@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⁶space.ai</title>
+  <!-- External stylesheet reference -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <!-- Logo on the left -->
+      <div class="logo" onclick="showSection('landing')">⁶space.ai</div>
+
+      <!-- Desktop nav on the right -->
+      <div class="nav-links-desktop">
+        <a onclick="showSection('pricing')">Pricing</a>
+        <a onclick="showSection('about')">About</a>
+        <a onclick="showSection('create')">Create</a>
+      </div>
+
+      <!-- Toggle (+ / X) for small screens -->
+      <div class="toggle" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- Nav links for small screens -->
+    <div class="nav-links">
+      <a onclick="showSection('pricing')">Pricing</a>
+      <a onclick="showSection('about')">About</a>
+      <a onclick="showSection('create')">Create</a>
+    </div>
+  </header>
+
+  <!-- LANDING SECTION -->
+  <section class="section" id="landing">
+    <iframe class="landing-iframe" src="https://hansenhomeai.github.io/WebbyDeerKnoll/"></iframe>
+    <!-- Invisible Overlay to prevent unintended interactions -->
+    <div id="iframe-overlay"></div>
+    <div class="landing-content">
+      <h1>Captivate buyers.</h1>
+      <a onclick="showSection('create')" class="cta-button">Create your own</a>
+    </div>
+  </section>
+
+  <!-- LOGO CAROUSEL SECTION -->
+  <section class="section hidden" id="landing-carousel">
+    <div class="logo-carousel">
+      <div class="logos">
+        <img src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/2.png?raw=true" alt="Customer 1 Logo">
+        <img src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/6.png?raw=true" alt="Customer 2 Logo">
+        <img src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/4.png?raw=true" alt="Customer 3 Logo">
+        <img src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/MirrRanchGroup2.png?raw=true" alt="Customer 7 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/3.png?raw=true" alt="Customer 4 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/MullinRealEstate2.png?raw=true" alt="Customer 9 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/5.png?raw=true" alt="Customer 5 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/1.png?raw=true" alt="Customer 6 Logo">      
+
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/2.png?raw=true" alt="Customer 1 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/6.png?raw=true" alt="Customer 2 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/4.png?raw=true" alt="Customer 3 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/MirrRanchGroup2.png?raw=true" alt="Customer 7 Logo">
+        <img loading="lazy" src="https://github.com/HansenHomeAI/Customer-Logos/blob/main/3.png?raw=true" alt="Customer 4 Logo">
+      </div>
+    </div>
+  </section>
+
+  <!-- LANDING-ADDITIONAL (two-col) -->
+  <section class="section two-col-section hidden" id="landing-additional">
+    <div class="two-col-content">
+      <h2>See properties in their full context.</h2>
+      <div class="right-col">
+        <p>We transform your aerial drone images into interactive 3D models that capture not just a building, but its surroundings. View your property as if you’re right there—feeling the neighborhood and natural flow around it.</p>
+        <a href="https://10716eforestcreekrd.hansentour.com" class="cta-button2-fixed" target="_blank">View property</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW STATS SECTION -->
+  <section class="section hidden" id="landing-stats">
+    <h2>Virtual experiences work.</h2>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <h1>95%</h1>
+        <p>Are more likely to contact listings with 3D tours.</p>
+      </div>
+      <div class="stat-box">
+        <h1>99%</h1>
+        <p>See 3D tours as a competitive edge.</p>
+      </div>
+      <div class="stat-box">
+        <h1>82%</h1>
+        <p>Consider switching agents if a 3D tour is offered.</p>
+      </div>
+    </div>
+    <p class="stats-source">National Association of Realtors</p>
+  </section>
+
+  <!-- LANDING-MORE (two-col) -->
+  <section class="section two-col-section hidden" id="landing-more">
+    <div class="two-col-content">
+      <h2>The future of property visualization.</h2>
+      <div class="right-col">
+        <p>Photos and 3D tours only show parts of a property—never the full picture. At ⁶space.ai, we create interactive models that let you explore the land, surroundings, and location in a way <span class="inline-white">no photo or video can match.</span></p>
+        <a href="https://dolan-road.hansentour.com" class="cta-button2-fixed" target="_blank">View property</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- LANDING-MORE2 (two-col) -->
+  <section class="section two-col-section hidden" id="landing-more2">
+    <div class="two-col-content">
+      <h2>Effortless creation with your drone.</h2>
+      <div class="right-col">
+        <p>Creating your 3D model is effortless. Our system lets your drone fly itself, capturing the perfect shots with zero skill required. Simply upload your photos, and you’ll receive the completed model straight to your inbox.</p>
+        <a onclick="showSection('create')" class="cta-button2-fixed">Create your own</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section hidden" id="landing-stats2">
+    <div class="stats-grid">
+      <div class="stat-box2">
+        <img src="https://raw.githubusercontent.com/HansenHomeAI/6SpaceLogos/refs/heads/main/White6SpaceFullLogo.svg" alt="Customer 6 Logo">
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section hidden" id="pricing">
+    <h1>Pricing.</h1>
+    <p>Each model includes a 1-month free trial for the $29/mo hosting.</p>
+    <div class="pricing-grid">
+      <!-- On-Site Visit Card -->
+      <div class="pricing-card">
+        <h2>On-site visit.</h2>
+        <div class="price">$1,200</div>
+        <p>We’ll visit your property in person and handle every step of the capture. Hosting continues at $29/month after your free first month.</p>
+        <a
+          onclick="window.location.href='mailto:hello@hansenhome.ai?subject=On-Site%20Visit%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20scheduling%20an%20on-site%20visit%20for%20⁶space.ai%20to%20capture%20my%20property%20and%20create%20a%203D%20model.'"
+          class="cta-button"
+        >
+          Contact Us
+        </a>
+      </div>
+      <!-- Remote Flight Card -->
+      <div class="pricing-card">
+        <h2>Remote flight.</h2>
+        <div class="price">$600</div>
+        <p>Your drone follows an automated flight path—no hassle, no extra gear. We train the neural network and host the result. Hosting continues at $29/month after your free first month.</p>
+        <a onclick="showSection('create')" class="cta-button">Create your model</a>
+      </div>
+      <!-- Enterprise Card -->
+      <div class="pricing-card">
+        <h2>Custom.</h2>
+        <p>High-volume or specialized projects? We’ll create a tailored plan to meet your needs.</p>
+        <a
+          onclick="window.location.href='mailto:hello@hansenhome.ai?subject=Custom%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20custom%20pricing%20options%20at%20⁶space.ai.'"
+          class="cta-button"
+        >
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT (two-col) -->
+  <section class="section two-col-section hidden" id="about">
+    <h1>About ⁶space.ai.</h1>
+    <div class="right-col">
+      <p>Your real estate is all about location—yet most listings fail to showcase it properly. Photos and 3D tours capture the inside of a home well, but they leave out what matters most: the context, the surroundings, the feel of the space.</p>
+      <p>That’s where ⁶space.ai comes in.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT-MISSION (two-col) -->
+  <section class="section two-col-section hidden" id="about-mission">
+    <div class="two-col-content">
+      <h2>How it works.</h2>
+      <div class="right-col">
+        <p><span class="inline-white">Plan your flight</span> – A drone pilot generates a flight path right here on our platform.</p>
+        <p><span class="inline-white">Capture and upload</span> – The drone follows the path, taking photos, which are then uploaded back to us.</p>
+        <p><span class="inline-white">Get your model</span> – We train a neural network on the images, and within 3 days, you receive a fully immersive 3D model straight to your inbox.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT-INNOVATION (two-col) -->
+  <section class="section two-col-section hidden" id="about-innovation">
+    <div class="two-col-content">
+      <h2>Bringing AI to real estate.</h2>
+      <div class="right-col">
+        <p>Noticing firsthand how listings fail to capture what you actually care about, 20-year-old founder Gabriel Hansen set out to fix it. Teaching himself computer science from the ground up, he built ⁶space.ai—combining advances in neural networks with drone technology to create a whole new way to showcase location. The name references <span class="inline-white">6 degrees of freedom</span> through space (a term common in AR/VR). Pronounced sick-space, it reflects exactly what it is: a sick, radical new way to immerse yourself in a location.</p>
+        <p>Our mission is simple: make the best tool for property marketing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE -->
+  <section class="section hidden" id="create">
+    <h1>Create your space.</h1>
+    <p>Transform your listings with ease. Our streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</p>
+
+    <div>
+      <div class="iframe-container">
+        <h2>Step 1: plan your drone flight.</h2>
+        <iframe src="https://hansenhomeai.github.io/DronePathGeneratorFE/" style="width:100%; min-height:900px; border:none;"></iframe>
+      </div>
+      <div class="iframe-container">
+        <h2>Step 2: upload drone photos.</h2>
+        <iframe src="https://hansenhomeai.github.io/DronePhotoUploaderFE/" style="width:100%; min-height:700px; border:none;"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE-STEPS -->
+  <section class="section hidden" id="create-steps">
+    <div>
+      <h2>Step 3: model processing.</h2>
+      <p>Sit tight—creating your model can take up to 3 days. We’ll send a fully immersive 3D tour straight to your inbox once it’s ready. If you run into any issues, just reach out using the feedback form below.</p>
+    </div>
+  </section>
+
+  <!-- Feedback Section -->
+  <div class="feedback-section">
+    <form class="feedback-form" onsubmit="sendFeedback(event)">
+      <input
+        type="text"
+        name="feedback"
+        class="feedback-input"
+        placeholder="Ways we can improve?">
+      <button type="submit" class="feedback-button cta-button2">Send feedback</button>
+    </form>
+  </div>
+
+  <footer>
+    © 2025 ⁶space.ai · All rights reserved
+  </footer>
+
+  <!-- External script reference -->
+  <script src="script.js"></script>
+</body>
+</html>
