@@ -6,6 +6,14 @@
   <title>⁶space.ai</title>
   <!-- External stylesheet reference -->
   <link rel="stylesheet" href="styles.css">
+  <!-- Preload first carousel images -->
+  <link rel="preload" as="image" href="assets/2.png">
+  <link rel="preload" as="image" href="assets/6.png">
+  <link rel="preload" as="image" href="assets/4.png">
+  <link rel="preload" as="image" href="assets/MirrRanchGroup2.png">
+
+
+
 </head>
 <body>
   <!-- HEADER -->
@@ -51,10 +59,10 @@
   <section class="section hidden" id="landing-carousel">
   <div class="logo-carousel">
     <div class="logos">
-      <img src="assets/2.png" alt="Customer 1 Logo">
-      <img src="assets/6.png" alt="Customer 2 Logo">
-      <img src="assets/4.png" alt="Customer 3 Logo">
-      <img src="assets/MirrRanchGroup2.png" alt="Customer 7 Logo">
+      <img loading="eager" src="assets/2.png" alt="Customer 1 Logo">
+      <img loading="eager" src="assets/6.png" alt="Customer 2 Logo">
+      <img loading="eager" src="assets/4.png" alt="Customer 3 Logo">
+      <img loading="eager" src="assets/MirrRanchGroup2.png" alt="Customer 7 Logo">
       <img loading="lazy" src="assets/3.png" alt="Customer 4 Logo">
       <img loading="lazy" src="assets/MullinRealEstate2.png" alt="Customer 9 Logo">
       <img loading="lazy" src="assets/5.png" alt="Customer 5 Logo">
