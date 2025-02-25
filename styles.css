@@ -151,7 +151,9 @@ body {
   left: 50%;
   transform-origin: center;
   transition: transform 0.3s ease;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
 }
+
 .toggle span:first-child {
   transform: translate(-50%, -50%) rotate(0deg);
 }
@@ -243,7 +245,7 @@ body {
 .header .logo,
 .header .nav-links a,
 .header .nav-links-desktop a {
-  text-shadow: 0 1px 17px rgba(0, 0, 0, 0.57);
+  text-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
 }
 
 /* LANDING SECTION & IFRAME */
@@ -362,31 +364,45 @@ body {
   overflow: hidden;
 }
 
+#landing-carousel {
+  padding: 30px 20px 0px; /* Keep top padding, remove bottom padding */
+  position: relative;
+  min-height: 10px; /* Adjust this value based on your needs */
+  align-items: flex-end;
+}
+
+#landing-stats2 {
+  padding: 70px 20px 10px;
+  position: relative;
+}
+
 /* We apply padding to all sections below for consistent spacing */
 #landing-more,
 #landing-more2,
-#landing-carousel,
 #landing-stats,
-#landing-stats2,
 #pricing,
 #about,
 #about-mission,
 #about-innovation,
 #create,
 #create-steps {
-  padding: 110px 20px 60px;
+  padding: 70px 20px 70px;
   position: relative;
 }
 /* We reduce top padding of #landing-additional by ~25px to tighten the gap */
 #landing-additional {
-  padding: 85px 20px 60px;
+  padding: 50px 20px 60px;
   position: relative;
+}
+/* Added section outlines for bettter visualization */
+.section {
+  border: 1px solid rgba(255,0,0,0); /* Temporary visual guide */
 }
 
 .section h1 {
   font-weight: 500;
   margin-bottom: 1rem;
-  font-size: 3rem;
+  font-size: clamp(2.2rem, 8vw, 2.9rem) !important;
 }
 .section h2 {
   font-weight: 500;
@@ -602,7 +618,10 @@ footer {
   background: transparent;
   position: relative;
   width: 100%;
-  margin: -50px 0;
+  margin-bottom: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
 }
 .logos {
   display: flex;

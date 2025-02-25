@@ -12,9 +12,10 @@ function showSection(sectionId) {
   const toggleBtn = header.querySelector('.toggle');
   const landingIframe = document.querySelector('.landing-iframe');
 
-  // Hide all sections
+  // Hide ALL sections first
   allSections.forEach(sec => sec.classList.add('hidden'));
 
+  // Then show only the relevant sections
   if (sectionId === 'pricing') {
     document.getElementById('pricing').classList.remove('hidden');
   } else if (sectionId === 'about') {
@@ -24,8 +25,7 @@ function showSection(sectionId) {
   } else if (sectionId === 'create') {
     document.getElementById('create').classList.remove('hidden');
     document.getElementById('create-steps').classList.remove('hidden');
-  } else {
-    // Default: show landing sections
+  } else if (sectionId === 'landing') {  // Make this explicit
     document.getElementById('landing').classList.remove('hidden');
     document.getElementById('landing-carousel').classList.remove('hidden');
     document.getElementById('landing-additional').classList.remove('hidden');
