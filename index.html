@@ -201,7 +201,412 @@
   <section class="section hidden" id="create">
     <h1>Create your space.</h1>
     <p>Transform your listings with ease. Our streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</p>
+  <!-- FILE: dronePathGenerator.html -->
+<div id="dfpg-container">
+  <div class="dfpg-container-inner">
+    <h1>Drone flight path generator</h1>
 
+    <!-- LOCATION SECTION -->
+    <h2>
+      Location
+      <span class="info-wrapper">
+        <span class="info-pill-icon" data-tooltip-target="tooltipLocation">info</span>
+      </span>
+    </h2>
+    <div class="info-tooltip" id="tooltipLocation">
+      <p>This section is all about setting your flight’s <strong>title</strong> and
+        <strong>coordinates</strong>. Make sure you accurately enter latitude/longitude, plus any separate takeoff coordinate if needed. 
+        Remember that latitude is positive in the Northern Hemisphere and negative in the Southern Hemisphere, and longitude is negative
+        in the Western Hemisphere and positive in the Eastern Hemisphere. Double-check these signs if you’re near the equator or prime
+        meridian.
+      </p>
+    </div>
+
+    <form id="coordinateForm">
+      <div class="input-row">
+        <div class="input-wrapper" data-label="Title">
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            placeholder="Enter title"
+          >
+          <div class="hover-overlay"></div>
+        </div>
+        <div class="input-wrapper" data-label="Coordinates">
+          <input 
+            type="text" 
+            id="coordinates" 
+            name="coordinates" 
+            placeholder="Enter coordinates (e.g., 40.68920°N, 74.04454°W)"
+          >
+          <div class="hover-overlay"></div>
+        </div>
+      </div>
+      <div class="input-wrapper" data-label="Takeoff Coordinates">
+        <input 
+          type="text" 
+          id="takeoffCoordinates" 
+          name="takeoffCoordinates" 
+          placeholder="Separate takeoff coordinates (optional)"
+        >
+        <div class="hover-overlay"></div>
+      </div>
+
+      <!-- FLIGHT SECTION -->
+      <h2>
+        Flight
+        <span class="info-wrapper">
+          <span class="info-pill-icon" data-tooltip-target="tooltipFlight">info</span>
+        </span>
+      </h2>
+      <div class="info-tooltip" id="tooltipFlight">
+        <p>Here you can select <strong>Standard</strong> or <strong>Advanced</strong> mode
+          and fine-tune details like altitude range, loops, radius increments, etc. In Standard mode, a single slider controls
+          the overall flight size. In Advanced mode, you can customize the number of loops, initial radius, and whether increments
+          are exponential. Use the battery capacity to split the flight into multiple segments if needed.
+        </p>
+      </div>
+
+      <!-- Updated pill toggle for 3 modes -->
+      <div class="pill-toggle" id="modeToggle" data-mode="standard">
+        <div class="pill-toggle-selector"></div>
+        <div class="pill-toggle-labels">
+          <span class="standard-label" onclick="setGeneratorMode('standard')">Residential</span>
+          <span class="ranch-label" onclick="setGeneratorMode('ranch')">Ranch</span>
+          <span class="advanced-label" onclick="setGeneratorMode('advanced')">Advanced</span>
+        </div>
+      </div>
+
+      <!-- Residential (formerly Standard) Mode UI -->
+      <div id="standardModeUI" style="display:block;">
+        <div class="slider-container">
+          <input 
+            type="range" 
+            id="pathSizeSlider" 
+            min="0" 
+            max="100" 
+            value="0" 
+            step="1"
+          >
+          <div class="slider-labels">
+            <span>Smallest flight</span>
+            <span>Largest flight</span>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Min Height">
+            <input 
+              type="number" 
+              id="minHeight" 
+              name="minHeight" 
+              placeholder="Min height (default: 100ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <div class="input-wrapper" data-label="Max Height">
+            <input 
+              type="number" 
+              id="maxHeight" 
+              name="maxHeight" 
+              placeholder="Max height (optional)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+        </div>
+        <div class="input-wrapper" data-label="Battery Capacity">
+          <input 
+            type="number" 
+            id="batteryCapacity" 
+            name="batteryCapacity" 
+            placeholder="Battery capacity (default: 20min)" 
+            step="any"
+          >
+          <div class="hover-overlay"></div>
+        </div>
+      </div>
+
+      <!-- Ranch Mode UI -->
+      <div id="ranchModeUI" style="display:none;">
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Min Height">
+            <input 
+              type="number" 
+              id="minHeightRanch" 
+              name="minHeightRanch" 
+              placeholder="Min height (default: 100ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <div class="input-wrapper" data-label="Max Height">
+            <input 
+              type="number" 
+              id="maxHeightRanch" 
+              name="maxHeightRanch" 
+              placeholder="Max height (optional)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+        </div>
+
+        <div class="input-wrapper" data-label="Battery Capacity">
+          <input 
+            type="number" 
+            id="batteryCapacityRanch" 
+            name="batteryCapacityRanch" 
+            placeholder="Battery capacity (default: 20min)" 
+            step="any"
+          >
+          <div class="hover-overlay"></div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Number of Batteries">
+            <input 
+              type="number" 
+              id="numBatteriesRanch" 
+              name="numBatteriesRanch" 
+              placeholder="Number of Batteries"
+              step="1"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <div class="input-wrapper" data-label="Initial Radius">
+            <input
+              type="number"
+              id="initialRadiusRanch"
+              name="initialRadiusRanch"
+              placeholder="Initial radius (default: 350ft)"
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Mode UI -->
+      <div id="advancedModeUI" style="display:none;">
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Number of Loops">
+            <input 
+              type="number" 
+              id="numLoops" 
+              name="numLoops" 
+              placeholder="Loops (default: 3)" 
+              min="1" 
+              step="1"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <div class="input-wrapper" data-label="Initial Radius">
+            <input 
+              type="number" 
+              id="initialRadius" 
+              name="initialRadius" 
+              placeholder="Initial radius (default: 200ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+        </div>
+        <!-- Radius increment row -->
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Radius Increment">
+            <input 
+              type="number" 
+              id="radiusIncrement" 
+              name="radiusIncrement" 
+              placeholder="Radius increment (default: 50ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <label class="ios-toggle-container">
+            <div class="toggle-switch">
+              <input type="checkbox" id="exponentialRadius">
+              <span class="slider"></span>
+            </div>
+            <span class="toggle-text">Exponential</span>
+          </label>
+        </div>
+        <!-- Height increment row -->
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Height Increment">
+            <input 
+              type="number" 
+              id="aglIncrement" 
+              name="aglIncrement" 
+              placeholder="Height increment (default: 20ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <label class="ios-toggle-container">
+            <div class="toggle-switch">
+              <input type="checkbox" id="exponentialAGL">
+              <span class="slider"></span>
+            </div>
+            <span class="toggle-text">Exponential</span>
+          </label>
+        </div>
+        <div class="input-row">
+          <div class="input-wrapper" data-label="Initial AGL">
+            <input 
+              type="number" 
+              id="initialAGL" 
+              name="initialAGL" 
+              placeholder="Min height (default: 150ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+          <div class="input-wrapper" data-label="Start Point Altitude">
+            <input 
+              type="number" 
+              id="startPointAltitude" 
+              name="startPointAltitude" 
+              placeholder="Start point altitude (default: 70ft)" 
+              step="any"
+            >
+            <div class="hover-overlay"></div>
+          </div>
+        </div>
+        <div class="input-wrapper" data-label="Battery Capacity">
+          <input 
+            type="number" 
+            id="batteryCapacityAdvanced" 
+            name="batteryCapacityAdvanced" 
+            placeholder="Battery capacity (default: 20min)" 
+            step="any"
+          >
+          <div class="hover-overlay"></div>
+        </div>
+      </div>
+
+      <div id="poiSection" style="display:none;">
+        <h2>Points of Interest</h2>
+        <label class="ios-toggle-container">
+          <div class="toggle-switch">
+            <input type="checkbox" id="poiModeToggle">
+            <span class="slider"></span>
+          </div>
+          <span class="toggle-text">Use POI Elevation Instead of Gimbal Tilt Control</span>
+        </label>
+      </div>
+      <button type="button" id="addPoiButton" style="display:none;">Add POI</button>
+
+      <!-- DOWNLOAD SECTION -->
+      <h2>
+        Download
+        <span class="info-wrapper">
+          <span class="info-pill-icon" data-tooltip-target="tooltipDownload">info</span>
+        </span>
+      </h2>
+      <div class="info-tooltip" id="tooltipDownload">
+        <p>After generating, you can download the flight path CSV. If it’s split into segments 
+        (multi-battery missions), each segment will have its own download button. You can then import these CSV files into your 
+        preferred flight planning software. If multiple segments are generated, each one picks up where the last segment ended in 
+        order to accommodate your battery capacity.</p>
+      </div>
+
+      <button type="submit" id="generateButton">Generate flight path</button>
+      <div id="result"></div>
+      <button id="downloadMasterBtn" style="display:none;">Download Master Flight Path CSV</button>
+      <div id="segmentDownloads" class="segment-downloads" style="display:none;"></div>
+      <div id="flightTime" style="display:none;"></div>
+      <div id="log"></div>
+    </form>
+  </div>
+</div>
+<!-- CHUNK #1: dronePhotoUploader.html (HTML snippet) -->
+<div id="dpu-container">
+  <div class="dpu-container-inner">
+    <h1>Upload your drone photos</h1>
+
+    <!-- Title of property -->
+    <div class="input-wrapper">
+      <input
+        type="text"
+        id="propertyTitle"
+        placeholder="Title of property"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Address of property -->
+    <div class="input-wrapper">
+      <input
+        type="text"
+        id="addressOfProperty"
+        placeholder="Address of property"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Listing description -->
+    <div class="input-wrapper">
+      <textarea
+        id="listingDescription"
+        rows="4"
+        placeholder="Listing description..."
+      ></textarea>
+    </div>
+
+    <!-- Drag & Drop / File Select for .zip -->
+    <div id="uploadArea" class="upload-area">
+      <p id="uploadPrompt">Drag & drop .zip files here, or click to select</p>
+      <p>(Max 5GB total)</p>
+
+      <!-- Hidden by default, shown once a file is selected -->
+      <p id="selectedFileDisplay" style="display:none;">
+        Selected file: <span id="selectedFileName"></span>
+        <span id="removeFileBtn" class="close-icon">&times;</span>
+      </p>
+
+      <input 
+        type="file" 
+        id="fileInput" 
+        accept=".zip"
+        style="display:none"
+      />
+    </div>
+
+    <!-- Email field -->
+    <div class="input-wrapper">
+      <input
+        type="email"
+        id="emailField"
+        placeholder="Your email"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Optional notes -->
+    <div class="input-wrapper">
+      <textarea 
+        id="optionalNotes"
+        rows="3"
+        placeholder="Optional notes (e.g. desired lot lines, tags)..."
+      ></textarea>
+    </div>
+
+    <!-- Upload Button -->
+    <div class="input-row">
+      <button id="uploadBtn" class="dpu-btn">
+        Upload photos
+      </button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-bar-fill" id="progressBarFill"></div>
+    </div>
+  </div>
+</div>
     <div>
       <div class="iframe-container">
         <h2>Step 1: plan your drone flight.</h2>
