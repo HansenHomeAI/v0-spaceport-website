@@ -380,13 +380,12 @@ body {
 #landing-more,
 #landing-more2,
 #landing-stats,
-#pricing,
-#about,
 #about-mission,
 #about-innovation,
-#create,
-#create-steps {
-  padding: 70px 20px 70px;
+#create-steps1,
+#create-steps2,
+#create-steps3 {
+  padding: 70px 20px 40px;
   position: relative;
 }
 /* We reduce top padding of #landing-additional by ~25px to tighten the gap */
@@ -451,6 +450,8 @@ body {
   }
 }
 
+
+
 /* Pricing Cards */
 .pricing-grid {
   display: flex;
@@ -462,7 +463,7 @@ body {
 .pricing-card {
   text-align: center;
   max-width: 540px;
-  width: 100%;
+  width: 90%;
   padding: 30px;
   border-radius: 32px;
   position: relative;
@@ -608,8 +609,9 @@ footer {
 #create {
   flex-direction: column;
   justify-content: center;
-  min-height: 65vh;
-  margin-top: 15vh;
+  min-height: 3rem;
+  margin-top: 10rem;
+  margin-bottom: 3rem;
 }
 
 /* LOGO CAROUSEL STYLES */
@@ -694,6 +696,8 @@ footer {
   margin-top: 40px;
   justify-content: center;
   align-items: center;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 @media (min-width: 750px) {
   .stats-grid {
@@ -790,7 +794,7 @@ footer {
 .stat-box p {
   font-size: 1.1rem;
   line-height: 1.4;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   color: #fff;
 }
 

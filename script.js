@@ -24,7 +24,9 @@ function showSection(sectionId) {
     document.getElementById('about-innovation').classList.remove('hidden');
   } else if (sectionId === 'create') {
     document.getElementById('create').classList.remove('hidden');
-    document.getElementById('create-steps').classList.remove('hidden');
+    document.getElementById('create-steps1').classList.remove('hidden');
+    document.getElementById('create-steps2').classList.remove('hidden');
+    document.getElementById('create-steps3').classList.remove('hidden');
   } else if (sectionId === 'landing') {  // Make this explicit
     document.getElementById('landing').classList.remove('hidden');
     document.getElementById('landing-carousel').classList.remove('hidden');

@@ -83,7 +83,7 @@
     <div class="two-col-content">
       <h2>See properties in their full context.</h2>
       <div class="right-col">
-        <p>We transform your aerial drone images into interactive 3D models that capture not just a building, but its surroundings. View your property as if you’re right there—feeling the neighborhood and natural flow around it.</p>
+        <p>Transform your drone images into interactive 3D models that capture not just a building, but its location. View your property as if you’re right there—feeling the neighborhood and natural flow around it.</p>
         <a href="https://10716eforestcreekrd.hansentour.com" class="cta-button2-fixed" target="_blank">View property</a>
       </div>
     </div>
@@ -148,7 +148,7 @@
       <div class="pricing-card">
         <h2>Autonomous capture.</h2>
         <div class="price">$599</div>
-        <p>Your drone follows an automated flight path—no hassle, no extra gear. We train the neural network and host the result. Hosting continues at $29/month after your free first month.</p>
+        <p>Your drone follows an automated flight path—no hassle, no extra gear. We train the neural network and host the embeddable link. Hosting continues at $29/month after your free first month.</p>
         <a onclick="showSection('create')" class="cta-button">Create your model</a>
       </div>
       <!-- Enterprise Card -->
@@ -200,12 +200,27 @@
   <!-- CREATE -->
   <section class="section hidden" id="create">
     <h1>Create your space.</h1>
-    <p>Transform your listings with ease. Our streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</p>
-  <!-- FILE: dronePathGenerator.html -->
+    <p>Transform your listings with ease. This streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</p>
+  </section>
+  
+  <section class="section hidden" id="create-steps1">
+    <div class="flight-path-section">
+        <div class="two-col-content">
+          <div class="left-col">
+            <h2 class="flight-path-title">Step 1: plan your drone flight.</h2>
+          </div>
+          <div class="right-col">
+            <p>This algorithm will create a flight path which adjusts to changes in topography to capture the perfect photos for our neural network, creating path segments optimized for each battery. Ensure minimum height is set to avoid any trees or structures, and maximum height complies with your airspace.</p>
+            <p>The completed flight path CSV segments can be uploaded to your drone, each to be flown consecutively per battery. The Master CSV simply gives an overall veiw of the entire path, but each Segment CSV is intended to be flown with each battery. Unless for emergencies, do not interfere with the flight. For DJI drones, it is recommended to use the <span class="inline-white">Litchi Mission Hub</span> app to execute the flight.</p>
+          </div>
+        </div>
+  </div>
+  
+  
+    <!-- FILE: dronePathGenerator.html -->
 <div id="dfpg-container">
   <div class="dfpg-container-inner">
-    <h1>Drone flight path generator</h1>
-
+    
     <!-- LOCATION SECTION -->
     <h2>
       Location
@@ -522,10 +537,23 @@
     </form>
   </div>
 </div>
+</section>
+
+<section class="section hidden" id="create-steps2">
+  <div class="flight-path-section">
+      <div class="two-col-content">
+        <div class="left-col">
+          <h2 class="flight-path-title">Step 2: upload drone photos.</h2>
+        </div>
+        <div class="right-col">
+          <p>Enter the relevant info to create the model. If you'd like property lines or embeded name tags, include the site map documents within the drone photos zip file, and make mention in the "Optional notes" field.</p>
+        </div>
+      </div>
+</div>
+    
 <!-- CHUNK #1: dronePhotoUploader.html (HTML snippet) -->
 <div id="dpu-container">
   <div class="dpu-container-inner">
-    <h1>Upload your drone photos</h1>
 
     <!-- Title of property -->
     <div class="input-wrapper">
@@ -607,20 +635,11 @@
     </div>
   </div>
 </div>
-    <div>
-      <div class="iframe-container">
-        <h2>Step 1: plan your drone flight.</h2>
-        <iframe src="https://hansenhomeai.github.io/DronePathGeneratorFE/" style="width:100%; min-height:900px; border:none;"></iframe>
-      </div>
-      <div class="iframe-container">
-        <h2>Step 2: upload drone photos.</h2>
-        <iframe src="https://hansenhomeai.github.io/DronePhotoUploaderFE/" style="width:100%; min-height:700px; border:none;"></iframe>
-      </div>
-    </div>
+</div>
   </section>
 
   <!-- CREATE-STEPS -->
-  <section class="section hidden" id="create-steps">
+  <section class="section hidden" id="create-steps3">
     <div>
       <h2>Step 3: model processing.</h2>
       <p>Sit tight—creating your model can take up to 3 days. We’ll send a fully immersive 3D tour straight to your inbox once it’s ready. If you run into any issues, just reach out using the feedback form below.</p>
