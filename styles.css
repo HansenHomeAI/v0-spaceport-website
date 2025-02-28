@@ -1566,7 +1566,6 @@ footer {
 #create {
   position: relative;
   overflow: visible;
-  isolation: isolate; /* Create new stacking context */
 }
 
 /* PRICING Gradient */
