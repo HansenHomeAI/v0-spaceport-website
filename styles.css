@@ -1561,108 +1561,89 @@ footer {
 
 
 /* Keep the same position & overflow for all three */
+/* Keep the same position & overflow for all three */
 #pricing-header,
 #about,
 #create {
   position: relative;
   overflow: visible;
+  isolation: isolate; /* Create new stacking context */
 }
 
-/* PRICING Gradient */
+/* PRICING Circle Swirl */
 #pricing-header::before {
   content: "";
   position: absolute;
-  top: -1600px;
+  top: -1200px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 1800px;
-  height: 1800px;
-  border-radius: 50%;
+  transform: translateX(-50%) rotate(160deg);
+  width: 1600px;         /* Larger bounding box so the swirl is bigger */
+  height: 1600px;
   pointer-events: none;
   z-index: -2;
-  /* Example: orange -> purple swirl */
-  background: conic-gradient(
-    from -180deg at 50% 110%,
-    #FF4F00 0%,
-    #CD70E4 20%,
-    #4b006d 40%,
-    #FF4F00 80%,
-    #FF4F00 100%
-  );
-  filter: blur(150px);
-  opacity: 0.49;
+  background: url("assets/ColorSwirl.png") no-repeat center;
+  /* 'contain' keeps the full shape visible within the box 
+     If you need it to fill the box entirely, use 'cover' instead. */
+  background-size: contain;
+  opacity: 0.6;
 }
 
-/* ABOUT Gradient */
+/* ABOUT Circle Swirl */
 #about::before {
   content: "";
   position: absolute;
-  top: -1600px;
+  top: -1200px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 1800px;
-  height: 1800px;
-  border-radius: 50%;
+  transform: translateX(-50%) rotate(180deg);
+  width: 1600px;         /* Larger bounding box so the swirl is bigger */
+  height: 1600px;
   pointer-events: none;
   z-index: -2;
-  /* Example: pink -> teal swirl */
-  background: conic-gradient(
-    from 0deg at 50% 110%,
-      #FF4F00 0%,
-      #FF4F00 20%,
-      #4b006d 40%,
-      #CD70E4 80%,
-      #4b006d 100%
-  );
-  filter: blur(150px);
-  opacity: 0.4;
+  background: url("assets/ColorSwirl.png") no-repeat center;
+  /* 'contain' keeps the full shape visible within the box 
+     If you need it to fill the box entirely, use 'cover' instead. */
+  background-size: contain;
+  opacity: 0.6;
 }
 
-/* CREATE Gradient */
+/* CREATE Circle Swirl */
 #create::before {
   content: "";
   position: absolute;
-  top: -1600px;
+  top: -1200px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 1800px;
-  height: 1800px;
-  border-radius: 50%;
+  transform: translateX(-50%) rotate(200deg);
+  width: 1600px;         /* Larger bounding box so the swirl is bigger */
+  height: 1600px;
   pointer-events: none;
   z-index: -2;
-  /* Example: purple -> orange swirl */
-  background: conic-gradient(
-    from 200deg at 50% 110%,
-      #FF4F00 0%,
-      #FF4F00 20%,
-      #4b006d 40%,
-      #CD70E4 80%,
-      #FF4F00 100%
-  );
-  filter: blur(150px);
-  opacity: 0.5;
+  background: url("assets/ColorSwirl.png") no-repeat center;
+  /* 'contain' keeps the full shape visible within the box 
+     If you need it to fill the box entirely, use 'cover' instead. */
+  background-size: contain;
+  opacity: 0.6;
 }
 
 /* Noise overlay layer for all three */
-#pricing::after,
+#pricing-header::after,
 #about::after,
 #create::after {
   content: "";
   position: absolute;
   top: -1600px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 2800px;
-  height: 2800px;
-  border-radius: 50%;
+  transform: translateX(-50%) rotate(0deg);
+  width: 1800px;
+  height: 1800px;
   pointer-events: none;
   z-index: -1;
-
-  background-image: url("assets/noiseEffect Rectangle 1024.png");
-  background-repeat: repeat;
+  background: url("assets/NoiseSwirl.png") repeat center;
   background-size: 200px 200px;
-  opacity: 0.5;
+  background-position: 0 0;
+  opacity: 1;
 }
+
+
 
 .stat-box h1 {
   margin-left: 0;
