@@ -282,6 +282,7 @@ body {
   font-weight: 700;
   margin-bottom: 1rem;
   font-size: clamp(2.2rem, 8vw, 2.9rem) !important;
+  max-width: 100%;
 }
 .landing-content p {
   line-height: 1.6;
@@ -402,6 +403,9 @@ body {
   font-weight: 500;
   margin-bottom: 1rem;
   font-size: clamp(2.2rem, 8vw, 2.9rem) !important;
+  max-width: 92%;
+  margin-left: auto;
+  margin-right: auto;
 }
 .section h2 {
   font-weight: 500;
@@ -414,7 +418,7 @@ body {
   color: #737373;
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
-  max-width: 88%;
+  max-width: 92%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -605,7 +609,7 @@ footer {
 
 /* Ensure About, Pricing, and Create start 35% from the top */
 #about,
-#pricing,
+#pricing-header,
 #create {
   flex-direction: column;
   justify-content: center;
@@ -696,8 +700,8 @@ footer {
   margin-top: 40px;
   justify-content: center;
   align-items: center;
-  margin-left: 5%;
-  margin-right: 5%;
+  margin-left: 0%;
+  margin-right: 0%;
 }
 @media (min-width: 750px) {
   .stats-grid {
@@ -775,7 +779,10 @@ footer {
   padding: 1.4px;
 }
 .stat-box h1 {
-  font-size: 5rem;
+  display: block;       /* Ensure it’s a block-level element */
+  width: 100%;          /* Take up full width of the container */
+  text-align: left;     /* Force left alignment */
+  font-size: 4rem !important;
   margin-bottom: 5px;
   font-weight: 500;
   background: conic-gradient(
@@ -859,6 +866,23 @@ footer {
   pointer-events: none;
   padding: 1.4px;
 }
+
+.stat-box2::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-image: url("assets/noiseEffect Rectangle 1024.png");
+  background-repeat: repeat;
+  background-size: 200px 200px; /* adjust for finer or coarser grain */
+  opacity: 0.18; /* adjust opacity as needed */
+  pointer-events: none;
+  z-index: -1;
+}
+
 .stat-box2 h1 {
   font-size: 5rem;
   margin-bottom: 15px;
@@ -1533,4 +1557,119 @@ footer {
     margin: 40px auto;
     padding: 15px;
   }
+}
+
+
+/* Keep the same position & overflow for all three */
+#pricing-header,
+#about,
+#create {
+  position: relative;
+  overflow: visible;
+}
+
+/* PRICING Gradient */
+#pricing-header::before {
+  content: "";
+  position: absolute;
+  top: -1600px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1800px;
+  height: 1800px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -2;
+  /* Example: orange -> purple swirl */
+  background: conic-gradient(
+    from -180deg at 50% 110%,
+    #FF4F00 0%,
+    #CD70E4 20%,
+    #4b006d 40%,
+    #FF4F00 80%,
+    #FF4F00 100%
+  );
+  filter: blur(150px);
+  opacity: 0.49;
+}
+
+/* ABOUT Gradient */
+#about::before {
+  content: "";
+  position: absolute;
+  top: -1600px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1800px;
+  height: 1800px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -2;
+  /* Example: pink -> teal swirl */
+  background: conic-gradient(
+    from 0deg at 50% 110%,
+      #FF4F00 0%,
+      #FF4F00 20%,
+      #4b006d 40%,
+      #CD70E4 80%,
+      #4b006d 100%
+  );
+  filter: blur(150px);
+  opacity: 0.4;
+}
+
+/* CREATE Gradient */
+#create::before {
+  content: "";
+  position: absolute;
+  top: -1600px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1800px;
+  height: 1800px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -2;
+  /* Example: purple -> orange swirl */
+  background: conic-gradient(
+    from 200deg at 50% 110%,
+      #FF4F00 0%,
+      #FF4F00 20%,
+      #4b006d 40%,
+      #CD70E4 80%,
+      #FF4F00 100%
+  );
+  filter: blur(150px);
+  opacity: 0.5;
+}
+
+/* Noise overlay layer for all three */
+#pricing::after,
+#about::after,
+#create::after {
+  content: "";
+  position: absolute;
+  top: -1600px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2800px;
+  height: 2800px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+
+  background-image: url("assets/noiseEffect Rectangle 1024.png");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.5;
+}
+
+.stat-box h1 {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+  /* If needed, add !important:
+     margin-left: 0 !important;
+     margin-right: 0 !important;
+     max-width: none !important; */
 }

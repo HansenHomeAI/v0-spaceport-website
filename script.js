@@ -17,6 +17,7 @@ function showSection(sectionId) {
 
   // Then show only the relevant sections
   if (sectionId === 'pricing') {
+    document.getElementById('pricing-header').classList.remove('hidden');
     document.getElementById('pricing').classList.remove('hidden');
   } else if (sectionId === 'about') {
     document.getElementById('about').classList.remove('hidden');
