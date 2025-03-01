@@ -1740,3 +1740,15 @@ body::before {
 #dpu-container .input-wrapper textarea {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+
+/* Remove arrows (spinners) in Chrome, Safari, Edge, and Opera */
+#dfpg-container .input-wrapper input[type="number"]::-webkit-outer-spin-button,
+#dfpg-container .input-wrapper input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove arrows (spinners) in Firefox */
+#dfpg-container .input-wrapper input[type="number"] {
+  -moz-appearance: textfield;
+}
