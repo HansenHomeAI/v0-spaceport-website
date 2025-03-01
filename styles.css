@@ -454,7 +454,22 @@ html, body {
   }
 }
 
+.two-col-section .two-col-content .right-col p,
+.two-col-section .two-col-content .right-col .cta-button2-fixed {
+  /* Remove any existing margin overrides */
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
 
+/* If you want to adjust the spacing between them */
+.two-col-section .two-col-content .right-col p {
+  margin-bottom: 1.5rem;
+}
+
+.two-col-section .two-col-content .right-col .cta-button2-fixed {
+  margin-left: 0; /* Override the default 8px margin-left */
+}
 
 /* Pricing Cards */
 .pricing-grid {
@@ -1685,4 +1700,39 @@ body::before {
   );
   pointer-events: none;
   z-index: 998; /* Below header (999) but above other content */
+}
+
+.symbol-3d {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  vertical-align: middle;
+  transform: translateY(0.05px);
+}
+
+/* Style for CTA1 button symbol */
+.cta-button.with-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-button.with-symbol .symbol-3d {
+  filter: invert(0%); /* Makes SVG white to match button text */
+}
+
+/* Style for CTA2 button symbol */
+.cta-button2-fixed.with-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-button2-fixed.with-symbol .symbol-3d {
+  filter: invert(39%) sepia(62%) saturate(7483%) hue-rotate(4deg) brightness(112%) contrast(106%); /* Makes SVG #FF4F00 color */
+}
+
+.cta-button2-fixed.with-symbol:hover .symbol-3d {
+  filter: invert(0%); /* Makes SVG white on hover */
 }
