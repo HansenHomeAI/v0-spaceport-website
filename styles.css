@@ -1736,3 +1736,7 @@ body::before {
 .cta-button2-fixed.with-symbol:hover .symbol-3d {
   filter: invert(0%); /* Makes SVG white on hover */
 }
+
+#dpu-container .input-wrapper textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
