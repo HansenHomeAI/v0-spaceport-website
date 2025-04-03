@@ -740,39 +740,17 @@ footer {
 }
 /* Variation for box #1 */
 .stat-box:nth-child(1) {
-  background: conic-gradient(
-    from 120deg at -20% 74%,
-    #FF4F00 0%,
-    #EFEEE7 20%,
-    #EFEEE7 40%,
-    #CD70E4 80%,
-    #FF4F00 100%,
-    opacity: 0.1
-  );
+  background: rgba(0, 0, 0, 0.1); /* Base background with opacity */
+  /* Applying gradient potentially as overlay or removing opacity from definition */
+  /* Simpler approach: Just use a base color if gradient is complex */
 }
 /* Variation for box #2 */
 .stat-box:nth-child(2) {
-  background: conic-gradient(
-    from 180deg at 0% 110%,
-    #E7621E 0%,
-    #E7621E 15%,
-    #D768C6 45%,
-    #FF4F00 85%,
-    #E7621E 100%,
-    opacity: 0.1
-  );
+  background: rgba(0, 0, 0, 0.1);
 }
 /* Variation for box #3 */
 .stat-box:nth-child(3) {
-  background: conic-gradient(
-    from 270deg at 110% 0%,
-    #CD70E4 0%,
-    #CD70E4 25%,
-    #E36281 50%,
-    #FF4F00 75%,
-    #CD70E4 100%,
-    opacity: 0.1
-  );
+  background: rgba(0, 0, 0, 0.1);
 }
 .stat-box::before {
   content: "";
@@ -1344,6 +1322,8 @@ footer {
   user-select: none;
   position: relative;
   top: -2px;
+  border: none;
+  transition: background 0.3s ease;
 }
 #dfpg-container .info-pill-icon:hover {
   background: #FF4F00;
@@ -1757,24 +1737,28 @@ body::before {
 
 /* Add Existing Path Button */
 .add-path-button {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  /* Removed position: absolute; */
+  /* Removed top/left properties */
+  /* Other styles moved to .info-pill-icon or overridden above */
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
-  padding: 2px 10px;
-  font-size: 0.85rem;
+  border: none; /* Match info pill */
+  border-radius: 999px; /* Match info pill */
+  padding: 2px 10px; /* Match info pill */
+  font-size: 0.85rem; /* Match info pill */
   cursor: pointer;
   color: #fff;
-  text-transform: uppercase;
+  text-transform: uppercase; /* Match info pill */
   user-select: none;
   transition: all 0.3s ease;
-  z-index: 10;
+  /* Removed z-index */
+  margin-top: 0.5rem;
+  display: block;
+  width: fit-content;
 }
 
 .add-path-button:hover {
-  background: #FF4F00;
+  /* Inherits hover from .info-pill-icon */
+  background: #FF4F00; 
   color: #fff;
 }
 
@@ -1785,28 +1769,31 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
+.popup.hidden {
+  display: none;
+}
+
 .popup-content {
-  background: #000;
-  border-radius: 20px;
+  background: #1a1a1a;
+  padding: 2rem;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  padding: 30px;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .popup-header h2 {
@@ -1817,13 +1804,12 @@ body::before {
 .close-icon {
   font-size: 1.5rem;
   cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  transition: background 0.3s ease;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
 }
 
 .close-icon:hover {
-  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .instructions {
@@ -1833,8 +1819,8 @@ body::before {
 
 .upload-area {
   border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 30px;
+  border-radius: 8px;
+  padding: 2rem;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.3s ease;
@@ -1854,51 +1840,80 @@ body::before {
 }
 
 .parsing-results {
-  margin-top: 20px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
+  margin-top: 1.5rem;
 }
 
-.parsing-results h3 {
-  margin-bottom: 15px;
-  font-size: 1.1rem;
+.parsing-results.hidden {
+  display: none;
 }
 
 #detectedParams {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  margin-top: 1rem;
 }
 
 #detectedParams div {
-  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
-#detectedParams div strong {
-  display: block;
-  margin-bottom: 5px;
+#detectedParams strong {
   color: rgba(255, 255, 255, 0.8);
 }
 
-#detectedParams div span {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+#detectedParams span {
+  color: white;
 }
 
-.dfpg-container {
-  position: relative;
-  background-color: #1a1a1a;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 1200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.dfpg-header {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; /* Add explicit gap between elements */
 }
 
-.dfpg-container-inner {
-  position: relative;
-  padding-top: 50px; /* Add space for the button */
+/* Group for title/info - Flexbox centers this */
+.header-title-group {
+  margin-bottom: 0; /* Remove margin since we're using gap */
+  text-align: center; /* Center the title group */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-title-group h2 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-title-group .info-wrapper {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Style for Add Existing Path button */
+.add-path-button.info-pill-icon {
+  display: block;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.85rem;
+  color: #fff;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease;
+  width: fit-content;
+  margin: 0; /* Remove margin since we're using gap */
+}
+
+.add-path-button.info-pill-icon:hover {
+  background: #FF4F00;
+  color: #fff;
 }

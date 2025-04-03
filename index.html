@@ -234,18 +234,24 @@
     <!-- FILE: dronePathGenerator.html -->
 <div id="dfpg-container" class="dfpg-container">
   <div class="dfpg-container-inner">
-    <button class="add-path-button" onclick="showAddPathPopup()">Add Existing Path</button>
     <div class="dfpg-header">
-    <h2>
-      Location
-      <span class="info-wrapper">
-        <span class="info-pill-icon" data-tooltip-target="tooltipLocation">info</span>
-      </span>
-    </h2>
-    <div class="info-tooltip" id="tooltipLocation">
-      <p>This section is all about setting your flight's <strong>title</strong> and
-        <strong>coordinates</strong>. Paste the coordinates of the desired focus point of your model. To optimize your drone's battery, add separate takeoff coordinates if the takeoff location is far from the focus point of your model. Any coordinate format is accepted, but coordinates from Apple or Google Maps are recommended for accuracy.
-      </p>
+      <!-- Group for Location title and Info pill -->
+      <div class="header-title-group">
+        <h2>
+          Location
+          <span class="info-wrapper">
+            <span class="info-pill-icon" data-tooltip-target="tooltipLocation">info</span>
+          </span>
+        </h2>
+      </div>
+      <!-- Add Path button moved outside the title group -->
+      <button class="add-path-button info-pill-icon" onclick="showAddPathPopup()">Add Existing Path</button>
+
+      <div class="info-tooltip" id="tooltipLocation">
+        <p>This section is all about setting your flight's <strong>title</strong> and
+          <strong>coordinates</strong>. Paste the coordinates of the desired focus point of your model. To optimize your drone's battery, add separate takeoff coordinates if the takeoff location is far from the focus point of your model. Any coordinate format is accepted, but coordinates from Apple or Google Maps are recommended for accuracy.
+        </p>
+      </div>
     </div>
 
     <form id="coordinateForm">
@@ -563,7 +569,7 @@
 </div>
     
 <!-- CHUNK #1: dronePhotoUploader.html (HTML snippet) -->
-<div id="dpu-container">
+<div id="dpu-container" class="dpu-container">
   <div class="dpu-container-inner">
 
     <!-- Title of property -->
@@ -680,20 +686,20 @@
   <div id="addPathPopup" class="popup hidden">
     <div class="popup-content">
       <div class="popup-header">
-        <h2>Add Existing Flight Path</h2>
-        <div class="close-icon" onclick="hideAddPathPopup()">×</div>
+        <h2>Add Existing Path</h2>
+        <span class="close-icon" onclick="hideAddPathPopup()">×</span>
       </div>
-      <div class="popup-body">
-        <p class="instructions">Add an existing flight path and we'll pre-fill the parameters.</p>
-        <div class="upload-area" id="csvUploadArea">
-          <input type="file" id="csvFileInput" accept=".csv" style="display: none">
-          <p>Drag and drop your CSV file here or click to browse</p>
-          <p class="file-format">Only CSV files are accepted</p>
-        </div>
-        <div id="parsingResults" class="parsing-results hidden">
-          <h3>Detected Parameters:</h3>
-          <div id="detectedParams"></div>
-        </div>
+      <div class="instructions">
+        <p>Upload a CSV file containing your flight path waypoints. The system will analyze the data and pre-fill the parameters for you.</p>
+      </div>
+      <div id="csvUploadArea" class="upload-area">
+        <p>Drag and drop your CSV file here</p>
+        <p class="file-format">or click to browse</p>
+        <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+      </div>
+      <div id="parsingResults" class="parsing-results hidden">
+        <h3>Detected Parameters</h3>
+        <div id="detectedParams"></div>
       </div>
     </div>
   </div>

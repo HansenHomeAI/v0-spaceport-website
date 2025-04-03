@@ -875,9 +875,10 @@ function hideAddPathPopup() {
 function handleOutsideClick(event) {
   const popup = document.getElementById('addPathPopup');
   const popupContent = document.querySelector('.popup-content');
+  const closeIcon = document.querySelector('.close-icon');
   
-  // Check if click is outside the popup content
-  if (popup && popupContent && !popupContent.contains(event.target)) {
+  // Check if click is outside the popup content and not on the close icon
+  if (popup && popupContent && !popupContent.contains(event.target) && event.target !== closeIcon) {
     hideAddPathPopup();
   }
 }
@@ -1198,4 +1199,18 @@ function formatParamName(key) {
   return key
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, str => str.toUpperCase());
+}
+
+// Helper function to calculate distance between two points
+function haversine_distance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c;
+  return distance * 3280.84; // Convert to feet
 }
