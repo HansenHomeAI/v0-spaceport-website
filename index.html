@@ -235,17 +235,16 @@
 <div id="dfpg-container" class="dfpg-container">
   <div class="dfpg-container-inner">
     <div class="dfpg-header">
-      <!-- Group for Location title and Info pill -->
+      <!-- Group for Location title, Info pill, and Add Path button -->
       <div class="header-title-group">
         <h2>
           Location
           <span class="info-wrapper">
             <span class="info-pill-icon" data-tooltip-target="tooltipLocation">info</span>
           </span>
+          <button class="add-path-button info-pill-icon" onclick="showAddPathPopup()">Add Existing Path</button>
         </h2>
       </div>
-      <!-- Add Path button moved outside the title group -->
-      <button class="add-path-button info-pill-icon" onclick="showAddPathPopup()">Add Existing Path</button>
 
       <div class="info-tooltip" id="tooltipLocation">
         <p>This section is all about setting your flight's <strong>title</strong> and

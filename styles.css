@@ -1311,28 +1311,29 @@ footer {
 
 /* Info icon & tooltips */
 #dfpg-container .info-pill-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   padding: 2px 10px;
   font-size: 0.85rem;
-  cursor: pointer;
   color: #fff;
   text-transform: uppercase;
-  user-select: none;
-  position: relative;
-  top: -2px;
   border: none;
+  cursor: pointer;
+  user-select: none;
   transition: background 0.3s ease;
+  margin: 0;
+  height: 24px;
 }
 #dfpg-container .info-pill-icon:hover {
   background: #FF4F00;
   color: #fff;
 }
 #dfpg-container .info-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
 }
 #dfpg-container .info-tooltip {
   display: none;
@@ -1869,16 +1870,15 @@ body::before {
 }
 
 .dfpg-header {
-  margin-bottom: 4rem; /* Increased space below the header section */
+  margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  gap: 1.5rem; /* Add explicit gap between elements */
 }
 
+/* Group for title/info - Flexbox centers this */
 .header-title-group {
-  margin-bottom: 0;
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1886,18 +1886,21 @@ body::before {
 
 .header-title-group h2 {
   margin: 0;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  gap: 0.8rem;
 }
 
 .header-title-group .info-wrapper {
-  display: inline-block;
-  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
 }
 
 /* Style for Add Existing Path button */
 .add-path-button.info-pill-icon {
-  display: block;
+  display: inline-flex;
+  align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   padding: 2px 10px;
@@ -1908,10 +1911,8 @@ body::before {
   cursor: pointer;
   user-select: none;
   transition: background 0.3s ease;
-  width: fit-content;
-  margin-top: -0.5rem; /* Negative margin to pull it up closer to the title */
-  position: relative;
-  top: -0.5rem; /* Additional negative offset to pull it up */
+  margin: 0;
+  height: 24px;
 }
 
 .add-path-button.info-pill-icon:hover {
