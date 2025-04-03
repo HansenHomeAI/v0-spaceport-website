@@ -22,9 +22,6 @@
       <!-- Logo on the left -->
       <div class="logo" onclick="showSection('landing')">Hansen AI</div>
 
-      <!-- Add Existing Path button -->
-      <div class="add-path-button" onclick="showAddPathPopup()">Add Existing Path</div>
-
       <!-- Desktop nav on the right -->
       <div class="nav-links-desktop">
         <a onclick="showSection('pricing')">Pricing</a>
@@ -235,10 +232,10 @@
   
   
     <!-- FILE: dronePathGenerator.html -->
-<div id="dfpg-container">
+<div id="dfpg-container" class="dfpg-container">
   <div class="dfpg-container-inner">
-    
-    <!-- LOCATION SECTION -->
+    <button class="add-path-button" onclick="showAddPathPopup()">Add Existing Path</button>
+    <div class="dfpg-header">
     <h2>
       Location
       <span class="info-wrapper">
@@ -548,6 +545,7 @@
       <div id="flightTime" style="display:none;"></div>
       <div id="log"></div>
     </form>
+    </div>
   </div>
 </div>
 </section>

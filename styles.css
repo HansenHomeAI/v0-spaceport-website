@@ -1756,21 +1756,22 @@ body::before {
 /* Add Existing Path Button */
 .add-path-button {
   position: absolute;
+  top: 20px;
   left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
   padding: 8px 16px;
-  border-radius: 20px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background 0.3s ease;
-  z-index: 1;
+  transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .add-path-button:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Popup Styles */
@@ -1881,4 +1882,19 @@ body::before {
 #detectedParams div span {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
+}
+
+.dfpg-container {
+  position: relative;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 1200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dfpg-container-inner {
+  position: relative;
+  padding-top: 50px; /* Add space for the button */
 }
