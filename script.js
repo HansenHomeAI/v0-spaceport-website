@@ -853,47 +853,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add Existing Path Functions
 function showAddPathPopup() {
-  document.getElementById('addPathPopup').classList.remove('hidden');
+  const popup = document.getElementById('addPathPopup');
+  if (popup) {
+    popup.classList.remove('hidden');
+    // Add event listener for clicking outside the popup
+    document.addEventListener('click', handleOutsideClick);
+  }
 }
 
 function hideAddPathPopup() {
-  document.getElementById('addPathPopup').classList.add('hidden');
-  document.getElementById('parsingResults').classList.add('hidden');
-  document.getElementById('csvFileInput').value = '';
+  const popup = document.getElementById('addPathPopup');
+  if (popup) {
+    popup.classList.add('hidden');
+    document.getElementById('parsingResults').classList.add('hidden');
+    document.getElementById('csvFileInput').value = '';
+    // Remove the outside click listener
+    document.removeEventListener('click', handleOutsideClick);
+  }
+}
+
+function handleOutsideClick(event) {
+  const popup = document.getElementById('addPathPopup');
+  const popupContent = document.querySelector('.popup-content');
+  
+  // Check if click is outside the popup content
+  if (popup && popupContent && !popupContent.contains(event.target)) {
+    hideAddPathPopup();
+  }
 }
 
 // Setup file upload handlers
 document.addEventListener('DOMContentLoaded', function() {
+  // Ensure popup is hidden by default
+  const popup = document.getElementById('addPathPopup');
+  if (popup) {
+    popup.classList.add('hidden');
+  }
+
   const uploadArea = document.getElementById('csvUploadArea');
   const fileInput = document.getElementById('csvFileInput');
   
-  // Click to upload
-  uploadArea.addEventListener('click', () => fileInput.click());
-  
-  // Drag and drop
-  uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-  });
-  
-  uploadArea.addEventListener('dragleave', () => {
-    uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-  });
-  
-  uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-    if (e.dataTransfer.files.length) {
-      handleFileUpload(e.dataTransfer.files[0]);
-    }
-  });
-  
-  // File input change
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length) {
-      handleFileUpload(e.target.files[0]);
-    }
-  });
+  if (uploadArea && fileInput) {
+    // Click to upload
+    uploadArea.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering outside click
+      fileInput.click();
+    });
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+    });
+    
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      if (e.dataTransfer.files.length) {
+        handleFileUpload(e.dataTransfer.files[0]);
+      }
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      e.stopPropagation(); // Prevent triggering outside click
+      if (e.target.files.length) {
+        handleFileUpload(e.target.files[0]);
+      }
+    });
+  }
 });
 
 function handleFileUpload(file) {
