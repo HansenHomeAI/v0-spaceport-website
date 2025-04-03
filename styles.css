@@ -794,7 +794,7 @@ footer {
   padding: 1.4px;
 }
 .stat-box h1 {
-  display: block;       /* Ensure it’s a block-level element */
+  display: block;       /* Ensure it's a block-level element */
   width: 100%;          /* Take up full width of the container */
   text-align: left;     /* Force left alignment */
   font-size: 4rem !important;
@@ -1751,4 +1751,134 @@ body::before {
 /* Remove arrows (spinners) in Firefox */
 #dfpg-container .input-wrapper input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Add Existing Path Button */
+.add-path-button {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.3s ease;
+  z-index: 1;
+}
+
+.add-path-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Popup Styles */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: #000;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  padding: 30px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.popup-header h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.close-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.close-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.instructions {
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.upload-area {
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.upload-area:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.upload-area p {
+  margin: 10px 0;
+}
+
+.file-format {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.parsing-results {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.parsing-results h3 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+#detectedParams {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+#detectedParams div {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+#detectedParams div strong {
+  display: block;
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+#detectedParams div span {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
 }

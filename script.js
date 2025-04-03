@@ -850,3 +850,316 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 })();
+
+// Add Existing Path Functions
+function showAddPathPopup() {
+  document.getElementById('addPathPopup').classList.remove('hidden');
+}
+
+function hideAddPathPopup() {
+  document.getElementById('addPathPopup').classList.add('hidden');
+  document.getElementById('parsingResults').classList.add('hidden');
+  document.getElementById('csvFileInput').value = '';
+}
+
+// Setup file upload handlers
+document.addEventListener('DOMContentLoaded', function() {
+  const uploadArea = document.getElementById('csvUploadArea');
+  const fileInput = document.getElementById('csvFileInput');
+  
+  // Click to upload
+  uploadArea.addEventListener('click', () => fileInput.click());
+  
+  // Drag and drop
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+  });
+  
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+  });
+  
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    if (e.dataTransfer.files.length) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  });
+  
+  // File input change
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+      handleFileUpload(e.target.files[0]);
+    }
+  });
+});
+
+function handleFileUpload(file) {
+  if (!file.name.endsWith('.csv')) {
+    alert('Please upload a CSV file');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const csvData = e.target.result;
+    analyzeFlightPath(csvData);
+  };
+  reader.readAsText(file);
+}
+
+function analyzeFlightPath(csvData) {
+  const lines = csvData.split('\n');
+  if (lines.length < 2) {
+    alert('Invalid CSV file format');
+    return;
+  }
+  
+  // Parse CSV headers
+  const headers = lines[0].split(',').map(h => h.trim());
+  const waypoints = [];
+  
+  // Parse waypoints
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const values = lines[i].split(',').map(v => v.trim());
+    const waypoint = {};
+    headers.forEach((header, index) => {
+      waypoint[header] = values[index];
+    });
+    waypoints.push(waypoint);
+  }
+  
+  if (waypoints.length === 0) {
+    alert('No waypoints found in CSV file');
+    return;
+  }
+  
+  // Analyze parameters
+  const detectedParams = {
+    centerCoordinates: detectCenterCoordinates(waypoints),
+    minHeight: detectMinHeight(waypoints),
+    maxHeight: detectMaxHeight(waypoints),
+    numLoops: detectNumLoops(waypoints),
+    initialRadius: detectInitialRadius(waypoints),
+    radiusIncrement: detectRadiusIncrement(waypoints),
+    aglIncrement: detectAGLIncrement(waypoints),
+    mode: detectMode(waypoints)
+  };
+  
+  displayDetectedParams(detectedParams);
+}
+
+function detectCenterCoordinates(waypoints) {
+  // Find the point that appears most frequently as POI
+  const poiCounts = {};
+  waypoints.forEach(wp => {
+    const key = `${wp.poi_latitude},${wp.poi_longitude}`;
+    poiCounts[key] = (poiCounts[key] || 0) + 1;
+  });
+  
+  const mostFrequentPOI = Object.entries(poiCounts)
+    .sort((a, b) => b[1] - a[1])[0][0];
+  return mostFrequentPOI;
+}
+
+function detectMinHeight(waypoints) {
+  return Math.min(...waypoints.map(wp => parseFloat(wp.altitude)));
+}
+
+function detectMaxHeight(waypoints) {
+  return Math.max(...waypoints.map(wp => parseFloat(wp.altitude)));
+}
+
+function detectNumLoops(waypoints) {
+  // Count distinct radius values to estimate number of loops
+  const radii = new Set(waypoints.map(wp => {
+    const lat = parseFloat(wp.latitude);
+    const lon = parseFloat(wp.longitude);
+    const poiLat = parseFloat(wp.poi_latitude);
+    const poiLon = parseFloat(wp.poi_longitude);
+    return haversine_distance(lat, lon, poiLat, poiLon);
+  }));
+  return radii.size;
+}
+
+function detectInitialRadius(waypoints) {
+  // Find the minimum distance from center
+  return Math.min(...waypoints.map(wp => {
+    const lat = parseFloat(wp.latitude);
+    const lon = parseFloat(wp.longitude);
+    const poiLat = parseFloat(wp.poi_latitude);
+    const poiLon = parseFloat(wp.poi_longitude);
+    return haversine_distance(lat, lon, poiLat, poiLon);
+  }));
+}
+
+function detectRadiusIncrement(waypoints) {
+  // Find the difference between consecutive unique radii
+  const radii = Array.from(new Set(waypoints.map(wp => {
+    const lat = parseFloat(wp.latitude);
+    const lon = parseFloat(wp.longitude);
+    const poiLat = parseFloat(wp.poi_latitude);
+    const poiLon = parseFloat(wp.poi_longitude);
+    return haversine_distance(lat, lon, poiLat, poiLon);
+  }))).sort((a, b) => a - b);
+  
+  if (radii.length < 2) return null;
+  
+  const increments = [];
+  for (let i = 1; i < radii.length; i++) {
+    increments.push(radii[i] - radii[i-1]);
+  }
+  
+  // Return the most common increment
+  const incrementCounts = {};
+  increments.forEach(inc => {
+    incrementCounts[inc] = (incrementCounts[inc] || 0) + 1;
+  });
+  
+  return Object.entries(incrementCounts)
+    .sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function detectAGLIncrement(waypoints) {
+  // Find the difference between consecutive unique altitudes
+  const altitudes = Array.from(new Set(waypoints.map(wp => parseFloat(wp.altitude))))
+    .sort((a, b) => a - b);
+  
+  if (altitudes.length < 2) return null;
+  
+  const increments = [];
+  for (let i = 1; i < altitudes.length; i++) {
+    increments.push(altitudes[i] - altitudes[i-1]);
+  }
+  
+  // Return the most common increment
+  const incrementCounts = {};
+  increments.forEach(inc => {
+    incrementCounts[inc] = (incrementCounts[inc] || 0) + 1;
+  });
+  
+  return Object.entries(incrementCounts)
+    .sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function detectMode(waypoints) {
+  // Check for patterns that indicate ranch mode
+  const hasConsistentPOI = waypoints.every(wp => 
+    wp.poi_latitude === waypoints[0].poi_latitude && 
+    wp.poi_longitude === waypoints[0].poi_longitude
+  );
+  
+  const hasVaryingGimbal = waypoints.some(wp => 
+    parseFloat(wp.gimbalpitchangle) !== parseFloat(waypoints[0].gimbalpitchangle)
+  );
+  
+  if (hasConsistentPOI && hasVaryingGimbal) {
+    return 'ranch';
+  }
+  
+  // Check for standard vs advanced
+  const hasPOIRows = waypoints.some(wp => wp.poi_altitude !== '0');
+  return hasPOIRows ? 'advanced' : 'standard';
+}
+
+function displayDetectedParams(params) {
+  const container = document.getElementById('detectedParams');
+  container.innerHTML = '';
+  
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== null) {
+      const div = document.createElement('div');
+      div.innerHTML = `<strong>${formatParamName(key)}</strong><span>${value}</span>`;
+      container.appendChild(div);
+    }
+  });
+  
+  document.getElementById('parsingResults').classList.remove('hidden');
+  
+  // Auto-fill the form based on detected parameters
+  autoFillForm(params);
+}
+
+function autoFillForm(params) {
+  // First, set the mode based on detected parameters
+  if (params.mode) {
+    setGeneratorMode(params.mode);
+  }
+  
+  // Fill in the appropriate fields based on the current mode
+  const mode = document.getElementById('modeToggle').getAttribute('data-mode');
+  
+  if (mode === 'standard') {
+    // Fill standard mode fields
+    if (params.minHeight) {
+      document.getElementById('minHeight').value = params.minHeight;
+    }
+    if (params.maxHeight) {
+      document.getElementById('maxHeight').value = params.maxHeight;
+    }
+    if (params.batteryCapacity) {
+      document.getElementById('batteryCapacity').value = params.batteryCapacity;
+    }
+    
+    // Set the path size slider based on detected parameters
+    if (params.initialRadius && params.numLoops) {
+      const maxRadius = params.initialRadius + (params.numLoops - 1) * params.radiusIncrement;
+      const sliderValue = Math.min(100, Math.max(0, (maxRadius - 100) / 2));
+      document.getElementById('pathSizeSlider').value = sliderValue;
+    }
+  } 
+  else if (mode === 'ranch') {
+    // Fill ranch mode fields
+    if (params.minHeight) {
+      document.getElementById('minHeightRanch').value = params.minHeight;
+    }
+    if (params.maxHeight) {
+      document.getElementById('maxHeightRanch').value = params.maxHeight;
+    }
+    if (params.batteryCapacity) {
+      document.getElementById('batteryCapacityRanch').value = params.batteryCapacity;
+    }
+    if (params.initialRadius) {
+      document.getElementById('initialRadiusRanch').value = params.initialRadius;
+    }
+    if (params.numLoops) {
+      document.getElementById('numBatteriesRanch').value = params.numLoops;
+    }
+  } 
+  else if (mode === 'advanced') {
+    // Fill advanced mode fields
+    if (params.numLoops) {
+      document.getElementById('numLoops').value = params.numLoops;
+    }
+    if (params.initialRadius) {
+      document.getElementById('initialRadius').value = params.initialRadius;
+    }
+    if (params.radiusIncrement) {
+      document.getElementById('radiusIncrement').value = params.radiusIncrement;
+    }
+    if (params.aglIncrement) {
+      document.getElementById('aglIncrement').value = params.aglIncrement;
+    }
+    if (params.minHeight) {
+      document.getElementById('initialAGL').value = params.minHeight;
+    }
+    if (params.batteryCapacity) {
+      document.getElementById('batteryCapacityAdvanced').value = params.batteryCapacity;
+    }
+  }
+  
+  // Fill common fields regardless of mode
+  if (params.centerCoordinates) {
+    const [lat, lon] = params.centerCoordinates.split(',');
+    document.getElementById('coordinates').value = `${lat}, ${lon}`;
+  }
+}
+
+function formatParamName(key) {
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, str => str.toUpperCase());
+}

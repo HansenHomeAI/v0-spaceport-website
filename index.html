@@ -22,6 +22,9 @@
       <!-- Logo on the left -->
       <div class="logo" onclick="showSection('landing')">Hansen AI</div>
 
+      <!-- Add Existing Path button -->
+      <div class="add-path-button" onclick="showAddPathPopup()">Add Existing Path</div>
+
       <!-- Desktop nav on the right -->
       <div class="nav-links-desktop">
         <a onclick="showSection('pricing')">Pricing</a>
@@ -86,7 +89,7 @@
     <div class="two-col-content">
       <h2>Show what matters most to buyers.</h2>
       <div class="right-col">
-        <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you’re right there—feeling the neighborhood and natural flow around it.</p>
+        <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you're right there—feeling the neighborhood and natural flow around it.</p>
         <a href="https://deer-knoll-dr.hansentour.com" class="cta-button2-fixed with-symbol" target="_blank">
           <img src="assets/3DSymbol.svg" class="symbol-3d" alt="" aria-hidden="true">
           View example
@@ -134,7 +137,7 @@
     <div class="two-col-content">
       <h2>Effortless creation with your drone.</h2>
       <div class="right-col">
-        <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you’ll receive the completed model straight to your inbox.</p>
+        <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you'll receive the completed model straight to your inbox.</p>
         <a onclick="showSection('create')" class="cta-button2-fixed">Create your own</a>
       </div>
     </div>
@@ -167,7 +170,7 @@
       <!-- Enterprise Card -->
       <div class="pricing-card">
         <h2>Custom.</h2>
-        <p>High-volume or specialized projects? We’ll create a tailored plan to meet your needs.</p>
+        <p>High-volume or specialized projects? We'll create a tailored plan to meet your needs.</p>
         <a
           onclick="window.location.href='mailto:hello@hansenhome.ai?subject=Custom%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20custom%20pricing%20options%20at%20Hansen.'"
           class="cta-button"
@@ -183,7 +186,7 @@
     <h1>About Hansen AI.</h1>
     <p><span class="inline-white">Real estate is all about location—yet most listings fail to showcase it properly. Photos and 3D tours capture the inside of a home well, but they leave out what matters most: the context, the surroundings, the feel of the space.</span></p>
     <div class="right-col">
-      <p><span class="inline-white">That’s where Hansen AI comes in.</span></p>
+      <p><span class="inline-white">That's where Hansen AI comes in.</span></p>
     </div>
   </section>
 
@@ -243,7 +246,7 @@
       </span>
     </h2>
     <div class="info-tooltip" id="tooltipLocation">
-      <p>This section is all about setting your flight’s <strong>title</strong> and
+      <p>This section is all about setting your flight's <strong>title</strong> and
         <strong>coordinates</strong>. Paste the coordinates of the desired focus point of your model. To optimize your drone's battery, add separate takeoff coordinates if the takeoff location is far from the focus point of your model. Any coordinate format is accepted, but coordinates from Apple or Google Maps are recommended for accuracy.
       </p>
     </div>
@@ -532,7 +535,7 @@
         </span>
       </h2>
       <div class="info-tooltip" id="tooltipDownload">
-        <p>After generating, you can download the flight path CSV. If it’s split into segments 
+        <p>After generating, you can download the flight path CSV. If it's split into segments 
         (multi-battery missions), each segment will have its own download button. You can then import these CSV files into your 
         preferred flight planning software. If multiple segments are generated, each one picks up where the last segment ended in 
         order to accommodate your battery capacity.</p>
@@ -652,7 +655,7 @@
   <section class="section hidden" id="create-steps3">
     <div>
       <h2>Step 3: model processing.</h2>
-      <p>Sit tight—creating your model can take up to 3 days. We’ll send a fully immersive 3D tour straight to your inbox once it’s ready. If you run into any issues, just reach out using the feedback form below.</p>
+      <p>Sit tight—creating your model can take up to 3 days. We'll send a fully immersive 3D tour straight to your inbox once it's ready. If you run into any issues, just reach out using the feedback form below.</p>
     </div>
   </section>
 
@@ -674,5 +677,27 @@
 
   <!-- External script reference -->
   <script src="script.js"></script>
+
+  <!-- Add Existing Path Popup -->
+  <div id="addPathPopup" class="popup hidden">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h2>Add Existing Flight Path</h2>
+        <div class="close-icon" onclick="hideAddPathPopup()">×</div>
+      </div>
+      <div class="popup-body">
+        <p class="instructions">Add an existing flight path and we'll pre-fill the parameters.</p>
+        <div class="upload-area" id="csvUploadArea">
+          <input type="file" id="csvFileInput" accept=".csv" style="display: none">
+          <p>Drag and drop your CSV file here or click to browse</p>
+          <p class="file-format">Only CSV files are accepted</p>
+        </div>
+        <div id="parsingResults" class="parsing-results hidden">
+          <h3>Detected Parameters:</h3>
+          <div id="detectedParams"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
