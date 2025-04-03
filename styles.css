@@ -1869,17 +1869,16 @@ body::before {
 }
 
 .dfpg-header {
-  margin-bottom: 2rem;
+  margin-bottom: 4rem; /* Increased space below the header section */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem; /* Add explicit gap between elements */
+  gap: 0;
 }
 
-/* Group for title/info - Flexbox centers this */
 .header-title-group {
-  margin-bottom: 0; /* Remove margin since we're using gap */
-  text-align: center; /* Center the title group */
+  margin-bottom: 0;
+  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1910,7 +1909,9 @@ body::before {
   user-select: none;
   transition: background 0.3s ease;
   width: fit-content;
-  margin: 0; /* Remove margin since we're using gap */
+  margin-top: -0.5rem; /* Negative margin to pull it up closer to the title */
+  position: relative;
+  top: -0.5rem; /* Additional negative offset to pull it up */
 }
 
 .add-path-button.info-pill-icon:hover {
