@@ -130,6 +130,53 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleBtn.classList.remove('rotated');
     }
   });
+
+  // Initialize popup functionality
+  const popup = document.getElementById('addPathPopup');
+  const uploadArea = document.getElementById('csvUploadArea');
+  const fileInput = document.getElementById('csvFileInput');
+  
+  if (popup) {
+    popup.classList.add('hidden');
+  }
+
+  if (uploadArea && fileInput) {
+    // Click to upload
+    uploadArea.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+    });
+    
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      if (e.dataTransfer.files.length) {
+        handleFileUpload(e.dataTransfer.files[0]);
+      }
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      e.stopPropagation();
+      if (e.target.files.length) {
+        handleFileUpload(e.target.files[0]);
+      }
+    });
+  }
 });
 
 // FILE: dronePathGenerator.js
@@ -531,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== JS FOR TOOLTIP POSITIONING =====
   document.addEventListener('click', function(e) {
-    const isIcon = e.target.matches('.info-pill-icon');
+    const isIcon = e.target.matches('.info-pill-icon[data-tooltip-target]');  // Only match icons with tooltip targets
     const isTooltip = e.target.closest('.info-tooltip');
     const openTooltips = document.querySelectorAll('#dfpg-container .info-tooltip.active');
 
@@ -546,35 +593,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle tooltip click
     if (isIcon) {
       e.preventDefault();
+      e.stopPropagation(); // Prevent event from bubbling up
       const icon = e.target;
       const tooltipId = icon.getAttribute('data-tooltip-target');
       const tooltip = document.getElementById(tooltipId);
 
-      if (tooltip.classList.contains('active')) {
-        tooltip.classList.remove('active');
-        tooltip.style.display = 'none';
-      } else {
-        openTooltips.forEach(tip => {
-          tip.classList.remove('active');
-          tip.style.display = 'none';
-        });
-        tooltip.classList.add('active');
-        tooltip.style.display = 'block';
+      if (tooltip) { // Only proceed if tooltip exists
+        if (tooltip.classList.contains('active')) {
+          tooltip.classList.remove('active');
+          tooltip.style.display = 'none';
+        } else {
+          openTooltips.forEach(tip => {
+            tip.classList.remove('active');
+            tip.style.display = 'none';
+          });
+          tooltip.classList.add('active');
+          tooltip.style.display = 'block';
 
-        // Positioning logic
-        const containerRect = document.querySelector('#dfpg-container .dfpg-container-inner').getBoundingClientRect();
-        const iconRect = icon.getBoundingClientRect();
-        const top = (iconRect.bottom - containerRect.top) + 10;
-        tooltip.style.top = top + 'px';
+          // Positioning logic
+          const containerRect = document.querySelector('#dfpg-container .dfpg-container-inner').getBoundingClientRect();
+          const iconRect = icon.getBoundingClientRect();
+          const top = (iconRect.bottom - containerRect.top) + 10;
+          tooltip.style.top = top + 'px';
 
-        tooltip.style.left = '50%';
-        tooltip.style.transform = 'translateX(-50%)';
+          tooltip.style.left = '50%';
+          tooltip.style.transform = 'translateX(-50%)';
 
-        // Adjust arrow positioning
-        const tooltipRect = tooltip.getBoundingClientRect();
-        const iconCenterX = iconRect.left + (iconRect.width / 2);
-        const arrowX = iconCenterX - tooltipRect.left;
-        tooltip.style.setProperty('--arrowOffset', arrowX + 'px');
+          // Adjust arrow positioning
+          const tooltipRect = tooltip.getBoundingClientRect();
+          const iconCenterX = iconRect.left + (iconRect.width / 2);
+          const arrowX = iconCenterX - tooltipRect.left;
+          tooltip.style.setProperty('--arrowOffset', arrowX + 'px');
+        }
       }
     }
   });
@@ -851,22 +901,39 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 
-// Add Existing Path Functions
-function showAddPathPopup() {
+// Define the functions in the global scope first
+function showAddPathPopup(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  console.log('showAddPathPopup called');
   const popup = document.getElementById('addPathPopup');
+  console.log('popup element:', popup);
   if (popup) {
     popup.classList.remove('hidden');
     // Add event listener for clicking outside the popup
-    document.addEventListener('click', handleOutsideClick);
+    setTimeout(() => {
+      document.addEventListener('click', handleOutsideClick);
+    }, 0);
+    console.log('popup shown and click handler added');
+  } else {
+    console.error('Popup element not found');
   }
 }
 
-function hideAddPathPopup() {
+function hideAddPathPopup(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
   const popup = document.getElementById('addPathPopup');
   if (popup) {
     popup.classList.add('hidden');
-    document.getElementById('parsingResults').classList.add('hidden');
-    document.getElementById('csvFileInput').value = '';
+    const parsingResults = document.getElementById('parsingResults');
+    const csvFileInput = document.getElementById('csvFileInput');
+    if (parsingResults) parsingResults.classList.add('hidden');
+    if (csvFileInput) csvFileInput.value = '';
     // Remove the outside click listener
     document.removeEventListener('click', handleOutsideClick);
   }
@@ -879,59 +946,9 @@ function handleOutsideClick(event) {
   
   // Check if click is outside the popup content and not on the close icon
   if (popup && popupContent && !popupContent.contains(event.target) && event.target !== closeIcon) {
-    hideAddPathPopup();
+    hideAddPathPopup(event);
   }
 }
-
-// Setup file upload handlers
-document.addEventListener('DOMContentLoaded', function() {
-  // Ensure popup is hidden by default
-  const popup = document.getElementById('addPathPopup');
-  if (popup) {
-    popup.classList.add('hidden');
-  }
-
-  const uploadArea = document.getElementById('csvUploadArea');
-  const fileInput = document.getElementById('csvFileInput');
-  
-  if (uploadArea && fileInput) {
-    // Click to upload
-    uploadArea.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering outside click
-      fileInput.click();
-    });
-    
-    // Drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-    });
-    
-    uploadArea.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-    });
-    
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-      if (e.dataTransfer.files.length) {
-        handleFileUpload(e.dataTransfer.files[0]);
-      }
-    });
-    
-    // File input change
-    fileInput.addEventListener('change', (e) => {
-      e.stopPropagation(); // Prevent triggering outside click
-      if (e.target.files.length) {
-        handleFileUpload(e.target.files[0]);
-      }
-    });
-  }
-});
 
 function handleFileUpload(file) {
   if (!file.name.endsWith('.csv')) {
@@ -946,6 +963,66 @@ function handleFileUpload(file) {
   };
   reader.readAsText(file);
 }
+
+// Explicitly add functions to window object
+window.showAddPathPopup = showAddPathPopup;
+window.hideAddPathPopup = hideAddPathPopup;
+window.handleFileUpload = handleFileUpload;
+
+// Initialize everything when the DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM Content Loaded - Initializing popup functionality');
+  
+  // Initialize popup
+  const popup = document.getElementById('addPathPopup');
+  console.log('Found popup element:', popup);
+  
+  if (popup) {
+    popup.classList.add('hidden');
+    
+    // Initialize upload area
+    const uploadArea = document.getElementById('csvUploadArea');
+    const fileInput = document.getElementById('csvFileInput');
+    
+    if (uploadArea && fileInput) {
+      // Click to upload
+      uploadArea.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+      });
+      
+      uploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        if (e.dataTransfer.files.length) {
+          handleFileUpload(e.dataTransfer.files[0]);
+        }
+      });
+      
+      // File input change
+      fileInput.addEventListener('change', (e) => {
+        e.stopPropagation();
+        if (e.target.files.length) {
+          handleFileUpload(e.target.files[0]);
+        }
+      });
+    }
+  }
+});
 
 function analyzeFlightPath(csvData) {
   const lines = csvData.split('\n');
