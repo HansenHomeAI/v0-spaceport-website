@@ -585,8 +585,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close all tooltips if clicking outside
     if (!isIcon && !isTooltip) {
       openTooltips.forEach(tip => {
-        tip.classList.remove('active');
-        tip.style.display = 'none';
+        if (tip && tip.classList) {
+          tip.classList.remove('active');
+          tip.style.display = 'none';
+        }
       });
     }
 
@@ -598,32 +600,37 @@ document.addEventListener('DOMContentLoaded', () => {
       const tooltipId = icon.getAttribute('data-tooltip-target');
       const tooltip = document.getElementById(tooltipId);
 
-      if (tooltip) { // Only proceed if tooltip exists
+      if (tooltip && tooltip.classList) { // Only proceed if tooltip exists and has classList
         if (tooltip.classList.contains('active')) {
           tooltip.classList.remove('active');
           tooltip.style.display = 'none';
         } else {
           openTooltips.forEach(tip => {
-            tip.classList.remove('active');
-            tip.style.display = 'none';
+            if (tip && tip.classList) {
+              tip.classList.remove('active');
+              tip.style.display = 'none';
+            }
           });
           tooltip.classList.add('active');
           tooltip.style.display = 'block';
 
           // Positioning logic
-          const containerRect = document.querySelector('#dfpg-container .dfpg-container-inner').getBoundingClientRect();
-          const iconRect = icon.getBoundingClientRect();
-          const top = (iconRect.bottom - containerRect.top) + 10;
-          tooltip.style.top = top + 'px';
+          const container = document.querySelector('#dfpg-container .dfpg-container-inner');
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const iconRect = icon.getBoundingClientRect();
+            const top = (iconRect.bottom - containerRect.top) + 10;
+            tooltip.style.top = top + 'px';
 
-          tooltip.style.left = '50%';
-          tooltip.style.transform = 'translateX(-50%)';
+            tooltip.style.left = '50%';
+            tooltip.style.transform = 'translateX(-50%)';
 
-          // Adjust arrow positioning
-          const tooltipRect = tooltip.getBoundingClientRect();
-          const iconCenterX = iconRect.left + (iconRect.width / 2);
-          const arrowX = iconCenterX - tooltipRect.left;
-          tooltip.style.setProperty('--arrowOffset', arrowX + 'px');
+            // Adjust arrow positioning
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const iconCenterX = iconRect.left + (iconRect.width / 2);
+            const arrowX = iconCenterX - tooltipRect.left;
+            tooltip.style.setProperty('--arrowOffset', arrowX + 'px');
+          }
         }
       }
     }
@@ -1209,6 +1216,8 @@ document.addEventListener('DOMContentLoaded', function() {
         event.stopPropagation();
         showAddPathPopup(event);
       });
+    } else {
+      console.error('Add path button not found');
     }
     
     // Initialize upload area
@@ -1255,7 +1264,11 @@ document.addEventListener('DOMContentLoaded', function() {
           handleFileUpload(e.target.files[0]);
         }
       });
+    } else {
+      console.error('Upload area or file input not found');
     }
+  } else {
+    console.error('Popup element not found');
   }
 });
 
