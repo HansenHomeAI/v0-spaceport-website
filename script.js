@@ -951,175 +951,146 @@ function handleOutsideClick(event) {
 }
 
 function handleFileUpload(file) {
-  if (!file.name.endsWith('.csv')) {
+  console.log('handleFileUpload called with file:', file);
+  
+  // Add null check for file
+  if (!file) {
+    console.error('No file provided to handleFileUpload');
+    return;
+  }
+
+  // Check file extension
+  if (!file.name.toLowerCase().endsWith('.csv')) {
+    console.error('Invalid file type:', file.name);
     alert('Please upload a CSV file');
     return;
   }
   
   const reader = new FileReader();
+  
   reader.onload = function(e) {
-    const csvData = e.target.result;
-    analyzeFlightPath(csvData);
+    console.log('FileReader onload triggered');
+    try {
+      const csvData = e.target.result;
+      console.log('CSV data first 100 chars:', csvData.substring(0, 100));
+      analyzeFlightPath(csvData);
+    } catch (error) {
+      console.error('Error processing CSV data:', error);
+      alert('Error processing CSV file: ' + error.message);
+    }
   };
-  reader.readAsText(file);
+  
+  reader.onerror = function(e) {
+    console.error('FileReader error:', e.target.error);
+    alert('Error reading file: ' + e.target.error);
+  };
+  
+  console.log('Starting to read file as text');
+  try {
+    reader.readAsText(file);
+  } catch (error) {
+    console.error('Error starting file read:', error);
+    alert('Error starting file read: ' + error.message);
+  }
 }
 
-// Explicitly add functions to window object
-window.showAddPathPopup = showAddPathPopup;
-window.hideAddPathPopup = hideAddPathPopup;
-window.handleFileUpload = handleFileUpload;
-
-// Initialize everything when the DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM Content Loaded - Initializing popup functionality');
-  
-  // Initialize popup
-  const popup = document.getElementById('addPathPopup');
-  console.log('Found popup element:', popup);
-  
-  if (popup) {
-    popup.classList.add('hidden');
-    
-    // Initialize upload area
-    const uploadArea = document.getElementById('csvUploadArea');
-    const fileInput = document.getElementById('csvFileInput');
-    
-    if (uploadArea && fileInput) {
-      // Click to upload
-      uploadArea.addEventListener('click', (e) => {
-        e.stopPropagation();
-        fileInput.click();
-      });
-      
-      // Drag and drop
-      uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-      });
-      
-      uploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-      });
-      
-      uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-        if (e.dataTransfer.files.length) {
-          handleFileUpload(e.dataTransfer.files[0]);
-        }
-      });
-      
-      // File input change
-      fileInput.addEventListener('change', (e) => {
-        e.stopPropagation();
-        if (e.target.files.length) {
-          handleFileUpload(e.target.files[0]);
-        }
-      });
-    }
-  }
-});
-
 function analyzeFlightPath(csvData) {
+  console.log('analyzeFlightPath called');
+  
+  if (!csvData) {
+    console.error('No CSV data provided to analyzeFlightPath');
+    return;
+  }
+  
   const lines = csvData.split('\n');
+  console.log('Number of CSV lines:', lines.length);
+  
   if (lines.length < 2) {
+    console.error('Invalid CSV file format - not enough lines');
     alert('Invalid CSV file format');
     return;
   }
   
   // Parse CSV headers
   const headers = lines[0].split(',').map(h => h.trim());
+  console.log('CSV headers:', headers);
+  
   const waypoints = [];
+  let validWaypoints = 0;
   
   // Parse waypoints
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i].trim()) continue;
+    
     const values = lines[i].split(',').map(v => v.trim());
+    if (values.length !== headers.length) {
+      console.warn(`Skipping line ${i + 1}: incorrect number of values`);
+      continue;
+    }
+    
     const waypoint = {};
     headers.forEach((header, index) => {
       waypoint[header] = values[index];
     });
     waypoints.push(waypoint);
+    validWaypoints++;
   }
   
+  console.log('Valid waypoints parsed:', validWaypoints);
+  
   if (waypoints.length === 0) {
+    console.error('No valid waypoints found in CSV');
     alert('No waypoints found in CSV file');
     return;
   }
+
+  try {
+    console.log('Detecting parameters from waypoints');
+    const params = {
+      mode: detectMode(waypoints),
+      radiusIncrement: detectRadiusIncrement(waypoints),
+      aglIncrement: detectAGLIncrement(waypoints),
+      centerCoordinates: detectCenterCoordinates(waypoints)
+    };
+    
+    console.log('Detected parameters:', params);
+    displayDetectedParams(params);
+  } catch (error) {
+    console.error('Error detecting parameters:', error);
+    alert('Error analyzing flight path: ' + error.message);
+  }
+}
+
+function detectMode(waypoints) {
+  // Check for patterns that indicate ranch mode
+  const hasConsistentPOI = waypoints.every(wp => 
+    wp.poi_longitude === waypoints[0].poi_longitude
+  );
   
-  // Analyze parameters
-  const detectedParams = {
-    centerCoordinates: detectCenterCoordinates(waypoints),
-    minHeight: detectMinHeight(waypoints),
-    maxHeight: detectMaxHeight(waypoints),
-    numLoops: detectNumLoops(waypoints),
-    initialRadius: detectInitialRadius(waypoints),
-    radiusIncrement: detectRadiusIncrement(waypoints),
-    aglIncrement: detectAGLIncrement(waypoints),
-    mode: detectMode(waypoints)
-  };
+  const hasVaryingGimbal = waypoints.some(wp => 
+    parseFloat(wp.gimbalpitchangle) !== parseFloat(waypoints[0].gimbalpitchangle)
+  );
   
-  displayDetectedParams(detectedParams);
-}
-
-function detectCenterCoordinates(waypoints) {
-  // Find the point that appears most frequently as POI
-  const poiCounts = {};
-  waypoints.forEach(wp => {
-    const key = `${wp.poi_latitude},${wp.poi_longitude}`;
-    poiCounts[key] = (poiCounts[key] || 0) + 1;
-  });
+  if (hasConsistentPOI && hasVaryingGimbal) {
+    return 'ranch';
+  }
   
-  const mostFrequentPOI = Object.entries(poiCounts)
-    .sort((a, b) => b[1] - a[1])[0][0];
-  return mostFrequentPOI;
-}
-
-function detectMinHeight(waypoints) {
-  return Math.min(...waypoints.map(wp => parseFloat(wp.altitude)));
-}
-
-function detectMaxHeight(waypoints) {
-  return Math.max(...waypoints.map(wp => parseFloat(wp.altitude)));
-}
-
-function detectNumLoops(waypoints) {
-  // Count distinct radius values to estimate number of loops
-  const radii = new Set(waypoints.map(wp => {
-    const lat = parseFloat(wp.latitude);
-    const lon = parseFloat(wp.longitude);
-    const poiLat = parseFloat(wp.poi_latitude);
-    const poiLon = parseFloat(wp.poi_longitude);
-    return haversine_distance(lat, lon, poiLat, poiLon);
-  }));
-  return radii.size;
-}
-
-function detectInitialRadius(waypoints) {
-  // Find the minimum distance from center
-  return Math.min(...waypoints.map(wp => {
-    const lat = parseFloat(wp.latitude);
-    const lon = parseFloat(wp.longitude);
-    const poiLat = parseFloat(wp.poi_latitude);
-    const poiLon = parseFloat(wp.poi_longitude);
-    return haversine_distance(lat, lon, poiLat, poiLon);
-  }));
+  // Check for standard vs advanced
+  const hasPOIRows = waypoints.some(wp => wp.poi_altitude !== '0');
+  return hasPOIRows ? 'advanced' : 'standard';
 }
 
 function detectRadiusIncrement(waypoints) {
-  // Find the difference between consecutive unique radii
-  const radii = Array.from(new Set(waypoints.map(wp => {
-    const lat = parseFloat(wp.latitude);
-    const lon = parseFloat(wp.longitude);
-    const poiLat = parseFloat(wp.poi_latitude);
-    const poiLon = parseFloat(wp.poi_longitude);
-    return haversine_distance(lat, lon, poiLat, poiLon);
-  }))).sort((a, b) => a - b);
-  
+  // Calculate distances from center to each waypoint
+  const center = detectCenterCoordinates(waypoints);
+  if (!center) return null;
+
+  const radii = waypoints.map(wp => {
+    const dx = parseFloat(wp.longitude) - parseFloat(center.longitude);
+    const dy = parseFloat(wp.latitude) - parseFloat(center.latitude);
+    return Math.sqrt(dx * dx + dy * dy);
+  }).sort((a, b) => a - b);
+
   if (radii.length < 2) return null;
   
   const increments = [];
@@ -1137,8 +1108,42 @@ function detectRadiusIncrement(waypoints) {
     .sort((a, b) => b[1] - a[1])[0][0];
 }
 
+function detectCenterCoordinates(waypoints) {
+  // Find the point that appears most frequently as POI
+  const poiCounts = {};
+  waypoints.forEach(wp => {
+    if (wp.poi_latitude && wp.poi_longitude) {
+      const key = `${wp.poi_latitude},${wp.poi_longitude}`;
+      poiCounts[key] = (poiCounts[key] || 0) + 1;
+    }
+  });
+  
+  if (Object.keys(poiCounts).length === 0) {
+    // If no POI coordinates, use the average of all waypoints
+    const sum = waypoints.reduce((acc, wp) => ({
+      latitude: acc.latitude + parseFloat(wp.latitude),
+      longitude: acc.longitude + parseFloat(wp.longitude)
+    }), { latitude: 0, longitude: 0 });
+    
+    return {
+      latitude: sum.latitude / waypoints.length,
+      longitude: sum.longitude / waypoints.length
+    };
+  }
+  
+  // Return the most frequent POI coordinates
+  const mostFrequent = Object.entries(poiCounts)
+    .sort((a, b) => b[1] - a[1])[0][0]
+    .split(',');
+    
+  return {
+    latitude: parseFloat(mostFrequent[0]),
+    longitude: parseFloat(mostFrequent[1])
+  };
+}
+
 function detectAGLIncrement(waypoints) {
-  // Find the difference between consecutive unique altitudes
+  // Find unique altitudes and sort them
   const altitudes = Array.from(new Set(waypoints.map(wp => parseFloat(wp.altitude))))
     .sort((a, b) => a - b);
   
@@ -1159,135 +1164,97 @@ function detectAGLIncrement(waypoints) {
     .sort((a, b) => b[1] - a[1])[0][0];
 }
 
-function detectMode(waypoints) {
-  // Check for patterns that indicate ranch mode
-  const hasConsistentPOI = waypoints.every(wp => 
-    wp.poi_latitude === waypoints[0].poi_latitude && 
-    wp.poi_longitude === waypoints[0].poi_longitude
-  );
+function displayDetectedParams(params) {
+  console.log('Displaying detected parameters');
+  const parsingResults = document.getElementById('parsingResults');
+  const detectedParams = document.getElementById('detectedParams');
   
-  const hasVaryingGimbal = waypoints.some(wp => 
-    parseFloat(wp.gimbalpitchangle) !== parseFloat(waypoints[0].gimbalpitchangle)
-  );
-  
-  if (hasConsistentPOI && hasVaryingGimbal) {
-    return 'ranch';
+  if (!parsingResults || !detectedParams) {
+    console.error('Could not find parsingResults or detectedParams elements');
+    return;
   }
   
-  // Check for standard vs advanced
-  const hasPOIRows = waypoints.some(wp => wp.poi_altitude !== '0');
-  return hasPOIRows ? 'advanced' : 'standard';
-}
-
-function displayDetectedParams(params) {
-  const container = document.getElementById('detectedParams');
-  container.innerHTML = '';
+  // Clear previous results
+  detectedParams.innerHTML = '';
   
+  // Display each detected parameter
   Object.entries(params).forEach(([key, value]) => {
     if (value !== null) {
-      const div = document.createElement('div');
-      div.innerHTML = `<strong>${formatParamName(key)}</strong><span>${value}</span>`;
-      container.appendChild(div);
+      const paramDiv = document.createElement('div');
+      paramDiv.innerHTML = `<strong>${key}:</strong> <span>${value}</span>`;
+      detectedParams.appendChild(paramDiv);
     }
   });
   
-  document.getElementById('parsingResults').classList.remove('hidden');
-  
-  // Auto-fill the form based on detected parameters
-  autoFillForm(params);
+  parsingResults.classList.remove('hidden');
 }
 
-function autoFillForm(params) {
-  // First, set the mode based on detected parameters
-  if (params.mode) {
-    setGeneratorMode(params.mode);
-  }
+// Initialize everything when the DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM Content Loaded - Initializing popup functionality');
   
-  // Fill in the appropriate fields based on the current mode
-  const mode = document.getElementById('modeToggle').getAttribute('data-mode');
+  // Initialize popup
+  const popup = document.getElementById('addPathPopup');
+  console.log('Found popup element:', popup);
   
-  if (mode === 'standard') {
-    // Fill standard mode fields
-    if (params.minHeight) {
-      document.getElementById('minHeight').value = params.minHeight;
-    }
-    if (params.maxHeight) {
-      document.getElementById('maxHeight').value = params.maxHeight;
-    }
-    if (params.batteryCapacity) {
-      document.getElementById('batteryCapacity').value = params.batteryCapacity;
-    }
+  if (popup) {
+    popup.classList.add('hidden');
     
-    // Set the path size slider based on detected parameters
-    if (params.initialRadius && params.numLoops) {
-      const maxRadius = params.initialRadius + (params.numLoops - 1) * params.radiusIncrement;
-      const sliderValue = Math.min(100, Math.max(0, (maxRadius - 100) / 2));
-      document.getElementById('pathSizeSlider').value = sliderValue;
-    }
-  } 
-  else if (mode === 'ranch') {
-    // Fill ranch mode fields
-    if (params.minHeight) {
-      document.getElementById('minHeightRanch').value = params.minHeight;
-    }
-    if (params.maxHeight) {
-      document.getElementById('maxHeightRanch').value = params.maxHeight;
-    }
-    if (params.batteryCapacity) {
-      document.getElementById('batteryCapacityRanch').value = params.batteryCapacity;
-    }
-    if (params.initialRadius) {
-      document.getElementById('initialRadiusRanch').value = params.initialRadius;
-    }
-    if (params.numLoops) {
-      document.getElementById('numBatteriesRanch').value = params.numLoops;
-    }
-  } 
-  else if (mode === 'advanced') {
-    // Fill advanced mode fields
-    if (params.numLoops) {
-      document.getElementById('numLoops').value = params.numLoops;
-    }
-    if (params.initialRadius) {
-      document.getElementById('initialRadius').value = params.initialRadius;
-    }
-    if (params.radiusIncrement) {
-      document.getElementById('radiusIncrement').value = params.radiusIncrement;
-    }
-    if (params.aglIncrement) {
-      document.getElementById('aglIncrement').value = params.aglIncrement;
-    }
-    if (params.minHeight) {
-      document.getElementById('initialAGL').value = params.minHeight;
-    }
-    if (params.batteryCapacity) {
-      document.getElementById('batteryCapacityAdvanced').value = params.batteryCapacity;
+    // Initialize upload area
+    const uploadArea = document.getElementById('csvUploadArea');
+    const fileInput = document.getElementById('csvFileInput');
+    
+    if (uploadArea && fileInput) {
+      console.log('Setting up file upload handlers');
+      // Click to upload
+      uploadArea.addEventListener('click', (e) => {
+        console.log('Upload area clicked');
+        e.stopPropagation();
+        fileInput.click();
+      });
+      
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+      });
+      
+      uploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        console.log('File dropped');
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        if (e.dataTransfer.files.length) {
+          handleFileUpload(e.dataTransfer.files[0]);
+        }
+      });
+      
+      // File input change
+      fileInput.addEventListener('change', (e) => {
+        console.log('File input changed');
+        e.stopPropagation();
+        if (e.target.files.length) {
+          handleFileUpload(e.target.files[0]);
+        }
+      });
     }
   }
-  
-  // Fill common fields regardless of mode
-  if (params.centerCoordinates) {
-    const [lat, lon] = params.centerCoordinates.split(',');
-    document.getElementById('coordinates').value = `${lat}, ${lon}`;
-  }
-}
+});
 
-function formatParamName(key) {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase());
-}
-
-// Helper function to calculate distance between two points
-function haversine_distance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of the Earth in km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  const distance = R * c;
-  return distance * 3280.84; // Convert to feet
-}
+// Make functions globally available
+window.showAddPathPopup = showAddPathPopup;
+window.hideAddPathPopup = hideAddPathPopup;
+window.handleFileUpload = handleFileUpload;
+window.analyzeFlightPath = analyzeFlightPath;
+window.detectMode = detectMode;
+window.detectRadiusIncrement = detectRadiusIncrement;
+window.detectAGLIncrement = detectAGLIncrement;
+window.detectCenterCoordinates = detectCenterCoordinates;
+window.displayDetectedParams = displayDetectedParams;
