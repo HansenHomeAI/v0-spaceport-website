@@ -135,14 +135,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const popup = document.getElementById('addPathPopup');
   const uploadArea = document.getElementById('csvUploadArea');
   const fileInput = document.getElementById('csvFileInput');
+  const addPathButton = document.getElementById('addPathButton');
   
   if (popup) {
     popup.classList.add('hidden');
   }
 
+  if (addPathButton) {
+    console.log('Setting up Add Path button click handler');
+    addPathButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.showAddPathPopup(e);
+    });
+  }
+
   if (uploadArea && fileInput) {
+    console.log('Setting up file upload handlers');
     // Click to upload
     uploadArea.addEventListener('click', (e) => {
+      console.log('Upload area clicked');
       e.stopPropagation();
       fileInput.click();
     });
@@ -161,19 +173,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     uploadArea.addEventListener('drop', (e) => {
+      console.log('File dropped');
       e.preventDefault();
       e.stopPropagation();
       uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
       if (e.dataTransfer.files.length) {
-        handleFileUpload(e.dataTransfer.files[0]);
+        window.handleFileUpload(e.dataTransfer.files[0]);
       }
     });
     
     // File input change
     fileInput.addEventListener('change', (e) => {
+      console.log('File input changed');
       e.stopPropagation();
       if (e.target.files.length) {
-        handleFileUpload(e.target.files[0]);
+        window.handleFileUpload(e.target.files[0]);
       }
     });
   }
@@ -902,7 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 // Define the functions in the global scope first
-function showAddPathPopup(event) {
+window.showAddPathPopup = function(event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
@@ -914,15 +928,15 @@ function showAddPathPopup(event) {
     popup.classList.remove('hidden');
     // Add event listener for clicking outside the popup
     setTimeout(() => {
-      document.addEventListener('click', handleOutsideClick);
+      document.addEventListener('click', window.handleOutsideClick);
     }, 0);
     console.log('popup shown and click handler added');
   } else {
     console.error('Popup element not found');
   }
-}
+};
 
-function hideAddPathPopup(event) {
+window.hideAddPathPopup = function(event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
@@ -935,22 +949,22 @@ function hideAddPathPopup(event) {
     if (parsingResults) parsingResults.classList.add('hidden');
     if (csvFileInput) csvFileInput.value = '';
     // Remove the outside click listener
-    document.removeEventListener('click', handleOutsideClick);
+    document.removeEventListener('click', window.handleOutsideClick);
   }
-}
+};
 
-function handleOutsideClick(event) {
+window.handleOutsideClick = function(event) {
   const popup = document.getElementById('addPathPopup');
   const popupContent = document.querySelector('.popup-content');
   const closeIcon = document.querySelector('.close-icon');
   
   // Check if click is outside the popup content and not on the close icon
   if (popup && popupContent && !popupContent.contains(event.target) && event.target !== closeIcon) {
-    hideAddPathPopup(event);
+    window.hideAddPathPopup(event);
   }
-}
+};
 
-function handleFileUpload(file) {
+window.handleFileUpload = function(file) {
   console.log('handleFileUpload called with file:', file);
   
   // Add null check for file
@@ -973,7 +987,7 @@ function handleFileUpload(file) {
     try {
       const csvData = e.target.result;
       console.log('CSV data first 100 chars:', csvData.substring(0, 100));
-      analyzeFlightPath(csvData);
+      window.analyzeFlightPath(csvData);
     } catch (error) {
       console.error('Error processing CSV data:', error);
       alert('Error processing CSV file: ' + error.message);
@@ -992,9 +1006,9 @@ function handleFileUpload(file) {
     console.error('Error starting file read:', error);
     alert('Error starting file read: ' + error.message);
   }
-}
+};
 
-function analyzeFlightPath(csvData) {
+window.analyzeFlightPath = function(csvData) {
   console.log('analyzeFlightPath called');
   
   if (!csvData) {
@@ -1047,21 +1061,21 @@ function analyzeFlightPath(csvData) {
   try {
     console.log('Detecting parameters from waypoints');
     const params = {
-      mode: detectMode(waypoints),
-      radiusIncrement: detectRadiusIncrement(waypoints),
-      aglIncrement: detectAGLIncrement(waypoints),
-      centerCoordinates: detectCenterCoordinates(waypoints)
+      mode: window.detectMode(waypoints),
+      radiusIncrement: window.detectRadiusIncrement(waypoints),
+      aglIncrement: window.detectAGLIncrement(waypoints),
+      centerCoordinates: window.detectCenterCoordinates(waypoints)
     };
     
     console.log('Detected parameters:', params);
-    displayDetectedParams(params);
+    window.displayDetectedParams(params);
   } catch (error) {
     console.error('Error detecting parameters:', error);
     alert('Error analyzing flight path: ' + error.message);
   }
-}
+};
 
-function detectMode(waypoints) {
+window.detectMode = function(waypoints) {
   // Check for patterns that indicate ranch mode
   const hasConsistentPOI = waypoints.every(wp => 
     wp.poi_longitude === waypoints[0].poi_longitude
@@ -1078,11 +1092,11 @@ function detectMode(waypoints) {
   // Check for standard vs advanced
   const hasPOIRows = waypoints.some(wp => wp.poi_altitude !== '0');
   return hasPOIRows ? 'advanced' : 'standard';
-}
+};
 
-function detectRadiusIncrement(waypoints) {
+window.detectRadiusIncrement = function(waypoints) {
   // Calculate distances from center to each waypoint
-  const center = detectCenterCoordinates(waypoints);
+  const center = window.detectCenterCoordinates(waypoints);
   if (!center) return null;
 
   const radii = waypoints.map(wp => {
@@ -1106,9 +1120,9 @@ function detectRadiusIncrement(waypoints) {
   
   return Object.entries(incrementCounts)
     .sort((a, b) => b[1] - a[1])[0][0];
-}
+};
 
-function detectCenterCoordinates(waypoints) {
+window.detectCenterCoordinates = function(waypoints) {
   // Find the point that appears most frequently as POI
   const poiCounts = {};
   waypoints.forEach(wp => {
@@ -1140,9 +1154,9 @@ function detectCenterCoordinates(waypoints) {
     latitude: parseFloat(mostFrequent[0]),
     longitude: parseFloat(mostFrequent[1])
   };
-}
+};
 
-function detectAGLIncrement(waypoints) {
+window.detectAGLIncrement = function(waypoints) {
   // Find unique altitudes and sort them
   const altitudes = Array.from(new Set(waypoints.map(wp => parseFloat(wp.altitude))))
     .sort((a, b) => a - b);
@@ -1162,9 +1176,9 @@ function detectAGLIncrement(waypoints) {
   
   return Object.entries(incrementCounts)
     .sort((a, b) => b[1] - a[1])[0][0];
-}
+};
 
-function displayDetectedParams(params) {
+window.displayDetectedParams = function(params) {
   console.log('Displaying detected parameters');
   const parsingResults = document.getElementById('parsingResults');
   const detectedParams = document.getElementById('detectedParams');
@@ -1187,7 +1201,7 @@ function displayDetectedParams(params) {
   });
   
   parsingResults.classList.remove('hidden');
-}
+};
 
 // Initialize everything when the DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -1203,6 +1217,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize upload area
     const uploadArea = document.getElementById('csvUploadArea');
     const fileInput = document.getElementById('csvFileInput');
+    const addPathButton = document.getElementById('addPathButton');
+    
+    if (addPathButton) {
+      console.log('Setting up Add Path button click handler');
+      addPathButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.showAddPathPopup(e);
+      });
+    }
     
     if (uploadArea && fileInput) {
       console.log('Setting up file upload handlers');
@@ -1232,7 +1256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation();
         uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
         if (e.dataTransfer.files.length) {
-          handleFileUpload(e.dataTransfer.files[0]);
+          window.handleFileUpload(e.dataTransfer.files[0]);
         }
       });
       
@@ -1241,20 +1265,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('File input changed');
         e.stopPropagation();
         if (e.target.files.length) {
-          handleFileUpload(e.target.files[0]);
+          window.handleFileUpload(e.target.files[0]);
         }
       });
     }
   }
 });
-
-// Make functions globally available
-window.showAddPathPopup = showAddPathPopup;
-window.hideAddPathPopup = hideAddPathPopup;
-window.handleFileUpload = handleFileUpload;
-window.analyzeFlightPath = analyzeFlightPath;
-window.detectMode = detectMode;
-window.detectRadiusIncrement = detectRadiusIncrement;
-window.detectAGLIncrement = detectAGLIncrement;
-window.detectCenterCoordinates = detectCenterCoordinates;
-window.displayDetectedParams = displayDetectedParams;
