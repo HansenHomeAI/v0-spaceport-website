@@ -915,12 +915,8 @@ footer {
 /* FILE: dronePathGenerator.css */
 #dfpg-container {
   position: relative;
-  background-color: #1a1a1a;
-  border-radius: 8px;
-  padding: 20px;
   margin: 20px auto;
   max-width: 1200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* We replaced .container with .dfpg-container-inner */
