@@ -1282,3 +1282,120 @@ window.detectRadiusIncrement = detectRadiusIncrement;
 window.detectAGLIncrement = detectAGLIncrement;
 window.detectCenterCoordinates = detectCenterCoordinates;
 window.displayDetectedParams = displayDetectedParams;
+
+// API Endpoints
+const API_ENDPOINTS = {
+    DRONE_PATH: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
+    START_UPLOAD: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
+    GET_PRESIGNED_URL: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
+    COMPLETE_UPLOAD: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
+    SAVE_SUBMISSION: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/save-submission"
+};
+
+async function saveSubmissionMetadata(objectKey) {
+    const email = document.getElementById('email').value;
+    const propertyTitle = document.getElementById('propertyTitle').value;
+    const listingDescription = document.getElementById('listingDescription').value;
+    const addressOfProperty = document.getElementById('addressOfProperty').value;
+    const optionalNotes = document.getElementById('optionalNotes').value;
+
+    const response = await fetch(API_ENDPOINTS.SAVE_SUBMISSION, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            propertyTitle,
+            listingDescription,
+            addressOfProperty,
+            optionalNotes,
+            objectKey
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to save submission metadata: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+async function startMultipartUpload(fileName, fileType) {
+    const response = await fetch(API_ENDPOINTS.START_UPLOAD, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName, fileType })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to start multipart upload: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+async function getPresignedUrlForPart(uploadId, bucketName, objectKey, partNumber) {
+    const response = await fetch(API_ENDPOINTS.GET_PRESIGNED_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uploadId, bucketName, objectKey, partNumber })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to get presigned URL: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+async function completeMultipartUpload(uploadId, bucketName, objectKey, parts) {
+    const response = await fetch(API_ENDPOINTS.COMPLETE_UPLOAD, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uploadId, bucketName, objectKey, parts })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to complete multipart upload: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+// Update the drone path generation API call
+async function generateDronePath(payload) {
+    try {
+        const response = await fetch(API_ENDPOINTS.DRONE_PATH, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Lambda request failed: ${response.status}`);
+        }
+
+        const rawData = await response.json();
+        const data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+
+        if (data && data.logs) {
+            data.logs.forEach(entry => {
+                log(entry.title, entry.msg);
+            });
+        }
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        if (data.elevationMsg) {
+            resultDiv.innerHTML = data.elevationMsg;
+        }
+        if (typeof data.totalFlightTimeMinutes !== "undefined") {
+            flightTimeDiv.style.display = "block";
+            flightTimeDiv.innerHTML = `Estimated Total Flight Time: ${data.totalFlightTimeMinutes.toFixed(2)} minutes`;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error generating drone path:', error);
+        throw error;
+    }
+}
