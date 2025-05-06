@@ -86,7 +86,7 @@ class SpaceportStack(cdk.Stack):
             self,
             "Spaceport-GoogleMapsApiKey",
             parameter_name="/Spaceport/GoogleMapsApiKey",
-            string_value="AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU",
+            string_value="REPLACE_WITH_YOUR_API_KEY",  # This will be updated manually after deployment
             description="Google Maps API key for elevation data",
             tier=ssm.ParameterTier.STANDARD
         )
