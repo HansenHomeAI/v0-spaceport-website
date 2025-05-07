@@ -1,15 +1,18 @@
 from aws_cdk import (
-    core as cdk,
+    Stack,
     aws_lambda as lambda_,
     aws_apigateway as apigw,
     aws_s3 as s3,
     aws_dynamodb as dynamodb,
     aws_iam as iam,
     aws_ssm as ssm,
+    RemovalPolicy,
+    Duration,
+    CfnOutput
 )
 from constructs import Construct
 
-class SpaceportStack(cdk.Stack):
+class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -26,7 +29,7 @@ class SpaceportStack(cdk.Stack):
                     exposed_headers=["ETag"]
                 )
             ],
-            removal_policy=cdk.RemovalPolicy.RETAIN
+            removal_policy=RemovalPolicy.RETAIN
         )
         
         # Create DynamoDB table for file metadata
@@ -39,7 +42,7 @@ class SpaceportStack(cdk.Stack):
                 type=dynamodb.AttributeType.STRING
             ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=cdk.RemovalPolicy.RETAIN
+            removal_policy=RemovalPolicy.RETAIN
         )
         
         # Create DynamoDB table for drone flight paths
@@ -52,7 +55,7 @@ class SpaceportStack(cdk.Stack):
                 type=dynamodb.AttributeType.STRING
             ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=cdk.RemovalPolicy.RETAIN
+            removal_policy=RemovalPolicy.RETAIN
         )
         
         # Create Lambda execution role with permissions to S3 and DynamoDB
@@ -112,65 +115,23 @@ class SpaceportStack(cdk.Stack):
                 "GOOGLE_MAPS_API_KEY_PARAM": google_maps_api_key.parameter_name
             },
             role=lambda_role,
-            timeout=cdk.Duration.seconds(30)
+            timeout=Duration.seconds(30)
         )
         
-        # Create Lambda functions for multipart upload
-        start_upload_lambda = lambda_.Function(
+        # Create Lambda function for file upload
+        file_upload_lambda = lambda_.Function(
             self, 
-            "Spaceport-StartUploadFunction",
-            function_name="Spaceport-StartUploadFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
+            "Spaceport-FileUploadFunction",
+            function_name="Spaceport-FileUploadFunction",
+            runtime=lambda_.Runtime.NODEJS_14_X,
             code=lambda_.Code.from_asset("lambda/file_upload"),
-            handler="start_upload.handler",
+            handler="index.handler",
             environment={
                 "BUCKET_NAME": upload_bucket.bucket_name,
                 "METADATA_TABLE_NAME": file_metadata_table.table_name
             },
             role=lambda_role,
-            timeout=cdk.Duration.seconds(10)
-        )
-        
-        get_presigned_url_lambda = lambda_.Function(
-            self, 
-            "Spaceport-GetPresignedUrlFunction",
-            function_name="Spaceport-GetPresignedUrlFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset("lambda/file_upload"),
-            handler="get_presigned_url.handler",
-            environment={
-                "BUCKET_NAME": upload_bucket.bucket_name
-            },
-            role=lambda_role,
-            timeout=cdk.Duration.seconds(10)
-        )
-        
-        complete_upload_lambda = lambda_.Function(
-            self, 
-            "Spaceport-CompleteUploadFunction",
-            function_name="Spaceport-CompleteUploadFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset("lambda/file_upload"),
-            handler="complete_upload.handler",
-            environment={
-                "BUCKET_NAME": upload_bucket.bucket_name
-            },
-            role=lambda_role,
-            timeout=cdk.Duration.seconds(30)
-        )
-        
-        save_submission_lambda = lambda_.Function(
-            self, 
-            "Spaceport-SaveSubmissionFunction",
-            function_name="Spaceport-SaveSubmissionFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset("lambda/file_upload"),
-            handler="save_submission.handler",
-            environment={
-                "METADATA_TABLE_NAME": file_metadata_table.table_name
-            },
-            role=lambda_role,
-            timeout=cdk.Duration.seconds(10)
+            timeout=Duration.seconds(30)
         )
         
         # Create API Gateway for drone path generation
@@ -215,35 +176,35 @@ class SpaceportStack(cdk.Stack):
         start_upload_resource = file_upload_api.root.add_resource("start-multipart-upload")
         start_upload_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(start_upload_lambda)
+            apigw.LambdaIntegration(file_upload_lambda)
         )
         
         get_presigned_url_resource = file_upload_api.root.add_resource("get-presigned-url")
         get_presigned_url_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(get_presigned_url_lambda)
+            apigw.LambdaIntegration(file_upload_lambda)
         )
         
         complete_upload_resource = file_upload_api.root.add_resource("complete-multipart-upload")
         complete_upload_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(complete_upload_lambda)
+            apigw.LambdaIntegration(file_upload_lambda)
         )
         
         save_submission_resource = file_upload_api.root.add_resource("save-submission")
         save_submission_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(save_submission_lambda)
+            apigw.LambdaIntegration(file_upload_lambda)
         )
         
         # Output the API URLs
-        cdk.CfnOutput(
+        CfnOutput(
             self, 
             "DronePathApiUrl",
             value=f"{drone_path_api.url}DronePathREST"
         )
         
-        cdk.CfnOutput(
+        CfnOutput(
             self, 
             "FileUploadApiUrl",
             value=file_upload_api.url
