@@ -11,6 +11,7 @@ from aws_cdk import (
     CfnOutput
 )
 from constructs import Construct
+import os
 
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -102,13 +103,16 @@ class SpaceportStack(Stack):
             )
         )
         
+        # Get the lambda directory absolute path
+        lambda_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lambda")
+        
         # Create Lambda function for drone path generation
         drone_path_lambda = lambda_.Function(
             self, 
             "Spaceport-DronePathFunction",
             function_name="Spaceport-DronePathFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset("lambda/drone_path"),
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "drone_path")),
             handler="lambda_function.handler",
             environment={
                 "DYNAMODB_TABLE_NAME": drone_path_table.table_name,
@@ -124,7 +128,7 @@ class SpaceportStack(Stack):
             "Spaceport-FileUploadFunction",
             function_name="Spaceport-FileUploadFunction",
             runtime=lambda_.Runtime.NODEJS_14_X,
-            code=lambda_.Code.from_asset("lambda/file_upload"),
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "file_upload")),
             handler="index.handler",
             environment={
                 "BUCKET_NAME": upload_bucket.bucket_name,

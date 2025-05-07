@@ -1,0 +1,9 @@
+{
+  "name": "spaceport-file-upload",
+  "version": "1.0.0",
+  "description": "Lambda handler for Spaceport file upload operations",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1042.0"
+  }
+} 
