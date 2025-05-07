@@ -73,14 +73,12 @@ class SpaceportStack(Stack):
             )
         )
         
-        # Import existing Parameter Store parameter for Google Maps API key
-        google_maps_api_key = ssm.StringParameter.from_string_parameter_name(
+        # Use an SSM dynamic reference to fetch the API key at deploy time
+        api_key = ssm.StringParameter.value_for_string_parameter(
             self,
-            "ImportedGoogleMapsApiKey",
+            "GoogleMapsApiKey",
             "/Spaceport/GoogleMapsApiKey"
         )
-        # Grant Lambda role read access to the parameter
-        google_maps_api_key.grant_read(lambda_role)
         
         # Get the lambda directory absolute path
         lambda_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lambda")
@@ -95,7 +93,8 @@ class SpaceportStack(Stack):
             handler="lambda_function.lambda_handler",
             environment={
                 "DYNAMODB_TABLE_NAME": drone_path_table.table_name,
-                "GOOGLE_MAPS_API_KEY_PARAM": google_maps_api_key.parameter_name
+                # Inject the actual API key via SSM dynamic reference
+                "GOOGLE_MAPS_API_KEY": api_key
             },
             role=lambda_role,
             timeout=Duration.seconds(30)
