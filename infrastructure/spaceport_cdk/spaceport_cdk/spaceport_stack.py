@@ -33,30 +33,18 @@ class SpaceportStack(Stack):
             removal_policy=RemovalPolicy.RETAIN
         )
         
-        # Create DynamoDB table for file metadata
-        file_metadata_table = dynamodb.Table(
-            self, 
-            "Spaceport-FileMetadata",
-            table_name="Spaceport-FileMetadata",
-            partition_key=dynamodb.Attribute(
-                name="id", 
-                type=dynamodb.AttributeType.STRING
-            ),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN
+        # Import existing DynamoDB table for file metadata
+        file_metadata_table = dynamodb.Table.from_table_name(
+            self,
+            "ImportedFileMetadataTable",
+            "Spaceport-FileMetadata"
         )
         
-        # Create DynamoDB table for drone flight paths
-        drone_path_table = dynamodb.Table(
-            self, 
-            "Spaceport-DroneFlightPaths",
-            table_name="Spaceport-DroneFlightPaths",
-            partition_key=dynamodb.Attribute(
-                name="id", 
-                type=dynamodb.AttributeType.STRING
-            ),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN
+        # Import existing DynamoDB table for drone flight paths
+        drone_path_table = dynamodb.Table.from_table_name(
+            self,
+            "ImportedDroneFlightPathsTable",
+            "Spaceport-DroneFlightPaths"
         )
         
         # Create Lambda execution role with permissions to S3 and DynamoDB
@@ -85,23 +73,14 @@ class SpaceportStack(Stack):
             )
         )
         
-        # Create Parameter Store parameter for Google Maps API key
-        google_maps_api_key = ssm.StringParameter(
+        # Import existing Parameter Store parameter for Google Maps API key
+        google_maps_api_key = ssm.StringParameter.from_string_parameter_name(
             self,
-            "Spaceport-GoogleMapsApiKey",
-            parameter_name="/Spaceport/GoogleMapsApiKey",
-            string_value="REPLACE_WITH_YOUR_API_KEY",  # This will be updated manually after deployment
-            description="Google Maps API key for elevation data",
-            tier=ssm.ParameterTier.STANDARD
+            "ImportedGoogleMapsApiKey",
+            "/Spaceport/GoogleMapsApiKey"
         )
-        
-        # Add permissions to the Lambda role to read the parameter
-        lambda_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=["ssm:GetParameter"],
-                resources=[google_maps_api_key.parameter_arn]
-            )
-        )
+        # Grant Lambda role read access to the parameter
+        google_maps_api_key.grant_read(lambda_role)
         
         # Get the lambda directory absolute path
         lambda_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lambda")
