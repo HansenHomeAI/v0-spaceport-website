@@ -20,12 +20,17 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        cache: 'pip'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        # Install specific versions to avoid dependency resolution issues
+        pip install aws-cdk-lib==2.89.0 constructs==10.3.0 boto3==1.28.0 --no-deps
+        pip install pytest jsii cattrs typeguard typing-extensions publication --no-deps
+        # Now install all dependencies
         pip install -e .
+        npm install -g aws-cdk
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -36,12 +41,12 @@ jobs:
 
     - name: CDK Bootstrap
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2
+      run: npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2
 
     - name: CDK Deploy
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: cdk deploy --require-approval never
+      run: npx cdk deploy --require-approval never
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
-      run: cdk diff 
+      run: npx cdk diff 
