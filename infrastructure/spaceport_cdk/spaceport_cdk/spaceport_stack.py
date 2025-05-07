@@ -113,7 +113,7 @@ class SpaceportStack(Stack):
             function_name="Spaceport-DronePathFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
             code=lambda_.Code.from_asset(os.path.join(lambda_dir, "drone_path")),
-            handler="lambda_function.handler",
+            handler="lambda_function.lambda_handler",
             environment={
                 "DYNAMODB_TABLE_NAME": drone_path_table.table_name,
                 "GOOGLE_MAPS_API_KEY_PARAM": google_maps_api_key.parameter_name
