@@ -74,9 +74,8 @@ class SpaceportStack(Stack):
         )
         
         # Use an SSM dynamic reference to fetch the API key at deploy time
-        api_key = ssm.StringParameter.value_for_string_parameter(
+        api_key = ssm.StringParameter.value_from_lookup(
             self,
-            "GoogleMapsApiKey",
             "/Spaceport/GoogleMapsApiKey"
         )
         
