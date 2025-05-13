@@ -43,9 +43,11 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2
 
-    - name: CDK Deploy
+    - name: Deploy CDK Stack
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: npx cdk deploy --require-approval never
+      run: |
+        cd infrastructure/spaceport_cdk
+        npx cdk deploy --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
