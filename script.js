@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       // *** CALL YOUR AWS LAMBDA ENDPOINT HERE ***
-      const lambdaUrl = "https://2sgk99b5pg.execute-api.us-west-2.amazonaws.com/dev/DronePathREST";
+      const lambdaUrl = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod/DronePathREST";
       const response = await fetch(lambdaUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -729,10 +729,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /************************************************
    * Endpoints for multipart in your backend
    ************************************************/
-  const START_MULTIPART_ENDPOINT   = "https://mismmjgpm3.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload";
-  const GET_PRESIGNED_PART_ENDPOINT= "https://mismmjgpm3.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url";
-  const COMPLETE_MULTIPART_ENDPOINT= "https://mismmjgpm3.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload";
-  const SAVE_SUBMISSION_ENDPOINT   = "https://mismmjgpm3.execute-api.us-west-2.amazonaws.com/prod/save-submission";
+  const START_MULTIPART_ENDPOINT   = "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload";
+  const GET_PRESIGNED_PART_ENDPOINT= "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url";
+  const COMPLETE_MULTIPART_ENDPOINT= "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload";
+  const SAVE_SUBMISSION_ENDPOINT   = "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission";
 
   async function saveSubmissionMetadata(objectKey) {
     const payload = {
@@ -1285,11 +1285,11 @@ window.displayDetectedParams = displayDetectedParams;
 
 // API Endpoints
 const API_ENDPOINTS = {
-    DRONE_PATH: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
-    START_UPLOAD: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
-    GET_PRESIGNED_URL: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
-    COMPLETE_UPLOAD: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
-    SAVE_SUBMISSION: "https://YOUR_API_ID.execute-api.us-west-2.amazonaws.com/prod/save-submission"
+    DRONE_PATH: "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
+    START_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
+    GET_PRESIGNED_URL: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
+    COMPLETE_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
+    SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission"
 };
 
 async function saveSubmissionMetadata(objectKey) {
