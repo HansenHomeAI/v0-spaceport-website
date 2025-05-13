@@ -107,7 +107,7 @@ class SpaceportStack(Stack):
             self, 
             "Spaceport-FileUploadFunction",
             function_name="Spaceport-FileUploadFunction",
-            runtime=lambda_.Runtime.NODEJS_14_X,
+            runtime=lambda_.Runtime.NODEJS_18_X,
             code=lambda_.Code.from_asset(os.path.join(lambda_dir, "file_upload")),
             handler="index.handler",
             environment={
