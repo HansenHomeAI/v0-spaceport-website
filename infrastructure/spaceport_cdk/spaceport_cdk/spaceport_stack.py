@@ -26,20 +26,11 @@ class SpaceportStack(Stack):
             no_echo=True  # This will mask the value in CloudFormation
         )
 
-        # Create an S3 bucket for file uploads
-        upload_bucket = s3.Bucket(
+        # Import existing S3 bucket for file uploads
+        upload_bucket = s3.Bucket.from_bucket_name(
             self, 
             "Spaceport-UploadBucket",
-            bucket_name="spaceport-uploads",
-            cors=[
-                s3.CorsRule(
-                    allowed_methods=[s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.POST],
-                    allowed_origins=["*"],
-                    allowed_headers=["*"],
-                    exposed_headers=["ETag"]
-                )
-            ],
-            removal_policy=RemovalPolicy.RETAIN
+            "spaceport-uploads"
         )
         
         # Import existing DynamoDB table for file metadata
@@ -67,7 +58,20 @@ class SpaceportStack(Stack):
         )
         
         # Add permissions to the Lambda role
-        upload_bucket.grant_read_write(lambda_role)
+        lambda_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:ListBucket",
+                    "s3:DeleteObject"
+                ],
+                resources=[
+                    f"arn:aws:s3:::{upload_bucket.bucket_name}",
+                    f"arn:aws:s3:::{upload_bucket.bucket_name}/*"
+                ]
+            )
+        )
         file_metadata_table.grant_read_write_data(lambda_role)
         drone_path_table.grant_read_write_data(lambda_role)
         
