@@ -8,7 +8,8 @@ from aws_cdk import (
     aws_ssm as ssm,
     RemovalPolicy,
     Duration,
-    CfnOutput
+    CfnOutput,
+    CfnParameter
 )
 from constructs import Construct
 import os
@@ -16,6 +17,14 @@ import os
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        # Create a CloudFormation parameter for the API key
+        api_key_param = CfnParameter(
+            self, "GoogleMapsApiKey",
+            type="String",
+            description="Google Maps API Key",
+            no_echo=True  # This will mask the value in CloudFormation
+        )
 
         # Create an S3 bucket for file uploads
         upload_bucket = s3.Bucket(
@@ -73,13 +82,6 @@ class SpaceportStack(Stack):
             )
         )
         
-        # Use an SSM dynamic reference to fetch the API key at deploy time
-        api_key = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "GoogleMapsApiKey",
-            "/Spaceport/GoogleMapsApiKey"
-        ).string_value
-        
         # Get the lambda directory absolute path
         lambda_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lambda")
         
@@ -93,8 +95,8 @@ class SpaceportStack(Stack):
             handler="lambda_function.lambda_handler",
             environment={
                 "DYNAMODB_TABLE_NAME": drone_path_table.table_name,
-                # Inject the actual API key via SSM dynamic reference
-                "GOOGLE_MAPS_API_KEY": api_key
+                # Use the CloudFormation parameter value
+                "GOOGLE_MAPS_API_KEY": api_key_param.value_as_string
             },
             role=lambda_role,
             timeout=Duration.seconds(30)
