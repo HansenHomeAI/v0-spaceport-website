@@ -74,10 +74,11 @@ class SpaceportStack(Stack):
         )
         
         # Use an SSM dynamic reference to fetch the API key at deploy time
-        api_key = ssm.StringParameter.value_from_lookup(
+        api_key = ssm.StringParameter.from_string_parameter_name(
             self,
+            "GoogleMapsApiKey",
             "/Spaceport/GoogleMapsApiKey"
-        )
+        ).string_value
         
         # Get the lambda directory absolute path
         lambda_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lambda")
