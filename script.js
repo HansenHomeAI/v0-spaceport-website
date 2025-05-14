@@ -485,10 +485,10 @@ document.addEventListener('DOMContentLoaded', () => {
           log(entry.title, entry.msg);
         });
       }
-      if (data.error) {
+      if (data && data.error) {
         throw new Error(data.error);
       }
-      if (data.elevationMsg) {
+      if (data && data.elevationMsg) {
         resultDiv.innerHTML = data.elevationMsg;
       }
       if (typeof data.totalFlightTimeMinutes !== "undefined") {
@@ -1382,10 +1382,10 @@ async function generateDronePath(payload) {
                 log(entry.title, entry.msg);
             });
         }
-        if (data.error) {
+        if (data && data.error) {
             throw new Error(data.error);
         }
-        if (data.elevationMsg) {
+        if (data && data.elevationMsg) {
             resultDiv.innerHTML = data.elevationMsg;
         }
         if (typeof data.totalFlightTimeMinutes !== "undefined") {

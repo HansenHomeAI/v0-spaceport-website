@@ -176,7 +176,13 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type, x-amz-date, authorization, x-api-key, x-amz-security-token',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST'
             },
-            'body': json.dumps({ 'message': 'Production drone path logic executed', 'elevationMsg': elev_msg, 'logs': logs })
+            'body': json.dumps({
+                'title': title,
+                'elevationMsg': elev_msg,
+                'logs': logs,
+                'masterWaypoints': [],  # Empty array for now
+                'segments': []          # Empty array for now
+            })
         }
 
     except Exception as e:
