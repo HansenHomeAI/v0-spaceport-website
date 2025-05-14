@@ -1,6 +1,12 @@
 import json
 import os
 import math
+import sys
+
+# Add the package directory to the Python path
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "package"))
+
+# Now we can import requests
 import requests
 
 # Fetch the Google Maps API key from environment or parameter store
