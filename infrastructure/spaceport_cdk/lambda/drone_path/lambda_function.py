@@ -166,7 +166,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type, x-amz-date, authorization, x-api-key, x-amz-security-token',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST'
             },
             'body': json.dumps({ 'message': 'Production drone path logic executed', 'elevationMsg': elev_msg, 'logs': logs })
         }
@@ -178,7 +180,7 @@ def lambda_handler(event, context):
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                'Access-Control-Allow-Headers': 'Content-Type, x-amz-date, authorization, x-api-key, x-amz-security-token',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST'
             },
             'body': json.dumps({ 'error': str(e), 'logs': logs })

@@ -137,10 +137,46 @@ class SpaceportStack(Stack):
         drone_path_resource = drone_path_api.root.add_resource("DronePathREST")
         drone_path_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(drone_path_lambda),
+            apigw.LambdaIntegration(
+                drone_path_lambda,
+                proxy=True,
+                integration_responses=[
+                    {
+                        "statusCode": "200",
+                        "responseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": "'*'"
+                        }
+                    },
+                    {
+                        "statusCode": "400",
+                        "responseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": "'*'"
+                        }
+                    },
+                    {
+                        "statusCode": "500",
+                        "responseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": "'*'"
+                        },
+                        "selectionPattern": ".*"
+                    }
+                ]
+            ),
             method_responses=[
                 apigw.MethodResponse(
                     status_code="200",
+                    response_parameters={
+                        "method.response.header.Access-Control-Allow-Origin": True
+                    }
+                ),
+                apigw.MethodResponse(
+                    status_code="400",
+                    response_parameters={
+                        "method.response.header.Access-Control-Allow-Origin": True
+                    }
+                ),
+                apigw.MethodResponse(
+                    status_code="500",
                     response_parameters={
                         "method.response.header.Access-Control-Allow-Origin": True
                     }
