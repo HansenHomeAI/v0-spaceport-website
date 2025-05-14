@@ -146,7 +146,7 @@ class SpaceportStack(Stack):
         # Add gateway response for 502 errors to handle CORS
         drone_path_api.add_gateway_response(
             "BadGatewayResponse",
-            type=apigw.ResponseType.BAD_GATEWAY,
+            type="BAD_GATEWAY",
             response_headers={
                 "Access-Control-Allow-Origin": "'*'",
                 "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
