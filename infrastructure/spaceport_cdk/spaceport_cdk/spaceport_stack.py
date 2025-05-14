@@ -95,7 +95,16 @@ class SpaceportStack(Stack):
             "Spaceport-DronePathFunction",
             function_name="Spaceport-DronePathFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "drone_path")),
+            code=lambda_.Code.from_asset(
+                os.path.join(lambda_dir, "drone_path"),
+                bundling=lambda_.BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ]
+                )
+            ),
             handler="lambda_function.lambda_handler",
             environment={
                 "DYNAMODB_TABLE_NAME": drone_path_table.table_name,
@@ -132,6 +141,17 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS
             )
+        )
+        
+        # Add gateway response for 502 errors to handle CORS
+        drone_path_api.add_gateway_response(
+            "BadGatewayResponse",
+            type=apigw.ResponseType.BAD_GATEWAY,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "Access-Control-Allow-Methods": "'OPTIONS,POST'"
+            }
         )
         
         drone_path_resource = drone_path_api.root.add_resource("DronePathREST")
