@@ -263,20 +263,33 @@ def lambda_handler(event, context):
         # FINAL RESPONSE
         # ---------------------------------------------------------------------
         log("Lambda Completion", "Returning success response.")
+        
+        # Ensure totalFlightTimeMinutes is always properly defined
+        if mode == "ranch":
+            final_flight_time = total_ranch_time
+        else:
+            final_flight_time = totalFlightTimeMinutes
+        
+        log("Flight Time", f"Mode: {mode}, Final flight time: {final_flight_time:.2f} minutes")
+            
+        response_body = {
+            "title": title,
+            "elevationMsg": elev_msg,
+            "masterWaypoints": master_waypoints,
+            "segments": segments,
+            "totalFlightTimeMinutes": float(f"{final_flight_time:.2f}"),
+            "logs": logs
+        }
+        
+        log("Response Structure", f"Keys in response: {list(response_body.keys())}")
+        
         return {
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",  # Replace '*' with your frontend domain
             },
-            "body": json.dumps({
-                "title": title,
-                "elevationMsg": elev_msg,
-                "masterWaypoints": master_waypoints,
-                "segments": segments,
-                "totalFlightTimeMinutes": float(f"{total_ranch_time if mode=='ranch' else totalFlightTimeMinutes:.2f}"),
-                "logs": logs
-            })
+            "body": json.dumps(response_body)
         }
 
     except Exception as e:
