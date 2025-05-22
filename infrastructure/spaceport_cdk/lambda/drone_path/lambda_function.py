@@ -264,48 +264,54 @@ def lambda_handler(event, context):
         # ---------------------------------------------------------------------
         log("Lambda Completion", "Returning success response.")
         
-        # Ensure totalFlightTimeMinutes is always properly defined
-        if mode == "ranch":
-            final_flight_time = total_ranch_time
-        else:
-            final_flight_time = totalFlightTimeMinutes
+        # Debug logging for CloudWatch insights
+        flight_time = total_ranch_time if mode == 'ranch' else totalFlightTimeMinutes
+        print(f"DEBUG MODE: {mode}, FLIGHT TIME: {flight_time:.2f}")
         
-        log("Flight Time", f"Mode: {mode}, Final flight time: {final_flight_time:.2f} minutes")
-            
+        # For Lambda Proxy Integration, we must return:
+        # - statusCode (number)
+        # - headers (object)
+        # - body (string)
+        
         response_body = {
             "title": title,
             "elevationMsg": elev_msg,
             "masterWaypoints": master_waypoints,
             "segments": segments,
-            "totalFlightTimeMinutes": float(f"{final_flight_time:.2f}"),
+            "totalFlightTimeMinutes": float(flight_time),  # Ensure this is a number
             "logs": logs
         }
         
-        log("Response Structure", f"Keys in response: {list(response_body.keys())}")
+        print(f"DEBUG RESPONSE KEYS: {list(response_body.keys())}")
         
         return {
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",  # Replace '*' with your frontend domain
+                "Access-Control-Allow-Origin": "*"
             },
             "body": json.dumps(response_body)
         }
 
     except Exception as e:
         log("Error Handler", f"An exception occurred: {str(e)}")
+        print(f"ERROR: {str(e)}")
+        
+        # Error response for Lambda Proxy Integration
+        error_body = {
+            "error": str(e),
+            "logs": logs
+        }
+        
         return {
             "statusCode": 500,
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",  # Replace '*' with your frontend domain
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
                 "Access-Control-Allow-Methods": "OPTIONS,POST"
             },
-            "body": json.dumps({
-                "error": str(e),
-                "logs": logs
-            })
+            "body": json.dumps(error_body)
         }
 
 
