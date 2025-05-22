@@ -478,7 +478,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const rawData = await response.json();
+      
+      // Debug logging to console
+      console.log("DRONE PATH DEBUG - Raw response:", rawData);
+      console.log("DRONE PATH DEBUG - Raw response type:", typeof rawData);
+      console.log("DRONE PATH DEBUG - Has body property:", rawData.hasOwnProperty('body'));
+      if (rawData.body) {
+        console.log("DRONE PATH DEBUG - Body type:", typeof rawData.body);
+      }
+      
       const data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+      
+      // More debug logging
+      console.log("DRONE PATH DEBUG - Processed data:", data);
+      console.log("DRONE PATH DEBUG - Has totalFlightTimeMinutes:", data && data.hasOwnProperty('totalFlightTimeMinutes'));
+      if (data && data.totalFlightTimeMinutes) {
+        console.log("DRONE PATH DEBUG - totalFlightTimeMinutes type:", typeof data.totalFlightTimeMinutes);
+        console.log("DRONE PATH DEBUG - totalFlightTimeMinutes value:", data.totalFlightTimeMinutes);
+      }
 
       if (data && data.logs) {
         data.logs.forEach(entry => {
@@ -1375,7 +1392,24 @@ async function generateDronePath(payload) {
         }
 
         const rawData = await response.json();
+        
+        // Debug logging to console
+        console.log("DRONE PATH DEBUG - Raw response:", rawData);
+        console.log("DRONE PATH DEBUG - Raw response type:", typeof rawData);
+        console.log("DRONE PATH DEBUG - Has body property:", rawData.hasOwnProperty('body'));
+        if (rawData.body) {
+          console.log("DRONE PATH DEBUG - Body type:", typeof rawData.body);
+        }
+        
         const data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+        
+        // More debug logging
+        console.log("DRONE PATH DEBUG - Processed data:", data);
+        console.log("DRONE PATH DEBUG - Has totalFlightTimeMinutes:", data && data.hasOwnProperty('totalFlightTimeMinutes'));
+        if (data && data.totalFlightTimeMinutes) {
+          console.log("DRONE PATH DEBUG - totalFlightTimeMinutes type:", typeof data.totalFlightTimeMinutes);
+          console.log("DRONE PATH DEBUG - totalFlightTimeMinutes value:", data.totalFlightTimeMinutes);
+        }
 
         if (data && data.logs) {
             data.logs.forEach(entry => {
@@ -1391,6 +1425,33 @@ async function generateDronePath(payload) {
         if (typeof data.totalFlightTimeMinutes !== "undefined") {
             flightTimeDiv.style.display = "block";
             flightTimeDiv.innerHTML = `Estimated Total Flight Time: ${data.totalFlightTimeMinutes.toFixed(2)} minutes`;
+        }
+        if (data.masterWaypoints && data.masterWaypoints.length) {
+            downloadMasterBtn.style.display = "inline-block";
+            const titleSafe = sanitizeTitle(data.title || 'untitled');
+            downloadMasterBtn.onclick = function() {
+                downloadCSV(data.masterWaypoints, `${titleSafe}-master.csv`);
+                log('Download:', `${titleSafe}-master.csv has been downloaded.`);
+            };
+        } else {
+            downloadMasterBtn.style.display = "none";
+        }
+        if (data.segments && data.segments.length) {
+            segmentDownloadsDiv.style.display = "block";
+            segmentDownloadsDiv.innerHTML = `<p>Flight Segments (${data.segments.length}):</p>`;
+            data.segments.forEach((segment, idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = `Download Segment ${idx + 1}`;
+                btn.style.marginRight = "5px";
+                const titleSafe = sanitizeTitle(data.title || 'untitled');
+                btn.onclick = () => {
+                    downloadCSV(segment, `${titleSafe}-segment-${idx + 1}.csv`);
+                    log('Download:', `${titleSafe}-segment-${idx + 1}.csv has been downloaded.`);
+                };
+                segmentDownloadsDiv.appendChild(btn);
+            });
+        } else {
+            segmentDownloadsDiv.style.display = "none";
         }
 
         return data;

@@ -268,29 +268,26 @@ def lambda_handler(event, context):
         flight_time = total_ranch_time if mode == 'ranch' else totalFlightTimeMinutes
         print(f"DEBUG MODE: {mode}, FLIGHT TIME: {flight_time:.2f}")
         
-        # For Lambda Proxy Integration, we must return:
-        # - statusCode (number)
-        # - headers (object)
-        # - body (string)
-        
+        # Create a JSON response with a simpler structure
         response_body = {
             "title": title,
             "elevationMsg": elev_msg,
             "masterWaypoints": master_waypoints,
             "segments": segments,
-            "totalFlightTimeMinutes": float(flight_time),  # Ensure this is a number
+            "totalFlightTimeMinutes": flight_time,  # Don't convert to float again
             "logs": logs
         }
         
         print(f"DEBUG RESPONSE KEYS: {list(response_body.keys())}")
         
+        # Return a standard Lambda proxy response
         return {
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*"
             },
-            "body": json.dumps(response_body)
+            "body": json.dumps(response_body, default=str)  # Use default=str to handle all serialization issues
         }
 
     except Exception as e:
@@ -311,7 +308,7 @@ def lambda_handler(event, context):
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
                 "Access-Control-Allow-Methods": "OPTIONS,POST"
             },
-            "body": json.dumps(error_body)
+            "body": json.dumps(error_body, default=str)  # Use default=str for consistent serialization
         }
 
 
