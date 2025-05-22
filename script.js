@@ -487,12 +487,18 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("DRONE PATH DEBUG - Body type:", typeof rawData.body);
       }
       
-      const data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+      // Handle both response formats:
+      // 1. If rawData has a 'body' property, use it (old format)
+      // 2. If rawData is the direct response, use it (new format from API Gateway)
+      let data = rawData;
+      if (rawData.body) {
+        data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+      }
       
       // More debug logging
       console.log("DRONE PATH DEBUG - Processed data:", data);
       console.log("DRONE PATH DEBUG - Has totalFlightTimeMinutes:", data && data.hasOwnProperty('totalFlightTimeMinutes'));
-      if (data && data.totalFlightTimeMinutes) {
+      if (data && typeof data.totalFlightTimeMinutes !== 'undefined' && data.totalFlightTimeMinutes !== null) {
         console.log("DRONE PATH DEBUG - totalFlightTimeMinutes type:", typeof data.totalFlightTimeMinutes);
         console.log("DRONE PATH DEBUG - totalFlightTimeMinutes value:", data.totalFlightTimeMinutes);
       }
@@ -508,9 +514,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data && data.elevationMsg) {
         resultDiv.innerHTML = data.elevationMsg;
       }
-      if (typeof data.totalFlightTimeMinutes !== "undefined") {
+      if (data && typeof data.totalFlightTimeMinutes !== "undefined" && data.totalFlightTimeMinutes !== null) {
         flightTimeDiv.style.display = "block";
         flightTimeDiv.innerHTML = `Estimated Total Flight Time: ${data.totalFlightTimeMinutes.toFixed(2)} minutes`;
+      } else {
+        console.error("Missing totalFlightTimeMinutes in response");
+        flightTimeDiv.style.display = "none";
       }
       if (data.masterWaypoints && data.masterWaypoints.length) {
         downloadMasterBtn.style.display = "inline-block";
@@ -1401,12 +1410,18 @@ async function generateDronePath(payload) {
           console.log("DRONE PATH DEBUG - Body type:", typeof rawData.body);
         }
         
-        const data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+        // Handle both response formats:
+        // 1. If rawData has a 'body' property, use it (old format)
+        // 2. If rawData is the direct response, use it (new format from API Gateway)
+        let data = rawData;
+        if (rawData.body) {
+          data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
+        }
         
         // More debug logging
         console.log("DRONE PATH DEBUG - Processed data:", data);
         console.log("DRONE PATH DEBUG - Has totalFlightTimeMinutes:", data && data.hasOwnProperty('totalFlightTimeMinutes'));
-        if (data && data.totalFlightTimeMinutes) {
+        if (data && typeof data.totalFlightTimeMinutes !== 'undefined' && data.totalFlightTimeMinutes !== null) {
           console.log("DRONE PATH DEBUG - totalFlightTimeMinutes type:", typeof data.totalFlightTimeMinutes);
           console.log("DRONE PATH DEBUG - totalFlightTimeMinutes value:", data.totalFlightTimeMinutes);
         }
@@ -1422,9 +1437,12 @@ async function generateDronePath(payload) {
         if (data && data.elevationMsg) {
             resultDiv.innerHTML = data.elevationMsg;
         }
-        if (typeof data.totalFlightTimeMinutes !== "undefined") {
+        if (data && typeof data.totalFlightTimeMinutes !== "undefined" && data.totalFlightTimeMinutes !== null) {
             flightTimeDiv.style.display = "block";
             flightTimeDiv.innerHTML = `Estimated Total Flight Time: ${data.totalFlightTimeMinutes.toFixed(2)} minutes`;
+        } else {
+            console.error("Missing totalFlightTimeMinutes in response");
+            flightTimeDiv.style.display = "none";
         }
         if (data.masterWaypoints && data.masterWaypoints.length) {
             downloadMasterBtn.style.display = "inline-block";
