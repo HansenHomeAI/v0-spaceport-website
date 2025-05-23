@@ -3,7 +3,8 @@ const S3 = new AWS.S3();
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 const SES = new AWS.SES({ region: "us-west-2" }); // <<< NEW: for sending emails
 
-const BUCKET_NAME = "user-submissions"; // your bucket
+const BUCKET_NAME = process.env.BUCKET_NAME; // Use environment variable from CDK
+const METADATA_TABLE_NAME = process.env.METADATA_TABLE_NAME; // Use environment variable from CDK
 
 // Helper function to send an email via SES
 async function sendEmailNotification(toAddress, subject, bodyText) {
@@ -203,7 +204,7 @@ exports.handler = async (event) => {
 
       // 4a) Save to DynamoDB
       const params = {
-        TableName: "UserSubmissions",
+        TableName: METADATA_TABLE_NAME,
         Item: {
           SubmissionId: objectKey, // using the unique S3 object key
           Email: email,
@@ -219,7 +220,7 @@ exports.handler = async (event) => {
 
       // 4b) Send email notifications
       try {
-        const userSubject = "We’ve Received Your Drone Photos!";
+        const userSubject = "We've Received Your Drone Photos!";
         const userBody = `Hello,
 
 Thank you for your submission! We have received your photos and will start processing them soon.

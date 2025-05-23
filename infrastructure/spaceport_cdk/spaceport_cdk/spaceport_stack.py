@@ -64,7 +64,10 @@ class SpaceportStack(Stack):
                     "s3:PutObject",
                     "s3:GetObject",
                     "s3:ListBucket",
-                    "s3:DeleteObject"
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload",
+                    "s3:ListMultipartUploadParts",
+                    "s3:ListBucketMultipartUploads"
                 ],
                 resources=[
                     f"arn:aws:s3:::{upload_bucket.bucket_name}",
@@ -86,8 +89,8 @@ class SpaceportStack(Stack):
             )
         )
         
-        # Get the lambda directory absolute path
-        lambda_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lambda")
+        # Get the lambda directory absolute path - fixed to point to correct location
+        lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
         
         # Create Lambda function for drone path generation
         drone_path_lambda = lambda_.Function(
@@ -196,29 +199,41 @@ class SpaceportStack(Stack):
             )
         )
         
-        # Add resources and methods for file upload API
+        # Add resources and methods for file upload API with proper CORS
         start_upload_resource = file_upload_api.root.add_resource("start-multipart-upload")
         start_upload_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(file_upload_lambda)
+            apigw.LambdaIntegration(
+                file_upload_lambda,
+                proxy=True
+            )
         )
         
         get_presigned_url_resource = file_upload_api.root.add_resource("get-presigned-url")
         get_presigned_url_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(file_upload_lambda)
+            apigw.LambdaIntegration(
+                file_upload_lambda,
+                proxy=True
+            )
         )
         
         complete_upload_resource = file_upload_api.root.add_resource("complete-multipart-upload")
         complete_upload_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(file_upload_lambda)
+            apigw.LambdaIntegration(
+                file_upload_lambda,
+                proxy=True
+            )
         )
         
         save_submission_resource = file_upload_api.root.add_resource("save-submission")
         save_submission_resource.add_method(
             "POST", 
-            apigw.LambdaIntegration(file_upload_lambda)
+            apigw.LambdaIntegration(
+                file_upload_lambda,
+                proxy=True
+            )
         )
         
         # Output the API URLs
