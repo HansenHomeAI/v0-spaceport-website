@@ -1,14 +1,11 @@
-const AWS = require('aws-sdk');
+const AWS = require("aws-sdk");
 const S3 = new AWS.S3();
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
-const SES = new AWS.SES({ region: "us-west-2" });
+const SES = new AWS.SES({ region: "us-west-2" }); // <<< NEW: for sending emails
 
-const BUCKET_NAME = process.env.BUCKET_NAME;
-const METADATA_TABLE_NAME = process.env.METADATA_TABLE_NAME;
+const BUCKET_NAME = "user-submissions"; // your bucket
 
-/**
- * Handler for file upload requests.
- */
+// Helper function to send an email via SES
 async function sendEmailNotification(toAddress, subject, bodyText) {
   const params = {
     Destination: { ToAddresses: [toAddress] },
@@ -16,7 +13,7 @@ async function sendEmailNotification(toAddress, subject, bodyText) {
       Subject: { Data: subject },
       Body: { Text: { Data: bodyText } },
     },
-    Source: "hello@hansenhome.ai",
+    Source: "hello@hansenhome.ai", // Must be a verified sender in SES
   };
   return SES.sendEmail(params).promise();
 }
@@ -24,12 +21,14 @@ async function sendEmailNotification(toAddress, subject, bodyText) {
 exports.handler = async (event) => {
   console.log("Event received:", JSON.stringify(event));
 
+  // Common CORS headers for all responses
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
+  // Handle OPTIONS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -38,6 +37,7 @@ exports.handler = async (event) => {
     };
   }
 
+  // Attempt to parse JSON body
   let body;
   try {
     body = JSON.parse(event.body || "{}");
@@ -50,16 +50,22 @@ exports.handler = async (event) => {
     };
   }
 
-  const path = event.resource || event.path;
+  const path = event.resource || event.path; // Adjust depending on how your API Gateway is set up
   console.log("Path:", path);
 
   try {
+    // ----------------------------------------------------------------------
+    // 1) START MULTIPART UPLOAD
+    //    POST /start-multipart-upload
+    // ----------------------------------------------------------------------
     if (path === "/start-multipart-upload") {
+      // e.g. body = { fileName, fileType, ... }
       const { fileName } = body;
       if (!fileName) {
         throw new Error("Missing fileName");
       }
 
+      // Generate a random + timestamp-based key
       const randomKeyPart = Math.random().toString(36).substring(2, 8);
       const finalKey = `${Date.now()}-${randomKeyPart}-${fileName}`;
 
@@ -69,6 +75,7 @@ exports.handler = async (event) => {
         ACL: "bucket-owner-full-control",
       };
 
+      // Initiate the multipart upload
       const createResp = await S3.createMultipartUpload(s3Params).promise();
       console.log("Multipart upload initiated:", createResp);
 
@@ -83,7 +90,12 @@ exports.handler = async (event) => {
       };
     }
 
+    // ----------------------------------------------------------------------
+    // 2) GET PRESIGNED URL FOR PART
+    //    POST /get-presigned-url
+    // ----------------------------------------------------------------------
     if (path === "/get-presigned-url") {
+      // e.g. body = { uploadId, bucketName, objectKey, partNumber }
       const { uploadId, bucketName, objectKey, partNumber } = body;
       if (!uploadId || !bucketName || !objectKey || !partNumber) {
         throw new Error("Missing uploadId, bucketName, objectKey, or partNumber");
@@ -96,6 +108,7 @@ exports.handler = async (event) => {
         PartNumber: partNumber,
       };
 
+      // Generate a presigned URL for the uploadPart operation
       const url = await S3.getSignedUrlPromise("uploadPart", partParams);
       console.log("Presigned URL for part:", partNumber, url);
 
@@ -106,19 +119,30 @@ exports.handler = async (event) => {
       };
     }
 
+    // ----------------------------------------------------------------------
+    // 3) COMPLETE MULTIPART UPLOAD
+    //    POST /complete-multipart-upload
+    // ----------------------------------------------------------------------
     if (path === "/complete-multipart-upload") {
+      // e.g. body = { uploadId, bucketName, objectKey, parts: [{ ETag, PartNumber }, ...] }
       const { uploadId, bucketName, objectKey, parts } = body;
       if (!uploadId || !bucketName || !objectKey || !parts) {
         throw new Error("Missing one or more required fields to complete upload.");
       }
 
+      // The "Parts" array must be sorted by PartNumber ascending
       const sortedParts = parts.sort((a, b) => a.PartNumber - b.PartNumber);
 
       const completeParams = {
         Bucket: bucketName,
         Key: objectKey,
         UploadId: uploadId,
-        MultipartUpload: { Parts: sortedParts.map(p => ({ ETag: p.ETag, PartNumber: p.PartNumber })) },
+        MultipartUpload: {
+          Parts: sortedParts.map(p => ({
+            ETag: p.ETag,
+            PartNumber: p.PartNumber,
+          })),
+        },
       };
 
       const completionResp = await S3.completeMultipartUpload(completeParams).promise();
@@ -134,6 +158,10 @@ exports.handler = async (event) => {
       };
     }
 
+    // ----------------------------------------------------------------------
+    // OPTIONAL: The old single-part approach (if still needed)
+    // POST /generate-presigned-url
+    // ----------------------------------------------------------------------
     if (path === "/generate-presigned-url") {
       const { fileName, fileType } = body;
       if (!fileName || !fileType) {
@@ -147,7 +175,12 @@ exports.handler = async (event) => {
       const randomKeyPart = Math.random().toString(36).substring(2, 8);
       const finalKey = `${Date.now()}-${randomKeyPart}-${fileName}`;
 
-      const params = { Bucket: BUCKET_NAME, Key: finalKey, ContentType: fileType, Expires: 300 };
+      const params = {
+        Bucket: BUCKET_NAME,
+        Key: finalKey,
+        ContentType: fileType,
+        Expires: 300,
+      };
       const presignedURL = await S3.getSignedUrlPromise("putObject", params);
       return {
         statusCode: 200,
@@ -156,18 +189,37 @@ exports.handler = async (event) => {
       };
     }
 
+    // ----------------------------------------------------------------------
+    // 4) SAVE SUBMISSION METADATA (& Send Email Notifications)
+    //     POST /save-submission
+    // ----------------------------------------------------------------------
     if (path === "/save-submission") {
+      // Expected body fields:
+      // { email, propertyTitle, listingDescription, addressOfProperty, optionalNotes, objectKey }
       const { email, propertyTitle, listingDescription, addressOfProperty, optionalNotes, objectKey } = body;
       if (!objectKey || !email || !propertyTitle) {
         throw new Error("Missing required fields: objectKey, email, or propertyTitle");
       }
 
-      const dbParams = { TableName: METADATA_TABLE_NAME, Item: { SubmissionId: objectKey, Email: email, PropertyTitle: propertyTitle, ListingDescription: listingDescription, Address: addressOfProperty, OptionalNotes: optionalNotes || "", Timestamp: Date.now() } };
-      await dynamoClient.put(dbParams).promise();
-      console.log("Metadata saved to DynamoDB:", dbParams.Item);
+      // 4a) Save to DynamoDB
+      const params = {
+        TableName: "UserSubmissions",
+        Item: {
+          SubmissionId: objectKey, // using the unique S3 object key
+          Email: email,
+          PropertyTitle: propertyTitle,
+          ListingDescription: listingDescription,
+          Address: addressOfProperty,
+          OptionalNotes: optionalNotes || "",
+          Timestamp: Date.now()
+        }
+      };
+      await dynamoClient.put(params).promise();
+      console.log("Metadata saved to DynamoDB:", params.Item);
 
+      // 4b) Send email notifications
       try {
-        const userSubject = "We've Received Your Drone Photos!";
+        const userSubject = "We’ve Received Your Drone Photos!";
         const userBody = `Hello,
 
 Thank you for your submission! We have received your photos and will start processing them soon.
@@ -189,11 +241,15 @@ Upload ID: ${objectKey}
 
 Please process this submission accordingly.`;
 
-        await Promise.all([ sendEmailNotification(email, userSubject, userBody), sendEmailNotification("hello@hansenhome.ai", adminSubject, adminBody) ]);
+        await Promise.all([
+          sendEmailNotification(email, userSubject, userBody),
+          sendEmailNotification("hello@hansenhome.ai", adminSubject, adminBody)
+        ]);
 
         console.log("Email notifications sent.");
       } catch (emailErr) {
         console.error("Error sending email notifications:", emailErr);
+        // Not throwing here, so we still return a 200 if metadata was saved
       }
 
       return {
@@ -203,10 +259,21 @@ Please process this submission accordingly.`;
       };
     }
 
-    return { statusCode: 404, headers: corsHeaders, body: JSON.stringify({ error: "No matching path" }) };
+    // ----------------------------------------------------------------------
+    // If none of the above matched, return 404
+    // ----------------------------------------------------------------------
+    return {
+      statusCode: 404,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "No matching path" }),
+    };
 
   } catch (err) {
     console.error("Error handling request:", err);
-    return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: err.message }) };
+    return {
+      statusCode: 500,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: err.message }),
+    };
   }
-}; 
+};
