@@ -39,6 +39,14 @@ cdk.out/
 .env.local
 .env.production
 
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tgz
+.npm
+
 # Editor files
 .vscode/
 .idea/

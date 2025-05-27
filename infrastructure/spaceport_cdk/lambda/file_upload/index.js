@@ -1,7 +1,14 @@
-const AWS = require("aws-sdk");
-const S3 = new AWS.S3();
-const dynamoClient = new AWS.DynamoDB.DocumentClient();
-const SES = new AWS.SES({ region: "us-west-2" }); // <<< NEW: for sending emails
+const { S3Client, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
+
+// Initialize clients
+const s3Client = new S3Client({ region: "us-west-2" });
+const dynamoClient = new DynamoDBClient({ region: "us-west-2" });
+const docClient = DynamoDBDocumentClient.from(dynamoClient);
+const sesClient = new SESClient({ region: "us-west-2" });
 
 const BUCKET_NAME = process.env.BUCKET_NAME; // Use environment variable from CDK
 const METADATA_TABLE_NAME = process.env.METADATA_TABLE_NAME; // Use environment variable from CDK
@@ -16,7 +23,8 @@ async function sendEmailNotification(toAddress, subject, bodyText) {
     },
     Source: "hello@hansenhome.ai", // Must be a verified sender in SES
   };
-  return SES.sendEmail(params).promise();
+  const command = new SendEmailCommand(params);
+  return sesClient.send(command);
 }
 
 exports.handler = async (event) => {
@@ -77,7 +85,8 @@ exports.handler = async (event) => {
       };
 
       // Initiate the multipart upload
-      const createResp = await S3.createMultipartUpload(s3Params).promise();
+      const command = new CreateMultipartUploadCommand(s3Params);
+      const createResp = await s3Client.send(command);
       console.log("Multipart upload initiated:", createResp);
 
       return {
@@ -110,7 +119,8 @@ exports.handler = async (event) => {
       };
 
       // Generate a presigned URL for the uploadPart operation
-      const url = await S3.getSignedUrlPromise("uploadPart", partParams);
+      const command = new UploadPartCommand(partParams);
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
       console.log("Presigned URL for part:", partNumber, url);
 
       return {
@@ -146,7 +156,8 @@ exports.handler = async (event) => {
         },
       };
 
-      const completionResp = await S3.completeMultipartUpload(completeParams).promise();
+      const command = new CompleteMultipartUploadCommand(completeParams);
+      const completionResp = await s3Client.send(command);
       console.log("Multipart upload completed:", completionResp);
 
       return {
@@ -180,9 +191,12 @@ exports.handler = async (event) => {
         Bucket: BUCKET_NAME,
         Key: finalKey,
         ContentType: fileType,
-        Expires: 300,
       };
-      const presignedURL = await S3.getSignedUrlPromise("putObject", params);
+      
+      const { PutObjectCommand } = require("@aws-sdk/client-s3");
+      const command = new PutObjectCommand(params);
+      const presignedURL = await getSignedUrl(s3Client, command, { expiresIn: 300 });
+      
       return {
         statusCode: 200,
         headers: corsHeaders,
@@ -215,7 +229,9 @@ exports.handler = async (event) => {
           Timestamp: Date.now()
         }
       };
-      await dynamoClient.put(params).promise();
+      
+      const command = new PutCommand(params);
+      await docClient.send(command);
       console.log("Metadata saved to DynamoDB:", params.Item);
 
       // 4b) Send email notifications
