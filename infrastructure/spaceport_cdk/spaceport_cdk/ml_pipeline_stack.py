@@ -408,11 +408,27 @@ class MLPipelineStack(Stack):
             })
         )
 
+        # Add error handling to each job
+        sfm_job_with_catch = sfm_job.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error"
+        )
+
+        gaussian_job_with_catch = gaussian_job.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error"
+        )
+
+        compression_job_with_catch = compression_job.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error"
+        )
+
         # Chain the jobs together
-        definition = sfm_job.next(gaussian_job).next(compression_job).next(notify_user)
-        
-        # Add error handling
-        definition.add_catch(notify_error, errors=["States.ALL"])
+        definition = sfm_job_with_catch.next(gaussian_job_with_catch).next(compression_job_with_catch).next(notify_user)
 
         # Create the Step Function
         ml_pipeline = sfn.StateMachine(
