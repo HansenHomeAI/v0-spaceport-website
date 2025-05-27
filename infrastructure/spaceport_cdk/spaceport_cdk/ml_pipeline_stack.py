@@ -1,0 +1,485 @@
+from aws_cdk import (
+    Stack,
+    aws_lambda as lambda_,
+    aws_apigateway as apigw,
+    aws_s3 as s3,
+    aws_iam as iam,
+    aws_stepfunctions as sfn,
+    aws_stepfunctions_tasks as sfn_tasks,
+    aws_sagemaker as sagemaker,
+    aws_ecr as ecr,
+    aws_logs as logs,
+    aws_cloudwatch as cloudwatch,
+    RemovalPolicy,
+    Duration,
+    CfnOutput,
+)
+from constructs import Construct
+import os
+import json
+
+
+class MLPipelineStack(Stack):
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
+
+        # ========== S3 BUCKETS ==========
+        # Create ML processing bucket with organized prefixes
+        ml_bucket = s3.Bucket(
+            self, "SpaceportMLBucket",
+            bucket_name="spaceport-ml-processing",
+            removal_policy=RemovalPolicy.RETAIN,
+            versioned=True,
+            lifecycle_rules=[
+                s3.LifecycleRule(
+                    id="DeleteIncompleteMultipartUploads",
+                    abort_incomplete_multipart_upload_after=Duration.days(1),
+                    enabled=True
+                )
+            ]
+        )
+
+        # Import existing upload bucket
+        upload_bucket = s3.Bucket.from_bucket_name(
+            self, "ImportedUploadBucket",
+            "spaceport-uploads"
+        )
+
+        # ========== ECR REPOSITORIES ==========
+        # ECR repositories for ML containers
+        sfm_repo = ecr.Repository(
+            self, "SfMRepository",
+            repository_name="spaceport/sfm",
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    rule_priority=1,
+                    description="Keep only 10 most recent images"
+                )
+            ]
+        )
+
+        gaussian_repo = ecr.Repository(
+            self, "GaussianRepository", 
+            repository_name="spaceport/3dgs",
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    rule_priority=1,
+                    description="Keep only 10 most recent images"
+                )
+            ]
+        )
+
+        compressor_repo = ecr.Repository(
+            self, "CompressorRepository",
+            repository_name="spaceport/compressor", 
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    rule_priority=1,
+                    description="Keep only 10 most recent images"
+                )
+            ]
+        )
+
+        # ========== IAM ROLES ==========
+        # SageMaker execution role
+        sagemaker_role = iam.Role(
+            self, "SageMakerExecutionRole",
+            assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2ContainerRegistryReadOnly"),
+                iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess")
+            ]
+        )
+
+        # Step Functions execution role
+        step_functions_role = iam.Role(
+            self, "StepFunctionsExecutionRole",
+            assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
+            inline_policies={
+                "SageMakerPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "sagemaker:CreateProcessingJob",
+                                "sagemaker:CreateTrainingJob",
+                                "sagemaker:DescribeProcessingJob",
+                                "sagemaker:DescribeTrainingJob",
+                                "sagemaker:StopProcessingJob",
+                                "sagemaker:StopTrainingJob"
+                            ],
+                            resources=["*"]
+                        ),
+                        iam.PolicyStatement(
+                            actions=["iam:PassRole"],
+                            resources=[sagemaker_role.role_arn]
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "lambda:InvokeFunction"
+                            ],
+                            resources=["*"]
+                        )
+                    ]
+                )
+            }
+        )
+
+        # Lambda execution role for API
+        lambda_role = iam.Role(
+            self, "MLLambdaExecutionRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "StepFunctionsPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=["states:StartExecution"],
+                            resources=["*"]
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "s3:GetObject",
+                                "s3:HeadObject"
+                            ],
+                            resources=[
+                                f"{upload_bucket.bucket_arn}/*",
+                                f"{ml_bucket.bucket_arn}/*"
+                            ]
+                        )
+                    ]
+                )
+            }
+        )
+
+        # Notification Lambda role
+        notification_lambda_role = iam.Role(
+            self, "NotificationLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "SESPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "ses:SendEmail",
+                                "ses:SendRawEmail"
+                            ],
+                            resources=["*"]
+                        )
+                    ]
+                )
+            }
+        )
+
+        # ========== CLOUDWATCH LOG GROUPS ==========
+        # Log groups for each component
+        sfm_log_group = logs.LogGroup(
+            self, "SfMLogGroup",
+            log_group_name="/aws/sagemaker/processing-jobs/sfm",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        gaussian_log_group = logs.LogGroup(
+            self, "GaussianLogGroup", 
+            log_group_name="/aws/sagemaker/training-jobs/3dgs",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        compressor_log_group = logs.LogGroup(
+            self, "CompressorLogGroup",
+            log_group_name="/aws/sagemaker/processing-jobs/compressor", 
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        step_functions_log_group = logs.LogGroup(
+            self, "StepFunctionsLogGroup",
+            log_group_name="/aws/stepfunctions/ml-pipeline",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        # ========== LAMBDA FUNCTIONS ==========
+        # Get the lambda directory path
+        lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
+
+        # API Lambda for starting ML jobs
+        start_job_lambda = lambda_.Function(
+            self, "StartMLJobFunction",
+            function_name="Spaceport-StartMLJob",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "start_ml_job")),
+            handler="lambda_function.lambda_handler",
+            environment={
+                "STATE_MACHINE_ARN": "",  # Will be set after Step Function creation
+                "UPLOAD_BUCKET": upload_bucket.bucket_name,
+                "ML_BUCKET": ml_bucket.bucket_name
+            },
+            role=lambda_role,
+            timeout=Duration.seconds(30)
+        )
+
+        # Notification Lambda
+        notification_lambda = lambda_.Function(
+            self, "NotificationFunction",
+            function_name="Spaceport-MLNotification",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "ml_notification")),
+            handler="lambda_function.lambda_handler",
+            environment={
+                "ML_BUCKET": ml_bucket.bucket_name
+            },
+            role=notification_lambda_role,
+            timeout=Duration.seconds(30)
+        )
+
+        # ========== STEP FUNCTIONS DEFINITION ==========
+        # Define the Step Functions workflow
+        
+        # SfM Processing Job
+        sfm_job = sfn_tasks.SageMakerCreateProcessingJob(
+            self, "SfMProcessingJob",
+            processing_job_name=sfn.JsonPath.string_at("$.jobName"),
+            app_specification=sfn_tasks.AppSpecification(
+                image_uri=sfn.JsonPath.string_at("$.sfmImageUri"),
+                container_entrypoint=["/opt/ml/code/run_sfm.sh"],
+                container_arguments=sfn_tasks.ContainerArguments.from_json_path_at("$.sfmArgs")
+            ),
+            cluster_config=sfn_tasks.ProcessingClusterConfig(
+                instance_count=1,
+                instance_type=sagemaker.InstanceType.ML_C5_2XLARGE,
+                volume_size_in_gb=100
+            ),
+            processing_inputs=[
+                sfn_tasks.ProcessingInput(
+                    input_name="input-data",
+                    app_managed=False,
+                    s3_input=sfn_tasks.ProcessingS3Input(
+                        s3_uri=sfn.JsonPath.string_at("$.inputS3Uri"),
+                        local_path="/opt/ml/processing/input",
+                        s3_data_type=sfn_tasks.S3DataType.S3_PREFIX
+                    )
+                )
+            ],
+            processing_outputs=[
+                sfn_tasks.ProcessingOutput(
+                    output_name="colmap-output",
+                    app_managed=False,
+                    s3_output=sfn_tasks.ProcessingS3Output(
+                        s3_uri=sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
+                        local_path="/opt/ml/processing/output"
+                    )
+                )
+            ],
+            role=sagemaker_role,
+            result_path="$.sfmResult"
+        )
+
+        # 3DGS Training Job  
+        gaussian_job = sfn_tasks.SageMakerCreateTrainingJob(
+            self, "GaussianTrainingJob",
+            training_job_name=sfn.JsonPath.string_at("$.jobName"),
+            algorithm_specification=sfn_tasks.AlgorithmSpecification(
+                training_image=sfn.JsonPath.string_at("$.gaussianImageUri"),
+                training_input_mode=sfn_tasks.TrainingInputMode.FILE
+            ),
+            input_data_config=[
+                sfn_tasks.Channel(
+                    channel_name="training",
+                    data_source=sfn_tasks.DataSource(
+                        s3_data_source=sfn_tasks.S3DataSource(
+                            s3_data_type=sfn_tasks.S3DataType.S3_PREFIX,
+                            s3_uri=sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
+                            s3_data_distribution_type=sfn_tasks.S3DataDistributionType.FULLY_REPLICATED
+                        )
+                    )
+                )
+            ],
+            output_data_config=sfn_tasks.OutputDataConfig(
+                s3_output_path=sfn.JsonPath.string_at("$.gaussianOutputS3Uri")
+            ),
+            resource_config=sfn_tasks.ResourceConfig(
+                instance_count=1,
+                instance_type=sagemaker.InstanceType.ML_G4DN_XLARGE,
+                volume_size_in_gb=100
+            ),
+            stopping_condition=sfn_tasks.StoppingCondition(
+                max_runtime=Duration.hours(6)
+            ),
+            role=sagemaker_role,
+            result_path="$.gaussianResult"
+        )
+
+        # Compression Job
+        compression_job = sfn_tasks.SageMakerCreateProcessingJob(
+            self, "CompressionJob",
+            processing_job_name=sfn.JsonPath.string_at("$.jobName"),
+            app_specification=sfn_tasks.AppSpecification(
+                image_uri=sfn.JsonPath.string_at("$.compressorImageUri"),
+                container_entrypoint=["/opt/ml/code/run_compression.sh"],
+                container_arguments=sfn_tasks.ContainerArguments.from_json_path_at("$.compressionArgs")
+            ),
+            cluster_config=sfn_tasks.ProcessingClusterConfig(
+                instance_count=1,
+                instance_type=sagemaker.InstanceType.ML_C5_XLARGE,
+                volume_size_in_gb=50
+            ),
+            processing_inputs=[
+                sfn_tasks.ProcessingInput(
+                    input_name="gaussian-model",
+                    app_managed=False,
+                    s3_input=sfn_tasks.ProcessingS3Input(
+                        s3_uri=sfn.JsonPath.string_at("$.gaussianOutputS3Uri"),
+                        local_path="/opt/ml/processing/input",
+                        s3_data_type=sfn_tasks.S3DataType.S3_PREFIX
+                    )
+                )
+            ],
+            processing_outputs=[
+                sfn_tasks.ProcessingOutput(
+                    output_name="compressed-model",
+                    app_managed=False,
+                    s3_output=sfn_tasks.ProcessingS3Output(
+                        s3_uri=sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
+                        local_path="/opt/ml/processing/output"
+                    )
+                )
+            ],
+            role=sagemaker_role,
+            result_path="$.compressionResult"
+        )
+
+        # Notification step
+        notify_user = sfn_tasks.LambdaInvoke(
+            self, "NotifyUser",
+            lambda_function=notification_lambda,
+            payload=sfn.TaskInput.from_object({
+                "jobId": sfn.JsonPath.string_at("$.jobId"),
+                "email": sfn.JsonPath.string_at("$.email"),
+                "s3Url": sfn.JsonPath.string_at("$.s3Url"),
+                "compressedOutputS3Uri": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
+                "status": "completed"
+            }),
+            result_path="$.notificationResult"
+        )
+
+        # Error notification
+        notify_error = sfn_tasks.LambdaInvoke(
+            self, "NotifyError",
+            lambda_function=notification_lambda,
+            payload=sfn.TaskInput.from_object({
+                "jobId": sfn.JsonPath.string_at("$.jobId"),
+                "email": sfn.JsonPath.string_at("$.email"),
+                "s3Url": sfn.JsonPath.string_at("$.s3Url"),
+                "status": "failed",
+                "error": sfn.JsonPath.string_at("$.Error")
+            })
+        )
+
+        # Chain the jobs together
+        definition = sfm_job.next(gaussian_job).next(compression_job).next(notify_user)
+        
+        # Add error handling
+        definition.add_catch(notify_error, errors=["States.ALL"])
+
+        # Create the Step Function
+        ml_pipeline = sfn.StateMachine(
+            self, "MLPipelineStateMachine",
+            state_machine_name="SpaceportMLPipeline",
+            definition=definition,
+            role=step_functions_role,
+            logs=sfn.LogOptions(
+                destination=step_functions_log_group,
+                level=sfn.LogLevel.ALL
+            ),
+            timeout=Duration.hours(8)
+        )
+
+        # Update Lambda environment with Step Function ARN
+        start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
+
+        # ========== API GATEWAY ==========
+        # Create API Gateway for ML pipeline
+        ml_api = apigw.RestApi(
+            self, "SpaceportMLApi",
+            rest_api_name="Spaceport-ML-API",
+            description="API for ML processing pipeline",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["Content-Type", "Authorization"]
+            )
+        )
+
+        # Add /start-job endpoint
+        start_job_resource = ml_api.root.add_resource("start-job")
+        start_job_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                start_job_lambda,
+                proxy=True
+            )
+        )
+
+        # ========== CLOUDWATCH ALARMS ==========
+        # Alarm for Step Function failures
+        step_function_failure_alarm = cloudwatch.Alarm(
+            self, "StepFunctionFailureAlarm",
+            alarm_name="SpaceportMLPipeline-Failures",
+            alarm_description="Alarm when ML pipeline fails",
+            metric=ml_pipeline.metric_failed(),
+            threshold=1,
+            evaluation_periods=1,
+            datapoints_to_alarm=1
+        )
+
+        # ========== OUTPUTS ==========
+        CfnOutput(
+            self, "MLApiUrl",
+            value=ml_api.url,
+            description="ML Pipeline API Gateway URL"
+        )
+
+        CfnOutput(
+            self, "MLBucketName", 
+            value=ml_bucket.bucket_name,
+            description="ML Processing S3 Bucket"
+        )
+
+        CfnOutput(
+            self, "StepFunctionArn",
+            value=ml_pipeline.state_machine_arn,
+            description="ML Pipeline Step Function ARN"
+        )
+
+        CfnOutput(
+            self, "SfMRepositoryUri",
+            value=sfm_repo.repository_uri,
+            description="SfM ECR Repository URI"
+        )
+
+        CfnOutput(
+            self, "GaussianRepositoryUri", 
+            value=gaussian_repo.repository_uri,
+            description="3DGS ECR Repository URI"
+        )
+
+        CfnOutput(
+            self, "CompressorRepositoryUri",
+            value=compressor_repo.repository_uri,
+            description="Compressor ECR Repository URI"
+        ) 

@@ -1915,3 +1915,81 @@ body::before {
   background: #FF4F00;
   color: #fff;
 }
+
+/* ML Processing Styles */
+#ml-container .input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+#ml-container .input-wrapper label {
+  position: absolute;
+  top: -8px;
+  left: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  color: #ccc;
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+}
+
+#ml-container .job-status {
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+#ml-container .job-status h3 {
+  color: #28a745;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+#ml-container .job-status p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+#ml-container .error-message {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+#ml-container .error-message h3 {
+  color: #dc3545;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+#ml-container .error-message p {
+  line-height: 1.5;
+}
+
+#ml-container .dpu-btn {
+  position: relative;
+  min-width: 160px;
+}
+
+#ml-container .dpu-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+#ml-container .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+/* Add Existing Path Button */

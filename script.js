@@ -27,6 +27,7 @@ function showSection(sectionId) {
     document.getElementById('create').classList.remove('hidden');
     document.getElementById('create-steps1').classList.remove('hidden');
     document.getElementById('create-steps2').classList.remove('hidden');
+    document.getElementById('create-ml-processing').classList.remove('hidden');
     document.getElementById('create-steps3').classList.remove('hidden');
   } else if (sectionId === 'landing') {  // Make this explicit
     document.getElementById('landing').classList.remove('hidden');
@@ -1478,3 +1479,168 @@ async function generateDronePath(payload) {
         throw error;
     }
 }
+
+// ML PROCESSING FUNCTIONALITY
+(function() {
+  // Configuration - Update this with your actual API Gateway URL after deployment
+  const ML_API_BASE_URL = 'https://your-api-gateway-url.execute-api.us-west-2.amazonaws.com/prod';
+  
+  const s3UrlInput = document.getElementById('s3UrlInput');
+  const mlEmailField = document.getElementById('mlEmailField');
+  const startProcessingBtn = document.getElementById('startProcessingBtn');
+  const processingBtnText = document.getElementById('processingBtnText');
+  const processingSpinner = document.getElementById('processingSpinner');
+  const processingStatus = document.getElementById('processingStatus');
+  const processingError = document.getElementById('processingError');
+  const jobIdSpan = document.getElementById('jobId');
+  const jobStatusSpan = document.getElementById('jobStatus');
+  const errorMessageP = document.getElementById('errorMessage');
+
+  // S3 URL validation regex
+  const S3_URL_REGEX = /^https:\/\/(?:([a-z0-9.-]+)\.s3\.amazonaws\.com\/(.+)|s3\.amazonaws\.com\/([a-z0-9.-]+)\/(.+))$/;
+
+  // Email validation regex
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (startProcessingBtn) {
+    startProcessingBtn.addEventListener('click', handleStartProcessing);
+  }
+
+  if (s3UrlInput) {
+    s3UrlInput.addEventListener('input', validateForm);
+  }
+
+  if (mlEmailField) {
+    mlEmailField.addEventListener('input', validateForm);
+  }
+
+  function validateForm() {
+    const s3Url = s3UrlInput?.value?.trim() || '';
+    const email = mlEmailField?.value?.trim() || '';
+    
+    const isValidS3Url = S3_URL_REGEX.test(s3Url);
+    const isValidEmail = EMAIL_REGEX.test(email);
+    
+    if (startProcessingBtn) {
+      startProcessingBtn.disabled = !(isValidS3Url && isValidEmail);
+    }
+
+    // Visual feedback for S3 URL
+    if (s3UrlInput) {
+      if (s3Url && !isValidS3Url) {
+        s3UrlInput.style.borderColor = '#dc3545';
+      } else {
+        s3UrlInput.style.borderColor = '';
+      }
+    }
+
+    // Visual feedback for email
+    if (mlEmailField) {
+      if (email && !isValidEmail) {
+        mlEmailField.style.borderColor = '#dc3545';
+      } else {
+        mlEmailField.style.borderColor = '';
+      }
+    }
+  }
+
+  async function handleStartProcessing() {
+    const s3Url = s3UrlInput?.value?.trim();
+    const email = mlEmailField?.value?.trim();
+
+    if (!s3Url || !email) {
+      showError('Please fill in all required fields.');
+      return;
+    }
+
+    if (!S3_URL_REGEX.test(s3Url)) {
+      showError('Please enter a valid S3 URL (e.g., https://spaceport-uploads.s3.amazonaws.com/your-file.zip)');
+      return;
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      showError('Please enter a valid email address.');
+      return;
+    }
+
+    // Show loading state
+    setLoadingState(true);
+    hideStatus();
+    hideError();
+
+    try {
+      const response = await fetch(`${ML_API_BASE_URL}/start-job`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          s3Url: s3Url,
+          email: email
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Show success status
+      showSuccess(data.jobId, data.executionArn);
+
+    } catch (error) {
+      console.error('Error starting ML processing:', error);
+      showError(error.message || 'Failed to start processing. Please try again.');
+    } finally {
+      setLoadingState(false);
+    }
+  }
+
+  function setLoadingState(loading) {
+    if (!startProcessingBtn || !processingBtnText || !processingSpinner) return;
+
+    startProcessingBtn.disabled = loading;
+    
+    if (loading) {
+      processingBtnText.textContent = 'Starting...';
+      processingSpinner.style.display = 'inline-block';
+    } else {
+      processingBtnText.textContent = 'Start Processing';
+      processingSpinner.style.display = 'none';
+    }
+  }
+
+  function showSuccess(jobId, executionArn) {
+    if (!processingStatus || !jobIdSpan || !jobStatusSpan) return;
+
+    jobIdSpan.textContent = jobId;
+    jobStatusSpan.textContent = 'Pipeline started successfully';
+    processingStatus.style.display = 'block';
+
+    // Optionally store the execution ARN for future status checking
+    console.log('Execution ARN:', executionArn);
+  }
+
+  function showError(message) {
+    if (!processingError || !errorMessageP) return;
+
+    errorMessageP.textContent = message;
+    processingError.style.display = 'block';
+  }
+
+  function hideError() {
+    if (processingError) {
+      processingError.style.display = 'none';
+    }
+  }
+
+  function hideStatus() {
+    if (processingStatus) {
+      processingStatus.style.display = 'none';
+    }
+  }
+
+  // Initialize form validation
+  validateForm();
+})();

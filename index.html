@@ -656,6 +656,73 @@
 </div>
   </section>
 
+  <!-- ML PROCESSING SECTION -->
+  <section class="section hidden" id="create-ml-processing">
+    <div class="flight-path-section">
+      <div class="two-col-content">
+        <div class="left-col">
+          <h2 class="flight-path-title">Alternative: Process existing S3 upload.</h2>
+        </div>
+        <div class="right-col">
+          <p>Already have drone photos uploaded to S3? Paste the S3 URL below to start ML processing directly. This will run your images through our advanced pipeline: Structure from Motion → 3D Gaussian Splatting → Compression.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ML Processing Container -->
+    <div id="ml-container" class="dpu-container">
+      <div class="dpu-container-inner">
+        
+        <!-- S3 URL Input -->
+        <div class="input-wrapper">
+          <input
+            type="url"
+            id="s3UrlInput"
+            placeholder="https://spaceport-uploads.s3.amazonaws.com/your-file.zip"
+            autocomplete="off"
+          />
+          <label for="s3UrlInput">S3 URL</label>
+        </div>
+
+        <!-- Email for notifications -->
+        <div class="input-wrapper">
+          <input
+            type="email"
+            id="mlEmailField"
+            placeholder="your.email@example.com"
+            autocomplete="off"
+          />
+          <label for="mlEmailField">Email for notifications</label>
+        </div>
+
+        <!-- Processing Button -->
+        <div class="input-row">
+          <button id="startProcessingBtn" class="dpu-btn">
+            <span id="processingBtnText">Start Processing</span>
+            <div id="processingSpinner" class="spinner" style="display:none;"></div>
+          </button>
+        </div>
+
+        <!-- Status Display -->
+        <div id="processingStatus" style="display:none;">
+          <div class="job-status">
+            <h3>Processing Started!</h3>
+            <p><strong>Job ID:</strong> <span id="jobId"></span></p>
+            <p><strong>Status:</strong> <span id="jobStatus">Initializing...</span></p>
+            <p>We'll send you an email notification when processing is complete. This typically takes 2-6 hours depending on the size of your dataset.</p>
+          </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="processingError" class="error-message" style="display:none;">
+          <h3>Processing Error</h3>
+          <p id="errorMessage"></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- CREATE-STEPS -->
   <section class="section hidden" id="create-steps3">
     <div>
