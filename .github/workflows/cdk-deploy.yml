@@ -45,7 +45,7 @@ jobs:
 
     - name: Deploy CDK Stack
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: npx cdk deploy --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+      run: npx cdk deploy --all --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
