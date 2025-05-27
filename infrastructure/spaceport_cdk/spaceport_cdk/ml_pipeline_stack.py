@@ -296,38 +296,43 @@ class MLPipelineStack(Stack):
             result_path="$.sfmResult"
         )
 
-        # 3DGS Training Job  
-        gaussian_job = sfn_tasks.SageMakerCreateTrainingJob(
+        # 3DGS Training Job - Using CallAwsService for dynamic image URI support
+        gaussian_job = sfn_tasks.CallAwsService(
             self, "GaussianTrainingJob",
-            training_job_name=sfn.JsonPath.string_at("$.jobName"),
-            algorithm_specification=sfn_tasks.AlgorithmSpecification(
-                training_image=sfn.JsonPath.string_at("$.gaussianImageUri"),
-                training_input_mode=sfn_tasks.InputMode.FILE
-            ),
-            input_data_config=[
-                sfn_tasks.Channel(
-                    channel_name="training",
-                    data_source=sfn_tasks.DataSource(
-                        s3_data_source=sfn_tasks.S3DataSource(
-                            s3_data_type=sfn_tasks.S3DataType.S3_PREFIX,
-                            s3_uri=sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
-                            s3_data_distribution_type=sfn_tasks.S3DataDistributionType.FULLY_REPLICATED
-                        )
-                    )
-                )
+            service="sagemaker",
+            action="createTrainingJob",
+            parameters={
+                "TrainingJobName": sfn.JsonPath.string_at("$.jobName"),
+                "AlgorithmSpecification": {
+                    "TrainingImage": sfn.JsonPath.string_at("$.gaussianImageUri"),
+                    "TrainingInputMode": "File"
+                },
+                "InputDataConfig": [{
+                    "ChannelName": "training",
+                    "DataSource": {
+                        "S3DataSource": {
+                            "S3DataType": "S3Prefix",
+                            "S3Uri": sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
+                            "S3DataDistributionType": "FullyReplicated"
+                        }
+                    }
+                }],
+                "OutputDataConfig": {
+                    "S3OutputPath": sfn.JsonPath.string_at("$.gaussianOutputS3Uri")
+                },
+                "ResourceConfig": {
+                    "InstanceCount": 1,
+                    "InstanceType": "ml.g4dn.xlarge",
+                    "VolumeSizeInGB": 100
+                },
+                "StoppingCondition": {
+                    "MaxRuntimeInSeconds": 21600  # 6 hours
+                },
+                "RoleArn": sagemaker_role.role_arn
+            },
+            iam_resources=[
+                f"arn:aws:sagemaker:{self.region}:{self.account}:training-job/*"
             ],
-            output_data_config=sfn_tasks.OutputDataConfig(
-                s3_output_path=sfn.JsonPath.string_at("$.gaussianOutputS3Uri")
-            ),
-            resource_config=sfn_tasks.ResourceConfig(
-                instance_count=1,
-                instance_type=ec2.InstanceType.of(ec2.InstanceClass.G4DN, ec2.InstanceSize.XLARGE),
-                volume_size_in_gb=100
-            ),
-            stopping_condition=sfn_tasks.StoppingCondition(
-                max_runtime=Duration.hours(6)
-            ),
-            role=sagemaker_role,
             result_path="$.gaussianResult"
         )
 
