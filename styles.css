@@ -868,7 +868,7 @@ footer {
   width: 100%;
   height: 100%;
   border-radius: inherit;
-  background-image: url("../public/assets/images/noiseEffect Rectangle 1024.png");
+  background-image: url("assets/noiseEffect Rectangle 1024.png");
   background-repeat: repeat;
   background-size: 200px 200px; /* adjust for finer or coarser grain */
   opacity: 0.18; /* adjust opacity as needed */
@@ -1589,7 +1589,7 @@ footer {
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("../public/assets/images/ColorSwirl.png") no-repeat center;
+  background: url("assets/ColorSwirl.png") no-repeat center;
   /* 'contain' keeps the full shape visible within the box 
      If you need it to fill the box entirely, use 'cover' instead. */
   background-size: contain;
@@ -1607,7 +1607,7 @@ footer {
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("../public/assets/images/ColorSwirl.png") no-repeat center;
+  background: url("assets/ColorSwirl.png") no-repeat center;
   /* 'contain' keeps the full shape visible within the box 
      If you need it to fill the box entirely, use 'cover' instead. */
   background-size: contain;
@@ -1625,7 +1625,7 @@ footer {
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("../public/assets/images/ColorSwirl.png") no-repeat center;
+  background: url("assets/ColorSwirl.png") no-repeat center;
   /* 'contain' keeps the full shape visible within the box 
      If you need it to fill the box entirely, use 'cover' instead. */
   background-size: contain;
@@ -1645,7 +1645,7 @@ footer {
   height: 1800px;
   pointer-events: none;
   z-index: -1;
-  background: url("../public/assets/images/NoiseSwirl.png") repeat center;
+  background: url("assets/NoiseSwirl.png") repeat center;
   background-size: 200px 200px;
   background-position: 0 0;
   opacity: 1;
