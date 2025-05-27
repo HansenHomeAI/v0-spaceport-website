@@ -1916,64 +1916,99 @@ body::before {
   color: #fff;
 }
 
-/* ML Processing Styles */
+/* ML Processing Styles - Match dpu-container design language */
+#ml-container {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #000;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* The main container that matches dpu-container-inner */
+#ml-container .dpu-container-inner {
+  width: 90%;
+  max-width: 600px;
+  margin: 80px auto 40px auto;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+/* Reset styles inside ml-container */
+#ml-container * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#ml-container h1, 
+#ml-container h2 {
+  text-shadow: 0 3px 16px rgba(0,0,0,0.8);
+}
+
 #ml-container .input-wrapper {
   position: relative;
-  margin-bottom: 20px;
+  display: block;
+  flex: 1;
+  margin-bottom: 15px;
 }
 
-#ml-container .input-wrapper label {
-  position: absolute;
-  top: -8px;
-  left: 15px;
+#ml-container .input-wrapper input[type="url"],
+#ml-container .input-wrapper input[type="email"] {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
-  padding: 2px 8px;
-  font-size: 0.85rem;
-  color: #ccc;
-  border-radius: 4px;
-  backdrop-filter: blur(10px);
-}
-
-#ml-container .job-status {
-  background: rgba(40, 167, 69, 0.1);
-  border: 1px solid rgba(40, 167, 69, 0.3);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-}
-
-#ml-container .job-status h3 {
-  color: #28a745;
+  color: #fff;
+  outline: none;
+  transition: border 0.2s ease, background 0.2s ease;
   margin-bottom: 15px;
-  font-size: 1.2rem;
 }
 
-#ml-container .job-status p {
-  margin-bottom: 8px;
-  line-height: 1.5;
+#ml-container .input-wrapper input::placeholder {
+  color: #bbb;
+  opacity: 1;
 }
 
-#ml-container .error-message {
-  background: rgba(220, 53, 69, 0.1);
-  border: 1px solid rgba(220, 53, 69, 0.3);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
+#ml-container .input-wrapper input:focus {
+  border: 1px solid #FF4F00;
+  background: rgba(255, 255, 255, 0.15);
 }
 
-#ml-container .error-message h3 {
-  color: #dc3545;
+#ml-container .input-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 15px;
-  font-size: 1.2rem;
-}
-
-#ml-container .error-message p {
-  line-height: 1.5;
 }
 
 #ml-container .dpu-btn {
+  padding: 14px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+  background: #FF4F00;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   min-width: 160px;
+}
+
+#ml-container .dpu-btn:hover {
+  background: #d84400;
 }
 
 #ml-container .dpu-btn:disabled {
@@ -1992,4 +2027,52 @@ body::before {
   display: inline-block;
 }
 
-/* Add Existing Path Button */
+#ml-container .job-status {
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+#ml-container .job-status h3 {
+  color: #28a745;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  text-shadow: 0 3px 16px rgba(0,0,0,0.8);
+}
+
+#ml-container .job-status p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  color: #fff;
+}
+
+#ml-container .error-message {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+#ml-container .error-message h3 {
+  color: #dc3545;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  text-shadow: 0 3px 16px rgba(0,0,0,0.8);
+}
+
+#ml-container .error-message p {
+  line-height: 1.5;
+  color: #fff;
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+  #ml-container .dpu-container-inner {
+    width: 95%;
+    margin: 40px auto;
+    padding: 15px;
+  }
+}
