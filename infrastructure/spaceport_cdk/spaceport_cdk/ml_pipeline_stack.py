@@ -13,6 +13,7 @@ from aws_cdk import (
     RemovalPolicy,
     Duration,
     CfnOutput,
+    aws_ec2 as ec2,
 )
 from constructs import Construct
 import os
@@ -250,42 +251,48 @@ class MLPipelineStack(Stack):
         # ========== STEP FUNCTIONS DEFINITION ==========
         # Define the Step Functions workflow
         
-        # SfM Processing Job
-        sfm_job = sfn_tasks.SageMakerCreateProcessingJob(
+        # SfM Processing Job - Using CallAwsService since SageMakerCreateProcessingJob doesn't exist in CDK v2
+        sfm_job = sfn_tasks.CallAwsService(
             self, "SfMProcessingJob",
-            processing_job_name=sfn.JsonPath.string_at("$.jobName"),
-            app_specification=sfn_tasks.AppSpecification(
-                image_uri=sfn.JsonPath.string_at("$.sfmImageUri"),
-                container_entrypoint=["/opt/ml/code/run_sfm.sh"],
-                container_arguments=sfn_tasks.ContainerArguments.from_json_path_at("$.sfmArgs")
-            ),
-            cluster_config=sfn_tasks.ProcessingClusterConfig(
-                instance_count=1,
-                instance_type=sagemaker.InstanceType.ML_C5_2XLARGE,
-                volume_size_in_gb=100
-            ),
-            processing_inputs=[
-                sfn_tasks.ProcessingInput(
-                    input_name="input-data",
-                    app_managed=False,
-                    s3_input=sfn_tasks.ProcessingS3Input(
-                        s3_uri=sfn.JsonPath.string_at("$.inputS3Uri"),
-                        local_path="/opt/ml/processing/input",
-                        s3_data_type=sfn_tasks.S3DataType.S3_PREFIX
-                    )
-                )
+            service="sagemaker",
+            action="createProcessingJob",
+            parameters={
+                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName"),
+                "AppSpecification": {
+                    "ImageUri": sfn.JsonPath.string_at("$.sfmImageUri"),
+                    "ContainerEntrypoint": ["/opt/ml/code/run_sfm.sh"]
+                },
+                "ProcessingResources": {
+                    "ClusterConfig": {
+                        "InstanceCount": 1,
+                        "InstanceType": "ml.c5.2xlarge",
+                        "VolumeSizeInGB": 100
+                    }
+                },
+                "ProcessingInputs": [{
+                    "InputName": "input-data",
+                    "AppManaged": False,
+                    "S3Input": {
+                        "S3Uri": sfn.JsonPath.string_at("$.inputS3Uri"),
+                        "LocalPath": "/opt/ml/processing/input",
+                        "S3DataType": "S3Prefix"
+                    }
+                }],
+                "ProcessingOutputConfig": {
+                    "Outputs": [{
+                        "OutputName": "colmap-output",
+                        "AppManaged": False,
+                        "S3Output": {
+                            "S3Uri": sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
+                            "LocalPath": "/opt/ml/processing/output"
+                        }
+                    }]
+                },
+                "RoleArn": sagemaker_role.role_arn
+            },
+            iam_resources=[
+                f"arn:aws:sagemaker:{self.region}:{self.account}:processing-job/*"
             ],
-            processing_outputs=[
-                sfn_tasks.ProcessingOutput(
-                    output_name="colmap-output",
-                    app_managed=False,
-                    s3_output=sfn_tasks.ProcessingS3Output(
-                        s3_uri=sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
-                        local_path="/opt/ml/processing/output"
-                    )
-                )
-            ],
-            role=sagemaker_role,
             result_path="$.sfmResult"
         )
 
@@ -295,7 +302,7 @@ class MLPipelineStack(Stack):
             training_job_name=sfn.JsonPath.string_at("$.jobName"),
             algorithm_specification=sfn_tasks.AlgorithmSpecification(
                 training_image=sfn.JsonPath.string_at("$.gaussianImageUri"),
-                training_input_mode=sfn_tasks.TrainingInputMode.FILE
+                training_input_mode=sfn_tasks.InputMode.FILE
             ),
             input_data_config=[
                 sfn_tasks.Channel(
@@ -314,7 +321,7 @@ class MLPipelineStack(Stack):
             ),
             resource_config=sfn_tasks.ResourceConfig(
                 instance_count=1,
-                instance_type=sagemaker.InstanceType.ML_G4DN_XLARGE,
+                instance_type=ec2.InstanceType.of(ec2.InstanceClass.G4DN, ec2.InstanceSize.XLARGE),
                 volume_size_in_gb=100
             ),
             stopping_condition=sfn_tasks.StoppingCondition(
@@ -324,42 +331,48 @@ class MLPipelineStack(Stack):
             result_path="$.gaussianResult"
         )
 
-        # Compression Job
-        compression_job = sfn_tasks.SageMakerCreateProcessingJob(
+        # Compression Job - Using CallAwsService since SageMakerCreateProcessingJob doesn't exist in CDK v2
+        compression_job = sfn_tasks.CallAwsService(
             self, "CompressionJob",
-            processing_job_name=sfn.JsonPath.string_at("$.jobName"),
-            app_specification=sfn_tasks.AppSpecification(
-                image_uri=sfn.JsonPath.string_at("$.compressorImageUri"),
-                container_entrypoint=["/opt/ml/code/run_compression.sh"],
-                container_arguments=sfn_tasks.ContainerArguments.from_json_path_at("$.compressionArgs")
-            ),
-            cluster_config=sfn_tasks.ProcessingClusterConfig(
-                instance_count=1,
-                instance_type=sagemaker.InstanceType.ML_C5_XLARGE,
-                volume_size_in_gb=50
-            ),
-            processing_inputs=[
-                sfn_tasks.ProcessingInput(
-                    input_name="gaussian-model",
-                    app_managed=False,
-                    s3_input=sfn_tasks.ProcessingS3Input(
-                        s3_uri=sfn.JsonPath.string_at("$.gaussianOutputS3Uri"),
-                        local_path="/opt/ml/processing/input",
-                        s3_data_type=sfn_tasks.S3DataType.S3_PREFIX
-                    )
-                )
+            service="sagemaker",
+            action="createProcessingJob",
+            parameters={
+                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName"),
+                "AppSpecification": {
+                    "ImageUri": sfn.JsonPath.string_at("$.compressorImageUri"),
+                    "ContainerEntrypoint": ["/opt/ml/code/run_compression.sh"]
+                },
+                "ProcessingResources": {
+                    "ClusterConfig": {
+                        "InstanceCount": 1,
+                        "InstanceType": "ml.c5.xlarge",
+                        "VolumeSizeInGB": 50
+                    }
+                },
+                "ProcessingInputs": [{
+                    "InputName": "gaussian-model",
+                    "AppManaged": False,
+                    "S3Input": {
+                        "S3Uri": sfn.JsonPath.string_at("$.gaussianOutputS3Uri"),
+                        "LocalPath": "/opt/ml/processing/input",
+                        "S3DataType": "S3Prefix"
+                    }
+                }],
+                "ProcessingOutputConfig": {
+                    "Outputs": [{
+                        "OutputName": "compressed-model",
+                        "AppManaged": False,
+                        "S3Output": {
+                            "S3Uri": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
+                            "LocalPath": "/opt/ml/processing/output"
+                        }
+                    }]
+                },
+                "RoleArn": sagemaker_role.role_arn
+            },
+            iam_resources=[
+                f"arn:aws:sagemaker:{self.region}:{self.account}:processing-job/*"
             ],
-            processing_outputs=[
-                sfn_tasks.ProcessingOutput(
-                    output_name="compressed-model",
-                    app_managed=False,
-                    s3_output=sfn_tasks.ProcessingS3Output(
-                        s3_uri=sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
-                        local_path="/opt/ml/processing/output"
-                    )
-                )
-            ],
-            role=sagemaker_role,
             result_path="$.compressionResult"
         )
 

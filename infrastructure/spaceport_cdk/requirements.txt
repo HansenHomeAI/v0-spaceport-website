@@ -1,16 +1,4 @@
 aws-cdk-lib==2.89.0
 constructs>=10.0.0
 boto3>=1.20.0
-pytest>=6.0.0
-aws-cdk.aws-lambda>=1.0.0
-aws-cdk.aws-apigateway>=1.0.0
-aws-cdk.aws-s3>=1.0.0
-aws-cdk.aws-dynamodb>=1.0.0
-aws-cdk.aws-iam>=1.0.0
-aws-cdk.aws-ssm>=1.0.0
-aws-cdk.aws-stepfunctions>=1.0.0
-aws-cdk.aws-stepfunctions-tasks>=1.0.0
-aws-cdk.aws-sagemaker>=1.0.0
-aws-cdk.aws-ecr>=1.0.0
-aws-cdk.aws-logs>=1.0.0
-aws-cdk.aws-cloudwatch>=1.0.0 
+pytest>=6.0.0 
