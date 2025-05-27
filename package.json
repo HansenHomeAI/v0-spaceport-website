@@ -1,0 +1,26 @@
+{
+  "name": "spaceport-website",
+  "version": "1.0.0",
+  "description": "Spaceport drone photography platform",
+  "scripts": {
+    "dev": "cd frontend && python3 -m http.server 8000",
+    "deploy": "cd infrastructure/spaceport_cdk && cdk deploy",
+    "build": "echo 'Frontend build process - add your build tool here'",
+    "test": "echo 'Tests - add your testing framework here'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/spaceport-website.git"
+  },
+  "keywords": [
+    "drone",
+    "photography",
+    "real-estate",
+    "aws",
+    "lambda"
+  ],
+  "author": "Gabriel Hansen",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+} 

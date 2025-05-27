@@ -4,10 +4,28 @@ This repository contains the Spaceport Website, a platform for generating drone 
 
 ## Project Structure
 
-- `/` - Root directory containing the website's frontend (HTML, CSS, JS)
-- `/assets` - Website assets (images, etc.)
-- `/infrastructure` - AWS CDK code for deploying backend resources
-- `/lambda` - AWS Lambda function code for backend processing
+```
+spaceport-website/
+├── frontend/                    # Frontend application
+│   ├── public/                  # Static files served directly
+│   │   ├── index.html          # Main HTML file
+│   │   └── assets/             # Images, logos, etc.
+│   ├── src/                    # Source code
+│   │   ├── styles.css          # Stylesheets
+│   │   └── script.js           # JavaScript code
+│   └── package.json            # Frontend dependencies
+├── infrastructure/             # AWS CDK infrastructure code
+│   └── spaceport_cdk/
+│       ├── lambda/             # Lambda function source code
+│       │   ├── file_upload/    # File upload handling
+│       │   └── drone_path/     # Drone path generation
+│       ├── app.py              # CDK app entry point
+│       └── requirements.txt    # Python dependencies
+├── .github/                    # GitHub Actions workflows
+│   └── workflows/
+├── package.json                # Root project configuration
+└── README.md                   # This file
+```
 
 ## Backend Infrastructure
 
@@ -17,10 +35,32 @@ The backend is managed with AWS CDK and includes:
 - Lambda functions for processing requests
 - S3 bucket for file storage
 - DynamoDB tables for metadata
+- SES for email notifications
 
 All AWS resources are prefixed with "Spaceport-" for easy identification.
 
-## Deployment
+## Quick Start
+
+### Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start frontend development server
+npm run dev
+
+# Visit http://localhost:8000
+```
+
+### Deployment
+
+```bash
+# Deploy infrastructure to AWS
+npm run deploy
+```
+
+## Detailed Setup
 
 ### Prerequisites
 
@@ -47,21 +87,32 @@ cdk synth  # To generate CloudFormation template
 cdk deploy # To deploy resources to AWS
 ```
 
-### Frontend Deployment
-
-The frontend website can be deployed to any static hosting service. If using AWS:
-
-1. Create an S3 bucket for static website hosting
-2. Configure CloudFront for HTTPS support
-3. Upload the website files to S3
-
-## Local Development
-
-For local development of the website, you can use a simple HTTP server:
+### Frontend Development
 
 ```bash
-# Using Python
-python -m http.server 8000
+# Navigate to frontend directory
+cd frontend
+
+# Start development server
+npm run dev
+
+# Visit http://localhost:8000
 ```
 
-Then visit `http://localhost:8000` in your browser. 
+## Features
+
+- **Drone Path Generation**: Generate optimized flight paths for different property types
+- **File Upload**: Secure multipart upload to S3 with progress tracking
+- **Email Notifications**: Automated notifications via AWS SES
+- **Responsive Design**: Modern, mobile-friendly interface
+
+## Contributing
+
+1. Follow the established directory structure
+2. Keep frontend and backend code separated
+3. Use meaningful commit messages
+4. Test changes locally before pushing
+
+## License
+
+MIT License - see LICENSE file for details 
