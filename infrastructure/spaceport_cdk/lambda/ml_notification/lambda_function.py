@@ -32,7 +32,7 @@ def lambda_handler(event, context):
         
         # Send email via SES
         response = ses.send_email(
-            Source='noreply@hansenhome.ai',  # This email must be verified in SES
+            Source='hello@hansenhome.ai',  # Using the requested email address
             Destination={
                 'ToAddresses': [email]
             },
