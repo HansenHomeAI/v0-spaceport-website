@@ -284,7 +284,8 @@ class MLPipelineStack(Stack):
                         "AppManaged": False,
                         "S3Output": {
                             "S3Uri": sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
-                            "LocalPath": "/opt/ml/processing/output"
+                            "LocalPath": "/opt/ml/processing/output",
+                            "S3UploadMode": "EndOfJob"
                         }
                     }]
                 },
@@ -369,7 +370,8 @@ class MLPipelineStack(Stack):
                         "AppManaged": False,
                         "S3Output": {
                             "S3Uri": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
-                            "LocalPath": "/opt/ml/processing/output"
+                            "LocalPath": "/opt/ml/processing/output",
+                            "S3UploadMode": "EndOfJob"
                         }
                     }]
                 },
