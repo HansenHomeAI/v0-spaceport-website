@@ -12,9 +12,9 @@ echo "🏗️ Building all ML pipeline containers..."
 CONTAINERS=("sfm" "3dgs" "compressor")
 
 for container in "${CONTAINERS[@]}"; do
-    if [ -d "infrastructure/containers/$container" ]; then
+    if [ -d "$container" ]; then
         echo "Building $container..."
-        ./infrastructure/containers/scripts/build-single.sh "$container" "$PUSH_FLAG"
+        ./scripts/build-single.sh "$container" "$PUSH_FLAG"
         echo ""
     else
         echo "⚠️ Skipping $container (directory not found)"

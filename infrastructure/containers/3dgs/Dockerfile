@@ -1,5 +1,5 @@
 # 3D Gaussian Splatting Training Container
-FROM nvidia/cuda:11.8-devel-ubuntu20.04
+FROM ubuntu:20.04
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -24,8 +24,7 @@ RUN pip3 install -r requirements.txt
 
 # Copy training script
 COPY train_gaussian.py .
-COPY *.sh .
-RUN chmod +x *.sh
+RUN chmod +x train_gaussian.py
 
 # Set entrypoint
-ENTRYPOINT ["/opt/ml/train_gaussian.py"] 
+ENTRYPOINT ["python3", "/opt/ml/train_gaussian.py"] 

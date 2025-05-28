@@ -27,8 +27,8 @@ ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ECR_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/spaceport/$CONTAINER_NAME"
 
 # Check if container directory exists
-if [ ! -d "infrastructure/containers/$CONTAINER_NAME" ]; then
-    echo -e "${RED}❌ Container directory not found: infrastructure/containers/$CONTAINER_NAME${NC}"
+if [ ! -d "$CONTAINER_NAME" ]; then
+    echo -e "${RED}❌ Container directory not found: $CONTAINER_NAME${NC}"
     exit 1
 fi
 
@@ -36,7 +36,7 @@ fi
 echo -e "${YELLOW}📦 Building Docker image...${NC}"
 docker build -t "spaceport/$CONTAINER_NAME:latest" \
     -t "$ECR_URI:latest" \
-    "infrastructure/containers/$CONTAINER_NAME"
+    "$CONTAINER_NAME"
 
 echo -e "${GREEN}✅ Built: spaceport/$CONTAINER_NAME:latest${NC}"
 
