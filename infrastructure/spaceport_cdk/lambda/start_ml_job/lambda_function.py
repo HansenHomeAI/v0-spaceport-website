@@ -158,16 +158,32 @@ def lambda_handler(event, context):
 def validate_s3_url(url):
     """
     Validate S3 URL format
-    Accepts: https://bucket-name.s3.amazonaws.com/key or https://s3.amazonaws.com/bucket-name/key
+    Accepts: 
+    - s3://bucket-name/key
+    - https://bucket-name.s3.amazonaws.com/key 
+    - https://s3.amazonaws.com/bucket-name/key
     """
-    s3_url_pattern = r'^https://(?:([a-z0-9.-]+)\.s3\.amazonaws\.com/(.+)|s3\.amazonaws\.com/([a-z0-9.-]+)/(.+))$'
-    return re.match(s3_url_pattern, url) is not None
+    # S3 protocol format
+    s3_protocol_pattern = r'^s3://([a-z0-9.-]+)/(.+)$'
+    # HTTPS format
+    https_pattern = r'^https://(?:([a-z0-9.-]+)\.s3\.amazonaws\.com/(.+)|s3\.amazonaws\.com/([a-z0-9.-]+)/(.+))$'
+    
+    return re.match(s3_protocol_pattern, url) is not None or re.match(https_pattern, url) is not None
 
 
 def parse_s3_url(url):
     """
     Parse S3 URL to extract bucket name and object key
+    Handles both s3:// and https:// formats
     """
+    # Check for s3:// protocol format first
+    s3_protocol_match = re.match(r'^s3://([a-z0-9.-]+)/(.+)$', url)
+    if s3_protocol_match:
+        bucket_name = s3_protocol_match.group(1)
+        object_key = s3_protocol_match.group(2)
+        return bucket_name, object_key
+    
+    # Fall back to HTTPS format parsing
     parsed = urlparse(url)
     
     if parsed.netloc.endswith('.s3.amazonaws.com'):

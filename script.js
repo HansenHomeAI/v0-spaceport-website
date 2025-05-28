@@ -1483,7 +1483,7 @@ async function generateDronePath(payload) {
 // ML PROCESSING FUNCTIONALITY
 (function() {
   // Configuration - Update this with your actual API Gateway URL after deployment
-  const ML_API_BASE_URL = 'https://your-api-gateway-url.execute-api.us-west-2.amazonaws.com/prod';
+  const ML_API_BASE_URL = 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod';
   
   const s3UrlInput = document.getElementById('s3UrlInput');
   const mlEmailField = document.getElementById('mlEmailField');
@@ -1496,8 +1496,8 @@ async function generateDronePath(payload) {
   const jobStatusSpan = document.getElementById('jobStatus');
   const errorMessageP = document.getElementById('errorMessage');
 
-  // S3 URL validation regex
-  const S3_URL_REGEX = /^https:\/\/(?:([a-z0-9.-]+)\.s3\.amazonaws\.com\/(.+)|s3\.amazonaws\.com\/([a-z0-9.-]+)\/(.+))$/;
+  // S3 URL validation regex - accepts both s3:// and https:// formats
+  const S3_URL_REGEX = /^(?:s3:\/\/[a-z0-9.-]+\/(.+)|https:\/\/(?:([a-z0-9.-]+)\.s3\.amazonaws\.com\/(.+)|s3\.amazonaws\.com\/([a-z0-9.-]+)\/(.+)))$/;
 
   // Email validation regex
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1554,7 +1554,7 @@ async function generateDronePath(payload) {
     }
 
     if (!S3_URL_REGEX.test(s3Url)) {
-      showError('Please enter a valid S3 URL (e.g., https://spaceport-uploads.s3.amazonaws.com/your-file.zip)');
+      showError('Please enter a valid S3 URL (e.g., s3://bucket-name/file.zip or https://bucket-name.s3.amazonaws.com/file.zip)');
       return;
     }
 
