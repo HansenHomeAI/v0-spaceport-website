@@ -265,7 +265,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c5.2xlarge",
+                        "InstanceType": "ml.c6i.4xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },
@@ -351,7 +351,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c5.xlarge",
+                        "InstanceType": "ml.c6i.2xlarge",
                         "VolumeSizeInGB": 50
                     }
                 },
@@ -406,7 +406,7 @@ class MLPipelineStack(Stack):
                 "email": sfn.JsonPath.string_at("$.email"),
                 "s3Url": sfn.JsonPath.string_at("$.s3Url"),
                 "status": "failed",
-                "error": sfn.JsonPath.string_at("$.Error")
+                "error": sfn.JsonPath.string_at("$.error.Cause")
             })
         )
 
@@ -440,7 +440,8 @@ class MLPipelineStack(Stack):
             role=step_functions_role,
             logs=sfn.LogOptions(
                 destination=step_functions_log_group,
-                level=sfn.LogLevel.ALL
+                level=sfn.LogLevel.ALL,
+                include_execution_data=True
             ),
             timeout=Duration.hours(8)
         )
