@@ -276,7 +276,6 @@ class MLPipelineStack(Stack):
                         "S3Uri": sfn.JsonPath.string_at("$.inputS3Uri"),
                         "LocalPath": "/opt/ml/processing/input",
                         "S3DataType": "S3Prefix",
-                        "S3DownloadMode": "File",
                         "S3InputMode": "File"
                     }
                 }],
@@ -364,7 +363,6 @@ class MLPipelineStack(Stack):
                         "S3Uri": sfn.JsonPath.string_at("$.gaussianOutputS3Uri"),
                         "LocalPath": "/opt/ml/processing/input",
                         "S3DataType": "S3Prefix",
-                        "S3DownloadMode": "File",
                         "S3InputMode": "File"
                     }
                 }],
