@@ -9,6 +9,7 @@ WORKSPACE_DIR="/tmp/colmap_workspace"
 
 # Create workspace directory
 mkdir -p "$WORKSPACE_DIR"
+mkdir -p "$WORKSPACE_DIR/images"
 
 echo "Input directory: $INPUT_DIR"
 echo "Output directory: $OUTPUT_DIR"
