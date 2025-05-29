@@ -265,7 +265,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.4xlarge",
+                        "InstanceType": "ml.c6i.2xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },
@@ -351,7 +351,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.2xlarge",
+                        "InstanceType": "ml.c6i.4xlarge",
                         "VolumeSizeInGB": 50
                     }
                 },

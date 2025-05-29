@@ -37,27 +37,45 @@ Frontend (S3 URL Input) → API Gateway → Lambda → Step Functions → SageMa
 - **CloudWatch**: Logging and monitoring
 - **IAM**: Security and permissions
 
-## 🔄 ML Pipeline Stages
+## 🤖 ML Pipeline Stages - PRODUCTION READY
+
+### ✅ Approved AWS SageMaker Quotas
+**Status**: All quotas approved and production ready!
+
+**ml.g4dn.xlarge for training job usage**: 1 instance
+- **Usage**: 3D Gaussian Splatting Training step
+- **Specs**: 4 vCPUs, 16 GB RAM, 1x NVIDIA T4 GPU
+- **Purpose**: GPU-accelerated neural rendering training
+
+**ml.c6i.2xlarge for processing job usage**: 1 instance  
+- **Usage**: SfM Processing (COLMAP) step
+- **Specs**: 8 vCPUs, 16 GB RAM
+- **Purpose**: Structure-from-Motion reconstruction
+
+**ml.c6i.4xlarge for processing job usage**: 2 instances
+- **Usage**: Compression (SOGS) step  
+- **Specs**: 16 vCPUs, 32 GB RAM
+- **Purpose**: Gaussian splat optimization and compression
 
 ### Stage 1: Structure from Motion (SfM) Processing
 - **Container**: `spaceport/sfm` (COLMAP-based)
 - **Input**: ZIP file with drone photos
 - **Output**: 3D point cloud and camera poses
-- **SageMaker**: Processing Job on `ml.c5.2xlarge`
+- **SageMaker**: Processing Job on `ml.c6i.2xlarge` ✅
 - **Duration**: ~30-60 minutes
 
 ### Stage 2: 3D Gaussian Splatting Training
 - **Container**: `spaceport/3dgs` (Custom 3DGS implementation)
 - **Input**: SfM output (point cloud + poses)
 - **Output**: 3D Gaussian Splat model
-- **SageMaker**: Training Job on `ml.g4dn.xlarge` (GPU)
+- **SageMaker**: Training Job on `ml.g4dn.xlarge` (GPU) ✅
 - **Duration**: ~2-6 hours
 
-### Stage 3: Model Compression
+### Stage 3: Model Compression (SOGS)
 - **Container**: `spaceport/compressor` (Model optimization)
 - **Input**: Raw 3DGS model
 - **Output**: Compressed, web-optimized model
-- **SageMaker**: Processing Job on `ml.c5.xlarge`
+- **SageMaker**: Processing Job on `ml.c6i.4xlarge` ✅
 - **Duration**: ~15-30 minutes
 
 ## 📁 Project Structure
@@ -223,9 +241,9 @@ cd ../containers
 ## 💰 Cost Optimization
 
 ### Resource Sizing Strategy
-- **SfM Processing**: `ml.c5.2xlarge` (CPU-intensive photogrammetry)
+- **SfM Processing**: `ml.c6i.2xlarge` (CPU-intensive photogrammetry)
 - **3DGS Training**: `ml.g4dn.xlarge` (GPU required for neural rendering)
-- **Compression**: `ml.c5.xlarge` (CPU-only model optimization)
+- **Compression**: `ml.c6i.4xlarge` (CPU-only model optimization)
 
 ### Cost Controls
 - **Spot Instances**: Not used (reliability over cost for production)
