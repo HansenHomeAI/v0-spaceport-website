@@ -83,9 +83,9 @@ colmap feature_extractor \
     --ImageReader.single_camera 1 \
     --ImageReader.camera_model SIMPLE_PINHOLE \
     --SiftExtraction.use_gpu 0 \
-    --SiftExtraction.num_threads 2 \
-    --SiftExtraction.max_image_size 2048 \
-    --SiftExtraction.max_num_features 8192 \
+    --SiftExtraction.num_threads 4 \
+    --SiftExtraction.max_image_size 3072 \
+    --SiftExtraction.max_num_features 12288 \
     --SiftExtraction.first_octave -1 || {
     echo "ERROR: Feature extraction failed"
     exit 1
@@ -97,7 +97,7 @@ echo "=== COLMAP FEATURE MATCHING ==="
 colmap exhaustive_matcher \
     --database_path "$WORKSPACE_DIR/database.db" \
     --SiftMatching.use_gpu 0 \
-    --SiftMatching.num_threads 2 \
+    --SiftMatching.num_threads 4 \
     --SiftMatching.max_ratio 0.8 \
     --SiftMatching.max_distance 0.7 || {
     echo "ERROR: Feature matching failed"
@@ -115,7 +115,7 @@ colmap mapper \
     --database_path "$WORKSPACE_DIR/database.db" \
     --image_path "$WORKSPACE_DIR/images" \
     --output_path "$sparse_dir" \
-    --Mapper.num_threads 2 \
+    --Mapper.num_threads 4 \
     --Mapper.init_max_forward_motion 0.95 \
     --Mapper.multiple_models 0 \
     --Mapper.extract_colors 0 || {
