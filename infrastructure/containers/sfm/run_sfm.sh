@@ -81,7 +81,12 @@ colmap feature_extractor \
     --database_path "$WORKSPACE_DIR/database.db" \
     --image_path "$WORKSPACE_DIR/images" \
     --ImageReader.single_camera 1 \
-    --SiftExtraction.use_gpu 0 || {
+    --ImageReader.camera_model SIMPLE_PINHOLE \
+    --SiftExtraction.use_gpu 0 \
+    --SiftExtraction.num_threads 2 \
+    --SiftExtraction.max_image_size 2048 \
+    --SiftExtraction.max_num_features 8192 \
+    --SiftExtraction.first_octave -1 || {
     echo "ERROR: Feature extraction failed"
     exit 1
 }
@@ -91,7 +96,10 @@ echo "Feature extraction completed successfully"
 echo "=== COLMAP FEATURE MATCHING ==="
 colmap exhaustive_matcher \
     --database_path "$WORKSPACE_DIR/database.db" \
-    --SiftMatching.use_gpu 0 || {
+    --SiftMatching.use_gpu 0 \
+    --SiftMatching.num_threads 2 \
+    --SiftMatching.max_ratio 0.8 \
+    --SiftMatching.max_distance 0.7 || {
     echo "ERROR: Feature matching failed"
     exit 1
 }
@@ -106,7 +114,11 @@ echo "=== COLMAP SPARSE RECONSTRUCTION ==="
 colmap mapper \
     --database_path "$WORKSPACE_DIR/database.db" \
     --image_path "$WORKSPACE_DIR/images" \
-    --output_path "$sparse_dir" || {
+    --output_path "$sparse_dir" \
+    --Mapper.num_threads 2 \
+    --Mapper.init_max_forward_motion 0.95 \
+    --Mapper.multiple_models 0 \
+    --Mapper.extract_colors 0 || {
     echo "ERROR: Sparse reconstruction failed"
     exit 1
 }
