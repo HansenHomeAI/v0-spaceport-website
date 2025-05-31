@@ -98,7 +98,7 @@ def lambda_handler(event, context):
         account_id = context.invoked_function_arn.split(':')[4]
         region = context.invoked_function_arn.split(':')[3]
         
-        sfm_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:latest"
+        sfm_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:cpu-fix"
         gaussian_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest"
         compressor_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest"
         

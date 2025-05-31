@@ -148,7 +148,10 @@ echo "Image undistortion completed successfully"
 colmap patch_match_stereo \
     --workspace_path "$dense_dir" \
     --workspace_format COLMAP \
-    --PatchMatchStereo.geom_consistency true || {
+    --PatchMatchStereo.geom_consistency true \
+    --PatchMatchStereo.gpu_index -1 \
+    --PatchMatchStereo.depth_min 0.01 \
+    --PatchMatchStereo.depth_max 100.0 || {
     echo "ERROR: Patch match stereo failed"
     exit 1
 }
