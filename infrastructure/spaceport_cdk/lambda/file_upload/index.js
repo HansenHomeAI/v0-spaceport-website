@@ -220,7 +220,7 @@ exports.handler = async (event) => {
       const params = {
         TableName: METADATA_TABLE_NAME,
         Item: {
-          SubmissionId: objectKey, // using the unique S3 object key
+          id: objectKey, // using the unique S3 object key as primary key
           Email: email,
           PropertyTitle: propertyTitle,
           ListingDescription: listingDescription,
