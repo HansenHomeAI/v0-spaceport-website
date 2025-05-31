@@ -127,6 +127,16 @@ class MLPipelineStack(Stack):
                                 "lambda:InvokeFunction"
                             ],
                             resources=["*"]
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents",
+                                "logs:DescribeLogGroups",
+                                "logs:DescribeLogStreams"
+                            ],
+                            resources=["*"]
                         )
                     ]
                 )
@@ -298,6 +308,29 @@ class MLPipelineStack(Stack):
             result_path="$.sfmResult"
         )
 
+        # Wait for SfM processing job to complete
+        wait_for_sfm = sfn_tasks.CallAwsService(
+            self, "WaitForSfMCompletion",
+            service="sagemaker",
+            action="describeProcessingJob",
+            parameters={
+                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName")
+            },
+            iam_resources=[
+                f"arn:aws:sagemaker:{self.region}:{self.account}:processing-job/*"
+            ],
+            result_path="$.sfmStatus"
+        )
+
+        # Check if SfM job is complete
+        sfm_choice = sfn.Choice(self, "IsSfMComplete")
+        
+        # Wait state for polling
+        sfm_wait = sfn.Wait(
+            self, "WaitForSfM",
+            time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
+        )
+
         # 3DGS Training Job - Using CallAwsService for dynamic image URI support
         gaussian_job = sfn_tasks.CallAwsService(
             self, "GaussianTrainingJob",
@@ -336,6 +369,29 @@ class MLPipelineStack(Stack):
                 f"arn:aws:sagemaker:{self.region}:{self.account}:training-job/*"
             ],
             result_path="$.gaussianResult"
+        )
+
+        # Wait for Gaussian training job to complete
+        wait_for_gaussian = sfn_tasks.CallAwsService(
+            self, "WaitForGaussianCompletion",
+            service="sagemaker",
+            action="describeTrainingJob",
+            parameters={
+                "TrainingJobName": sfn.JsonPath.string_at("$.jobName")
+            },
+            iam_resources=[
+                f"arn:aws:sagemaker:{self.region}:{self.account}:training-job/*"
+            ],
+            result_path="$.gaussianStatus"
+        )
+
+        # Check if Gaussian job is complete
+        gaussian_choice = sfn.Choice(self, "IsGaussianComplete")
+        
+        # Wait state for polling
+        gaussian_wait = sfn.Wait(
+            self, "WaitForGaussian",
+            time=sfn.WaitTime.duration(Duration.seconds(120))  # Wait 2 minutes between polls for longer training jobs
         )
 
         # Compression Job - Using CallAwsService since SageMakerCreateProcessingJob doesn't exist in CDK v2
@@ -385,6 +441,29 @@ class MLPipelineStack(Stack):
             result_path="$.compressionResult"
         )
 
+        # Wait for Compression job to complete
+        wait_for_compression = sfn_tasks.CallAwsService(
+            self, "WaitForCompressionCompletion",
+            service="sagemaker",
+            action="describeProcessingJob",
+            parameters={
+                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName")
+            },
+            iam_resources=[
+                f"arn:aws:sagemaker:{self.region}:{self.account}:processing-job/*"
+            ],
+            result_path="$.compressionStatus"
+        )
+
+        # Check if Compression job is complete
+        compression_choice = sfn.Choice(self, "IsCompressionComplete")
+        
+        # Wait state for polling
+        compression_wait = sfn.Wait(
+            self, "WaitForCompression",
+            time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
+        )
+
         # Notification step
         notify_user = sfn_tasks.LambdaInvoke(
             self, "NotifyUser",
@@ -419,7 +498,19 @@ class MLPipelineStack(Stack):
             result_path="$.error"
         )
 
+        wait_for_sfm_with_catch = wait_for_sfm.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error"
+        )
+
         gaussian_job_with_catch = gaussian_job.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error"
+        )
+
+        wait_for_gaussian_with_catch = wait_for_gaussian.add_catch(
             notify_error,
             errors=["States.ALL"],
             result_path="$.error"
@@ -431,8 +522,53 @@ class MLPipelineStack(Stack):
             result_path="$.error"
         )
 
-        # Chain the jobs together
-        definition = sfm_job_with_catch.next(gaussian_job_with_catch).next(compression_job_with_catch).next(notify_user)
+        wait_for_compression_with_catch = wait_for_compression.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error"
+        )
+
+        # Build the workflow with proper job completion waiting
+        # SfM workflow: Start job -> Wait and poll until complete
+        sfm_polling_loop = sfm_choice.when(
+            sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Completed"),
+            gaussian_job_with_catch
+        ).when(
+            sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Failed"),
+            notify_error
+        ).otherwise(
+            sfm_wait.next(wait_for_sfm_with_catch)
+        )
+
+        # Gaussian workflow: Start job -> Wait and poll until complete  
+        gaussian_polling_loop = gaussian_choice.when(
+            sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Completed"),
+            compression_job_with_catch
+        ).when(
+            sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Failed"),
+            notify_error
+        ).otherwise(
+            gaussian_wait.next(wait_for_gaussian_with_catch)
+        )
+
+        # Compression workflow: Start job -> Wait and poll until complete
+        compression_polling_loop = compression_choice.when(
+            sfn.Condition.string_equals("$.compressionStatus.ProcessingJobStatus", "Completed"),
+            notify_user
+        ).when(
+            sfn.Condition.string_equals("$.compressionStatus.ProcessingJobStatus", "Failed"),
+            notify_error
+        ).otherwise(
+            compression_wait.next(wait_for_compression_with_catch)
+        )
+
+        # Connect the polling loops to the choices
+        wait_for_sfm_with_catch.next(sfm_polling_loop)
+        wait_for_gaussian_with_catch.next(gaussian_polling_loop)
+        wait_for_compression_with_catch.next(compression_polling_loop)
+
+        # Chain the jobs together with proper waiting
+        definition = sfm_job_with_catch.next(wait_for_sfm_with_catch)
 
         # Create the Step Function
         ml_pipeline = sfn.StateMachine(
