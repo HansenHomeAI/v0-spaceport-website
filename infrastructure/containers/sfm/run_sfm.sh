@@ -4,6 +4,14 @@
 set -e  # Exit on any error
 set -x  # Print every command as it executes
 
+# FORCE DISABLE CUDA TO PREVENT INITIALIZATION ERRORS
+export CUDA_VISIBLE_DEVICES=""
+export COLMAP_NO_CUDA=1
+
+echo "=== STARTING SfM PROCESSING ==="
+echo "Input images directory: /opt/ml/processing/input/images"
+echo "Output directory: /opt/ml/processing/output"
+
 echo "=== SfM PROCESSING STARTING ==="
 echo "Date: $(date)"
 echo "User: $(whoami)"
