@@ -1319,6 +1319,375 @@ const API_ENDPOINTS = {
     SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission"
 };
 
+// Enhanced Drone Path Generator API Configuration
+const ENHANCED_API_BASE = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod";
+
+// Enhanced Drone Path Generator Class
+class EnhancedDronePathGenerator {
+    constructor() {
+        this.currentOptimizedParams = null;
+        this.initializeEventListeners();
+    }
+
+    initializeEventListeners() {
+        const optimizeButton = document.getElementById('optimizeButton');
+        const downloadMasterCSV = document.getElementById('downloadMasterCSV');
+        
+        if (optimizeButton) {
+            optimizeButton.addEventListener('click', () => this.handleOptimize());
+        }
+        
+        if (downloadMasterCSV) {
+            downloadMasterCSV.addEventListener('click', () => this.handleDownloadMasterCSV());
+        }
+
+        // Add input validation
+        const requiredInputs = ['centerCoordinates', 'batteryMinutes', 'numBatteries'];
+        requiredInputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('input', () => this.validateForm());
+            }
+        });
+    }
+
+    validateForm() {
+        const centerCoords = document.getElementById('centerCoordinates')?.value?.trim();
+        const batteryMinutes = document.getElementById('batteryMinutes')?.value;
+        const numBatteries = document.getElementById('numBatteries')?.value;
+
+        const isValid = centerCoords && batteryMinutes && numBatteries && 
+                       batteryMinutes >= 10 && batteryMinutes <= 60 &&
+                       numBatteries >= 1 && numBatteries <= 12;
+
+        const optimizeButton = document.getElementById('optimizeButton');
+        if (optimizeButton) {
+            optimizeButton.disabled = !isValid;
+        }
+
+        return isValid;
+    }
+
+    async handleOptimize() {
+        if (!this.validateForm()) {
+            this.showError('Please fill in all required fields with valid values.');
+            return;
+        }
+
+        const centerCoords = document.getElementById('centerCoordinates').value.trim();
+        const batteryMinutes = parseInt(document.getElementById('batteryMinutes').value);
+        const numBatteries = parseInt(document.getElementById('numBatteries').value);
+
+        this.setOptimizeLoading(true);
+        this.hideError();
+        this.hideOptimizationResults();
+
+        try {
+            // Step 1: Optimize the spiral pattern
+            console.log('Starting optimization for:', { batteryMinutes, batteries: numBatteries, center: centerCoords });
+            
+            const optimizationResponse = await fetch(`${ENHANCED_API_BASE}/api/optimize-spiral`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    batteryMinutes: batteryMinutes,
+                    batteries: numBatteries,
+                    center: centerCoords
+                })
+            });
+
+            if (!optimizationResponse.ok) {
+                const errorData = await optimizationResponse.json().catch(() => ({}));
+                throw new Error(errorData.error || `Optimization failed: ${optimizationResponse.status}`);
+            }
+
+            const optimizationData = await optimizationResponse.json();
+            console.log('Optimization response:', optimizationData);
+
+            // Step 2: Get elevation data
+            const elevationResponse = await fetch(`${ENHANCED_API_BASE}/api/elevation`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    center: centerCoords
+                })
+            });
+
+            let elevationFeet = null;
+            if (elevationResponse.ok) {
+                const elevationData = await elevationResponse.json();
+                elevationFeet = elevationData.elevation_feet;
+            }
+
+            // Store the optimized parameters for CSV downloads
+            this.currentOptimizedParams = {
+                ...optimizationData.optimized_params,
+                center: centerCoords,
+                minHeight: document.getElementById('minHeightFeet')?.value || 100,
+                maxHeight: document.getElementById('maxHeightFeet')?.value || null
+            };
+
+            // Display results
+            this.displayOptimizationResults(optimizationData, elevationFeet);
+            this.enableDownloads();
+
+        } catch (error) {
+            console.error('Optimization error:', error);
+            this.showError(error.message || 'Failed to optimize flight plan. Please try again.');
+        } finally {
+            this.setOptimizeLoading(false);
+        }
+    }
+
+    displayOptimizationResults(data, elevationFeet) {
+        const params = data.optimized_params;
+        const info = data.optimization_info || {};
+        
+        // Update result values
+        document.getElementById('patternType').textContent = 'Exponential Spiral';
+        document.getElementById('numBounces').textContent = params.N || '-';
+        document.getElementById('flightRadius').textContent = params.rHold ? `${Math.round(params.rHold)} ft` : '-';
+        document.getElementById('estimatedTime').textContent = params.estimated_time_minutes ? 
+            `${params.estimated_time_minutes} min` : '-';
+        
+        // Set battery utilization color based on value
+        const utilizationSpan = document.getElementById('batteryUtilization');
+        if (params.battery_utilization) {
+            utilizationSpan.textContent = `${params.battery_utilization}%`;
+            // Color coding for utilization
+            utilizationSpan.className = 'result-value';
+            if (params.battery_utilization > 90) {
+                utilizationSpan.classList.add('warning');
+            } else if (params.battery_utilization < 70) {
+                utilizationSpan.classList.add('error');
+            } else {
+                utilizationSpan.classList.add('success');
+            }
+        } else {
+            utilizationSpan.textContent = '-';
+            utilizationSpan.className = 'result-value';
+        }
+
+        // Display elevation if available
+        if (elevationFeet !== null) {
+            document.getElementById('groundElevation').textContent = `${Math.round(elevationFeet)} ft MSL`;
+        } else {
+            document.getElementById('groundElevation').textContent = 'N/A';
+        }
+
+        // Show the results section
+        document.getElementById('optimizationResults').style.display = 'block';
+
+        // Log optimization details
+        this.logOptimizationDetails(data);
+    }
+
+    logOptimizationDetails(data) {
+        const logContent = document.getElementById('logContent');
+        const missionLogs = document.getElementById('missionLogs');
+        
+        if (logContent && missionLogs) {
+            const params = data.optimized_params;
+            const info = data.optimization_info || {};
+            
+            let logHtml = '';
+            logHtml += `<p><strong>Optimization Algorithm:</strong> Intelligent Balanced Scaling with Binary Search</p>`;
+            logHtml += `<p><strong>Pattern Type:</strong> Exponential Spiral with Neural Network Optimization</p>`;
+            logHtml += `<p><strong>Start Radius:</strong> ${params.r0 || 150} ft</p>`;
+            logHtml += `<p><strong>Slices:</strong> ${params.slices} (one per battery)</p>`;
+            
+            if (info.bounce_scaling_reason) {
+                logHtml += `<p><strong>Bounce Count Logic:</strong> ${info.bounce_scaling_reason}</p>`;
+            }
+            
+            if (info.radius_optimization_iterations) {
+                logHtml += `<p><strong>Binary Search Iterations:</strong> ${info.radius_optimization_iterations}</p>`;
+            }
+            
+            logHtml += `<p><strong>Safety Margin:</strong> 95% battery utilization maximum</p>`;
+            logHtml += `<p><strong>Altitude Logic:</strong> Outbound: 0.37ft/ft climb, Inbound: 0.1ft/ft descent</p>`;
+            
+            logContent.innerHTML = logHtml;
+            missionLogs.style.display = 'block';
+        }
+    }
+
+    enableDownloads() {
+        const downloadMasterCSV = document.getElementById('downloadMasterCSV');
+        const batteryDownloads = document.getElementById('batteryDownloads');
+        const batteryButtons = document.getElementById('batteryButtons');
+        
+        if (downloadMasterCSV) {
+            downloadMasterCSV.disabled = false;
+            downloadMasterCSV.style.display = 'block';
+        }
+        
+        if (batteryDownloads && batteryButtons && this.currentOptimizedParams) {
+            // Clear existing battery buttons
+            batteryButtons.innerHTML = '';
+            
+            // Create individual battery download buttons
+            for (let i = 0; i < this.currentOptimizedParams.slices; i++) {
+                const batteryBtn = document.createElement('button');
+                batteryBtn.className = 'battery-btn';
+                batteryBtn.textContent = `🔋 Battery ${i + 1}`;
+                batteryBtn.onclick = () => this.handleDownloadBatteryCSV(i);
+                batteryButtons.appendChild(batteryBtn);
+            }
+            
+            batteryDownloads.style.display = 'block';
+        }
+    }
+
+    async handleDownloadMasterCSV() {
+        if (!this.currentOptimizedParams) {
+            this.showError('Please optimize the flight plan first.');
+            return;
+        }
+
+        try {
+            await this.downloadCSV('master', null);
+        } catch (error) {
+            console.error('Master CSV download error:', error);
+            this.showError('Failed to download master CSV. Please try again.');
+        }
+    }
+
+    async handleDownloadBatteryCSV(batteryIndex) {
+        if (!this.currentOptimizedParams) {
+            this.showError('Please optimize the flight plan first.');
+            return;
+        }
+
+        try {
+            await this.downloadCSV('battery', batteryIndex);
+        } catch (error) {
+            console.error(`Battery ${batteryIndex + 1} CSV download error:`, error);
+            this.showError(`Failed to download battery ${batteryIndex + 1} CSV. Please try again.`);
+        }
+    }
+
+    async downloadCSV(type, batteryIndex = null) {
+        const requestBody = {
+            slices: this.currentOptimizedParams.slices,
+            N: this.currentOptimizedParams.N,
+            r0: this.currentOptimizedParams.r0,
+            rHold: this.currentOptimizedParams.rHold,
+            center: this.currentOptimizedParams.center,
+            minHeight: parseFloat(this.currentOptimizedParams.minHeight),
+            maxHeight: this.currentOptimizedParams.maxHeight ? 
+                      parseFloat(this.currentOptimizedParams.maxHeight) : null
+        };
+
+        let endpoint = `${ENHANCED_API_BASE}/api/csv`;
+        let filename = 'flight-plan';
+
+        if (type === 'battery' && batteryIndex !== null) {
+            endpoint = `${ENHANCED_API_BASE}/api/csv/battery/${batteryIndex + 1}`;
+            filename = `battery-${batteryIndex + 1}`;
+        }
+
+        // Add mission title to filename if available
+        const missionTitle = document.getElementById('missionTitle')?.value?.trim();
+        if (missionTitle) {
+            const safeTitle = missionTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
+            filename = `${safeTitle}-${filename}`;
+        }
+
+        console.log(`Downloading ${type} CSV:`, { endpoint, requestBody });
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `CSV download failed: ${response.status}`);
+        }
+
+        // Handle CSV response (should be text/csv)
+        const csvText = await response.text();
+        
+        // Create download
+        const blob = new Blob([csvText], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        // Log successful download
+        this.logDownload(type, batteryIndex, filename);
+    }
+
+    logDownload(type, batteryIndex, filename) {
+        const logContent = document.getElementById('logContent');
+        if (logContent) {
+            const downloadMsg = type === 'battery' ? 
+                `Battery ${batteryIndex + 1} CSV downloaded: ${filename}.csv` :
+                `Master CSV downloaded: ${filename}.csv`;
+            
+            const existingContent = logContent.innerHTML;
+            logContent.innerHTML = existingContent + `<p><strong>Download:</strong> ${downloadMsg}</p>`;
+        }
+    }
+
+    setOptimizeLoading(loading) {
+        const optimizeButton = document.getElementById('optimizeButton');
+        const optimizeButtonText = document.getElementById('optimizeButtonText');
+        const optimizeSpinner = document.getElementById('optimizeSpinner');
+
+        if (optimizeButton && optimizeButtonText && optimizeSpinner) {
+            optimizeButton.disabled = loading;
+            optimizeButtonText.textContent = loading ? 'Optimizing...' : 'Optimize Flight Plan';
+            optimizeSpinner.style.display = loading ? 'block' : 'none';
+        }
+    }
+
+    showError(message) {
+        const errorDiv = document.getElementById('optimizationError');
+        const errorText = document.getElementById('optimizationErrorText');
+        
+        if (errorDiv && errorText) {
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    hideError() {
+        const errorDiv = document.getElementById('optimizationError');
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
+    }
+
+    hideOptimizationResults() {
+        const resultsDiv = document.getElementById('optimizationResults');
+        const downloadMasterCSV = document.getElementById('downloadMasterCSV');
+        const batteryDownloads = document.getElementById('batteryDownloads');
+        const missionLogs = document.getElementById('missionLogs');
+        
+        if (resultsDiv) resultsDiv.style.display = 'none';
+        if (downloadMasterCSV) {
+            downloadMasterCSV.style.display = 'none';
+            downloadMasterCSV.disabled = true;
+        }
+        if (batteryDownloads) batteryDownloads.style.display = 'none';
+        if (missionLogs) missionLogs.style.display = 'none';
+    }
+}
+
+// Initialize the enhanced drone path generator when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new EnhancedDronePathGenerator();
+});
+
+// Keep essential file upload and ML processing functionality
 async function saveSubmissionMetadata(objectKey) {
     const email = document.getElementById('email').value;
     const propertyTitle = document.getElementById('propertyTitle').value;
@@ -1388,94 +1757,76 @@ async function completeMultipartUpload(uploadId, bucketName, objectKey, parts) {
     return response.json();
 }
 
-// Update the drone path generation API call
-async function generateDronePath(payload) {
+async function uploadFileInChunks(file) {
+    const chunkSize = 50 * 1024 * 1024; // 50MB per chunk
+    const totalChunks = Math.ceil(file.size / chunkSize);
+
     try {
-        const response = await fetch(API_ENDPOINTS.DRONE_PATH, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+        // Start multipart upload
+        const { uploadId, bucketName, objectKey } = await startMultipartUpload(file.name, file.type);
+        
+        const uploadPromises = [];
+        const parts = [];
+
+        // Upload chunks
+        for (let i = 0; i < totalChunks; i++) {
+            const start = i * chunkSize;
+            const end = Math.min(start + chunkSize, file.size);
+            const chunk = file.slice(start, end);
+            const partNumber = i + 1;
+
+            const uploadPromise = uploadPart(uploadId, bucketName, objectKey, chunk, partNumber);
+            uploadPromises.push(uploadPromise);
+        }
+
+        // Wait for all uploads to complete
+        const partResults = await Promise.all(uploadPromises);
+        
+        partResults.forEach((result, index) => {
+            parts.push({
+                PartNumber: index + 1,
+                ETag: result.etag
+            });
+        });
+
+        // Complete multipart upload
+        const result = await completeMultipartUpload(uploadId, bucketName, objectKey, parts);
+        
+        // Save submission metadata
+        await saveSubmissionMetadata(result.objectKey);
+        
+        return result;
+        
+    } catch (error) {
+        console.error('Upload failed:', error);
+        throw error;
+    }
+}
+
+async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
+    try {
+        // Get presigned URL for this part
+        const { presignedUrl } = await getPresignedUrlForPart(uploadId, bucketName, objectKey, partNumber);
+        
+        // Upload the chunk
+        const response = await fetch(presignedUrl, {
+            method: 'PUT',
+            body: chunk,
+            headers: {
+                'Content-Type': 'application/octet-stream'
+            }
         });
 
         if (!response.ok) {
-            throw new Error(`Lambda request failed: ${response.status}`);
+            throw new Error(`Part ${partNumber} upload failed: ${response.status}`);
         }
 
-        const rawData = await response.json();
-        
-        // Debug logging to console
-        console.log("DRONE PATH DEBUG - Raw response:", rawData);
-        console.log("DRONE PATH DEBUG - Raw response type:", typeof rawData);
-        console.log("DRONE PATH DEBUG - Has body property:", rawData.hasOwnProperty('body'));
-        if (rawData.body) {
-          console.log("DRONE PATH DEBUG - Body type:", typeof rawData.body);
-        }
-        
-        // Handle both response formats:
-        // 1. If rawData has a 'body' property, use it (old format)
-        // 2. If rawData is the direct response, use it (new format from API Gateway)
-        let data = rawData;
-        if (rawData.body) {
-          data = typeof rawData.body === "string" ? JSON.parse(rawData.body) : rawData.body;
-        }
-        
-        // More debug logging
-        console.log("DRONE PATH DEBUG - Processed data:", data);
-        console.log("DRONE PATH DEBUG - Has totalFlightTimeMinutes:", data && data.hasOwnProperty('totalFlightTimeMinutes'));
-        if (data && typeof data.totalFlightTimeMinutes !== 'undefined' && data.totalFlightTimeMinutes !== null) {
-          console.log("DRONE PATH DEBUG - totalFlightTimeMinutes type:", typeof data.totalFlightTimeMinutes);
-          console.log("DRONE PATH DEBUG - totalFlightTimeMinutes value:", data.totalFlightTimeMinutes);
-        }
-
-        if (data && data.logs) {
-            data.logs.forEach(entry => {
-                log(entry.title, entry.msg);
-            });
-        }
-        if (data && data.error) {
-            throw new Error(data.error);
-        }
-        if (data && data.elevationMsg) {
-            resultDiv.innerHTML = data.elevationMsg;
-        }
-        if (data && typeof data.totalFlightTimeMinutes !== "undefined" && data.totalFlightTimeMinutes !== null) {
-            flightTimeDiv.style.display = "block";
-            flightTimeDiv.innerHTML = `Estimated Total Flight Time: ${data.totalFlightTimeMinutes.toFixed(2)} minutes`;
-        } else {
-            console.error("Missing totalFlightTimeMinutes in response");
-            flightTimeDiv.style.display = "none";
-        }
-        if (data.masterWaypoints && data.masterWaypoints.length) {
-            downloadMasterBtn.style.display = "inline-block";
-            const titleSafe = sanitizeTitle(data.title || 'untitled');
-            downloadMasterBtn.onclick = function() {
-                downloadCSV(data.masterWaypoints, `${titleSafe}-master.csv`);
-                log('Download:', `${titleSafe}-master.csv has been downloaded.`);
-            };
-        } else {
-            downloadMasterBtn.style.display = "none";
-        }
-        if (data.segments && data.segments.length) {
-            segmentDownloadsDiv.style.display = "block";
-            segmentDownloadsDiv.innerHTML = `<p>Flight Segments (${data.segments.length}):</p>`;
-            data.segments.forEach((segment, idx) => {
-                const btn = document.createElement('button');
-                btn.textContent = `Download Segment ${idx + 1}`;
-                btn.style.marginRight = "5px";
-                const titleSafe = sanitizeTitle(data.title || 'untitled');
-                btn.onclick = () => {
-                    downloadCSV(segment, `${titleSafe}-segment-${idx + 1}.csv`);
-                    log('Download:', `${titleSafe}-segment-${idx + 1}.csv has been downloaded.`);
-                };
-                segmentDownloadsDiv.appendChild(btn);
-            });
-        } else {
-            segmentDownloadsDiv.style.display = "none";
-        }
-
-        return data;
+        return {
+            partNumber,
+            etag: response.headers.get('ETag')
+        };
     } catch (error) {
-        console.error('Error generating drone path:', error);
+        console.error(`Error uploading part ${partNumber}:`, error);
         throw error;
     }
 }
