@@ -9,10 +9,23 @@ from aws_cdk import (
     RemovalPolicy,
     Duration,
     CfnOutput,
-    CfnParameter
+    CfnParameter,
+    BundlingOptions,
+    aws_cloudfront as cloudfront,
+    aws_cloudfront_origins as origins,
+    aws_stepfunctions as sfn,
+    aws_stepfunctions_tasks as sfn_tasks,
+    aws_sagemaker as sagemaker,
+    aws_ecr as ecr,
+    aws_logs as logs,
+    aws_sns as sns,
+    aws_events as events,
+    aws_events_targets as targets,
+    aws_cloudwatch as cloudwatch
 )
 from constructs import Construct
 import os
+import aws_cdk as cdk
 
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -92,13 +105,22 @@ class SpaceportStack(Stack):
         # Get the lambda directory absolute path - fixed to point to correct location
         lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
         
-        # Create Lambda function for drone path generation
+        # Create Lambda function for drone path generation with bundled dependencies
         drone_path_lambda = lambda_.Function(
             self, 
             "Spaceport-DronePathFunction",
             function_name="Spaceport-DronePathFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "drone_path")),
+            code=lambda_.Code.from_asset(
+                os.path.join(lambda_dir, "drone_path"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ]
+                )
+            ),
             handler="lambda_function.lambda_handler",
             environment={
                 "DYNAMODB_TABLE_NAME": drone_path_table.table_name,
