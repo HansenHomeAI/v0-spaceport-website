@@ -833,27 +833,13 @@ function displayDetectedParams(params) {
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM Content Loaded - Initializing popup functionality');
   
-  // Initialize popup
+  // Initialize popup (optional - only if popup exists)
   const popup = document.getElementById('addPathPopup');
-  console.log('Found popup element:', popup);
   
   if (popup) {
     popup.classList.add('hidden');
     
-    // Add event listener for the add path button
-    const addPathButton = document.querySelector('[data-action="show-add-path-popup"]');
-    if (addPathButton) {
-      console.log('Found add path button');
-      addPathButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        showAddPathPopup(event);
-      });
-    } else {
-      console.error('Add path button not found');
-    }
-    
-    // Initialize upload area
+    // Initialize upload area (only if it exists)
     const uploadArea = document.getElementById('csvUploadArea');
     const fileInput = document.getElementById('csvFileInput');
     
@@ -897,11 +883,7 @@ document.addEventListener('DOMContentLoaded', function() {
           handleFileUpload(e.target.files[0]);
         }
       });
-    } else {
-      console.error('Upload area or file input not found');
     }
-  } else {
-    console.error('Popup element not found');
   }
 });
 
