@@ -940,16 +940,22 @@ class EnhancedDronePathGenerator {
         const downloadMasterCSV = document.getElementById('downloadMasterCSV');
         
         if (optimizeButton) {
-            optimizeButton.addEventListener('click', () => this.handleOptimize());
+            optimizeButton.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent form submission
+                this.handleOptimize();
+            });
         }
         
         if (downloadMasterCSV) {
-            downloadMasterCSV.addEventListener('click', () => this.handleDownloadMasterCSV());
+            downloadMasterCSV.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent form submission
+                this.handleDownloadMasterCSV();
+            });
         }
-
-        // Add input validation
-        const requiredInputs = ['centerCoordinates', 'batteryMinutes', 'numBatteries'];
-        requiredInputs.forEach(inputId => {
+        
+        // Add event listeners for input changes to enable optimization
+        const inputs = ['missionTitle', 'centerCoordinates', 'batteryMinutes', 'numBatteries'];
+        inputs.forEach(inputId => {
             const input = document.getElementById(inputId);
             if (input) {
                 input.addEventListener('input', () => this.validateForm());
@@ -1159,9 +1165,13 @@ class EnhancedDronePathGenerator {
             // Create individual battery download buttons
             for (let i = 0; i < this.currentOptimizedParams.slices; i++) {
                 const batteryBtn = document.createElement('button');
+                batteryBtn.type = 'button';
                 batteryBtn.className = 'battery-btn';
-                batteryBtn.textContent = `🔋 Battery ${i + 1}`;
-                batteryBtn.onclick = () => this.handleDownloadBatteryCSV(i);
+                batteryBtn.innerHTML = `🔋 Battery ${i + 1}`;
+                batteryBtn.onclick = (e) => {
+                    e.preventDefault(); // Prevent form submission
+                    this.handleDownloadBatteryCSV(i);
+                };
                 batteryButtons.appendChild(batteryBtn);
             }
             
