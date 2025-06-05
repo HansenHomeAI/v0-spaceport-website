@@ -869,6 +869,15 @@ class SpiralDesigner:
             progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
             gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))  # -35° to -21° range
             
+            # Calculate photo interval timing
+            # Start photos at first waypoint, continue throughout flight, stop at last waypoint
+            if i == 0:
+                photo_interval = 3.0  # Start taking photos at 3-second intervals
+            elif i == len(spiral_path) - 1:
+                photo_interval = 0    # Stop taking photos at the last waypoint
+            else:
+                photo_interval = 3.0  # Continue 3-second intervals throughout flight
+            
             # Create CSV row with all 16 Litchi columns
             row = [
                 latitude,                   # GPS latitude
@@ -885,7 +894,7 @@ class SpiralDesigner:
                 center['lon'],              # POI longitude (spiral center)
                 0,                          # POI altitude (ground level)
                 0,                          # POI altitude mode (AGL)
-                0 if i == 0 else 2.8,      # Photo interval (2.8s after first)
+                photo_interval,             # Photo interval (3s start/middle, 0s stop)
                 0                           # Photo distance interval (disabled)
             ]
             
@@ -1041,6 +1050,15 @@ class SpiralDesigner:
             progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
             gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))
             
+            # Calculate photo interval timing
+            # Start photos at first waypoint, continue throughout flight, stop at last waypoint
+            if i == 0:
+                photo_interval = 3.0  # Start taking photos at 3-second intervals
+            elif i == len(spiral_path) - 1:
+                photo_interval = 0    # Stop taking photos at the last waypoint
+            else:
+                photo_interval = 3.0  # Continue 3-second intervals throughout flight
+            
             # Create CSV row (identical format to generate_csv)
             row = [
                 latitude,                   # GPS latitude
@@ -1057,7 +1075,7 @@ class SpiralDesigner:
                 center['lon'],              # POI longitude (spiral center)
                 0,                          # POI altitude (ground level)
                 0,                          # POI altitude mode (AGL)
-                0 if i == 0 else 2.8,      # Photo interval (2.8s after first)
+                photo_interval,             # Photo interval (3s start/middle, 0s stop)
                 0                           # Photo distance interval (disabled)
             ]
             
