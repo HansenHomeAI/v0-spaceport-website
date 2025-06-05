@@ -1356,16 +1356,39 @@ class EnhancedDronePathGenerator {
         const batteryMinutes = document.getElementById('batteryMinutes')?.value;
         const numBatteries = document.getElementById('numBatteries')?.value;
 
-        const isValid = centerCoords && batteryMinutes && numBatteries && 
-                       batteryMinutes >= 10 && batteryMinutes <= 60 &&
-                       numBatteries >= 1 && numBatteries <= 12;
-
-        const optimizeButton = document.getElementById('optimizeButton');
-        if (optimizeButton) {
-            optimizeButton.disabled = !isValid;
+        // Center coordinates are always required
+        if (!centerCoords) {
+            const optimizeButton = document.getElementById('optimizeButton');
+            if (optimizeButton) {
+                optimizeButton.disabled = true;
+            }
+            return false;
         }
 
-        return isValid;
+        // Validate battery minutes if provided (allow empty for default)
+        if (batteryMinutes && (batteryMinutes < 10 || batteryMinutes > 60)) {
+            const optimizeButton = document.getElementById('optimizeButton');
+            if (optimizeButton) {
+                optimizeButton.disabled = true;
+            }
+            return false;
+        }
+
+        // Validate number of batteries if provided (allow empty for default)
+        if (numBatteries && (numBatteries < 1 || numBatteries > 12)) {
+            const optimizeButton = document.getElementById('optimizeButton');
+            if (optimizeButton) {
+                optimizeButton.disabled = true;
+            }
+            return false;
+        }
+
+        // Form is valid
+        const optimizeButton = document.getElementById('optimizeButton');
+        if (optimizeButton) {
+            optimizeButton.disabled = false;
+        }
+        return true;
     }
 
     async handleOptimize() {
@@ -1375,8 +1398,9 @@ class EnhancedDronePathGenerator {
         }
 
         const centerCoords = document.getElementById('centerCoordinates').value.trim();
-        const batteryMinutes = parseInt(document.getElementById('batteryMinutes').value);
-        const numBatteries = parseInt(document.getElementById('numBatteries').value);
+        // Use default values if fields are empty
+        const batteryMinutes = parseInt(document.getElementById('batteryMinutes').value) || 20;
+        const numBatteries = parseInt(document.getElementById('numBatteries').value) || 3;
 
         this.setOptimizeLoading(true);
         this.hideError();
@@ -1419,12 +1443,12 @@ class EnhancedDronePathGenerator {
                 elevationFeet = elevationData.elevation_feet;
             }
 
-            // Store the optimized parameters for CSV downloads
+            // Store the optimized parameters for CSV downloads (use defaults for empty fields)
             this.currentOptimizedParams = {
                 ...optimizationData.optimized_params,
                 center: centerCoords,
                 minHeight: document.getElementById('minHeightFeet')?.value || 100,
-                maxHeight: document.getElementById('maxHeightFeet')?.value || null
+                maxHeight: document.getElementById('maxHeightFeet')?.value || 400
             };
 
             // Display results
