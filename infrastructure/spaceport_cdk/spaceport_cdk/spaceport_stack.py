@@ -187,6 +187,50 @@ class SpaceportStack(Stack):
             ]
         )
         
+        # Add enhanced drone path API endpoints with CORS
+        api_resource = drone_path_api.root.add_resource("api")
+        
+        # /api/optimize-spiral endpoint
+        optimize_spiral_resource = api_resource.add_resource("optimize-spiral")
+        optimize_spiral_resource.add_method(
+            "POST", 
+            apigw.LambdaIntegration(
+                drone_path_lambda,
+                proxy=True
+            )
+        )
+        
+        # /api/elevation endpoint  
+        elevation_resource = api_resource.add_resource("elevation")
+        elevation_resource.add_method(
+            "POST", 
+            apigw.LambdaIntegration(
+                drone_path_lambda,
+                proxy=True
+            )
+        )
+        
+        # /api/csv endpoint
+        csv_resource = api_resource.add_resource("csv")
+        csv_resource.add_method(
+            "POST", 
+            apigw.LambdaIntegration(
+                drone_path_lambda,
+                proxy=True
+            )
+        )
+        
+        # /api/csv/battery/{id} endpoint
+        battery_resource = csv_resource.add_resource("battery")
+        battery_id_resource = battery_resource.add_resource("{id}")
+        battery_id_resource.add_method(
+            "POST", 
+            apigw.LambdaIntegration(
+                drone_path_lambda,
+                proxy=True
+            )
+        )
+        
         # Create API Gateway for file upload
         file_upload_api = apigw.RestApi(
             self, 
