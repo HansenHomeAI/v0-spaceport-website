@@ -258,7 +258,7 @@
             type="text" 
             id="missionTitle" 
             name="missionTitle" 
-            placeholder="Enter mission title"
+            placeholder="Enter mission name (e.g., 'Downtown Property Survey')"
           >
           <div class="hover-overlay"></div>
         </div>
@@ -267,7 +267,7 @@
             type="text" 
             id="centerCoordinates" 
             name="centerCoordinates" 
-            placeholder="e.g., 41.73218° N, 111.83979° W or 41.73218, -111.83979"
+            placeholder="GPS coordinates (e.g., 41.73218, -111.83979 or 41.73218° N, 111.83979° W)"
             required
           >
           <div class="hover-overlay"></div>
@@ -286,12 +286,12 @@
       </div>
 
       <div class="input-row">
-        <div class="input-wrapper" data-label="Battery Duration (minutes)">
+        <div class="input-wrapper" data-label="Flight Duration Per Battery">
           <input 
             type="number" 
             id="batteryMinutes" 
             name="batteryMinutes" 
-            placeholder="20"
+            placeholder="Flight duration per battery (default: 20 minutes)"
             min="10"
             max="60"
             step="1"
@@ -300,12 +300,12 @@
           >
           <div class="hover-overlay"></div>
         </div>
-        <div class="input-wrapper" data-label="Number of Batteries">
+        <div class="input-wrapper" data-label="Total Number of Batteries">
           <input 
             type="number" 
             id="numBatteries" 
             name="numBatteries" 
-            placeholder="3"
+            placeholder="Number of batteries available (default: 3)"
             min="1"
             max="12"
             step="1"
@@ -317,12 +317,12 @@
       </div>
 
       <div class="input-row">
-        <div class="input-wrapper" data-label="Minimum Height (feet AGL)">
+        <div class="input-wrapper" data-label="Minimum Safe Flying Height">
           <input 
             type="number" 
             id="minHeightFeet" 
             name="minHeightFeet" 
-            placeholder="100"
+            placeholder="Minimum altitude above ground (default: 100 ft)"
             min="50"
             max="300"
             step="10"
@@ -330,15 +330,16 @@
           >
           <div class="hover-overlay"></div>
         </div>
-        <div class="input-wrapper" data-label="Maximum Height (feet AGL)">
+        <div class="input-wrapper" data-label="Maximum Flying Height (Optional)">
           <input 
             type="number" 
             id="maxHeightFeet" 
             name="maxHeightFeet" 
-            placeholder="400 (optional)"
+            placeholder="Maximum altitude limit (optional, default: 400 ft)"
             min="200"
             max="1000"
             step="10"
+            value="400"
           >
           <div class="hover-overlay"></div>
         </div>
