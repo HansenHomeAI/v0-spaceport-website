@@ -109,7 +109,7 @@ build_and_push_container() {
         fi
     fi
     
-    docker build -f "$dockerfile" -t "$image_uri" .
+    docker build -f "$dockerfile" --platform linux/amd64 -t "$image_uri" .
     success "Docker build completed: $container_name"
     
     # Push to ECR

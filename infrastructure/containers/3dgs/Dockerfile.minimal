@@ -1,0 +1,18 @@
+FROM python:3.8-slim
+
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install boto3 numpy
+
+# Copy the training script
+COPY train_gaussian.py /opt/ml/code/train_gaussian.py
+
+# Set working directory
+WORKDIR /opt/ml/code
+
+# Set the entrypoint
+ENTRYPOINT ["python", "train_gaussian.py"] 
