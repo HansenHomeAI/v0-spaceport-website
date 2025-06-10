@@ -26,6 +26,7 @@ def lambda_handler(event, context):
             
         s3_url = body.get('s3Url')
         email = body.get('email', 'noreply@hansenhome.ai')  # Optional email for notifications
+        pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
         
         if not s3_url:
             return {
@@ -108,6 +109,7 @@ def lambda_handler(event, context):
             "jobName": job_name,
             "s3Url": s3_url,
             "email": email,
+            "pipelineStep": pipeline_step,
             "inputS3Uri": f"s3://{bucket_name}/{object_key}",
             "colmapOutputS3Uri": f"s3://{ml_bucket}/colmap/{job_id}/",
             "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",

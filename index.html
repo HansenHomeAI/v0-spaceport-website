@@ -539,12 +539,22 @@
     <div id="ml-container" class="dpu-container">
       <div class="dpu-container-inner">
         
+        <!-- Pipeline Step Selector -->
+        <div class="input-wrapper">
+          <label for="pipelineStepSelect" class="step-selector-label">Start from step:</label>
+          <select id="pipelineStepSelect" class="step-selector">
+            <option value="sfm">1. SfM Processing → 3D Gaussian Splatting → Compression</option>
+            <option value="3dgs">2. 3D Gaussian Splatting → Compression</option>
+            <option value="compression">3. Compression Only</option>
+          </select>
+        </div>
+
         <!-- S3 URL Input -->
         <div class="input-wrapper">
           <input
             type="url"
             id="s3UrlInput"
-            placeholder="S3 URL"
+            placeholder="S3 URL (images zip for SfM, sparse reconstruction for 3DGS, or model for compression)"
             autocomplete="off"
           />
         </div>

@@ -567,8 +567,27 @@ class MLPipelineStack(Stack):
         wait_for_gaussian_with_catch.next(gaussian_polling_loop)
         wait_for_compression_with_catch.next(compression_polling_loop)
 
-        # Chain the jobs together with proper waiting
-        definition = sfm_job_with_catch.next(wait_for_sfm_with_catch)
+        # Create pipeline step selector choice
+        pipeline_step_choice = sfn.Choice(self, "PipelineStepChoice")
+        
+        # Define workflows for each starting point
+        sfm_workflow = sfm_job_with_catch.next(wait_for_sfm_with_catch)
+        gaussian_workflow = gaussian_job_with_catch.next(wait_for_gaussian_with_catch)
+        compression_workflow = compression_job_with_catch.next(wait_for_compression_with_catch)
+        
+        # Pipeline step conditional logic
+        definition = pipeline_step_choice.when(
+            sfn.Condition.string_equals("$.pipelineStep", "sfm"),
+            sfm_workflow
+        ).when(
+            sfn.Condition.string_equals("$.pipelineStep", "3dgs"),
+            gaussian_workflow
+        ).when(
+            sfn.Condition.string_equals("$.pipelineStep", "compression"),
+            compression_workflow
+        ).otherwise(
+            sfm_workflow  # Default to full pipeline
+        )
 
         # Create the Step Function
         ml_pipeline = sfn.StateMachine(

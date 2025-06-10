@@ -2310,3 +2310,75 @@ body::before {
     text-align: left;
   }
 }
+
+/* Pipeline Step Selector Styling */
+#ml-container .step-selector-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#ml-container .step-selector {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 45px;
+}
+
+#ml-container .step-selector:focus {
+  outline: none;
+  border-color: rgba(10, 132, 255, 0.8);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+}
+
+#ml-container .step-selector option {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 12px;
+  font-weight: 500;
+}
+
+/* Dynamic placeholder text color */
+#ml-container #s3UrlInput.step-sfm {
+  color: #34c759;
+}
+
+#ml-container #s3UrlInput.step-3dgs {
+  color: #ff9500;
+}
+
+#ml-container #s3UrlInput.step-compression {
+  color: #0a84ff;
+}
+
+/* Responsive adjustments for step selector */
+@media (max-width: 480px) {
+  #ml-container .step-selector {
+    font-size: 14px;
+    padding: 12px 16px;
+    padding-right: 40px;
+    background-size: 18px;
+    background-position: right 10px center;
+  }
+  
+  #ml-container .step-selector-label {
+    font-size: 13px;
+  }
+}

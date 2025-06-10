@@ -1460,6 +1460,7 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   
   const s3UrlInput = document.getElementById('s3UrlInput');
   const mlEmailField = document.getElementById('mlEmailField');
+  const pipelineStepSelect = document.getElementById('pipelineStepSelect');
   const startProcessingBtn = document.getElementById('startProcessingBtn');
   const processingBtnText = document.getElementById('processingBtnText');
   const processingSpinner = document.getElementById('processingSpinner');
@@ -1485,6 +1486,34 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 
   if (mlEmailField) {
     mlEmailField.addEventListener('input', validateForm);
+  }
+
+  if (pipelineStepSelect) {
+    pipelineStepSelect.addEventListener('change', updatePlaceholderText);
+    updatePlaceholderText(); // Initialize
+  }
+
+  function updatePlaceholderText() {
+    if (!s3UrlInput || !pipelineStepSelect) return;
+    
+    const step = pipelineStepSelect.value;
+    const placeholders = {
+      'sfm': 'S3 URL (images zip file for Structure from Motion processing)',
+      '3dgs': 'S3 URL (sparse reconstruction output for 3D Gaussian Splatting)',
+      'compression': 'S3 URL (3D Gaussian model for compression)'
+    };
+    
+    const stepClasses = {
+      'sfm': 'step-sfm',
+      '3dgs': 'step-3dgs', 
+      'compression': 'step-compression'
+    };
+    
+    s3UrlInput.placeholder = placeholders[step] || placeholders['sfm'];
+    
+    // Update visual styling
+    s3UrlInput.className = s3UrlInput.className.replace(/step-\w+/g, '');
+    s3UrlInput.classList.add(stepClasses[step] || stepClasses['sfm']);
   }
 
   function validateForm() {
@@ -1549,7 +1578,8 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
         },
         body: JSON.stringify({
           s3Url: s3Url,
-          email: email
+          email: email,
+          pipelineStep: pipelineStepSelect?.value || 'sfm'
         })
       });
 
