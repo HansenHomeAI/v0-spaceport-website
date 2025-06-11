@@ -267,7 +267,7 @@ class MLPipelineStack(Stack):
             service="sagemaker",
             action="createProcessingJob",
             parameters={
-                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName"),
+                "ProcessingJobName": sfn.JsonPath.format("{}-sfm", sfn.JsonPath.string_at("$.jobName")),
                 "AppSpecification": {
                     "ImageUri": sfn.JsonPath.string_at("$.sfmImageUri"),
                     "ContainerEntrypoint": ["/opt/ml/code/run_sfm.sh"]
@@ -314,7 +314,7 @@ class MLPipelineStack(Stack):
             service="sagemaker",
             action="describeProcessingJob",
             parameters={
-                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName")
+                "ProcessingJobName": sfn.JsonPath.format("{}-sfm", sfn.JsonPath.string_at("$.jobName"))
             },
             iam_resources=[
                 f"arn:aws:sagemaker:{self.region}:{self.account}:processing-job/*"
@@ -337,7 +337,7 @@ class MLPipelineStack(Stack):
             service="sagemaker",
             action="createTrainingJob",
             parameters={
-                "TrainingJobName": sfn.JsonPath.string_at("$.jobName"),
+                "TrainingJobName": sfn.JsonPath.format("{}-3dgs", sfn.JsonPath.string_at("$.jobName")),
                 "AlgorithmSpecification": {
                     "TrainingImage": sfn.JsonPath.string_at("$.gaussianImageUri"),
                     "TrainingInputMode": "File"
@@ -377,7 +377,7 @@ class MLPipelineStack(Stack):
             service="sagemaker",
             action="describeTrainingJob",
             parameters={
-                "TrainingJobName": sfn.JsonPath.string_at("$.jobName")
+                "TrainingJobName": sfn.JsonPath.format("{}-3dgs", sfn.JsonPath.string_at("$.jobName"))
             },
             iam_resources=[
                 f"arn:aws:sagemaker:{self.region}:{self.account}:training-job/*"
@@ -400,7 +400,7 @@ class MLPipelineStack(Stack):
             service="sagemaker",
             action="createProcessingJob",
             parameters={
-                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName"),
+                "ProcessingJobName": sfn.JsonPath.format("{}-compression", sfn.JsonPath.string_at("$.jobName")),
                 "AppSpecification": {
                     "ImageUri": sfn.JsonPath.string_at("$.compressorImageUri"),
                     "ContainerEntrypoint": ["/opt/ml/code/run_compression.sh"]
@@ -447,7 +447,7 @@ class MLPipelineStack(Stack):
             service="sagemaker",
             action="describeProcessingJob",
             parameters={
-                "ProcessingJobName": sfn.JsonPath.string_at("$.jobName")
+                "ProcessingJobName": sfn.JsonPath.format("{}-compression", sfn.JsonPath.string_at("$.jobName"))
             },
             iam_resources=[
                 f"arn:aws:sagemaker:{self.region}:{self.account}:processing-job/*"
