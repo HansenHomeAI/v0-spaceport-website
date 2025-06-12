@@ -61,9 +61,9 @@ aws ecr get-login-password --region us-west-2 | docker login --username AWS --pa
 ./scripts/build-all.sh
 
 # Or build individually:
-# SfM Container
+# SfM Container (Production COLMAP 3.11.1)
 cd sfm
-docker build --platform linux/amd64 -t 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest -f Dockerfile.minimal .
+docker build --platform linux/amd64 -t 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest .
 docker push 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest
 
 # 3DGS Container  
