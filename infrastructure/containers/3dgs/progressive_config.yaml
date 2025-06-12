@@ -1,0 +1,203 @@
+# Progressive 3D Gaussian Splatting Training Configuration
+# Based on Trick-GS methodology for optimal quality and efficiency
+
+training:
+  # Core training parameters
+  max_iterations: 30000
+  log_interval: 100
+  save_interval: 5000
+  
+  # Early termination based on PSNR plateau
+  early_termination:
+    enabled: true
+    psnr_plateau_patience: 1000      # Wait 1000 iterations for improvement
+    psnr_plateau_threshold: 0.1      # Minimum PSNR improvement (dB)
+    min_iterations: 5000             # Don't terminate before this
+
+# Progressive Resolution Strategy (Trick-GS core feature)
+progressive_resolution:
+  enabled: true
+  initial_factor: 0.125              # Start at 1/8 resolution (critical for efficiency)
+  final_factor: 1.0                  # End at full resolution
+  schedule_end_iteration: 19500      # When to reach full resolution
+  interpolation: "logarithmic"       # More natural progression than linear
+  
+  # Multiple resolution batches for different training phases
+  resolution_batches:
+    - factor: 0.125    # 1/8 resolution - coarse structure learning
+      iterations: [0, 5000]
+      purpose: "Initial structure and coarse geometry"
+    
+    - factor: 0.25     # 1/4 resolution - intermediate details
+      iterations: [5000, 10000] 
+      purpose: "Intermediate geometry refinement"
+    
+    - factor: 0.5      # 1/2 resolution - fine details
+      iterations: [10000, 15000]
+      purpose: "Fine detail emergence"
+    
+    - factor: 0.75     # 3/4 resolution - near-final quality
+      iterations: [15000, 19500]
+      purpose: "High-quality detail refinement"
+    
+    - factor: 1.0      # Full resolution - final convergence
+      iterations: [19500, 30000]
+      purpose: "Final quality convergence"
+
+# Progressive Blurring Strategy (Trick-GS technique)
+progressive_blur:
+  enabled: true
+  initial_sigma: 2.4                 # Strong initial blur (σ=2.4)
+  initial_kernel_size: 9             # 9x9 Gaussian kernel
+  final_sigma: 0.0                   # No blur at the end
+  final_kernel_size: 1               # No kernel at the end
+  schedule_end_iteration: 19500      # When to stop blurring
+  update_interval: 100               # Update blur every 100 iterations
+  blur_type: "gaussian"              # Gaussian blur for smooth reduction
+
+# Gaussian Management Strategy
+gaussian_management:
+  # Standard densification phase
+  densification:
+    enabled: true
+    interval: 100                    # Every 100 iterations
+    start_iteration: 500             # Start after initial convergence
+    end_iteration: 15000             # End standard densification
+    
+  # Late densification recovery (Trick-GS innovation)
+  late_densification:
+    enabled: true
+    start_iteration: 20000           # Recovery phase start
+    end_iteration: 20500             # Recovery phase end
+    interval: 100                    # Every 100 iterations
+    purpose: "Recover details lost during pruning"
+  
+  # Significance-based pruning (6 phases with decay)
+  significance_pruning:
+    enabled: true
+    pruning_schedule:
+      - iteration: 20000
+        retention_ratio: 0.60        # Keep 60% of Gaussians
+        criteria: "significance_score"
+        
+      - iteration: 20500
+        retention_ratio: 0.42        # 60% * 0.7 decay
+        criteria: "significance_score"
+        
+      - iteration: 21000
+        retention_ratio: 0.294       # Previous * 0.7
+        criteria: "significance_score"
+        
+      - iteration: 21500
+        retention_ratio: 0.206       # Previous * 0.7
+        criteria: "significance_score"
+        
+      - iteration: 22000
+        retention_ratio: 0.144       # Previous * 0.7
+        criteria: "significance_score"
+        
+      - iteration: 22500
+        retention_ratio: 0.101       # Previous * 0.7 (final)
+        criteria: "significance_score"
+
+# Learning Rate Schedules (Optimized for progressive training)
+learning_rates:
+  # Gaussian parameters (position, rotation, scaling)
+  gaussian_lr: 0.5
+  gaussian_lr_decay: 0.95           # Decay every 1000 iterations
+  gaussian_lr_min: 0.01
+  
+  # Spherical Harmonics (color representation)
+  sh_lr: 0.05
+  sh_lr_decay: 0.98
+  sh_lr_min: 0.005
+  
+  # Opacity parameters
+  opacity_lr: 0.1
+  opacity_lr_decay: 0.99
+  opacity_lr_min: 0.01
+
+# Advanced Optimization Features
+optimization:
+  # Spherical Harmonics progressive training
+  sh_progressive:
+    enabled: true
+    start_bands: 1                   # Start with 1 SH band (diffuse only)
+    max_bands: 3                     # Maximum 3 SH bands
+    band_increase_interval: 5000     # Add band every 5000 iterations
+    
+  # Adaptive loss weighting
+  adaptive_loss:
+    enabled: true
+    color_weight: 1.0
+    depth_weight: 0.1                # Depth consistency loss
+    normal_weight: 0.05              # Surface normal consistency
+    
+  # Memory optimization
+  memory_optimization:
+    enabled: true
+    gradient_checkpointing: true     # Save memory during backprop
+    mixed_precision: true            # Use FP16 for speed/memory
+    max_gaussians_per_batch: 100000  # Limit batch size for memory
+
+# Quality Metrics and Monitoring
+quality_metrics:
+  # Primary metrics
+  target_psnr: 35.0                  # Target PSNR for convergence
+  target_ssim: 0.95                  # Target SSIM
+  target_lpips: 0.05                 # Target LPIPS (lower is better)
+  
+  # Evaluation settings
+  evaluation_interval: 1000          # Evaluate every 1000 iterations
+  validation_split: 0.1              # 10% of images for validation
+  
+  # Convergence criteria
+  convergence_patience: 2000         # Wait 2000 iterations for convergence
+  convergence_threshold: 0.001       # Loss improvement threshold
+
+# Hardware Optimization
+hardware:
+  # GPU settings
+  gpu_memory_fraction: 0.9           # Use 90% of GPU memory
+  allow_growth: true                 # Allow dynamic memory allocation
+  
+  # CPU settings  
+  num_workers: 4                     # Data loading workers
+  pin_memory: true                   # Pin memory for faster GPU transfer
+  
+  # Precision settings
+  mixed_precision_enabled: true      # Enable automatic mixed precision
+  gradient_clipping: 1.0             # Clip gradients for stability
+
+# Output and Logging
+output:
+  # Model checkpoints
+  checkpoint_interval: 5000          # Save checkpoint every 5000 iterations
+  keep_last_n_checkpoints: 3         # Keep last 3 checkpoints
+  
+  # Logging
+  log_level: "INFO"
+  tensorboard_enabled: true          # Enable TensorBoard logging
+  wandb_enabled: false               # Weights & Biases integration
+  
+  # Model export
+  export_formats: ["ply", "compressed"]
+  compression_enabled: true          # Enable model compression
+  quantization_bits: 16              # 16-bit quantization for storage
+
+# Experimental Features (based on latest research)
+experimental:
+  # Multi-patch training (BOGausS inspiration)
+  multi_patch_training:
+    enabled: false                   # Experimental feature
+    patch_sizes: [4, 8, 16]          # Different patch sizes
+    
+  # Global track constraints (TrackGS inspiration)
+  global_track_constraints:
+    enabled: false                   # Experimental feature
+    track_weight: 0.01               # Weight for track consistency
+    
+  # VR optimization (VRSplat inspiration)
+  vr_optimization:
+    enabled: false                   # Experimental feature
+    target_fps: 72                   # Target VR framerate 
