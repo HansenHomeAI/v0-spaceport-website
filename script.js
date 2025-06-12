@@ -1618,37 +1618,30 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   let currentTracker = null;
 
   function showProgressTracker(jobId, executionArn) {
-    // Hide the old status display
-    hideStatus();
+    console.log('🎯 showProgressTracker called with jobId:', jobId, 'executionArn:', executionArn);
     
-    // Create progress tracker container
-    const trackerContainer = document.getElementById('progressTrackerContainer') || createProgressTrackerContainer();
-    
-    // Clear any existing tracker
-    trackerContainer.innerHTML = '';
+    // Use the existing processing status container instead of creating a new one
+    const statusContainer = document.getElementById('processingStatus');
+    if (!statusContainer) {
+      console.error('❌ Processing status container not found!');
+      return;
+    }
     
     // Create the progress tracker HTML
     const trackerHTML = createProgressTrackerHTML(jobId, executionArn);
-    trackerContainer.innerHTML = trackerHTML;
-    trackerContainer.style.display = 'block';
+    console.log('🎨 Generated tracker HTML length:', trackerHTML.length);
+    
+    // Replace the content of the status container with our progress tracker
+    statusContainer.innerHTML = trackerHTML;
+    statusContainer.style.display = 'block';
+    console.log('✅ Progress tracker displayed in status container');
     
     // Initialize the progress tracker
     initializeProgressTracker(jobId, executionArn);
+    console.log('🚀 Progress tracker initialized');
   }
 
-  function createProgressTrackerContainer() {
-    const container = document.createElement('div');
-    container.id = 'progressTrackerContainer';
-    container.style.display = 'none';
-    
-    // Insert after the processing status div
-    const statusDiv = document.getElementById('processingStatus');
-    if (statusDiv && statusDiv.parentNode) {
-      statusDiv.parentNode.insertBefore(container, statusDiv.nextSibling);
-    }
-    
-    return container;
-  }
+
 
   function createProgressTrackerHTML(jobId, executionArn) {
     return `
@@ -1847,16 +1840,10 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   }
 
   function showSuccess(jobId, executionArn) {
+    console.log('✅ Job started successfully, showing progress tracker...');
+    
     // Show the beautiful progress tracker instead of the basic status
     showProgressTracker(jobId, executionArn);
-    
-    // Also update the basic status for fallback
-    if (processingStatus && jobIdSpan && jobStatusSpan) {
-      jobIdSpan.textContent = jobId;
-      jobStatusSpan.textContent = 'Pipeline started successfully';
-      // Hide the basic status since we're showing the progress tracker
-      processingStatus.style.display = 'none';
-    }
 
     // Store the execution ARN for future status checking
     console.log('Execution ARN:', executionArn);
