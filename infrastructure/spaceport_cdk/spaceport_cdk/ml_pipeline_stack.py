@@ -361,9 +361,14 @@ class MLPipelineStack(Stack):
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 21600  # 6 hours
+                    "MaxRuntimeInSeconds": 7200  # 2 hours for real training
                 },
-                "RoleArn": sagemaker_role.role_arn
+                "RoleArn": sagemaker_role.role_arn,
+                "Environment": {
+                    "MAX_ITERATIONS": "30000",
+                    "LOG_INTERVAL": "1000", 
+                    "SAVE_INTERVAL": "5000"
+                }
             },
             iam_resources=[
                 f"arn:aws:sagemaker:{self.region}:{self.account}:training-job/*"
