@@ -1,0 +1,132 @@
+# Production-Ready 3D Gaussian Splatting Container
+# Optimized for AWS SageMaker with GPU support and reliability focus
+
+FROM nvidia/cuda:11.8-devel-ubuntu20.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# Set production environment
+ENV ENVIRONMENT=production
+ENV PYTHONPATH=/opt/ml/code
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-venv \
+    git \
+    wget \
+    curl \
+    build-essential \
+    cmake \
+    ninja-build \
+    libgoogle-glog-dev \
+    libgflags-dev \
+    libatlas-base-dev \
+    libeigen3-dev \
+    libsuitesparse-dev \
+    libfreeimage-dev \
+    libmetis-dev \
+    libgoogle-glog-dev \
+    libgflags-dev \
+    libglew-dev \
+    qtbase5-dev \
+    libqt5opengl5-dev \
+    libcgal-dev \
+    libcgal-qt5-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create Python virtual environment for isolation
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Upgrade pip and install core Python packages
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install production Python dependencies
+RUN pip install --no-cache-dir \
+    torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118 \
+    numpy==1.24.3 \
+    scipy==1.11.1 \
+    opencv-python==4.8.0.74 \
+    Pillow==10.0.0 \
+    matplotlib==3.7.2 \
+    tqdm==4.65.0 \
+    scikit-image==0.21.0 \
+    imageio==2.31.1 \
+    boto3==1.28.17 \
+    botocore==1.31.17 \
+    awscli==1.29.17 \
+    sagemaker==2.180.0 \
+    psutil==5.9.5 \
+    pyyaml==6.0.1
+
+# Install additional dependencies for Gaussian splatting
+RUN pip install --no-cache-dir \
+    plyfile==0.8.1 \
+    trimesh==3.23.5 \
+    open3d==0.17.0 \
+    requests==2.31.0
+
+# Create directory structure matching SageMaker expectations
+RUN mkdir -p /opt/ml/code \
+    /opt/ml/input/data/training \
+    /opt/ml/model \
+    /opt/ml/output \
+    /tmp/gaussian_splatting
+
+# Set working directory
+WORKDIR /opt/ml/code
+
+# Copy production training script
+COPY train_gaussian_production.py /opt/ml/code/train.py
+
+# Make training script executable
+RUN chmod +x /opt/ml/code/train.py
+
+# Create entrypoint script for SageMaker
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "🚀 Starting Production 3D Gaussian Splatting Container"\n\
+echo "Environment: $ENVIRONMENT"\n\
+echo "GPU Info:"\n\
+nvidia-smi || echo "No GPU available"\n\
+\n\
+echo "Python Environment:"\n\
+python3 --version\n\
+pip --version\n\
+\n\
+echo "Input Data:"\n\
+ls -la /opt/ml/input/data/training/ || echo "No input data directory"\n\
+\n\
+echo "Starting training..."\n\
+cd /opt/ml/code\n\
+python3 train.py\n\
+\n\
+echo "Training completed! Output files:"\n\
+ls -la /opt/ml/model/\n\
+' > /opt/ml/code/entrypoint.sh
+
+RUN chmod +x /opt/ml/code/entrypoint.sh
+
+# Health check for container reliability
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD python3 -c "import torch; print('Health check passed')" || exit 1
+
+# Set proper permissions for SageMaker
+RUN chmod -R 755 /opt/ml/
+
+# Final environment setup
+ENV SAGEMAKER_PROGRAM=train.py
+ENV SAGEMAKER_SUBMIT_DIRECTORY=/opt/ml/code
+
+# Use production entrypoint
+ENTRYPOINT ["/opt/ml/code/entrypoint.sh"] 

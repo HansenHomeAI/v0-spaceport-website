@@ -1,0 +1,14 @@
+{
+  "test_mode": true,
+  "job_name": "test-production-3dgs",
+  "results": {
+    "total_iterations": 500,
+    "final_loss": 0.04045023116484092,
+    "final_psnr": 25.047221923700956,
+    "final_gaussians": 12500,
+    "training_time_seconds": 0.07551097869873047,
+    "converged_early": true
+  },
+  "status": "SUCCESS",
+  "timestamp": "2025-06-12 15:34:49"
+}
