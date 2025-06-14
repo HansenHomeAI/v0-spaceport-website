@@ -1967,21 +1967,26 @@ class SpiralDesigner:
             # Insert safety waypoints after this original waypoint
             if i in safety_by_segment:
                 for safety_wp in safety_by_segment[i]:
-                    # Create properly formatted waypoint
-                    enhanced_waypoint = {
-                        'latitude': safety_wp['lat'],
-                        'longitude': safety_wp['lon'],
-                        'altitude': safety_wp['altitude'],
-                        'elevation': safety_wp['elevation'],
-                        'heading': waypoint.get('heading', 0),  # Use same heading as original
-                        'curve': max(waypoint.get('curve', 40), 40),  # Ensure safe curve radius
-                        'phase': f"safety_{safety_wp['type']}",
-                        'reason': safety_wp['reason'],
-                        'type': 'safety_waypoint'
-                    }
-                    enhanced_waypoints.append(enhanced_waypoint)
-                    
-                    print(f"✅ Inserted safety waypoint: {safety_wp['reason']}")
+                    # Create properly formatted waypoint with error handling
+                    try:
+                        enhanced_waypoint = {
+                            'latitude': safety_wp.get('lat', 0.0),
+                            'longitude': safety_wp.get('lon', 0.0),
+                            'altitude': safety_wp.get('altitude', waypoint.get('altitude', 100.0)),
+                            'elevation': safety_wp.get('elevation', 0.0),
+                            'heading': waypoint.get('heading', 0),  # Use same heading as original
+                            'curve': max(waypoint.get('curve', 40), 40),  # Ensure safe curve radius
+                            'phase': f"safety_{safety_wp.get('type', 'unknown')}",
+                            'reason': safety_wp.get('reason', 'Safety waypoint'),
+                            'type': 'safety_waypoint'
+                        }
+                        enhanced_waypoints.append(enhanced_waypoint)
+                        
+                        print(f"✅ Inserted safety waypoint: {safety_wp.get('reason', 'Safety waypoint')}")
+                    except Exception as e:
+                        print(f"⚠️  Error creating safety waypoint: {e}, skipping...")
+                        print(f"   Safety waypoint keys: {list(safety_wp.keys()) if isinstance(safety_wp, dict) else 'Not a dict'}")
+                        continue
         
         # Check waypoint limit
         if len(enhanced_waypoints) > 95:  # Leave buffer for 99 limit
