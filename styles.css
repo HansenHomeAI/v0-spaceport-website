@@ -2016,6 +2016,45 @@ body::before {
   cursor: not-allowed;
 }
 
+/* Stop button in ML form */
+#ml-container .stop-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: transparent;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  margin-left: 12px;
+}
+
+#ml-container .stop-button:hover {
+  background: #374151;
+  color: white;
+  border-color: #374151;
+}
+
+#ml-container .stop-button:active {
+  transform: translateY(1px);
+}
+
+#ml-container .stop-button:disabled {
+  background: transparent;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+#ml-container .stop-button .stop-icon {
+  font-size: 12px;
+}
+
 #ml-container .spinner {
   width: 16px;
   height: 16px;

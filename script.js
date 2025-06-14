@@ -1636,9 +1636,40 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
     statusContainer.style.display = 'block';
     console.log('✅ Progress tracker displayed in status container');
     
+    // Add stop button next to the start button
+    addStopButtonToForm(jobId, executionArn);
+    
     // Initialize the progress tracker
     initializeProgressTracker(jobId, executionArn);
     console.log('🚀 Progress tracker initialized');
+  }
+
+  function addStopButtonToForm(jobId, executionArn) {
+    // Find the start button
+    const startButton = document.querySelector('#ml-container .dpu-btn');
+    if (!startButton) {
+      console.error('❌ Start button not found');
+      return;
+    }
+    
+    // Check if stop button already exists
+    if (document.getElementById('stopProcessingButton')) {
+      return; // Already added
+    }
+    
+    // Create stop button
+    const stopButton = document.createElement('button');
+    stopButton.id = 'stopProcessingButton';
+    stopButton.className = 'stop-button';
+    stopButton.innerHTML = `
+      <span class="stop-icon">⏹</span>
+      Stop Processing
+    `;
+    stopButton.onclick = () => stopProcessing(jobId, executionArn);
+    
+    // Insert stop button after start button
+    startButton.parentNode.insertBefore(stopButton, startButton.nextSibling);
+    console.log('✅ Stop button added to form');
   }
 
 
@@ -1651,17 +1682,7 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
           <div class="pill-progress-bar">
             <div class="pill-progress-fill" id="pillProgressFill"></div>
           </div>
-        </div>
-
-        <!-- Status Text -->
-        <div class="status-text" id="statusText">Initializing processing...</div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button class="stop-button" id="stopButton" onclick="stopProcessing('${jobId}', '${executionArn}')">
-            <span class="stop-icon">⏸</span>
-            Stop Processing
-          </button>
+          <div class="status-text" id="statusText">Initializing processing...</div>
         </div>
 
         <!-- Completion Message -->
@@ -1742,7 +1763,6 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
     if (stage === 'completed') {
       const completionState = document.getElementById('completionState');
       const statusText = document.getElementById('statusText');
-      const actionButtons = document.getElementById('actionButtons');
       
       if (completionState) {
         completionState.style.display = 'block';
@@ -1750,8 +1770,9 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
       if (statusText) {
         statusText.style.display = 'none';
       }
+      
       // Hide stop button when complete
-      const stopButton = document.getElementById('stopButton');
+      const stopButton = document.getElementById('stopProcessingButton');
       if (stopButton) {
         stopButton.style.display = 'none';
       }

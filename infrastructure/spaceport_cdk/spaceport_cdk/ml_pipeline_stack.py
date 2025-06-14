@@ -611,6 +611,17 @@ class MLPipelineStack(Stack):
         # Update Lambda environment with Step Function ARN
         start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
 
+        # Create Lambda function for stopping jobs
+        stop_job_lambda = lambda_.Function(
+            self, "StopJobFunction",
+            function_name="Spaceport-StopJobFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset("../lambda/stop_job"),
+            handler="stop_job.lambda_handler",
+            role=lambda_role,
+            timeout=Duration.seconds(30)
+        )
+
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
         ml_api = apigw.RestApi(
@@ -630,6 +641,16 @@ class MLPipelineStack(Stack):
             "POST",
             apigw.LambdaIntegration(
                 start_job_lambda,
+                proxy=True
+            )
+        )
+
+        # Add /stop-job endpoint
+        stop_job_resource = ml_api.root.add_resource("stop-job")
+        stop_job_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                stop_job_lambda,
                 proxy=True
             )
         )
