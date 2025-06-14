@@ -1551,15 +1551,16 @@ class SpiralDesigner:
     # Prevents drone crashes by detecting terrain anomalies between waypoints
     # Optimized for large properties (100+ acres) with cost-effective sampling
     
-    # Configuration parameters for different terrain types
-    SAFE_DISTANCE_FT = 400          # No sampling needed under this distance (large properties)
-    INITIAL_SAMPLE_INTERVAL = 120   # Initial sampling every 120ft (balanced for large areas)
-    ANOMALY_THRESHOLD = 20          # 20ft deviation triggers investigation (rough terrain tolerance)
-    CRITICAL_THRESHOLD = 60         # 60ft deviation = immediate waypoint (major hazard)
-    MODERATE_THRESHOLD = 35         # 35ft deviation = dense sampling (moderate hazard)
-    DENSE_SAMPLE_INTERVAL = 40      # Dense sampling every 40ft around anomalies
+    # Configuration parameters optimized for smart API usage
+    SAFE_DISTANCE_FT = 300          # 300ft max distance without sampling (user specified)
+    INITIAL_SAMPLE_INTERVAL = 300   # Sample every 300ft - catches major terrain changes efficiently
+    ANOMALY_THRESHOLD = 25          # 25ft deviation triggers investigation (balanced detection)
+    CRITICAL_THRESHOLD = 70         # 70ft deviation = immediate waypoint (major hazards)
+    MODERATE_THRESHOLD = 40         # 40ft deviation = verification (moderate hazards)
+    DENSE_SAMPLE_INTERVAL = 80      # Verification sampling every 80ft (efficient confirmation)
     MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 2  # Respect 99-waypoint limit
-    SAFETY_BUFFER_FT = 25           # Safety clearance above detected terrain
+    SAFETY_BUFFER_FT = 25           # 25ft safety clearance above detected terrain
+    MAX_API_CALLS_PER_REQUEST = 25  # Conservative limit for 30s timeout
     
     def generate_intermediate_points(self, start_lat: float, start_lon: float, end_lat: float, end_lon: float, interval_ft: float) -> List[Dict]:
         """
@@ -1662,9 +1663,12 @@ class SpiralDesigner:
         """
         safety_waypoints = []
         total_api_calls = 0
-        max_api_calls = 100  # Budget for large properties
+        max_api_calls = self.MAX_API_CALLS_PER_REQUEST
+        segments_processed = 0
         
-        print(f"🔍 Starting adaptive terrain sampling for {len(waypoints_with_coords)} waypoints")
+        print(f"🔍 Starting smart terrain sampling for {len(waypoints_with_coords)} waypoints")
+        print(f"   • Safe distance threshold: {self.SAFE_DISTANCE_FT}ft")
+        print(f"   • API call budget: {max_api_calls} calls")
         
         for i in range(len(waypoints_with_coords) - 1):
             # Check waypoint budget
@@ -1686,8 +1690,9 @@ class SpiralDesigner:
                 next_wp['lat'], next_wp['lon']
             ) * 3.28084
             
-            # Skip short segments - they're inherently safe
+            # Skip short segments - they're inherently safe (key optimization)
             if segment_distance_ft <= self.SAFE_DISTANCE_FT:
+                print(f"   ✓ Segment {i+1}: {segment_distance_ft:.0f}ft - SAFE (< {self.SAFE_DISTANCE_FT}ft)")
                 continue
             
             print(f"📏 Analyzing segment {i+1}: {segment_distance_ft:.0f}ft")
@@ -1746,7 +1751,16 @@ class SpiralDesigner:
             
             safety_waypoints.extend(segment_safety_waypoints)
         
-        print(f"✅ Adaptive sampling complete: {len(safety_waypoints)} safety waypoints, {total_api_calls} API calls")
+        segments_analyzed = sum(1 for i in range(len(waypoints_with_coords) - 1) 
+                               if self.haversine_distance(waypoints_with_coords[i]['lat'], waypoints_with_coords[i]['lon'],
+                                                         waypoints_with_coords[i+1]['lat'], waypoints_with_coords[i+1]['lon']) * 3.28084 > self.SAFE_DISTANCE_FT)
+        
+        print(f"✅ Smart terrain sampling complete:")
+        print(f"   • {len(safety_waypoints)} safety waypoints created")
+        print(f"   • {total_api_calls}/{max_api_calls} API calls used ({total_api_calls/max_api_calls*100:.1f}%)")
+        print(f"   • {segments_analyzed} segments analyzed (>{self.SAFE_DISTANCE_FT}ft)")
+        print(f"   • {len(waypoints_with_coords)-1-segments_analyzed} segments skipped (<{self.SAFE_DISTANCE_FT}ft)")
+        
         return safety_waypoints
     
     def process_segment_anomalies(self, anomalies: List[Dict], current_wp: Dict, next_wp: Dict, segment_idx: int) -> List[Dict]:
