@@ -1645,71 +1645,58 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 
   function createProgressTrackerHTML(jobId, executionArn) {
     return `
-      <div class="ml-progress-tracker" id="mlProgressTracker">
-        <!-- Header -->
-        <div class="progress-header">
-          <div class="progress-title">
-            <span class="stage-icon" id="currentStageIcon">🚀</span>
-            <h3>3D Model Processing</h3>
-            <span class="job-id">Job: ${jobId.slice(-8)}</span>
+      <div class="clean-progress-tracker" id="cleanProgressTracker">
+        <!-- Clean Header -->
+        <div class="clean-header">
+          <h3>Processing your 3D model</h3>
+          <span class="job-reference">Job ${jobId.slice(-8)}</span>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+          <div class="step" data-step="0" id="step-0">
+            <div class="step-indicator"></div>
+            <span class="step-label">Starting</span>
           </div>
-          <div class="progress-time">
-            <span class="elapsed-time" id="elapsedTime">⏱️ 0:00</span>
+          <div class="step" data-step="25" id="step-25">
+            <div class="step-indicator"></div>
+            <span class="step-label">Structure Analysis</span>
+          </div>
+          <div class="step" data-step="70" id="step-70">
+            <div class="step-indicator"></div>
+            <span class="step-label">3D Training</span>
+          </div>
+          <div class="step" data-step="95" id="step-95">
+            <div class="step-indicator"></div>
+            <span class="step-label">Optimization</span>
+          </div>
+          <div class="step" data-step="100" id="step-100">
+            <div class="step-indicator"></div>
+            <span class="step-label">Complete</span>
           </div>
         </div>
 
         <!-- Main Progress Bar -->
-        <div class="progress-container">
-          <div class="progress-info">
-            <span class="stage-name" id="stageName">Initializing</span>
-            <span class="progress-percentage" id="progressPercentage">5%</span>
+        <div class="clean-progress-bar">
+          <div class="progress-track">
+            <div class="progress-fill" id="cleanProgressFill"></div>
           </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill" style="width: 5%; background-color: #3498db;"></div>
-          </div>
-          <div class="stage-description" id="stageDescription">
-            Setting up the processing pipeline...
-          </div>
-          <div class="stage-details" id="stageDetails" style="display: none;"></div>
+          <div class="progress-percentage" id="cleanProgressPercentage">0%</div>
         </div>
 
-        <!-- Stage Indicators -->
-        <div class="stages-container">
-          <div class="stages-list">
-            <div class="stage-item" id="stage-sfm">
-              <div class="stage-icon-circle" style="background-color: #e74c3c;">📷</div>
-              <div class="stage-info">
-                <div class="stage-title">Structure from Motion</div>
-                <div class="stage-subtitle">Feature detection, matching, and sparse reconstruction</div>
-              </div>
-            </div>
-            <div class="stage-item" id="stage-3dgs">
-              <div class="stage-icon-circle" style="background-color: #f39c12;">🎯</div>
-              <div class="stage-info">
-                <div class="stage-title">3D Gaussian Splatting</div>
-                <div class="stage-subtitle">Progressive training: 25% → 50% → 75% → 100% resolution with PSNR plateau termination</div>
-              </div>
-            </div>
-            <div class="stage-item" id="stage-compression">
-              <div class="stage-icon-circle" style="background-color: #27ae60;">📦</div>
-              <div class="stage-info">
-                <div class="stage-title">Compression</div>
-                <div class="stage-subtitle">Gaussian splat optimization and web format conversion</div>
-              </div>
-            </div>
-          </div>
+        <!-- Current Status -->
+        <div class="current-status">
+          <div class="status-label" id="cleanStatusLabel">Initializing</div>
+          <div class="status-description" id="cleanStatusDescription">Setting up processing pipeline</div>
+          <div class="elapsed-time" id="cleanElapsedTime">0:00</div>
         </div>
 
-        <!-- Status Messages -->
-        <div id="statusMessages"></div>
-
-        <!-- Optimization Features Badge -->
-        <div class="optimization-badge">
-          <div class="badge-header">⚡ Optimization Features Active</div>
-          <div class="badge-features">
-            <span class="feature">Progressive Resolution</span>
-            <span class="feature">PSNR Plateau Termination</span>
-            <span class="feature">Trick-GS Methodology</span>
+        <!-- Completion Message -->
+        <div class="completion-message" id="completionMessage" style="display: none;">
+          <div class="completion-icon">✓</div>
+          <div class="completion-text">
+            <strong>Processing complete!</strong>
+            <p>Check your email for the download link.</p>
           </div>
         </div>
       </div>
@@ -1724,9 +1711,9 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
     // Update elapsed time every second
     const timeInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      const elapsedElement = document.getElementById('elapsedTime');
+      const elapsedElement = document.getElementById('cleanElapsedTime');
       if (elapsedElement) {
-        elapsedElement.textContent = `⏱️ ${formatElapsedTime(elapsed)}`;
+        elapsedElement.textContent = formatElapsedTime(elapsed);
       }
     }, 1000);
 
@@ -1764,51 +1751,59 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 
   function updateProgressDisplay(stage, progress, details) {
     const stageConfig = {
-      starting: { name: 'Initializing', icon: '🚀', color: '#3498db' },
-      sfm: { name: 'Structure from Motion', icon: '📷', color: '#e74c3c' },
-      '3dgs': { name: '3D Gaussian Splatting', icon: '🎯', color: '#f39c12' },
-      compression: { name: 'Compression', icon: '📦', color: '#27ae60' },
-      completed: { name: 'Complete', icon: '🎉', color: '#2ecc71' }
+      starting: { name: 'Initializing', description: 'Setting up processing pipeline' },
+      sfm: { name: 'Structure Analysis', description: 'Analyzing image structure' },
+      '3dgs': { name: '3D Training', description: 'Training neural representation' },
+      compression: { name: 'Optimization', description: 'Optimizing for delivery' },
+      completed: { name: 'Complete', description: 'Processing finished' }
     };
 
     const config = stageConfig[stage] || stageConfig.starting;
 
-    // Update main progress display
-    const stageIcon = document.getElementById('currentStageIcon');
-    const stageName = document.getElementById('stageName');
-    const progressPercentage = document.getElementById('progressPercentage');
-    const progressFill = document.getElementById('progressFill');
-    const stageDescription = document.getElementById('stageDescription');
-    const stageDetailsEl = document.getElementById('stageDetails');
-
-    if (stageIcon) stageIcon.textContent = config.icon;
-    if (stageName) stageName.textContent = config.name;
-    if (progressPercentage) progressPercentage.textContent = `${progress}%`;
+    // Update progress bar
+    const progressFill = document.getElementById('cleanProgressFill');
+    const progressPercentage = document.getElementById('cleanProgressPercentage');
+    
     if (progressFill) {
       progressFill.style.width = `${progress}%`;
-      progressFill.style.backgroundColor = config.color;
+    }
+    if (progressPercentage) {
+      progressPercentage.textContent = `${progress}%`;
     }
 
-    if (details) {
-      if (stageDetailsEl) {
-        stageDetailsEl.textContent = details;
-        stageDetailsEl.style.display = 'block';
-      }
+    // Update status
+    const statusLabel = document.getElementById('cleanStatusLabel');
+    const statusDescription = document.getElementById('cleanStatusDescription');
+    
+    if (statusLabel) {
+      statusLabel.textContent = details || config.name;
+    }
+    if (statusDescription) {
+      statusDescription.textContent = config.description;
     }
 
-    // Update stage indicators
-    ['sfm', '3dgs', 'compression'].forEach(stageKey => {
-      const stageElement = document.getElementById(`stage-${stageKey}`);
-      if (stageElement) {
-        stageElement.classList.remove('active', 'completed');
-        if (stageKey === stage) {
-          stageElement.classList.add('active');
-        } else if (stageConfig[stage] && stageConfig[stageKey] && 
-                  progress > (stageKey === 'sfm' ? 25 : stageKey === '3dgs' ? 70 : 90)) {
-          stageElement.classList.add('completed');
+    // Update step indicators
+    const allSteps = document.querySelectorAll('.step');
+    allSteps.forEach(step => {
+      const stepProgress = parseInt(step.dataset.step);
+      step.classList.remove('active', 'completed');
+      
+      if (stepProgress <= progress) {
+        if (stepProgress === progress || (progress > stepProgress && progress < stepProgress + 25)) {
+          step.classList.add('active');
+        } else if (stepProgress < progress) {
+          step.classList.add('completed');
         }
       }
     });
+
+    // Show completion message if done
+    if (stage === 'completed') {
+      const completionMessage = document.getElementById('completionMessage');
+      if (completionMessage) {
+        completionMessage.style.display = 'flex';
+      }
+    }
   }
 
   function showCompletionMessage(jobId) {
