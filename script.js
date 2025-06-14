@@ -1682,14 +1682,7 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
           <div class="pill-progress-bar">
             <div class="pill-progress-fill" id="pillProgressFill"></div>
           </div>
-          <div class="status-text" id="statusText">Initializing processing...</div>
-        </div>
-
-        <!-- Completion Message -->
-        <div class="completion-state" id="completionState" style="display: none;">
-          <div class="completion-check">✓</div>
-          <div class="completion-message">Processing complete</div>
-          <div class="completion-subtitle">Check your email for the download link</div>
+          <div class="status-text" id="statusText">Setting up your processing pipeline</div>
         </div>
       </div>
     `;
@@ -1739,11 +1732,11 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 
   function updateProgressDisplay(stage, progress, details) {
     const stageMessages = {
-      starting: 'Initializing processing...',
-      sfm: 'Analyzing image structure...',
-      '3dgs': 'Training 3D neural representation...',
-      compression: 'Optimizing for delivery...',
-      completed: 'Processing complete!'
+      starting: 'Setting up your processing pipeline',
+      sfm: 'Extracting features from uploaded images',
+      '3dgs': 'Training advanced neural 3D representation',
+      compression: 'Optimizing model for web delivery',
+      completed: 'Your 3D model is ready!'
     };
 
     // Update progress bar
@@ -1761,14 +1754,9 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 
     // Show completion state if done
     if (stage === 'completed') {
-      const completionState = document.getElementById('completionState');
       const statusText = document.getElementById('statusText');
-      
-      if (completionState) {
-        completionState.style.display = 'block';
-      }
       if (statusText) {
-        statusText.style.display = 'none';
+        statusText.textContent = 'Your 3D model is ready!';
       }
       
       // Hide stop button when complete

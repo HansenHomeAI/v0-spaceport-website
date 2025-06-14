@@ -2016,43 +2016,41 @@ body::before {
   cursor: not-allowed;
 }
 
-/* Stop button in ML form */
+/* Stop button in ML form - using existing cta-button2 style */
 #ml-container .stop-button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  background: transparent;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-  margin-left: 12px;
+  margin-left: 16px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 #ml-container .stop-button:hover {
-  background: #374151;
-  color: white;
-  border-color: #374151;
-}
-
-#ml-container .stop-button:active {
-  transform: translateY(1px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 #ml-container .stop-button:disabled {
   background: transparent;
-  color: #9ca3af;
-  border-color: #e5e7eb;
+  color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
+  transform: none;
 }
 
 #ml-container .stop-button .stop-icon {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 #ml-container .spinner {
