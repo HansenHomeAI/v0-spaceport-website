@@ -956,6 +956,7 @@ class EnhancedDronePathGenerator {
             if (optimizeButton) {
                 optimizeButton.disabled = true;
             }
+            this.hideDownloads();
             return false;
         }
 
@@ -965,6 +966,7 @@ class EnhancedDronePathGenerator {
             if (optimizeButton) {
                 optimizeButton.disabled = true;
             }
+            this.hideDownloads();
             return false;
         }
 
@@ -974,14 +976,16 @@ class EnhancedDronePathGenerator {
             if (optimizeButton) {
                 optimizeButton.disabled = true;
             }
+            this.hideDownloads();
             return false;
         }
 
-        // Form is valid
+        // Form is valid - enable both optimize button and downloads
         const optimizeButton = document.getElementById('optimizeButton');
         if (optimizeButton) {
             optimizeButton.disabled = false;
         }
+        this.enableDownloadsDirectly();
         return true;
     }
 
@@ -991,18 +995,38 @@ class EnhancedDronePathGenerator {
             return;
         }
 
-        const centerCoords = document.getElementById('centerCoordinates').value.trim();
-        // Use default values if fields are empty
-        const batteryMinutes = parseInt(document.getElementById('batteryMinutes').value) || 20;
-        const numBatteries = parseInt(document.getElementById('numBatteries').value) || 3;
-
         this.setOptimizeLoading(true);
         this.hideError();
         this.hideOptimizationResults();
 
         try {
+            await this.autoOptimize();
+            if (this.currentOptimizedParams) {
+                // Display results only if user clicked optimize button
+                this.displayOptimizationResults(this.lastOptimizationData, this.lastElevationFeet);
+                this.enableDownloads();
+            }
+        } catch (error) {
+            console.error('Optimization error:', error);
+            this.showError(error.message || 'Failed to optimize flight plan. Please try again.');
+        } finally {
+            this.setOptimizeLoading(false);
+        }
+    }
+
+    async autoOptimize() {
+        if (!this.validateForm()) {
+            return false;
+        }
+
+        const centerCoords = document.getElementById('centerCoordinates').value.trim();
+        // Use default values if fields are empty
+        const batteryMinutes = parseInt(document.getElementById('batteryMinutes').value) || 20;
+        const numBatteries = parseInt(document.getElementById('numBatteries').value) || 3;
+
+        try {
             // Step 1: Optimize the spiral pattern
-            console.log('Starting optimization for:', { batteryMinutes, batteries: numBatteries, center: centerCoords });
+            console.log('Auto-optimizing for:', { batteryMinutes, batteries: numBatteries, center: centerCoords });
             
             const optimizationResponse = await fetch(`${ENHANCED_API_BASE}/api/optimize-spiral`, {
                 method: 'POST',
@@ -1020,7 +1044,7 @@ class EnhancedDronePathGenerator {
             }
 
             const optimizationData = await optimizationResponse.json();
-            console.log('Optimization response:', optimizationData);
+            console.log('Auto-optimization response:', optimizationData);
 
             // Step 2: Get elevation data
             const elevationResponse = await fetch(`${ENHANCED_API_BASE}/api/elevation`, {
@@ -1045,15 +1069,15 @@ class EnhancedDronePathGenerator {
                 maxHeight: document.getElementById('maxHeightFeet')?.value || 400
             };
 
-            // Display results
-            this.displayOptimizationResults(optimizationData, elevationFeet);
-            this.enableDownloads();
+            // Store for display if needed
+            this.lastOptimizationData = optimizationData;
+            this.lastElevationFeet = elevationFeet;
+
+            return true;
 
         } catch (error) {
-            console.error('Optimization error:', error);
-            this.showError(error.message || 'Failed to optimize flight plan. Please try again.');
-        } finally {
-            this.setOptimizeLoading(false);
+            console.error('Auto-optimization error:', error);
+            return false;
         }
     }
 
@@ -1162,9 +1186,13 @@ class EnhancedDronePathGenerator {
     }
 
     async handleDownloadMasterCSV() {
+        // Auto-optimize if not already done
         if (!this.currentOptimizedParams) {
-            this.showError('Please optimize the flight plan first.');
-            return;
+            await this.autoOptimize();
+            if (!this.currentOptimizedParams) {
+                this.showError('Unable to generate flight plan. Please check your inputs.');
+                return;
+            }
         }
 
         try {
@@ -1176,9 +1204,13 @@ class EnhancedDronePathGenerator {
     }
 
     async handleDownloadBatteryCSV(batteryIndex) {
+        // Auto-optimize if not already done
         if (!this.currentOptimizedParams) {
-            this.showError('Please optimize the flight plan first.');
-            return;
+            await this.autoOptimize();
+            if (!this.currentOptimizedParams) {
+                this.showError('Unable to generate flight plan. Please check your inputs.');
+                return;
+            }
         }
 
         try {
@@ -1290,17 +1322,55 @@ class EnhancedDronePathGenerator {
 
     hideOptimizationResults() {
         const resultsDiv = document.getElementById('optimizationResults');
-        const downloadMasterCSV = document.getElementById('downloadMasterCSV');
-        const batteryDownloads = document.getElementById('batteryDownloads');
         const missionLogs = document.getElementById('missionLogs');
         
         if (resultsDiv) resultsDiv.style.display = 'none';
+        if (missionLogs) missionLogs.style.display = 'none';
+    }
+
+    enableDownloadsDirectly() {
+        const downloadMasterCSV = document.getElementById('downloadMasterCSV');
+        const batteryDownloads = document.getElementById('batteryDownloads');
+        const batteryButtons = document.getElementById('batteryButtons');
+        
+        if (downloadMasterCSV) {
+            downloadMasterCSV.disabled = false;
+            downloadMasterCSV.style.display = 'block';
+        }
+        
+        if (batteryDownloads && batteryButtons) {
+            // Clear existing battery buttons
+            batteryButtons.innerHTML = '';
+            
+            // Get number of batteries from form (default to 3)
+            const numBatteries = parseInt(document.getElementById('numBatteries')?.value) || 3;
+            
+            // Create individual battery download buttons
+            for (let i = 0; i < numBatteries; i++) {
+                const batteryBtn = document.createElement('button');
+                batteryBtn.type = 'button';
+                batteryBtn.className = 'battery-btn';
+                batteryBtn.innerHTML = `🔋 Battery ${i + 1}`;
+                batteryBtn.onclick = (e) => {
+                    e.preventDefault(); // Prevent form submission
+                    this.handleDownloadBatteryCSV(i);
+                };
+                batteryButtons.appendChild(batteryBtn);
+            }
+            
+            batteryDownloads.style.display = 'block';
+        }
+    }
+
+    hideDownloads() {
+        const downloadMasterCSV = document.getElementById('downloadMasterCSV');
+        const batteryDownloads = document.getElementById('batteryDownloads');
+        
         if (downloadMasterCSV) {
             downloadMasterCSV.style.display = 'none';
             downloadMasterCSV.disabled = true;
         }
         if (batteryDownloads) batteryDownloads.style.display = 'none';
-        if (missionLogs) missionLogs.style.display = 'none';
     }
 }
 
