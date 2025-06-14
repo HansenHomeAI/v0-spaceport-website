@@ -1351,7 +1351,8 @@ class SpiralDesigner:
                 current_altitude = min_height
             elif 'outbound' in phase or 'hold' in phase:
                 # Outbound climb rate: 0.37ft per foot
-                additional_distance = dist_from_center - (slice_waypoints[0]['x']**2 + slice_waypoints[0]['y']**2)**0.5
+                first_distance = math.sqrt(slice_waypoints[0]['x']**2 + slice_waypoints[0]['y']**2)
+                additional_distance = dist_from_center - first_distance
                 if additional_distance < 0:
                     additional_distance = 0
                 current_altitude = min_height + (additional_distance * 0.37)
