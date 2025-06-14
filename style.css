@@ -1,296 +1,168 @@
-/* ===== CLEAN PROGRESS TRACKER STYLES ===== */
+/* ===== APPLE PROGRESS TRACKER STYLES ===== */
 
-/* Clean Progress Tracker - Apple/Vercel/Linear Aesthetic */
-.clean-progress-tracker {
+/* Apple Progress Tracker - Minimal & Clean */
+.apple-progress-tracker {
+  max-width: 480px;
+  margin: 40px auto;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 32px;
-  margin: 24px 0;
-  max-width: 600px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  padding: 40px 32px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Clean Header */
-.clean-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.clean-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
-  letter-spacing: -0.025em;
-}
-
-.job-reference {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* Progress Steps */
-.progress-steps {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  position: relative;
-}
-
-.progress-steps::before {
-  content: '';
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  background: #f3f4f6;
-  z-index: 1;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 2;
-}
-
-.step-indicator {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #f3f4f6;
-  border: 3px solid #ffffff;
-  transition: all 0.3s ease;
-  margin-bottom: 8px;
-}
-
-.step.active .step-indicator {
-  background: #3b82f6;
-  border-color: #3b82f6;
-}
-
-.step.completed .step-indicator {
-  background: #10b981;
-  border-color: #10b981;
-}
-
-.step-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
   text-align: center;
 }
 
-.step.active .step-label {
-  color: #3b82f6;
-  font-weight: 600;
+/* Progress Container */
+.progress-container {
+  margin-bottom: 24px;
 }
 
-.step.completed .step-label {
-  color: #10b981;
-}
-
-/* Clean Progress Bar */
-.clean-progress-bar {
-  margin-bottom: 32px;
+.pill-progress-bar {
+  height: 12px;
+  background: #f5f5f7;
+  border-radius: 6px;
+  overflow: hidden;
   position: relative;
 }
 
-.progress-track {
-  height: 8px;
-  background: #f3f4f6;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.progress-fill {
+.pill-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-  border-radius: 4px;
+  background: linear-gradient(90deg, #007aff 0%, #5ac8fa 100%);
+  border-radius: 6px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   width: 0%;
 }
 
-.progress-percentage {
-  position: absolute;
-  right: 0;
-  top: -2px;
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-/* Current Status */
-.current-status {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  padding: 16px 0;
-  border-top: 1px solid #f3f4f6;
-}
-
-.status-label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 4px;
-}
-
-.status-description {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.elapsed-time {
-  font-size: 0.875rem;
-  color: #6b7280;
+/* Status Text */
+.status-text {
+  font-size: 16px;
   font-weight: 500;
-  font-variant-numeric: tabular-nums;
+  color: #1d1d1f;
+  margin-bottom: 32px;
+  line-height: 1.4;
 }
 
-/* Completion Message */
-.completion-message {
-  display: none;
+/* Action Buttons */
+.action-buttons {
+  margin-bottom: 20px;
+}
+
+.stop-button {
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  margin-top: 16px;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 
-.completion-icon {
-  width: 32px;
-  height: 32px;
-  background: #10b981;
-  color: white;
+.stop-button:hover {
+  background: #d70015;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+}
+
+.stop-button:active {
+  transform: translateY(0);
+}
+
+.stop-button:disabled {
+  background: #d1d1d6;
+  color: #86868b;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.stop-icon {
+  font-size: 12px;
+}
+
+/* Completion State */
+.completion-state {
+  display: none;
+  text-align: center;
+}
+
+.completion-check {
+  width: 60px;
+  height: 60px;
+  background: #34c759;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  font-size: 28px;
   font-weight: bold;
-  font-size: 1.125rem;
-  flex-shrink: 0;
+  margin: 0 auto 20px;
+  animation: checkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.completion-text strong {
-  color: #065f46;
-  font-size: 1rem;
+@keyframes checkBounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.completion-message {
+  font-size: 18px;
   font-weight: 600;
-  display: block;
-  margin-bottom: 4px;
+  color: #1d1d1f;
+  margin-bottom: 8px;
 }
 
-.completion-text p {
-  color: #047857;
-  font-size: 0.875rem;
-  margin: 0;
+.completion-subtitle {
+  font-size: 14px;
+  color: #86868b;
+  line-height: 1.4;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .clean-progress-tracker {
-    padding: 24px;
-    margin: 16px 0;
+  .apple-progress-tracker {
+    margin: 20px;
+    padding: 32px 24px;
+    max-width: calc(100% - 40px);
   }
-
-  .clean-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 24px;
+  
+  .status-text {
+    font-size: 15px;
   }
-
-  .clean-header h3 {
-    font-size: 1.125rem;
-  }
-
-  .progress-steps {
-    margin-bottom: 20px;
-  }
-
-  .step-label {
-    font-size: 0.6875rem;
-    line-height: 1.2;
-  }
-
-  .current-status {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .completion-message {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
+  
+  .stop-button {
+    padding: 10px 18px;
+    font-size: 13px;
   }
 }
 
-/* Dark mode support */
+/* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-  .clean-progress-tracker {
-    background: #1f2937;
-    border-color: #374151;
+  .apple-progress-tracker {
+    background: #1c1c1e;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
-
-  .clean-header h3 {
-    color: #f9fafb;
+  
+  .pill-progress-bar {
+    background: #2c2c2e;
   }
-
-  .job-reference,
-  .status-description,
-  .elapsed-time,
-  .progress-percentage {
-    color: #9ca3af;
+  
+  .status-text {
+    color: #f2f2f7;
   }
-
-  .status-label {
-    color: #f9fafb;
+  
+  .completion-message {
+    color: #f2f2f7;
   }
-
-  .step-label {
-    color: #9ca3af;
-  }
-
-  .step.active .step-label {
-    color: #60a5fa;
-  }
-
-  .step.completed .step-label {
-    color: #34d399;
-  }
-
-  .progress-track {
-    background: #374151;
-  }
-
-  .current-status {
-    border-color: #374151;
-  }
-}
-
-/* Smooth animations */
-.clean-progress-tracker {
-  animation: fadeInUp 0.5s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .completion-subtitle {
+    color: #98989d;
   }
 } 

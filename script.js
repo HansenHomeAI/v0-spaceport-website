@@ -1645,59 +1645,30 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 
   function createProgressTrackerHTML(jobId, executionArn) {
     return `
-      <div class="clean-progress-tracker" id="cleanProgressTracker">
-        <!-- Clean Header -->
-        <div class="clean-header">
-          <h3>Processing your 3D model</h3>
-          <span class="job-reference">Job ${jobId.slice(-8)}</span>
-        </div>
-
-        <!-- Progress Steps -->
-        <div class="progress-steps">
-          <div class="step" data-step="0" id="step-0">
-            <div class="step-indicator"></div>
-            <span class="step-label">Starting</span>
-          </div>
-          <div class="step" data-step="25" id="step-25">
-            <div class="step-indicator"></div>
-            <span class="step-label">Structure Analysis</span>
-          </div>
-          <div class="step" data-step="70" id="step-70">
-            <div class="step-indicator"></div>
-            <span class="step-label">3D Training</span>
-          </div>
-          <div class="step" data-step="95" id="step-95">
-            <div class="step-indicator"></div>
-            <span class="step-label">Optimization</span>
-          </div>
-          <div class="step" data-step="100" id="step-100">
-            <div class="step-indicator"></div>
-            <span class="step-label">Complete</span>
+      <div class="apple-progress-tracker" id="appleProgressTracker">
+        <!-- Progress Bar Container -->
+        <div class="progress-container">
+          <div class="pill-progress-bar">
+            <div class="pill-progress-fill" id="pillProgressFill"></div>
           </div>
         </div>
 
-        <!-- Main Progress Bar -->
-        <div class="clean-progress-bar">
-          <div class="progress-track">
-            <div class="progress-fill" id="cleanProgressFill"></div>
-          </div>
-          <div class="progress-percentage" id="cleanProgressPercentage">0%</div>
-        </div>
+        <!-- Status Text -->
+        <div class="status-text" id="statusText">Initializing processing...</div>
 
-        <!-- Current Status -->
-        <div class="current-status">
-          <div class="status-label" id="cleanStatusLabel">Initializing</div>
-          <div class="status-description" id="cleanStatusDescription">Setting up processing pipeline</div>
-          <div class="elapsed-time" id="cleanElapsedTime">0:00</div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="stop-button" id="stopButton" onclick="stopProcessing('${jobId}', '${executionArn}')">
+            <span class="stop-icon">⏸</span>
+            Stop Processing
+          </button>
         </div>
 
         <!-- Completion Message -->
-        <div class="completion-message" id="completionMessage" style="display: none;">
-          <div class="completion-icon">✓</div>
-          <div class="completion-text">
-            <strong>Processing complete!</strong>
-            <p>Check your email for the download link.</p>
-          </div>
+        <div class="completion-state" id="completionState" style="display: none;">
+          <div class="completion-check">✓</div>
+          <div class="completion-message">Processing complete</div>
+          <div class="completion-subtitle">Check your email for the download link</div>
         </div>
       </div>
     `;
@@ -1708,13 +1679,9 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
     let currentStage = 'starting';
     let status = 'RUNNING';
 
-    // Update elapsed time every second
+    // Simple timer (no display needed for minimal design)
     const timeInterval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const elapsedElement = document.getElementById('cleanElapsedTime');
-      if (elapsedElement) {
-        elapsedElement.textContent = formatElapsedTime(elapsed);
-      }
+      // Just keeping track of time, no UI update needed
     }, 1000);
 
     // Simulate realistic progress
@@ -1750,58 +1717,43 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   }
 
   function updateProgressDisplay(stage, progress, details) {
-    const stageConfig = {
-      starting: { name: 'Initializing', description: 'Setting up processing pipeline' },
-      sfm: { name: 'Structure Analysis', description: 'Analyzing image structure' },
-      '3dgs': { name: '3D Training', description: 'Training neural representation' },
-      compression: { name: 'Optimization', description: 'Optimizing for delivery' },
-      completed: { name: 'Complete', description: 'Processing finished' }
+    const stageMessages = {
+      starting: 'Initializing processing...',
+      sfm: 'Analyzing image structure...',
+      '3dgs': 'Training 3D neural representation...',
+      compression: 'Optimizing for delivery...',
+      completed: 'Processing complete!'
     };
 
-    const config = stageConfig[stage] || stageConfig.starting;
-
     // Update progress bar
-    const progressFill = document.getElementById('cleanProgressFill');
-    const progressPercentage = document.getElementById('cleanProgressPercentage');
-    
+    const progressFill = document.getElementById('pillProgressFill');
     if (progressFill) {
       progressFill.style.width = `${progress}%`;
     }
-    if (progressPercentage) {
-      progressPercentage.textContent = `${progress}%`;
+
+    // Update status text
+    const statusText = document.getElementById('statusText');
+    if (statusText) {
+      const message = details || stageMessages[stage] || stageMessages.starting;
+      statusText.textContent = message;
     }
 
-    // Update status
-    const statusLabel = document.getElementById('cleanStatusLabel');
-    const statusDescription = document.getElementById('cleanStatusDescription');
-    
-    if (statusLabel) {
-      statusLabel.textContent = details || config.name;
-    }
-    if (statusDescription) {
-      statusDescription.textContent = config.description;
-    }
-
-    // Update step indicators
-    const allSteps = document.querySelectorAll('.step');
-    allSteps.forEach(step => {
-      const stepProgress = parseInt(step.dataset.step);
-      step.classList.remove('active', 'completed');
-      
-      if (stepProgress <= progress) {
-        if (stepProgress === progress || (progress > stepProgress && progress < stepProgress + 25)) {
-          step.classList.add('active');
-        } else if (stepProgress < progress) {
-          step.classList.add('completed');
-        }
-      }
-    });
-
-    // Show completion message if done
+    // Show completion state if done
     if (stage === 'completed') {
-      const completionMessage = document.getElementById('completionMessage');
-      if (completionMessage) {
-        completionMessage.style.display = 'flex';
+      const completionState = document.getElementById('completionState');
+      const statusText = document.getElementById('statusText');
+      const actionButtons = document.getElementById('actionButtons');
+      
+      if (completionState) {
+        completionState.style.display = 'block';
+      }
+      if (statusText) {
+        statusText.style.display = 'none';
+      }
+      // Hide stop button when complete
+      const stopButton = document.getElementById('stopButton');
+      if (stopButton) {
+        stopButton.style.display = 'none';
       }
     }
   }
@@ -1823,16 +1775,48 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
     }
   }
 
-  function formatElapsedTime(ms) {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-
-    if (hours > 0) {
-      return `${hours}:${(minutes % 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+  // Stop processing function
+  function stopProcessing(jobId, executionArn) {
+    console.log('🛑 Stopping processing for job:', jobId);
+    
+    // Show confirmation
+    if (!confirm('Are you sure you want to stop processing? This cannot be undone.')) {
+      return;
     }
-    return `${minutes}:${(seconds % 60).toString().padStart(2, '0')}`;
+    
+    // Update UI immediately
+    const statusText = document.getElementById('statusText');
+    const stopButton = document.getElementById('stopButton');
+    const progressFill = document.getElementById('pillProgressFill');
+    
+    if (statusText) statusText.textContent = 'Stopping processing...';
+    if (stopButton) stopButton.disabled = true;
+    
+    // Call API to stop the job (this would need to be implemented)
+    fetch(`${ML_API_BASE_URL}/stop-job`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId, executionArn })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (statusText) statusText.textContent = 'Processing stopped';
+      if (progressFill) progressFill.style.background = '#ef4444';
+      setTimeout(() => {
+        // Hide the progress tracker after a delay
+        const tracker = document.getElementById('appleProgressTracker');
+        if (tracker) tracker.style.display = 'none';
+      }, 2000);
+    })
+    .catch(error => {
+      console.error('Error stopping job:', error);
+      if (statusText) statusText.textContent = 'Failed to stop processing';
+      if (stopButton) stopButton.disabled = false;
+    });
   }
+
+  // Make it globally available
+  window.stopProcessing = stopProcessing;
 
   function showSuccess(jobId, executionArn) {
     console.log('✅ Job started successfully, showing progress tracker...');
