@@ -595,6 +595,31 @@ class SpiralDesigner:
             'lat': lat0 + d_lat * 180 / math.pi,
             'lon': lon0 + d_lon * 180 / math.pi
         }
+
+    def lat_lon_to_xy(self, lat: float, lon: float, lat0: float, lon0: float) -> Dict:
+        """
+        Convert GPS coordinates to local XY coordinates (feet) using flat Earth approximation.
+        
+        INVERSE OF xy_to_lat_lon METHOD:
+        This is the reverse conversion needed for placing safety waypoints correctly.
+        
+        Args:
+            lat, lon: GPS coordinates in decimal degrees
+            lat0, lon0: Center coordinates in decimal degrees
+            
+        Returns:
+            Dict with 'x' and 'y' keys in feet relative to center
+        """
+        d_lat = (lat - lat0) * math.pi / 180
+        d_lon = (lon - lon0) * math.pi / 180
+        
+        y_m = d_lat * self.EARTH_R
+        x_m = d_lon * self.EARTH_R * math.cos(lat0 * math.pi / 180)
+        
+        return {
+            'x': x_m / self.FT2M,
+            'y': y_m / self.FT2M
+        }
     
     def generate_spiral_data(self, params: Dict, debug_mode: bool = False, debug_angle: float = 0) -> Dict:
         """
@@ -812,9 +837,17 @@ class SpiralDesigner:
                 # Add any safety waypoints that belong after this original waypoint
                 segment_safety_waypoints = [swp for swp in safety_waypoints if swp['segment_idx'] == i]
                 for safety_wp in segment_safety_waypoints:
-                    # Create a pseudo-waypoint for the safety waypoint
+                    # Convert safety waypoint GPS coordinates back to local X,Y coordinates  
+                    safety_local_coords = self.lat_lon_to_xy(
+                        safety_wp['lat'], safety_wp['lon'], center['lat'], center['lon']
+                    )
+                    
+                    # Create properly positioned safety waypoint
                     safety_pseudo_wp = {
-                        'x': 0, 'y': 0, 'curve': 40, 'phase': f"safety_{safety_wp['type']}"
+                        'x': safety_local_coords['x'], 
+                        'y': safety_local_coords['y'], 
+                        'curve': 40, 
+                        'phase': f"safety_{safety_wp['type']}"
                     }
                     enhanced_waypoints_data.append({
                         'waypoint': safety_pseudo_wp,
@@ -1068,9 +1101,17 @@ class SpiralDesigner:
                 # Add any safety waypoints that belong after this original waypoint
                 segment_safety_waypoints = [swp for swp in safety_waypoints if swp['segment_idx'] == i]
                 for safety_wp in segment_safety_waypoints:
-                    # Create a pseudo-waypoint for the safety waypoint
+                    # Convert safety waypoint GPS coordinates back to local X,Y coordinates  
+                    safety_local_coords = self.lat_lon_to_xy(
+                        safety_wp['lat'], safety_wp['lon'], center['lat'], center['lon']
+                    )
+                    
+                    # Create properly positioned safety waypoint
                     safety_pseudo_wp = {
-                        'x': 0, 'y': 0, 'curve': 40, 'phase': f"safety_{safety_wp['type']}"
+                        'x': safety_local_coords['x'], 
+                        'y': safety_local_coords['y'], 
+                        'curve': 40, 
+                        'phase': f"safety_{safety_wp['type']}"
                     }
                     enhanced_waypoints_data.append({
                         'waypoint': safety_pseudo_wp,
