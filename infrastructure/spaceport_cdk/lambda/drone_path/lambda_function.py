@@ -1333,135 +1333,61 @@ class SpiralDesigner:
         ascend_time = (min_height * self.FT2M) / vertical_speed_mps
         slice_time += ascend_time
         
-        # Generate CSV content with Litchi header
-        header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
-        rows = [header]
-        
-        # Track altitude calculation state (IDENTICAL to generate_csv logic)
-        first_waypoint_distance = 0
-        max_outbound_altitude = 0
-        max_outbound_distance = 0
-        
-        # Process waypoints with identical algorithm to ensure consistency
-        for i, wp in enumerate(spiral_path):
-            # Convert to GPS coordinates with high precision
-            coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
-            latitude = round(coords['lat'] * 100000) / 100000
-            longitude = round(coords['lon'] * 100000) / 100000
+        # PHASE 2: Waypoint-to-waypoint navigation with altitude changes
+        for i, wp in enumerate(slice_waypoints):
+            # Convert to GPS coordinates for distance calculation
+            coords = self.xy_to_lat_lon(wp['x'], wp['y'], center_lat, center_lon)
+            current_lat, current_lon = coords['lat'], coords['lon']
             
-            # Calculate elevation-aware altitude with terrain following
-            ground_elevation = ground_elevations[i]
-            local_ground_offset = ground_elevation - takeoff_elevation_feet
-            if local_ground_offset < 0:
-                local_ground_offset = 0
+            # Calculate horizontal distance to this waypoint
+            horizontal_distance_m = self.haversine_distance(prev_lat, prev_lon, current_lat, current_lon)
+            horizontal_time = horizontal_distance_m / speed_mps
             
-            # Check if this is a safety waypoint with pre-calculated altitude
-            if (self._enhanced_waypoints_data and 
-                i < len(self._enhanced_waypoints_data) and 
-                self._enhanced_waypoints_data[i].get('is_safety', False)):
-                # Use pre-calculated safety altitude
-                altitude = round(self._enhanced_waypoints_data[i].get('safety_altitude', min_height + ground_elevation) * 100) / 100
-            else:
-                # NEURAL NETWORK ALTITUDE CALCULATION (identical to generate_csv)
-                dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
-                phase = wp.get('phase', 'unknown')
-                
-                if i == 0:
-                    # FIRST WAYPOINT: Always starts at min_height
-                    first_waypoint_distance = dist_from_center
-                    desired_agl = min_height
-                    max_outbound_altitude = min_height
-                    max_outbound_distance = dist_from_center
-                elif 'outbound' in phase or 'hold' in phase:
-                    # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
-                    additional_distance = dist_from_center - first_waypoint_distance
-                    if additional_distance < 0:
-                        additional_distance = 0
-                    agl_increment = additional_distance * 0.37
-                    desired_agl = min_height + agl_increment
-                    
-                    # Track maximum for inbound descent calculations
-                    if desired_agl > max_outbound_altitude:
-                        max_outbound_altitude = desired_agl
-                        max_outbound_distance = dist_from_center
-                elif 'inbound' in phase:
-                    # INBOUND: Context capture with 0.1ft per foot descent rate
-                    distance_from_max = max_outbound_distance - dist_from_center
-                    if distance_from_max < 0:
-                        distance_from_max = 0
-                    altitude_decrease = distance_from_max * 0.1
-                    desired_agl = max_outbound_altitude - altitude_decrease
-                    
-                    # Safety floor: never below min_height
-                    if desired_agl < min_height:
-                        desired_agl = min_height
-                else:
-                    # Fallback for unknown phases
-                    additional_distance = dist_from_center - first_waypoint_distance
-                    if additional_distance < 0:
-                        additional_distance = 0
-                    agl_increment = additional_distance * 0.37
-                    desired_agl = min_height + agl_increment
-                
-                # Calculate final MSL altitude (terrain following)
-                final_altitude = local_ground_offset + desired_agl
-                
-                # Apply maximum height constraint if specified
-                if max_height is not None:
-                    adjusted_max_height = max_height - takeoff_elevation_feet
-                    current_agl = final_altitude - ground_elevation
-                    if current_agl > adjusted_max_height:
-                        final_altitude = ground_elevation + adjusted_max_height
-                
-                altitude = round(final_altitude * 100) / 100
+            # Calculate altitude change time (using neural network altitude logic)
+            dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
+            phase = wp.get('phase', 'unknown')
             
-            # Calculate forward-looking heading using atan2
-            heading = 0
-            if i < len(spiral_path) - 1:
-                next_wp = spiral_path[i + 1]
-                dx = next_wp['x'] - wp['x']
-                dy = next_wp['y'] - wp['y']
-                heading = round(((math.atan2(dx, dy) * 180 / math.pi) + 360) % 360)
-            
-            # Convert curve radius from feet to meters
-            curve_size_meters = round((wp['curve'] * self.FT2M) * 100) / 100
-            
-            # Calculate sinusoidal gimbal pitch for varied photo angles
-            progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))
-            
-            # Calculate photo interval timing
-            # Start photos at first waypoint, continue throughout flight, stop at last waypoint
             if i == 0:
-                photo_interval = 3.0  # Start taking photos at 3-second intervals
-            elif i == len(spiral_path) - 1:
-                photo_interval = 0    # Stop taking photos at the last waypoint
+                current_altitude = min_height
+            elif 'outbound' in phase or 'hold' in phase:
+                # Outbound climb rate: 0.37ft per foot
+                additional_distance = dist_from_center - (slice_waypoints[0]['x']**2 + slice_waypoints[0]['y']**2)**0.5
+                if additional_distance < 0:
+                    additional_distance = 0
+                current_altitude = min_height + (additional_distance * 0.37)
+            elif 'inbound' in phase:
+                # Inbound descent rate: 0.1ft per foot
+                max_distance = max([math.sqrt(w['x']**2 + w['y']**2) for w in slice_waypoints])
+                distance_from_max = max_distance - dist_from_center
+                if distance_from_max < 0:
+                    distance_from_max = 0
+                max_altitude = min_height + (max_distance * 0.37)
+                current_altitude = max_altitude - (distance_from_max * 0.1)
+                if current_altitude < min_height:
+                    current_altitude = min_height
             else:
-                photo_interval = 3.0  # Continue 3-second intervals throughout flight
+                current_altitude = min_height
             
-            # Create CSV row (identical format to generate_csv)
-            row = [
-                latitude,                   # GPS latitude
-                longitude,                  # GPS longitude  
-                altitude,                   # Flight altitude (MSL feet)
-                heading,                    # Forward direction (degrees)
-                curve_size_meters,          # Turn radius (meters)
-                0,                          # Rotation direction (none)
-                2,                          # Gimbal mode (focus POI)
-                gimbal_pitch,               # Camera tilt angle 
-                0,                          # Altitude mode (AGL)
-                8.85,                       # Speed (19.8 mph = 8.85 m/s)
-                center['lat'],              # POI latitude (spiral center)
-                center['lon'],              # POI longitude (spiral center)
-                -35,                        # POI altitude (-35ft AGL)
-                0,                          # POI altitude mode (AGL)
-                photo_interval,             # Photo interval (3s start/middle, 0s stop)
-                0                           # Photo distance interval (disabled)
-            ]
+            # Calculate vertical movement time
+            altitude_change_ft = abs(current_altitude - prev_altitude)
+            vertical_time = (altitude_change_ft * self.FT2M) / vertical_speed_mps
             
-            rows.append(','.join(map(str, row)))
+            # Add waypoint processing time (hover + acceleration)
+            waypoint_time = horizontal_time + vertical_time + hover_time + accel_time
+            slice_time += waypoint_time
+            
+            # Update tracking variables
+            prev_lat, prev_lon = current_lat, current_lon
+            prev_altitude = current_altitude
         
-        return '\n'.join(rows)
+        # PHASE 3: Return to home and landing
+        return_distance_m = self.haversine_distance(prev_lat, prev_lon, center_lat, center_lon)
+        return_time = return_distance_m / speed_mps
+        descent_time = (prev_altitude * self.FT2M) / vertical_speed_mps
+        slice_time += return_time + descent_time
+        
+        # Convert to minutes and add safety buffer
+        return (slice_time / 60.0) * 1.1  # 10% safety buffer
 
     def optimize_spiral_for_battery(self, target_battery_minutes: float, num_batteries: int, center_lat: float, center_lon: float) -> Dict:
         """
