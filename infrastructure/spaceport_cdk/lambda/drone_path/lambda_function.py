@@ -1157,58 +1157,65 @@ class SpiralDesigner:
             if local_ground_offset < 0:
                 local_ground_offset = 0
             
-            # NEURAL NETWORK ALTITUDE CALCULATION (identical to generate_csv)
-            dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
-            phase = wp.get('phase', 'unknown')
-            
-            if i == 0:
-                # FIRST WAYPOINT: Always starts at min_height
-                first_waypoint_distance = dist_from_center
-                desired_agl = min_height
-                max_outbound_altitude = min_height
-                max_outbound_distance = dist_from_center
-            elif 'outbound' in phase or 'hold' in phase:
-                # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.37
-                desired_agl = min_height + agl_increment
-                
-                # Track maximum for inbound descent calculations
-                if desired_agl > max_outbound_altitude:
-                    max_outbound_altitude = desired_agl
-                    max_outbound_distance = dist_from_center
-            elif 'inbound' in phase:
-                # INBOUND: Context capture with 0.1ft per foot descent rate
-                distance_from_max = max_outbound_distance - dist_from_center
-                if distance_from_max < 0:
-                    distance_from_max = 0
-                altitude_decrease = distance_from_max * 0.1
-                desired_agl = max_outbound_altitude - altitude_decrease
-                
-                # Safety floor: never below min_height
-                if desired_agl < min_height:
-                    desired_agl = min_height
+            # Check if this is a safety waypoint with pre-calculated altitude
+            if (self._enhanced_waypoints_data and 
+                i < len(self._enhanced_waypoints_data) and 
+                self._enhanced_waypoints_data[i].get('is_safety', False)):
+                # Use pre-calculated safety altitude
+                altitude = round(self._enhanced_waypoints_data[i].get('safety_altitude', min_height + ground_elevation) * 100) / 100
             else:
-                # Fallback for unknown phases
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.37
-                desired_agl = min_height + agl_increment
-            
-            # Calculate final MSL altitude (terrain following)
-            final_altitude = local_ground_offset + desired_agl
-            
-            # Apply maximum height constraint if specified
-            if max_height is not None:
-                adjusted_max_height = max_height - takeoff_elevation_feet
-                current_agl = final_altitude - ground_elevation
-                if current_agl > adjusted_max_height:
-                    final_altitude = ground_elevation + adjusted_max_height
-            
-            altitude = round(final_altitude * 100) / 100
+                # NEURAL NETWORK ALTITUDE CALCULATION (identical to generate_csv)
+                dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
+                phase = wp.get('phase', 'unknown')
+                
+                if i == 0:
+                    # FIRST WAYPOINT: Always starts at min_height
+                    first_waypoint_distance = dist_from_center
+                    desired_agl = min_height
+                    max_outbound_altitude = min_height
+                    max_outbound_distance = dist_from_center
+                elif 'outbound' in phase or 'hold' in phase:
+                    # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
+                    additional_distance = dist_from_center - first_waypoint_distance
+                    if additional_distance < 0:
+                        additional_distance = 0
+                    agl_increment = additional_distance * 0.37
+                    desired_agl = min_height + agl_increment
+                    
+                    # Track maximum for inbound descent calculations
+                    if desired_agl > max_outbound_altitude:
+                        max_outbound_altitude = desired_agl
+                        max_outbound_distance = dist_from_center
+                elif 'inbound' in phase:
+                    # INBOUND: Context capture with 0.1ft per foot descent rate
+                    distance_from_max = max_outbound_distance - dist_from_center
+                    if distance_from_max < 0:
+                        distance_from_max = 0
+                    altitude_decrease = distance_from_max * 0.1
+                    desired_agl = max_outbound_altitude - altitude_decrease
+                    
+                    # Safety floor: never below min_height
+                    if desired_agl < min_height:
+                        desired_agl = min_height
+                else:
+                    # Fallback for unknown phases
+                    additional_distance = dist_from_center - first_waypoint_distance
+                    if additional_distance < 0:
+                        additional_distance = 0
+                    agl_increment = additional_distance * 0.37
+                    desired_agl = min_height + agl_increment
+                
+                # Calculate final MSL altitude (terrain following)
+                final_altitude = local_ground_offset + desired_agl
+                
+                # Apply maximum height constraint if specified
+                if max_height is not None:
+                    adjusted_max_height = max_height - takeoff_elevation_feet
+                    current_agl = final_altitude - ground_elevation
+                    if current_agl > adjusted_max_height:
+                        final_altitude = ground_elevation + adjusted_max_height
+                
+                altitude = round(final_altitude * 100) / 100
             
             # Calculate forward-looking heading using atan2
             heading = 0
