@@ -1134,6 +1134,15 @@ class SpiralDesigner:
         else:
             print(f"✅ No terrain anomalies detected - original flight path is safe")
             self._enhanced_waypoints_data = None
+            ground_elevations = [item['ground_elevation'] for item in enhanced_waypoints_data]
+            
+            # Store enhanced waypoints data for later use
+            self._enhanced_waypoints_data = enhanced_waypoints_data
+            
+            print(f"✅ Enhanced mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
+        else:
+            print(f"✅ No terrain anomalies detected - original flight path is safe")
+            self._enhanced_waypoints_data = None
         
         # Generate CSV content with Litchi header
         header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
