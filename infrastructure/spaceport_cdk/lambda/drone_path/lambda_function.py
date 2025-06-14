@@ -772,12 +772,71 @@ class SpiralDesigner:
         
         # Convert waypoints to lat/lon and get optimized elevations
         locations = []
+        waypoints_with_coords = []
         for wp in spiral_path:
             coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
             locations.append((coords['lat'], coords['lon']))
+            waypoints_with_coords.append({
+                'lat': coords['lat'],
+                'lon': coords['lon'],
+                'x': wp['x'],
+                'y': wp['y'],
+                'phase': wp.get('phase', 'unknown')
+            })
         
         # Get elevations with 15-foot proximity optimization
         ground_elevations = self.get_elevations_feet_optimized(locations)
+        
+        # Add elevations to waypoints_with_coords for adaptive sampling
+        for i, elevation in enumerate(ground_elevations):
+            waypoints_with_coords[i]['elevation'] = elevation
+        
+        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (Single Battery)
+        print(f"🛡️  Starting adaptive terrain sampling for battery {battery_index + 1} safety")
+        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        
+        if safety_waypoints:
+            print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into battery {battery_index + 1} flight path")
+            # Convert safety waypoints to the format expected by CSV generation
+            enhanced_waypoints_data = []
+            
+            for i, wp in enumerate(spiral_path):
+                # Add original waypoint
+                enhanced_waypoints_data.append({
+                    'waypoint': wp,
+                    'coords': waypoints_with_coords[i],
+                    'ground_elevation': ground_elevations[i],
+                    'is_safety': False
+                })
+                
+                # Add any safety waypoints that belong after this original waypoint
+                segment_safety_waypoints = [swp for swp in safety_waypoints if swp['segment_idx'] == i]
+                for safety_wp in segment_safety_waypoints:
+                    # Create a pseudo-waypoint for the safety waypoint
+                    safety_pseudo_wp = {
+                        'x': 0, 'y': 0, 'curve': 40, 'phase': f"safety_{safety_wp['type']}"
+                    }
+                    enhanced_waypoints_data.append({
+                        'waypoint': safety_pseudo_wp,
+                        'coords': {'lat': safety_wp['lat'], 'lon': safety_wp['lon']},
+                        'ground_elevation': safety_wp['elevation'],
+                        'safety_altitude': safety_wp['altitude'],
+                        'safety_reason': safety_wp['reason'],
+                        'is_safety': True
+                    })
+            
+            # Update the processing arrays to include safety waypoints
+            spiral_path = [item['waypoint'] for item in enhanced_waypoints_data]
+            locations = [(item['coords']['lat'], item['coords']['lon']) for item in enhanced_waypoints_data]
+            ground_elevations = [item['ground_elevation'] for item in enhanced_waypoints_data]
+            
+            # Store enhanced waypoints data for later use
+            self._enhanced_waypoints_data = enhanced_waypoints_data
+            
+            print(f"✅ Enhanced battery {battery_index + 1} mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
+        else:
+            print(f"✅ No terrain anomalies detected for battery {battery_index + 1} - original flight path is safe")
+            self._enhanced_waypoints_data = None
         
         # Generate CSV content with Litchi header
         header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
@@ -788,71 +847,87 @@ class SpiralDesigner:
         max_outbound_altitude = 0
         max_outbound_distance = 0
         
+        enhanced_waypoints_data = getattr(self, '_enhanced_waypoints_data', None)
+        
         for i, wp in enumerate(spiral_path):
-            # Convert to GPS coordinates with high precision
-            coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
-            latitude = round(coords['lat'] * 100000) / 100000  # 5 decimal places (~1m accuracy)
-            longitude = round(coords['lon'] * 100000) / 100000
+            # Check if this is a safety waypoint
+            is_safety_waypoint = (enhanced_waypoints_data and 
+                                  i < len(enhanced_waypoints_data) and 
+                                  enhanced_waypoints_data[i].get('is_safety', False))
             
-            # Calculate elevation-aware altitude with terrain following
-            ground_elevation = ground_elevations[i]
-            local_ground_offset = ground_elevation - takeoff_elevation_feet
-            if local_ground_offset < 0:
-                local_ground_offset = 0  # Never fly below takeoff elevation
-            
-            # NEURAL NETWORK ALTITUDE CALCULATION ALGORITHM
-            # =============================================
-            dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
-            phase = wp.get('phase', 'unknown')
-            
-            if i == 0:
-                # FIRST WAYPOINT: Always starts at min_height
-                first_waypoint_distance = dist_from_center
-                desired_agl = min_height
-                max_outbound_altitude = min_height
-                max_outbound_distance = dist_from_center
-            elif 'outbound' in phase or 'hold' in phase:
-                # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.37  # Neural network optimization rate
-                desired_agl = min_height + agl_increment
+            if is_safety_waypoint:
+                # Safety waypoint - use pre-calculated coordinates and altitude
+                safety_data = enhanced_waypoints_data[i]
+                latitude = round(safety_data['coords']['lat'] * 100000) / 100000
+                longitude = round(safety_data['coords']['lon'] * 100000) / 100000
+                altitude = round(safety_data['safety_altitude'] * 100) / 100
                 
-                # Track maximum for inbound descent calculations
-                if desired_agl > max_outbound_altitude:
-                    max_outbound_altitude = desired_agl
-                    max_outbound_distance = dist_from_center
-            elif 'inbound' in phase:
-                # INBOUND: Context capture with 0.1ft per foot descent rate
-                distance_from_max = max_outbound_distance - dist_from_center
-                if distance_from_max < 0:
-                    distance_from_max = 0
-                altitude_decrease = distance_from_max * 0.1  # Slow descent for context
-                desired_agl = max_outbound_altitude - altitude_decrease
-                
-                # Safety floor: never below min_height
-                if desired_agl < min_height:
-                    desired_agl = min_height
+                print(f"🚨 Safety waypoint {i+1}: {safety_data['safety_reason']} at {altitude:.1f}ft")
             else:
-                # Fallback for unknown phases (should not occur in normal operation)
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.37
-                desired_agl = min_height + agl_increment
-            
-            # Calculate final MSL altitude (terrain following)
-            final_altitude = local_ground_offset + desired_agl
-            
-            # Apply maximum height constraint if specified
-            if max_height is not None:
-                adjusted_max_height = max_height - takeoff_elevation_feet
-                current_agl = final_altitude - ground_elevation
-                if current_agl > adjusted_max_height:
-                    final_altitude = ground_elevation + adjusted_max_height
-            
-            altitude = round(final_altitude * 100) / 100  # Round to cm precision
+                # Regular waypoint - normal processing
+                coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
+                latitude = round(coords['lat'] * 100000) / 100000  # 5 decimal places (~1m accuracy)
+                longitude = round(coords['lon'] * 100000) / 100000
+                
+                # Calculate elevation-aware altitude with terrain following
+                ground_elevation = ground_elevations[i]
+                local_ground_offset = ground_elevation - takeoff_elevation_feet
+                if local_ground_offset < 0:
+                    local_ground_offset = 0  # Never fly below takeoff elevation
+                
+                # NEURAL NETWORK ALTITUDE CALCULATION ALGORITHM
+                # =============================================
+                dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
+                phase = wp.get('phase', 'unknown')
+                
+                if i == 0:
+                    # FIRST WAYPOINT: Always starts at min_height
+                    first_waypoint_distance = dist_from_center
+                    desired_agl = min_height
+                    max_outbound_altitude = min_height
+                    max_outbound_distance = dist_from_center
+                elif 'outbound' in phase or 'hold' in phase:
+                    # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
+                    additional_distance = dist_from_center - first_waypoint_distance
+                    if additional_distance < 0:
+                        additional_distance = 0
+                    agl_increment = additional_distance * 0.37  # Neural network optimization rate
+                    desired_agl = min_height + agl_increment
+                    
+                    # Track maximum for inbound descent calculations
+                    if desired_agl > max_outbound_altitude:
+                        max_outbound_altitude = desired_agl
+                        max_outbound_distance = dist_from_center
+                elif 'inbound' in phase:
+                    # INBOUND: Context capture with 0.1ft per foot descent rate
+                    distance_from_max = max_outbound_distance - dist_from_center
+                    if distance_from_max < 0:
+                        distance_from_max = 0
+                    altitude_decrease = distance_from_max * 0.1  # Slow descent for context
+                    desired_agl = max_outbound_altitude - altitude_decrease
+                    
+                    # Safety floor: never below min_height
+                    if desired_agl < min_height:
+                        desired_agl = min_height
+                else:
+                    # Fallback for unknown phases (should not occur in normal operation)
+                    additional_distance = dist_from_center - first_waypoint_distance
+                    if additional_distance < 0:
+                        additional_distance = 0
+                    agl_increment = additional_distance * 0.37
+                    desired_agl = min_height + agl_increment
+                
+                # Calculate final MSL altitude (terrain following)
+                final_altitude = local_ground_offset + desired_agl
+                
+                # Apply maximum height constraint if specified
+                if max_height is not None:
+                    adjusted_max_height = max_height - takeoff_elevation_feet
+                    current_agl = final_altitude - ground_elevation
+                    if current_agl > adjusted_max_height:
+                        final_altitude = ground_elevation + adjusted_max_height
+                
+                altitude = round(final_altitude * 100) / 100  # Round to cm precision
             
             # Calculate forward-looking heading using atan2
             heading = 0
@@ -953,12 +1028,71 @@ class SpiralDesigner:
         
         # Convert waypoints to lat/lon and get optimized elevations
         locations = []
+        waypoints_with_coords = []
         for wp in spiral_path:
             coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
             locations.append((coords['lat'], coords['lon']))
+            waypoints_with_coords.append({
+                'lat': coords['lat'],
+                'lon': coords['lon'],
+                'x': wp['x'],
+                'y': wp['y'],
+                'phase': wp.get('phase', 'unknown')
+            })
         
         # Get elevations with 15-foot proximity optimization
         ground_elevations = self.get_elevations_feet_optimized(locations)
+        
+        # Add elevations to waypoints_with_coords for adaptive sampling
+        for i, elevation in enumerate(ground_elevations):
+            waypoints_with_coords[i]['elevation'] = elevation
+        
+        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
+        print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        
+        if safety_waypoints:
+            print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
+            # Convert safety waypoints to the format expected by CSV generation
+            enhanced_waypoints_data = []
+            
+            for i, wp in enumerate(spiral_path):
+                # Add original waypoint
+                enhanced_waypoints_data.append({
+                    'waypoint': wp,
+                    'coords': waypoints_with_coords[i],
+                    'ground_elevation': ground_elevations[i],
+                    'is_safety': False
+                })
+                
+                # Add any safety waypoints that belong after this original waypoint
+                segment_safety_waypoints = [swp for swp in safety_waypoints if swp['segment_idx'] == i]
+                for safety_wp in segment_safety_waypoints:
+                    # Create a pseudo-waypoint for the safety waypoint
+                    safety_pseudo_wp = {
+                        'x': 0, 'y': 0, 'curve': 40, 'phase': f"safety_{safety_wp['type']}"
+                    }
+                    enhanced_waypoints_data.append({
+                        'waypoint': safety_pseudo_wp,
+                        'coords': {'lat': safety_wp['lat'], 'lon': safety_wp['lon']},
+                        'ground_elevation': safety_wp['elevation'],
+                        'safety_altitude': safety_wp['altitude'],
+                        'safety_reason': safety_wp['reason'],
+                        'is_safety': True
+                    })
+            
+            # Update the processing arrays to include safety waypoints
+            spiral_path = [item['waypoint'] for item in enhanced_waypoints_data]
+            locations = [(item['coords']['lat'], item['coords']['lon']) for item in enhanced_waypoints_data]
+            ground_elevations = [item['ground_elevation'] for item in enhanced_waypoints_data]
+            
+            # Store enhanced waypoints data for later use
+            self._enhanced_waypoints_data = enhanced_waypoints_data
+            
+            print(f"✅ Enhanced mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
+        else:
+            print(f"✅ No terrain anomalies detected - original flight path is safe")
+            self._enhanced_waypoints_data = None
         
         # Generate CSV content with Litchi header
         header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
@@ -1411,6 +1545,402 @@ class SpiralDesigner:
         print(f"Final optimization: {best_params['N']} bounces, {best_params['rHold']:.0f}ft radius, {best_time:.1f}min ({best_params['battery_utilization']}%)")
         
         return best_params
+
+    # ADAPTIVE TERRAIN SAMPLING SYSTEM
+    # ================================
+    # Prevents drone crashes by detecting terrain anomalies between waypoints
+    # Optimized for large properties (100+ acres) with cost-effective sampling
+    
+    # Configuration parameters for different terrain types
+    SAFE_DISTANCE_FT = 400          # No sampling needed under this distance (large properties)
+    INITIAL_SAMPLE_INTERVAL = 120   # Initial sampling every 120ft (balanced for large areas)
+    ANOMALY_THRESHOLD = 20          # 20ft deviation triggers investigation (rough terrain tolerance)
+    CRITICAL_THRESHOLD = 60         # 60ft deviation = immediate waypoint (major hazard)
+    MODERATE_THRESHOLD = 35         # 35ft deviation = dense sampling (moderate hazard)
+    DENSE_SAMPLE_INTERVAL = 40      # Dense sampling every 40ft around anomalies
+    MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 2  # Respect 99-waypoint limit
+    SAFETY_BUFFER_FT = 25           # Safety clearance above detected terrain
+    
+    def generate_intermediate_points(self, start_lat: float, start_lon: float, end_lat: float, end_lon: float, interval_ft: float) -> List[Dict]:
+        """
+        Generate intermediate GPS points along a great circle path at specified intervals.
+        
+        ALGORITHM:
+        1. Calculate total distance between start and end points
+        2. Determine number of sample points based on interval
+        3. Use spherical interpolation for accurate GPS positions
+        4. Return list of intermediate points with lat/lon
+        
+        Args:
+            start_lat, start_lon: Starting GPS coordinates
+            end_lat, end_lon: Ending GPS coordinates  
+            interval_ft: Distance between sample points in feet
+            
+        Returns:
+            List of intermediate points with 'lat', 'lon', 'distance_from_start'
+        """
+        total_distance_m = self.haversine_distance(start_lat, start_lon, end_lat, end_lon)
+        total_distance_ft = total_distance_m * 3.28084
+        
+        if total_distance_ft <= interval_ft:
+            return []  # No intermediate points needed
+        
+        num_points = int(total_distance_ft / interval_ft)
+        intermediate_points = []
+        
+        for i in range(1, num_points):  # Skip start (i=0) and end (i=num_points)
+            fraction = i / num_points
+            
+            # Spherical linear interpolation for accurate GPS positions
+            lat = start_lat + fraction * (end_lat - start_lat)
+            lon = start_lon + fraction * (end_lon - start_lon)
+            distance_from_start = fraction * total_distance_ft
+            
+            intermediate_points.append({
+                'lat': lat,
+                'lon': lon,
+                'distance_from_start': distance_from_start
+            })
+        
+        return intermediate_points
+    
+    def linear_interpolate_elevation(self, start_lat: float, start_lon: float, start_elev: float,
+                                   end_lat: float, end_lon: float, end_elev: float,
+                                   point_lat: float, point_lon: float) -> float:
+        """
+        Calculate expected elevation at a point using linear interpolation between two known points.
+        
+        INTERPOLATION ALGORITHM:
+        1. Calculate distance from start to point
+        2. Calculate total distance from start to end
+        3. Find fraction of total distance
+        4. Linearly interpolate elevation based on fraction
+        
+        Args:
+            start_lat, start_lon, start_elev: Starting point and elevation
+            end_lat, end_lon, end_elev: Ending point and elevation
+            point_lat, point_lon: Point to interpolate elevation for
+            
+        Returns:
+            Expected elevation in feet at the interpolated point
+        """
+        total_distance = self.haversine_distance(start_lat, start_lon, end_lat, end_lon)
+        point_distance = self.haversine_distance(start_lat, start_lon, point_lat, point_lon)
+        
+        if total_distance == 0:
+            return start_elev
+        
+        fraction = point_distance / total_distance
+        expected_elevation = start_elev + fraction * (end_elev - start_elev)
+        
+        return expected_elevation
+    
+    def adaptive_terrain_sampling(self, waypoints_with_coords: List[Dict]) -> List[Dict]:
+        """
+        Adaptive terrain anomaly detection system for drone safety.
+        
+        SAFETY ALGORITHM:
+        1. Analyze segments between consecutive waypoints
+        2. Skip short segments (< SAFE_DISTANCE_FT)
+        3. Sample terrain at regular intervals on long segments
+        4. Compare actual vs expected elevation (linear interpolation)
+        5. Detect anomalies above threshold
+        6. Add safety waypoints for significant terrain features
+        7. Respect waypoint budget (99 total limit)
+        
+        COST OPTIMIZATION:
+        - Strategic sampling intervals based on segment length
+        - Proximity caching for nearby elevation requests
+        - Batch processing of elevation queries
+        - Early termination if waypoint budget exhausted
+        
+        Args:
+            waypoints_with_coords: List of waypoints with lat/lon/elevation data
+            
+        Returns:
+            List of safety waypoints to insert into flight path
+        """
+        safety_waypoints = []
+        total_api_calls = 0
+        max_api_calls = 100  # Budget for large properties
+        
+        print(f"🔍 Starting adaptive terrain sampling for {len(waypoints_with_coords)} waypoints")
+        
+        for i in range(len(waypoints_with_coords) - 1):
+            # Check waypoint budget
+            if len(safety_waypoints) >= 20:  # Reserve waypoints for other uses
+                print(f"⚠️  Waypoint budget limit reached, stopping terrain sampling")
+                break
+            
+            # Check API call budget
+            if total_api_calls >= max_api_calls:
+                print(f"⚠️  API call budget limit reached, stopping terrain sampling")
+                break
+            
+            current_wp = waypoints_with_coords[i]
+            next_wp = waypoints_with_coords[i + 1]
+            
+            # Calculate segment distance
+            segment_distance_ft = self.haversine_distance(
+                current_wp['lat'], current_wp['lon'],
+                next_wp['lat'], next_wp['lon']
+            ) * 3.28084
+            
+            # Skip short segments - they're inherently safe
+            if segment_distance_ft <= self.SAFE_DISTANCE_FT:
+                continue
+            
+            print(f"📏 Analyzing segment {i+1}: {segment_distance_ft:.0f}ft")
+            
+            # Generate sample points along the segment
+            sample_points = self.generate_intermediate_points(
+                current_wp['lat'], current_wp['lon'],
+                next_wp['lat'], next_wp['lon'],
+                self.INITIAL_SAMPLE_INTERVAL
+            )
+            
+            if not sample_points:
+                continue
+            
+            # Batch sample elevations for efficiency
+            sample_locations = [(p['lat'], p['lon']) for p in sample_points]
+            sample_elevations = self.get_elevations_feet_optimized(sample_locations)
+            total_api_calls += len(sample_elevations)
+            
+            # Analyze each sample point for anomalies
+            segment_anomalies = []
+            
+            for j, (sample_point, actual_elevation) in enumerate(zip(sample_points, sample_elevations)):
+                expected_elevation = self.linear_interpolate_elevation(
+                    current_wp['lat'], current_wp['lon'], current_wp['elevation'],
+                    next_wp['lat'], next_wp['lon'], next_wp['elevation'],
+                    sample_point['lat'], sample_point['lon']
+                )
+                
+                deviation = actual_elevation - expected_elevation
+                abs_deviation = abs(deviation)
+                
+                if abs_deviation > self.ANOMALY_THRESHOLD:
+                    segment_anomalies.append({
+                        'point': sample_point,
+                        'actual_elevation': actual_elevation,
+                        'expected_elevation': expected_elevation,
+                        'deviation': deviation,
+                        'abs_deviation': abs_deviation,
+                        'risk_level': 'critical' if abs_deviation > self.CRITICAL_THRESHOLD else 'moderate'
+                    })
+                    
+                    print(f"⚠️  Anomaly detected: {deviation:+.1f}ft deviation at {sample_point['distance_from_start']:.0f}ft")
+            
+            # Process anomalies and create safety waypoints
+            segment_safety_waypoints = self.process_segment_anomalies(
+                segment_anomalies, current_wp, next_wp, i
+            )
+            
+            # Limit safety waypoints per segment
+            if len(segment_safety_waypoints) > self.MAX_SAFETY_WAYPOINTS_PER_SEGMENT:
+                # Keep only the most critical anomalies
+                segment_safety_waypoints.sort(key=lambda x: x['abs_deviation'], reverse=True)
+                segment_safety_waypoints = segment_safety_waypoints[:self.MAX_SAFETY_WAYPOINTS_PER_SEGMENT]
+                print(f"🔄 Limited to {self.MAX_SAFETY_WAYPOINTS_PER_SEGMENT} safety waypoints for segment {i+1}")
+            
+            safety_waypoints.extend(segment_safety_waypoints)
+        
+        print(f"✅ Adaptive sampling complete: {len(safety_waypoints)} safety waypoints, {total_api_calls} API calls")
+        return safety_waypoints
+    
+    def process_segment_anomalies(self, anomalies: List[Dict], current_wp: Dict, next_wp: Dict, segment_idx: int) -> List[Dict]:
+        """
+        Process detected anomalies and create appropriate safety waypoints.
+        
+        SAFETY LOGIC:
+        - Critical anomalies (>60ft): Immediate safety waypoint
+        - Moderate anomalies (35-60ft): Dense sampling for verification
+        - Positive deviations (hills): Fly over with safety buffer
+        - Negative deviations (valleys): Maintain minimum altitude
+        
+        Args:
+            anomalies: List of detected terrain anomalies
+            current_wp: Current waypoint for context
+            next_wp: Next waypoint for context
+            segment_idx: Segment index for logging
+            
+        Returns:
+            List of safety waypoints for this segment
+        """
+        safety_waypoints = []
+        
+        for anomaly in anomalies:
+            point = anomaly['point']
+            actual_elevation = anomaly['actual_elevation']
+            deviation = anomaly['deviation']
+            risk_level = anomaly['risk_level']
+            
+            if risk_level == 'critical':
+                # Critical anomaly - immediate safety waypoint
+                if deviation > 0:
+                    # Positive deviation (hill/obstacle) - fly over it
+                    safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
+                    reason = f"Critical terrain obstacle: +{deviation:.1f}ft hill"
+                else:
+                    # Negative deviation (valley) - maintain reasonable altitude
+                    safety_altitude = max(current_wp['altitude'], next_wp['altitude'])
+                    reason = f"Critical terrain drop: {deviation:.1f}ft valley"
+                
+                safety_waypoints.append({
+                    'lat': point['lat'],
+                    'lon': point['lon'],
+                    'altitude': safety_altitude,
+                    'elevation': actual_elevation,
+                    'reason': reason,
+                    'abs_deviation': anomaly['abs_deviation'],
+                    'segment_idx': segment_idx,
+                    'type': 'critical_safety'
+                })
+                
+                print(f"🚨 Critical safety waypoint: {reason}")
+                
+            elif risk_level == 'moderate' and deviation > 0:
+                # Moderate positive deviation - verify with dense sampling
+                dense_points = self.verify_moderate_anomaly(point, actual_elevation)
+                
+                if dense_points:
+                    max_elevation = max(p['elevation'] for p in dense_points)
+                    safety_altitude = max_elevation + (self.SAFETY_BUFFER_FT * 0.7)  # Slightly less buffer for verified moderate
+                    
+                    safety_waypoints.append({
+                        'lat': point['lat'],
+                        'lon': point['lon'],
+                        'altitude': safety_altitude,
+                        'elevation': max_elevation,
+                        'reason': f"Verified terrain feature: +{deviation:.1f}ft",
+                        'abs_deviation': anomaly['abs_deviation'],
+                        'segment_idx': segment_idx,
+                        'type': 'moderate_safety'
+                    })
+                    
+                    print(f"⚠️  Moderate safety waypoint: Verified terrain feature +{deviation:.1f}ft")
+        
+        return safety_waypoints
+    
+    def verify_moderate_anomaly(self, center_point: Dict, center_elevation: float) -> List[Dict]:
+        """
+        Verify moderate anomalies with dense sampling around the detected point.
+        
+        VERIFICATION ALGORITHM:
+        1. Create sampling points in a cross pattern around the anomaly
+        2. Sample elevation at each verification point
+        3. If multiple points confirm the anomaly, it's real terrain
+        4. If isolated, it might be noise - ignore it
+        
+        Args:
+            center_point: GPS coordinates of the detected anomaly
+            center_elevation: Elevation at the anomaly point
+            
+        Returns:
+            List of verification points if anomaly is confirmed, empty list otherwise
+        """
+        # Create verification points in a cross pattern (N, S, E, W)
+        offset_degrees = self.DENSE_SAMPLE_INTERVAL / 364000  # Approximate conversion
+        
+        verification_points = [
+            {'lat': center_point['lat'] + offset_degrees, 'lon': center_point['lon']},     # North
+            {'lat': center_point['lat'] - offset_degrees, 'lon': center_point['lon']},     # South
+            {'lat': center_point['lat'], 'lon': center_point['lon'] + offset_degrees},     # East
+            {'lat': center_point['lat'], 'lon': center_point['lon'] - offset_degrees},     # West
+        ]
+        
+        # Sample elevations at verification points
+        verification_locations = [(p['lat'], p['lon']) for p in verification_points]
+        verification_elevations = self.get_elevations_feet_optimized(verification_locations)
+        
+        # Add elevations to points
+        for point, elevation in zip(verification_points, verification_elevations):
+            point['elevation'] = elevation
+        
+        # Check if anomaly is confirmed by surrounding terrain
+        confirmed_points = []
+        for point in verification_points:
+            if abs(point['elevation'] - center_elevation) <= 15:  # Within 15ft of center
+                confirmed_points.append(point)
+        
+        # Require at least 2 confirmation points to verify the anomaly
+        if len(confirmed_points) >= 2:
+            return confirmed_points + [{'lat': center_point['lat'], 'lon': center_point['lon'], 'elevation': center_elevation}]
+        else:
+            return []  # Anomaly not confirmed - likely noise
+
+    def insert_safety_waypoints(self, original_waypoints: List[Dict], safety_waypoints: List[Dict]) -> List[Dict]:
+        """
+        Insert safety waypoints into the original flight path while maintaining proper sequencing.
+        
+        INSERTION ALGORITHM:
+        1. Group safety waypoints by segment
+        2. Sort by distance along each segment
+        3. Insert safety waypoints after their corresponding original waypoint
+        4. Maintain proper heading and curve calculations
+        5. Ensure total waypoint count stays under 99
+        
+        Args:
+            original_waypoints: Original spiral waypoints
+            safety_waypoints: Safety waypoints to insert
+            
+        Returns:
+            Combined waypoint list with safety waypoints inserted
+        """
+        if not safety_waypoints:
+            return original_waypoints
+        
+        # Group safety waypoints by segment
+        safety_by_segment = {}
+        for safety_wp in safety_waypoints:
+            segment_idx = safety_wp['segment_idx']
+            if segment_idx not in safety_by_segment:
+                safety_by_segment[segment_idx] = []
+            safety_by_segment[segment_idx].append(safety_wp)
+        
+        # Sort safety waypoints within each segment by distance from start
+        for segment_idx in safety_by_segment:
+            safety_by_segment[segment_idx].sort(key=lambda x: x.get('distance_from_start', 0))
+        
+        # Insert safety waypoints into the flight path
+        enhanced_waypoints = []
+        
+        for i, waypoint in enumerate(original_waypoints):
+            enhanced_waypoints.append(waypoint)
+            
+            # Insert safety waypoints after this original waypoint
+            if i in safety_by_segment:
+                for safety_wp in safety_by_segment[i]:
+                    # Create properly formatted waypoint
+                    enhanced_waypoint = {
+                        'latitude': safety_wp['lat'],
+                        'longitude': safety_wp['lon'],
+                        'altitude': safety_wp['altitude'],
+                        'elevation': safety_wp['elevation'],
+                        'heading': waypoint.get('heading', 0),  # Use same heading as original
+                        'curve': max(waypoint.get('curve', 40), 40),  # Ensure safe curve radius
+                        'phase': f"safety_{safety_wp['type']}",
+                        'reason': safety_wp['reason'],
+                        'type': 'safety_waypoint'
+                    }
+                    enhanced_waypoints.append(enhanced_waypoint)
+                    
+                    print(f"✅ Inserted safety waypoint: {safety_wp['reason']}")
+        
+        # Check waypoint limit
+        if len(enhanced_waypoints) > 95:  # Leave buffer for 99 limit
+            print(f"⚠️  Enhanced path has {len(enhanced_waypoints)} waypoints, trimming to respect 99 limit")
+            # Keep original waypoints and only the most critical safety waypoints
+            critical_safety = [wp for wp in enhanced_waypoints if wp.get('type') == 'safety_waypoint' and 'critical' in wp.get('phase', '')]
+            if len(original_waypoints) + len(critical_safety) <= 95:
+                enhanced_waypoints = original_waypoints + critical_safety
+            else:
+                enhanced_waypoints = original_waypoints  # Fall back to original path
+                print(f"⚠️  Too many waypoints, using original path without safety enhancements")
+        
+        print(f"📊 Final waypoint count: {len(enhanced_waypoints)} (original: {len(original_waypoints)}, safety: {len(enhanced_waypoints) - len(original_waypoints)})")
+        return enhanced_waypoints
 
 # Lambda handler function
 def lambda_handler(event, context):
