@@ -2167,8 +2167,26 @@ def handle_csv_download(designer, body, cors_headers):
         r0 = body.get('r0', 150)
         rHold = body.get('rHold', 1595)
         center = body.get('center', '')
-        min_height = body.get('minHeight', 100)
-        max_height = body.get('maxHeight')
+        # Robustly parse minHeight / maxHeight so blank strings don't cause errors
+        def _parse_height(value, default=None):
+            """Convert height field to float, returning default if blank or invalid."""
+            if value is None:
+                return default
+            if isinstance(value, (int, float)):
+                return float(value)
+            # Handle empty string or whitespace
+            value_str = str(value).strip()
+            if value_str == "":
+                return default
+            try:
+                return float(value_str)
+            except (ValueError, TypeError):
+                return default
+
+        # Default minimum altitude is 120 ft AGL when user leaves field blank
+        min_height = _parse_height(body.get('minHeight'), 120.0)
+        # maxHeight is optional – if blank/invalid we treat as unlimited (None)
+        max_height = _parse_height(body.get('maxHeight'), None)
         
         if not center:
             return {
@@ -2231,8 +2249,26 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         r0 = body.get('r0', 150)
         rHold = body.get('rHold', 1595)
         center = body.get('center', '')
-        min_height = body.get('minHeight', 100)
-        max_height = body.get('maxHeight')
+        # Robustly parse minHeight / maxHeight so blank strings don't cause errors
+        def _parse_height(value, default=None):
+            """Convert height field to float, returning default if blank or invalid."""
+            if value is None:
+                return default
+            if isinstance(value, (int, float)):
+                return float(value)
+            # Handle empty string or whitespace
+            value_str = str(value).strip()
+            if value_str == "":
+                return default
+            try:
+                return float(value_str)
+            except (ValueError, TypeError):
+                return default
+
+        # Default minimum altitude is 120 ft AGL when user leaves field blank
+        min_height = _parse_height(body.get('minHeight'), 120.0)
+        # maxHeight is optional – if blank/invalid we treat as unlimited (None)
+        max_height = _parse_height(body.get('maxHeight'), None)
         
         if not center:
             return {
