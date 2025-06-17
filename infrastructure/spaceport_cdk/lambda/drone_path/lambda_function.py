@@ -816,12 +816,12 @@ class SpiralDesigner:
         for i, elevation in enumerate(ground_elevations):
             waypoints_with_coords[i]['elevation'] = elevation
         
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
-        print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
+        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (Single Battery)
+        print(f"🛡️  Starting adaptive terrain sampling for battery {battery_index + 1} safety")
         safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
         
         if safety_waypoints:
-            print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into complete mission flight path")
+            print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into battery {battery_index + 1} flight path")
             # Convert safety waypoints to the format expected by CSV generation
             enhanced_waypoints_data = []
             
@@ -866,9 +866,9 @@ class SpiralDesigner:
             # Store enhanced waypoints data for later use
             self._enhanced_waypoints_data = enhanced_waypoints_data
             
-            print(f"✅ Enhanced complete mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
+            print(f"✅ Enhanced battery {battery_index + 1} mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
         else:
-            print(f"✅ No terrain anomalies detected for complete mission - original flight path is safe")
+            print(f"✅ No terrain anomalies detected for battery {battery_index + 1} - original flight path is safe")
             self._enhanced_waypoints_data = None
         
         # Generate CSV content with Litchi header
