@@ -893,7 +893,12 @@ class SpiralDesigner:
                 safety_data = enhanced_waypoints_data[i]
                 latitude = round(safety_data['coords']['lat'] * 100000) / 100000
                 longitude = round(safety_data['coords']['lon'] * 100000) / 100000
-                altitude = round(safety_data['safety_altitude'] * 100) / 100
+                # Safety waypoint altitude is stored as absolute MSL. Convert to the
+                # same reference frame used by regular waypoints (feet above take-off).
+                altitude_agl = safety_data['safety_altitude'] - takeoff_elevation_feet
+                if altitude_agl < min_height:
+                    altitude_agl = min_height  # Never below minimum flight height
+                altitude = round(altitude_agl * 100) / 100
                 
                 print(f"🚨 Safety waypoint {i+1}: {safety_data['safety_reason']} at {altitude:.1f}ft")
             else:
