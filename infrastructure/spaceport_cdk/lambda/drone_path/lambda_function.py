@@ -1839,7 +1839,9 @@ class SpiralDesigner:
                     reason = f"Critical terrain obstacle: +{deviation:.1f}ft hill"
                 else:
                     # Negative deviation (valley) - maintain reasonable altitude
-                    safety_altitude = max(current_wp['altitude'], next_wp['altitude'])
+                    safety_altitude = max(current_wp.get('altitude', 0), next_wp.get('altitude', 0))
+                    if safety_altitude == 0:
+                        safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
                     reason = f"Critical terrain drop: {deviation:.1f}ft valley"
                 
                 safety_waypoints.append({
