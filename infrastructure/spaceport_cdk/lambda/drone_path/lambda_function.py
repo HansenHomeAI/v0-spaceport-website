@@ -1605,7 +1605,7 @@ class SpiralDesigner:
     MODERATE_THRESHOLD = 40         # 40ft deviation = verification (moderate hazards)
     DENSE_SAMPLE_INTERVAL = 80      # Verification sampling every 80ft (efficient confirmation)
     MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 2  # Respect 99-waypoint limit
-    SAFETY_BUFFER_FT = 25           # 25ft safety clearance above detected terrain
+    SAFETY_BUFFER_FT = 100          # 100ft safety clearance above detected terrain
     MAX_API_CALLS_PER_REQUEST = 25  # Conservative limit for 30s timeout
     
     def generate_intermediate_points(self, start_lat: float, start_lon: float, end_lat: float, end_lon: float, interval_ft: float) -> List[Dict]:
