@@ -1,5 +1,5 @@
-# SOGS Compression Container for AWS SageMaker
-# Based on NVIDIA CUDA runtime for GPU acceleration
+# AWS CodeBuild Dockerfile for SOGS Compression Container
+# This builds on AWS infrastructure with proper CUDA support
 FROM nvidia/cuda:12.6-runtime-ubuntu22.04
 
 # Set environment variables

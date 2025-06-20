@@ -1,0 +1,63 @@
+version: 0.2
+
+# AWS CodeBuild specification for building SOGS compression container
+# This builds the CUDA-enabled container on AWS infrastructure with GPU support
+
+phases:
+  pre_build:
+    commands:
+      - echo "🚀 Starting SOGS Compression Container Build"
+      - echo "Build started on `date`"
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}
+      - echo "Repository URI = $REPOSITORY_URI"
+      - echo "Image tag = $IMAGE_TAG"
+      - echo "Current directory contents:"
+      - ls -la
+      
+  build:
+    commands:
+      - echo "🏗️ Build started on `date`"
+      - echo "Building the Docker image with CUDA support..."
+      
+      # Build the production CUDA-enabled container
+      - echo "Building production CUDA container..."
+      - docker build -f Dockerfile -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:latest
+      
+      # Also build minimal version for comparison
+      - echo "Building minimal CPU container for testing..."
+      - docker build -f Dockerfile.minimal -t $IMAGE_REPO_NAME:minimal .
+      - docker tag $IMAGE_REPO_NAME:minimal $REPOSITORY_URI:minimal
+      
+      - echo "Build completed on `date`"
+      
+  post_build:
+    commands:
+      - echo "📤 Build completed on `date`"
+      - echo "Pushing the Docker images..."
+      
+      # Push both versions
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:minimal
+      
+      - echo "✅ Images pushed successfully!"
+      - echo "Production image: $REPOSITORY_URI:latest"
+      - echo "Minimal image: $REPOSITORY_URI:minimal"
+      - echo "Tagged image: $REPOSITORY_URI:$IMAGE_TAG"
+      
+      # Output the image URIs for use in CDK
+      - echo "ECR_IMAGE_URI=$REPOSITORY_URI:latest" >> build_outputs.txt
+      - echo "ECR_IMAGE_URI_MINIMAL=$REPOSITORY_URI:minimal" >> build_outputs.txt
+      - echo "ECR_IMAGE_URI_TAGGED=$REPOSITORY_URI:$IMAGE_TAG" >> build_outputs.txt
+
+artifacts:
+  files:
+    - build_outputs.txt
+    - compress_model.py
+    - requirements.txt
+    - README.md 

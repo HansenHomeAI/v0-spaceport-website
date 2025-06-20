@@ -1,5 +1,5 @@
-# Minimal SOGS Compression Container (CPU-only for testing)
-# Use when CUDA is not available or for development/testing
+# Simple SOGS Compression Container (CPU-only, immediate testing)
+# This version works without CUDA and can be built anywhere
 FROM python:3.9-slim
 
 # Set environment variables
@@ -15,8 +15,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     build-essential \
-    cmake \
-    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip
@@ -25,12 +23,9 @@ RUN python -m pip install --upgrade pip
 # Install PyTorch CPU-only version
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-# Install dependencies
+# Copy and install requirements
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-
-# Note: SOGS may not work optimally without CUDA, but this allows testing the container structure
-# For production use, the full CUDA-enabled Dockerfile should be used
 
 # Copy compression script
 COPY compress_model.py .
