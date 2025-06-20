@@ -1871,11 +1871,6 @@ class SpiralDesigner:
 
                         safety_altitude = best_sample['elevation'] + self.SAFETY_BUFFER_FT
 
-                        dist_from_start_ft = self.haversine_distance(
-                            current_wp['lat'], current_wp['lon'],
-                            best_sample['lat'], best_sample['lon']
-                        ) * 3.28084
-
                         safety_waypoints.append({
                             'lat': best_sample['lat'],
                             'lon': best_sample['lon'],
@@ -1885,7 +1880,11 @@ class SpiralDesigner:
                             'abs_deviation': anomaly['abs_deviation'],
                             'segment_idx': segment_idx,
                             'type': 'critical_safety_enhanced',
-                            'distance_from_start': dist_from_start_ft
+                            'distance_from_start': self.calculate_distance_along_segment(
+                                current_wp['lat'], current_wp['lon'], 
+                                next_wp['lat'], next_wp['lon'], 
+                                best_sample['lat'], best_sample['lon']
+                            )
                         })
                         print(f"✅ Enhanced safety waypoint placed at ridge-lip (+{best_dev:.1f}ft dev)")
                 else:
@@ -1900,11 +1899,6 @@ class SpiralDesigner:
                     max_elevation = max(p['elevation'] for p in dense_points)
                     safety_altitude = max_elevation + (self.SAFETY_BUFFER_FT * 0.7)  # Slightly less buffer for verified moderate
                     
-                    dist_from_start_ft = self.haversine_distance(
-                        current_wp['lat'], current_wp['lon'],
-                        point['lat'], point['lon']
-                    ) * 3.28084
-
                     safety_waypoints.append({
                         'lat': point['lat'],
                         'lon': point['lon'],
@@ -1914,7 +1908,11 @@ class SpiralDesigner:
                         'abs_deviation': anomaly['abs_deviation'],
                         'segment_idx': segment_idx,
                         'type': 'moderate_safety',
-                        'distance_from_start': dist_from_start_ft
+                        'distance_from_start': self.calculate_distance_along_segment(
+                            current_wp['lat'], current_wp['lon'], 
+                            next_wp['lat'], next_wp['lon'], 
+                            point['lat'], point['lon']
+                        )
                     })
                     
                     print(f"⚠️  Moderate safety waypoint: Verified terrain feature +{deviation:.1f}ft")
@@ -2113,6 +2111,52 @@ class SpiralDesigner:
         
         print(f"🔍 Enhanced ridge sampling: {len(enhanced_samples_with_elevation)} dense samples around anomaly")
         return enhanced_samples_with_elevation
+
+    def calculate_distance_along_segment(self, start_lat: float, start_lon: float, end_lat: float, end_lon: float, point_lat: float, point_lon: float) -> float:
+        """
+        Calculate the distance along a segment from start to the projection of a point onto the segment.
+        
+        This uses vector projection to find where along the segment line the safety waypoint
+        should be positioned for proper ordering.
+        
+        Args:
+            start_lat, start_lon: Segment start coordinates
+            end_lat, end_lon: Segment end coordinates  
+            point_lat, point_lon: Safety waypoint coordinates
+            
+        Returns:
+            Distance in feet from segment start to the projected position
+        """
+        # Convert to local XY coordinates for easier vector math
+        # Use segment start as origin
+        start_xy = {'x': 0, 'y': 0}
+        end_xy = self.lat_lon_to_xy(end_lat, end_lon, start_lat, start_lon)
+        point_xy = self.lat_lon_to_xy(point_lat, point_lon, start_lat, start_lon)
+        
+        # Vector from start to end (segment vector)
+        segment_vec = {'x': end_xy['x'], 'y': end_xy['y']}
+        segment_length_sq = segment_vec['x']**2 + segment_vec['y']**2
+        
+        if segment_length_sq == 0:
+            # Start and end are the same point
+            return 0.0
+        
+        # Vector from start to point
+        start_to_point = {'x': point_xy['x'], 'y': point_xy['y']}
+        
+        # Project start_to_point onto segment_vec
+        # t = (start_to_point · segment_vec) / |segment_vec|²
+        dot_product = start_to_point['x'] * segment_vec['x'] + start_to_point['y'] * segment_vec['y']
+        t = dot_product / segment_length_sq
+        
+        # Clamp t to [0, 1] to stay within segment bounds
+        t = max(0.0, min(1.0, t))
+        
+        # Calculate distance along segment
+        segment_length = math.sqrt(segment_length_sq)
+        distance_along_segment = t * segment_length
+        
+        return distance_along_segment
 
 # Lambda handler function
 def lambda_handler(event, context):
