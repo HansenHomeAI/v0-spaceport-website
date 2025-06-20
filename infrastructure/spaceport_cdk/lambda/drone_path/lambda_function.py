@@ -1603,7 +1603,8 @@ class SpiralDesigner:
     ANOMALY_THRESHOLD = 25          # 25ft deviation triggers investigation (balanced detection)
     CRITICAL_THRESHOLD = 70         # 70ft deviation = immediate waypoint (major hazards)
     MODERATE_THRESHOLD = 40         # 40ft deviation = verification (moderate hazards)
-    DENSE_SAMPLE_INTERVAL = 80      # Verification sampling every 80ft (efficient confirmation)
+    DENSE_SAMPLE_INTERVAL = 35      # Dense sampling every 35ft around anomalies (high precision)
+    RIDGE_DETECTION_RADIUS = 150    # Sample within 150ft radius around detected anomalies
     MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 2  # Respect 99-waypoint limit
     SAFETY_BUFFER_FT = 100          # 100ft safety clearance above detected terrain
     MAX_API_CALLS_PER_REQUEST = 25  # Conservative limit for 30s timeout
@@ -1839,21 +1840,47 @@ class SpiralDesigner:
             if risk_level == 'critical':
                 # Critical anomaly - immediate safety waypoint
                 if deviation > 0:
-                    # Positive deviation (hill/obstacle) - fly over it
-                    safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
-                    reason = f"Critical terrain obstacle: +{deviation:.1f}ft hill"
+                    # Positive deviation (hill/obstacle) - enhanced ridge mapping
+                    print(f"🚨 Critical anomaly detected: +{deviation:.1f}ft - performing enhanced ridge sampling")
+                    
+                    # Perform enhanced dense sampling around the anomaly
+                    enhanced_samples = self.enhanced_ridge_sampling(
+                        anomaly, current_wp['lat'], current_wp['lon'], 
+                        next_wp['lat'], next_wp['lon']
+                    )
+                    
+                    if enhanced_samples:
+                        # Find the highest point from enhanced sampling for optimal safety waypoint placement
+                        max_elevation_sample = max(enhanced_samples, key=lambda x: x['elevation'])
+                        safety_altitude = max_elevation_sample['elevation'] + self.SAFETY_BUFFER_FT
+                        
+                        safety_waypoints.append({
+                            'lat': max_elevation_sample['lat'],
+                            'lon': max_elevation_sample['lon'],
+                            'altitude': safety_altitude,
+                            'elevation': max_elevation_sample['elevation'],
+                            'reason': f"Enhanced ridge mapping: +{deviation:.1f}ft peak at {max_elevation_sample['elevation']:.0f}ft",
+                            'abs_deviation': anomaly['abs_deviation'],
+                            'segment_idx': segment_idx,
+                            'type': 'critical_safety_enhanced'
+                        })
+                        print(f"✅ Enhanced safety waypoint placed at highest point: {max_elevation_sample['elevation']:.0f}ft")
+                    else:
+                        # Fallback to original method if enhanced sampling fails
+                        safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
+                        reason = f"Critical terrain obstacle: +{deviation:.1f}ft hill"
 
-                    safety_waypoints.append({
-                        'lat': point['lat'],
-                        'lon': point['lon'],
-                        'altitude': safety_altitude,
-                        'elevation': actual_elevation,
-                        'reason': reason,
-                        'abs_deviation': anomaly['abs_deviation'],
-                        'segment_idx': segment_idx,
-                        'type': 'critical_safety'
-                    })
-                    print(f"🚨 Critical safety waypoint: {reason}")
+                        safety_waypoints.append({
+                            'lat': point['lat'],
+                            'lon': point['lon'],
+                            'altitude': safety_altitude,
+                            'elevation': actual_elevation,
+                            'reason': reason,
+                            'abs_deviation': anomaly['abs_deviation'],
+                            'segment_idx': segment_idx,
+                            'type': 'critical_safety'
+                        })
+                        print(f"🚨 Fallback safety waypoint: {reason}")
                 else:
                     # Negative deviation (valley) - ignored per new policy (no descent)
                     print(f"ℹ️  Skipping valley deviation {deviation:.1f}ft (no safety waypoint needed)")
@@ -1999,6 +2026,80 @@ class SpiralDesigner:
         
         print(f"📊 Final waypoint count: {len(enhanced_waypoints)} (original: {len(original_waypoints)}, safety: {len(enhanced_waypoints) - len(original_waypoints)})")
         return enhanced_waypoints
+
+    def enhanced_ridge_sampling(self, anomaly: Dict, segment_start_lat: float, segment_start_lon: float, 
+                               segment_end_lat: float, segment_end_lon: float) -> List[Dict]:
+        """
+        Perform enhanced dense sampling around a detected anomaly to better map ridgelines.
+        
+        SMART SAMPLING STRATEGY:
+        1. Create dense sample grid around the anomaly point
+        2. Sample along the segment direction for ridge continuity
+        3. Sample perpendicular to segment for ridge width mapping  
+        4. Use 35ft intervals for high-precision terrain mapping
+        5. Limit total samples to stay within API budget
+        
+        This helps accurately place safety waypoints by understanding the full
+        extent and shape of terrain features like ridgelines.
+        
+        Args:
+            anomaly: Detected anomaly with point coordinates and deviation
+            segment_start_lat, segment_start_lon: Start of the segment being analyzed
+            segment_end_lat, segment_end_lon: End of the segment being analyzed
+            
+        Returns:
+            List of enhanced sample points with elevations around the anomaly
+        """
+        anomaly_lat = anomaly['point']['lat']
+        anomaly_lon = anomaly['point']['lon']
+        
+        # Calculate segment direction vector for oriented sampling
+        segment_bearing = math.atan2(
+            segment_end_lat - segment_start_lat,
+            segment_end_lon - segment_start_lon
+        )
+        
+        # Convert radius to GPS degrees (approximate)
+        radius_degrees = self.RIDGE_DETECTION_RADIUS / 364000  # ~364,000 ft per degree
+        interval_degrees = self.DENSE_SAMPLE_INTERVAL / 364000
+        
+        enhanced_samples = []
+        
+        # ALONG-SEGMENT SAMPLING: Map ridge continuity along flight path
+        for offset_ft in [-100, -70, -35, 0, 35, 70, 100]:  # 7 samples along segment
+            offset_degrees = offset_ft / 364000
+            sample_lat = anomaly_lat + offset_degrees * math.cos(segment_bearing)
+            sample_lon = anomaly_lon + offset_degrees * math.sin(segment_bearing)
+            enhanced_samples.append({'lat': sample_lat, 'lon': sample_lon, 'type': 'along_segment'})
+        
+        # CROSS-SEGMENT SAMPLING: Map ridge width perpendicular to flight path
+        perp_bearing = segment_bearing + math.pi / 2  # 90 degrees perpendicular
+        for offset_ft in [-70, -35, 35, 70]:  # 4 samples across segment
+            offset_degrees = offset_ft / 364000
+            sample_lat = anomaly_lat + offset_degrees * math.cos(perp_bearing)
+            sample_lon = anomaly_lon + offset_degrees * math.sin(perp_bearing)
+            enhanced_samples.append({'lat': sample_lat, 'lon': sample_lon, 'type': 'cross_segment'})
+        
+        # Limit total samples to stay within API budget (max 11 samples per anomaly)
+        if len(enhanced_samples) > 11:
+            enhanced_samples = enhanced_samples[:11]
+        
+        # Batch sample elevations for efficiency
+        sample_locations = [(s['lat'], s['lon']) for s in enhanced_samples]
+        sample_elevations = self.get_elevations_feet_optimized(sample_locations)
+        
+        # Combine coordinates with elevations
+        enhanced_samples_with_elevation = []
+        for sample, elevation in zip(enhanced_samples, sample_elevations):
+            enhanced_samples_with_elevation.append({
+                'lat': sample['lat'],
+                'lon': sample['lon'],
+                'elevation': elevation,
+                'sample_type': sample['type']
+            })
+        
+        print(f"🔍 Enhanced ridge sampling: {len(enhanced_samples_with_elevation)} dense samples around anomaly")
+        return enhanced_samples_with_elevation
 
 # Lambda handler function
 def lambda_handler(event, context):
