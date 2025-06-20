@@ -1,6 +1,6 @@
 # 🚀 Spaceport Website & ML Pipeline
 
-A comprehensive web application with an integrated **3D Gaussian Splatting ML pipeline** for reconstructing 3D models from drone images.
+> **Production-ready web application with integrated Gaussian Splatting ML pipeline for 3D reconstruction**
 
 ## 🎯 Project Overview
 
@@ -51,50 +51,95 @@ This production-ready system processes uploaded drone images through a sophistic
 
 ```
 /
-├── infrastructure/           # AWS CDK infrastructure code
-│   ├── spaceport_cdk/       # CDK stack definitions
-│   ├── containers/          # Docker containers for ML pipeline
-│   └── build scripts        # Container build automation
-├── src/                     # Frontend React application
-├── public/                  # Static assets
-├── docs/                    # Project documentation
-├── README.md               # This file - main project documentation
-└── DEPLOYMENT.md           # Deployment guide and troubleshooting
+├── frontend/           # React-based website (HTML, CSS, JS)
+├── infrastructure/     # AWS CDK infrastructure & Lambda functions
+├── assets/            # Static images and logos
+├── docs/              # All documentation
+├── tests/             # All test files (unit, integration, ML)
+├── scripts/           # Build, deployment, and container scripts
+│   ├── build/         # Container build scripts
+│   ├── deployment/    # Production deployment scripts
+│   └── container-management/  # ML container management
+├── .github/           # GitHub Actions CI/CD
+└── [config files]     # .gitignore, .cursorrules, env.example, etc.
 ```
 
-## 🚀 Quick Start
-
-### Prerequisites
-- AWS CLI configured with appropriate credentials
-- Docker installed and running
-- Node.js and npm installed
-- Python 3.9+ installed
-
-### Backend Deployment
-```bash
-# Navigate to CDK directory
-cd infrastructure/spaceport_cdk
-
-# Activate virtual environment
-source venv/bin/activate
-
-# Deploy all infrastructure
-cdk deploy --all
-
-# Build and push ML containers (after infrastructure deployment)
-cd ../containers
-./scripts/build-all.sh
-```
+## 🎯 Quick Start
 
 ### Frontend Development
 ```bash
-# Install dependencies
-npm install
+cd frontend/
+# Open index.html in browser or serve with local server
+```
 
-# Start development server
-npm start
+### Infrastructure Deployment
+```bash
+cd infrastructure/spaceport_cdk/
+cdk deploy --all
+```
 
-# Visit http://localhost:3000
+### Building Containers
+```bash
+cd scripts/build/
+./build-all.sh
+```
+
+## 📚 Documentation
+
+- **[ML Pipeline Guide](docs/README_ML_PIPELINE.md)** - Complete ML pipeline documentation
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Infrastructure deployment instructions
+- **[API Documentation](docs/api.md)** - API endpoints and usage
+- **[Project Status](docs/PROJECT_STATUS.md)** - Current development status
+- **[Optimization Guide](docs/OPTIMIZATION_IMPLEMENTATION_GUIDE.md)** - Performance optimization
+
+## 🏗️ Architecture
+
+### Core Components
+- **Frontend**: Drone path visualization + ML processing interface
+- **Backend**: AWS Lambda functions + API Gateway
+- **ML Pipeline**: SageMaker-based Gaussian Splatting (SfM → 3DGS → Compression)
+- **Infrastructure**: Production AWS services (CDK-managed)
+
+### AWS Services Used
+- **S3**: Website hosting + ML data storage
+- **CloudFront**: Global CDN
+- **API Gateway**: RESTful endpoints
+- **Lambda**: Serverless backend logic
+- **Step Functions**: ML workflow orchestration
+- **SageMaker**: ML training (ml.g4dn.xlarge, ml.c6i.2xlarge/4xlarge)
+- **ECR**: Container registry
+- **CloudWatch**: Monitoring & logging
+
+## 🚀 Production Ready
+
+✅ **AWS Quotas Approved** for production ML pipeline  
+✅ **CI/CD Pipeline** with GitHub Actions  
+✅ **Container-based ML** with optimized algorithms  
+✅ **Monitoring & Alerting** via CloudWatch  
+✅ **Security Best Practices** with IAM least-privilege  
+
+## 🧪 Testing
+
+```bash
+cd tests/
+python test_current_pipeline.py      # Test ML pipeline
+python safety_validation_test.py     # Safety validation
+python test_adaptive_sampling.py     # Adaptive sampling tests
+```
+
+## 🔧 Development
+
+### Environment Setup
+```bash
+cp env.example .env
+# Configure your AWS credentials and API keys
+```
+
+### Container Development
+```bash
+cd scripts/container-management/
+./run_sfm_fast.sh     # Fast SfM testing
+./test_local.sh       # Local container testing
 ```
 
 ## 🎯 API Endpoints
@@ -189,4 +234,5 @@ npm start
 
 **Status**: Production Ready 🚀  
 **Account**: 975050048887, **Region**: us-west-2  
-**Last Updated**: After production COLMAP 3.11.1 implementation and repository cleanup 
+**Last Updated**: Directory reorganization completed  
+**Next**: Deploy and test full ML pipeline 
