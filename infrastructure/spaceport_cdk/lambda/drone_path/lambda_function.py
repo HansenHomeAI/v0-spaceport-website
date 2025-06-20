@@ -1842,26 +1842,22 @@ class SpiralDesigner:
                     # Positive deviation (hill/obstacle) - fly over it
                     safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
                     reason = f"Critical terrain obstacle: +{deviation:.1f}ft hill"
+
+                    safety_waypoints.append({
+                        'lat': point['lat'],
+                        'lon': point['lon'],
+                        'altitude': safety_altitude,
+                        'elevation': actual_elevation,
+                        'reason': reason,
+                        'abs_deviation': anomaly['abs_deviation'],
+                        'segment_idx': segment_idx,
+                        'type': 'critical_safety'
+                    })
+                    print(f"🚨 Critical safety waypoint: {reason}")
                 else:
-                    # Negative deviation (valley) - maintain reasonable altitude
-                    safety_altitude = max(current_wp.get('altitude', 0), next_wp.get('altitude', 0))
-                    if safety_altitude == 0:
-                        safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
-                    reason = f"Critical terrain drop: {deviation:.1f}ft valley"
-                
-                safety_waypoints.append({
-                    'lat': point['lat'],
-                    'lon': point['lon'],
-                    'altitude': safety_altitude,
-                    'elevation': actual_elevation,
-                    'reason': reason,
-                    'abs_deviation': anomaly['abs_deviation'],
-                    'segment_idx': segment_idx,
-                    'type': 'critical_safety'
-                })
-                
-                print(f"🚨 Critical safety waypoint: {reason}")
-                
+                    # Negative deviation (valley) - ignored per new policy (no descent)
+                    print(f"ℹ️  Skipping valley deviation {deviation:.1f}ft (no safety waypoint needed)")
+            
             elif risk_level == 'moderate' and deviation > 0:
                 # Moderate positive deviation - verify with dense sampling
                 dense_points = self.verify_moderate_anomaly(point, actual_elevation)
