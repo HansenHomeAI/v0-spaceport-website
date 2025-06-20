@@ -1605,7 +1605,7 @@ class SpiralDesigner:
     MODERATE_THRESHOLD = 40         # 40ft deviation = verification (moderate hazards)
     DENSE_SAMPLE_INTERVAL = 35      # Dense sampling every 35ft around anomalies (high precision)
     RIDGE_DETECTION_RADIUS = 150    # Sample within 150ft radius around detected anomalies
-    MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 2  # Respect 99-waypoint limit
+    MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 1  # One safety waypoint per segment eliminates ordering issues
     SAFETY_BUFFER_FT = 100          # 100ft safety clearance above detected terrain
     MAX_API_CALLS_PER_REQUEST = 25  # Conservative limit for 30s timeout
     
