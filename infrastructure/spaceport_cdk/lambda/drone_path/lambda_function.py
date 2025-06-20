@@ -1599,13 +1599,11 @@ class SpiralDesigner:
     
     # Configuration parameters optimized for smart API usage
     SAFE_DISTANCE_FT = 300          # 300ft max distance without sampling (user specified)
-    INITIAL_SAMPLE_INTERVAL = 250   # Sample every 250ft for finer baseline sampling
-    ANOMALY_THRESHOLD = 25          # 25ft deviation triggers investigation (balanced detection)
-    CRITICAL_THRESHOLD = 70         # 70ft deviation = immediate waypoint (major hazards)
-    MODERATE_THRESHOLD = 40         # 40ft deviation = verification (moderate hazards)
-    DENSE_SAMPLE_INTERVAL = 35      # Dense sampling every 35ft around anomalies (high precision)
-    RIDGE_DETECTION_RADIUS = 150    # Sample within 150ft radius around detected anomalies
-    MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 2  # Respect 99-waypoint limit
+    INITIAL_SAMPLE_INTERVAL = 200   # Sample every 200ft for even finer baseline sampling
+    ANOMALY_THRESHOLD = 20          # 20ft deviation now triggers investigation sooner
+    CRITICAL_THRESHOLD = 60         # 60ft deviation = immediate waypoint (more sensitive)
+    MODERATE_THRESHOLD = 35         # 35ft deviation = verification (moderate hazards)
+    MAX_SAFETY_WAYPOINTS_PER_SEGMENT = 4  # Allow up to 4 safety waypoints per long segment
     SAFETY_BUFFER_FT = 100          # 100ft safety clearance above detected terrain
     MAX_API_CALLS_PER_REQUEST = 25  # Conservative limit for 30s timeout
     
