@@ -1599,7 +1599,7 @@ class SpiralDesigner:
     
     # Configuration parameters optimized for smart API usage
     SAFE_DISTANCE_FT = 300          # 300ft max distance without sampling (user specified)
-    INITIAL_SAMPLE_INTERVAL = 300   # Sample every 300ft - catches major terrain changes efficiently
+    INITIAL_SAMPLE_INTERVAL = 250   # Sample every 250ft for finer baseline sampling
     ANOMALY_THRESHOLD = 25          # 25ft deviation triggers investigation (balanced detection)
     CRITICAL_THRESHOLD = 70         # 70ft deviation = immediate waypoint (major hazards)
     MODERATE_THRESHOLD = 40         # 40ft deviation = verification (moderate hazards)
@@ -1850,37 +1850,38 @@ class SpiralDesigner:
                     )
                     
                     if enhanced_samples:
-                        # Find the highest point from enhanced sampling for optimal safety waypoint placement
-                        max_elevation_sample = max(enhanced_samples, key=lambda x: x['elevation'])
-                        safety_altitude = max_elevation_sample['elevation'] + self.SAFETY_BUFFER_FT
-                        
+                        # Choose sample with the GREATEST POSITIVE DEVIATION (ridge-lip) instead of simply highest elevation.
+                        best_sample = None
+                        best_dev = -float('inf')
+                        for es in enhanced_samples:
+                            expected_elev = self.linear_interpolate_elevation(
+                                current_wp['lat'], current_wp['lon'], current_wp['elevation'],
+                                next_wp['lat'], next_wp['lon'], next_wp['elevation'],
+                                es['lat'], es['lon']
+                            )
+                            sample_dev = es['elevation'] - expected_elev
+                            if sample_dev > best_dev:
+                                best_dev = sample_dev
+                                best_sample = es
+
+                        if best_sample is None:
+                            # Fallback to highest elevation sample
+                            best_sample = max(enhanced_samples, key=lambda x: x['elevation'])
+                            best_dev = best_sample['elevation'] - expected_elev
+
+                        safety_altitude = best_sample['elevation'] + self.SAFETY_BUFFER_FT
+
                         safety_waypoints.append({
-                            'lat': max_elevation_sample['lat'],
-                            'lon': max_elevation_sample['lon'],
+                            'lat': best_sample['lat'],
+                            'lon': best_sample['lon'],
                             'altitude': safety_altitude,
-                            'elevation': max_elevation_sample['elevation'],
-                            'reason': f"Enhanced ridge mapping: +{deviation:.1f}ft peak at {max_elevation_sample['elevation']:.0f}ft",
+                            'elevation': best_sample['elevation'],
+                            'reason': f"Enhanced ridge mapping: +{best_dev:.1f}ft deviation",
                             'abs_deviation': anomaly['abs_deviation'],
                             'segment_idx': segment_idx,
                             'type': 'critical_safety_enhanced'
                         })
-                        print(f"✅ Enhanced safety waypoint placed at highest point: {max_elevation_sample['elevation']:.0f}ft")
-                    else:
-                        # Fallback to original method if enhanced sampling fails
-                        safety_altitude = actual_elevation + self.SAFETY_BUFFER_FT
-                        reason = f"Critical terrain obstacle: +{deviation:.1f}ft hill"
-
-                        safety_waypoints.append({
-                            'lat': point['lat'],
-                            'lon': point['lon'],
-                            'altitude': safety_altitude,
-                            'elevation': actual_elevation,
-                            'reason': reason,
-                            'abs_deviation': anomaly['abs_deviation'],
-                            'segment_idx': segment_idx,
-                            'type': 'critical_safety'
-                        })
-                        print(f"🚨 Fallback safety waypoint: {reason}")
+                        print(f"✅ Enhanced safety waypoint placed at ridge-lip (+{best_dev:.1f}ft dev)")
                 else:
                     # Negative deviation (valley) - ignored per new policy (no descent)
                     print(f"ℹ️  Skipping valley deviation {deviation:.1f}ft (no safety waypoint needed)")
