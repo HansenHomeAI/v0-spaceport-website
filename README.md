@@ -51,25 +51,33 @@ This production-ready system processes uploaded drone images through a sophistic
 
 ```
 /
-├── frontend/           # React-based website (HTML, CSS, JS)
-├── infrastructure/     # AWS CDK infrastructure & Lambda functions
-├── assets/            # Static images and logos
-├── docs/              # All documentation
-├── tests/             # All test files (unit, integration, ML)
-├── scripts/           # Build, deployment, and container scripts
-│   ├── build/         # Container build scripts
-│   ├── deployment/    # Production deployment scripts
+├── docs/              # 🌐 WEBSITE + Documentation
+│   ├── index.html     # Main website file (GitHub Pages)
+│   ├── styles.css     # Website styles
+│   ├── script.js      # Website JavaScript
+│   └── [*.md files]   # Documentation files
+├── infrastructure/    # AWS CDK infrastructure & Lambda functions
+├── assets/           # Static images and logos
+├── tests/            # All test files (unit, integration, ML)
+├── scripts/          # Build, deployment, and container scripts
+│   ├── build/        # Container build scripts
+│   ├── deployment/   # Production deployment scripts
 │   └── container-management/  # ML container management
-├── .github/           # GitHub Actions CI/CD
-└── [config files]     # .gitignore, .cursorrules, env.example, etc.
+├── .github/          # GitHub Actions CI/CD
+└── [config files]    # .gitignore, .cursorrules, env.example, etc.
 ```
 
 ## 🎯 Quick Start
 
+### 🌐 Website (GitHub Pages)
+The website is automatically deployed from the `/docs` folder to: 
+**http://dev.hansentour.com/**
+
 ### Frontend Development
 ```bash
-cd frontend/
-# Open index.html in browser or serve with local server
+cd docs/
+# Edit index.html, styles.css, script.js
+# Push to GitHub - site auto-deploys!
 ```
 
 ### Infrastructure Deployment
