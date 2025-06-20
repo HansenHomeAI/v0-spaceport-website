@@ -1871,6 +1871,11 @@ class SpiralDesigner:
 
                         safety_altitude = best_sample['elevation'] + self.SAFETY_BUFFER_FT
 
+                        dist_from_start_ft = self.haversine_distance(
+                            current_wp['lat'], current_wp['lon'],
+                            best_sample['lat'], best_sample['lon']
+                        ) * 3.28084
+
                         safety_waypoints.append({
                             'lat': best_sample['lat'],
                             'lon': best_sample['lon'],
@@ -1879,7 +1884,8 @@ class SpiralDesigner:
                             'reason': f"Enhanced ridge mapping: +{best_dev:.1f}ft deviation",
                             'abs_deviation': anomaly['abs_deviation'],
                             'segment_idx': segment_idx,
-                            'type': 'critical_safety_enhanced'
+                            'type': 'critical_safety_enhanced',
+                            'distance_from_start': dist_from_start_ft
                         })
                         print(f"✅ Enhanced safety waypoint placed at ridge-lip (+{best_dev:.1f}ft dev)")
                 else:
@@ -1894,6 +1900,11 @@ class SpiralDesigner:
                     max_elevation = max(p['elevation'] for p in dense_points)
                     safety_altitude = max_elevation + (self.SAFETY_BUFFER_FT * 0.7)  # Slightly less buffer for verified moderate
                     
+                    dist_from_start_ft = self.haversine_distance(
+                        current_wp['lat'], current_wp['lon'],
+                        point['lat'], point['lon']
+                    ) * 3.28084
+
                     safety_waypoints.append({
                         'lat': point['lat'],
                         'lon': point['lon'],
@@ -1902,7 +1913,8 @@ class SpiralDesigner:
                         'reason': f"Verified terrain feature: +{deviation:.1f}ft",
                         'abs_deviation': anomaly['abs_deviation'],
                         'segment_idx': segment_idx,
-                        'type': 'moderate_safety'
+                        'type': 'moderate_safety',
+                        'distance_from_start': dist_from_start_ft
                     })
                     
                     print(f"⚠️  Moderate safety waypoint: Verified terrain feature +{deviation:.1f}ft")
