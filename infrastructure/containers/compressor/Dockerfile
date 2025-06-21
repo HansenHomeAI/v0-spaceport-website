@@ -1,73 +1,113 @@
-# SOGS Compression Container for AWS SageMaker
-# Based on NVIDIA CUDA runtime for GPU acceleration
-FROM nvidia/cuda:12.6-runtime-ubuntu22.04
+# Production SOGS Compression Container
+# Optimized for AWS SageMaker with GPU support
 
-# Set environment variables
+FROM nvidia/cuda:12.1-devel-ubuntu22.04
+
+# Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
-ENV CUDA_VISIBLE_DEVICES=0
-
-# Set working directory
-WORKDIR /opt/ml
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+ENV ENVIRONMENT=production
+ENV PYTHONPATH=/opt/ml/code
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     python3-dev \
+    build-essential \
+    cmake \
     git \
     wget \
     curl \
-    build-essential \
-    cmake \
-    pkg-config \
     libjpeg-dev \
     libpng-dev \
+    libwebp-dev \
     libtiff-dev \
-    libavcodec-dev \
-    libavformat-dev \
-    libswscale-dev \
-    libv4l-dev \
-    libxvidcore-dev \
-    libx264-dev \
-    libgtk-3-dev \
-    libatlas-base-dev \
-    gfortran \
-    && rm -rf /var/lib/apt/lists/*
+    libopencv-dev \
+    pkg-config \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# Create symbolic links for python
-RUN ln -s /usr/bin/python3 /usr/bin/python
+# Create and use a Python virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Upgrade pip
-RUN python -m pip install --upgrade pip
+# Upgrade pip and install core packages
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# Install PyTorch with CUDA 12.6 support
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+# Install PyTorch with CUDA support
+RUN pip install --no-cache-dir torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
 
-# Install CuPy for CUDA 12.x
-RUN pip install cupy-cuda12x
+# Install other core dependencies
+RUN pip install --no-cache-dir \
+    cupy-cuda12x \
+    boto3 \
+    awscli \
+    numpy \
+    scipy \
+    pandas \
+    scikit-learn \
+    Pillow \
+    opencv-python \
+    imageio \
+    tqdm \
+    structlog \
+    orjson \
+    plyfile
 
-# Install other ML dependencies
-RUN pip install torchpq
+# Install PLAS algorithm (required for SOGS)
+RUN pip install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git
 
-# Install PLAS (Parallel Linear Assignment Sorting)
-RUN pip install git+https://github.com/fraunhoferhhi/PLAS.git
+# Clone and install PlayCanvas SOGS
+WORKDIR /opt
+RUN git clone https://github.com/playcanvas/sogs.git
+WORKDIR /opt/sogs
+RUN pip install --no-cache-dir -e .
 
-# Copy and install requirements
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Create SageMaker directory structure
+RUN mkdir -p /opt/ml/code /opt/ml/input/data /opt/ml/model /opt/ml/output
 
-# Clone and install SOGS
-RUN git clone https://github.com/playcanvas/sogs.git /tmp/sogs
-WORKDIR /tmp/sogs
-RUN pip install -e .
-
-# Return to working directory
-WORKDIR /opt/ml
+# Set working directory
+WORKDIR /opt/ml/code
 
 # Copy compression script
-COPY compress_model.py .
-RUN chmod +x compress_model.py
+COPY compress.py /opt/ml/code/compress.py
+RUN chmod +x /opt/ml/code/compress.py
 
-# Set entrypoint
-ENTRYPOINT ["python", "/opt/ml/compress_model.py"] 
+# Create entrypoint script for SageMaker
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "🚀 Starting Production SOGS Compression Container"\n\
+echo "Environment: $ENVIRONMENT"\n\
+echo "GPU Info:"\n\
+nvidia-smi || echo "No GPU available"\n\
+\n\
+echo "Verifying installations..."\n\
+python -c "import torch; print(f''CUDA available: {torch.cuda.is_available()}''); import sogs; print(''SOGS imported successfully'')" \n\
+\n\
+echo "Input Data:"\n\
+ls -la /opt/ml/input/data/ || echo "No input data directory"\n\
+\n\
+echo "Starting compression..."\n\
+python3 compress.py\n\
+\n\
+echo "Compression completed! Output files:"\n\
+ls -la /opt/ml/model/\n\
+' > /opt/ml/code/entrypoint.sh
+
+RUN chmod +x /opt/ml/code/entrypoint.sh
+
+# Set proper permissions for SageMaker
+RUN chmod -R 755 /opt/ml/
+
+# Final environment setup
+ENV SAGEMAKER_PROGRAM=compress.py
+ENV SAGEMAKER_SUBMIT_DIRECTORY=/opt/ml/code
+
+# Use production entrypoint
+ENTRYPOINT ["/opt/ml/code/entrypoint.sh"] 

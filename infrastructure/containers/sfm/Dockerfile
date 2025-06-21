@@ -1,53 +1,73 @@
-# Real Production COLMAP Container - Final Version
-# Uses the official COLMAP container with the correct script name
+# Production SFM (COLMAP) Container
+# Optimized for AWS SageMaker Processing Jobs
 
 FROM colmap/colmap:latest
 
 # Switch to root to install packages
 USER root
 
-# Set environment to avoid interactive prompts
+# Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=production
+ENV PYTHONPATH=/opt/ml/code
 
-# Update package lists and install essential tools first
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        wget \
-        curl \
-        unzip \
-        ca-certificates \
-    && rm -rf /var/lib/apt/lists/* || true
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    unzip \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# Try to install Python, but don't fail if it doesn't work
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3 \
-        python3-pip \
-    && rm -rf /var/lib/apt/lists/* || \
-    (echo "Python installation failed, will use alternative approach" && \
-     wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
-     python3 /tmp/get-pip.py || \
-     echo "Will proceed without Python")
+# Create and use a Python virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Install boto3 if possible, otherwise skip
-RUN pip3 install boto3 || \
-    python3 -m pip install boto3 || \
-    echo "boto3 installation skipped - will use shell-only approach"
+# Upgrade pip and install AWS SDK
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir boto3
 
-# Create working directories
+# Create SageMaker directory structure
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
-
-# Copy our production COLMAP script with the expected name
-COPY run_colmap_production.sh /opt/ml/code/run_sfm.sh
-
-# Make it executable
-RUN chmod +x /opt/ml/code/run_sfm.sh
-
-# Verify COLMAP is working
-RUN colmap help || echo "COLMAP verification failed"
 
 # Set working directory
 WORKDIR /opt/ml/code
 
-# Use the expected script name as the entrypoint
-ENTRYPOINT ["/opt/ml/code/run_sfm.sh"] 
+# Copy processing script
+COPY process.py /opt/ml/code/process.py
+RUN chmod +x /opt/ml/code/process.py
+
+# Create entrypoint script for SageMaker
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "🚀 Starting Production SFM (COLMAP) Container"\n\
+echo "Environment: $ENVIRONMENT"\n\
+echo "Verifying installations..."\n\
+python3 --version \n\
+colmap help > /dev/null || (echo "COLMAP command not found!" && exit 1)\n\
+echo "COLMAP OK"\n\
+\n\
+echo "Input Data:"\n\
+ls -la /opt/ml/processing/input/ || echo "No input data directory"\n\
+\n\
+echo "Starting processing..."\n\
+python3 process.py\n\
+\n\
+echo "Processing completed! Output files:"\n\
+ls -la /opt/ml/processing/output/\n\
+' > /opt/ml/code/entrypoint.sh
+
+RUN chmod +x /opt/ml/code/entrypoint.sh
+
+# Set proper permissions for SageMaker
+RUN chmod -R 755 /opt/ml/
+
+# Final environment setup
+ENV SAGEMAKER_PROGRAM=process.py
+ENV SAGEMAKER_SUBMIT_DIRECTORY=/opt/ml/code
+
+# Use production entrypoint
+ENTRYPOINT ["/opt/ml/code/entrypoint.sh"] 
