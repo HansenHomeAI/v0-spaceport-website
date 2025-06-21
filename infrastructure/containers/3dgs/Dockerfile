@@ -1,7 +1,7 @@
 # Production-Ready 3D Gaussian Splatting Container
 # Optimized for AWS SageMaker with GPU support and reliability focus
 
-FROM nvidia/cuda:11.8-devel-ubuntu20.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive

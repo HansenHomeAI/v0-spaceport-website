@@ -13,11 +13,24 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+def get_aws_account_id():
+    """Gets the AWS account ID from the caller identity."""
+    try:
+        sts_client = boto3.client("sts")
+        return sts_client.get_caller_identity()["Account"]
+    except Exception as e:
+        logger.error(f"Could not determine AWS account ID: {e}")
+        return None
+
 def test_full_pipeline():
     """Test complete pipeline from SfM through 3DGS"""
     
     region = 'us-west-2'
-    account_id = '975050048887'
+    account_id = get_aws_account_id()
+
+    if not account_id:
+        logger.error("Exiting due to missing AWS account ID.")
+        return None, 'ERROR'
     
     stepfunctions = boto3.client('stepfunctions', region_name=region)
     
@@ -25,8 +38,8 @@ def test_full_pipeline():
     test_input = {
         "jobName": f"full-pipeline-test-{int(time.time())}",
         "s3Url": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip",
-        "sfmImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:real-colmap-fixed-final",
-        "trainImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",  # OUR OPTIMIZED CONTAINER
+        "sfmImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:latest",
+        "trainImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",
         "compressImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest",
         "inputS3Uri": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip"
         # NOTE: Removed "pipelineStep" - let it run the full pipeline

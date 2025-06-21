@@ -13,13 +13,19 @@ ENV ENVIRONMENT=production
 ENV PYTHONPATH=/opt/ml/code
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    unzip \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+RUN for i in 1 2 3; do \
+    echo "🛠️  Attempt $i: Installing system dependencies..." && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-venv \
+        unzip \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    break || echo "⚠️  apt-get failed, retrying in 30s..." && sleep 30; \
+  done
 
 # Create and use a Python virtual environment
 RUN python3 -m venv /opt/venv

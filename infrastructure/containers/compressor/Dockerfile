@@ -1,7 +1,7 @@
 # Production SOGS Compression Container
 # Optimized for AWS SageMaker with GPU support
 
-FROM nvidia/cuda:12.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.1.0-devel-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
