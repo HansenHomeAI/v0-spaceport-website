@@ -30,7 +30,7 @@ def install_sogs():
             'cupy-cuda12x',  # GPU acceleration - required for SOGS
             'trimesh', 'plyfile', 'structlog', 'orjson',
             'torchpq',  # Required for SOGS
-            'git+https://github.com/playcanvas/plas.git'  # PLAS algorithm
+            'git+https://github.com/fraunhoferhhi/PLAS.git'  # PLAS algorithm - CORRECT REPO!
         ]
         
         for dep in python_deps:
@@ -131,48 +131,23 @@ def run_real_sogs_compression(input_file, output_dir, gpu_available=True):
     try:
         logger.info("🚀 Running REAL SOGS compression with GPU!")
         
-        # Create output directory
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # Try SOGS CLI
-        cmd = ['sogs-compress', '--ply', input_file, '--output-dir', output_dir]
-        if gpu_available:
-            cmd.extend(['--gpu'])
+        # Run SOGS compression (GPU will be used automatically if available)
+        cmd = [
+            "sogs-compress", 
+            "--ply", input_file,
+            "--output-dir", output_dir
+        ]
         
         logger.info(f"🎯 Command: {' '.join(cmd)}")
         
-        start_time = time.time()
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
-        end_time = time.time()
+        result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode == 0:
-            logger.info("🎉 REAL SOGS compression SUCCESS!")
-            logger.info(f"⏱️ Processing time: {end_time - start_time:.1f}s")
-            logger.info(f"📤 STDOUT: {result.stdout}")
-            
-            # Calculate compression metrics
-            input_size = os.path.getsize(input_file)
-            output_size = sum(
-                os.path.getsize(os.path.join(root, file))
-                for root, dirs, files in os.walk(output_dir)
-                for file in files
-            )
-            compression_ratio = input_size / output_size if output_size > 0 else 1.0
-            
-            return {
-                'method': 'real_sogs_gpu',
-                'success': True,
-                'gpu_used': gpu_available,
-                'processing_time': end_time - start_time,
-                'input_size': input_size,
-                'output_size': output_size,
-                'compression_ratio': compression_ratio,
-                'stdout': result.stdout,
-                'stderr': result.stderr
-            }
+            logger.info("✅ SOGS compression completed successfully!")
+            logger.info(f"📊 STDOUT: {result.stdout}")
         else:
             logger.error(f"❌ SOGS failed: {result.stderr}")
-            return None
+            raise Exception("SOGS compression failed")
             
     except Exception as e:
         logger.error(f"❌ SOGS compression error: {e}")
