@@ -1,0 +1,31 @@
+FROM python:3.9-slim
+
+# Install minimal dependencies
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    boto3==1.28.17 \
+    sagemaker==2.180.0
+
+# Install Python packages
+RUN pip install --no-cache-dir \
+    numpy==1.24.3 \
+    boto3==1.28.17 \
+    sagemaker==2.180.0
+
+# Create SageMaker directories
+RUN mkdir -p /opt/ml/code /opt/ml/input/data/training /opt/ml/model
+
+# Copy production training script
+COPY train_gaussian_production.py /opt/ml/code/train.py
+
+# Set up entrypoint
+WORKDIR /opt/ml/code
+RUN chmod +x train.py
+
+# Create simple entrypoint
+RUN echo '#!/bin/bash\necho "🚀 Starting Production 3DGS Container"\npython3 /opt/ml/code/train.py' > /opt/ml/code/entrypoint.sh
+RUN chmod +x /opt/ml/code/entrypoint.sh
+
+ENV SAGEMAKER_PROGRAM=train.py
+ENTRYPOINT ["/opt/ml/code/entrypoint.sh"]

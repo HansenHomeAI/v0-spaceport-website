@@ -1,0 +1,18 @@
+FROM ubuntu:20.04
+
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the minimal test script as the expected name
+COPY run_sfm_minimal.sh /opt/ml/code/run_sfm.sh
+
+# Make it executable
+RUN chmod +x /opt/ml/code/run_sfm.sh
+
+# Set working directory
+WORKDIR /opt/ml/code
+
+# Set the entrypoint
+ENTRYPOINT ["/opt/ml/code/run_sfm.sh"] 
