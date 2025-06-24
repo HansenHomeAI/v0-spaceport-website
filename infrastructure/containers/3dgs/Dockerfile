@@ -23,8 +23,8 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Copy training script
-COPY train_gaussian.py .
-RUN chmod +x train_gaussian.py
+COPY train_gaussian_production.py /opt/ml/code/train.py
+RUN chmod +x /opt/ml/code/train.py
 
 # Set entrypoint
-ENTRYPOINT ["python3", "/opt/ml/train_gaussian.py"] 
+ENTRYPOINT ["python3", "/opt/ml/code/train.py"] 

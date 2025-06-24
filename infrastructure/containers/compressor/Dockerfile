@@ -1,16 +1,20 @@
-# Model Compression Container
+# Production Model Compression Container
 FROM python:3.9-slim
 
-# Set working directory
-WORKDIR /opt/ml
+WORKDIR /opt/ml/code
 
-# Install Python dependencies
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy compression script
-COPY compress_model.py .
-RUN chmod +x compress_model.py
+# Copy the production compression script
+COPY compress.py .
+RUN chmod +x compress.py
 
-# Set entrypoint
-ENTRYPOINT ["python", "/opt/ml/compress_model.py"] 
+# Set the entrypoint to our production script
+ENTRYPOINT ["python", "/opt/ml/code/compress.py"] 
