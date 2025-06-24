@@ -86,11 +86,20 @@ cd scripts/build/
 
 ## 📚 Documentation
 
+### **Core Documentation**
+- **[Development Guidelines](docs/DEVELOPMENT_GUIDELINES.md)** - 🚨 **MANDATORY**: Rules for AI assistants
+- **[Container Architecture](docs/CONTAINER_ARCHITECTURE.md)** - ⚡ **CRITICAL**: Container organization & maintenance rules
+- **[Project Status](docs/PROJECT_STATUS.md)** - Current development status & recent achievements
 - **[ML Pipeline Guide](docs/README_ML_PIPELINE.md)** - Complete ML pipeline documentation
+
+### **Implementation Guides**  
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Infrastructure deployment instructions
 - **[API Documentation](docs/api.md)** - API endpoints and usage
-- **[Project Status](docs/PROJECT_STATUS.md)** - Current development status
 - **[Optimization Guide](docs/OPTIMIZATION_IMPLEMENTATION_GUIDE.md)** - Performance optimization
+
+### **Analysis & History**
+- **[ML Pipeline Analysis](docs/ML_PIPELINE_ANALYSIS.md)** - Detailed pipeline testing results
+- **[SOGS Completion Summary](docs/SOGS_COMPLETION_SUMMARY.md)** - Compression implementation details
 
 ## 🏗️ Architecture
 

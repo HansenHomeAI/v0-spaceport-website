@@ -65,23 +65,35 @@ This is a comprehensive web application with an integrated Gaussian Splatting ML
    - Email notifications via SES
    - Job status updates
 
-### Container Images (ECR):
-- `sfm-processing`: COLMAP-based Structure-from-Motion
-- `gaussian-splatting`: 3D Gaussian Splatting training
-- `sogs-compression`: Gaussian splat compression
+### Container Images (ECR) - PRODUCTION READY:
+- `spaceport/sfm:latest`: COLMAP 3.11.1 Structure-from-Motion ✅
+- `spaceport/3dgs:latest`: Optimized 3D Gaussian Splatting training ✅  
+- `spaceport/compressor:latest`: SOGS-style Gaussian splat compression ✅
+
+### Container Organization Rules:
+- **GOLDEN RULE**: One Dockerfile per container directory
+- **Build Process**: Use `scripts/deployment/deploy.sh` or GitHub Actions
+- **Platform**: Always `--platform linux/amd64` for SageMaker compatibility
+- **NO DUPLICATES**: Never create multiple Dockerfiles in same directory
 
 ## 📁 Directory Structure
 
 ```
 /
 ├── infrastructure/           # AWS CDK infrastructure code
-│   ├── spaceport_cdk/       # CDK stack definitions
+│   ├── spaceport_cdk/       # CDK stack definitions  
 │   ├── lambda/              # Lambda function code
-│   └── containers/          # Docker containers for ML pipeline
-├── src/                     # Frontend React application
-├── public/                  # Static assets
-├── README.md               # Main project documentation
-└── README_ML_PIPELINE.md   # ML pipeline specific documentation
+│   └── containers/          # PRODUCTION ML containers (1 Dockerfile each)
+│       ├── sfm/             # COLMAP Structure-from-Motion
+│       ├── 3dgs/            # 3D Gaussian Splatting training
+│       └── compressor/      # SOGS compression
+├── scripts/                 # Build and deployment scripts
+│   └── deployment/          # Production deployment scripts
+├── docs/                    # ALL documentation files
+├── tests/                   # Organized test files
+├── assets/                  # Static images and logos
+├── [frontend files]         # HTML, CSS, JS for website
+└── [config files]           # .cursorrules, .gitignore, buildspec.yml
 ```
 
 ## 🔧 Development Guidelines

@@ -52,24 +52,29 @@ The Spaceport ML Pipeline is a **production-ready** 3D Gaussian Splatting system
 - **Performance**: ~30 seconds (test), ~15 minutes (production)
 - **Status**: **FIXED** and validated ✅
 
-## 🔧 Recent Critical Fixes
+## 🔧 Recent Critical Fixes & Major Refactoring
 
-### Issue: Compression Step Failures ✅ RESOLVED
-**Problem**: Compression jobs failing due to SageMaker job name conflicts
-**Root Cause**: All pipeline steps using same base job name
-**Solution**: Implemented unique naming scheme:
-- SfM: `{jobName}-sfm`
-- 3DGS: `{jobName}-3dgs`
-- Compression: `{jobName}-compression`
+### Issue: Messy Codebase & Build Inconsistencies ✅ RESOLVED
+**Problem**: Multiple Dockerfiles, duplicate scripts, inconsistent build patterns
+**Root Cause**: Experimental files and build variants accumulated over development
+**Solution**: Complete container architecture standardization:
+- **Container Cleanup**: Single Dockerfile per container (removed 10+ duplicates)
+- **Build Standardization**: Unified `scripts/deployment/deploy.sh` script
+- **CI/CD Enhancement**: GitHub Actions for cloud-based builds
+- **Documentation**: Comprehensive container architecture guide
 
-**Additional Fixes Applied**:
-- Fixed container entrypoint from shell script to Python direct execution
-- Resolved ARM64/AMD64 platform compatibility with `--platform linux/amd64`
-- Updated container dependencies and error handling
+### Issue: Local Docker Build Failures ✅ RESOLVED  
+**Problem**: Mac Docker Desktop incompatibility with `--platform linux/amd64`
+**Root Cause**: ARM64/AMD64 architecture conflicts in local environment
+**Solution**: GitHub Actions cloud builds:
+- **Environment**: Ubuntu Linux runners (native linux/amd64)
+- **Automation**: Triggered by container changes only
+- **Reliability**: Bypasses all local Docker environment issues
 
-**Validation**: Complete end-to-end pipeline tested successfully
-- **Execution**: `12b8e92d-7947-43a3-8f2e-763e309cf1a1` - SUCCEEDED ✅
-- **All Jobs**: SfM, 3DGS, and Compression completed without errors
+**Validation**: Complete codebase refactoring completed successfully
+- **Containers**: 3 production containers with single Dockerfile each ✅
+- **Build Process**: Standardized and automated ✅  
+- **Documentation**: Comprehensive guides for future maintenance ✅
 
 ### Recent Achievement: Production COLMAP Implementation ✅ COMPLETED
 **Implementation**: Successfully deployed real COLMAP 3.11.1 for Structure-from-Motion processing
