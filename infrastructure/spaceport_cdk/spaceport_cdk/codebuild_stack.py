@@ -148,40 +148,23 @@ class CodeBuildStack(Stack):
             timeout_in_minutes=60  # 1 hour for container builds
         )
 
-        # Manual build project (for testing without webhooks)
+        # Manual CodeBuild project
         manual_build_project = codebuild.Project(
-            self, "SOGSManualBuild",
-            project_name="spaceport-sogs-manual-build",
-            description="Manual build for SOGS compression container",
-            
+            self, "ManualContainerBuildProject",
+            project_name="spaceport-manual-container-builds",
+            description="Manually triggered CodeBuild project to build all ML containers",
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_7_0,
                 compute_type=codebuild.ComputeType.LARGE,
-                privileged=True
+                privileged=True, # Required for Docker-in-Docker
             ),
-            
-            # Source from local files (for manual builds)
-            source=codebuild.Source.code_commit(
-                repository=None  # Will be configured manually
+            source=codebuild.Source.git_hub(
+                owner="your-github-owner", # CHANGE THIS
+                repo="your-github-repo",   # CHANGE THIS
+                branch_or_ref="main"
             ),
-            
-            build_spec=codebuild.BuildSpec.from_source_filename("infrastructure/containers/compressor/buildspec.yml"),
-            
-            environment_variables={
-                "AWS_DEFAULT_REGION": codebuild.BuildEnvironmentVariable(value=self.region),
-                "AWS_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=self.account),
-                "IMAGE_REPO_NAME": codebuild.BuildEnvironmentVariable(value="spaceport-ml-sogs-compressor"),
-                "IMAGE_TAG": codebuild.BuildEnvironmentVariable(value="latest")
-            },
-            
-            artifacts=codebuild.Artifacts.s3(
-                bucket=build_artifacts_bucket,
-                name="sogs-manual-build-artifacts",
-                include_build_id=True
-            ),
-            
+            build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml"), # Use root buildspec
             role=codebuild_role,
-            timeout_in_minutes=60
         )
 
         # Outputs
@@ -192,15 +175,15 @@ class CodeBuildStack(Stack):
         )
 
         CfnOutput(
-            self, "SOGSBuildProject",
+            self, "CodeBuildProjectName",
             value=sogs_build_project.project_name,
             description="CodeBuild project name for SOGS container"
         )
 
         CfnOutput(
-            self, "SOGSManualBuildProject",
+            self, "ManualCodeBuildProjectName",
             value=manual_build_project.project_name,
-            description="Manual CodeBuild project for SOGS container"
+            description="Manual CodeBuild project for all containers"
         )
 
         CfnOutput(
