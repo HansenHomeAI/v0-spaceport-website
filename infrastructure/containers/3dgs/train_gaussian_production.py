@@ -28,6 +28,15 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+import yaml
+from tqdm import tqdm
+
+from utils.colmap_loader import read_colmap_scene
+from utils.dataset import SpaceportDataset
+from utils.logger import logger
+from utils.loss import Loss
+from utils.model import GaussianModel
+from utils.visualizer import Visualizer
 
 # Configure production logging
 logging.basicConfig(
@@ -47,445 +56,138 @@ except ImportError as e:
     import gsplat
     from gsplat import rasterization
 
-class RealGaussianSplatTrainer:
-    """REAL 3D Gaussian Splatting trainer - NO SIMULATION"""
-    
-    def __init__(self):
-        self.setup_environment()
-        self.setup_device()
-        self.setup_paths()
-        self.setup_training_config()
+class Trainer:
+    def __init__(self, config_path: str):
+        with open(config_path, 'r') as f:
+            self.config = yaml.safe_load(f)
         
-    def setup_environment(self):
-        """Setup SageMaker environment"""
-        self.job_name = os.environ.get('SM_TRAINING_ENV', '{}')
-        try:
-            job_info = json.loads(self.job_name)
-            self.job_name = job_info.get('job_name', 'real-3dgs-training')
-        except:
-            self.job_name = os.environ.get('JOB_NAME', 'real-3dgs-training')
-            
-        logger.info(f"🚀 Starting REAL 3D Gaussian Splatting Training: {self.job_name}")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-    def setup_device(self):
-        """Setup CUDA device for GPU acceleration"""
-        if torch.cuda.is_available():
-            self.device = torch.device("cuda")
-            logger.info(f"🎮 Using GPU: {torch.cuda.get_device_name(0)}")
-            logger.info(f"💾 GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
-        else:
-            self.device = torch.device("cpu")
-            logger.warning("⚠️  No GPU available, using CPU (will be very slow)")
-        
-    def setup_paths(self):
-        """Setup input/output paths for SageMaker"""
-        self.input_dir = Path("/opt/ml/input/data/training")
-        self.output_dir = Path("/opt/ml/model")
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+        # Determine paths from SageMaker environment variables
+        self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
+        self.output_dir = Path(os.environ.get("SM_MODEL_DIR", "/opt/ml/model"))
+        self.output_dir.mkdir(exist_ok=True, parents=True)
+
+        logger.info("✅ Trainer initialized")
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
-        
-        # Log the contents of the input directory for debugging
-        try:
-            logger.info(f"🔎 Listing contents of input directory: {self.input_dir}")
-            for path in self.input_dir.rglob("*"):
-                logger.info(f"  - Found: {path.relative_to(self.input_dir)}")
-        except Exception as e:
-            logger.error(f"  - Could not list contents of input directory: {e}")
-        
-    def setup_training_config(self):
-        """Setup REAL training configuration"""
-        self.config = {
-            # Real training parameters (not simulation)
-            'max_iterations': int(os.environ.get('MAX_ITERATIONS', '30000')),
-            'learning_rate': float(os.environ.get('LEARNING_RATE', '0.01')),
-            'position_lr': float(os.environ.get('POSITION_LR', '0.00016')),
-            'scaling_lr': float(os.environ.get('SCALING_LR', '0.005')),
-            'rotation_lr': float(os.environ.get('ROTATION_LR', '0.001')),
-            'opacity_lr': float(os.environ.get('OPACITY_LR', '0.05')),
-            'feature_lr': float(os.environ.get('FEATURE_LR', '0.0025')),
-            
-            # Optimization settings
-            'densify_from_iter': int(os.environ.get('DENSIFY_FROM_ITER', '500')),
-            'densify_until_iter': int(os.environ.get('DENSIFY_UNTIL_ITER', '15000')),
-            'densification_interval': int(os.environ.get('DENSIFICATION_INTERVAL', '100')),
-            'opacity_reset_interval': int(os.environ.get('OPACITY_RESET_INTERVAL', '3000')),
-            
-            # Quality targets
-            'target_psnr': float(os.environ.get('TARGET_PSNR', '30.0')),
-            'plateau_patience': int(os.environ.get('PLATEAU_PATIENCE', '1000')),
-            
-            # Logging
-            'log_interval': int(os.environ.get('LOG_INTERVAL', '100')),
-            'save_interval': int(os.environ.get('SAVE_INTERVAL', '5000')),
-        }
-        
-        logger.info("⚙️  REAL Training Configuration:")
-        for key, value in self.config.items():
-            logger.info(f"   {key}: {value}")
-    
-    def load_colmap_data(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        """Load REAL COLMAP reconstruction data"""
-        logger.info("📊 Loading COLMAP reconstruction data...")
-        
-        logger.info(f"Input data directory is: {self.input_dir}")
-        if not self.input_dir.exists():
-             raise Exception(f"Input directory does not exist: {self.input_dir}")
-        
-        # Find the directory containing points3D.txt, which could be in a subdirectory like '0'
-        try:
-            logger.info(f"Searching for points3D.txt recursively in {self.input_dir}...")
-            points_files = list(self.input_dir.rglob("points3D.txt"))
-            logger.info(f"Found {len(points_files)} instances of points3D.txt.")
-        except Exception as e:
-            raise Exception(f"An error occurred while searching for points3D.txt: {e}")
+        if torch.cuda.is_available():
+            gpu_name = torch.cuda.get_device_name(0)
+            gpu_mem = round(torch.cuda.get_device_properties(0).total_memory / 1024**3, 1)
+            logger.info(f"🎮 Using GPU: {gpu_name}")
+            logger.info(f"💾 GPU Memory: {gpu_mem} GB")
+        else:
+            logger.warning("⚠️ No GPU found, training will be very slow on CPU.")
 
-        if not points_files:
-            logger.error(f"Could not find points3D.txt in any subdirectory of {self.input_dir}.")
-            logger.error("Listing contents of input directory for debugging:")
-            try:
-                for path in self.input_dir.rglob("*"):
-                    logger.error(f"  - Found: {path.relative_to(self.input_dir)}")
-            except Exception as list_e:
-                logger.error(f"  - Could not list contents: {list_e}")
-            raise Exception("The SfM job may have failed to produce a valid reconstruction.")
-        
-        # Use the parent directory of the first points3D.txt found
-        sparse_dir = points_files[0].parent
-        logger.info(f"📁 Found reconstruction files in: {sparse_dir}")
-        
-        # Load cameras.txt, images.txt, points3D.txt
-        cameras_file = sparse_dir / "cameras.txt"
-        images_file = sparse_dir / "images.txt"
-        points_file = sparse_dir / "points3D.txt"
-        
-        if not all(f.exists() for f in [cameras_file, images_file, points_file]):
-            logger.error("❌ Missing critical COLMAP files in the identified reconstruction directory!")
-            logger.error(f"  - Directory checked: {sparse_dir}")
-            logger.error(f"  - cameras.txt exists: {cameras_file.exists()}")
-            logger.error(f"  - images.txt exists: {images_file.exists()}")
-            logger.error(f"  - points3D.txt exists: {points_file.exists()}")
-            raise Exception("Inconsistent COLMAP output. Found points3D.txt but other files are missing.")
-        
-        # Parse COLMAP data (simplified for production)
-        logger.info("🔍 Parsing COLMAP data...")
-        points_3d = []
-        colors = []
-        
-        with open(points_file, 'r') as f:
-            for line_num, line in enumerate(f):
-                if line.startswith('#') or not line.strip():
-                    continue
-                
-                parts = line.strip().split()
-                # Expecting format: POINT3D_ID, X, Y, Z, R, G, B, ERROR, TRACK[]
-                if len(parts) < 7:
-                    logger.warning(f"Skipping malformed line {line_num + 1} in points3D.txt: {line.strip()}")
-                    continue
-                
-                try:
-                    # XYZ coordinates
-                    x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
-                    # RGB colors
-                    r, g, b = int(parts[4]), int(parts[5]), int(parts[6])
-                    points_3d.append([x, y, z])
-                    colors.append([r/255.0, g/255.0, b/255.0])
-                except (ValueError, IndexError) as e:
-                    logger.error(f"Error parsing line {line_num + 1} in points3D.txt: {e}")
-                    logger.error(f"Line content: {line.strip()}")
-                    continue
-        
-        if not points_3d:
-            raise Exception("No valid 3D points were parsed from COLMAP reconstruction. points3D.txt might be empty or in an unexpected format.")
-            
-        logger.info(f"✅ Loaded {len(points_3d)} 3D points from COLMAP")
-        
-        # Convert to tensors
-        positions = torch.tensor(points_3d, dtype=torch.float32, device=self.device)
-        colors = torch.tensor(colors, dtype=torch.float32, device=self.device)
-        
-        # Initialize scales and rotations
-        num_points = len(points_3d)
-        scales = torch.ones((num_points, 3), dtype=torch.float32, device=self.device) * 0.01
-        rotations = torch.zeros((num_points, 4), dtype=torch.float32, device=self.device)
-        rotations[:, 0] = 1.0  # Identity quaternion
-        
-        return positions, colors, scales, rotations
-    
-    def create_gaussian_model(self, positions: torch.Tensor, colors: torch.Tensor, 
-                            scales: torch.Tensor, rotations: torch.Tensor) -> Dict[str, torch.Tensor]:
-        """Create 3D Gaussian model with learnable parameters"""
-        logger.info("🎯 Creating 3D Gaussian model...")
-        
-        num_gaussians = positions.shape[0]
-        if num_gaussians == 0:
-            raise ValueError("Cannot create a Gaussian model with 0 points. The COLMAP parsing likely failed.")
-        
-        logger.info(f"📊 Initial Gaussians: {num_gaussians:,}")
-        
-        # Learnable parameters
-        gaussian_params = {
-            'positions': nn.Parameter(positions.clone().requires_grad_(True)),
-            'colors': nn.Parameter(colors.clone().requires_grad_(True)),
-            'scales': nn.Parameter(scales.clone().requires_grad_(True)),
-            'rotations': nn.Parameter(rotations.clone().requires_grad_(True)),
-            'opacities': nn.Parameter(torch.ones((num_gaussians, 1), device=self.device).requires_grad_(True))
-        }
-        
-        return gaussian_params
-    
-    def setup_optimizers(self, gaussian_params: Dict[str, torch.Tensor]) -> Dict[str, optim.Optimizer]:
-        """Setup optimizers for different parameter groups"""
-        optimizers = {
-            'positions': optim.Adam([gaussian_params['positions']], lr=self.config['position_lr']),
-            'colors': optim.Adam([gaussian_params['colors']], lr=self.config['feature_lr']),
-            'scales': optim.Adam([gaussian_params['scales']], lr=self.config['scaling_lr']),
-            'rotations': optim.Adam([gaussian_params['rotations']], lr=self.config['rotation_lr']),
-            'opacities': optim.Adam([gaussian_params['opacities']], lr=self.config['opacity_lr'])
-        }
-        
-        logger.info("✅ Optimizers configured with different learning rates")
-        return optimizers
-    
-    def compute_loss(self, rendered_image: torch.Tensor, target_image: torch.Tensor) -> torch.Tensor:
-        """Compute L1 + SSIM loss"""
-        # L1 loss
-        l1_loss = torch.abs(rendered_image - target_image).mean()
-        
-        # Simple SSIM approximation (for speed)
-        # In production, you'd use a proper SSIM implementation
-        ssim_loss = 0.0  # Simplified for this example
-        
-        total_loss = 0.8 * l1_loss + 0.2 * ssim_loss
-        return total_loss, l1_loss
-    
     def run_real_training(self):
-        """Run REAL 3D Gaussian Splatting training (NO SIMULATION)"""
-        logger.info("🎯 Starting REAL 3D Gaussian Splatting Training")
-        logger.info("=" * 60)
-        logger.info("⚠️  This is REAL training - will take 1-2 hours!")
+        """Run the full, real training process."""
+        logger.info("🚀 Starting REAL 3D Gaussian Splatting Training")
+
+        # 1. Load data using the proper dataset and scene loader
+        logger.info("📊 Loading COLMAP scene data (including cameras and images)...")
+        scene_path = self.find_colmap_sparse_dir()
+        images_path = self.input_dir / "images"
+        if not images_path.exists():
+            raise FileNotFoundError(
+                f"Image directory not found at {images_path}. "
+                "The 'images' folder must be at the root of the input data."
+            )
+        
+        scene_data = read_colmap_scene(scene_path, images_path)
+        dataset = SpaceportDataset(scene_data)
+        dataloader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=4, pin_memory=True)
+        logger.info(f"✅ Scene loaded. Found {len(scene_data.cameras)} cameras and {len(scene_data.images)} images.")
+
+        # 2. Initialize model from point cloud
+        logger.info("🎯 Creating 3D Gaussian model from point cloud...")
+        model = GaussianModel(
+            positions=torch.tensor(scene_data.points3D, dtype=torch.float32),
+            colors=torch.tensor(scene_data.colors, dtype=torch.float32),
+            opacities=torch.full((len(scene_data.points3D), 1), 0.7, dtype=torch.float32),
+        )
+        model.to(self.device)
+        logger.info(f"📊 Initial Gaussians: {model.num_points}")
+
+        # 3. Setup optimizer and loss
+        optimizer = torch.optim.Adam(model.get_params(), lr=self.config['learning_rate'])
+        loss_fn = Loss()
+
+        # 4. Training Loop
+        max_iterations = self.config['max_iterations']
+        progress_bar = tqdm(range(max_iterations), desc="Training Progress")
         
         start_time = time.time()
-        
-        try:
-            # Load COLMAP data
-            positions, colors, scales, rotations = self.load_colmap_data()
+        for iteration in progress_bar:
+            if iteration >= max_iterations:
+                break
             
-            # Create Gaussian model
-            gaussian_params = self.create_gaussian_model(positions, colors, scales, rotations)
-            
-            # Setup optimizers
-            optimizers = self.setup_optimizers(gaussian_params)
-            
-            # Training loop
-            best_psnr = 0.0
-            plateau_counter = 0
-            
-            logger.info("🔥 Starting training iterations...")
-            
-            for iteration in range(self.config['max_iterations']):
-                iteration_start = time.time()
+            try:
+                # Get next batch of data (camera view)
+                camera, image_data, gt_image = next(iter(dataloader))
                 
-                # Zero gradients
-                for optimizer in optimizers.values():
-                    optimizer.zero_grad()
+                # Move data to device
+                camera = {k: v.to(self.device) for k, v in camera.items()}
+                gt_image = gt_image.to(self.device)
+
+                # Render the current view
+                rendered_image, _ = model.render(camera)
                 
-                # For this example, we'll simulate the rendering process
-                # In a real implementation, you'd use gsplat rasterization
-                # with actual camera poses and render real images
+                # Calculate loss
+                loss, psnr = loss_fn(rendered_image, gt_image)
                 
-                # Simulate rendering (in real version, this would be actual gsplat rendering)
-                batch_size = min(1000, gaussian_params['positions'].shape[0])
-                indices = torch.randperm(gaussian_params['positions'].shape[0])[:batch_size]
-                
-                # Sample some gaussians for loss computation
-                sample_positions = gaussian_params['positions'][indices]
-                sample_colors = gaussian_params['colors'][indices]
-                
-                # Simulate a simple loss (in real version, this would be rendering loss)
-                # This creates a realistic loss curve that decreases over time
-                base_loss = 0.1 * math.exp(-iteration / 10000) + 0.001
-                noise = torch.randn(1, device=self.device) * 0.01
-                simulated_loss = base_loss + noise.item()
-                
-                # Create a tensor loss for backpropagation
-                loss_tensor = torch.tensor(simulated_loss, device=self.device, requires_grad=True)
-                
-                # Add regularization terms
-                position_reg = 0.0001 * torch.mean(torch.norm(gaussian_params['positions'], dim=1))
-                scale_reg = 0.0001 * torch.mean(torch.norm(gaussian_params['scales'], dim=1))
-                
-                total_loss = loss_tensor + position_reg + scale_reg
-                
-                # Backward pass
-                total_loss.backward()
-                
-                # Update parameters
-                for optimizer in optimizers.values():
-                    optimizer.step()
-                
-                # Calculate PSNR
-                psnr = -10 * math.log10(max(simulated_loss, 1e-8))
-                
+                # Backpropagation and optimization
+                loss.backward()
+                optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
+
                 # Logging
                 if iteration % self.config['log_interval'] == 0:
-                    elapsed_time = time.time() - start_time
-                    iter_time = time.time() - iteration_start
-                    num_gaussians = gaussian_params['positions'].shape[0]
-                    
-                    logger.info(f"Iter {iteration:6d}: Loss={simulated_loss:.6f}, PSNR={psnr:.2f}dB, "
-                              f"Gaussians={num_gaussians:,}, Time={iter_time:.3f}s")
+                    progress_bar.set_postfix({
+                        "Loss": f"{loss.item():.4f}", 
+                        "PSNR": f"{psnr:.2f}dB"
+                    })
                 
-                # PSNR plateau detection
-                if psnr > best_psnr + 0.1:
-                    best_psnr = psnr
-                    plateau_counter = 0
-                else:
-                    plateau_counter += 1
-                    
-                    if plateau_counter >= self.config["plateau_patience"]:
-                        logger.info(f"🛑 PSNR plateau detected at iteration {iteration}")
-                        logger.info(f"   Best PSNR: {best_psnr:.2f}dB - Early termination")
-                        break
-                
-                # Target PSNR reached
-                if psnr >= self.config['target_psnr']:
-                    logger.info(f"🎯 Target PSNR {self.config['target_psnr']:.1f}dB reached!")
-                    break
-                
-                # Save checkpoints
-                if iteration % self.config['save_interval'] == 0 and iteration > 0:
-                    self.save_checkpoint(gaussian_params, iteration)
+                # Save model periodically
+                if iteration > 0 and iteration % self.config['save_interval'] == 0:
+                    self.save_model(model, f"checkpoint_{iteration}.ply")
+
+            except StopIteration:
+                # Reset dataloader if it runs out of images
+                dataloader_iter = iter(dataloader)
+            except Exception as e:
+                logger.error(f"❌ Error during training iteration {iteration}: {e}")
+                break
+
+        training_time = time.time() - start_time
+        logger.info(f"🎉 Training finished in {training_time:.2f} seconds.")
+        self.save_model(model, "final_model.ply")
+
+    def find_colmap_sparse_dir(self) -> Path:
+        """Finds the COLMAP sparse reconstruction directory (e.g., 'sparse/0')."""
+        logger.info(f"Searching for COLMAP sparse directory in {self.input_dir}...")
         
-            training_time = time.time() - start_time
-            final_gaussians = gaussian_params['positions'].shape[0]
-        
-            logger.info("\n🎉 REAL TRAINING COMPLETED!")
-            logger.info("=" * 50)
-            logger.info(f"📊 Final Results:")
-            logger.info(f"   Total Iterations: {iteration}")
-            logger.info(f"   Final Loss: {simulated_loss:.6f}")
-            logger.info(f"   Final PSNR: {psnr:.2f}dB")
-            logger.info(f"   Final Gaussians: {final_gaussians:,}")
-            logger.info(f"   Training Time: {training_time:.1f} seconds ({training_time/60:.1f} minutes)")
+        # Search for a 'points3D.txt' file to identify the correct sparse folder
+        sparse_files = list(self.input_dir.glob("**/points3D.txt"))
+        if not sparse_files:
+            raise FileNotFoundError(f"Could not find 'points3D.txt' in any subdirectory of {self.input_dir}")
             
-            # Save final model
-            self.save_final_model(gaussian_params, {
-                'iterations': iteration,
-                'final_loss': simulated_loss,
-                'final_psnr': psnr,
-                'training_time': training_time,
-                'num_gaussians': final_gaussians
-            })
-            
-            return 0
-            
-        except Exception as e:
-            logger.error(f"❌ REAL training failed: {str(e)}")
-            logger.exception("Full error details:")
-            return 1
-    
-    def save_checkpoint(self, gaussian_params: Dict[str, torch.Tensor], iteration: int):
-        """Save training checkpoint"""
-        checkpoint_path = self.output_dir / f"checkpoint_{iteration}.pth"
-        torch.save({
-            'iteration': iteration,
-            'gaussian_params': {k: v.detach().cpu() for k, v in gaussian_params.items()},
-        }, checkpoint_path)
-        logger.info(f"💾 Saved checkpoint: {checkpoint_path.name}")
-    
-    def save_final_model(self, gaussian_params: Dict[str, torch.Tensor], training_results: Dict):
-        """Save final trained model"""
-        logger.info("💾 Saving final trained model...")
-        
-        # Save model parameters
-        model_path = self.output_dir / "final_model.pth"
-        torch.save({
-            'gaussian_params': {k: v.detach().cpu() for k, v in gaussian_params.items()},
-            'training_results': training_results,
-            'config': self.config
-        }, model_path)
-        
-        # Save PLY format for compatibility
-        ply_path = self.output_dir / "final_model.ply"
-        self.save_ply_model(gaussian_params, ply_path)
-        
-        # Save training metadata
-        metadata_path = self.output_dir / "training_metadata.json"
-        with open(metadata_path, 'w') as f:
-            json.dump({
-                'job_name': self.job_name,
-                'training_type': 'REAL_3D_GAUSSIAN_SPLATTING',
-                'library': 'gsplat',
-                'device': str(self.device),
-                'results': training_results,
-                'config': self.config,
-                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
-            }, f, indent=2)
-        
-        logger.info(f"✅ Model saved:")
-        logger.info(f"   - PyTorch model: {model_path.name}")
-        logger.info(f"   - PLY model: {ply_path.name}")
-        logger.info(f"   - Metadata: {metadata_path.name}")
-    
-    def save_ply_model(self, gaussian_params: Dict[str, torch.Tensor], ply_path: Path):
-        """Save model in PLY format"""
-        positions = gaussian_params['positions'].detach().cpu().numpy()
-        colors = gaussian_params['colors'].detach().cpu().numpy()
-        scales = gaussian_params['scales'].detach().cpu().numpy()
-        rotations = gaussian_params['rotations'].detach().cpu().numpy()
-        opacities = gaussian_params['opacities'].detach().cpu().numpy()
-        
-        num_gaussians = positions.shape[0]
-        
-        with open(ply_path, 'w') as f:
-            f.write(f"""ply
-format ascii 1.0
-comment REAL 3D Gaussian Splatting Model (gsplat)
-comment Job: {self.job_name}
-element vertex {num_gaussians}
-property float x
-property float y
-property float z
-property float opacity
-property float scale_0
-property float scale_1
-property float scale_2
-property float rot_0
-property float rot_1
-property float rot_2
-property float rot_3
-property uchar red
-property uchar green
-property uchar blue
-end_header
-""")
-            
-            for i in range(num_gaussians):
-                pos = positions[i]
-                col = colors[i]
-                scale = scales[i]
-                rot = rotations[i]
-                opacity = opacities[i, 0]
-                
-                # Convert colors to 0-255 range
-                r, g, b = int(col[0] * 255), int(col[1] * 255), int(col[2] * 255)
-                
-                f.write(f"{pos[0]:.6f} {pos[1]:.6f} {pos[2]:.6f} {opacity:.6f} "
-                       f"{scale[0]:.6f} {scale[1]:.6f} {scale[2]:.6f} "
-                       f"{rot[0]:.6f} {rot[1]:.6f} {rot[2]:.6f} {rot[3]:.6f} "
-                       f"{r} {g} {b}\n")
+        sparse_dir = sparse_files[0].parent
+        logger.info(f"✅ Found COLMAP sparse reconstruction at: {sparse_dir}")
+        return sparse_dir
+
+    def save_model(self, model: GaussianModel, filename: str):
+        """Saves the model to a PLY file in the output directory."""
+        path = self.output_dir / filename
+        model.save_ply(str(path))
+        logger.info(f"💾 Model saved to {path}")
 
 def main():
-    """Main entry point for REAL 3D Gaussian Splatting training"""
-    logger.info("🎯 REAL 3D Gaussian Splatting Training")
-    logger.info("=" * 50)
-    logger.info("⚠️  This performs ACTUAL training - NOT simulation!")
-    logger.info("Expected duration: 1-2 hours for real training")
+    parser = argparse.ArgumentParser(description="3D Gaussian Splatting Trainer")
+    parser.add_argument("--config", type=str, default="progressive_config.yaml", help="Path to the config file.")
+    args = parser.parse_args()
     
-    trainer = RealGaussianSplatTrainer()
-    return trainer.run_real_training()
+    trainer = Trainer(args.config)
+    trainer.run_real_training()
 
 if __name__ == "__main__":
-    sys.exit(main()) 
+    main() 
