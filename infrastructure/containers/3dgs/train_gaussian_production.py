@@ -128,11 +128,28 @@ class RealGaussianSplatTrainer:
     def load_colmap_data(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Load REAL COLMAP reconstruction data"""
         logger.info("📊 Loading COLMAP reconstruction data...")
-            
+        
+        logger.info(f"Input data directory is: {self.input_dir}")
+        if not self.input_dir.exists():
+             raise Exception(f"Input directory does not exist: {self.input_dir}")
+        
         # Find the directory containing points3D.txt, which could be in a subdirectory like '0'
-        points_files = list(self.input_dir.rglob("points3D.txt"))
+        try:
+            logger.info(f"Searching for points3D.txt recursively in {self.input_dir}...")
+            points_files = list(self.input_dir.rglob("points3D.txt"))
+            logger.info(f"Found {len(points_files)} instances of points3D.txt.")
+        except Exception as e:
+            raise Exception(f"An error occurred while searching for points3D.txt: {e}")
+
         if not points_files:
-            raise Exception("Could not find points3D.txt in any subdirectory of the input. The SfM job may have failed to produce a valid reconstruction.")
+            logger.error(f"Could not find points3D.txt in any subdirectory of {self.input_dir}.")
+            logger.error("Listing contents of input directory for debugging:")
+            try:
+                for path in self.input_dir.rglob("*"):
+                    logger.error(f"  - Found: {path.relative_to(self.input_dir)}")
+            except Exception as list_e:
+                logger.error(f"  - Could not list contents: {list_e}")
+            raise Exception("The SfM job may have failed to produce a valid reconstruction.")
         
         # Use the parent directory of the first points3D.txt found
         sparse_dir = points_files[0].parent
