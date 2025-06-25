@@ -1,4 +1,5 @@
 # 3D Gaussian Splatting Training Container - Production GPU Version
+# Test build trigger - IAM permissions fix verification
 FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
 
 # Prevent interactive prompts during package installation

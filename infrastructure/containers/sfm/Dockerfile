@@ -1,5 +1,6 @@
 # Real Production COLMAP Container - Final Version
 # Uses the official COLMAP container with the correct script name
+# Test build trigger - IAM permissions fix verification
 
 FROM colmap/colmap:latest
 

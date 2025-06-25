@@ -1,4 +1,5 @@
 # Production Model Compression Container
+# Test build trigger - IAM permissions fix verification
 FROM python:3.9-slim
 
 WORKDIR /opt/ml/code
