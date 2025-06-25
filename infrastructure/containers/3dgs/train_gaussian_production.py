@@ -86,6 +86,14 @@ class RealGaussianSplatTrainer:
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
         
+        # Log the contents of the input directory for debugging
+        try:
+            logger.info(f"🔎 Listing contents of input directory: {self.input_dir}")
+            for path in self.input_dir.rglob("*"):
+                logger.info(f"  - Found: {path.relative_to(self.input_dir)}")
+        except Exception as e:
+            logger.error(f"  - Could not list contents of input directory: {e}")
+        
     def setup_training_config(self):
         """Setup REAL training configuration"""
         self.config = {
@@ -124,7 +132,7 @@ class RealGaussianSplatTrainer:
         # Find COLMAP sparse reconstruction
         sparse_dirs = list(self.input_dir.rglob("sparse"))
         if not sparse_dirs:
-            raise Exception("No COLMAP sparse reconstruction found")
+            raise Exception("No COLMAP sparse reconstruction found in the input directory. Please check the SfM job output.")
             
         sparse_dir = sparse_dirs[0]
         logger.info(f"📁 Using sparse reconstruction: {sparse_dir}")
@@ -135,6 +143,10 @@ class RealGaussianSplatTrainer:
         points_file = sparse_dir / "points3D.txt"
         
         if not all(f.exists() for f in [cameras_file, images_file, points_file]):
+            logger.error("❌ Missing critical COLMAP files!")
+            logger.error(f"  - cameras.txt exists: {cameras_file.exists()}")
+            logger.error(f"  - images.txt exists: {images_file.exists()}")
+            logger.error(f"  - points3D.txt exists: {points_file.exists()}")
             raise Exception("Missing COLMAP files: cameras.txt, images.txt, or points3D.txt")
         
         # Parse COLMAP data (simplified for production)
@@ -145,20 +157,30 @@ class RealGaussianSplatTrainer:
         colors = []
         
         with open(points_file, 'r') as f:
-            for line in f:
+            for line_num, line in enumerate(f):
                 if line.startswith('#') or not line.strip():
                     continue
+                
                 parts = line.strip().split()
-                if len(parts) >= 6:
+                # Expecting format: POINT3D_ID, X, Y, Z, R, G, B, ERROR, TRACK[]
+                if len(parts) < 7:
+                    logger.warning(f"Skipping malformed line {line_num + 1} in points3D.txt: {line.strip()}")
+                    continue
+                
+                try:
                     # XYZ coordinates
                     x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
                     # RGB colors
                     r, g, b = int(parts[4]), int(parts[5]), int(parts[6])
                     points_3d.append([x, y, z])
                     colors.append([r/255.0, g/255.0, b/255.0])
+                except (ValueError, IndexError) as e:
+                    logger.error(f"Error parsing line {line_num + 1} in points3D.txt: {e}")
+                    logger.error(f"Line content: {line.strip()}")
+                    continue
         
         if not points_3d:
-            raise Exception("No 3D points found in COLMAP reconstruction")
+            raise Exception("No valid 3D points were parsed from COLMAP reconstruction. points3D.txt might be empty or in an unexpected format.")
             
         logger.info(f"✅ Loaded {len(points_3d)} 3D points from COLMAP")
         
@@ -180,6 +202,9 @@ class RealGaussianSplatTrainer:
         logger.info("🎯 Creating 3D Gaussian model...")
         
         num_gaussians = positions.shape[0]
+        if num_gaussians == 0:
+            raise ValueError("Cannot create a Gaussian model with 0 points. The COLMAP parsing likely failed.")
+        
         logger.info(f"📊 Initial Gaussians: {num_gaussians:,}")
         
         # Learnable parameters
