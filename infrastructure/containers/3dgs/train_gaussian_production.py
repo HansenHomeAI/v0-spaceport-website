@@ -129,13 +129,14 @@ class RealGaussianSplatTrainer:
         """Load REAL COLMAP reconstruction data"""
         logger.info("📊 Loading COLMAP reconstruction data...")
             
-        # Find COLMAP sparse reconstruction
-        sparse_dirs = list(self.input_dir.rglob("sparse"))
-        if not sparse_dirs:
-            raise Exception("No COLMAP sparse reconstruction found in the input directory. Please check the SfM job output.")
-            
-        sparse_dir = sparse_dirs[0]
-        logger.info(f"📁 Using sparse reconstruction: {sparse_dir}")
+        # Find the directory containing points3D.txt, which could be in a subdirectory like '0'
+        points_files = list(self.input_dir.rglob("points3D.txt"))
+        if not points_files:
+            raise Exception("Could not find points3D.txt in any subdirectory of the input. The SfM job may have failed to produce a valid reconstruction.")
+        
+        # Use the parent directory of the first points3D.txt found
+        sparse_dir = points_files[0].parent
+        logger.info(f"📁 Found reconstruction files in: {sparse_dir}")
         
         # Load cameras.txt, images.txt, points3D.txt
         cameras_file = sparse_dir / "cameras.txt"
@@ -143,16 +144,15 @@ class RealGaussianSplatTrainer:
         points_file = sparse_dir / "points3D.txt"
         
         if not all(f.exists() for f in [cameras_file, images_file, points_file]):
-            logger.error("❌ Missing critical COLMAP files!")
+            logger.error("❌ Missing critical COLMAP files in the identified reconstruction directory!")
+            logger.error(f"  - Directory checked: {sparse_dir}")
             logger.error(f"  - cameras.txt exists: {cameras_file.exists()}")
             logger.error(f"  - images.txt exists: {images_file.exists()}")
             logger.error(f"  - points3D.txt exists: {points_file.exists()}")
-            raise Exception("Missing COLMAP files: cameras.txt, images.txt, or points3D.txt")
+            raise Exception("Inconsistent COLMAP output. Found points3D.txt but other files are missing.")
         
         # Parse COLMAP data (simplified for production)
         logger.info("🔍 Parsing COLMAP data...")
-            
-        # Load 3D points as initial Gaussian positions
         points_3d = []
         colors = []
         
