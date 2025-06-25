@@ -297,14 +297,14 @@ class RealGaussianSplatTrainer:
                 
                 # PSNR plateau detection
                 if psnr > best_psnr + 0.1:
-                        best_psnr = psnr
-                        plateau_counter = 0
-                    else:
+                    best_psnr = psnr
+                    plateau_counter = 0
+                else:
                     plateau_counter += 1
-                        
-                    if plateau_counter >= self.config['plateau_patience']:
+                    
+                    if plateau_counter >= self.config["plateau_patience"]:
                         logger.info(f"🛑 PSNR plateau detected at iteration {iteration}")
-                    logger.info(f"   Best PSNR: {best_psnr:.2f}dB - Early termination")
+                        logger.info(f"   Best PSNR: {best_psnr:.2f}dB - Early termination")
                         break
                 
                 # Target PSNR reached
@@ -316,11 +316,11 @@ class RealGaussianSplatTrainer:
                 if iteration % self.config['save_interval'] == 0 and iteration > 0:
                     self.save_checkpoint(gaussian_params, iteration)
         
-        training_time = time.time() - start_time
+            training_time = time.time() - start_time
             final_gaussians = gaussian_params['positions'].shape[0]
         
             logger.info("\n🎉 REAL TRAINING COMPLETED!")
-        logger.info("=" * 50)
+            logger.info("=" * 50)
             logger.info(f"📊 Final Results:")
             logger.info(f"   Total Iterations: {iteration}")
             logger.info(f"   Final Loss: {simulated_loss:.6f}")
