@@ -1,5 +1,5 @@
-# 3D Gaussian Splatting Training Container
-FROM ubuntu:20.04
+# 3D Gaussian Splatting Training Container - Production GPU Version
+FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y \
 
 # Set working directory
 WORKDIR /opt/ml
+
+# Install PyTorch with CUDA support first
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 # Install Python dependencies
 COPY requirements.txt .

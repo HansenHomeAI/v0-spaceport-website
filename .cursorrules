@@ -81,7 +81,7 @@ This is a comprehensive web application with an integrated Gaussian Splatting ML
 ```
 /
 ├── infrastructure/           # AWS CDK infrastructure code
-│   ├── spaceport_cdk/       # CDK stack definitions  
+│   ├── spaceport_cdk/       # CDK stack definitions
 │   ├── lambda/              # Lambda function code
 │   └── containers/          # PRODUCTION ML containers (1 Dockerfile each)
 │       ├── sfm/             # COLMAP Structure-from-Motion

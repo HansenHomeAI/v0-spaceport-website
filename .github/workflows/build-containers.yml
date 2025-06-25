@@ -26,10 +26,20 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      with:
+        platforms: linux/amd64
 
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Create ECR repositories if they don't exist
+      run: |
+        for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
+          echo "Ensuring ECR repository exists: $repo"
+          aws ecr describe-repositories --region us-west-2 --repository-names $repo || \
+          aws ecr create-repository --region us-west-2 --repository-name $repo --image-scanning-configuration scanOnPush=true
+        done
 
     - name: Make deploy script executable
       run: chmod +x scripts/deployment/deploy.sh
@@ -39,6 +49,7 @@ jobs:
       env:
         AWS_DEFAULT_REGION: us-west-2
         AWS_REGION: us-west-2
+        DOCKER_BUILDKIT: 1
 
     - name: Output container URIs
       run: |

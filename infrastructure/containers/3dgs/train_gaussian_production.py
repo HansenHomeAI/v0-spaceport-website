@@ -76,7 +76,7 @@ class RealGaussianSplatTrainer:
         else:
             self.device = torch.device("cpu")
             logger.warning("⚠️  No GPU available, using CPU (will be very slow)")
-            
+        
     def setup_paths(self):
         """Setup input/output paths for SageMaker"""
         self.input_dir = Path("/opt/ml/input/data/training")
@@ -120,7 +120,7 @@ class RealGaussianSplatTrainer:
     def load_colmap_data(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Load REAL COLMAP reconstruction data"""
         logger.info("📊 Loading COLMAP reconstruction data...")
-        
+            
         # Find COLMAP sparse reconstruction
         sparse_dirs = list(self.input_dir.rglob("sparse"))
         if not sparse_dirs:
@@ -139,7 +139,7 @@ class RealGaussianSplatTrainer:
         
         # Parse COLMAP data (simplified for production)
         logger.info("🔍 Parsing COLMAP data...")
-        
+            
         # Load 3D points as initial Gaussian positions
         points_3d = []
         colors = []
@@ -297,15 +297,15 @@ class RealGaussianSplatTrainer:
                 
                 # PSNR plateau detection
                 if psnr > best_psnr + 0.1:
-                    best_psnr = psnr
-                    plateau_counter = 0
-                else:
+                        best_psnr = psnr
+                        plateau_counter = 0
+                    else:
                     plateau_counter += 1
-                    
-                if plateau_counter >= self.config['plateau_patience']:
-                    logger.info(f"🛑 PSNR plateau detected at iteration {iteration}")
+                        
+                    if plateau_counter >= self.config['plateau_patience']:
+                        logger.info(f"🛑 PSNR plateau detected at iteration {iteration}")
                     logger.info(f"   Best PSNR: {best_psnr:.2f}dB - Early termination")
-                    break
+                        break
                 
                 # Target PSNR reached
                 if psnr >= self.config['target_psnr']:
@@ -315,12 +315,12 @@ class RealGaussianSplatTrainer:
                 # Save checkpoints
                 if iteration % self.config['save_interval'] == 0 and iteration > 0:
                     self.save_checkpoint(gaussian_params, iteration)
-            
-            training_time = time.time() - start_time
+        
+        training_time = time.time() - start_time
             final_gaussians = gaussian_params['positions'].shape[0]
-            
+        
             logger.info("\n🎉 REAL TRAINING COMPLETED!")
-            logger.info("=" * 50)
+        logger.info("=" * 50)
             logger.info(f"📊 Final Results:")
             logger.info(f"   Total Iterations: {iteration}")
             logger.info(f"   Final Loss: {simulated_loss:.6f}")
