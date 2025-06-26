@@ -10,7 +10,6 @@ import torch
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from PIL import Image
-import cv2
 
 from .colmap_loader import load_colmap_data, colmap_to_nerf_poses, get_camera_intrinsics
 
