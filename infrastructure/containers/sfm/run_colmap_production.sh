@@ -218,6 +218,20 @@ ls -la "$OUTPUT_DIR/sparse/0/" || echo "Directory not accessible"
 echo "☁️ Copying reference point cloud..."
 cp "$WORK_DIR/dense/sparse_points.ply" "$OUTPUT_DIR/dense/"
 
+# Copy undistorted images for 3DGS training
+echo "🖼️ Copying undistorted images for 3DGS training..."
+mkdir -p "$OUTPUT_DIR/images"
+if [ -d "$WORK_DIR/dense/images" ]; then
+    cp -r "$WORK_DIR/dense/images"/* "$OUTPUT_DIR/images/"
+    IMAGE_COPY_COUNT=$(find "$OUTPUT_DIR/images" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
+    echo "✅ Copied $IMAGE_COPY_COUNT undistorted images"
+else
+    echo "⚠️ No undistorted images found, copying original images..."
+    cp -r "$WORK_DIR/images"/* "$OUTPUT_DIR/images/"
+    IMAGE_COPY_COUNT=$(find "$OUTPUT_DIR/images" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
+    echo "✅ Copied $IMAGE_COPY_COUNT original images"
+fi
+
 # Copy database for reference
 echo "💾 Copying database..."
 cp "$WORK_DIR/database/database.db" "$OUTPUT_DIR/"
@@ -232,6 +246,7 @@ REQUIRED_FILES=(
     "$OUTPUT_DIR/sparse/0/points3D.txt"
     "$OUTPUT_DIR/dense/sparse_points.ply"
     "$OUTPUT_DIR/database.db"
+    "$OUTPUT_DIR/images"
 )
 
 ALL_PRESENT=true
@@ -239,6 +254,9 @@ for FILE in "${REQUIRED_FILES[@]}"; do
     if [ -f "$FILE" ]; then
         SIZE=$(stat -c%s "$FILE" 2>/dev/null || echo "0")
         echo "✅ $FILE ($SIZE bytes)"
+    elif [ -d "$FILE" ]; then
+        COUNT=$(find "$FILE" -type f | wc -l)
+        echo "✅ $FILE ($COUNT files)"
     else
         echo "❌ MISSING: $FILE"
         ALL_PRESENT=false
@@ -260,9 +278,11 @@ CAMERA_COUNT=$(grep -c "^[0-9]" "$OUTPUT_DIR/sparse/0/cameras.txt" 2>/dev/null |
 IMAGE_COUNT=$(grep -c "^[0-9]" "$OUTPUT_DIR/sparse/0/images.txt" 2>/dev/null || echo "0")
 POINT_COUNT=$(grep -c "^[0-9]" "$OUTPUT_DIR/sparse/0/points3D.txt" 2>/dev/null || echo "0")
 PLY_SIZE=$(stat -c%s "$OUTPUT_DIR/dense/sparse_points.ply" 2>/dev/null || echo "0")
+COPIED_IMAGE_COUNT=$(find "$OUTPUT_DIR/images" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
 
 echo "📷 Cameras registered: $CAMERA_COUNT"
 echo "🖼️ Images registered: $IMAGE_COUNT"
+echo "🖼️ Images copied for 3DGS: $COPIED_IMAGE_COUNT"
 echo "🎯 3D points: $POINT_COUNT"
 echo "☁️ Reference point cloud size: $PLY_SIZE bytes"
 
@@ -275,6 +295,7 @@ cat > "$OUTPUT_DIR/sfm_metadata.json" << EOF
   "statistics": {
     "cameras_registered": $CAMERA_COUNT,
     "images_registered": $IMAGE_COUNT,
+    "images_copied": $COPIED_IMAGE_COUNT,
     "sparse_points": $POINT_COUNT,
     "reference_pointcloud_bytes": $PLY_SIZE
   },
