@@ -14,7 +14,7 @@ from PIL import Image
 from .colmap_loader import load_colmap_data, colmap_to_nerf_poses, get_camera_intrinsics
 
 
-class GSplatDataset:
+class SpaceportDataset:
     """Dataset class for gsplat training"""
     
     def __init__(self, data_dir: Path, images_dir: Optional[Path] = None):
