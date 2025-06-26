@@ -52,3 +52,8 @@ yarn-error.log*
 .idea/
 *.swp
 *.swo
+
+tests/pipeline/*.log
+
+# Test logs
+*.log
