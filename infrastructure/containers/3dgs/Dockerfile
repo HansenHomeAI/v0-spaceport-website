@@ -32,5 +32,8 @@ RUN pip3 install -r requirements.txt
 # Make the main script executable
 RUN chmod +x train_gaussian_production.py
 
+# Add the code directory to the python path to allow imports
+ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
+
 # Set the correct entrypoint with the config file argument
 ENTRYPOINT ["python3", "train_gaussian_production.py", "--config", "progressive_config.yaml"] 
