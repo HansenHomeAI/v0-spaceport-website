@@ -31,7 +31,6 @@ from torch.utils.data import DataLoader
 import yaml
 from tqdm import tqdm
 
-from utils.colmap_loader import read_colmap_scene
 from utils.dataset import SpaceportDataset
 from utils.logger import logger
 from utils.loss import Loss
