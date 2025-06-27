@@ -46,7 +46,7 @@ class GaussianOnlyTester:
             "timestamp": timestamp,
             
             # CRITICAL: Start directly from 3DGS stage
-            "pipelineStep": "gaussian",  # Skip SfM, start from 3DGS
+            "pipelineStep": "3dgs",  # Skip SfM, start from 3DGS
             
             # Use existing SfM data
             "colmapOutputS3Uri": self.config['existing_sfm_data'],
@@ -78,7 +78,11 @@ class GaussianOnlyTester:
             "densify_grad_threshold": 0.0002,  # Gradient threshold for densification
             "percent_dense": 0.01,  # Percentage of scene to densify
             "lambda_dssim": 0.2,  # SSIM loss weight
-            "sh_degree": 3  # Spherical harmonics degree
+            "sh_degree": 3,  # Spherical harmonics degree
+            
+            # Logging and saving parameters
+            "log_interval": 500,  # Log every 500 iterations
+            "save_interval": 5000  # Save every 5000 iterations
         }
     
     def start_3dgs_test(self) -> Tuple[Optional[str], Optional[Dict]]:
