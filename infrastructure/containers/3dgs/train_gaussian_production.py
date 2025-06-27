@@ -60,15 +60,15 @@ class Trainer:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
-        # Override config with Step Functions parameters (if provided)
-        self.apply_step_functions_params()
-        
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        # Determine paths from SageMaker environment variables
+        # Determine paths from SageMaker environment variables FIRST
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
         self.output_dir = Path(os.environ.get("SM_MODEL_DIR", "/opt/ml/model"))
         self.output_dir.mkdir(exist_ok=True, parents=True)
+        
+        # Override config with Step Functions parameters (after paths are set)
+        self.apply_step_functions_params()
     
     def apply_step_functions_params(self):
         """Apply parameters passed from Step Functions via environment variables."""
