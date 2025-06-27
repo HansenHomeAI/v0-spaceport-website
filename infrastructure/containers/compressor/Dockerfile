@@ -1,5 +1,5 @@
 # Production SOGS Compression Container - Split Installation Strategy
-FROM public.ecr.aws/nvidia/cuda:12.9.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.9.1-runtime-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive

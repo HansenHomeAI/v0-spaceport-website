@@ -1,6 +1,6 @@
 # 3D Gaussian Splatting Training Container - Production GPU Version
 # Test build trigger - IAM permissions fix verification
-FROM public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
