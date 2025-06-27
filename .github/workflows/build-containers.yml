@@ -1,4 +1,4 @@
-name: Build ML Containers
+name: Trigger ML Container Build
 
 on:
   workflow_dispatch:  # Manual trigger
@@ -10,7 +10,7 @@ on:
       - 'buildspec.yml'
 
 jobs:
-  build-containers:
+  trigger-codebuild:
     runs-on: ubuntu-latest
     
     steps:
@@ -24,15 +24,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-      with:
-        platforms: linux/amd64
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
     - name: Create ECR repositories if they don't exist
       run: |
         for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
@@ -41,19 +32,44 @@ jobs:
           aws ecr create-repository --region us-west-2 --repository-name $repo --image-scanning-configuration scanOnPush=true
         done
 
-    - name: Make deploy script executable
-      run: chmod +x scripts/deployment/deploy.sh
-
-    - name: Build and push all containers
-      run: ./scripts/deployment/deploy.sh all
-      env:
-        AWS_DEFAULT_REGION: us-west-2
-        AWS_REGION: us-west-2
-        DOCKER_BUILDKIT: 1
+    - name: Trigger CodeBuild for container builds
+      run: |
+        echo "🚀 Triggering AWS CodeBuild for ML container builds..."
+        echo "CodeBuild has sufficient disk space for PyTorch + CUDA containers"
+        
+        BUILD_ID=$(aws codebuild start-build \
+          --project-name spaceport-ml-containers \
+          --source-version ${{ github.sha }} \
+          --query 'build.id' \
+          --output text)
+        
+        echo "✅ CodeBuild triggered successfully!"
+        echo "Build ID: $BUILD_ID"
+        echo "Monitor progress: https://console.aws.amazon.com/codesuite/codebuild/projects/spaceport-ml-containers/build/$BUILD_ID"
+        
+        # Wait for build to complete (optional - can be removed for async)
+        echo "⏳ Waiting for CodeBuild to complete..."
+        aws codebuild batch-get-builds --ids $BUILD_ID --query 'builds[0].buildStatus' --output text
+        
+        # Poll for completion
+        while true; do
+          STATUS=$(aws codebuild batch-get-builds --ids $BUILD_ID --query 'builds[0].buildStatus' --output text)
+          echo "Build status: $STATUS"
+          
+          if [ "$STATUS" = "SUCCEEDED" ]; then
+            echo "✅ CodeBuild completed successfully!"
+            break
+          elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "FAULT" ] || [ "$STATUS" = "STOPPED" ] || [ "$STATUS" = "TIMED_OUT" ]; then
+            echo "❌ CodeBuild failed with status: $STATUS"
+            exit 1
+          fi
+          
+          sleep 30
+        done
 
     - name: Output container URIs
       run: |
-        echo "✅ Containers built and pushed successfully:"
-        echo "SfM: ${{ steps.login-ecr.outputs.registry }}/spaceport/sfm:latest"
-        echo "3DGS: ${{ steps.login-ecr.outputs.registry }}/spaceport/3dgs:latest"
-        echo "Compressor: ${{ steps.login-ecr.outputs.registry }}/spaceport/compressor:latest" 
+        echo "✅ ML Containers built and pushed via CodeBuild:"
+        echo "SfM: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest"
+        echo "3DGS: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest"
+        echo "Compressor: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest" 
