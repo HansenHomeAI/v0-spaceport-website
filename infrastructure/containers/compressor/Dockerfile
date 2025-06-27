@@ -26,7 +26,7 @@ RUN pip3 install --no-cache-dir --upgrade pip \
 
 # Install remaining dependencies
 RUN pip3 install --no-cache-dir \
-    torchpq==0.2.1 \
+    torchpq==0.2.0.3 \
     plyfile==0.7.4 \
     trimesh==3.21.7 \
     boto3==1.34.69 \
