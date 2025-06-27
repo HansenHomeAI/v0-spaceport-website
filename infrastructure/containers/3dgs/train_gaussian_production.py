@@ -162,7 +162,7 @@ class Trainer:
                 logger.info(f"Iter {iteration:6d}: Loss={total_loss.item():.6f}, PSNR={psnr:.2f}dB, Gaussians={model.num_points}")
             
             # Save checkpoint
-            if iteration > 0 and iteration % self.config['save_interval'] == 0:
+            if iteration > 0 and iteration % self.config['training']['save_interval'] == 0:
                 self.save_model(model, f"checkpoint_{iteration}.ply")
             
             # Early termination for demo purposes
