@@ -1,6 +1,17 @@
 # SOGS Compression Container
 
-This container implements real 3D Gaussian Splat compression using the PlayCanvas SOGS (Self-Organizing Gaussians) library for use in AWS SageMaker Processing Jobs.
+Production-ready container for SOGS (Spatial Octree Gaussian Splatting) compression using GPU acceleration.
+
+## Features
+- Pure PlayCanvas SOGS implementation
+- GPU-accelerated compression using CUDA
+- No fallback modes - fails fast if GPU unavailable
+- Optimized for ml.g4dn.xlarge instances
+
+## Build Status
+- ✅ Docker Hub authentication configured
+- ✅ GPU quota approved (ml.g4dn.xlarge)
+- 🔄 Testing Docker Hub rate limit fix...
 
 ## Overview
 
