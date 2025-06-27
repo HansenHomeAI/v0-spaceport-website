@@ -15,6 +15,18 @@ from typing import Dict, List, Any
 import boto3
 import numpy as np
 
+# Import torch and SOGS dependencies at module level
+try:
+    import torch
+    import torchpq
+    from plyfile import PlyData
+    import trimesh
+    SOGS_DEPENDENCIES_AVAILABLE = True
+except ImportError as e:
+    print(f"CRITICAL: SOGS dependencies not available: {e}")
+    print("This container requires GPU with CUDA and all SOGS dependencies!")
+    sys.exit(1)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -31,35 +43,11 @@ class SOGSCompressor:
         self.output_dir = "/opt/ml/processing/output"
         
         # Verify GPU availability
-        self.gpu_available = self._check_gpu()
-        if not self.gpu_available:
+        if not torch.cuda.is_available():
             logger.error("GPU not available - SOGS requires CUDA GPU!")
             sys.exit(1)
-            
-        # Import and verify SOGS dependencies
-        self._verify_sogs_dependencies()
-    
-    def _check_gpu(self) -> bool:
-        """Check if GPU is available"""
-        try:
-            import torch
-            return torch.cuda.is_available()
-        except ImportError:
-            return False
-    
-    def _verify_sogs_dependencies(self):
-        """Verify all SOGS dependencies are available"""
-        logger.info("Verifying SOGS dependencies...")
         
-        try:
-            import torch
-            import torchpq
-            from plyfile import PlyData
-            import trimesh
-            logger.info("✅ All SOGS dependencies verified")
-        except ImportError as e:
-            logger.error(f"❌ Missing SOGS dependency: {e}")
-            sys.exit(1)
+        logger.info("✅ GPU available and SOGS dependencies verified")
     
     def compress_gaussian_splats(self, input_ply_files: List[str], output_dir: str) -> Dict[str, Any]:
         """
@@ -126,8 +114,6 @@ class SOGSCompressor:
         logger.info(f"Loading Gaussian splat: {ply_file}")
         
         try:
-            from plyfile import PlyData
-            
             plydata = PlyData.read(ply_file)
             vertex = plydata['vertex']
             
@@ -175,9 +161,6 @@ class SOGSCompressor:
         logger.info("Applying SOGS compression algorithm...")
         
         try:
-            import torch
-            import torchpq
-            
             # Convert to GPU tensors
             device = torch.device('cuda')
             positions = torch.tensor(gaussian_data['positions'], device=device, dtype=torch.float32)
