@@ -484,15 +484,35 @@ def main():
         logger.info(f"PyTorch available: {TORCH_AVAILABLE}")
         logger.info(f"CuPy available: {CUPY_AVAILABLE}")
         
-        # Find input PLY files
+        # Find input files (PLY or tar.gz from 3DGS training)
         ply_files = []
         if os.path.exists(input_dir):
             for file in os.listdir(input_dir):
+                file_path = os.path.join(input_dir, file)
+                
                 if file.lower().endswith('.ply'):
-                    ply_files.append(os.path.join(input_dir, file))
+                    ply_files.append(file_path)
+                elif file.lower().endswith('.tar.gz'):
+                    # Extract tar.gz file to find PLY files
+                    logger.info(f"Extracting 3DGS model archive: {file}")
+                    import tarfile
+                    
+                    extract_dir = os.path.join(work_dir, "extracted")
+                    os.makedirs(extract_dir, exist_ok=True)
+                    
+                    with tarfile.open(file_path, 'r:gz') as tar:
+                        tar.extractall(extract_dir)
+                    
+                    # Find PLY files in extracted content
+                    for root, dirs, files in os.walk(extract_dir):
+                        for extracted_file in files:
+                            if extracted_file.lower().endswith('.ply'):
+                                extracted_path = os.path.join(root, extracted_file)
+                                ply_files.append(extracted_path)
+                                logger.info(f"Found PLY file in archive: {extracted_file}")
         
         if not ply_files:
-            raise ValueError("No PLY files found in input directory")
+            raise ValueError("No PLY files found in input directory or tar.gz archives")
         
         # Process each PLY file
         results = []
