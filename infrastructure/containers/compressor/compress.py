@@ -338,8 +338,8 @@ class SOGSCompressor:
         logger.info("🚀 Starting PURE SOGS Compression Job")
         
         try:
-        # Find input PLY files
-        ply_files = []
+            # Find input PLY files
+            ply_files = []
             for root, dirs, files in os.walk(self.input_dir):
                 for file in files:
                     if file.endswith('.ply'):
@@ -348,8 +348,8 @@ class SOGSCompressor:
                         # Extract tar.gz and find PLY files
                         extracted_plys = self._extract_and_find_plys(os.path.join(root, file))
                         ply_files.extend(extracted_plys)
-        
-        if not ply_files:
+            
+            if not ply_files:
                 logger.error("No PLY files found in input directory")
                 sys.exit(1)
             
@@ -384,9 +384,9 @@ class SOGSCompressor:
         # Find PLY files in extracted content
         ply_files = []
         for root, dirs, files in os.walk(extract_dir):
-            for file in files:
-                if file.endswith('.ply'):
-                    ply_files.append(os.path.join(root, file))
+                for file in files:
+                    if file.endswith('.ply'):
+                        ply_files.append(os.path.join(root, file))
         
         return ply_files
 
