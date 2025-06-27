@@ -4,9 +4,6 @@ env:
   variables:
     AWS_REGION: "us-west-2"
     AWS_ACCOUNT_ID: "975050048887" # This will be automatically replaced by CodeBuild's role
-  parameter-store:
-    DOCKER_HUB_USERNAME: /docker/username
-    DOCKER_HUB_PASSWORD: /docker/password
 
 phases:
   install:
