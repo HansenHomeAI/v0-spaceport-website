@@ -249,4 +249,4 @@ When modifying the container:
 - [PlayCanvas SOGS Repository](https://github.com/playcanvas/sogs)
 - [PlayCanvas SOGS Blog Post](https://blog.playcanvas.com/playcanvas-adopts-sogs-for-20x-3dgs-compression)
 - [3D Gaussian Splatting Paper](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/)
-- [AWS SageMaker Processing Jobs](https://docs.aws.amazon.com/sagemaker/latest/dg/processing-job.html) 
+- [AWS SageMaker Processing Jobs](https://docs.aws.amazon.com/sagemaker/latest/dg/processing-job.html) # Container build triggered at Fri Jun 27 13:18:17 MDT 2025
