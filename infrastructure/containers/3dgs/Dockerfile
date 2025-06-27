@@ -35,5 +35,6 @@ RUN chmod +x train_gaussian_production.py
 # Add the code directory to the python path to allow imports
 ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
-# Set the correct entrypoint with the config file argument
-ENTRYPOINT ["python3", "train_gaussian_production.py", "--config", "progressive_config.yaml"] 
+# Set the correct entrypoint for SageMaker Training Jobs
+# SageMaker automatically appends "train" argument, so we handle it in the script
+ENTRYPOINT ["python3", "train_gaussian_production.py"] 

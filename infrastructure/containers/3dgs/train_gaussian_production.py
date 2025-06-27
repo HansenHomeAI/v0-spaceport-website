@@ -212,6 +212,7 @@ class Trainer:
 def main():
     parser = argparse.ArgumentParser(description="3D Gaussian Splatting Trainer")
     parser.add_argument("--config", type=str, default="progressive_config.yaml", help="Path to the config file.")
+    parser.add_argument("train", nargs='?', help="SageMaker training argument (ignored)")  # Handle SageMaker's automatic "train" argument
     args = parser.parse_args()
     
     trainer = Trainer(args.config)
