@@ -24,7 +24,7 @@ def create_codebuild_role():
         ]
     }
     
-    # Permissions policy
+    # Permissions policy - UPDATED with SSM Parameter Store access
     permissions_policy = {
         "Version": "2012-10-17",
         "Statement": [
@@ -59,6 +59,17 @@ def create_codebuild_role():
                     "s3:PutObject"
                 ],
                 "Resource": "*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ssm:GetParameters",
+                    "ssm:GetParameter"
+                ],
+                "Resource": [
+                    "arn:aws:ssm:*:*:parameter/docker/password",
+                    "arn:aws:ssm:*:*:parameter/docker/*"
+                ]
             }
         ]
     }
@@ -70,7 +81,7 @@ def create_codebuild_role():
         role_response = iam.create_role(
             RoleName=role_name,
             AssumeRolePolicyDocument=json.dumps(trust_policy),
-            Description="Service role for CodeBuild to build SOGS containers"
+            Description="Service role for CodeBuild to build SOGS containers with SSM access"
         )
         print(f"✅ Created IAM role: {role_name}")
         
@@ -86,16 +97,29 @@ def create_codebuild_role():
         
     except iam.exceptions.EntityAlreadyExistsException:
         print(f"✅ IAM role already exists: {role_name}")
+        
+        # Update existing role policy with SSM permissions
+        try:
+            iam.put_role_policy(
+                RoleName=role_name,
+                PolicyName="CodeBuildPermissions",
+                PolicyDocument=json.dumps(permissions_policy)
+            )
+            print(f"✅ Updated existing role with SSM permissions")
+        except Exception as e:
+            print(f"⚠️  Warning: Could not update role policy: {e}")
+        
         role_response = iam.get_role(RoleName=role_name)
         return role_response['Role']['Arn']
 
 def main():
     """Main execution"""
-    print("🔐 Setting up CodeBuild IAM Role...")
+    print("🔐 Setting up CodeBuild IAM Role with SSM Parameter Store access...")
     
     try:
         role_arn = create_codebuild_role()
         print(f"\n✅ CodeBuild role ready: {role_arn}")
+        print("🔑 Role now has access to SSM Parameter Store for Docker Hub credentials")
         return True
     except Exception as e:
         print(f"❌ Failed to setup role: {e}")
