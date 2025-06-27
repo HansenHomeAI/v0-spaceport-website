@@ -129,7 +129,7 @@ class Trainer:
         logger.info(f"📊 Initial Gaussians: {model.num_points}")
 
         # 3. Setup optimizer and loss
-        optimizer = torch.optim.Adam(model.get_params(), lr=self.config['learning_rate'])
+        optimizer = torch.optim.Adam(model.get_params(), lr=self.config['learning_rates']['gaussian_lr'])
         loss_fn = Loss()
 
         # 4. Simplified Training Loop (without camera views for now)
