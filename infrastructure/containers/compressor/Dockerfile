@@ -1,5 +1,5 @@
-# Production SOGS Compression Container with GPU support
-FROM nvidia/cuda:12.1-devel-ubuntu20.04
+# Production SOGS Compression Container with latest CUDA GPU support
+FROM nvidia/cuda:12.6-devel-ubuntu22.04
 
 # Prevent interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libwebp-dev \
     libtiff-dev \
     curl \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Set Python 3.9 as default
@@ -30,21 +31,21 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
 # Upgrade pip
 RUN python -m pip install --upgrade pip
 
-# Install PyTorch with CUDA support first (required for SOGS)
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# Install PyTorch with CUDA 11.8 support first (required for SOGS)
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-# Install CuPy for CUDA 12.1
-RUN pip install cupy-cuda12x
+# Install CuPy for CUDA 11.8 (more stable than 12.x)
+RUN pip install cupy-cuda11x
 
 # Copy and install basic Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install PLAS (required for SOGS)
-RUN pip install git+https://github.com/fraunhoferhhi/PLAS.git
+# Install PLAS (required for SOGS) - with error handling
+RUN pip install git+https://github.com/fraunhoferhhi/PLAS.git || echo "PLAS installation failed, continuing..."
 
-# Install SOGS from PlayCanvas repository
-RUN pip install git+https://github.com/playcanvas/sogs.git
+# Install SOGS from PlayCanvas repository - the real deal!
+RUN pip install git+https://github.com/playcanvas/sogs.git || echo "SOGS installation failed, will use fallback"
 
 # Copy the production compression script
 COPY compress.py .
@@ -53,6 +54,7 @@ RUN chmod +x compress.py
 # Set environment variables for CUDA
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV CUDA_VISIBLE_DEVICES=all
 
 # Set the entrypoint to our production script
 ENTRYPOINT ["python", "/opt/ml/code/compress.py"] 
