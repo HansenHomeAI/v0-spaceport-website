@@ -1,5 +1,5 @@
 # Production SOGS Compression Container - Optimized for GitHub Actions
-FROM nvidia/cuda:12.1-runtime-ubuntu20.04
+FROM nvidia/cuda:12.9.1-runtime-ubuntu20.04
 
 # Prevent interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
