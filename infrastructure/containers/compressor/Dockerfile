@@ -1,5 +1,5 @@
 # Production SOGS Compression Container with latest CUDA GPU support
-FROM nvidia/cuda:12.6-devel-ubuntu22.04
+FROM nvidia/cuda:12.9.1-devel-ubuntu22.04
 
 # Prevent interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
