@@ -1,2 +1,8 @@
 boto3
-numpy 
+numpy
+torch
+torchpq
+plyfile
+trimesh
+structlog
+orjson 

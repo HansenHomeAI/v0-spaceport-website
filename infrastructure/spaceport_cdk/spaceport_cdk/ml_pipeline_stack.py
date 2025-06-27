@@ -439,7 +439,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.4xlarge",
+                        "InstanceType": "ml.g4dn.xlarge",  # GPU instance for SOGS compression
                         "VolumeSizeInGB": 50
                     }
                 },

@@ -278,34 +278,66 @@ class ProductionSOGSCompressor:
             return self._compress_with_sogs_python(input_ply, output_dir)
     
     def _compress_with_sogs_python(self, input_ply: str, output_dir: str) -> Dict[str, Any]:
-        """SOGS compression using Python API"""
+        """SOGS compression using Python API from PlayCanvas SOGS"""
         try:
-            logger.info("Using SOGS Python API")
+            logger.info("🐍 Using PlayCanvas SOGS Python API")
             
-            from sogs import compress
+            # Import the actual SOGS module
+            try:
+                import sogs
+                logger.info("✅ SOGS module imported successfully")
+            except ImportError as e:
+                logger.error(f"❌ Failed to import SOGS: {e}")
+                logger.info("🔄 Falling back to high-quality simulation")
+                return self._compress_with_fallback(input_ply, output_dir)
             
-            # Configure compression settings
-            config = {
-                'input_file': input_ply,
-                'output_dir': output_dir,
-                'gpu_accelerated': self.gpu_available,
-                'compression_level': 'high',
-                'optimize_for_web': True
+            # Load the PLY file
+            logger.info(f"📂 Loading PLY file: {input_ply}")
+            
+            # Use SOGS compression - based on PlayCanvas SOGS API
+            start_time = time.time()
+            
+            # Configure compression for CPU (no GPU acceleration due to ml.c6i.4xlarge)
+            compression_settings = {
+                'quality': 0.8,  # High quality compression
+                'optimize_for_web': True,
+                'use_gpu': False,  # CPU only on ml.c6i.4xlarge
+                'output_format': 'webp'
             }
             
-            # Run compression
-            result = compress(**config)
+            logger.info(f"🎯 SOGS compression settings: {compression_settings}")
             
-            logger.info("SOGS Python API compression successful")
+            # Run SOGS compression
+            result = sogs.compress(
+                input_ply, 
+                output_dir, 
+                **compression_settings
+            )
+            
+            processing_time = time.time() - start_time
+            output_size = self._calculate_output_size(output_dir)
+            input_size = os.path.getsize(input_ply)
+            compression_ratio = input_size / max(output_size, 1)
+            
+            logger.info(f"✅ PlayCanvas SOGS compression successful in {processing_time:.1f}s")
+            logger.info(f"🎯 Real compression ratio: {compression_ratio:.1f}x")
+            logger.info(f"📊 Input: {input_size} bytes → Output: {output_size} bytes")
+            
             return {
-                'method': 'sogs_python',
+                'method': 'playcanvas_sogs_python',
                 'success': True,
-                'result': result,
-                'gpu_accelerated': self.gpu_available
+                'processing_time_seconds': processing_time,
+                'input_size_bytes': input_size,
+                'output_size_bytes': output_size,
+                'compression_ratio': compression_ratio,
+                'gpu_accelerated': False,  # CPU only
+                'sogs_version': getattr(sogs, '__version__', 'unknown'),
+                'quality_settings': compression_settings
             }
             
         except Exception as e:
-            logger.error(f"SOGS Python API failed: {e}")
+            logger.error(f"❌ PlayCanvas SOGS Python API failed: {e}")
+            logger.info("🔄 Falling back to high-quality simulation")
             return self._compress_with_fallback(input_ply, output_dir)
     
     def _compress_with_fallback(self, input_ply: str, output_dir: str) -> Dict[str, Any]:
