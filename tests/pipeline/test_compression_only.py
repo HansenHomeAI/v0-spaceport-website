@@ -63,6 +63,9 @@ class CompressionOnlyTester:
             "gaussianOutputS3Uri": f"s3://spaceport-ml-pipeline/{source_key}",  # Expected by compression stage
             "compressedOutputS3Uri": f"s3://spaceport-ml-pipeline/jobs/{job_id}/compression/",
             
+            # Container image URI
+            "compressorImageUri": f"{self.account_id}.dkr.ecr.{self.region}.amazonaws.com/spaceport/compressor:latest",
+            
             # Compression parameters
             "compressionLevel": 0.8,  # High compression
             "qualityTarget": 0.9,    # Maintain 90% quality

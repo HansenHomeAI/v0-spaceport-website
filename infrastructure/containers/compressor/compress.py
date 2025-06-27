@@ -558,6 +558,8 @@ def main():
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
         
+        # Ensure successful exit
+        logger.info("🎉 Compression job completed successfully - exiting with code 0")
         return 0
         
     except Exception as e:
