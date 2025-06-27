@@ -158,7 +158,7 @@ class Trainer:
             psnr = 20.0 + iteration * 0.001  # Gradually increasing PSNR
             
             # Logging
-            if iteration % self.config['log_interval'] == 0:
+            if iteration % self.config['training']['log_interval'] == 0:
                 logger.info(f"Iter {iteration:6d}: Loss={total_loss.item():.6f}, PSNR={psnr:.2f}dB, Gaussians={model.num_points}")
             
             # Save checkpoint
