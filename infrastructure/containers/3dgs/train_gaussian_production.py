@@ -133,7 +133,7 @@ class Trainer:
         loss_fn = Loss()
 
         # 4. Simplified Training Loop (without camera views for now)
-        max_iterations = self.config['max_iterations']
+        max_iterations = self.config['training']['max_iterations']
         
         start_time = time.time()
         logger.info("🔥 Starting training iterations...")
