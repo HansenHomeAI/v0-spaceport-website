@@ -1,5 +1,5 @@
 # Production SOGS Compression Container - Split Installation Strategy
-FROM nvidia/cuda:12.9.1-runtime-ubuntu20.04
+FROM nvidia/cuda:12.9.1-runtime-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -34,8 +34,8 @@ RUN pip3 install --no-cache-dir \
     && pip3 cache purge \
     && rm -rf ~/.cache/pip \
     && rm -rf /tmp/* \
-    && find /usr/local/lib/python3.8/dist-packages -name "*.pyc" -delete \
-    && find /usr/local/lib/python3.8/dist-packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+    && find /usr/local/lib/python3.*/dist-packages -name "*.pyc" -delete \
+    && find /usr/local/lib/python3.*/dist-packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # Copy files
 COPY requirements.txt .
