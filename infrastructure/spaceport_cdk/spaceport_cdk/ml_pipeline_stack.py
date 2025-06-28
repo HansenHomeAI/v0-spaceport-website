@@ -434,7 +434,7 @@ class MLPipelineStack(Stack):
                 "ProcessingJobName": sfn.JsonPath.format("{}-compression", sfn.JsonPath.string_at("$.jobName")),
                 "AppSpecification": {
                     "ImageUri": sfn.JsonPath.string_at("$.compressorImageUri"),
-                    "ContainerEntrypoint": ["python", "compress.py"]
+                    "ContainerEntrypoint": ["python3", "compress.py"]
                 },
                 "ProcessingResources": {
                     "ClusterConfig": {
