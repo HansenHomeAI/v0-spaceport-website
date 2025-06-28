@@ -28,7 +28,8 @@ RUN pip3 install --no-cache-dir --upgrade pip \
 
 # Install SOGS dependencies
 RUN pip3 install --no-cache-dir \
-    torchpq==0.0.7 \
+    cupy-cuda12x \
+    torchpq \
     plyfile==0.7.4 \
     Pillow==10.0.0 \
     numpy==1.24.3 \

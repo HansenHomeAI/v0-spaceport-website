@@ -1,6 +1,7 @@
 # PlayCanvas SOGS Dependencies
 torch==2.0.1
-torchpq==0.0.7
+cupy-cuda12x
+torchpq
 plyfile==0.7.4
 Pillow==10.0.0
 numpy==1.24.3
