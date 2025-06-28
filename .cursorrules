@@ -56,10 +56,10 @@ This is a comprehensive web application with an integrated Gaussian Splatting ML
    - Gaussian splat optimization
    - Model convergence
 
-3. **Compression** (SOGS on ml.c6i.4xlarge)
-   - Gaussian splat compression
-   - Optimization for web delivery
-   - Final model packaging
+3. **SOGS Compression** (Self-Organizing Gaussian Splats on ml.g4dn.xlarge)
+   - PlayCanvas SOGS compression algorithm
+   - WebP images + metadata.json output
+   - GPU-accelerated optimization for web delivery
 
 4. **Notification** (Lambda)
    - Email notifications via SES
@@ -68,7 +68,7 @@ This is a comprehensive web application with an integrated Gaussian Splatting ML
 ### Container Images (ECR) - PRODUCTION READY:
 - `spaceport/sfm:latest`: COLMAP 3.11.1 Structure-from-Motion ✅
 - `spaceport/3dgs:latest`: Optimized 3D Gaussian Splatting training ✅  
-- `spaceport/compressor:latest`: SOGS-style Gaussian splat compression ✅
+- `spaceport/compressor:latest`: PlayCanvas SOGS Self-Organizing Gaussian Splats ✅
 
 ### Container Organization Rules:
 - **GOLDEN RULE**: One Dockerfile per container directory
