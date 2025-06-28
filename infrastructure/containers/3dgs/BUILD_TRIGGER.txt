@@ -1,0 +1,1 @@
+Updated 3DGS container to output proper spherical harmonics for SOGS compatibility
