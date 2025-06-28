@@ -13,7 +13,8 @@ Production-ready container for SOGS (Spatial Octree Gaussian Splatting) compress
 - ✅ GPU quota approved (ml.g4dn.xlarge)
 - ✅ Fixed torch import NameError issue
 - ✅ Fixed python3 entry point in CDK
-- 🔄 Adding missing cupy dependency for SOGS compression...
+- ✅ Added missing cupy dependency
+- 🔄 Fixed PLY file loading 'function' object error...
 
 ## Overview
 

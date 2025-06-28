@@ -115,14 +115,15 @@ class SOGSCompressor:
         
         try:
             plydata = PlyData.read(ply_file)
-            vertex = plydata['vertex']
+            vertex_element = plydata['vertex']
+            vertex_data = vertex_element.data
             
             # Extract Gaussian parameters
-            positions = np.column_stack([vertex['x'], vertex['y'], vertex['z']])
+            positions = np.column_stack([vertex_data['x'], vertex_data['y'], vertex_data['z']])
             
             # Extract colors (RGB)
-            if 'red' in vertex.dtype.names:
-                colors = np.column_stack([vertex['red'], vertex['green'], vertex['blue']]) / 255.0
+            if 'red' in vertex_data.dtype.names:
+                colors = np.column_stack([vertex_data['red'], vertex_data['green'], vertex_data['blue']]) / 255.0
             else:
                 colors = np.ones((len(positions), 3)) * 0.5  # Default gray
             
@@ -131,14 +132,14 @@ class SOGSCompressor:
             rotations = None
             opacity = None
             
-            if 'scale_0' in vertex.dtype.names:
-                scales = np.column_stack([vertex['scale_0'], vertex['scale_1'], vertex['scale_2']])
+            if 'scale_0' in vertex_data.dtype.names:
+                scales = np.column_stack([vertex_data['scale_0'], vertex_data['scale_1'], vertex_data['scale_2']])
             
-            if 'rot_0' in vertex.dtype.names:
-                rotations = np.column_stack([vertex['rot_0'], vertex['rot_1'], vertex['rot_2'], vertex['rot_3']])
+            if 'rot_0' in vertex_data.dtype.names:
+                rotations = np.column_stack([vertex_data['rot_0'], vertex_data['rot_1'], vertex_data['rot_2'], vertex_data['rot_3']])
             
-            if 'opacity' in vertex.dtype.names:
-                opacity = vertex['opacity']
+            if 'opacity' in vertex_data.dtype.names:
+                opacity = vertex_data['opacity']
             
             gaussian_data = {
                 'positions': positions,
