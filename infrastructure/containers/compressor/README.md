@@ -16,7 +16,8 @@ Production-ready container for SOGS (Spatial Octree Gaussian Splatting) compress
 - ✅ Added missing cupy dependency
 - ✅ Fixed PLY file loading 'function' object error
 - ✅ Replaced torchpq with PyTorch-native quantization
-- 🔄 Fixed numpy memory stride alignment issue...
+- ✅ Fixed numpy memory stride alignment issue
+- 🔄 Fixed tensor tobytes() conversion in entropy coding...
 
 ## Overview
 

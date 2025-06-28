@@ -278,9 +278,21 @@ class SOGSCompressor:
         """Apply entropy coding for final compression"""
         # This would implement arithmetic coding or similar
         # For now, return the data as-is (still compressed via quantization)
+        
+        # Convert tensors to numpy arrays if needed
+        if hasattr(positions, 'cpu'):
+            positions_bytes = positions.cpu().numpy().tobytes()
+        else:
+            positions_bytes = positions.tobytes()
+            
+        if hasattr(colors, 'cpu'):
+            colors_bytes = colors.cpu().numpy().tobytes()
+        else:
+            colors_bytes = colors.tobytes()
+        
         return {
-            'positions_entropy': positions.tobytes(),
-            'colors_entropy': colors.tobytes(),
+            'positions_entropy': positions_bytes,
+            'colors_entropy': colors_bytes,
             'geometry_entropy': json.dumps(geometry, cls=NumpyEncoder).encode('utf-8')
         }
     
