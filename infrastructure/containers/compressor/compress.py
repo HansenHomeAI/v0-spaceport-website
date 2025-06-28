@@ -161,10 +161,10 @@ class SOGSCompressor:
         logger.info("Applying SOGS compression algorithm...")
         
         try:
-            # Convert to GPU tensors
+            # Convert to GPU tensors (ensure contiguous memory layout)
             device = torch.device('cuda')
-            positions = torch.tensor(gaussian_data['positions'], device=device, dtype=torch.float32)
-            colors = torch.tensor(gaussian_data['colors'], device=device, dtype=torch.float32)
+            positions = torch.tensor(np.ascontiguousarray(gaussian_data['positions']), device=device, dtype=torch.float32)
+            colors = torch.tensor(np.ascontiguousarray(gaussian_data['colors']), device=device, dtype=torch.float32)
             
             # SOGS Step 1: Spatial quantization of positions
             logger.info("Step 1: Spatial quantization...")
@@ -239,29 +239,38 @@ class SOGSCompressor:
         compressed = {}
         
         if gaussian_data['scales'] is not None:
-            scales = torch.tensor(gaussian_data['scales'], device=device, dtype=torch.float32)
+            # Ensure contiguous memory layout
+            scales_array = np.ascontiguousarray(gaussian_data['scales'])
+            scales = torch.tensor(scales_array, device=device, dtype=torch.float32)
             # Quantize scales to 8-bit
             scale_min = scales.min()
             scale_max = scales.max()
             scale_range = scale_max - scale_min
-            quantized_scales = ((scales - scale_min) / scale_range * 255).round().clamp(0, 255).to(torch.uint8)
+            if scale_range > 0:
+                quantized_scales = ((scales - scale_min) / scale_range * 255).round().clamp(0, 255).to(torch.uint8)
+            else:
+                quantized_scales = torch.zeros_like(scales, dtype=torch.uint8)
             compressed['scales'] = {
-                'data': quantized_scales.cpu().numpy(),
+                'data': quantized_scales.cpu().numpy().copy(),
                 'min': scale_min.item(),
                 'max': scale_max.item()
             }
         
         if gaussian_data['rotations'] is not None:
-            rotations = torch.tensor(gaussian_data['rotations'], device=device, dtype=torch.float32)
+            # Ensure contiguous memory layout
+            rotations_array = np.ascontiguousarray(gaussian_data['rotations'])
+            rotations = torch.tensor(rotations_array, device=device, dtype=torch.float32)
             # Normalize and quantize quaternions
             rotations = rotations / torch.norm(rotations, dim=1, keepdim=True)
             quantized_rotations = ((rotations + 1) / 2 * 255).round().clamp(0, 255).to(torch.uint8)
-            compressed['rotations'] = quantized_rotations.cpu().numpy()
+            compressed['rotations'] = quantized_rotations.cpu().numpy().copy()
         
         if gaussian_data['opacity'] is not None:
-            opacity = torch.tensor(gaussian_data['opacity'], device=device, dtype=torch.float32)
+            # Ensure contiguous memory layout
+            opacity_array = np.ascontiguousarray(gaussian_data['opacity'])
+            opacity = torch.tensor(opacity_array, device=device, dtype=torch.float32)
             quantized_opacity = (opacity * 255).round().clamp(0, 255).to(torch.uint8)
-            compressed['opacity'] = quantized_opacity.cpu().numpy()
+            compressed['opacity'] = quantized_opacity.cpu().numpy().copy()
         
         return compressed
     
