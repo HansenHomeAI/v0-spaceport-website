@@ -12,7 +12,8 @@ Production-ready container for SOGS (Spatial Octree Gaussian Splatting) compress
 - ✅ Docker Hub authentication configured
 - ✅ GPU quota approved (ml.g4dn.xlarge)
 - ✅ Fixed torch import NameError issue
-- 🔄 Rebuilding container with fixed imports...
+- ✅ Fixed python3 entry point in CDK
+- 🔄 Adding missing cupy dependency for SOGS compression...
 
 ## Overview
 

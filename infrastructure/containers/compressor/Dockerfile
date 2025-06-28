@@ -26,6 +26,7 @@ RUN pip3 install --no-cache-dir --upgrade pip \
 
 # Install remaining dependencies
 RUN pip3 install --no-cache-dir \
+    cupy-cuda12x==12.2.0 \
     torchpq==0.2.0.3 \
     plyfile==0.7.4 \
     trimesh==3.21.7 \
