@@ -22,14 +22,14 @@ The Spaceport ML Pipeline is a complete, production-grade system for converting 
 
 ### **Three-Stage Processing**
 ```
-📷 Input Images → 🔄 SfM Processing → 🎯 3DGS Training → 📦 Compression → 🎉 Final Model
-     (S3)           (COLMAP)          (Optimized)      (SOGS)         (Delivery)
+📷 Input Images → 🔄 SfM Processing → 🎯 3DGS Training → 📦 SOGS Compression → 🎉 Final Model
+     (S3)           (COLMAP)          (Optimized)      (Self-Organizing)    (PlayCanvas)
 ```
 
 ### **AWS Infrastructure**
 - **SfM Processing**: `ml.c6i.4xlarge` (COLMAP Structure-from-Motion)
 - **3DGS Training**: `ml.g4dn.xlarge` (GPU-accelerated Gaussian Splatting)
-- **Compression**: `ml.c6i.4xlarge` (SOGS optimization)
+- **SOGS Compression**: `ml.g4dn.xlarge` (Self-Organizing Gaussian Splats)
 - **Orchestration**: AWS Step Functions
 - **Storage**: S3 with organized prefixes
 

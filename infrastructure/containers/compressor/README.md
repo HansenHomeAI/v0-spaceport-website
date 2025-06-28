@@ -1,6 +1,6 @@
 # SOGS Compression Container
 
-Production-ready container for SOGS (Spatial Octree Gaussian Splatting) compression using GPU acceleration.
+Production-ready container for SOGS (Self-Organizing Gaussian Splats) compression using GPU acceleration.
 
 ## Features
 - Pure PlayCanvas SOGS implementation
