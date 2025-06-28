@@ -14,7 +14,8 @@ Production-ready container for SOGS (Spatial Octree Gaussian Splatting) compress
 - ✅ Fixed torch import NameError issue
 - ✅ Fixed python3 entry point in CDK
 - ✅ Added missing cupy dependency
-- 🔄 Fixed PLY file loading 'function' object error...
+- ✅ Fixed PLY file loading 'function' object error
+- 🔄 Replaced torchpq with PyTorch-native quantization...
 
 ## Overview
 
