@@ -1,14 +1,16 @@
-# Production SOGS Compression Container - Split Installation Strategy
+# Production PlayCanvas SOGS Compression Container
 FROM nvidia/cuda:12.9.1-runtime-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# Install minimal system dependencies
+# Install system dependencies needed for SOGS
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-minimal \
     python3-pip \
+    git \
+    build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
     && rm -rf /var/cache/apt/*
@@ -24,18 +26,22 @@ RUN pip3 install --no-cache-dir --upgrade pip \
     && rm -rf ~/.cache/pip \
     && rm -rf /tmp/*
 
-# Install remaining dependencies
+# Install SOGS dependencies
 RUN pip3 install --no-cache-dir \
-    cupy-cuda12x==12.2.0 \
+    torchpq==0.0.7 \
     plyfile==0.7.4 \
-    trimesh==3.21.7 \
-    boto3==1.34.69 \
+    Pillow==10.0.0 \
     numpy==1.24.3 \
+    boto3==1.34.69 \
     && pip3 cache purge \
     && rm -rf ~/.cache/pip \
-    && rm -rf /tmp/* \
-    && find /usr/local/lib/python3.*/dist-packages -name "*.pyc" -delete \
-    && find /usr/local/lib/python3.*/dist-packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+    && rm -rf /tmp/*
+
+# Install PLAS (Parallel Linear Assignment Sorting) from GitHub
+RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git \
+    && pip3 cache purge \
+    && rm -rf ~/.cache/pip \
+    && rm -rf /tmp/*
 
 # Copy files
 COPY requirements.txt .
