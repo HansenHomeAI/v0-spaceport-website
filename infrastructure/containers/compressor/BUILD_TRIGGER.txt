@@ -1,1 +1,2 @@
 Triggering container rebuild
+# Trigger container rebuild after syntax fix
