@@ -110,13 +110,30 @@ class ProductionPipelineValidator:
             "gaussianImageUri": self.config['container_uris']['3dgs'],
             "compressorImageUri": self.config['container_uris']['compressor'],
             
-            # 3DGS optimization parameters for production
+            # 3DGS optimization parameters for production (comprehensive set)
             "optimization_enabled": True,
             "progressive_resolution": True,
             "psnr_plateau_termination": True,
             "target_psnr": 30.0,
             "max_iterations": 10000,
-            "plateau_patience": 500
+            "min_iterations": 1000,  # Minimum iterations before early stopping
+            "plateau_patience": 500,
+            "learning_rate": 0.0025,  # Learning rate for stability
+            "position_lr_scale": 0.5,  # Scale position learning rate
+            "scaling_lr": 0.005,  # Scaling learning rate
+            "rotation_lr": 0.001,  # Rotation learning rate
+            "opacity_lr": 0.05,  # Opacity learning rate
+            "feature_lr": 0.0025,  # Feature learning rate
+            "densification_interval": 100,  # Densify every 100 iterations
+            "opacity_reset_interval": 3000,  # Reset opacity every 3000 iterations
+            "densify_from_iter": 500,  # Start densification from iteration 500
+            "densify_until_iter": 8000,  # Stop densification at iteration 8000
+            "densify_grad_threshold": 0.0002,  # Gradient threshold for densification
+            "percent_dense": 0.01,  # Percentage of scene to densify
+            "lambda_dssim": 0.2,  # SSIM loss weight
+            "sh_degree": 3,  # Spherical harmonics degree
+            "log_interval": 500,  # Log every 500 iterations
+            "save_interval": 5000  # Save every 5000 iterations
         }
     
     def start_production_test(self) -> Tuple[Optional[str], Optional[Dict]]:

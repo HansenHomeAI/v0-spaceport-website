@@ -1,0 +1,286 @@
+{
+    "events": [
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,214 - INFO - ✅ gsplat library loaded successfully",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.max_iterations = 10000 (from MAX_ITERATIONS)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.min_iterations = 1000 (from MIN_ITERATIONS)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.target_psnr = 30.0 (from TARGET_PSNR)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.plateau_patience = 500 (from PLATEAU_PATIENCE)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.psnr_plateau_termination = True (from PSNR_PLATEAU_TERMINATION)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override learning_rates.gaussian_lr = 0.0025 (from LEARNING_RATE)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.log_interval = 500 (from LOG_INTERVAL)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📝 Override training.save_interval = 5000 (from SAVE_INTERVAL)",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - ✅ Trainer initialized",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📁 Input directory: /opt/ml/input/data/training",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,599 - INFO - 📁 Output directory: /opt/ml/model",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,616 - INFO - 🎮 Using GPU: Tesla T4",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,616 - INFO - 💾 GPU Memory: 14.7 GB",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,616 - INFO - 🚀 Starting REAL gsplat 3D Gaussian Splatting Training",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,616 - INFO - 📊 Loading COLMAP reconstruction data...",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,616 - INFO - Searching for COLMAP sparse directory in /opt/ml/input/data/training...",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,616 - INFO - ✅ Found COLMAP sparse reconstruction at: /opt/ml/input/data/training/sparse/0",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,617 - INFO - ✅ Loaded 1 cameras",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,627 - INFO - ✅ Loaded 20 image poses",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,720 - INFO - ✅ Loaded 15242 3D points from COLMAP",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:49,730 - INFO - 🎯 Initializing Gaussians with spherical harmonics...",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:50,126 - INFO - ✅ Initialized 15242 Gaussians with spherical harmonics",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:50,126 - INFO - ⚙️ Setting up gsplat training...",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157231277,
+            "message": "2025-06-29 00:33:51,168 - INFO - 🔥 Starting real gsplat training...",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157232278,
+            "message": "2025-06-29 00:33:51,345 - INFO - Iter      0: Loss=0.004329, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157232278,
+            "message": "2025-06-29 00:33:51,967 - INFO - Iter    500: Loss=0.002313, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157233278,
+            "message": "2025-06-29 00:33:52,583 - INFO - Iter   1000: Loss=0.002297, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157233278,
+            "message": "2025-06-29 00:33:53,198 - INFO - Iter   1500: Loss=0.002286, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157234278,
+            "message": "2025-06-29 00:33:53,809 - INFO - Iter   2000: Loss=0.002290, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157235279,
+            "message": "2025-06-29 00:33:54,418 - INFO - Iter   2500: Loss=0.002279, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157235279,
+            "message": "2025-06-29 00:33:55,019 - INFO - Iter   3000: Loss=0.002252, Gaussians=15242",
+            "ingestionTime": 1751157237416
+        },
+        {
+            "timestamp": 1751157236279,
+            "message": "2025-06-29 00:33:55,657 - INFO - Iter   3500: Loss=0.002250, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157237281,
+            "message": "2025-06-29 00:33:56,279 - INFO - Iter   4000: Loss=0.002239, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157237281,
+            "message": "2025-06-29 00:33:56,880 - INFO - Iter   4500: Loss=0.002227, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:57,502 - INFO - Iter   5000: Loss=0.002216, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:57,504 - INFO - 💾 Gaussians saved to /opt/ml/model/checkpoint_5000.ply with spherical harmonics format",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:57,504 - INFO -    - 15242 Gaussians",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:57,504 - INFO -    - SH DC coefficients: f_dc_0, f_dc_1, f_dc_2",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:57,504 - INFO -    - Compatible with SOGS compression ✓",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:57,504 - INFO - 💾 Checkpoint saved at iteration 5000",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157238282,
+            "message": "2025-06-29 00:33:58,124 - INFO - Iter   5500: Loss=0.002205, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157239282,
+            "message": "2025-06-29 00:33:58,740 - INFO - Iter   6000: Loss=0.002194, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157240282,
+            "message": "2025-06-29 00:33:59,355 - INFO - Iter   6500: Loss=0.002183, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157240283,
+            "message": "2025-06-29 00:33:59,974 - INFO - Iter   7000: Loss=0.002172, Gaussians=15242",
+            "ingestionTime": 1751157241449
+        },
+        {
+            "timestamp": 1751157241283,
+            "message": "2025-06-29 00:34:00,582 - INFO - Iter   7500: Loss=0.002161, Gaussians=15242",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157241283,
+            "message": "2025-06-29 00:34:01,222 - INFO - Iter   8000: Loss=0.002150, Gaussians=15242",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157242283,
+            "message": "2025-06-29 00:34:01,843 - INFO - Iter   8500: Loss=0.002139, Gaussians=15242",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157243284,
+            "message": "2025-06-29 00:34:02,453 - INFO - Iter   9000: Loss=0.002128, Gaussians=15242",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157243284,
+            "message": "2025-06-29 00:34:03,077 - INFO - Iter   9500: Loss=0.002117, Gaussians=15242",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157244284,
+            "message": "2025-06-29 00:34:03,682 - INFO - 💾 Gaussians saved to /opt/ml/model/final_model.ply with spherical harmonics format",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157244284,
+            "message": "2025-06-29 00:34:03,682 - INFO -    - 15242 Gaussians",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157244284,
+            "message": "2025-06-29 00:34:03,682 - INFO -    - SH DC coefficients: f_dc_0, f_dc_1, f_dc_2",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157244284,
+            "message": "2025-06-29 00:34:03,682 - INFO -    - Compatible with SOGS compression ✓",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157244284,
+            "message": "2025-06-29 00:34:03,682 - INFO - ✅ Training metadata saved to /opt/ml/model/training_metadata.json",
+            "ingestionTime": 1751157246480
+        },
+        {
+            "timestamp": 1751157244284,
+            "message": "2025-06-29 00:34:03,682 - INFO - ✅ Real gsplat training completed!",
+            "ingestionTime": 1751157246480
+        }
+    ],
+    "nextForwardToken": "f/39052111507338530508634026519562832339483946211966058506/s",
+    "nextBackwardToken": "b/39052111217272737711346211306650148938409323912530100224/s"
+}

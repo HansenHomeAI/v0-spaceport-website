@@ -1,9 +1,6 @@
 {
-  "iterations": 14226,
-  "final_loss": 0.009652907028794289,
-  "final_psnr": 35.207433066827754,
-  "best_psnr": 35.207433066827754,
-  "training_time": 15.289577722549438,
-  "num_gaussians": 30,
-  "early_termination_reason": "target_psnr"
+  "iterations": 10000,
+  "training_completed": true,
+  "output_format": "spherical_harmonics",
+  "sogs_compatible": true
 }

@@ -1,0 +1,16 @@
+{
+    "events": [
+        {
+            "timestamp": 1751157447125,
+            "message": "  File \"/opt/ml/code/compress.py\", line 113\n    except Exception as e:",
+            "ingestionTime": 1751157453339
+        },
+        {
+            "timestamp": 1751157447125,
+            "message": "SyntaxError: expected 'except' or 'finally' block",
+            "ingestionTime": 1751157453339
+        }
+    ],
+    "nextForwardToken": "f/39052116030843987323784155421886635774022303651684941825/s",
+    "nextBackwardToken": "b/39052116030843987323784155421886635774022303651684941824/s"
+}
