@@ -1,3 +1,4 @@
-Production COLMAP SfM Container - Force Rebuild 2025-06-30 17:15:00
-Enhanced COLMAP parameters + quality validation + SfM optimization implemented
-Testing pipeline with 1000+ point validation requirement
+Production COLMAP SfM Container - Enhanced Error Reporting 2025-06-30 17:25:00
+Replaced set -e with detailed error reporting and debugging
+Added comprehensive logging to identify exact failure point
+Testing defensive error handling for pipeline debugging
