@@ -262,12 +262,31 @@ class Trainer:
         }
     
     def initialize_gaussians_from_colmap(self, scene_data: Dict) -> Dict[str, torch.Tensor]:
-        """Initialize Gaussian parameters with proper spherical harmonics."""
+        """Initialize Gaussian parameters from COLMAP point cloud with proper SH setup."""
         points_3d = scene_data['points_3d']
-        positions = torch.from_numpy(points_3d['positions']).float().to(self.device)
-        colors_rgb = points_3d['colors'].astype(np.float32) / 255.0  # Normalize to [0,1]
         
-        num_points = positions.shape[0]
+        if not points_3d:
+            raise Exception("No 3D points available from COLMAP reconstruction")
+        
+        positions = points_3d['positions']
+        colors = points_3d['colors']
+        
+        n_points = len(positions)
+        logger.info(f"🎯 Initializing {n_points} Gaussians from COLMAP points")
+        
+        # CRITICAL: Validate sufficient points for quality training
+        MIN_SPLATS = 1000
+        if n_points < MIN_SPLATS:
+            logger.error(f"❌ CRITICAL: Only {n_points} initial splats available!")
+            logger.error(f"❌ Need at least {MIN_SPLATS} splats for quality 3D Gaussian Splatting")
+            logger.error(f"❌ This indicates poor SfM reconstruction quality")
+            logger.error(f"❌ 3DGS TRAINING ABORTED - Fix SfM stage first")
+            sys.exit(1)
+        
+        logger.info(f"✅ Quality check passed: {n_points} >= {MIN_SPLATS} initial splats")
+        
+        positions = torch.from_numpy(positions).float().to(self.device)
+        colors_rgb = colors.astype(np.float32) / 255.0  # Normalize to [0,1]
         
         # Convert RGB to spherical harmonics DC coefficients
         # SH DC coefficient is RGB / sqrt(4*pi) for proper normalization
@@ -277,16 +296,16 @@ class Trainer:
         gaussians = {
             'positions': nn.Parameter(positions),
             'sh_dc': nn.Parameter(sh_dc),  # [N, 3] - DC coefficients only
-            'sh_rest': nn.Parameter(torch.zeros(num_points, 0, 3).to(self.device)),  # No higher order SH
-            'opacities': nn.Parameter(torch.logit(torch.full((num_points,), 0.7).to(self.device))),
-            'scales': nn.Parameter(torch.log(torch.full((num_points, 3), 0.01).to(self.device))),
-            'rotations': nn.Parameter(torch.zeros(num_points, 4).to(self.device))  # Quaternions
+            'sh_rest': nn.Parameter(torch.zeros(n_points, 0, 3).to(self.device)),  # No higher order SH
+            'opacities': nn.Parameter(torch.logit(torch.full((n_points,), 0.7).to(self.device))),
+            'scales': nn.Parameter(torch.log(torch.full((n_points, 3), 0.01).to(self.device))),
+            'rotations': nn.Parameter(torch.zeros(n_points, 4).to(self.device))  # Quaternions
         }
         
         # Initialize rotations as identity quaternions
         gaussians['rotations'].data[:, 0] = 1.0
         
-        logger.info(f"✅ Initialized {num_points} Gaussians with spherical harmonics")
+        logger.info(f"✅ Initialized {n_points} Gaussians with spherical harmonics")
         return gaussians
     
     def setup_optimizer(self, gaussians: Dict[str, torch.Tensor]) -> torch.optim.Optimizer:
