@@ -110,7 +110,7 @@ class PlayCanvasSOGSCompressor:
                 
                 logger.info(f"✅ File {i+1} compressed: {compression_ratio:.2f}x ratio, {len(output_files)} output files")
             
-        except Exception as e:
+            except Exception as e:
                 logger.error(f"Failed to compress {ply_file}: {e}")
                 raise
         
