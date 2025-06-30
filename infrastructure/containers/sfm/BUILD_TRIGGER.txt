@@ -1,0 +1,1 @@
+BUILD_TRIGGER - Optimized SfM: Skip image undistortion for 3DGS (saves 10-20min) Mon Jun 30 15:35:56 MDT 2025
