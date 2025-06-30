@@ -110,7 +110,7 @@ class PlayCanvasSOGSCompressor:
                 
                 logger.info(f"✅ File {i+1} compressed: {compression_ratio:.2f}x ratio, {len(output_files)} output files")
             
-            except Exception as e:
+        except Exception as e:
                 logger.error(f"Failed to compress {ply_file}: {e}")
                 raise
         
@@ -469,15 +469,16 @@ class PlayCanvasSOGSCompressor:
             # Find PLY files in input
             ply_files = []
             
-            # Check for direct PLY files
-            for file in os.listdir(self.input_dir):
-                file_path = os.path.join(self.input_dir, file)
-                if file.endswith('.ply'):
-                    ply_files.append(file_path)
-                elif file.endswith(('.tar.gz', '.zip')):
-                    # Extract and find PLY files
-                    extracted_plys = self._extract_and_find_plys(file_path)
-                    ply_files.extend(extracted_plys)
+            # Check for PLY files and archives recursively
+            for root, dirs, files in os.walk(self.input_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    if file.endswith('.ply'):
+                        ply_files.append(file_path)
+                    elif file.endswith(('.tar.gz', '.zip')):
+                        # Extract and find PLY files
+                        extracted_plys = self._extract_and_find_plys(file_path)
+                        ply_files.extend(extracted_plys)
             
             if not ply_files:
                 logger.error("No PLY files found in input directory")
