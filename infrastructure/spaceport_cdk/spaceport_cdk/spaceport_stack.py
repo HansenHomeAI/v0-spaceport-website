@@ -88,6 +88,22 @@ class SpaceportStack(Stack):
                 ]
             )
         )
+        
+        # Add permissions for ML bucket (CSV uploads)
+        lambda_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:ListBucket",
+                    "s3:DeleteObject"
+                ],
+                resources=[
+                    "arn:aws:s3:::spaceport-ml-processing",
+                    "arn:aws:s3:::spaceport-ml-processing/*"
+                ]
+            )
+        )
         file_metadata_table.grant_read_write_data(lambda_role)
         drone_path_table.grant_read_write_data(lambda_role)
         
@@ -142,6 +158,21 @@ class SpaceportStack(Stack):
             environment={
                 "BUCKET_NAME": upload_bucket.bucket_name,
                 "METADATA_TABLE_NAME": file_metadata_table.table_name
+            },
+            role=lambda_role,
+            timeout=Duration.seconds(30)
+        )
+        
+        # Create Lambda function for CSV upload URL generation
+        csv_upload_lambda = lambda_.Function(
+            self, 
+            "Spaceport-CsvUploadFunction",
+            function_name="Spaceport-CsvUploadFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "csv_upload_url")),
+            handler="lambda_function.lambda_handler",
+            environment={
+                "ML_BUCKET": "spaceport-ml-processing"  # Will be updated when ML stack is deployed
             },
             role=lambda_role,
             timeout=Duration.seconds(30)
@@ -298,6 +329,16 @@ class SpaceportStack(Stack):
             "POST", 
             apigw.LambdaIntegration(
                 file_upload_lambda,
+                proxy=True
+            )
+        )
+        
+        # Add CSV upload URL endpoint
+        csv_upload_resource = file_upload_api.root.add_resource("get-csv-upload-url")
+        csv_upload_resource.add_method(
+            "POST", 
+            apigw.LambdaIntegration(
+                csv_upload_lambda,
                 proxy=True
             )
         )

@@ -1,0 +1,116 @@
+# OpenSfM Configuration for GPS-Constrained Drone Reconstruction
+# Optimized for accuracy and 3DGS compatibility
+# Updated: 2025-01-27
+
+# GPS and Coordinate System Configuration
+use_altitude_tag: true
+align_method: 'orientation_prior'
+align_orientation_prior: 'vertical'
+
+# GPS Prior Configuration  
+use_gps: true
+gps_error_threshold: 10.0  # meters - reasonable for consumer drones
+gps_accuracy: 5.0         # assumed GPS accuracy in meters
+
+# Camera and Image Processing
+camera_calibration_linear_constraint_weight: 100.0
+camera_calibration_nonlinear_constraint_weight: 100.0
+
+# Feature Detection (tuned for drone imagery)
+feature_type: 'sift'
+feature_min_frames: 4000    # Increase for better matching in low-texture areas
+feature_process_size: 2048  # High resolution for drone imagery
+feature_use_adaptive_suppression: false
+
+sift_peak_threshold: 0.04   # Lower threshold for more features in flat areas
+sift_edge_threshold: 10     # Standard edge threshold
+
+# Feature Matching (enhanced for GPS-constrained reconstruction)
+matching_gps_distance: 100   # Only match images within 100m GPS distance
+matching_time_neighbors: 10  # Match with temporal neighbors
+matcher_type: 'flann'
+lowes_ratio: 0.8
+matcher_distance: 0.7
+
+# Robust matching for challenging drone scenarios
+robust_matching_calib_threshold: 4.0
+robust_matching_threshold: 4.0
+robust_matching_min_match: 20
+
+# Bundle Adjustment Configuration  
+optimize_camera_parameters: true
+bundle_adjustment_max_num_iterations: 500
+bundle_adjustment_loss_function: 'SoftLOneLoss'
+bundle_adjustment_loss_function_threshold: 1.0
+
+# GPS-specific bundle adjustment settings
+bundle_use_gps: true
+bundle_use_gcp: false
+bundle_max_num_shots: 500
+
+# Reconstruction Settings
+reconstruct_with_gps: true
+triangulation_threshold: 0.004
+triangulation_min_ray_angle: 2.0  # degrees
+
+# Resection settings for GPS initialization
+resection_threshold: 0.25
+resection_min_inliers: 15
+
+# Track Creation
+tracker_type: 'incremental'
+retriangulation: true
+retriangulation_ratio: 1.25
+
+# GPS Coordinate Reference
+# Will be set dynamically based on flight data
+reference_lla: [0.0, 0.0, 0.0]  # Placeholder - set by GPS processor
+
+# Dense Matching (minimal for 3DGS compatibility)
+depthmap_resolution: 640
+depthmap_min_depth: 0.01
+depthmap_max_depth: 1000
+
+# Process Configuration
+processes: 4  # Match SageMaker instance vCPUs
+
+# Output Settings
+save_partial_reconstructions: false
+local_bundle_radius: 3
+
+# Mesh Generation (disabled for 3DGS pipeline)
+mesh_size: 0  # Disable mesh generation
+
+# Quality Control
+min_reconstructed_points: 1000  # Minimum points for 3DGS compatibility
+remove_max_outliers: 50
+
+# Advanced GPS Integration Settings
+gps_dop_threshold: 10.0        # Dilution of precision threshold
+gps_min_satellites: 4          # Minimum GPS satellites
+auto_compute_image_connectivity: true
+
+# Camera Model Selection
+default_camera_model: 'perspective'  # Most drones use perspective cameras
+camera_models:
+  perspective:
+    focal_prior_weight: 1.0
+    k1_prior_weight: 0.1  
+    k2_prior_weight: 0.1
+
+# Incremental Reconstruction Settings
+incremental_bundle_size: 100
+incremental_bundle_steps: 10
+
+# Geometric Verification 
+compute_two_view_geometry: true
+two_view_geometry_threshold: 1e-8
+
+# Metadata Processing
+extract_metadata: true
+use_exif_size: true
+use_exif_focal: true
+
+# Logging and Debug
+log_level: 'INFO'
+save_debug_files: false 

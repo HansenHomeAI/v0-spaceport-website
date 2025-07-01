@@ -487,6 +487,25 @@
       />
     </div>
 
+    <!-- GPS Flight Path CSV Upload -->
+    <div id="csvUploadArea" class="upload-area csv-upload">
+      <p id="csvUploadPrompt">📍 Enhanced: Upload GPS flight path (.csv) for improved accuracy</p>
+      <p class="upload-description">Optional: Add your drone's flight path CSV for GPS-constrained reconstruction</p>
+
+      <!-- Hidden by default, shown once a CSV file is selected -->
+      <p id="selectedCsvDisplay" style="display:none;">
+        Selected GPS file: <span id="selectedCsvFileName"></span>
+        <span id="removeCsvBtn" class="close-icon">&times;</span>
+      </p>
+
+      <input 
+        type="file" 
+        id="csvFileInput" 
+        accept=".csv"
+        style="display:none"
+      />
+    </div>
+
     <!-- Email field -->
     <div class="input-wrapper">
       <input

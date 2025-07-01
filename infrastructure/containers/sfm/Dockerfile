@@ -1,67 +1,72 @@
-# Real Production COLMAP Container - Fixed COLMAP PATH Issue
-# Uses the official COLMAP container with the correct script name
-# COLMAP availability fix - 2025-06-30
+# Production OpenSfM Container with GPS-Constrained Reconstruction
+# Replaces COLMAP with OpenSfM for enhanced accuracy using drone flight path data
+# Updated: 2025-01-27
 
-FROM colmap/colmap:latest
+FROM python:3.9-slim
 
-# Switch to root to install packages
+# Switch to root for installation
 USER root
 
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Ensure COLMAP is in PATH - this is critical!
-ENV PATH="/usr/local/bin:$PATH"
-
-# Update package lists and install essential tools first
+# Install system dependencies for OpenSfM and GPS processing
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
         wget \
         curl \
         unzip \
         ca-certificates \
-    && rm -rf /var/lib/apt/lists/* || true
-
-# Try to install Python, but don't fail if it doesn't work
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3 \
+        pkg-config \
+        libeigen3-dev \
+        libopencv-dev \
+        libceres-dev \
+        libgoogle-glog-dev \
+        libgflags-dev \
+        libatlas-base-dev \
+        libsuitesparse-dev \
+        libproj-dev \
+        libgdal-dev \
+        python3-dev \
         python3-pip \
-    && rm -rf /var/lib/apt/lists/* || \
-    (echo "Python installation failed, will use alternative approach" && \
-     wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
-     python3 /tmp/get-pip.py || \
-     echo "Will proceed without Python")
-
-# Install boto3 if possible, otherwise skip
-RUN pip3 install boto3 || \
-    python3 -m pip install boto3 || \
-    echo "boto3 installation skipped - will use shell-only approach"
+        libboost-all-dev \
+        libyaml-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create working directories
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 
-# Copy our production COLMAP script with the expected name
-COPY run_colmap_production.sh /opt/ml/code/run_sfm.sh
+# Install Python dependencies for OpenSfM and GPS processing
+COPY requirements.txt /opt/ml/code/
+RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt
 
-# Make it executable
+# Clone and build OpenSfM
+RUN cd /opt && \
+    git clone --depth 1 --branch main https://github.com/mapillary/OpenSfM.git && \
+    cd OpenSfM && \
+    python3 setup.py build && \
+    python3 setup.py install
+
+# Copy our production OpenSfM scripts
+COPY run_opensfm_gps.py /opt/ml/code/
+COPY run_sfm.sh /opt/ml/code/
+COPY gps_processor.py /opt/ml/code/
+COPY colmap_converter.py /opt/ml/code/
+COPY config_template.yaml /opt/ml/code/
+
+# Make scripts executable
 RUN chmod +x /opt/ml/code/run_sfm.sh
-
-# CRITICAL: Verify COLMAP is working with better debugging
-RUN echo "=== COLMAP VERIFICATION ===" && \
-    echo "PATH: $PATH" && \
-    echo "Looking for COLMAP binary..." && \
-    which colmap || echo "COLMAP not found in PATH" && \
-    find /usr -name "colmap" -type f 2>/dev/null || echo "COLMAP binary not found in /usr" && \
-    ls -la /usr/local/bin/ | grep colmap || echo "No colmap in /usr/local/bin" && \
-    echo "Testing COLMAP command..." && \
-    colmap help >/dev/null 2>&1 && echo "✅ COLMAP verification SUCCESS" || echo "❌ COLMAP verification FAILED"
+RUN chmod +x /opt/ml/code/run_opensfm_gps.py
 
 # Set working directory
 WORKDIR /opt/ml/code
 
-# Ensure COLMAP is available at runtime
-ENV PATH="/usr/local/bin:$PATH"
+# Add OpenSfM to PATH
+ENV PATH="/opt/OpenSfM/bin:$PATH"
+ENV PYTHONPATH="/opt/OpenSfM:$PYTHONPATH"
 
 # Use the expected script name as the entrypoint
 ENTRYPOINT ["/opt/ml/code/run_sfm.sh"] 
