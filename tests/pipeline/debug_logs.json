@@ -1,0 +1,216 @@
+{
+    "events": [
+        {
+            "timestamp": 1751328788162,
+            "message": "============================================================",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "🚀 PRODUCTION COLMAP SfM PROCESSING - v1.1 (Debug Mode)",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "============================================================",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "Input: /opt/ml/processing/input",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "Output: /opt/ml/processing/output",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "Work: /tmp/colmap_work",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "🔍 DEBUG: Checking directory accessibility...",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "Input dir exists: YES",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "Output dir exists: YES",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "Can create work dir: YES",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "📁 Creating working directories...",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "============================================================",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "📁 EXTRACTING INPUT ARCHIVE",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "============================================================",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "🔍 DEBUG: Input directory contents:",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "total 54540",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "drwxr-xr-x 2 root root     4096 Jul  1 00:11 .",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "drwxr-xr-x 4 root root     4096 Jun 30 23:11 ..",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "-rw-r--r-- 1 root root 55839590 Jul  1 00:11 1749575207099-4fanwl-Archive.zip",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "📦 Found archive: /opt/ml/processing/input/1749575207099-4fanwl-Archive.zip",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788162,
+            "message": "📊 Archive size: 55839590 bytes",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "🔧 Extracting archive...",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "✅ Archive extracted successfully",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "🔍 DEBUG: Looking for images in extracted directory...",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0289.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0296.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0297.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0285.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0286.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0299.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0291.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0288.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0283.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "/tmp/colmap_work/images/DJI_0293.jpg",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "📸 Found 40 images",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "============================================================",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "🔍 STEP 1: FEATURE EXTRACTION",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "============================================================",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "🔍 DEBUG: Testing COLMAP availability...",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "❌ ERROR: COLMAP not available",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "❌ Script failed at line 122",
+            "ingestionTime": 1751328794365
+        },
+        {
+            "timestamp": 1751328788163,
+            "message": "❌ Exit code: 1",
+            "ingestionTime": 1751328794365
+        }
+    ],
+    "nextForwardToken": "f/39055937063674477076828220111359555565205317471372771369/s",
+    "nextBackwardToken": "b/39055937063652176331629689488218019846932669109866790912/s"
+}
