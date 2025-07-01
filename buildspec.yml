@@ -4,6 +4,7 @@ env:
   variables:
     AWS_REGION: "us-west-2"
     AWS_ACCOUNT_ID: "975050048887" # This will be automatically replaced by CodeBuild's role
+    CONTAINERS_TO_BUILD: "all" # Default fallback, overridden by GitHub workflow
 
 phases:
   install:
@@ -21,11 +22,13 @@ phases:
       - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
+      - echo "Containers to build: $CONTAINERS_TO_BUILD"
 
   build:
     commands:
       - echo "Starting container build process..."
-      - ./scripts/deployment/deploy.sh all
+      - echo "Building: $CONTAINERS_TO_BUILD"
+      - ./scripts/deployment/deploy.sh $CONTAINERS_TO_BUILD
 
   post_build:
     commands:
