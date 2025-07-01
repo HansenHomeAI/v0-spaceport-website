@@ -40,13 +40,19 @@ RUN apt-get update && \
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 
 # Install Python dependencies for OpenSfM and GPS processing
+# Install numpy first with version constraint for OpenSfM compatibility
+RUN pip3 install --no-cache-dir numpy==1.21.6
+
+# Install other dependencies
 COPY requirements.txt /opt/ml/code/
 RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt
 
-# Clone and build OpenSfM with setup.py patch to remove problematic Sphinx import
+# Clone and build OpenSfM with proper submodule initialization
+# Using stable release v0.6.0 for reliability
 RUN cd /opt && \
-    git clone --depth 1 --branch main https://github.com/mapillary/OpenSfM.git && \
+    git clone --branch v0.6.0 https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
+    git submodule update --init --recursive && \
     sed -i '/from sphinx.setup_command import BuildDoc/d' setup.py && \
     sed -i '/sphinx/d' setup.py && \
     python3 setup.py build && \
@@ -66,9 +72,9 @@ RUN chmod +x /opt/ml/code/run_opensfm_gps.py
 # Set working directory
 WORKDIR /opt/ml/code
 
-# Add OpenSfM to PATH
-ENV PATH="/opt/OpenSfM/bin:$PATH"
-ENV PYTHONPATH="/opt/OpenSfM:$PYTHONPATH"
+# Add OpenSfM to PATH and PYTHONPATH
+ENV PATH="/opt/OpenSfM/bin:${PATH}"
+ENV PYTHONPATH="/opt/OpenSfM"
 
 # Use the expected script name as the entrypoint
 ENTRYPOINT ["/opt/ml/code/run_sfm.sh"] 

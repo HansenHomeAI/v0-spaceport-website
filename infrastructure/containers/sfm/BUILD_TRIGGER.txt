@@ -29,9 +29,14 @@ Changes in this build:
 
 Docker Image Tag: spaceport/sfm:opensfm-gps-latest
 
-BUILD_TRIGGER_TIMESTAMP: 2025-01-27T22:15:00Z
-TRIGGER_REASON: Fix OpenSfM build failure - Patch setup.py to remove problematic sphinx.setup_command import
-CONTAINER_UPDATE: Added sed commands to remove sphinx imports from OpenSfM setup.py before installation
-BUILD_VERSION: opensfm-gps-v1.2-setup-patch
-EXPECTED_OUTCOME: OpenSfM installation should complete without sphinx.setup_command import error
-NOTES: Previous build failed with "ModuleNotFoundError: No module named 'sphinx.setup_command'" - now patching setup.py to remove sphinx dependencies entirely since we don't need documentation building
+BUILD_TRIGGER_TIMESTAMP: 2025-01-27T22:30:00Z
+TRIGGER_REASON: Comprehensive fix for OpenSfM build failures - submodules, stable version, and dependencies
+CONTAINER_UPDATE: Multiple critical fixes applied:
+  1. Fixed missing pybind11 submodule by adding 'git submodule update --init --recursive'
+  2. Switched to stable OpenSfM v0.6.0 release instead of unstable main branch
+  3. Added pybind11 and setuptools to requirements.txt
+  4. Pinned numpy to v1.21.6 for OpenSfM compatibility
+  5. Kept sphinx patching to avoid documentation build issues
+BUILD_VERSION: opensfm-gps-v1.3-stable
+EXPECTED_OUTCOME: OpenSfM should build successfully with all dependencies and submodules properly initialized
+NOTES: Previous builds failed due to: 1) Missing sphinx module, 2) Deprecated sphinx.setup_command, 3) Missing pybind11 submodule. All issues now addressed.
