@@ -33,6 +33,10 @@ scikit-learn>=1.0.0
 cython>=0.29.0
 wheel>=0.36.0
 
+# Documentation (required by OpenSfM setup.py)
+sphinx>=4.0.0
+sphinx_rtd_theme>=1.0.0
+
 # Logging and Configuration
 colorlog>=6.0.0
 tqdm>=4.60.0

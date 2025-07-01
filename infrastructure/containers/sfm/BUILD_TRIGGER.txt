@@ -28,3 +28,10 @@ Changes in this build:
 6. Maintains compatibility with existing 3DGS training pipeline
 
 Docker Image Tag: spaceport/sfm:opensfm-gps-latest
+
+BUILD_TRIGGER_TIMESTAMP: 2025-01-27T22:00:00Z
+TRIGGER_REASON: Fix OpenSfM build failure - Added missing Sphinx dependency required by setup.py
+CONTAINER_UPDATE: Added sphinx>=4.0.0 and sphinx_rtd_theme>=1.0.0 to requirements.txt
+BUILD_VERSION: opensfm-gps-v1.1-sphinx-fix
+EXPECTED_OUTCOME: OpenSfM installation should complete successfully in CodeBuild
+NOTES: Previous build failed with "ModuleNotFoundError: No module named 'sphinx'" during OpenSfM setup.py execution
