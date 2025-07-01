@@ -43,10 +43,12 @@ RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 COPY requirements.txt /opt/ml/code/
 RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt
 
-# Clone and build OpenSfM
+# Clone and build OpenSfM with setup.py patch to remove problematic Sphinx import
 RUN cd /opt && \
     git clone --depth 1 --branch main https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
+    sed -i '/from sphinx.setup_command import BuildDoc/d' setup.py && \
+    sed -i '/sphinx/d' setup.py && \
     python3 setup.py build && \
     python3 setup.py install
 

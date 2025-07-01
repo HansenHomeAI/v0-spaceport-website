@@ -29,9 +29,9 @@ Changes in this build:
 
 Docker Image Tag: spaceport/sfm:opensfm-gps-latest
 
-BUILD_TRIGGER_TIMESTAMP: 2025-01-27T22:00:00Z
-TRIGGER_REASON: Fix OpenSfM build failure - Added missing Sphinx dependency required by setup.py
-CONTAINER_UPDATE: Added sphinx>=4.0.0 and sphinx_rtd_theme>=1.0.0 to requirements.txt
-BUILD_VERSION: opensfm-gps-v1.1-sphinx-fix
-EXPECTED_OUTCOME: OpenSfM installation should complete successfully in CodeBuild
-NOTES: Previous build failed with "ModuleNotFoundError: No module named 'sphinx'" during OpenSfM setup.py execution
+BUILD_TRIGGER_TIMESTAMP: 2025-01-27T22:15:00Z
+TRIGGER_REASON: Fix OpenSfM build failure - Patch setup.py to remove problematic sphinx.setup_command import
+CONTAINER_UPDATE: Added sed commands to remove sphinx imports from OpenSfM setup.py before installation
+BUILD_VERSION: opensfm-gps-v1.2-setup-patch
+EXPECTED_OUTCOME: OpenSfM installation should complete without sphinx.setup_command import error
+NOTES: Previous build failed with "ModuleNotFoundError: No module named 'sphinx.setup_command'" - now patching setup.py to remove sphinx dependencies entirely since we don't need documentation building
