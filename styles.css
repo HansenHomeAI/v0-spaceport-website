@@ -1482,6 +1482,36 @@ footer {
   font-size: 0.95rem;
 }
 
+/* Enhanced styling for CSV upload area */
+#dpu-container .upload-area.csv-upload {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.05);
+  margin: 20px 0;
+  position: relative;
+}
+
+#dpu-container .upload-area.csv-upload:hover {
+  border-color: #66BB6A;
+  background: rgba(76, 175, 80, 0.08);
+}
+
+#dpu-container .upload-area.csv-upload.dragover {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.12);
+}
+
+#dpu-container .upload-area.csv-upload p:first-child {
+  color: #4CAF50;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+#dpu-container .upload-area.csv-upload .upload-description {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
 /* Buttons => changed .btn to .dpu-btn */
 #dpu-container .dpu-btn {
   padding: 14px 24px;

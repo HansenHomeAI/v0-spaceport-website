@@ -3,3 +3,28 @@ Fixed COLMAP not available error by explicitly setting PATH="/usr/local/bin:$PAT
 Added comprehensive COLMAP verification during container build
 This should restore working COLMAP functionality that we had before!
 Rebuilding container to fix the "COLMAP not available" runtime error.
+
+OPENSFM_GPS_ENHANCED_BUILD_v1.0
+
+This file triggers the automated build of the OpenSfM GPS-enhanced container.
+
+Container Features:
+- OpenSfM with GPS-constrained reconstruction
+- Drone flight path CSV processing 
+- Enhanced accuracy for low-feature areas
+- COLMAP-compatible output format
+- Production-ready for AWS SageMaker
+
+Build Date: 2025-01-27
+Pipeline: GPS-enhanced Structure-from-Motion
+Status: Ready for deployment
+
+Changes in this build:
+1. Replaced COLMAP with OpenSfM
+2. Added GPS flight path processing (gps_processor.py)
+3. Added COLMAP format conversion (colmap_converter.py) 
+4. Added OpenSfM configuration template
+5. Added comprehensive GPS-constrained reconstruction pipeline
+6. Maintains compatibility with existing 3DGS training pipeline
+
+Docker Image Tag: spaceport/sfm:opensfm-gps-latest

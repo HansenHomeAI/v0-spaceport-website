@@ -279,16 +279,7 @@ class MLPipelineStack(Stack):
                         "VolumeSizeInGB": 100
                     }
                 },
-                "ProcessingInputs": [{
-                    "InputName": "input-data",
-                    "AppManaged": False,
-                    "S3Input": {
-                        "S3Uri": sfn.JsonPath.string_at("$.inputS3Uri"),
-                        "LocalPath": "/opt/ml/processing/input",
-                        "S3DataType": "S3Prefix",
-                        "S3InputMode": "File"
-                    }
-                }],
+                "ProcessingInputs.$": "$.sfmProcessingInputs",
                 "ProcessingOutputConfig": {
                     "Outputs": [{
                         "OutputName": "colmap-output",

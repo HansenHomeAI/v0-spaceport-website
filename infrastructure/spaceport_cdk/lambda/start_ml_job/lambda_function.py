@@ -27,6 +27,7 @@ def lambda_handler(event, context):
         s3_url = body.get('s3Url')
         email = body.get('email', 'noreply@hansenhome.ai')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
+        csv_s3_key = body.get('csvS3Key')  # Optional CSV file S3 key for GPS-enhanced processing
         
         if not s3_url:
             return {
@@ -58,7 +59,7 @@ def lambda_handler(event, context):
         # Parse S3 URL to get bucket and key
         bucket_name, object_key = parse_s3_url(s3_url)
         
-        # Verify the object exists
+        # Verify the main object exists
         try:
             s3.head_object(Bucket=bucket_name, Key=object_key)
         except s3.exceptions.NoSuchKey:
@@ -86,6 +87,27 @@ def lambda_handler(event, context):
                 })
             }
         
+        # Verify CSV file exists if provided
+        csv_bucket_name = None
+        csv_object_key = None
+        has_gps_data = False
+        
+        if csv_s3_key:
+            # Assume CSV is in the same ML bucket (spaceport-ml-processing)
+            ml_bucket = os.environ['ML_BUCKET']
+            try:
+                s3.head_object(Bucket=ml_bucket, Key=csv_s3_key)
+                csv_bucket_name = ml_bucket
+                csv_object_key = csv_s3_key
+                has_gps_data = True
+                print(f"✅ GPS flight path CSV found: s3://{ml_bucket}/{csv_s3_key}")
+            except s3.exceptions.NoSuchKey:
+                print(f"⚠️ CSV file not found: s3://{ml_bucket}/{csv_s3_key}")
+                # Continue without GPS data - don't fail the entire request
+            except Exception as e:
+                print(f"⚠️ Cannot access CSV file: {str(e)}")
+                # Continue without GPS data
+        
         # Generate unique job ID
         job_id = str(uuid.uuid4())
         timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
@@ -99,9 +121,34 @@ def lambda_handler(event, context):
         account_id = context.invoked_function_arn.split(':')[4]
         region = context.invoked_function_arn.split(':')[3]
         
-        sfm_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:real-colmap-fixed-final"
+        sfm_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:opensfm-gps-latest"
         gaussian_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest"
         compressor_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest"
+        
+        # Build SfM processing inputs dynamically
+        sfm_processing_inputs = [{
+            "InputName": "input-data",
+            "AppManaged": False,
+            "S3Input": {
+                "S3Uri": f"s3://{bucket_name}/{object_key}",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File"
+            }
+        }]
+        
+        # Add CSV input if GPS data is available
+        if has_gps_data:
+            sfm_processing_inputs.append({
+                "InputName": "gps-data",
+                "AppManaged": False,
+                "S3Input": {
+                    "S3Uri": f"s3://{csv_bucket_name}/{csv_object_key}",
+                    "LocalPath": "/opt/ml/processing/input/gps",
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File"
+                }
+            })
         
         # Prepare Step Functions input
         step_function_input = {
@@ -118,7 +165,16 @@ def lambda_handler(event, context):
             "gaussianImageUri": gaussian_image_uri,
             "compressorImageUri": compressor_image_uri,
             "sfmArgs": ["--input", "/opt/ml/processing/input", "--output", "/opt/ml/processing/output"],
-            "compressionArgs": ["--input", "/opt/ml/processing/input", "--output", "/opt/ml/processing/output"]
+            "compressionArgs": ["--input", "/opt/ml/processing/input", "--output", "/opt/ml/processing/output"],
+            
+            # SfM Processing Configuration
+            "sfmProcessingInputs": sfm_processing_inputs,
+            
+            # GPS/CSV Enhancement Information
+            "hasGpsData": has_gps_data,
+            "csvS3Uri": f"s3://{csv_bucket_name}/{csv_object_key}" if has_gps_data else None,
+            "pipelineType": "gps_enhanced" if has_gps_data else "standard",
+            "sfmMethod": "opensfm_gps" if has_gps_data else "opensfm_standard"
         }
         
         # Start Step Functions execution
