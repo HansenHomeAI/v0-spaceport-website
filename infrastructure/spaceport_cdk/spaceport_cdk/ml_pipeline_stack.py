@@ -160,7 +160,8 @@ class MLPipelineStack(Stack):
                         iam.PolicyStatement(
                             actions=[
                                 "s3:GetObject",
-                                "s3:HeadObject"
+                                "s3:HeadObject",
+                                "s3:PutObject"
                             ],
                             resources=[
                                 f"{upload_bucket.bucket_arn}/*",
