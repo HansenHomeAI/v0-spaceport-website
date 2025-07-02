@@ -12,7 +12,7 @@ import subprocess
 import traceback
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 import logging
 import yaml
 
