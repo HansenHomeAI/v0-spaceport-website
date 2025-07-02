@@ -54,3 +54,10 @@ CONTAINER_UPDATE: Added Tuple to typing imports to fix "NameError: name 'Tuple' 
 BUILD_VERSION: opensfm-gps-v1.5-tuple-fix
 EXPECTED_OUTCOME: Container will execute successfully past the import stage
 NOTES: SageMaker job was failing with exit code 1 due to missing Tuple import. Simple fix to add to imports.
+
+BUILD_TRIGGER_TIMESTAMP: 2025-07-02T22:25:00Z
+TRIGGER_REASON: Fix missing fpdf dependency causing OpenSfM import failure
+CONTAINER_UPDATE: Added fpdf2>=2.5.0 to requirements.txt for OpenSfM report functionality
+BUILD_VERSION: opensfm-gps-v1.6-fpdf-fix
+EXPECTED_OUTCOME: OpenSfM should import successfully and begin feature extraction
+NOTES: OpenSfM was failing on import due to missing fpdf module needed for export_report. Added fpdf2 dependency.
