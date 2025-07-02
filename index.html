@@ -487,25 +487,6 @@
       />
     </div>
 
-    <!-- GPS Flight Path CSV Upload -->
-    <div id="csvUploadArea" class="upload-area csv-upload">
-      <p id="csvUploadPrompt">📍 Enhanced: Upload GPS flight path (.csv) for improved accuracy</p>
-      <p class="upload-description">Optional: Add your drone's flight path CSV for GPS-constrained reconstruction</p>
-
-      <!-- Hidden by default, shown once a CSV file is selected -->
-      <p id="selectedCsvDisplay" style="display:none;">
-        Selected GPS file: <span id="selectedCsvFileName"></span>
-        <span id="removeCsvBtn" class="close-icon">&times;</span>
-      </p>
-
-      <input 
-        type="file" 
-        id="csvFileInput" 
-        accept=".csv"
-        style="display:none"
-      />
-    </div>
-
     <!-- Email field -->
     <div class="input-wrapper">
       <input
@@ -576,6 +557,17 @@
             placeholder="S3 URL (images zip for SfM, sparse reconstruction for 3DGS, or model for compression)"
             autocomplete="off"
           />
+        </div>
+
+        <!-- GPS CSV Data (for SfM) -->
+        <div class="input-wrapper" id="gpsCsvWrapper">
+          <label for="gpsCsvData" class="csv-data-label">GPS Flight Path Data (optional for SfM):</label>
+          <textarea
+            id="gpsCsvData"
+            rows="6"
+            placeholder="Paste GPS CSV data here for enhanced SfM processing...&#10;latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval&#10;41.73272,-111.83423,130.0,249,14.48,0,2,-35,0,8.85,41.73231,-111.83423,-35,0,3.0,0"
+            class="csv-data-input"
+          ></textarea>
         </div>
 
         <!-- Email for notifications -->

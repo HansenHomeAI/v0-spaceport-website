@@ -16,6 +16,48 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 2  # Need previous commit to detect changes
+
+    - name: Detect changed containers
+      id: changes
+      run: |
+        # Get list of changed files
+        CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+        echo "Changed files: $CHANGED_FILES"
+        
+        # Check which containers have changes
+        CONTAINERS_TO_BUILD=""
+        
+        if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/sfm/"; then
+          CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD sfm"
+          echo "SfM container changed"
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/3dgs/"; then
+          CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD 3dgs"
+          echo "3DGS container changed"
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/compressor/"; then
+          CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD compressor"
+          echo "Compressor container changed"
+        fi
+        
+        # If deployment script or buildspec changed, build all
+        if echo "$CHANGED_FILES" | grep -q -E "(scripts/deployment/deploy.sh|buildspec.yml)"; then
+          CONTAINERS_TO_BUILD="all"
+          echo "Build infrastructure changed - building all containers"
+        fi
+        
+        # Default to all if no specific containers detected (safety)
+        if [ -z "$CONTAINERS_TO_BUILD" ]; then
+          CONTAINERS_TO_BUILD="all"
+          echo "No specific container changes detected - building all for safety"
+        fi
+        
+        echo "containers=$CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+        echo "Will build: $CONTAINERS_TO_BUILD"
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -35,11 +77,12 @@ jobs:
     - name: Trigger CodeBuild for container builds
       run: |
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
-        echo "CodeBuild has sufficient disk space for PyTorch + CUDA containers"
+        echo "Building containers: ${{ steps.changes.outputs.containers }}"
         
         BUILD_ID=$(aws codebuild start-build \
           --project-name spaceport-ml-containers \
           --source-version ${{ github.sha }} \
+          --environment-variables-override name=CONTAINERS_TO_BUILD,value="${{ steps.changes.outputs.containers }}" \
           --query 'build.id' \
           --output text)
         
@@ -70,6 +113,7 @@ jobs:
     - name: Output container URIs
       run: |
         echo "✅ ML Containers built and pushed via CodeBuild:"
+        echo "Built containers: ${{ steps.changes.outputs.containers }}"
         echo "SfM: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest"
         echo "3DGS: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest"
         echo "Compressor: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest" 

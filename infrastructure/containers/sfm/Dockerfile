@@ -40,21 +40,22 @@ RUN apt-get update && \
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 
 # Install Python dependencies for OpenSfM and GPS processing
-# Install numpy first with version constraint for OpenSfM compatibility
+# Install numpy early to satisfy many builds, but avoid duplicate install later
 RUN pip3 install --no-cache-dir numpy==1.21.6
 
-# Install other dependencies
+# Copy and install the remaining Python dependencies (excluding the already-installed numpy)
 COPY requirements.txt /opt/ml/code/
-RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt
+# Remove numpy from requirements to prevent version conflicts
+RUN grep -v "^numpy" /opt/ml/code/requirements.txt > /opt/ml/code/requirements_wo_numpy.txt && \
+    pip3 install --no-cache-dir -r /opt/ml/code/requirements_wo_numpy.txt && \
+    pip3 install --no-cache-dir sphinx==4.5.0
 
 # Clone and build OpenSfM with proper submodule initialization
-# Using stable release v0.6.0 for reliability
+# NOTE: v0.6.0 does not exist upstream, build fails. Use the default "main" branch (latest stable) instead.
 RUN cd /opt && \
-    git clone --branch v0.6.0 https://github.com/mapillary/OpenSfM.git && \
+    git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
     git submodule update --init --recursive && \
-    sed -i '/from sphinx.setup_command import BuildDoc/d' setup.py && \
-    sed -i '/sphinx/d' setup.py && \
     python3 setup.py build && \
     python3 setup.py install
 

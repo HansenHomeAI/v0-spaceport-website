@@ -282,13 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectedFileName = document.getElementById('selectedFileName');
   const removeFileBtn   = document.getElementById('removeFileBtn');
   
-  // CSV Upload Elements
-  const csvUploadArea = document.getElementById('csvUploadArea');
-  const csvFileInput = document.getElementById('csvFileInput');
-  const selectedCsvDisplay = document.getElementById('selectedCsvDisplay');
-  const selectedCsvFileName = document.getElementById('selectedCsvFileName');
-  const removeCsvBtn = document.getElementById('removeCsvBtn');
-  
   const emailField      = document.getElementById('emailField');
   const optionalNotes   = document.getElementById('optionalNotes');
   const uploadBtn       = document.getElementById('uploadBtn');
@@ -296,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBarFill = document.getElementById('progressBarFill');
 
   let selectedFile = null;
-  let selectedCsvFile = null;  
   const MAX_FILE_SIZE = 7 * 1024 * 1024 * 1024; // 7GB
   const CHUNK_SIZE    = 24 * 1024 * 1024;       // 24MB
 
@@ -318,43 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadPrompt.style.display = "block";
     uploadArea.classList.remove('missing-field');
   });
-
-  // CSV Upload Event Handlers
-  if (csvUploadArea && csvFileInput && selectedCsvDisplay && removeCsvBtn) {
-    // CSV Upload Area Click
-    csvUploadArea.addEventListener('click', () => csvFileInput.click());
-    
-    // CSV Drag & Drop
-    csvUploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      csvUploadArea.classList.add('dragover');
-    });
-    csvUploadArea.addEventListener('dragleave', () => {
-      csvUploadArea.classList.remove('dragover');
-    });
-    csvUploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      csvUploadArea.classList.remove('dragover');
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        validateAndSetCsvFile(e.dataTransfer.files[0]);
-      }
-    });
-    
-    // CSV File Input Change
-    csvFileInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files.length > 0) {
-        validateAndSetCsvFile(e.target.files[0]);
-      }
-    });
-    
-    // Remove CSV File
-    removeCsvBtn.addEventListener('click', () => {
-      selectedCsvFile = null;
-      csvFileInput.value = "";
-      selectedCsvDisplay.style.display = "none";
-      csvUploadArea.classList.remove('missing-field');
-    });
-  }
 
   // Drag & drop
   uploadArea.addEventListener('click', () => fileInput.click());
@@ -405,37 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadArea.classList.remove('missing-field');
   }
 
-  function validateAndSetCsvFile(file) {
-    // Check if it's a CSV file
-    if (!file.name.toLowerCase().endsWith(".csv") && file.type !== "text/csv") {
-      alert("Please upload a CSV file only.");
-      csvFileInput.value = "";
-      selectedCsvFile = null;
-      return;
-    }
-    
-    // Check file size (max 10MB for CSV)
-    const MAX_CSV_SIZE = 10 * 1024 * 1024; // 10MB
-    if (file.size > MAX_CSV_SIZE) {
-      alert("CSV file size exceeds 10MB. Please upload a smaller file.");
-      csvFileInput.value = "";
-      selectedCsvFile = null;
-      return;
-    }
-    
-    selectedCsvFile = file;
-    
-    // Show file name + close icon
-    selectedCsvDisplay.style.display = "block";
-    selectedCsvFileName.textContent = file.name;
-    
-    // Remove any validation highlighting
-    csvUploadArea.classList.remove('missing-field');
-    
-    // Visual feedback for successful upload
-    console.log("✅ GPS flight path loaded:", file.name);
-  }
-
   /************************************************
    * Endpoints for multipart in your backend
    ************************************************/
@@ -444,17 +368,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const COMPLETE_MULTIPART_ENDPOINT= "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload";
   const SAVE_SUBMISSION_ENDPOINT   = "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission";
 
-  async function saveSubmissionMetadata(objectKey, csvObjectKey = null) {
+  async function saveSubmissionMetadata(objectKey) {
     const payload = {
       email: emailField.value.trim(),
       propertyTitle: propertyTitle.value.trim(),
       listingDescription: listingDesc.value.trim(),
       addressOfProperty: addressOfProp.value.trim(),
       optionalNotes: optionalNotes.value.trim(),
-      objectKey: objectKey,
-      csvObjectKey: csvObjectKey,
-      hasGpsData: csvObjectKey !== null,
-      pipelineType: csvObjectKey ? "gps_enhanced" : "standard"
+      objectKey: objectKey
     };
 
     const res = await fetch(SAVE_SUBMISSION_ENDPOINT, {
@@ -549,39 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return { objectKey };
   }
 
-  // Simple upload for small CSV files
-  async function uploadCsvFile(csvFile) {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const csvObjectKey = `csv-uploads/${timestamp}-${csvFile.name}`;
-    
-    // For CSV files, we'll use a simple PUT request since they're small
-    const { url } = await fetch("https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-csv-upload-url", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        fileName: csvFile.name,
-        fileType: csvFile.type || "text/csv",
-        objectKey: csvObjectKey
-      }),
-    }).then(res => res.json());
-
-    // Upload CSV file directly
-    const uploadResponse = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": csvFile.type || "text/csv"
-      },
-      body: csvFile
-    });
-
-    if (!uploadResponse.ok) {
-      throw new Error("Failed to upload CSV file");
-    }
-
-    console.log("✅ CSV file uploaded successfully:", csvObjectKey);
-    return csvObjectKey;
-  }
-
   function uploadPart(url, chunk, partNumber) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -633,30 +521,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Upload main ZIP file
       const result = await uploadFileInChunks(selectedFile);
-      
-      // Upload CSV file if provided
-      let csvObjectKey = null;
-      if (selectedCsvFile) {
-        console.log("🛰️ Uploading GPS flight path CSV...");
-        try {
-          csvObjectKey = await uploadCsvFile(selectedCsvFile);
-          console.log("✅ GPS-enhanced pipeline will be used");
-        } catch (csvError) {
-          console.warn("⚠️ CSV upload failed, proceeding without GPS data:", csvError.message);
-          // Continue without CSV - don't fail the entire upload
-        }
-      }
 
-      // Save to DynamoDB with CSV information
-      await saveSubmissionMetadata(result.objectKey, csvObjectKey);
+      // Save to DynamoDB
+      await saveSubmissionMetadata(result.objectKey);
       console.log("Submission metadata saved!");
 
-      const hasGps = csvObjectKey !== null;
-      const message = hasGps 
-        ? "Upload completed! 🛰️ GPS-enhanced processing will begin shortly for improved accuracy."
-        : "Upload completed! Standard processing will begin shortly.";
+      const message = "Upload completed! Processing will begin shortly.";
       
-      uploadBtn.innerHTML = hasGps ? '🛰️ Upload Complete!' : 'Upload Complete!';
+      uploadBtn.innerHTML = 'Upload Complete!';
       alert(message);
     } catch (err) {
       console.error("Upload error:", err.message);
@@ -1600,6 +1472,8 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   const jobIdSpan = document.getElementById('jobId');
   const jobStatusSpan = document.getElementById('jobStatus');
   const errorMessageP = document.getElementById('errorMessage');
+  const gpsCsvWrapper = document.getElementById('gpsCsvWrapper');
+  const gpsCsvData = document.getElementById('gpsCsvData');
 
   // S3 URL validation regex - accepts both s3:// and https:// formats
   const S3_URL_REGEX = /^(?:s3:\/\/[a-z0-9.-]+\/(.+)|https:\/\/(?:([a-z0-9.-]+)\.s3\.amazonaws\.com\/(.+)|s3\.amazonaws\.com\/([a-z0-9.-]+)\/(.+)))$/;
@@ -1620,8 +1494,23 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   }
 
   if (pipelineStepSelect) {
-    pipelineStepSelect.addEventListener('change', updatePlaceholderText);
+    pipelineStepSelect.addEventListener('change', () => {
+      updatePlaceholderText();
+      toggleGpsCsvVisibility();
+    });
     updatePlaceholderText(); // Initialize
+    toggleGpsCsvVisibility(); // Initialize
+  }
+
+  function toggleGpsCsvVisibility() {
+    if (!gpsCsvWrapper || !pipelineStepSelect) return;
+    
+    // Only show GPS CSV textarea for SfM step
+    if (pipelineStepSelect.value === 'sfm') {
+      gpsCsvWrapper.style.display = 'block';
+    } else {
+      gpsCsvWrapper.style.display = 'none';
+    }
   }
 
   function updatePlaceholderText() {
@@ -1680,6 +1569,8 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   async function handleStartProcessing() {
     const s3Url = s3UrlInput?.value?.trim();
     const email = mlEmailField?.value?.trim();
+    const pipelineStep = pipelineStepSelect?.value || 'sfm';
+    const csvData = gpsCsvData?.value?.trim();
 
     if (!s3Url || !email) {
       showError('Please fill in all required fields.');
@@ -1702,16 +1593,24 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
     hideError();
 
     try {
+      const requestBody = {
+        s3Url: s3Url,
+        email: email,
+        pipelineStep: pipelineStep
+      };
+
+      // Add CSV data only if it's the SfM step and data is provided
+      if (pipelineStep === 'sfm' && csvData) {
+        requestBody.csvData = csvData;
+        console.log('🛰️ Including GPS CSV data for enhanced SfM processing');
+      }
+
       const response = await fetch(`${ML_API_BASE_URL}/start-job`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          s3Url: s3Url,
-          email: email,
-          pipelineStep: pipelineStepSelect?.value || 'sfm'
-        })
+        body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();

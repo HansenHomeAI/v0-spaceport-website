@@ -79,28 +79,34 @@ deploy_container() {
 # --- Script Main ---
 main() {
   if [[ $# -eq 0 ]]; then
-    error "Usage: $0 [sfm|3dgs|compressor|all]"
+    error "Usage: $0 [sfm|3dgs|compressor|all] or multiple containers separated by spaces"
   fi
 
   login_ecr
   echo
 
-  if [[ "$1" == "all" ]]; then
+  # Handle multiple arguments - either "all" or specific container names
+  if [[ "$*" == *"all"* ]]; then
     log "Deploying all containers..."
     for container in "sfm" "3dgs" "compressor"; do
       deploy_container "$container"
     done
     log "All containers deployed successfully!"
   else
-    # Validate input before calling deploy
-    case "$1" in
-        "sfm"|"3dgs"|"compressor")
-            deploy_container "$1"
-            ;;
-        *)
-            error "Invalid container name: $1. Must be one of: sfm, 3dgs, compressor, all."
-            ;;
-    esac
+    # Deploy specific containers passed as arguments
+    log "Deploying specific containers: $*"
+    for container in "$@"; do
+      # Validate each container name
+      case "$container" in
+          "sfm"|"3dgs"|"compressor")
+              deploy_container "$container"
+              ;;
+          *)
+              error "Invalid container name: $container. Must be one of: sfm, 3dgs, compressor, all."
+              ;;
+      esac
+    done
+    log "Specified containers deployed successfully!"
   fi
 
   log "Deployment script finished."
