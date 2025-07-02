@@ -40,3 +40,10 @@ CONTAINER_UPDATE: Multiple critical fixes applied:
 BUILD_VERSION: opensfm-gps-v1.3-stable
 EXPECTED_OUTCOME: OpenSfM should build successfully with all dependencies and submodules properly initialized
 NOTES: Previous builds failed due to: 1) Missing sphinx module, 2) Deprecated sphinx.setup_command, 3) Missing pybind11 submodule. All issues now addressed.
+
+BUILD_TRIGGER_TIMESTAMP: 2025-07-02T20:40:00Z
+TRIGGER_REASON: Fix ECR tag mismatch - Lambda expects :latest but was using :opensfm-gps-latest
+CONTAINER_UPDATE: Updated Lambda to use correct ECR tag :latest to match GitHub Actions workflow
+BUILD_VERSION: opensfm-gps-v1.4-tag-fix
+EXPECTED_OUTCOME: Container will be pushed with :latest tag and pipeline will find the image
+NOTES: Pipeline failed with "Cannot find the requested image" because of tag mismatch. Fixed Lambda to use :latest.
