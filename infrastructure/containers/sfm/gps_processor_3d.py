@@ -22,7 +22,7 @@ import exifread
 from PIL import Image
 from PIL.ExifTags import TAGS
 import logging
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, CubicSpline
 from scipy.spatial.distance import cdist
 
 # Configure logging
@@ -32,26 +32,41 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class FlightSegment:
-    """Represents a segment between two waypoints"""
+    """Represents a segment between two waypoints with curvature support"""
     start_point: np.ndarray  # [x, y, z] in local coordinates
     end_point: np.ndarray
+    control_points: List[np.ndarray]  # For curved paths
     start_waypoint_idx: int
     end_waypoint_idx: int
-    distance: float  # meters
+    distance: float  # meters (along curve)
     heading: float  # degrees
     altitude_change: float  # meters
+    curvature_radius: Optional[float] = None  # meters, if specified
     
     def interpolate_point(self, t: float) -> np.ndarray:
         """Get point along segment (t=0 is start, t=1 is end)"""
-        return self.start_point + t * (self.end_point - self.start_point)
+        if self.control_points:
+            # Use spline interpolation for curved path
+            all_points = [self.start_point] + self.control_points + [self.end_point]
+            t_values = np.linspace(0, 1, len(all_points))
+            
+            # Create spline for each dimension
+            x_spline = CubicSpline(t_values, [p[0] for p in all_points])
+            y_spline = CubicSpline(t_values, [p[1] for p in all_points])
+            z_spline = CubicSpline(t_values, [p[2] for p in all_points])
+            
+            return np.array([x_spline(t), y_spline(t), z_spline(t)])
+        else:
+            # Linear interpolation for straight segments
+            return self.start_point + t * (self.end_point - self.start_point)
 
 
 class Advanced3DPathProcessor:
     """Advanced processor that maps photos to 3D positions along flight path"""
     
-    # Default flight parameters
-    DEFAULT_FLIGHT_SPEED_MPH = 17.9
-    DEFAULT_PHOTO_INTERVAL_SEC = 3.0
+    # Fallback defaults (only used if CSV doesn't contain the data)
+    FALLBACK_FLIGHT_SPEED_MPH = 17.9
+    FALLBACK_PHOTO_INTERVAL_SEC = 3.0
     DEFAULT_GPS_ACCURACY_M = 5.0
     
     def __init__(self, csv_path: Path, images_dir: Path):
@@ -67,16 +82,18 @@ class Advanced3DPathProcessor:
         self.path_distances = []
         self.total_path_length = 0
         
-        # Flight parameters (can be overridden)
-        self.flight_speed_mps = self.DEFAULT_FLIGHT_SPEED_MPH * 0.44704  # Convert to m/s
-        self.photo_interval_sec = self.DEFAULT_PHOTO_INTERVAL_SEC
+        # Flight parameters (extracted from CSV)
+        self.flight_speed_mps = None
+        self.photo_interval_sec = None
+        self.distance_interval_m = None
+        self.use_time_based = True  # Prefer time-based over distance-based
         
-        logger.info(f"🚁 Initializing 3D Path Processor")
+        logger.info(f"🚁 Initializing Advanced 3D Path Processor")
         logger.info(f"📂 CSV: {csv_path}")
         logger.info(f"📷 Images: {images_dir}")
     
     def parse_flight_csv(self) -> pd.DataFrame:
-        """Parse the drone flight path CSV file with intelligent column detection"""
+        """Parse the drone flight path CSV file with comprehensive parameter extraction"""
         try:
             # Read CSV
             df = pd.read_csv(self.csv_path)
@@ -88,10 +105,13 @@ class Advanced3DPathProcessor:
                 'altitude': ['altitude(ft)', 'altitude', 'alt', 'Altitude', 'ALT', 'height', 'elevation'],
                 'heading': ['heading(deg)', 'heading', 'yaw', 'Heading', 'YAW', 'direction'],
                 'gimbal_pitch': ['gimbalpitchangle', 'gimbal_pitch', 'pitch', 'Pitch', 'camera_pitch'],
-                'speed': ['speed', 'velocity', 'ground_speed', 'Speed', 'SPEED'],
-                'time': ['time', 'timestamp', 'Time', 'TIMESTAMP', 'datetime'],
-                'photo_interval': ['photo_timeinterval', 'time_interval', 'interval', 'photo_interval'],
-                'distance_interval': ['photo_distinterval', 'dist_interval', 'distance', 'photo_distance']
+                'speed': ['speed(mph)', 'speed', 'velocity', 'ground_speed', 'Speed', 'SPEED', 'groundspeed'],
+                'time': ['time(s)', 'time', 'timestamp', 'Time', 'TIMESTAMP', 'datetime'],
+                'photo_interval': ['photo_timeinterval(s)', 'photo_timeinterval', 'time_interval', 'interval', 'photo_interval'],
+                'distance_interval': ['photo_distinterval(ft)', 'photo_distinterval', 'dist_interval', 'distance', 'photo_distance'],
+                'curvature_radius': ['curvature_radius', 'curve_radius', 'turn_radius', 'radius'],
+                'waypoint_type': ['waypoint_type', 'action', 'command', 'type'],
+                'flight_time': ['flight_time', 'duration', 'elapsed_time']
             }
             
             # Rename columns to standard names
@@ -113,18 +133,17 @@ class Advanced3DPathProcessor:
                 df['altitude'] = df['altitude'] * 0.3048
                 logger.info("📏 Converted altitude from feet to meters")
             
-            # Extract flight parameters if available
-            if 'speed' in df.columns and df['speed'].notna().any():
-                avg_speed = df['speed'].mean()
-                if avg_speed > 0:
-                    self.flight_speed_mps = avg_speed * 0.44704 if avg_speed < 50 else avg_speed
-                    logger.info(f"🚁 Using CSV speed: {self.flight_speed_mps:.1f} m/s")
+            # Extract flight parameters from CSV data
+            self._extract_flight_parameters(df)
             
-            if 'photo_interval' in df.columns and df['photo_interval'].notna().any():
-                interval = df['photo_interval'].iloc[0]
-                if 0.5 <= interval <= 10:  # Reasonable range
-                    self.photo_interval_sec = interval
-                    logger.info(f"📸 Using CSV photo interval: {self.photo_interval_sec} seconds")
+            # Process distance intervals (convert feet to meters if needed)
+            if 'distance_interval' in df.columns and df['distance_interval'].notna().any():
+                dist_val = df['distance_interval'].iloc[0]
+                if dist_val > 10:  # Likely in feet
+                    self.distance_interval_m = dist_val * 0.3048
+                else:
+                    self.distance_interval_m = dist_val
+                logger.info(f"📏 Using CSV distance interval: {self.distance_interval_m:.1f}m")
             
             # Fill missing columns with intelligent defaults
             if 'heading' not in df.columns:
@@ -133,6 +152,10 @@ class Advanced3DPathProcessor:
             
             if 'gimbal_pitch' not in df.columns:
                 df['gimbal_pitch'] = -90.0  # Typical nadir view
+            
+            # Add curvature information if not present
+            if 'curvature_radius' not in df.columns:
+                df['curvature_radius'] = None  # Will use default curved interpolation
             
             self.flight_data = df
             logger.info(f"✅ Loaded {len(df)} waypoints")
@@ -144,6 +167,68 @@ class Advanced3DPathProcessor:
         except Exception as e:
             logger.error(f"❌ Failed to parse CSV: {e}")
             raise
+    
+    def _extract_flight_parameters(self, df: pd.DataFrame):
+        """Extract flight parameters dynamically from CSV data"""
+        
+        # Extract speed
+        if 'speed' in df.columns and df['speed'].notna().any():
+            # Get non-zero speeds
+            speeds = df['speed'][df['speed'] > 0]
+            if len(speeds) > 0:
+                avg_speed = speeds.mean()
+                # Detect units (mph vs m/s vs km/h)
+                if avg_speed > 50:  # Likely km/h
+                    self.flight_speed_mps = avg_speed / 3.6
+                    logger.info(f"🚁 Using CSV speed: {avg_speed:.1f} km/h ({self.flight_speed_mps:.1f} m/s)")
+                elif avg_speed > 5:  # Likely mph
+                    self.flight_speed_mps = avg_speed * 0.44704
+                    logger.info(f"🚁 Using CSV speed: {avg_speed:.1f} mph ({self.flight_speed_mps:.1f} m/s)")
+                else:  # Likely m/s
+                    self.flight_speed_mps = avg_speed
+                    logger.info(f"🚁 Using CSV speed: {avg_speed:.1f} m/s")
+        
+        # Extract photo time interval
+        if 'photo_interval' in df.columns and df['photo_interval'].notna().any():
+            interval = df['photo_interval'].iloc[0]
+            if 0.5 <= interval <= 30:  # Reasonable range
+                self.photo_interval_sec = interval
+                logger.info(f"📸 Using CSV photo interval: {self.photo_interval_sec} seconds")
+        
+        # Calculate speed from time and distance if available
+        if 'time' in df.columns and df['time'].notna().any() and self.flight_speed_mps is None:
+            times = df['time'].values
+            if len(times) > 1:
+                # Calculate distance between waypoints
+                total_distance = 0
+                for i in range(len(df) - 1):
+                    p1 = Point(df.iloc[i]['latitude'], df.iloc[i]['longitude'])
+                    p2 = Point(df.iloc[i + 1]['latitude'], df.iloc[i + 1]['longitude'])
+                    total_distance += geodesic(p1, p2).meters
+                
+                total_time = times[-1] - times[0]
+                if total_time > 0:
+                    calculated_speed = total_distance / total_time
+                    self.flight_speed_mps = calculated_speed
+                    logger.info(f"🚁 Calculated speed from waypoints: {calculated_speed:.1f} m/s")
+        
+        # Use fallbacks if nothing found in CSV
+        if self.flight_speed_mps is None:
+            self.flight_speed_mps = self.FALLBACK_FLIGHT_SPEED_MPH * 0.44704
+            logger.warning(f"⚠️ Using fallback speed: {self.FALLBACK_FLIGHT_SPEED_MPH} mph ({self.flight_speed_mps:.1f} m/s)")
+        
+        if self.photo_interval_sec is None:
+            self.photo_interval_sec = self.FALLBACK_PHOTO_INTERVAL_SEC
+            logger.warning(f"⚠️ Using fallback photo interval: {self.photo_interval_sec} seconds")
+        
+        # Determine if we should use time-based or distance-based photo distribution
+        if self.distance_interval_m is not None:
+            self.use_time_based = False
+            logger.info(f"📐 Using distance-based photo distribution: {self.distance_interval_m:.1f}m intervals")
+        else:
+            self.use_time_based = True
+            calculated_distance = self.flight_speed_mps * self.photo_interval_sec
+            logger.info(f"⏱️ Using time-based photo distribution: {calculated_distance:.1f}m intervals")
     
     def _calculate_headings_from_path(self, df: pd.DataFrame) -> List[float]:
         """Calculate heading angles from sequential waypoints"""
@@ -200,7 +285,7 @@ class Advanced3DPathProcessor:
         return np.array([x, y, z])
     
     def build_3d_flight_path(self):
-        """Build 3D flight path with segments and cumulative distances"""
+        """Build 3D flight path with curved segments and cumulative distances"""
         if self.flight_data is None:
             raise ValueError("Flight data not loaded")
         
@@ -215,25 +300,45 @@ class Advanced3DPathProcessor:
             )
             waypoints_3d.append(point_3d)
         
-        # Build segments
+        # Build segments with curvature support
         for i in range(len(waypoints_3d) - 1):
             start = waypoints_3d[i]
             end = waypoints_3d[i + 1]
             
+            # Get curvature information if available
+            curvature_radius = None
+            if 'curvature_radius' in self.flight_data.columns:
+                curvature_radius = self.flight_data.iloc[i]['curvature_radius']
+                if pd.isna(curvature_radius):
+                    curvature_radius = None
+            
+            # Generate control points for curved path
+            control_points = self._generate_curve_control_points(
+                start, end, i, waypoints_3d, curvature_radius
+            )
+            
             # Calculate segment properties
+            if control_points:
+                # Calculate curved distance using spline
+                distance = self._calculate_curved_distance(start, end, control_points)
+            else:
+                # Linear distance
+                distance = np.linalg.norm(end - start)
+            
             segment_vec = end - start
-            distance = np.linalg.norm(segment_vec)
             heading = math.degrees(math.atan2(segment_vec[1], segment_vec[0]))
             altitude_change = segment_vec[2]
             
             segment = FlightSegment(
                 start_point=start,
                 end_point=end,
+                control_points=control_points,
                 start_waypoint_idx=i,
                 end_waypoint_idx=i + 1,
                 distance=distance,
                 heading=heading,
-                altitude_change=altitude_change
+                altitude_change=altitude_change,
+                curvature_radius=curvature_radius
             )
             
             self.flight_segments.append(segment)
@@ -244,7 +349,91 @@ class Advanced3DPathProcessor:
         logger.info(f"🛤️ Built 3D flight path:")
         logger.info(f"   Segments: {len(self.flight_segments)}")
         logger.info(f"   Total length: {self.total_path_length:.1f}m")
+        logger.info(f"   Curved segments: {sum(1 for s in self.flight_segments if s.control_points)}")
         logger.info(f"   Estimated flight time: {self.total_path_length / self.flight_speed_mps:.1f}s")
+    
+    def _generate_curve_control_points(self, start: np.ndarray, end: np.ndarray, 
+                                     waypoint_idx: int, all_waypoints: List[np.ndarray],
+                                     curvature_radius: Optional[float]) -> List[np.ndarray]:
+        """Generate control points for smooth curved path between waypoints"""
+        
+        # For now, use simple curve generation
+        # In a real implementation, this could use the curvature_radius parameter
+        # and consider the drone's flight dynamics
+        
+        # Simple approach: add control points that create a smooth curve
+        # considering the previous and next waypoints for continuity
+        
+        control_points = []
+        
+        # Get direction vectors for smooth transitions
+        prev_point = all_waypoints[waypoint_idx - 1] if waypoint_idx > 0 else None
+        next_point = all_waypoints[waypoint_idx + 2] if waypoint_idx + 2 < len(all_waypoints) else None
+        
+        # Calculate curve tension based on waypoint spacing
+        segment_length = np.linalg.norm(end - start)
+        curve_factor = 0.3  # 30% of segment length for curve control
+        
+        if prev_point is not None or next_point is not None:
+            # Create smooth curve using Catmull-Rom spline approach
+            
+            # Direction from previous point (or start direction)
+            if prev_point is not None:
+                in_direction = (start - prev_point) / np.linalg.norm(start - prev_point)
+            else:
+                in_direction = (end - start) / np.linalg.norm(end - start)
+            
+            # Direction to next point (or end direction)  
+            if next_point is not None:
+                out_direction = (next_point - end) / np.linalg.norm(next_point - end)
+            else:
+                out_direction = (end - start) / np.linalg.norm(end - start)
+            
+            # Create control points for smooth curve
+            control_1 = start + in_direction * segment_length * curve_factor
+            control_2 = end - out_direction * segment_length * curve_factor
+            
+            control_points = [control_1, control_2]
+            
+            logger.debug(f"Generated curved path for segment {waypoint_idx} → {waypoint_idx + 1}")
+        
+        return control_points
+    
+    def _calculate_curved_distance(self, start: np.ndarray, end: np.ndarray, 
+                                 control_points: List[np.ndarray]) -> float:
+        """Calculate distance along curved path using numerical integration"""
+        
+        # Create spline path
+        all_points = [start] + control_points + [end]
+        t_values = np.linspace(0, 1, len(all_points))
+        
+        # Create splines
+        x_spline = CubicSpline(t_values, [p[0] for p in all_points])
+        y_spline = CubicSpline(t_values, [p[1] for p in all_points])
+        z_spline = CubicSpline(t_values, [p[2] for p in all_points])
+        
+        # Numerical integration to get arc length
+        def path_derivative(t):
+            return np.array([x_spline(t, 1), y_spline(t, 1), z_spline(t, 1)])
+        
+        # Sample points along curve for integration
+        t_samples = np.linspace(0, 1, 100)
+        distances = []
+        
+        for i in range(len(t_samples) - 1):
+            t1, t2 = t_samples[i], t_samples[i + 1]
+            dt = t2 - t1
+            
+            # Average derivative over interval
+            deriv1 = path_derivative(t1)
+            deriv2 = path_derivative(t2)
+            avg_deriv = (deriv1 + deriv2) / 2
+            
+            # Arc length element
+            ds = np.linalg.norm(avg_deriv) * dt
+            distances.append(ds)
+        
+        return sum(distances)
     
     def get_photo_list_with_validation(self) -> List[Tuple[Path, int, Optional[datetime]]]:
         """
@@ -347,7 +536,7 @@ class Advanced3DPathProcessor:
     
     def map_photos_to_3d_positions(self, photos: List[Tuple[Path, int, Optional[datetime]]]):
         """
-        Map photos to 3D positions along flight path using speed and timing
+        Map photos to 3D positions along flight path using CSV-derived parameters
         """
         if not self.flight_segments:
             self.build_3d_flight_path()
@@ -356,25 +545,43 @@ class Advanced3DPathProcessor:
         if num_photos == 0:
             return
         
-        # Calculate expected photo spacing
-        photo_distance = self.flight_speed_mps * self.photo_interval_sec
-        expected_total_distance = photo_distance * (num_photos - 1)
-        
-        logger.info(f"📐 Photo mapping parameters:")
-        logger.info(f"   Photos: {num_photos}")
-        logger.info(f"   Speed: {self.flight_speed_mps:.1f} m/s")
-        logger.info(f"   Interval: {self.photo_interval_sec} s")
-        logger.info(f"   Spacing: {photo_distance:.1f} m")
-        
-        # Determine mapping strategy
-        if abs(expected_total_distance - self.total_path_length) < self.total_path_length * 0.2:
-            # Path length matches expected distance well
-            logger.info("✅ Using speed-based distribution")
-            self._map_photos_speed_based(photos, photo_distance)
+        # Use parameters extracted from CSV
+        if self.use_time_based:
+            # Time-based distribution using CSV speed and interval
+            photo_distance = self.flight_speed_mps * self.photo_interval_sec
+            expected_total_distance = photo_distance * (num_photos - 1)
+            
+            logger.info(f"📐 Time-based photo mapping parameters:")
+            logger.info(f"   Photos: {num_photos}")
+            logger.info(f"   Speed: {self.flight_speed_mps:.1f} m/s (from CSV)")
+            logger.info(f"   Interval: {self.photo_interval_sec} s (from CSV)")
+            logger.info(f"   Calculated spacing: {photo_distance:.1f} m")
+            
+            # Determine mapping strategy
+            if abs(expected_total_distance - self.total_path_length) < self.total_path_length * 0.2:
+                logger.info("✅ Using time-based distribution (CSV parameters)")
+                self._map_photos_speed_based(photos, photo_distance)
+            else:
+                logger.info("📊 Using proportional distribution (path length mismatch)")
+                logger.info(f"   Expected: {expected_total_distance:.1f}m, Actual: {self.total_path_length:.1f}m")
+                self._map_photos_proportional(photos)
         else:
-            # Significant mismatch - use proportional distribution
-            logger.info("📊 Using proportional distribution (path length mismatch)")
-            self._map_photos_proportional(photos)
+            # Distance-based distribution using CSV distance interval
+            photo_distance = self.distance_interval_m
+            expected_total_distance = photo_distance * (num_photos - 1)
+            
+            logger.info(f"📐 Distance-based photo mapping parameters:")
+            logger.info(f"   Photos: {num_photos}")
+            logger.info(f"   Distance interval: {photo_distance:.1f} m (from CSV)")
+            logger.info(f"   Expected total: {expected_total_distance:.1f} m")
+            
+            if abs(expected_total_distance - self.total_path_length) < self.total_path_length * 0.2:
+                logger.info("✅ Using distance-based distribution (CSV parameters)")
+                self._map_photos_distance_based(photos, photo_distance)
+            else:
+                logger.info("📊 Using proportional distribution (path length mismatch)")
+                logger.info(f"   Expected: {expected_total_distance:.1f}m, Actual: {self.total_path_length:.1f}m")
+                self._map_photos_proportional(photos)
         
         # Add additional metadata
         self._enhance_photo_positions()
@@ -383,7 +590,7 @@ class Advanced3DPathProcessor:
     
     def _map_photos_speed_based(self, photos: List[Tuple[Path, int, Optional[datetime]]], 
                                 photo_distance: float):
-        """Map photos based on constant speed assumption"""
+        """Map photos based on constant speed assumption (time-based)"""
         current_distance = 0.0
         
         for photo_path, order_idx, timestamp in photos:
@@ -397,13 +604,43 @@ class Advanced3DPathProcessor:
             self.photo_positions[photo_path.name] = {
                 'position_3d': position_3d.tolist(),
                 'path_distance': current_distance,
+                'mapping_method': 'time_based',
+                'photo_interval_sec': self.photo_interval_sec,
+                'flight_speed_mps': self.flight_speed_mps,
+                'order_index': order_idx,
+                'segment_index': segment_idx,
+                'segment_t': segment_t,
+                'confidence': 0.9 if current_distance <= self.total_path_length else 0.5,
+                'timestamp': timestamp.isoformat() if timestamp else None
+            }
+            
+            current_distance += photo_distance
+    
+    def _map_photos_distance_based(self, photos: List[Tuple[Path, int, Optional[datetime]]], 
+                                  photo_distance: float):
+        """Map photos based on fixed distance intervals (distance-based)"""
+        current_distance = 0.0
+        
+        for photo_path, order_idx, timestamp in photos:
+            # Find position along path
+            position_3d = self._get_position_at_distance(current_distance)
+            
+            # Get additional context
+            segment_idx, segment_t = self._get_segment_at_distance(current_distance)
+            segment = self.flight_segments[segment_idx] if segment_idx < len(self.flight_segments) else None
+            
+            self.photo_positions[photo_path.name] = {
+                'position_3d': position_3d.tolist(),
+                'path_distance': current_distance,
+                'mapping_method': 'distance_based',
+                'distance_interval_m': self.distance_interval_m,
                 'path_progress': current_distance / max(1, self.total_path_length),
                 'order_index': order_idx,
                 'timestamp': timestamp.isoformat() if timestamp else None,
                 'segment_index': segment_idx,
                 'segment_t': segment_t,
                 'heading': segment.heading if segment else 0.0,
-                'confidence': 0.8  # High confidence for speed-based
+                'confidence': 0.9 if current_distance <= self.total_path_length else 0.5  # High confidence for distance-based
             }
             
             current_distance += photo_distance

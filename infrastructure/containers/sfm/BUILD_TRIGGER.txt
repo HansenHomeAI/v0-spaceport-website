@@ -65,3 +65,14 @@ NOTES: OpenSfM was failing on import due to missing fpdf module needed for expor
 Fix numpy version compatibility issue for OpenSfM pickle unpickling error - Build 2025-07-02-17:00
 
 Add Advanced 3D Path Processor for improved GPS-to-photo mapping - Build 2025-07-02-17:30
+
+Enhanced GPS processor with CSV parameter extraction and curved path support - Build 2025-01-19-15:30
+
+Major improvements:
+- Dynamic extraction of flight speed, photo intervals, and distance intervals from CSV data
+- Support for curved flight paths between waypoints using spline interpolation
+- Fallback to hardcoded values only when CSV doesn't contain the parameters
+- Both time-based and distance-based photo distribution modes
+- Improved waypoint curvature handling with control points
+- Better flight parameter detection with unit conversion (mph/kmh/m/s, feet/meters)
+- Enhanced logging to show which parameters come from CSV vs fallbacks
