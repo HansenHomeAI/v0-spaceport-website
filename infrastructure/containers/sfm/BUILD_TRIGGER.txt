@@ -63,3 +63,5 @@ EXPECTED_OUTCOME: OpenSfM should import successfully and begin feature extractio
 NOTES: OpenSfM was failing on import due to missing fpdf module needed for export_report. Added fpdf2 dependency.
 
 Fix numpy version compatibility issue for OpenSfM pickle unpickling error - Build 2025-07-02-17:00
+
+Add Advanced 3D Path Processor for improved GPS-to-photo mapping - Build 2025-07-02-17:30

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Production OpenSfM GPS-Constrained Reconstruction
-Main processing script for drone imagery with flight path data
+OpenSfM GPS-Enhanced SfM Processing Pipeline
+Runs Structure-from-Motion with GPS priors from drone flight path data
 """
 
 import os
@@ -9,571 +9,335 @@ import sys
 import json
 import shutil
 import subprocess
-import traceback
+import tempfile
 from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 import logging
+import zipfile
 import yaml
 
-# Import our custom modules
-from gps_processor import DroneFlightPathProcessor
-from colmap_converter import OpenSfMToCOLMAPConverter
-
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler('/tmp/opensfm_processing.log')
-    ]
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Add current directory to Python path for imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-class SpaceportOpenSfMProcessor:
-    """Main processor for GPS-constrained OpenSfM reconstruction"""
+# Import our GPS processors
+from gps_processor import DroneFlightPathProcessor
+from gps_processor_3d import Advanced3DPathProcessor
+from colmap_converter import OpenSfMToCOLMAPConverter
+
+
+class OpenSfMGPSPipeline:
+    """Main pipeline for GPS-enhanced OpenSfM processing"""
     
-    def __init__(self, input_dir: Path, output_dir: Path):
+    def __init__(self, input_dir: Path, output_dir: Path, gps_csv_path: Path = None):
         """
-        Initialize the processor
+        Initialize OpenSfM GPS pipeline
         
         Args:
-            input_dir: SageMaker input directory (/opt/ml/processing/input)
-            output_dir: SageMaker output directory (/opt/ml/processing/output)
+            input_dir: Directory containing input ZIP or images
+            output_dir: Directory for output files
+            gps_csv_path: Optional path to GPS CSV file
         """
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
-        self.work_dir = Path("/tmp/opensfm_work")
+        self.gps_csv_path = Path(gps_csv_path) if gps_csv_path else None
+        self.work_dir = None
+        self.images_dir = None
+        self.opensfm_dir = None
         
-        # Processing paths
+        # Ensure output directory exists
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+    
+    def setup_workspace(self) -> Path:
+        """Set up temporary workspace for processing"""
+        self.work_dir = Path(tempfile.mkdtemp(prefix="opensfm_"))
         self.images_dir = self.work_dir / "images"
         self.opensfm_dir = self.work_dir / "opensfm"
-        self.colmap_output_dir = self.output_dir / "sparse" / "0"
         
-        # Processing statistics
-        self.stats = {
-            'start_time': datetime.utcnow().isoformat(),
-            'pipeline_version': 'opensfm_gps_v1.0',
-            'processing_steps': [],
-            'errors': [],
-            'warnings': []
-        }
+        # Create directories
+        self.images_dir.mkdir(parents=True, exist_ok=True)
+        self.opensfm_dir.mkdir(parents=True, exist_ok=True)
         
-        logger.info(f"🚀 Initializing Spaceport OpenSfM GPS Processor")
-        logger.info(f"   Input: {input_dir}")
-        logger.info(f"   Output: {output_dir}")
-        logger.info(f"   Work: {self.work_dir}")
+        logger.info(f"🏗️ Created workspace: {self.work_dir}")
+        return self.work_dir
     
-    def setup_directories(self) -> None:
-        """Create necessary working directories"""
-        try:
-            # Create work directories
-            self.work_dir.mkdir(parents=True, exist_ok=True)
-            self.images_dir.mkdir(parents=True, exist_ok=True)
-            self.opensfm_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Create output directories
-            self.output_dir.mkdir(parents=True, exist_ok=True)
-            self.colmap_output_dir.mkdir(parents=True, exist_ok=True)
-            (self.output_dir / "dense").mkdir(parents=True, exist_ok=True)
-            (self.output_dir / "images").mkdir(parents=True, exist_ok=True)
-            
-            logger.info("✅ Created working directories")
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to create directories: {e}")
-            raise
-    
-    def extract_input_data(self) -> Tuple[Path, Optional[Path]]:
-        """Extract images and find CSV file from input"""
-        logger.info("📁 Extracting input data...")
+    def extract_images(self) -> int:
+        """Extract images from input directory or ZIP file"""
+        image_count = 0
         
-        try:
-            # List input contents
-            input_files = list(self.input_dir.rglob('*'))
-            logger.info(f"🔍 Found {len(input_files)} input files")
+        # Check if input is a ZIP file
+        zip_files = list(self.input_dir.glob("*.zip"))
+        if zip_files:
+            # Extract first ZIP file found
+            zip_path = zip_files[0]
+            logger.info(f"📦 Extracting ZIP: {zip_path}")
             
-            # Find image archive (ZIP)
-            image_archive = None
-            for file_path in input_files:
-                if file_path.suffix.lower() == '.zip':
-                    image_archive = file_path
-                    break
-            
-            if not image_archive:
-                raise FileNotFoundError("No ZIP archive found in input directory")
-            
-            # Find CSV file
-            csv_file = None
-            for file_path in input_files:
-                if file_path.suffix.lower() == '.csv':
-                    csv_file = file_path
-                    break
-            
-            # Extract image archive
-            logger.info(f"📦 Extracting images from: {image_archive}")
-            subprocess.run(['unzip', '-q', str(image_archive), '-d', str(self.images_dir)], 
-                         check=True)
-            
-            # Count extracted images
-            image_extensions = {'.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG'}
-            images = [f for f in self.images_dir.rglob('*') if f.suffix in image_extensions]
-            logger.info(f"📸 Extracted {len(images)} images")
-            
-            if len(images) == 0:
-                raise ValueError("No images found in archive")
-            
-            # Log CSV status
-            if csv_file:
-                logger.info(f"🛰️ Found GPS flight path: {csv_file}")
-            else:
-                logger.warning("⚠️ No CSV flight path found - will proceed without GPS constraints")
-            
-            self.stats['processing_steps'].append({
-                'step': 'extract_input',
-                'status': 'completed',
-                'images_count': len(images),
-                'has_gps_data': csv_file is not None,
-                'timestamp': datetime.utcnow().isoformat()
-            })
-            
-            return image_archive, csv_file
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to extract input data: {e}")
-            self.stats['errors'].append(f"extract_input: {str(e)}")
-            raise
-    
-    def process_gps_data(self, csv_file: Path) -> Optional[DroneFlightPathProcessor]:
-        """Process GPS flight path data"""
-        if not csv_file:
-            logger.info("⚠️ No GPS data available - using traditional SfM")
-            return None
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                for member in zf.namelist():
+                    if member.lower().endswith(('.jpg', '.jpeg', '.png')):
+                        # Extract to images directory
+                        target_path = self.images_dir / Path(member).name
+                        with zf.open(member) as source, open(target_path, 'wb') as target:
+                            target.write(source.read())
+                        image_count += 1
+        else:
+            # Copy images from input directory
+            for img_path in self.input_dir.rglob('*'):
+                if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png']:
+                    shutil.copy2(img_path, self.images_dir / img_path.name)
+                    image_count += 1
         
-        logger.info("🛰️ Processing GPS flight path data...")
+        logger.info(f"📷 Extracted {image_count} images")
+        return image_count
+    
+    def process_gps_data(self) -> bool:
+        """Process GPS data if available"""
+        if not self.gps_csv_path or not self.gps_csv_path.exists():
+            # Check for GPS CSV in input directory
+            csv_files = list(self.input_dir.glob("gps/*.csv"))
+            if not csv_files:
+                logger.warning("⚠️ No GPS CSV file found, proceeding without GPS priors")
+                return False
+            self.gps_csv_path = csv_files[0]
+        
+        logger.info(f"🛰️ Processing GPS data from: {self.gps_csv_path}")
         
         try:
-            # Initialize GPS processor
-            gps_processor = DroneFlightPathProcessor(csv_file, self.images_dir)
+            # Use the new Advanced 3D Path Processor
+            processor = Advanced3DPathProcessor(self.gps_csv_path, self.images_dir)
             
-            # Parse flight data
-            flight_data = gps_processor.parse_flight_csv()
-            logger.info(f"✅ Parsed {len(flight_data)} GPS waypoints")
+            # Process flight data
+            processor.parse_flight_csv()
+            processor.setup_local_coordinate_system()
+            processor.build_3d_flight_path()
             
-            # Get photo list
-            photos = gps_processor.get_photo_list()
-            logger.info(f"📸 Found {len(photos)} photos to process")
+            # Process photos with intelligent ordering
+            photos = processor.get_photo_list_with_validation()
+            if not photos:
+                logger.error("❌ No photos found to process")
+                return False
             
-            # Map photos to GPS coordinates
-            mapping = gps_processor.map_photos_to_gps_sequential(photos)
-            logger.info(f"🗺️ Mapped {len(mapping)} photos to GPS coordinates")
+            # Map photos to 3D positions
+            processor.map_photos_to_3d_positions(photos)
             
-            # Setup local coordinate system
-            gps_processor.setup_local_coordinate_system()
+            # Generate OpenSfM files
+            processor.generate_opensfm_files(self.opensfm_dir)
             
-            # Generate OpenSfM GPS files
-            gps_processor.generate_opensfm_gps_file(self.opensfm_dir / "gps_list.txt")
-            gps_processor.create_reference_lla_file(self.opensfm_dir / "reference.lla")
+            # Get processing summary
+            summary = processor.get_processing_summary()
+            logger.info(f"📊 GPS Processing Summary:")
+            logger.info(f"   Photos: {summary['photos_processed']}")
+            logger.info(f"   Path length: {summary['path_length_m']}m")
+            logger.info(f"   Photo spacing: {summary['photo_spacing_m']}m")
+            logger.info(f"   Confidence: {summary['confidence_stats']['mean']:.2f}")
             
-            # Get processing statistics
-            gps_stats = gps_processor.get_processing_stats()
-            
-            self.stats['processing_steps'].append({
-                'step': 'process_gps',
-                'status': 'completed',
-                'gps_stats': gps_stats,
-                'timestamp': datetime.utcnow().isoformat()
-            })
-            
-            logger.info("✅ GPS data processing completed")
-            return gps_processor
+            return True
             
         except Exception as e:
             logger.error(f"❌ GPS processing failed: {e}")
-            self.stats['errors'].append(f"process_gps: {str(e)}")
-            self.stats['warnings'].append("Falling back to traditional SfM without GPS")
-            return None
+            logger.warning("⚠️ Continuing without GPS priors")
+            return False
     
-    def create_opensfm_config(self, has_gps: bool, gps_processor: Optional[DroneFlightPathProcessor] = None) -> Path:
+    def create_opensfm_config(self) -> None:
         """Create OpenSfM configuration file"""
-        logger.info("⚙️ Creating OpenSfM configuration...")
+        config = {
+            # Feature extraction
+            'feature_type': 'SIFT',
+            'feature_process_size': 2048,
+            'feature_min_frames': 8000,
+            'sift_peak_threshold': 0.01,
+            
+            # Matching
+            'matching_gps_neighbors': 20,
+            'matching_gps_distance': 100,  # meters
+            'matching_graph_rounds': 50,
+            'robust_matching_min_match': 20,
+            
+            # Reconstruction
+            'min_ray_angle_degrees': 2.0,
+            'reconstruction_min_ratio': 0.8,
+            'triangulation_min_ray_angle_degrees': 2.0,
+            
+            # GPS integration
+            'use_altitude_tag': True,
+            'gps_accuracy': 5.0,
+            
+            # Bundle adjustment
+            'bundle_use_gps': True,
+            'bundle_use_gcp': False,
+            
+            # Optimization
+            'optimize_camera_parameters': True,
+            'bundle_max_iterations': 100,
+            
+            # Output
+            'processes': 1,  # Use single process for stability
+        }
         
-        try:
-            # Load base configuration template
-            config_template_path = Path("/opt/ml/code/config_template.yaml")
-            with open(config_template_path, 'r') as f:
-                config = yaml.safe_load(f)
-            
-            # Modify configuration based on GPS availability
-            if has_gps and gps_processor:
-                # GPS-enhanced configuration
-                config['use_gps'] = True
-                config['reconstruct_with_gps'] = True
-                config['bundle_use_gps'] = True
-                
-                # Set reference location if available
-                if gps_processor.local_origin:
-                    lat, lon = gps_processor.local_origin
-                    config['reference_lla'] = [lat, lon, 0.0]
-                
-                logger.info("✅ Configured for GPS-constrained reconstruction")
-            else:
-                # Traditional SfM configuration
-                config['use_gps'] = False
-                config['reconstruct_with_gps'] = False
-                config['bundle_use_gps'] = False
-                
-                logger.info("✅ Configured for traditional SfM reconstruction")
-            
-            # Save configuration
-            config_path = self.opensfm_dir / "config.yaml"
-            with open(config_path, 'w') as f:
-                yaml.dump(config, f, default_flow_style=False, indent=2)
-            
-            logger.info(f"✅ Created OpenSfM config: {config_path}")
-            return config_path
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to create OpenSfM config: {e}")
-            raise
+        config_path = self.opensfm_dir / "config.yaml"
+        with open(config_path, 'w') as f:
+            yaml.dump(config, f)
+        
+        logger.info(f"✅ Created OpenSfM config: {config_path}")
     
     def copy_images_to_opensfm(self) -> None:
-        """Copy images to OpenSfM directory"""
-        logger.info("📷 Copying images to OpenSfM directory...")
-        
-        try:
-            opensfm_images_dir = self.opensfm_dir / "images"
-            opensfm_images_dir.mkdir(exist_ok=True)
-            
-            # Copy all images
-            image_extensions = {'.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG'}
-            images = [f for f in self.images_dir.rglob('*') if f.suffix in image_extensions]
-            
-            copied_count = 0
-            for image_path in images:
-                dest_path = opensfm_images_dir / image_path.name
-                shutil.copy2(image_path, dest_path)
-                copied_count += 1
-            
-            logger.info(f"✅ Copied {copied_count} images to OpenSfM")
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to copy images: {e}")
-            raise
+        """Copy images to OpenSfM directory structure"""
+        opensfm_images = self.opensfm_dir / "images"
+        if opensfm_images.exists():
+            shutil.rmtree(opensfm_images)
+        shutil.copytree(self.images_dir, opensfm_images)
+        logger.info(f"✅ Copied {len(list(opensfm_images.iterdir()))} images to OpenSfM")
     
-    def run_opensfm_reconstruction(self) -> bool:
+    def run_opensfm_commands(self) -> bool:
         """Run OpenSfM reconstruction pipeline"""
-        logger.info("🔄 Running OpenSfM reconstruction...")
+        commands = [
+            ("extract_metadata", "Extract image metadata"),
+            ("detect_features", "Detect features"),
+            ("match_features", "Match features"),
+            ("create_tracks", "Create tracks"),
+            ("reconstruct", "Reconstruct 3D structure"),
+        ]
         
-        try:
-            # Change to OpenSfM directory
-            os.chdir(self.opensfm_dir)
+        for cmd, description in commands:
+            logger.info(f"🔧 {description}...")
             
-            # OpenSfM pipeline steps
-            steps = [
-                ("extract_metadata", "Extract image metadata"),
-                ("detect_features", "Detect features"),
-                ("match_features", "Match features"),
-                ("create_tracks", "Create tracks"),
-                ("reconstruct", "Reconstruct")
-            ]
-            
-            for step_name, step_description in steps:
-                logger.info(f"🔧 {step_description}...")
+            try:
+                result = subprocess.run(
+                    ["opensfm", cmd, str(self.opensfm_dir)],
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                logger.info(f"✅ {description} completed")
                 
-                try:
-                    # Run OpenSfM command
-                    cmd = ["opensfm", step_name, str(self.opensfm_dir)]
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=3600)
-                    
-                    if result.returncode != 0:
-                        logger.error(f"❌ OpenSfM {step_name} failed:")
-                        logger.error(f"   stdout: {result.stdout}")
-                        logger.error(f"   stderr: {result.stderr}")
-                        return False
-                    
-                    logger.info(f"✅ {step_description} completed")
-                    
-                except subprocess.TimeoutExpired:
-                    logger.error(f"❌ OpenSfM {step_name} timed out")
-                    return False
-                except Exception as e:
-                    logger.error(f"❌ OpenSfM {step_name} error: {e}")
-                    return False
-            
-            # Check if reconstruction was successful
-            reconstruction_file = self.opensfm_dir / "reconstruction.json"
-            if not reconstruction_file.exists():
-                logger.error("❌ No reconstruction.json file generated")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"❌ OpenSfM {cmd} failed:")
+                logger.error(f"   stdout: {e.stdout}")
+                logger.error(f"   stderr: {e.stderr}")
                 return False
-            
-            # Validate reconstruction
-            with open(reconstruction_file, 'r') as f:
-                reconstructions = json.load(f)
-            
-            if not reconstructions:
-                logger.error("❌ Empty reconstruction file")
-                return False
-            
-            reconstruction = reconstructions[0]
-            point_count = len(reconstruction.get('points', {}))
-            shot_count = len(reconstruction.get('shots', {}))
-            camera_count = len(reconstruction.get('cameras', {}))
-            
-            logger.info(f"✅ OpenSfM reconstruction completed:")
-            logger.info(f"   Cameras: {camera_count}")
-            logger.info(f"   Shots: {shot_count}")
-            logger.info(f"   Points: {point_count}")
-            
-            # Quality check (same as COLMAP pipeline)
-            min_points_required = 1000
-            if point_count < min_points_required:
-                logger.error(f"❌ Insufficient 3D points: {point_count} < {min_points_required}")
-                logger.error("❌ Reconstruction quality too low for 3DGS training")
-                return False
-            
-            self.stats['processing_steps'].append({
-                'step': 'opensfm_reconstruction',
-                'status': 'completed',
-                'cameras': camera_count,
-                'shots': shot_count,
-                'points': point_count,
-                'quality_check': 'passed',
-                'timestamp': datetime.utcnow().isoformat()
-            })
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"❌ OpenSfM reconstruction failed: {e}")
-            logger.error(traceback.format_exc())
-            self.stats['errors'].append(f"opensfm_reconstruction: {str(e)}")
-            return False
-    
-    def convert_to_colmap_format(self) -> bool:
-        """Convert OpenSfM output to COLMAP format"""
-        logger.info("🔄 Converting to COLMAP format...")
         
+        return True
+    
+    def validate_reconstruction(self) -> bool:
+        """Validate OpenSfM reconstruction quality"""
+        reconstruction_file = self.opensfm_dir / "reconstruction.json"
+        
+        if not reconstruction_file.exists():
+            logger.error("❌ No reconstruction file found")
+            return False
+        
+        with open(reconstruction_file, 'r') as f:
+            reconstructions = json.load(f)
+        
+        if not reconstructions:
+            logger.error("❌ Empty reconstruction")
+            return False
+        
+        # Get the largest reconstruction
+        recon = max(reconstructions, key=lambda r: len(r.get('points', {})))
+        
+        num_cameras = len(recon.get('shots', {}))
+        num_points = len(recon.get('points', {}))
+        
+        logger.info(f"📊 Reconstruction statistics:")
+        logger.info(f"   Cameras: {num_cameras}")
+        logger.info(f"   3D points: {num_points}")
+        
+        # Validate minimum quality
+        if num_cameras < 5:
+            logger.error("❌ Too few cameras reconstructed")
+            return False
+        
+        if num_points < 1000:
+            logger.error("❌ Too few 3D points reconstructed")
+            return False
+        
+        logger.info("✅ Reconstruction validated")
+        return True
+    
+    def convert_to_colmap(self) -> bool:
+        """Convert OpenSfM output to COLMAP format"""
         try:
-            # Initialize converter
-            converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.colmap_output_dir)
-            
-            # Run conversion
-            validation = converter.convert_full_reconstruction()
-            
-            if not validation['quality_check_passed']:
-                logger.error("❌ COLMAP conversion failed quality check")
-                return False
-            
-            logger.info("✅ COLMAP format conversion completed")
-            
-            self.stats['processing_steps'].append({
-                'step': 'colmap_conversion',
-                'status': 'completed',
-                'validation': validation,
-                'timestamp': datetime.utcnow().isoformat()
-            })
-            
+            converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
+            converter.convert()
             return True
-            
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
-            self.stats['errors'].append(f"colmap_conversion: {str(e)}")
             return False
-    
-    def copy_output_files(self) -> None:
-        """Copy all necessary output files"""
-        logger.info("📋 Copying output files...")
-        
-        try:
-            # Copy original images for 3DGS training
-            output_images_dir = self.output_dir / "images"
-            output_images_dir.mkdir(exist_ok=True)
-            
-            image_extensions = {'.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG'}
-            images = [f for f in self.images_dir.rglob('*') if f.suffix in image_extensions]
-            
-            for image_path in images:
-                dest_path = output_images_dir / image_path.name
-                shutil.copy2(image_path, dest_path)
-            
-            # Copy reference point cloud to dense directory
-            dense_dir = self.output_dir / "dense"
-            dense_dir.mkdir(exist_ok=True)
-            
-            sparse_ply = self.colmap_output_dir / "sparse_points.ply"
-            if sparse_ply.exists():
-                shutil.copy2(sparse_ply, dense_dir / "sparse_points.ply")
-            
-            # Create database.db placeholder (for compatibility)
-            db_path = self.output_dir / "database.db"
-            with open(db_path, 'wb') as f:
-                f.write(b'')  # Empty file
-            
-            logger.info("✅ Output files copied successfully")
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to copy output files: {e}")
-            raise
-    
-    def generate_metadata(self) -> None:
-        """Generate processing metadata"""
-        logger.info("📊 Generating processing metadata...")
-        
-        try:
-            # Update final statistics
-            self.stats['end_time'] = datetime.utcnow().isoformat()
-            
-            # Calculate processing time
-            start_time = datetime.fromisoformat(self.stats['start_time'])
-            end_time = datetime.fromisoformat(self.stats['end_time'])
-            processing_time = (end_time - start_time).total_seconds()
-            
-            # Count final outputs
-            cameras_file = self.colmap_output_dir / "cameras.txt"
-            images_file = self.colmap_output_dir / "images.txt"
-            points_file = self.colmap_output_dir / "points3D.txt"
-            
-            camera_count = 0
-            image_count = 0
-            point_count = 0
-            
-            if cameras_file.exists():
-                with open(cameras_file, 'r') as f:
-                    camera_count = sum(1 for line in f if line.strip() and not line.startswith('#'))
-            
-            if images_file.exists():
-                with open(images_file, 'r') as f:
-                    lines = [line for line in f if line.strip() and not line.startswith('#')]
-                    image_count = len(lines) // 2
-            
-            if points_file.exists():
-                with open(points_file, 'r') as f:
-                    point_count = sum(1 for line in f if line.strip() and not line.startswith('#'))
-            
-            # Create metadata
-            metadata = {
-                "pipeline": "opensfm_gps_constrained",
-                "version": "1.0",
-                "timestamp": self.stats['end_time'],
-                "processing_time_seconds": round(processing_time, 1),
-                "optimization": "gps_constrained_reconstruction",
-                "advantages": [
-                    "GPS-enhanced pose estimation",
-                    "Better handling of low-feature areas",
-                    "Improved accuracy in challenging scenarios"
-                ],
-                "statistics": {
-                    "cameras_registered": camera_count,
-                    "images_registered": image_count,
-                    "sparse_points": point_count,
-                    "processing_steps": len(self.stats['processing_steps']),
-                    "errors": len(self.stats['errors']),
-                    "warnings": len(self.stats['warnings'])
-                },
-                "processing_steps": [
-                    "gps_data_processing",
-                    "feature_extraction",
-                    "gps_constrained_matching",
-                    "gps_constrained_reconstruction",
-                    "colmap_format_conversion"
-                ],
-                "output_format": "colmap_text",
-                "image_format": "original_with_gps_constraints",
-                "ready_for_3dgs": True,
-                "detailed_stats": self.stats
-            }
-            
-            # Save metadata
-            metadata_file = self.output_dir / "sfm_metadata.json"
-            with open(metadata_file, 'w') as f:
-                json.dump(metadata, f, indent=2)
-            
-            logger.info("✅ Generated processing metadata")
-            logger.info(f"📊 Processing completed in {processing_time:.1f} seconds")
-            logger.info(f"📷 Cameras: {camera_count}, Images: {image_count}, Points: {point_count}")
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to generate metadata: {e}")
     
     def cleanup(self) -> None:
         """Clean up temporary files"""
-        logger.info("🧹 Cleaning up temporary files...")
-        
-        try:
-            if self.work_dir.exists():
-                shutil.rmtree(self.work_dir)
-            logger.info("✅ Cleanup completed")
-        except Exception as e:
-            logger.warning(f"⚠️ Cleanup warning: {e}")
+        if self.work_dir and self.work_dir.exists():
+            shutil.rmtree(self.work_dir)
+            logger.info("🧹 Cleanup completed")
     
-    def run_full_pipeline(self) -> bool:
-        """Run the complete GPS-constrained OpenSfM pipeline"""
-        logger.info("🚀 Starting GPS-constrained OpenSfM pipeline")
-        
+    def run(self) -> int:
+        """Run the complete pipeline"""
         try:
-            # Setup
-            self.setup_directories()
+            # Set up workspace
+            self.setup_workspace()
             
-            # Extract input data
-            image_archive, csv_file = self.extract_input_data()
+            # Extract images
+            image_count = self.extract_images()
+            if image_count == 0:
+                logger.error("❌ No images found to process")
+                return 1
             
             # Process GPS data (if available)
-            gps_processor = self.process_gps_data(csv_file)
-            has_gps = gps_processor is not None
+            has_gps = self.process_gps_data()
             
-            # Create OpenSfM configuration
-            self.create_opensfm_config(has_gps, gps_processor)
+            # Create OpenSfM config
+            self.create_opensfm_config()
             
-            # Copy images to OpenSfM directory
+            # Copy images
             self.copy_images_to_opensfm()
             
-            # Run OpenSfM reconstruction
-            if not self.run_opensfm_reconstruction():
+            # Run OpenSfM
+            logger.info("🔄 Running OpenSfM reconstruction...")
+            if not self.run_opensfm_commands():
                 logger.error("❌ OpenSfM reconstruction failed")
-                return False
+                return 1
+            
+            # Validate reconstruction
+            if not self.validate_reconstruction():
+                return 1
             
             # Convert to COLMAP format
-            if not self.convert_to_colmap_format():
-                logger.error("❌ COLMAP conversion failed")
-                return False
+            logger.info("🔄 Converting to COLMAP format...")
+            if not self.convert_to_colmap():
+                return 1
             
-            # Copy output files
-            self.copy_output_files()
-            
-            # Generate metadata
-            self.generate_metadata()
-            
-            logger.info("🎉 GPS-constrained OpenSfM pipeline completed successfully!")
-            return True
+            logger.info("✅ OpenSfM GPS pipeline completed successfully")
+            return 0
             
         except Exception as e:
-            logger.error(f"❌ Pipeline failed: {e}")
-            logger.error(traceback.format_exc())
-            self.stats['errors'].append(f"pipeline: {str(e)}")
-            return False
+            logger.error(f"❌ Pipeline failed with error: {e}")
+            import traceback
+            traceback.print_exc()
+            return 1
         
         finally:
-            # Always clean up
+            # Always cleanup
             self.cleanup()
 
 
 def main():
     """Main entry point"""
-    # SageMaker paths
-    input_dir = Path("/opt/ml/processing/input")
-    output_dir = Path("/opt/ml/processing/output")
+    if len(sys.argv) < 3:
+        print("Usage: python run_opensfm_gps.py <input_dir> <output_dir> [gps_csv]")
+        sys.exit(1)
     
-    # Initialize processor
-    processor = SpaceportOpenSfMProcessor(input_dir, output_dir)
+    input_dir = Path(sys.argv[1])
+    output_dir = Path(sys.argv[2])
+    gps_csv = Path(sys.argv[3]) if len(sys.argv) > 3 else None
     
     # Run pipeline
-    success = processor.run_full_pipeline()
+    pipeline = OpenSfMGPSPipeline(input_dir, output_dir, gps_csv)
+    exit_code = pipeline.run()
     
-    # Exit with appropriate code
-    exit_code = 0 if success else 1
     logger.info(f"🏁 Pipeline finished with exit code: {exit_code}")
     sys.exit(exit_code)
 

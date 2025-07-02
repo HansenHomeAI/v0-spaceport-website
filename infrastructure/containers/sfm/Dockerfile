@@ -59,12 +59,13 @@ RUN cd /opt && \
     python3 setup.py build && \
     python3 setup.py install
 
-# Copy our production OpenSfM scripts
-COPY run_opensfm_gps.py /opt/ml/code/
-COPY run_sfm.sh /opt/ml/code/
-COPY gps_processor.py /opt/ml/code/
-COPY colmap_converter.py /opt/ml/code/
-COPY config_template.yaml /opt/ml/code/
+# Copy processing scripts
+COPY run_sfm.sh /opt/ml/code/run_sfm.sh
+COPY run_opensfm_gps.py /opt/ml/code/run_opensfm_gps.py
+COPY gps_processor.py /opt/ml/code/gps_processor.py
+COPY gps_processor_3d.py /opt/ml/code/gps_processor_3d.py
+COPY colmap_converter.py /opt/ml/code/colmap_converter.py
+COPY config_template.yaml /opt/ml/code/config_template.yaml
 
 # Make scripts executable
 RUN chmod +x /opt/ml/code/run_sfm.sh
