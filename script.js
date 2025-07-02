@@ -25,6 +25,7 @@ function showSection(sectionId) {
     document.getElementById('about-innovation').classList.remove('hidden');
   } else if (sectionId === 'create') {
     document.getElementById('create').classList.remove('hidden');
+    document.getElementById('create-dashboard').classList.remove('hidden');
     document.getElementById('create-steps1').classList.remove('hidden');
     document.getElementById('create-steps2').classList.remove('hidden');
     document.getElementById('create-ml-processing').classList.remove('hidden');
