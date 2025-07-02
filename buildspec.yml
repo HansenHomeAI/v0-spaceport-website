@@ -3,8 +3,8 @@ version: 0.2
 env:
   variables:
     AWS_REGION: "us-west-2"
-    AWS_ACCOUNT_ID: "975050048887" # This will be automatically replaced by CodeBuild's role
-    CONTAINERS_TO_BUILD: "all" # Default fallback, overridden by GitHub workflow
+    AWS_ACCOUNT_ID: "975050048887"
+    CONTAINERS_TO_BUILD: "all"
 
 phases:
   install:
