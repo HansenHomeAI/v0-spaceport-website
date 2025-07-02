@@ -22,12 +22,12 @@ phases:
       - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
-      - echo "Containers to build: $CONTAINERS_TO_BUILD"
+      - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
 
   build:
     commands:
       - echo "Starting container build process..."
-      - echo "Building: $CONTAINERS_TO_BUILD"
+      - 'echo "Building: $CONTAINERS_TO_BUILD"'
       - ./scripts/deployment/deploy.sh $CONTAINERS_TO_BUILD
 
   post_build:
