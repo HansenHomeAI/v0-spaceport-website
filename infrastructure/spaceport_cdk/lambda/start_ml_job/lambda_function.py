@@ -59,6 +59,11 @@ def lambda_handler(event, context):
         # Parse S3 URL to get bucket and key
         bucket_name, object_key = parse_s3_url(s3_url)
         
+        # Generate unique job ID early so it can be used for CSV storage
+        job_id = str(uuid.uuid4())
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+        job_name = f"ml-job-{timestamp}-{job_id[:8]}"
+        
         # Verify the main object exists
         try:
             s3.head_object(Bucket=bucket_name, Key=object_key)
@@ -112,11 +117,6 @@ def lambda_handler(event, context):
             except Exception as e:
                 print(f"⚠️ Failed to save CSV data: {str(e)}")
                 # Continue without GPS data - don't fail the entire request
-        
-        # Generate unique job ID
-        job_id = str(uuid.uuid4())
-        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-        job_name = f"ml-job-{timestamp}-{job_id[:8]}"
         
         # Get environment variables
         state_machine_arn = os.environ['STATE_MACHINE_ARN']
