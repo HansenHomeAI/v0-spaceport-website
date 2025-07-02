@@ -50,10 +50,12 @@ def start_pipeline() -> str:
     lambda_client = boto3.client("lambda", region_name=REGION)
 
     payload = {
-        "s3Url": S3_URL,
-        "email": TEST_EMAIL,
-        "pipelineStep": "sfm",
-        "csvData": CSV_DATA
+        "body": json.dumps({
+            "s3Url": S3_URL,
+            "email": TEST_EMAIL,
+            "pipelineStep": "sfm",
+            "csvData": CSV_DATA
+        })
     }
 
     logger.info("🚀 Invoking Start-ML-Job Lambda ...")
@@ -64,12 +66,16 @@ def start_pipeline() -> str:
     )
 
     resp_payload = json.loads(response["Payload"].read())
+    logger.info(f"🔍 Lambda response: {json.dumps(resp_payload, indent=2)}")
+    
     if response.get("FunctionError"):
         raise RuntimeError(f"Lambda error: {resp_payload}")
 
     body = resp_payload.get("body")
     if isinstance(body, str):
         body = json.loads(body)
+    
+    logger.info(f"🔍 Parsed body: {json.dumps(body, indent=2)}")
 
     job_id = body["jobId"]
     execution_arn = body["executionArn"]
@@ -101,4 +107,29 @@ def test_full_pipeline_with_gps():
     """Pytest entrypoint."""
     execution_arn = start_pipeline()
     final_status = wait_for_completion(execution_arn)
-    assert final_status == "SUCCEEDED", f"Pipeline failed with status {final_status} – see Step Functions execution for details" 
+    assert final_status == "SUCCEEDED", f"Pipeline failed with status {final_status} – see Step Functions execution for details"
+
+
+if __name__ == "__main__":
+    """Run the test directly with verbose output when executed as a script."""
+    logger.info("🧪 Starting GPS-Enhanced OpenSfM Pipeline Test")
+    logger.info(f"📍 Test Data: {S3_URL}")
+    logger.info(f"📧 Email: {TEST_EMAIL}")
+    logger.info(f"🗺️ GPS Data: {len(CSV_DATA.split(chr(10)))} waypoints")
+    
+    try:
+        execution_arn = start_pipeline()
+        logger.info(f"⏳ Polling every {POLL_INTERVAL} seconds (max {MAX_WAIT_SECONDS/60:.0f} minutes)...")
+        final_status = wait_for_completion(execution_arn)
+        
+        if final_status == "SUCCEEDED":
+            logger.info("🎉 Pipeline completed successfully!")
+            logger.info("✅ GPS-enhanced OpenSfM → 3DGS → Compression pipeline working!")
+        else:
+            logger.error(f"❌ Pipeline failed with status: {final_status}")
+            logger.error("🔍 Check Step Functions execution in AWS Console for detailed logs")
+            exit(1)
+            
+    except Exception as e:
+        logger.error(f"💥 Test failed with exception: {e}")
+        exit(1) 
