@@ -2550,3 +2550,58 @@ body::before {
     font-size: 0.9rem;
   }
 }
+
+/* ML Processing Section */
+#ml-container {
+  margin-top: 2rem;
+}
+
+.step-selector-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.step-selector {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.csv-data-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.csv-data-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.csv-data-input:focus {
+  outline: none;
+  border-color: #4a4a4a;
+}
+
+.job-status {
+  background-color: #e8f5e9;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+}

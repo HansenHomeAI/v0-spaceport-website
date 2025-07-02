@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         s3_url = body.get('s3Url')
         email = body.get('email', 'noreply@hansenhome.ai')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
-        csv_s3_key = body.get('csvS3Key')  # Optional CSV file S3 key for GPS-enhanced processing
+        csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
         
         if not s3_url:
             return {
@@ -92,21 +92,26 @@ def lambda_handler(event, context):
         csv_object_key = None
         has_gps_data = False
         
-        if csv_s3_key:
-            # Assume CSV is in the same ML bucket (spaceport-ml-processing)
+        if csv_data and pipeline_step == 'sfm':
+            # Save CSV data to S3
             ml_bucket = os.environ['ML_BUCKET']
+            timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+            csv_object_key = f"csv-data/{job_id}/gps-flight-path-{timestamp}.csv"
+            
             try:
-                s3.head_object(Bucket=ml_bucket, Key=csv_s3_key)
+                # Upload CSV data to S3
+                s3.put_object(
+                    Bucket=ml_bucket,
+                    Key=csv_object_key,
+                    Body=csv_data.encode('utf-8'),
+                    ContentType='text/csv'
+                )
                 csv_bucket_name = ml_bucket
-                csv_object_key = csv_s3_key
                 has_gps_data = True
-                print(f"✅ GPS flight path CSV found: s3://{ml_bucket}/{csv_s3_key}")
-            except s3.exceptions.NoSuchKey:
-                print(f"⚠️ CSV file not found: s3://{ml_bucket}/{csv_s3_key}")
-                # Continue without GPS data - don't fail the entire request
+                print(f"✅ GPS flight path CSV saved: s3://{ml_bucket}/{csv_object_key}")
             except Exception as e:
-                print(f"⚠️ Cannot access CSV file: {str(e)}")
-                # Continue without GPS data
+                print(f"⚠️ Failed to save CSV data: {str(e)}")
+                # Continue without GPS data - don't fail the entire request
         
         # Generate unique job ID
         job_id = str(uuid.uuid4())
