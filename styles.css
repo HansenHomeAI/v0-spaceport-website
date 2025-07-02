@@ -867,24 +867,13 @@ footer {
   padding: 1.4px;
 }
 .project-box h1 {
-  display: block;       /* Ensure it's a block-level element */
-  width: 100%;          /* Take up full width of the container */
-  text-align: left;     /* Force left alignment */
-  font-size: 4rem !important;
-  margin-bottom: 5px;
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
   font-weight: 500;
-  background: conic-gradient(
-    from -40deg at 0% -50%,
-    #E7621E 0%,
-    #E7621E 15%,
-    #D768C6 45%,
-    #FF4F00 85%,
-    #E7621E 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  color: #fff;
 }
 .project-box p {
   font-size: 1.1rem;
