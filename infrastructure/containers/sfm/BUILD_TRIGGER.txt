@@ -61,3 +61,5 @@ CONTAINER_UPDATE: Added fpdf2>=2.5.0 to requirements.txt for OpenSfM report func
 BUILD_VERSION: opensfm-gps-v1.6-fpdf-fix
 EXPECTED_OUTCOME: OpenSfM should import successfully and begin feature extraction
 NOTES: OpenSfM was failing on import due to missing fpdf module needed for export_report. Added fpdf2 dependency.
+
+Fix numpy version compatibility issue for OpenSfM pickle unpickling error - Build 2025-07-02-17:00
