@@ -1,5 +1,5 @@
 # OpenSfM Dependencies
-numpy>=1.20.0
+numpy==1.21.6
 scipy>=1.7.0
 opencv-python>=4.5.0
 matplotlib>=3.3.0
@@ -32,10 +32,8 @@ scikit-learn>=1.0.0
 # Additional OpenSfM Dependencies
 cython>=0.29.0
 wheel>=0.36.0
-
-# Documentation (required by OpenSfM setup.py)
-sphinx>=4.0.0
-sphinx_rtd_theme>=1.0.0
+pybind11>=2.6.0
+setuptools>=50.0.0
 
 # Logging and Configuration
 colorlog>=6.0.0
