@@ -263,43 +263,171 @@
         <button class="popup-close" onclick="closeNewProjectPopup()">✕</button>
       </div>
 
-      <!-- Map Section -->
-      <div class="popup-map-section">
-        <div class="map-placeholder">
-          <div class="location-pin">📍</div>
-          <h3>Select the focus point of your 3D model</h3>
-        </div>
-        <div class="coordinates-label">Coordinates</div>
-      </div>
+      <!-- Scrollable Content -->
+      <div class="popup-content-scroll">
+        
+        <!-- SECTION 1: CREATE FLIGHT PLAN -->
+        <div class="accordion-section active" data-section="setup">
+          <div class="accordion-header" onclick="toggleAccordionSection('setup')">
+            <div class="accordion-title">
+              <h3>Create Flight Plan</h3>
+            </div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-content">
+            <!-- Map Section -->
+            <div class="popup-map-section">
+              <div class="map-placeholder">
+                <div class="location-pin">📍</div>
+                <h3>Select the focus point of your 3D model</h3>
+              </div>
+              <div class="coordinates-label">Coordinates</div>
+            </div>
 
-      <!-- Batteries Section -->
-      <div class="popup-section">
-        <h4>Batteries</h4>
-        <div class="input-row-popup">
-          <div class="popup-input-wrapper">
-            <span class="input-icon">🕒</span>
-            <input type="text" placeholder="Duration" />
-          </div>
-          <div class="popup-input-wrapper">
-            <span class="input-icon">#</span>
-            <input type="text" placeholder="Quantity" />
-          </div>
-        </div>
-      </div>
+            <!-- Batteries Section -->
+            <div class="popup-section">
+              <h4>Batteries</h4>
+              <div class="input-row-popup">
+                <div class="popup-input-wrapper">
+                  <span class="input-icon">🕒</span>
+                  <input type="text" placeholder="Duration" />
+                </div>
+                <div class="popup-input-wrapper">
+                  <span class="input-icon">#</span>
+                  <input type="text" placeholder="Quantity" />
+                </div>
+              </div>
+            </div>
 
-      <!-- Altitude Section -->
-      <div class="popup-section">
-        <h4>Altitude</h4>
-        <div class="input-row-popup">
-          <div class="popup-input-wrapper">
-            <span class="input-icon">↓</span>
-            <input type="text" placeholder="Minimum" />
-          </div>
-          <div class="popup-input-wrapper">
-            <span class="input-icon">↑</span>
-            <input type="text" placeholder="Maximum" />
+            <!-- Altitude Section -->
+            <div class="popup-section">
+              <h4>Altitude</h4>
+              <div class="input-row-popup">
+                <div class="popup-input-wrapper">
+                  <span class="input-icon">↓</span>
+                  <input type="text" placeholder="Minimum" />
+                </div>
+                <div class="popup-input-wrapper">
+                  <span class="input-icon">↑</span>
+                  <input type="text" placeholder="Maximum" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Flight Pattern Section -->
+            <div class="popup-section">
+              <h4>Flight Pattern</h4>
+              <div class="input-row-popup">
+                <div class="popup-input-wrapper">
+                  <span class="input-icon">🎯</span>
+                  <input type="text" placeholder="Pattern Type" />
+                </div>
+                <div class="popup-input-wrapper">
+                  <span class="input-icon">📏</span>
+                  <input type="text" placeholder="Coverage %" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Generate Flight Path Button -->
+            <div class="popup-section">
+              <button class="popup-action-btn primary">
+                <span class="btn-icon">⚡</span>
+                Generate Flight Path
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- SECTION 2: PROPERTY UPLOAD -->
+        <div class="accordion-section" data-section="upload">
+          <div class="accordion-header" onclick="toggleAccordionSection('upload')">
+            <div class="accordion-title">
+              <h3>Property Upload</h3>
+            </div>
+            <span class="accordion-chevron">▶</span>
+          </div>
+          <div class="accordion-content">
+            <div class="popup-section">
+              <p class="section-description">Upload your aerial photos and provide property information</p>
+              
+              <div class="popup-section">
+                <h4>Photo Upload</h4>
+                <div class="upload-zone">
+                  <div class="upload-icon">📁</div>
+                  <p>Drag and drop photos or click to browse</p>
+                  <span class="upload-hint">Supports JPG, PNG, RAW formats</span>
+                </div>
+              </div>
+
+              <div class="popup-section">
+                <h4>Property Details</h4>
+                <div class="input-row-popup">
+                  <div class="popup-input-wrapper">
+                    <span class="input-icon">🏠</span>
+                    <input type="text" placeholder="Property Name" />
+                  </div>
+                  <div class="popup-input-wrapper">
+                    <span class="input-icon">📏</span>
+                    <input type="text" placeholder="Area (sq ft)" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="popup-section">
+                <button class="popup-action-btn primary">
+                  <span class="btn-icon">🚀</span>
+                  Start Processing
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: MODEL DELIVERY -->
+        <div class="accordion-section" data-section="delivery">
+          <div class="accordion-header" onclick="toggleAccordionSection('delivery')">
+            <div class="accordion-title">
+              <h3>Model Delivery</h3>
+            </div>
+            <span class="accordion-chevron">▶</span>
+          </div>
+          <div class="accordion-content">
+            <div class="popup-section">
+              <p class="section-description">Receive your completed 3D model and download links</p>
+              
+              <div class="popup-section">
+                <h4>Processing Status</h4>
+                <div class="status-indicator">
+                  <div class="status-dot pending"></div>
+                  <span>Waiting for upload...</span>
+                </div>
+              </div>
+
+              <div class="popup-section">
+                <h4>Delivery Method</h4>
+                <div class="input-row-popup">
+                  <div class="popup-input-wrapper">
+                    <span class="input-icon">📧</span>
+                    <input type="email" placeholder="Email Address" />
+                  </div>
+                  <div class="popup-input-wrapper">
+                    <span class="input-icon">🔗</span>
+                    <input type="text" placeholder="Download Link" readonly />
+                  </div>
+                </div>
+              </div>
+
+              <div class="popup-section">
+                <button class="popup-action-btn secondary disabled">
+                  <span class="btn-icon">⬇️</span>
+                  Download Model
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

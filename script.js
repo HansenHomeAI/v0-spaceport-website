@@ -642,6 +642,24 @@ function closeNewProjectPopup() {
   }
 }
 
+// ACCORDION FUNCTIONALITY
+function toggleAccordionSection(sectionId) {
+  const allSections = document.querySelectorAll('.accordion-section');
+  const targetSection = document.querySelector(`[data-section="${sectionId}"]`);
+  
+  if (!targetSection) return;
+  
+  // Close all sections
+  allSections.forEach(section => {
+    if (section !== targetSection) {
+      section.classList.remove('active');
+    }
+  });
+  
+  // Toggle target section
+  targetSection.classList.toggle('active');
+}
+
 function handleFileUpload(file) {
   console.log('handleFileUpload called with file:', file);
   
