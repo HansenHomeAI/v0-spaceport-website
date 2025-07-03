@@ -881,7 +881,7 @@ footer {
   display: block;
   width: 100%;
   text-align: left;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin: 0 0 8px 0;
   font-weight: 500;
   color: #fff;
@@ -900,7 +900,7 @@ footer {
   cursor: pointer;
   transition: background 0.3s ease;
   padding: 12px 20px !important;
-  border-radius: 25px !important;
+  border-radius: 30px !important;
 }
 .new-project-card:hover {
   background: rgba(255, 255, 255, 0.08) !important;
@@ -914,13 +914,13 @@ footer {
 }
 .new-project-card h1 {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin: 0 !important;
-  padding: 0 20px;
+  padding: 0 5px;
 }
 .new-project-card .plus-icon {
-  position: relative;
+  position: absolute;
+  right: 25px;
   width: 16px;
   height: 16px;
   display: inline-block;
