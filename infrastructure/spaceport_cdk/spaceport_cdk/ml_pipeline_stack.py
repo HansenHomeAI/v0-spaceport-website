@@ -160,7 +160,8 @@ class MLPipelineStack(Stack):
                         iam.PolicyStatement(
                             actions=[
                                 "s3:GetObject",
-                                "s3:HeadObject"
+                                "s3:HeadObject",
+                                "s3:PutObject"
                             ],
                             resources=[
                                 f"{upload_bucket.bucket_arn}/*",
@@ -275,7 +276,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.4xlarge",
+                        "InstanceType": "ml.c6i.2xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },

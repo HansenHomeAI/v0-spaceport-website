@@ -1,15 +1,15 @@
-# OpenSfM Dependencies
-numpy==1.21.6
-scipy>=1.7.0
-opencv-python>=4.5.0
-matplotlib>=3.3.0
-networkx>=2.6.0
-pyyaml>=5.4.0
+# OpenSfM Dependencies - updated for better compatibility
+numpy>=1.24.0,<2.0.0
+scipy>=1.9.0,<2.0.0
+opencv-python>=4.5.0,<5.0.0
+matplotlib>=3.5.0,<4.0.0
+networkx>=2.6.0,<3.0.0
+pyyaml>=6.0.0
 exifread>=2.3.0
 gpxpy>=1.4.0
-joblib>=1.0.0
-pillow>=8.0.0
-pyproj>=3.2.0
+joblib>=1.1.0
+pillow>=9.0.0
+pyproj>=3.4.0
 xmltodict>=0.12.0
 
 # GPS and Coordinate Processing
@@ -26,8 +26,8 @@ boto3>=1.18.0
 botocore>=1.21.0
 
 # Scientific Computing Extensions
-scikit-image>=0.18.0
-scikit-learn>=1.0.0
+scikit-image>=0.19.0,<1.0.0
+scikit-learn>=1.1.0,<2.0.0
 
 # Additional OpenSfM Dependencies
 cython>=0.29.0
@@ -41,4 +41,7 @@ tqdm>=4.60.0
 
 # Image Processing
 imageio>=2.9.0
-rawpy>=0.17.0 
+rawpy>=0.17.0
+
+# PDF Generation (for OpenSfM reports)
+fpdf2>=2.5.0 

@@ -93,7 +93,7 @@ echo "============================================================"
 
 # Run the main Python processing script
 echo "🔧 Executing OpenSfM GPS-constrained reconstruction..."
-python3 /opt/ml/code/run_opensfm_gps.py
+python3 /opt/ml/code/run_opensfm_gps.py "$INPUT_DIR" "$OUTPUT_DIR"
 
 # Check if the Python script succeeded
 PYTHON_EXIT_CODE=$?

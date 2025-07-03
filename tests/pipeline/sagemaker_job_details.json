@@ -1,0 +1,64 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "input-data",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-uploads/1751413909023-l2zkyj-Battery-1.zip",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "gps-data",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing/csv-data/e75c160f-aa41-4b03-9604-92ced2c96eae/gps-flight-path-20250703-031257.csv",
+                "LocalPath": "/opt/ml/processing/input/gps",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "colmap-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing/colmap/e75c160f-aa41-4b03-9604-92ced2c96eae/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "ml-job-20250703-031256-e75c160f-sfm",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.c6i.2xlarge",
+            "VolumeSizeInGB": 100
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/ml-job-20250703-031256-e75c160f-sfm",
+    "ProcessingJobStatus": "Failed",
+    "FailureReason": "AlgorithmError: , exit code: 1",
+    "ProcessingEndTime": "2025-07-02T21:17:31-06:00",
+    "ProcessingStartTime": "2025-07-02T21:13:32-06:00",
+    "LastModifiedTime": "2025-07-02T21:18:00.664000-06:00",
+    "CreationTime": "2025-07-02T21:12:58.109000-06:00"
+}

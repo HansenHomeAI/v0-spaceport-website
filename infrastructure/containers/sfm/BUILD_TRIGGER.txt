@@ -47,3 +47,41 @@ CONTAINER_UPDATE: Updated Lambda to use correct ECR tag :latest to match GitHub 
 BUILD_VERSION: opensfm-gps-v1.4-tag-fix
 EXPECTED_OUTCOME: Container will be pushed with :latest tag and pipeline will find the image
 NOTES: Pipeline failed with "Cannot find the requested image" because of tag mismatch. Fixed Lambda to use :latest.
+
+BUILD_TRIGGER_TIMESTAMP: 2025-07-02T21:55:00Z
+TRIGGER_REASON: Fix missing Tuple import causing NameError in run_opensfm_gps.py
+CONTAINER_UPDATE: Added Tuple to typing imports to fix "NameError: name 'Tuple' is not defined"
+BUILD_VERSION: opensfm-gps-v1.5-tuple-fix
+EXPECTED_OUTCOME: Container will execute successfully past the import stage
+NOTES: SageMaker job was failing with exit code 1 due to missing Tuple import. Simple fix to add to imports.
+
+BUILD_TRIGGER_TIMESTAMP: 2025-07-02T22:25:00Z
+TRIGGER_REASON: Fix missing fpdf dependency causing OpenSfM import failure
+CONTAINER_UPDATE: Added fpdf2>=2.5.0 to requirements.txt for OpenSfM report functionality
+BUILD_VERSION: opensfm-gps-v1.6-fpdf-fix
+EXPECTED_OUTCOME: OpenSfM should import successfully and begin feature extraction
+NOTES: OpenSfM was failing on import due to missing fpdf module needed for export_report. Added fpdf2 dependency.
+
+Fix numpy version compatibility issue for OpenSfM pickle unpickling error - Build 2025-07-02-17:00
+
+Add Advanced 3D Path Processor for improved GPS-to-photo mapping - Build 2025-07-02-17:30
+
+Enhanced GPS processor with CSV parameter extraction and curved path support - Build 2025-01-19-15:30
+
+Major improvements:
+- Dynamic extraction of flight speed, photo intervals, and distance intervals from CSV data
+- Support for curved flight paths between waypoints using spline interpolation
+- Fallback to hardcoded values only when CSV doesn't contain the parameters
+- Both time-based and distance-based photo distribution modes
+- Improved waypoint curvature handling with control points
+- Better flight parameter detection with unit conversion (mph/kmh/m/s, feet/meters)
+- Enhanced logging to show which parameters come from CSV vs fallbacks
+
+HOTFIX - Build 2025-01-19-21:00:
+- Fixed run_sfm.sh to pass correct command line arguments to run_opensfm_gps.py
+- Added INPUT_DIR and OUTPUT_DIR arguments to Python script call
+Wed Jul  2 21:31:43 MDT 2025: Fixed heading KeyError in time-based mapping
+Wed Jul  2 22:01:36 MDT 2025: Fixed reference_lla.json format for OpenSfM
+
+BUILD_TRIGGER_NUMPY_FIX_2025_07_03_v2
+BUILD_TRIGGER_ORIENTATION_FIX_2025_07_03_v3
