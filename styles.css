@@ -894,6 +894,45 @@ footer {
   max-width: none;
 }
 
+/* New Project Card Styling */
+.new-project-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.new-project-card:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+.new-project-card h1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.new-project-card .plus-icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.new-project-card .plus-icon span {
+  position: absolute;
+  display: block;
+  width: 16px;
+  height: 2.5px;
+  background: #fff;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
+}
+.new-project-card .plus-icon span:first-child {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+.new-project-card .plus-icon span:last-child {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
 .stat-box2 {
   width: 100%;
   max-width: 814px;
