@@ -82,3 +82,5 @@ HOTFIX - Build 2025-01-19-21:00:
 - Added INPUT_DIR and OUTPUT_DIR arguments to Python script call
 Wed Jul  2 21:31:43 MDT 2025: Fixed heading KeyError in time-based mapping
 Wed Jul  2 22:01:36 MDT 2025: Fixed reference_lla.json format for OpenSfM
+
+BUILD_TRIGGER_NUMPY_FIX_2025_07_03_v2

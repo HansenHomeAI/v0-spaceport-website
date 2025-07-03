@@ -39,15 +39,10 @@ RUN apt-get update && \
 # Create working directories
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 
-# Install Python dependencies for OpenSfM and GPS processing
-# Install numpy early to satisfy many builds, but avoid duplicate install later
-RUN pip3 install --no-cache-dir numpy==1.21.6
-
-# Copy and install the remaining Python dependencies (excluding the already-installed numpy)
+# Copy requirements and install Python dependencies
+# CRITICAL: Install all dependencies together to ensure numpy<2.0 constraint is respected
 COPY requirements.txt /opt/ml/code/
-# Remove numpy from requirements to prevent version conflicts
-RUN grep -v "^numpy" /opt/ml/code/requirements.txt > /opt/ml/code/requirements_wo_numpy.txt && \
-    pip3 install --no-cache-dir -r /opt/ml/code/requirements_wo_numpy.txt && \
+RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt && \
     pip3 install --no-cache-dir sphinx==4.5.0
 
 # Clone and build OpenSfM with proper submodule initialization
