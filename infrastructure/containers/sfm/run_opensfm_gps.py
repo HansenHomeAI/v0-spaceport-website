@@ -262,8 +262,16 @@ class OpenSfMGPSPipeline:
         """Convert OpenSfM output to COLMAP format"""
         try:
             converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
-            converter.convert()
-            return True
+            validation_results = converter.convert_full_reconstruction()
+            
+            # Log conversion results
+            logger.info(f"📊 COLMAP Conversion Results:")
+            logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
+            logger.info(f"   Images: {validation_results.get('image_count', 0)}")
+            logger.info(f"   Points: {validation_results.get('point_count', 0)}")
+            logger.info(f"   Quality Check: {'✅ PASSED' if validation_results.get('quality_check_passed', False) else '❌ FAILED'}")
+            
+            return validation_results.get('quality_check_passed', False)
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False
