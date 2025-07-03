@@ -894,19 +894,30 @@ footer {
   max-width: none;
 }
 
-/* New Project Card Styling */
+/* New Project Card Styling - Pill shape, full width on desktop */
 .new-project-card {
   background: rgba(255, 255, 255, 0.05) !important;
   cursor: pointer;
   transition: background 0.3s ease;
+  padding: 12px 20px !important;
+  border-radius: 25px !important;
 }
 .new-project-card:hover {
   background: rgba(255, 255, 255, 0.08) !important;
+}
+@media (min-width: 640px) {
+  .new-project-card {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+  }
 }
 .new-project-card h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 0 !important;
+  padding: 0 20px;
 }
 .new-project-card .plus-icon {
   position: relative;
