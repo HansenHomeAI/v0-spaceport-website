@@ -748,7 +748,8 @@ class Advanced3DPathProcessor:
                     'altitude': data['altitude'],
                     'dop': data['gps_accuracy']
                 },
-                'orientation': data['heading'] if 'heading' in data else 0
+                'orientation': 1,  # Standard EXIF orientation (1=normal, OpenSfM expects int 1-8)
+                'heading_deg': data['heading'] if 'heading' in data else 0  # Preserve heading as custom field
             }
         
         with open(output_dir / 'exif_overrides.json', 'w') as f:
