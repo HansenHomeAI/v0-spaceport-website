@@ -804,36 +804,47 @@ footer {
   margin-top: 45px;
 }
 
-/* PROJECT CARDS (Dashboard) - Same as stats cards */
+/* PROJECT CARDS (Dashboard) - Max 2 per row, wider cards */
 .project-cards {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 30px;
   margin-top: 40px;
-  justify-content: center;
   align-items: center;
-  margin-left: 0%;
-  margin-right: 0%;
+  max-width: 92%;
+  margin-left: auto;
+  margin-right: auto;
 }
-@media (min-width: 750px) {
+@media (min-width: 640px) {
   .project-cards {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: stretch;
+    justify-content: flex-start;
+    margin-left: 6%;
+    margin-right: 6%;
+    max-width: none;
   }
 }
 .project-box {
   width: 100%;
-  max-width: 414px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 25px;
   border-radius: 25px;
   position: relative;
   color: #fff;
   text-align: left;
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
+}
+@media (min-width: 640px) {
+  .project-box {
+    flex: 0 0 calc(50% - 15px);
+    width: calc(50% - 15px);
+  }
 }
 /* Variation for box #1 */
 .project-box:nth-child(1) {
