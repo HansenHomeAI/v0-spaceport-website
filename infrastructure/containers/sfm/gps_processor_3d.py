@@ -610,6 +610,7 @@ class Advanced3DPathProcessor:
                 'order_index': order_idx,
                 'segment_index': segment_idx,
                 'segment_t': segment_t,
+                'heading': segment.heading if segment else 0.0,
                 'confidence': 0.9 if current_distance <= self.total_path_length else 0.5,
                 'timestamp': timestamp.isoformat() if timestamp else None
             }
@@ -775,7 +776,7 @@ class Advanced3DPathProcessor:
             gps_priors['cameras'][photo_name] = {
                 'position': data['position_3d'],
                 'position_std': [data['gps_accuracy']] * 3,
-                'orientation': [0, 0, data['heading']],
+                'orientation': [0, 0, data['heading'] if 'heading' in data else 0],
                 'orientation_std': [180, 180, 10]  # Allow pitch/roll freedom, constrain yaw
             }
         
