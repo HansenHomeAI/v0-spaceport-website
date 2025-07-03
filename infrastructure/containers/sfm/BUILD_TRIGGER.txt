@@ -81,3 +81,4 @@ HOTFIX - Build 2025-01-19-21:00:
 - Fixed run_sfm.sh to pass correct command line arguments to run_opensfm_gps.py
 - Added INPUT_DIR and OUTPUT_DIR arguments to Python script call
 Wed Jul  2 21:31:43 MDT 2025: Fixed heading KeyError in time-based mapping
+Wed Jul  2 22:01:36 MDT 2025: Fixed reference_lla.json format for OpenSfM

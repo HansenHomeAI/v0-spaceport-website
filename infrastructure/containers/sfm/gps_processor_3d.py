@@ -754,10 +754,14 @@ class Advanced3DPathProcessor:
         with open(output_dir / 'exif_overrides.json', 'w') as f:
             json.dump(exif_overrides, f, indent=2)
         
-        # 2. Generate reference_lla.json (local coordinates)
+        # 2. Generate reference_lla.json (GPS coordinates for OpenSfM)
         reference_lla = {}
         for photo_name, data in self.photo_positions.items():
-            reference_lla[photo_name] = data['position_3d']  # [x, y, z] in meters
+            reference_lla[photo_name] = {
+                'latitude': data['latitude'],
+                'longitude': data['longitude'],
+                'altitude': data['altitude']
+            }
         
         with open(output_dir / 'reference_lla.json', 'w') as f:
             json.dump(reference_lla, f, indent=2)
