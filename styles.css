@@ -886,6 +886,7 @@ footer {
   padding: 12px 20px !important;
   border-radius: 25px !important;
   box-sizing: border-box !important;
+  border: none !important;
 }
 .new-project-card:hover {
   background: rgba(255, 255, 255, 0.08) !important;
