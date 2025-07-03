@@ -250,6 +250,59 @@
       </div>
     </div>
   </section>
+
+  <!-- NEW PROJECT POPUP -->
+  <div id="newProjectPopup" class="popup-overlay hidden">
+    <div class="popup-modal">
+      <!-- Header -->
+      <div class="popup-header">
+        <div class="popup-title-section">
+          <input type="text" id="projectTitle" class="popup-title-input" value="Untitled" />
+          <span class="edit-icon">✏️</span>
+        </div>
+        <button class="popup-close" onclick="closeNewProjectPopup()">✕</button>
+      </div>
+
+      <!-- Map Section -->
+      <div class="popup-map-section">
+        <div class="map-placeholder">
+          <div class="location-pin">📍</div>
+          <h3>Select the focus point of your 3D model</h3>
+        </div>
+        <div class="coordinates-label">Coordinates</div>
+      </div>
+
+      <!-- Batteries Section -->
+      <div class="popup-section">
+        <h4>Batteries</h4>
+        <div class="input-row-popup">
+          <div class="popup-input-wrapper">
+            <span class="input-icon">🕒</span>
+            <input type="text" placeholder="Duration" />
+          </div>
+          <div class="popup-input-wrapper">
+            <span class="input-icon">#</span>
+            <input type="text" placeholder="Quantity" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Altitude Section -->
+      <div class="popup-section">
+        <h4>Altitude</h4>
+        <div class="input-row-popup">
+          <div class="popup-input-wrapper">
+            <span class="input-icon">↓</span>
+            <input type="text" placeholder="Minimum" />
+          </div>
+          <div class="popup-input-wrapper">
+            <span class="input-icon">↑</span>
+            <input type="text" placeholder="Maximum" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <section class="section hidden" id="create-steps1">
     <div class="flight-path-section">

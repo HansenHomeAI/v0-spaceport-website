@@ -179,6 +179,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Initialize new project popup functionality
+  const newProjectButton = document.querySelector('.new-project-card');
+  const newProjectPopup = document.getElementById('newProjectPopup');
+  
+  if (newProjectButton && newProjectPopup) {
+    // Add click handler for New Project button
+    newProjectButton.addEventListener('click', function() {
+      openNewProjectPopup();
+    });
+
+    // Close popup when clicking outside of it
+    newProjectPopup.addEventListener('click', function(e) {
+      if (e.target === newProjectPopup) {
+        closeNewProjectPopup();
+      }
+    });
+  }
+
+  // Handle escape key to close popup
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeNewProjectPopup();
+    }
+  });
 });
 
 // FILE: dronePathGenerator.js
@@ -591,6 +616,29 @@ function handleOutsideClick(event) {
   // Check if click is outside the popup content and not on the close icon
   if (popup && popupContent && !popupContent.contains(event.target) && event.target !== closeIcon) {
     hideAddPathPopup(event);
+  }
+}
+
+// NEW PROJECT POPUP FUNCTIONS
+function openNewProjectPopup() {
+  const popup = document.getElementById('newProjectPopup');
+  if (popup) {
+    popup.classList.remove('hidden');
+    // Focus on the title input
+    const titleInput = document.getElementById('projectTitle');
+    if (titleInput) {
+      setTimeout(() => {
+        titleInput.focus();
+        titleInput.select();
+      }, 100);
+    }
+  }
+}
+
+function closeNewProjectPopup() {
+  const popup = document.getElementById('newProjectPopup');
+  if (popup) {
+    popup.classList.add('hidden');
   }
 }
 
