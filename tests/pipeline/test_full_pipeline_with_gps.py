@@ -89,16 +89,25 @@ def wait_for_completion(execution_arn: str) -> str:
     sfn = boto3.client("stepfunctions", region_name=REGION)
     start_time = time.time()
     last_status = None
+    cycle = 0
 
     while True:
         desc = sfn.describe_execution(executionArn=execution_arn)
         status = desc["status"]
+        cycle += 1
+
+        # Always log the poll cycle and status
+        elapsed = time.time() - start_time
+        logger.info(f"⏲️  Poll #{cycle} – {elapsed/60:.1f} min elapsed – Status: {status}")
+
+        # Log only when status changes for detailed updates
         if status != last_status:
-            logger.info(f"Status → {status}")
+            logger.info(f"Status changed → {status}")
             last_status = status
+
         if status in {"SUCCEEDED", "FAILED", "TIMED_OUT", "ABORTED"}:
             return status
-        if time.time() - start_time > MAX_WAIT_SECONDS:
+        if elapsed > MAX_WAIT_SECONDS:
             raise TimeoutError("Pipeline timed out waiting for completion")
         time.sleep(POLL_INTERVAL)
 
