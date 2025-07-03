@@ -76,3 +76,7 @@ Major improvements:
 - Improved waypoint curvature handling with control points
 - Better flight parameter detection with unit conversion (mph/kmh/m/s, feet/meters)
 - Enhanced logging to show which parameters come from CSV vs fallbacks
+
+HOTFIX - Build 2025-01-19-21:00:
+- Fixed run_sfm.sh to pass correct command line arguments to run_opensfm_gps.py
+- Added INPUT_DIR and OUTPUT_DIR arguments to Python script call
