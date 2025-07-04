@@ -146,20 +146,21 @@ class OpenSfMGPSPipeline:
         config = {
             # Feature extraction
             'feature_type': 'SIFT',
-            'feature_process_size': 2048,
-            'feature_min_frames': 8000,
-            'sift_peak_threshold': 0.01,
+            'feature_process_size': 2048,          # High-res processing for drone images
+            'feature_max_num_features': 20000,     # Allow dense feature extraction
+            'feature_min_frames': 4000,            # Lower floor so images with fewer features are still accepted
+            'sift_peak_threshold': 0.006,          # Lower threshold → more features in low-texture areas
             
             # Matching
-            'matching_gps_neighbors': 20,
-            'matching_gps_distance': 100,  # meters
-            'matching_graph_rounds': 50,
-            'robust_matching_min_match': 20,
+            'matching_gps_neighbors': 30,          # More temporal neighbors
+            'matching_gps_distance': 300,          # Allow matches up to 300 m apart
+            'matching_graph_rounds': 80,           # More graph refinement rounds
+            'robust_matching_min_match': 8,        # Relax minimum matches to keep difficult pairs
             
             # Reconstruction
-            'min_ray_angle_degrees': 2.0,
-            'reconstruction_min_ratio': 0.8,
-            'triangulation_min_ray_angle_degrees': 2.0,
+            'min_ray_angle_degrees': 1.0,          # Allow shallower angles → more points
+            'reconstruction_min_ratio': 0.6,       # Allow more images even with fewer inliers
+            'triangulation_min_ray_angle_degrees': 1.0,
             
             # GPS integration
             'use_altitude_tag': True,
@@ -174,7 +175,7 @@ class OpenSfMGPSPipeline:
             'bundle_max_iterations': 100,
             
             # Output
-            'processes': 1,  # Use single process for stability
+            'processes': 4,  # Parallelise where possible
         }
         
         config_path = self.opensfm_dir / "config.yaml"
@@ -239,12 +240,23 @@ class OpenSfMGPSPipeline:
         # Get the largest reconstruction
         recon = max(reconstructions, key=lambda r: len(r.get('points', {})))
         
-        num_cameras = len(recon.get('shots', {}))
+        shots_dict = recon.get('shots', {})
+        num_cameras = len(shots_dict)
         num_points = len(recon.get('points', {}))
         
         logger.info(f"📊 Reconstruction statistics:")
         logger.info(f"   Cameras: {num_cameras}")
         logger.info(f"   3D points: {num_points}")
+        
+        # Log which images were registered (first 20 for brevity)
+        registered_images = list(shots_dict.keys())
+        logger.info(f"   Registered images (showing up to 20): {registered_images[:20]}")
+        
+        # Determine unregistered images for debugging
+        all_images = [p.name for p in (self.images_dir).iterdir() if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}]
+        unregistered = sorted(set(all_images) - set(registered_images))
+        if unregistered:
+            logger.warning(f"⚠️ Unregistered images (showing up to 20): {unregistered[:20]}")
         
         # Validate minimum quality
         if num_cameras < 5:
@@ -262,8 +274,16 @@ class OpenSfMGPSPipeline:
         """Convert OpenSfM output to COLMAP format"""
         try:
             converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
-            converter.convert()
-            return True
+            validation_results = converter.convert_full_reconstruction()
+            
+            # Log conversion results
+            logger.info(f"📊 COLMAP Conversion Results:")
+            logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
+            logger.info(f"   Images: {validation_results.get('image_count', 0)}")
+            logger.info(f"   Points: {validation_results.get('point_count', 0)}")
+            logger.info(f"   Quality Check: {'✅ PASSED' if validation_results.get('quality_check_passed', False) else '❌ FAILED'}")
+            
+            return validation_results.get('quality_check_passed', False)
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False

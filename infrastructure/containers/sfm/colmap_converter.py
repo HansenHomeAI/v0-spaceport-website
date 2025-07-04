@@ -404,6 +404,16 @@ class OpenSfMToCOLMAPConverter:
         logger.info(f"✅ Full conversion completed")
         return validation
 
+    def convert(self) -> Dict:
+        """Public wrapper to preserve legacy call sites.
+
+        Older pipeline code expects a `convert()` method on the converter.  The
+        implementation was renamed to `convert_full_reconstruction()` during a
+        refactor, which broke the runtime (AttributeError).  This thin wrapper
+        simply forwards to the new implementation while returning its result.
+        """
+        return self.convert_full_reconstruction()
+
 
 def main():
     """Test converter functionality"""
