@@ -2843,17 +2843,19 @@ body::before {
 }
 
 .edit-icon {
-  font-size: 0.9rem;
+  width: 16px;
+  height: 16px;
+  background: url('assets/SpaceportIcons/Edit.svg') no-repeat center;
+  background-size: contain;
   opacity: 0.6;
   flex-shrink: 0;
   margin-top: 8px;
+  transition: opacity 0.2s ease;
 }
 
 .popup-close {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 1.2rem;
   cursor: pointer;
   padding: 10px;
   border-radius: 8px;
@@ -2865,6 +2867,10 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-image: url('assets/SpaceportIcons/Close.svg');
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .popup-close:hover {
@@ -2934,8 +2940,11 @@ body::before {
 }
 
 .accordion-chevron {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+  width: 16px;
+  height: 16px;
+  background: url('assets/SpaceportIcons/Arrow.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.6;
   transition: transform 0.3s ease;
 }
 
@@ -2981,7 +2990,10 @@ body::before {
 }
 
 .location-pin {
-  font-size: 2rem;
+  width: 32px;
+  height: 32px;
+  background: url('assets/SpaceportIcons/Pin.svg') no-repeat center;
+  background-size: contain;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
@@ -3044,10 +3056,14 @@ body::before {
 }
 
 .input-icon {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 1rem;
+  width: 16px;
+  height: 16px;
   margin-right: 10px;
   flex-shrink: 0;
+  opacity: 0.6;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
 
 .popup-input-wrapper input {
@@ -3085,7 +3101,10 @@ body::before {
 }
 
 .upload-icon {
-  font-size: 2.5rem;
+  width: 48px;
+  height: 48px;
+  background: url('assets/SpaceportIcons/Camera.svg') no-repeat center;
+  background-size: contain;
   margin-bottom: 12px;
   opacity: 0.7;
 }
@@ -3246,4 +3265,41 @@ body::before {
   .upload-zone {
     padding: 24px 12px;
   }
+}
+
+/* Specific Input Icon Classes */
+.input-icon.pin {
+  background-image: url('assets/SpaceportIcons/Pin.svg');
+}
+
+.input-icon.time {
+  background-image: url('assets/SpaceportIcons/Time.svg');
+}
+
+.input-icon.number {
+  background-image: url('assets/SpaceportIcons/Number.svg');
+}
+
+.input-icon.minimum {
+  background-image: url('assets/SpaceportIcons/Minimum.svg');
+}
+
+.input-icon.maximum {
+  background-image: url('assets/SpaceportIcons/Maximum.svg');
+}
+
+.input-icon.home {
+  background-image: url('assets/SpaceportIcons/3D.svg');
+}
+
+.input-icon.map {
+  background-image: url('assets/SpaceportIcons/Map.svg');
+}
+
+.input-icon.email {
+  background-image: url('assets/SpaceportIcons/Info.svg');
+}
+
+.input-icon.link {
+  background-image: url('assets/SpaceportIcons/Controls.svg');
 }
