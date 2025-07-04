@@ -2763,13 +2763,34 @@ body::before {
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   border-radius: 24px;
-  border: 2.4px solid rgba(255, 255, 255, 0.5);
+  position: relative;
   box-sizing: border-box;
   overflow: hidden;
   transform: scale(1);
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
+}
+
+.popup-modal::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  padding: 1.4px;
+  z-index: 11;
 }
 
 .popup-overlay.hidden .popup-modal {
@@ -2780,21 +2801,24 @@ body::before {
 .popup-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px 16px 16px 16px;
-  border-bottom: 2.4px solid rgba(255, 255, 255, 0.5);
+  /* Removed border-bottom for cleaner look */
   position: sticky;
   top: 0;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   z-index: 10;
+  gap: 12px;
 }
 
 .popup-title-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .popup-title-input {
@@ -2808,6 +2832,10 @@ body::before {
   border-radius: 8px;
   transition: background 0.2s ease;
   font-family: inherit;
+  flex: 1;
+  min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .popup-title-input:focus {
@@ -2817,6 +2845,8 @@ body::before {
 .edit-icon {
   font-size: 0.9rem;
   opacity: 0.6;
+  flex-shrink: 0;
+  margin-top: 8px;
 }
 
 .popup-close {
@@ -2829,6 +2859,12 @@ body::before {
   border-radius: 8px;
   opacity: 0.7;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .popup-close:hover {
@@ -2863,11 +2899,11 @@ body::before {
 
 /* Accordion Sections */
 .accordion-section {
-  border-bottom: 2.4px solid rgba(255, 255, 255, 0.5);
+  /* Removed border-bottom for cleaner look */
 }
 
 .accordion-section:last-child {
-  border-bottom: none;
+  /* No border needed */
 }
 
 .accordion-header {
@@ -2968,11 +3004,11 @@ body::before {
 /* Sections */
 .popup-section {
   padding: 20px 16px;
-  border-bottom: 2.4px solid rgba(255, 255, 255, 0.5);
+  /* Removed border-bottom for cleaner look */
 }
 
 .popup-section:last-child {
-  border-bottom: none;
+  /* No border needed */
   padding-bottom: 24px;
 }
 
@@ -3188,6 +3224,11 @@ body::before {
   
   .popup-header {
     padding: 16px 12px 12px 12px;
+    gap: 8px;
+  }
+  
+  .popup-title-input {
+    font-size: 1.3rem;
   }
   
   .popup-section {
