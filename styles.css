@@ -2739,9 +2739,9 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2759,11 +2759,12 @@ body::before {
   width: 90%;
   max-width: 420px;
   max-height: 85vh;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2.4px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
   overflow: hidden;
   transform: scale(1);
   transition: transform 0.3s ease;
@@ -2780,13 +2781,13 @@ body::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px 16px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px 16px 16px 16px;
+  border-bottom: 2.4px solid rgba(255, 255, 255, 0.5);
   position: sticky;
   top: 0;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   z-index: 10;
 }
 
@@ -2800,12 +2801,13 @@ body::before {
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 600;
   outline: none;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   transition: background 0.2s ease;
+  font-family: inherit;
 }
 
 .popup-title-input:focus {
@@ -2823,8 +2825,8 @@ body::before {
   color: #fff;
   font-size: 1.2rem;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
   opacity: 0.7;
   transition: all 0.2s ease;
 }
@@ -2861,7 +2863,7 @@ body::before {
 
 /* Accordion Sections */
 .accordion-section {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 2.4px solid rgba(255, 255, 255, 0.5);
 }
 
 .accordion-section:last-child {
@@ -2872,7 +2874,7 @@ body::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 20px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
@@ -2889,9 +2891,10 @@ body::before {
 
 .accordion-title h3 {
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
+  font-family: inherit;
 }
 
 .accordion-chevron {
@@ -2917,10 +2920,11 @@ body::before {
 /* Section Descriptions */
 .section-description {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   margin: 0 0 20px 0;
-  padding: 0 24px;
+  padding: 0 16px;
   line-height: 1.4;
+  font-family: inherit;
 }
 
 /* Map Section */
@@ -2954,19 +2958,17 @@ body::before {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.coordinates-label {
+.coordinates-input-section {
   position: absolute;
   bottom: 16px;
   left: 16px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
-  font-weight: 500;
+  right: 16px;
 }
 
 /* Sections */
 .popup-section {
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 20px 16px;
+  border-bottom: 2.4px solid rgba(255, 255, 255, 0.5);
 }
 
 .popup-section:last-child {
@@ -2979,11 +2981,13 @@ body::before {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 16px 0;
+  font-family: inherit;
 }
 
 .input-row-popup {
   display: flex;
   gap: 12px;
+  margin: 0 4px;
 }
 
 .popup-input-wrapper {
@@ -2991,16 +2995,16 @@ body::before {
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 32px;
+  padding: 0 20px;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .popup-input-wrapper:focus-within {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .input-icon {
@@ -3014,11 +3018,12 @@ body::before {
   background: none;
   border: none;
   color: #fff;
-  font-size: 1rem;
-  padding: 14px 0;
+  font-size: 1.1rem;
+  padding: 16px 0;
   outline: none;
   flex: 1;
   font-weight: 400;
+  font-family: inherit;
 }
 
 .popup-input-wrapper input::placeholder {
@@ -3028,18 +3033,19 @@ body::before {
 
 /* Upload Zone */
 .upload-zone {
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+  border: 2.4px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
   padding: 32px 24px;
   text-align: center;
   transition: all 0.2s ease;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05);
+  box-sizing: border-box;
 }
 
 .upload-zone:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .upload-icon {
@@ -3050,14 +3056,16 @@ body::before {
 
 .upload-zone p {
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
   margin: 0 0 8px 0;
+  font-family: inherit;
 }
 
 .upload-hint {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.85rem;
+  font-size: 1rem;
+  font-family: inherit;
 }
 
 /* Status Indicators */
@@ -3065,10 +3073,11 @@ body::before {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  border: 2.4px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
 }
 
 .status-dot {
@@ -3101,8 +3110,9 @@ body::before {
 
 .status-indicator span {
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   font-weight: 500;
+  font-family: inherit;
 }
 
 /* Action Buttons */
@@ -3112,40 +3122,52 @@ body::before {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 14px 24px;
-  border: none;
-  border-radius: 16px;
+  padding: 16px 24px;
+  border: 2.5px solid #FF4F00;
+  border-radius: 999px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-family: inherit;
+  box-sizing: border-box;
+  text-decoration: none;
 }
 
 .popup-action-btn.primary {
-  background: linear-gradient(135deg, #0a84ff 0%, #64b5f6 100%);
-  color: #fff;
+  background: transparent;
+  color: #FF4F00;
+  border-color: #FF4F00;
 }
 
 .popup-action-btn.primary:hover {
-  background: linear-gradient(135deg, #0066cc 0%, #4a9eff 100%);
+  background: #FF4F00;
+  color: #fff;
+  border-color: #FF4F00;
   transform: translateY(-1px);
 }
 
 .popup-action-btn.secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: #FF4F00;
+  border-color: #FF4F00;
+  opacity: 0.6;
 }
 
 .popup-action-btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: #FF4F00;
+  color: #fff;
+  border-color: #FF4F00;
+  opacity: 1;
 }
 
 .popup-action-btn.disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
   pointer-events: none;
+  color: #FF4F00;
+  background: transparent;
+  border-color: #FF4F00;
 }
 
 .btn-icon {
@@ -3161,25 +3183,26 @@ body::before {
   
   .input-row-popup {
     flex-direction: column;
+    margin: 0 0;
   }
   
   .popup-header {
-    padding: 16px 20px 12px 20px;
+    padding: 16px 12px 12px 12px;
   }
   
   .popup-section {
-    padding: 16px 20px;
+    padding: 16px 12px;
   }
   
   .accordion-header {
-    padding: 16px 20px;
+    padding: 16px 12px;
   }
   
   .section-description {
-    padding: 0 20px;
+    padding: 0 12px;
   }
   
   .upload-zone {
-    padding: 24px 16px;
+    padding: 24px 12px;
   }
 }
