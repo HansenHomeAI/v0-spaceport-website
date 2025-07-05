@@ -1,8 +1,9 @@
 # Production OpenSfM Container with GPS-Constrained Reconstruction
 # Replaces COLMAP with OpenSfM for enhanced accuracy using drone flight path data
 # Updated: 2025-01-27
+# Build optimization: Multi-stage build for better caching
 
-FROM python:3.9-slim
+FROM python:3.9-slim as base
 
 # Switch to root for installation
 USER root
@@ -39,6 +40,9 @@ RUN apt-get update && \
 # Create working directories
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 
+# Dependencies stage - changes less frequently, better for caching
+FROM base as dependencies
+
 # Copy requirements and install Python dependencies
 # CRITICAL: Install all dependencies together to ensure numpy<2.0 constraint is respected
 COPY requirements.txt /opt/ml/code/
@@ -53,6 +57,9 @@ RUN cd /opt && \
     git submodule update --init --recursive && \
     python3 setup.py build && \
     python3 setup.py install
+
+# Final stage - application code that changes more frequently
+FROM dependencies as final
 
 # Copy processing scripts
 COPY run_sfm.sh /opt/ml/code/run_sfm.sh

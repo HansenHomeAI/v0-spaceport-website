@@ -59,9 +59,20 @@ deploy_container() {
 
   log "Building container from: ${container_dir}"
   
-  # Build for the correct platform for SageMaker
-  docker build --platform linux/amd64 -f "${container_dir}/Dockerfile" -t "${repo_name}:latest" "${container_dir}"
-  log "Build complete."
+  # Build for the correct platform for SageMaker with enhanced caching
+  log "Using Docker BuildKit for improved layer caching..."
+  
+  # Enable enhanced caching and build optimization
+  export DOCKER_BUILDKIT=1
+  docker build \
+    --platform linux/amd64 \
+    --cache-from "${ecr_uri}:latest" \
+    --build-arg BUILDKIT_INLINE_CACHE=1 \
+    -f "${container_dir}/Dockerfile" \
+    -t "${repo_name}:latest" \
+    "${container_dir}"
+  
+  log "Build complete with enhanced caching."
 
   log "Tagging images..."
   docker tag "${repo_name}:latest" "${ecr_uri}:latest"
