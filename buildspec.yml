@@ -5,9 +5,6 @@ env:
     AWS_REGION: "us-west-2"
     AWS_ACCOUNT_ID: "975050048887"
     CONTAINERS_TO_BUILD: "all"
-    # Docker layer caching optimization
-    DOCKER_BUILDKIT: "1"
-    BUILDKIT_PROGRESS: "plain"
 
 phases:
   install:
@@ -16,8 +13,6 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - pip install awscli --upgrade
-      - echo "Enabling Docker BuildKit for improved caching..."
-      - export DOCKER_BUILDKIT=1
 
   pre_build:
     commands:
@@ -28,22 +23,16 @@ phases:
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
-      - echo "Starting optimized build process with enhanced caching..."
-      - echo "Build optimization: Docker layer caching enabled"
 
   build:
     commands:
       - echo "Starting container build process..."
       - 'echo "Building: $CONTAINERS_TO_BUILD"'
-      - echo "Build started at: $(date)"
       - ./scripts/deployment/deploy.sh $CONTAINERS_TO_BUILD
-      - echo "Build completed at: $(date)"
 
   post_build:
     commands:
       - echo "Build process completed on `date`"
-      - echo "Cleaning up temporary files..."
-      - docker system prune -f --filter "until=24h" || true
 
 artifacts:
   files:
@@ -53,6 +42,4 @@ artifacts:
 cache:
   paths:
     - '/root/.cache/pip'
-    - '/root/.docker/buildx'
-    - '/root/.cache/docker'
-    - '/var/lib/docker/overlay2' 
+    - '/root/.docker/buildx' 
