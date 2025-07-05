@@ -87,3 +87,16 @@ BUILD_TRIGGER_NUMPY_FIX_2025_07_03_v2
 BUILD_TRIGGER_ORIENTATION_FIX_2025_07_03_v3
 BUILD_TRIGGER_METHOD_NAME_FIX_2025_07_03_v4
 BUILD_TRIGGER_HIGH_DENSITY_SFM_2025_07_03_v5
+
+BUILD_TRIGGER_COLMAP_PATH_FIX_2025_07_03_v6
+CRITICAL FIX: COLMAP sparse/0 directory structure path mismatch
+ISSUE: OpenSfMToCOLMAPConverter was writing files to /opt/ml/processing/output/ but validation script expected them in /opt/ml/processing/output/sparse/0/
+SOLUTION: Modified OpenSfMToCOLMAPConverter to create proper sparse/0 directory structure
+CHANGES:
+1. Updated __init__ to create output_path as base_path/sparse/0
+2. Added base_output_path to maintain access to root output directory
+3. Updated create_reference_point_cloud to write PLY to dense/ directory
+4. Updated validation to check PLY file in correct dense/ location
+5. Enhanced logging to show both base output and sparse directory paths
+EXPECTED_OUTCOME: Pipeline should complete successfully with files in correct locations for validation
+NOTES: This was the final blocking issue preventing successful GPS-enhanced OpenSfM pipeline completion

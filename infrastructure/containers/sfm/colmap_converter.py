@@ -28,12 +28,15 @@ class OpenSfMToCOLMAPConverter:
             output_path: Path to output COLMAP format files
         """
         self.opensfm_path = Path(opensfm_path)
-        self.output_path = Path(output_path)
+        # Create COLMAP-compatible sparse/0 directory structure
+        self.output_path = Path(output_path) / "sparse" / "0"
+        self.base_output_path = Path(output_path)
         self.reconstruction = None
         
         logger.info(f"🔄 Initializing OpenSfM to COLMAP converter")
         logger.info(f"   Input: {opensfm_path}")
         logger.info(f"   Output: {output_path}")
+        logger.info(f"   COLMAP sparse dir: {self.output_path}")
     
     def load_opensfm_reconstruction(self) -> Dict:
         """Load OpenSfM reconstruction data"""
@@ -290,7 +293,11 @@ class OpenSfMToCOLMAPConverter:
         if not self.reconstruction:
             raise ValueError("Reconstruction not loaded")
         
-        ply_file = self.output_path / "sparse_points.ply"
+        # Create dense directory for PLY file (validation expects it in dense/)
+        dense_dir = self.base_output_path / "dense"
+        dense_dir.mkdir(parents=True, exist_ok=True)
+        
+        ply_file = dense_dir / "sparse_points.ply"
         points_data = self.reconstruction.get('points', {})
         
         logger.info(f"☁️ Creating reference point cloud with {len(points_data)} points")
@@ -336,7 +343,7 @@ class OpenSfMToCOLMAPConverter:
             cameras_file = self.output_path / "cameras.txt"
             images_file = self.output_path / "images.txt"
             points_file = self.output_path / "points3D.txt"
-            ply_file = self.output_path / "sparse_points.ply"
+            ply_file = self.base_output_path / "dense" / "sparse_points.ply"
             
             validation_results['cameras_file_exists'] = cameras_file.exists()
             validation_results['images_file_exists'] = images_file.exists()
@@ -386,8 +393,9 @@ class OpenSfMToCOLMAPConverter:
         """Convert complete OpenSfM reconstruction to COLMAP format"""
         logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion")
         
-        # Create output directory
+        # Create output directory structure (sparse/0 for COLMAP files)
         self.output_path.mkdir(parents=True, exist_ok=True)
+        logger.info(f"📁 Created COLMAP sparse directory: {self.output_path}")
         
         # Load reconstruction
         self.load_opensfm_reconstruction()
