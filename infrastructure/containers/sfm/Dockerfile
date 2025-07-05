@@ -10,27 +10,26 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install system dependencies for OpenSfM and GPS processing (cached layer)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential=12.9ubuntu3 \
-        cmake=3.22.1-1ubuntu1.22.04.1 \
-        git=1:2.34.1-1ubuntu1.10 \
-        wget=1.21.2-2ubuntu1 \
-        curl=7.81.0-1ubuntu1.16 \
-        unzip=6.0-26ubuntu3.1 \
-        ca-certificates=20230311ubuntu0.22.04.1 \
-        pkg-config=0.29.2-1ubuntu3 \
-        libeigen3-dev=3.4.0-2ubuntu2 \
-        libopencv-dev=4.5.4+dfsg-9ubuntu4 \
-        libceres-dev=2.0.0+dfsg-4build1 \
-        libgoogle-glog-dev=0.6.0-1 \
-        libgflags-dev=2.2.2-2 \
-        libatlas-base-dev=3.10.3-12ubuntu1 \
-        libsuitesparse-dev=1:5.10.1+dfsg-4build1 \
-        libproj-dev=8.2.1-1 \
-        libgdal-dev=3.4.1+dfsg-1build4 \
-        python3-dev=3.10.6-1~22.04 \
-        python3-pip=22.0.2+dfsg-1ubuntu0.4 \
-        libboost-all-dev=1.74.0.3ubuntu7 \
-        libyaml-dev=0.2.2-1build2 \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        curl \
+        unzip \
+        ca-certificates \
+        pkg-config \
+        libeigen3-dev \
+        libopencv-dev \
+        libceres-dev \
+        libgoogle-glog-dev \
+        libgflags-dev \
+        libatlas-base-dev \
+        libsuitesparse-dev \
+        libproj-dev \
+        libgdal-dev \
+        python3-dev \
+        libboost-all-dev \
+        libyaml-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

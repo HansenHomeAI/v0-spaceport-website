@@ -9,13 +9,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies (cached layer)
 RUN apt-get update && apt-get install -y \
-    python3=3.10.6-1~22.04 \
-    python3-pip=22.0.2+dfsg-1ubuntu0.4 \
-    git=1:2.34.1-1ubuntu1.10 \
-    wget=1.21.2-2ubuntu1 \
-    curl=7.81.0-1ubuntu1.16 \
-    build-essential=12.9ubuntu3 \
-    cmake=3.22.1-1ubuntu1.22.04.1 \
+    python3 \
+    python3-pip \
+    git \
+    wget \
+    curl \
+    build-essential \
+    cmake \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

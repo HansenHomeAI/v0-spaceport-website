@@ -10,10 +10,10 @@ ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies (cached layer)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-minimal=3.10.6-1~22.04 \
-    python3-pip=22.0.2+dfsg-1ubuntu0.4 \
-    git=1:2.34.1-1ubuntu1.10 \
-    build-essential=12.9ubuntu3 \
+    python3-minimal \
+    python3-pip \
+    git \
+    build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
     && rm -rf /var/cache/apt/*
