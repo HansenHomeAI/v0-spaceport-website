@@ -5,6 +5,11 @@ env:
     AWS_REGION: "us-west-2"
     AWS_ACCOUNT_ID: "975050048887"
     CONTAINERS_TO_BUILD: "all"
+    # Enable Docker BuildKit for better caching
+    DOCKER_BUILDKIT: "1"
+    BUILDKIT_PROGRESS: "plain"
+    # Docker layer caching
+    DOCKER_LAYER_CACHING: "1"
 
 phases:
   install:
@@ -13,6 +18,10 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - pip install awscli --upgrade
+      # Install Docker Buildx for advanced caching
+      - docker buildx version || (curl -L https://github.com/docker/buildx/releases/download/v0.11.2/buildx-v0.11.2.linux-amd64 -o /usr/local/bin/docker-buildx && chmod +x /usr/local/bin/docker-buildx)
+      - docker buildx create --name mybuilder --use || true
+      - docker buildx inspect --bootstrap || true
 
   pre_build:
     commands:
@@ -23,16 +32,29 @@ phases:
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
+      # Pre-pull base images for caching
+      - echo "Pre-pulling base images for caching..."
+      - docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true
+      - docker pull nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true
+      - docker pull python:3.9-slim || true
+      # Set up Docker layer caching
+      - echo "Setting up Docker layer caching..."
+      - mkdir -p /tmp/docker-cache
+      - export DOCKER_BUILDKIT=1
 
   build:
     commands:
-      - echo "Starting container build process..."
-      - 'echo "Building: $CONTAINERS_TO_BUILD"'
+      - echo "Starting optimized container build process..."
+      - 'echo "Building with caching enabled: $CONTAINERS_TO_BUILD"'
+      # Use optimized deployment script with caching
       - ./scripts/deployment/deploy.sh $CONTAINERS_TO_BUILD
 
   post_build:
     commands:
       - echo "Build process completed on `date`"
+      - echo "Cleaning up build cache..."
+      - docker system prune -f --volumes || true
+      - docker buildx prune -f || true
 
 artifacts:
   files:
@@ -41,5 +63,27 @@ artifacts:
 
 cache:
   paths:
+    # Python dependency caching
     - '/root/.cache/pip'
-    - '/root/.docker/buildx' 
+    - '/root/.cache/pipenv'
+    - '/root/.local/share/virtualenvs'
+    
+    # Docker layer caching
+    - '/root/.docker/buildx'
+    - '/tmp/docker-cache/**/*'
+    - '/var/lib/docker/image'
+    - '/var/lib/docker/overlay2'
+    
+    # Build artifacts caching
+    - 'infrastructure/containers/**/node_modules'
+    - 'infrastructure/containers/**/.cache'
+    - 'infrastructure/containers/**/build'
+    - 'infrastructure/containers/**/dist'
+    
+    # AWS CLI and other tools
+    - '/root/.aws'
+    - '/usr/local/bin'
+    
+    # Git dependencies
+    - '/root/.gitconfig'
+    - '/tmp/git-cache' 
