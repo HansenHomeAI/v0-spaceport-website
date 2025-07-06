@@ -2980,7 +2980,7 @@ body::before {
 /* Address Search Overlay */
 .address-search-overlay {
   position: absolute;
-  top: 16px;
+  bottom: 16px;
   left: 16px;
   right: 16px;
   z-index: 15;
@@ -3004,7 +3004,7 @@ body::before {
 }
 
 .address-search-wrapper:focus-within {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .address-search-wrapper input {
@@ -3025,10 +3025,13 @@ body::before {
 }
 
 .expand-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   width: 56px;
   height: 56px;
   border-radius: 32px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: none;
   display: flex;
@@ -3036,11 +3039,11 @@ body::before {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  flex-shrink: 0;
+  z-index: 15;
 }
 
 .expand-button:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .expand-icon {
@@ -3048,12 +3051,14 @@ body::before {
   height: 20px;
   background: url('assets/SpaceportIcons/Maximum.svg') no-repeat center;
   background-size: contain;
-  opacity: 0.8;
+  opacity: 1;
+  filter: brightness(0) invert(1);
 }
 
 .expand-button.expanded .expand-icon {
   background: url('assets/SpaceportIcons/Minimum.svg') no-repeat center;
   background-size: contain;
+  filter: brightness(0) invert(1);
 }
 
 /* Map Container */
@@ -3079,7 +3084,7 @@ body::before {
 }
 
 .map-container.fullscreen .address-search-overlay {
-  top: 20px;
+  bottom: 20px;
   left: 20px;
   right: 20px;
 }
@@ -3130,17 +3135,19 @@ body::before {
 }
 
 .instruction-content {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 32px;
-  padding: 20px 24px;
+  padding: 20px 40px;
   text-align: center;
   border: none;
   transition: all 0.2s ease;
+  max-width: 400px;
+  white-space: nowrap;
 }
 
 .instruction-content:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .instruction-pin {
@@ -3149,8 +3156,8 @@ body::before {
   background: url('assets/SpaceportIcons/Pin.svg') no-repeat center;
   background-size: contain;
   margin: 0 auto 12px;
-  opacity: 0.8;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  opacity: 1;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 .instruction-content h3 {
@@ -3162,47 +3169,7 @@ body::before {
 }
 
 /* Coordinates Input Overlay */
-.coordinates-input-overlay {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 15;
-}
 
-.coordinates-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: none;
-  border-radius: 32px;
-  padding: 0 20px;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-.coordinates-input-wrapper:focus-within {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.coordinates-input-wrapper input {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.1rem;
-  padding: 16px 0;
-  outline: none;
-  flex: 1;
-  font-weight: 400;
-  font-family: inherit;
-}
-
-.coordinates-input-wrapper input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
-}
 
 /* Sections */
 .popup-section {
@@ -3500,29 +3467,14 @@ body::before {
   .address-search-overlay {
     left: 12px;
     right: 12px;
-    top: 12px;
-  }
-  
-  .coordinates-input-overlay {
-    left: 12px;
-    right: 12px;
     bottom: 12px;
   }
   
   .address-search-wrapper {
-    padding: 0 16px;
+    padding: 0 16px 0 44px;
   }
   
   .address-search-wrapper input {
-    font-size: 1rem;
-    padding: 14px 0;
-  }
-  
-  .coordinates-input-wrapper {
-    padding: 0 16px;
-  }
-  
-  .coordinates-input-wrapper input {
     font-size: 1rem;
     padding: 14px 0;
   }
@@ -3531,6 +3483,8 @@ body::before {
     width: 48px;
     height: 48px;
     border-radius: 28px;
+    top: 12px;
+    right: 12px;
   }
   
   .expand-icon {
@@ -3539,12 +3493,6 @@ body::before {
   }
   
   .map-container.fullscreen .address-search-overlay {
-    left: 16px;
-    right: 16px;
-    top: 16px;
-  }
-  
-  .map-container.fullscreen .coordinates-input-overlay {
     left: 16px;
     right: 16px;
     bottom: 16px;
@@ -3572,17 +3520,27 @@ body::before {
 
 /* Adjust address search wrapper width */
 .address-search-wrapper {
-  flex: 0 1 auto;
-  min-width: 200px; /* Reduced from default */
-  max-width: calc(100% - 80px); /* Leave space for expand button */
+  width: 100%;
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: none;
   border-radius: 32px;
-  padding: 0 20px;
+  padding: 0 20px 0 48px;
   transition: all 0.2s ease;
   box-sizing: border-box;
+}
+
+.address-search-wrapper::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  width: 18px;
+  height: 18px;
+  background: url('assets/SpaceportIcons/Map.svg') no-repeat center;
+  background-size: contain;
+  opacity: 1;
+  filter: brightness(0) invert(1);
 }
