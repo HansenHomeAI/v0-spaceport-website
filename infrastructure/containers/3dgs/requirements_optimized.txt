@@ -40,4 +40,4 @@ einops>=0.6.0         # For tensor operations
 
 # Memory optimization
 psutil>=5.9.0         # For memory monitoring
-gc-python-utils>=0.1.0  # For garbage collection utilities 
+gc-python-utils>=0.0.1  # For garbage collection utilities (fixed version constraint) 
