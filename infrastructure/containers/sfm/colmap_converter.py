@@ -299,8 +299,8 @@ class OpenSfMToCOLMAPConverter:
         if not self.reconstruction:
             raise ValueError("Reconstruction not loaded")
         
-        # Create dense directory for PLY file (validation expects it in dense/)
-        dense_dir = self.base_output_path / "dense"
+        # Create dense directory in temp location (avoiding permission issues)
+        dense_dir = self.temp_dir / "dense"
         dense_dir.mkdir(parents=True, exist_ok=True)
         
         ply_file = dense_dir / "sparse_points.ply"
@@ -350,6 +350,17 @@ class OpenSfMToCOLMAPConverter:
                     logger.info(f"📄 Copied {filename} to final location")
                 else:
                     logger.warning(f"⚠️ Missing file: {filename}")
+            
+            # Copy dense directory (contains PLY file)
+            temp_dense_dir = self.temp_dir / "dense"
+            final_dense_dir = self.base_output_path / "dense"
+            if temp_dense_dir.exists():
+                if final_dense_dir.exists():
+                    shutil.rmtree(final_dense_dir)
+                shutil.copytree(temp_dense_dir, final_dense_dir)
+                logger.info(f"📁 Copied dense directory to final location")
+            else:
+                logger.warning(f"⚠️ Missing dense directory: {temp_dense_dir}")
             
             # Clean up temp directory
             shutil.rmtree(self.temp_dir)
