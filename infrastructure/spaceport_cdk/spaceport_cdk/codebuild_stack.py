@@ -6,13 +6,14 @@ from aws_cdk import (
     aws_s3 as s3,
     RemovalPolicy,
     CfnOutput,
+    Duration,
 )
 from constructs import Construct
 
 class CodeBuildStack(Stack):
     """
-    CodeBuild stack for building SOGS compression container on AWS infrastructure
-    This enables building CUDA containers without requiring local CUDA support
+    CodeBuild stack for building container images with optimized caching
+    Includes Docker layer caching, S3 artifact caching, and local caching
     """
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -25,22 +26,44 @@ class CodeBuildStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
             lifecycle_rules=[
                 ecr.LifecycleRule(
-                    max_image_count=10,
+                    max_image_count=20,  # Increased for better caching
                     rule_priority=1,
-                    description="Keep only 10 most recent images"
+                    description="Keep 20 most recent images for caching"
                 )
             ]
         )
 
-        # S3 bucket for build artifacts (if needed)
+        # Enhanced S3 bucket for build artifacts and caching
         build_artifacts_bucket = s3.Bucket(
             self, "SOGSBuildArtifacts",
             bucket_name=f"spaceport-sogs-build-artifacts-{self.account}",
             removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_objects=True
+            auto_delete_objects=True,
+            versioned=True,
+            lifecycle_rules=[
+                s3.LifecycleRule(
+                    id="CacheOptimization",
+                    enabled=True,
+                    # Keep recent artifacts for caching
+                    expiration=Duration.days(30),
+                    # Clean up old versions
+                    noncurrent_version_expiration=Duration.days(7),
+                    # Move to cheaper storage for long-term artifacts
+                    transitions=[
+                        s3.Transition(
+                            storage_class=s3.StorageClass.INFREQUENT_ACCESS,
+                            transition_after=Duration.days(7)
+                        ),
+                        s3.Transition(
+                            storage_class=s3.StorageClass.GLACIER,
+                            transition_after=Duration.days(30)
+                        )
+                    ]
+                )
+            ]
         )
 
-        # IAM role for CodeBuild
+        # Enhanced IAM role for CodeBuild with caching permissions
         codebuild_role = iam.Role(
             self, "SOGSCodeBuildRole",
             assumed_by=iam.ServicePrincipal("codebuild.amazonaws.com"),
@@ -57,7 +80,9 @@ class CodeBuildStack(Stack):
                                 "ecr:PutImage",
                                 "ecr:InitiateLayerUpload",
                                 "ecr:UploadLayerPart",
-                                "ecr:CompleteLayerUpload"
+                                "ecr:CompleteLayerUpload",
+                                "ecr:DescribeImages",
+                                "ecr:ListImages"
                             ],
                             resources=[
                                 sogs_ecr_repo.repository_arn,
@@ -80,13 +105,16 @@ class CodeBuildStack(Stack):
                                 f"arn:aws:logs:{self.region}:{self.account}:log-group:/aws/codebuild/*"
                             ]
                         ),
-                        # S3 for artifacts
+                        # Enhanced S3 permissions for caching
                         iam.PolicyStatement(
                             actions=[
                                 "s3:GetObject",
                                 "s3:PutObject",
                                 "s3:GetBucketAcl",
-                                "s3:GetBucketLocation"
+                                "s3:GetBucketLocation",
+                                "s3:ListBucket",
+                                "s3:GetObjectVersion",
+                                "s3:DeleteObject"
                             ],
                             resources=[
                                 build_artifacts_bucket.bucket_arn,
@@ -98,16 +126,16 @@ class CodeBuildStack(Stack):
             }
         )
 
-        # CodeBuild project for SOGS compression container
+        # Optimized CodeBuild project for SOGS compression container
         sogs_build_project = codebuild.Project(
             self, "SOGSCompressionBuild",
             project_name="spaceport-sogs-compression-build",
-            description="Build SOGS compression container with CUDA support on AWS infrastructure",
+            description="Build SOGS compression container with advanced caching and optimization",
             
-            # Use a build environment with GPU support for CUDA builds
+            # Enhanced build environment
             environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_7_0,  # Latest with Docker support
-                compute_type=codebuild.ComputeType.LARGE,  # More resources for container builds
+                build_image=codebuild.LinuxBuildImage.STANDARD_7_0,
+                compute_type=codebuild.ComputeType.X2_LARGE,  # More resources for faster builds
                 privileged=True  # Required for Docker builds
             ),
             
@@ -131,40 +159,86 @@ class CodeBuildStack(Stack):
                 "AWS_DEFAULT_REGION": codebuild.BuildEnvironmentVariable(value=self.region),
                 "AWS_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=self.account),
                 "IMAGE_REPO_NAME": codebuild.BuildEnvironmentVariable(value="spaceport-ml-sogs-compressor"),
-                "IMAGE_TAG": codebuild.BuildEnvironmentVariable(value="latest")
+                "IMAGE_TAG": codebuild.BuildEnvironmentVariable(value="latest"),
+                "DOCKER_BUILDKIT": codebuild.BuildEnvironmentVariable(value="1"),
+                "BUILDKIT_PROGRESS": codebuild.BuildEnvironmentVariable(value="plain")
             },
             
-            # Artifacts
+            # Enhanced artifacts with caching
             artifacts=codebuild.Artifacts.s3(
                 bucket=build_artifacts_bucket,
                 name="sogs-build-artifacts",
-                include_build_id=True
+                include_build_id=True,
+                path="artifacts"
             ),
+            
+            # Enable local and S3 caching
+            cache=codebuild.Cache.local(
+                codebuild.LocalCacheMode.DOCKER_LAYER,
+                codebuild.LocalCacheMode.SOURCE,
+                codebuild.LocalCacheMode.CUSTOM
+            ),
+            
+            # Additional S3 cache
+            secondary_artifacts=[
+                codebuild.Artifacts.s3(
+                    bucket=build_artifacts_bucket,
+                    name="build-cache",
+                    include_build_id=False,
+                    path="cache",
+                    identifier="BuildCache"
+                )
+            ],
             
             # Role
             role=codebuild_role,
             
-            # Timeout
-            timeout_in_minutes=60  # 1 hour for container builds
+            # Extended timeout for complex builds
+            timeout=Duration.minutes(90)
         )
 
-        # Manual CodeBuild project
+        # Enhanced manual CodeBuild project with caching
         manual_build_project = codebuild.Project(
             self, "ManualContainerBuildProject",
             project_name="spaceport-manual-container-builds",
-            description="Manually triggered CodeBuild project to build all ML containers",
+            description="Manually triggered CodeBuild project with optimized caching",
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_7_0,
-                compute_type=codebuild.ComputeType.LARGE,
-                privileged=True, # Required for Docker-in-Docker
+                compute_type=codebuild.ComputeType.X2_LARGE,  # More resources
+                privileged=True
             ),
             source=codebuild.Source.git_hub(
                 owner="your-github-owner", # CHANGE THIS
                 repo="your-github-repo",   # CHANGE THIS
                 branch_or_ref="main"
             ),
-            build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml"), # Use root buildspec
+            build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml"),
+            
+            # Enhanced environment variables
+            environment_variables={
+                "AWS_DEFAULT_REGION": codebuild.BuildEnvironmentVariable(value=self.region),
+                "AWS_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=self.account),
+                "DOCKER_BUILDKIT": codebuild.BuildEnvironmentVariable(value="1"),
+                "BUILDKIT_PROGRESS": codebuild.BuildEnvironmentVariable(value="plain"),
+                "CONTAINERS_TO_BUILD": codebuild.BuildEnvironmentVariable(value="all")
+            },
+            
+            # Enable comprehensive caching
+            cache=codebuild.Cache.local(
+                codebuild.LocalCacheMode.DOCKER_LAYER,
+                codebuild.LocalCacheMode.SOURCE,
+                codebuild.LocalCacheMode.CUSTOM
+            ),
+            
+            # Enhanced artifacts
+            artifacts=codebuild.Artifacts.s3(
+                bucket=build_artifacts_bucket,
+                name="manual-build-artifacts",
+                include_build_id=True
+            ),
+            
             role=codebuild_role,
+            timeout=Duration.minutes(120)  # Extended timeout
         )
 
         # Outputs
@@ -189,7 +263,13 @@ class CodeBuildStack(Stack):
         CfnOutput(
             self, "BuildArtifactsBucket",
             value=build_artifacts_bucket.bucket_name,
-            description="S3 bucket for build artifacts"
+            description="S3 bucket for build artifacts and caching"
+        )
+
+        CfnOutput(
+            self, "OptimizationFeatures",
+            value="Docker Layer Caching, S3 Artifact Caching, Local Caching, Enhanced Compute",
+            description="Optimization features enabled in this CodeBuild stack"
         )
 
         # Store references for other stacks

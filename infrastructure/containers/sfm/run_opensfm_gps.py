@@ -15,6 +15,7 @@ from typing import Dict, List, Tuple
 import logging
 import zipfile
 import yaml
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -288,6 +289,176 @@ class OpenSfMGPSPipeline:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False
     
+    def copy_images_for_3dgs(self) -> None:
+        """Copy images to output directory for 3DGS training"""
+        output_images_dir = self.output_dir / "images"
+        
+        if output_images_dir.exists():
+            shutil.rmtree(output_images_dir)
+        
+        # Copy images from extracted directory
+        shutil.copytree(self.images_dir, output_images_dir)
+        
+        image_count = len(list(output_images_dir.iterdir()))
+        logger.info(f"✅ Copied {image_count} images to output directory for 3DGS training")
+    
+    def generate_metadata_json(self) -> None:
+        """Generate metadata JSON file with processing statistics"""
+        # Get reconstruction statistics
+        reconstruction_file = self.opensfm_dir / "reconstruction.json"
+        
+        if not reconstruction_file.exists():
+            logger.warning("⚠️ No reconstruction file found for metadata generation")
+            return
+        
+        with open(reconstruction_file, 'r') as f:
+            reconstructions = json.load(f)
+        
+        if not reconstructions:
+            logger.warning("⚠️ Empty reconstruction for metadata generation")
+            return
+        
+        # Get the largest reconstruction
+        recon = max(reconstructions, key=lambda r: len(r.get('points', {})))
+        
+        shots_dict = recon.get('shots', {})
+        num_cameras = len(shots_dict)
+        num_points = len(recon.get('points', {}))
+        
+        # Calculate processing time (approximate)
+        processing_time = time.time() - getattr(self, '_start_time', time.time())
+        
+        # Generate metadata
+        metadata = {
+            'pipeline': 'OpenSfM GPS-Enhanced Structure-from-Motion',
+            'processing_time_seconds': round(processing_time, 2),
+            'cameras_registered': num_cameras,
+            'images_registered': num_cameras,  # Assuming 1:1 mapping
+            'points_3d': num_points,
+            'gps_enhanced': hasattr(self, 'gps_csv_path') and self.gps_csv_path is not None,
+            'quality_check_passed': num_points >= 1000,
+            'colmap_format': True,
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
+        }
+        
+        metadata_file = self.output_dir / "sfm_metadata.json"
+        with open(metadata_file, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        
+        logger.info(f"✅ Generated metadata JSON: {metadata_file}")
+    
+    def create_stub_database(self) -> None:
+        """Create a stub COLMAP database.db file for compatibility"""
+        import sqlite3
+        
+        database_file = self.output_dir / "database.db"
+        
+        # Create minimal COLMAP database schema
+        conn = sqlite3.connect(str(database_file))
+        cursor = conn.cursor()
+        
+        # Create basic COLMAP database tables (minimal schema)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS cameras (
+                camera_id INTEGER PRIMARY KEY,
+                model INTEGER NOT NULL,
+                width INTEGER NOT NULL,
+                height INTEGER NOT NULL,
+                params BLOB,
+                prior_focal_length INTEGER NOT NULL
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS images (
+                image_id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                camera_id INTEGER NOT NULL,
+                prior_qw REAL,
+                prior_qx REAL,
+                prior_qy REAL,
+                prior_qz REAL,
+                prior_tx REAL,
+                prior_ty REAL,
+                prior_tz REAL,
+                CONSTRAINT fk_images_camera_id FOREIGN KEY(camera_id) REFERENCES cameras(camera_id)
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS keypoints (
+                image_id INTEGER NOT NULL,
+                rows INTEGER NOT NULL,
+                cols INTEGER NOT NULL,
+                data BLOB,
+                CONSTRAINT fk_keypoints_image_id FOREIGN KEY(image_id) REFERENCES images(image_id)
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS matches (
+                pair_id INTEGER PRIMARY KEY,
+                rows INTEGER NOT NULL,
+                cols INTEGER NOT NULL,
+                data BLOB
+            )
+        ''')
+        
+        # Insert minimal data based on COLMAP conversion
+        sparse_dir = self.output_dir / "sparse" / "0"
+        cameras_file = sparse_dir / "cameras.txt"
+        images_file = sparse_dir / "images.txt"
+        
+        if cameras_file.exists():
+            with open(cameras_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    parts = line.split()
+                    if len(parts) >= 5:
+                        try:
+                            camera_id = int(parts[0])
+                            model = 1  # PINHOLE model
+                            width = int(parts[2])
+                            height = int(parts[3])
+                            cursor.execute(
+                                'INSERT OR REPLACE INTO cameras (camera_id, model, width, height, params, prior_focal_length) VALUES (?, ?, ?, ?, ?, ?)',
+                                (camera_id, model, width, height, b'', 0)
+                            )
+                        except (ValueError, IndexError) as e:
+                            logger.warning(f"Skipping malformed camera line: {line} - {e}")
+                            continue
+        
+        if images_file.exists():
+            with open(images_file, 'r') as f:
+                lines = f.readlines()
+                i = 0
+                image_id = 1
+                while i < len(lines):
+                    line = lines[i].strip()
+                    if not line or line.startswith('#'):
+                        i += 1
+                        continue
+                    parts = line.split()
+                    if len(parts) >= 10:
+                        try:
+                            camera_id = int(parts[8])
+                            name = parts[9]
+                            cursor.execute(
+                                'INSERT OR REPLACE INTO images (image_id, name, camera_id) VALUES (?, ?, ?)',
+                                (image_id, name, camera_id)
+                            )
+                            image_id += 1
+                        except (ValueError, IndexError) as e:
+                            logger.warning(f"Skipping malformed image line: {line} - {e}")
+                    i += 2  # Skip points2D line
+        
+        conn.commit()
+        conn.close()
+        
+        logger.info(f"✅ Created stub COLMAP database: {database_file}")
+    
     def cleanup(self) -> None:
         """Clean up temporary files"""
         if self.work_dir and self.work_dir.exists():
@@ -297,6 +468,9 @@ class OpenSfMGPSPipeline:
     def run(self) -> int:
         """Run the complete pipeline"""
         try:
+            # Record start time for metadata
+            self._start_time = time.time()
+            
             # Set up workspace
             self.setup_workspace()
             
@@ -329,6 +503,12 @@ class OpenSfMGPSPipeline:
             logger.info("🔄 Converting to COLMAP format...")
             if not self.convert_to_colmap():
                 return 1
+            
+            # Generate additional artifacts for 3DGS compatibility
+            logger.info("🔄 Generating additional artifacts for 3DGS compatibility...")
+            self.copy_images_for_3dgs()
+            self.generate_metadata_json()
+            self.create_stub_database()
             
             logger.info("✅ OpenSfM GPS pipeline completed successfully")
             return 0
