@@ -1980,6 +1980,23 @@ function initializeMap() {
       attributionControl: false // Remove attribution for cleaner look
     });
 
+    // Hide instructions on any map interaction
+    const hideInstructions = () => {
+      const instructions = document.getElementById('map-instructions');
+      if (instructions && !instructions.classList.contains('hidden')) {
+        instructions.classList.add('hidden');
+        setTimeout(() => {
+          instructions.style.display = 'none';
+        }, 300);
+      }
+    };
+
+    // Add interaction event listeners to hide instructions
+    map.on('mousedown', hideInstructions);
+    map.on('touchstart', hideInstructions);
+    map.on('drag', hideInstructions);
+    map.on('zoom', hideInstructions);
+
     // Add click event listener
     map.on('click', (e) => {
       const { lng, lat } = e.lngLat;
@@ -2000,25 +2017,19 @@ function initializeMap() {
       .addTo(map);
       
       // Update the coordinates input field
-      const coordinatesInput = document.getElementById('coordinates-input');
-      if (coordinatesInput) {
-        coordinatesInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      }
-      
-      // Hide the instructions after first click
-      const instructions = document.querySelector('.map-instructions');
-      if (instructions) {
-        instructions.style.opacity = '0';
-        setTimeout(() => {
-          instructions.style.display = 'none';
-        }, 300);
-      }
+      updateCoordinatesInput(lat, lng);
       
       console.log('Selected coordinates:', { lat, lng });
     });
 
-    // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Initialize expand button functionality
+    initializeExpandButton();
+
+    // Initialize address search functionality
+    initializeAddressSearch();
+
+    // Initialize coordinates input editing
+    initializeCoordinatesInput();
 
     console.log('✅ Mapbox map initialized successfully');
   } catch (error) {
@@ -2029,6 +2040,209 @@ function initializeMap() {
 // Function to get selected coordinates (for use in drone path generation)
 function getSelectedCoordinates() {
   return selectedCoordinates;
+}
+
+// Helper function to update coordinates input
+function updateCoordinatesInput(lat, lng) {
+  const coordinatesInput = document.getElementById('coordinates-input');
+  if (coordinatesInput) {
+    coordinatesInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+  }
+}
+
+// Initialize expand/fullscreen button functionality
+function initializeExpandButton() {
+  const expandButton = document.getElementById('expand-button');
+  const mapContainer = document.getElementById('map-container');
+  
+  if (!expandButton || !mapContainer) return;
+
+  expandButton.addEventListener('click', () => {
+    const isFullscreen = mapContainer.classList.contains('fullscreen');
+    
+    if (isFullscreen) {
+      // Exit fullscreen
+      mapContainer.classList.remove('fullscreen');
+      expandButton.classList.remove('expanded');
+      
+      // Move back to original parent
+      const mapSection = document.querySelector('.popup-map-section');
+      if (mapSection) {
+        mapSection.appendChild(mapContainer);
+      }
+    } else {
+      // Enter fullscreen
+      mapContainer.classList.add('fullscreen');
+      expandButton.classList.add('expanded');
+      
+      // Move to body for true fullscreen
+      document.body.appendChild(mapContainer);
+    }
+    
+    // Resize map after transition
+    setTimeout(() => {
+      if (map) {
+        map.resize();
+      }
+    }, 100);
+  });
+
+  // ESC key to exit fullscreen
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mapContainer.classList.contains('fullscreen')) {
+      expandButton.click();
+    }
+  });
+}
+
+// Initialize address search functionality
+function initializeAddressSearch() {
+  const addressInput = document.getElementById('address-search');
+  if (!addressInput) return;
+
+  addressInput.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const address = addressInput.value.trim();
+      if (address) {
+        await searchAddress(address);
+      }
+    }
+  });
+}
+
+// Search for address using Mapbox Geocoding API
+async function searchAddress(address) {
+  try {
+    const response = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&limit=1`
+    );
+    const data = await response.json();
+    
+    if (data.features && data.features.length > 0) {
+      const [lng, lat] = data.features[0].center;
+      
+      // Fly to the location
+      map.flyTo({
+        center: [lng, lat],
+        zoom: 15,
+        duration: 2000
+      });
+      
+      // Set the marker and coordinates
+      selectedCoordinates = { lng, lat };
+      
+      // Remove existing marker if any
+      if (currentMarker) {
+        currentMarker.remove();
+      }
+      
+      // Add new marker
+      currentMarker = new mapboxgl.Marker({
+        color: '#007AFF'
+      })
+      .setLngLat([lng, lat])
+      .addTo(map);
+      
+      // Update coordinates input
+      updateCoordinatesInput(lat, lng);
+      
+      console.log('Address found:', { address, lat, lng });
+    } else {
+      console.log('Address not found');
+      // Could show a subtle error message here
+    }
+  } catch (error) {
+    console.error('Error searching address:', error);
+  }
+}
+
+// Initialize coordinates input editing functionality
+function initializeCoordinatesInput() {
+  const coordinatesInput = document.getElementById('coordinates-input');
+  if (!coordinatesInput) return;
+
+  coordinatesInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = coordinatesInput.value.trim();
+      if (value) {
+        parseAndSetCoordinates(value);
+      }
+    }
+  });
+
+  coordinatesInput.addEventListener('blur', () => {
+    const value = coordinatesInput.value.trim();
+    if (value) {
+      parseAndSetCoordinates(value);
+    }
+  });
+}
+
+// Parse coordinates from input and set marker
+function parseAndSetCoordinates(value) {
+  try {
+    // Support various formats: "lat, lng" or "lat,lng" or "lng lat"
+    const coords = value.split(/[,\s]+/).map(coord => parseFloat(coord.trim()));
+    
+    if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+      let lat, lng;
+      
+      // Determine if it's lat,lng or lng,lat based on typical ranges
+      if (Math.abs(coords[0]) <= 90 && Math.abs(coords[1]) <= 180) {
+        // Assume lat, lng format
+        lat = coords[0];
+        lng = coords[1];
+      } else if (Math.abs(coords[1]) <= 90 && Math.abs(coords[0]) <= 180) {
+        // Assume lng, lat format
+        lng = coords[0];
+        lat = coords[1];
+      } else {
+        throw new Error('Invalid coordinate range');
+      }
+      
+      // Validate ranges
+      if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+        throw new Error('Coordinates out of range');
+      }
+      
+      // Set the location
+      selectedCoordinates = { lng, lat };
+      
+      // Remove existing marker if any
+      if (currentMarker) {
+        currentMarker.remove();
+      }
+      
+      // Add new marker
+      currentMarker = new mapboxgl.Marker({
+        color: '#007AFF'
+      })
+      .setLngLat([lng, lat])
+      .addTo(map);
+      
+      // Fly to the location
+      map.flyTo({
+        center: [lng, lat],
+        zoom: 15,
+        duration: 1500
+      });
+      
+      // Update input with standardized format
+      updateCoordinatesInput(lat, lng);
+      
+      console.log('Coordinates set manually:', { lat, lng });
+    } else {
+      throw new Error('Invalid coordinate format');
+    }
+  } catch (error) {
+    console.error('Error parsing coordinates:', error);
+    // Reset to previous valid coordinates if available
+    if (selectedCoordinates) {
+      updateCoordinatesInput(selectedCoordinates.lat, selectedCoordinates.lng);
+    }
+  }
 }
 
 // Initialize map when new project popup opens
@@ -2046,6 +2260,16 @@ window.openNewProjectPopup = function() {
 const originalCloseNewProjectPopup = window.closeNewProjectPopup;
 window.closeNewProjectPopup = function() {
   if (map) {
+    // If map is in fullscreen, exit first
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer && mapContainer.classList.contains('fullscreen')) {
+      mapContainer.classList.remove('fullscreen');
+      const mapSection = document.querySelector('.popup-map-section');
+      if (mapSection) {
+        mapSection.appendChild(mapContainer);
+      }
+    }
+    
     map.remove();
     map = null;
     currentMarker = null;

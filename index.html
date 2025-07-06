@@ -281,14 +281,35 @@
             <!-- Map Section -->
             <div class="popup-map-section">
               <div id="map-container" class="map-container">
-                <div class="map-instructions">
-                  <h3>Click anywhere on the map to set your project center</h3>
+                <!-- Progressive blur overlays -->
+                <div class="map-blur-overlay top"></div>
+                <div class="map-blur-overlay bottom"></div>
+                
+                <!-- Address Search Bar (overlay on map) -->
+                <div class="address-search-overlay">
+                  <div class="address-search-wrapper">
+                    <span class="input-icon map"></span>
+                    <input type="text" id="address-search" placeholder="Enter address or location" />
+                  </div>
+                  <button class="expand-button" id="expand-button">
+                    <span class="expand-icon"></span>
+                  </button>
                 </div>
-              </div>
-              <div class="coordinates-input-section">
-                <div class="popup-input-wrapper">
-                  <span class="input-icon pin"></span>
-                  <input type="text" id="coordinates-input" placeholder="Click on map to set coordinates" readonly />
+                
+                <!-- Centered instructions -->
+                <div class="map-instructions-center" id="map-instructions">
+                  <div class="instruction-content">
+                    <div class="instruction-pin"></div>
+                    <h3>Click anywhere on the map to set your project center</h3>
+                  </div>
+                </div>
+                
+                <!-- Coordinates Input (overlay on map) -->
+                <div class="coordinates-input-overlay">
+                  <div class="coordinates-input-wrapper">
+                    <span class="input-icon pin"></span>
+                    <input type="text" id="coordinates-input" placeholder="Click on map to set coordinates" />
+                  </div>
                 </div>
               </div>
             </div>
