@@ -6,6 +6,9 @@
   <title>Spaceport AI</title>
   <!-- External stylesheet reference -->
   <link rel="stylesheet" href="styles.css">
+  <!-- Mapbox GL JS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
   <!-- Preload first carousel images -->
   <link rel="preload" as="image" href="assets/2.png">
   <link rel="preload" as="image" href="assets/6.png">
@@ -277,14 +280,15 @@
           <div class="accordion-content">
             <!-- Map Section -->
             <div class="popup-map-section">
-              <div class="map-placeholder">
-                <div class="location-pin"></div>
-                <h3>Select the focus point of your 3D model</h3>
+              <div id="map-container" class="map-container">
+                <div class="map-instructions">
+                  <h3>Click anywhere on the map to set your project center</h3>
+                </div>
               </div>
               <div class="coordinates-input-section">
                 <div class="popup-input-wrapper">
                   <span class="input-icon pin"></span>
-                  <input type="text" placeholder="Coordinates" />
+                  <input type="text" id="coordinates-input" placeholder="Click on map to set coordinates" readonly />
                 </div>
               </div>
             </div>

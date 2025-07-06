@@ -2977,32 +2977,34 @@ body::before {
   position: relative;
 }
 
-.map-placeholder {
-  height: 200px;
-  background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #fff;
+.map-container {
+  height: 300px;
+  width: 100%;
   position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.location-pin {
-  width: 32px;
-  height: 32px;
-  background: url('assets/SpaceportIcons/Pin.svg') no-repeat center;
-  background-size: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+.map-instructions {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 6px;
+  padding: 8px 12px;
+  pointer-events: none;
 }
 
-.map-placeholder h3 {
-  font-size: 1.1rem;
+.map-instructions h3 {
+  font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
   margin: 0;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 

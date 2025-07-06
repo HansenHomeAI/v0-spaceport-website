@@ -1957,3 +1957,102 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
   // Initialize form validation
   validateForm();
 })();
+
+// Mapbox Integration for New Project Modal
+let map = null;
+let currentMarker = null;
+let selectedCoordinates = null;
+
+// Mapbox Access Token
+mapboxgl.accessToken = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
+
+function initializeMap() {
+  // Only initialize if the map container exists and map hasn't been created yet
+  const mapContainer = document.getElementById('map-container');
+  if (!mapContainer || map) return;
+
+  try {
+    map = new mapboxgl.Map({
+      container: 'map-container',
+      style: 'mapbox://styles/mapbox/satellite-v9', // Satellite imagery
+      center: [-98.5795, 39.8283], // Center of USA as default
+      zoom: 4,
+      attributionControl: false // Remove attribution for cleaner look
+    });
+
+    // Add click event listener
+    map.on('click', (e) => {
+      const { lng, lat } = e.lngLat;
+      
+      // Store the selected coordinates
+      selectedCoordinates = { lng, lat };
+      
+      // Remove existing marker if any
+      if (currentMarker) {
+        currentMarker.remove();
+      }
+      
+      // Add new marker
+      currentMarker = new mapboxgl.Marker({
+        color: '#007AFF'
+      })
+      .setLngLat([lng, lat])
+      .addTo(map);
+      
+      // Update the coordinates input field
+      const coordinatesInput = document.getElementById('coordinates-input');
+      if (coordinatesInput) {
+        coordinatesInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      }
+      
+      // Hide the instructions after first click
+      const instructions = document.querySelector('.map-instructions');
+      if (instructions) {
+        instructions.style.opacity = '0';
+        setTimeout(() => {
+          instructions.style.display = 'none';
+        }, 300);
+      }
+      
+      console.log('Selected coordinates:', { lat, lng });
+    });
+
+    // Add navigation controls
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    console.log('✅ Mapbox map initialized successfully');
+  } catch (error) {
+    console.error('❌ Error initializing Mapbox map:', error);
+  }
+}
+
+// Function to get selected coordinates (for use in drone path generation)
+function getSelectedCoordinates() {
+  return selectedCoordinates;
+}
+
+// Initialize map when new project popup opens
+const originalOpenNewProjectPopup = window.openNewProjectPopup;
+window.openNewProjectPopup = function() {
+  originalOpenNewProjectPopup();
+  
+  // Initialize map after popup is shown
+  setTimeout(() => {
+    initializeMap();
+  }, 100);
+};
+
+// Clean up map when popup closes
+const originalCloseNewProjectPopup = window.closeNewProjectPopup;
+window.closeNewProjectPopup = function() {
+  if (map) {
+    map.remove();
+    map = null;
+    currentMarker = null;
+    selectedCoordinates = null;
+  }
+  originalCloseNewProjectPopup();
+};
+
+// Make functions globally available
+window.getSelectedCoordinates = getSelectedCoordinates;
