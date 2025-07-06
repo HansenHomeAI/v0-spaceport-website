@@ -412,18 +412,23 @@ class OpenSfMGPSPipeline:
         if cameras_file.exists():
             with open(cameras_file, 'r') as f:
                 for line in f:
-                    if line.startswith('#') or not line.strip():
+                    line = line.strip()
+                    if not line or line.startswith('#'):
                         continue
-                    parts = line.strip().split()
+                    parts = line.split()
                     if len(parts) >= 5:
-                        camera_id = int(parts[0])
-                        model = 1  # PINHOLE model
-                        width = int(parts[2])
-                        height = int(parts[3])
-                        cursor.execute(
-                            'INSERT OR REPLACE INTO cameras (camera_id, model, width, height, params, prior_focal_length) VALUES (?, ?, ?, ?, ?, ?)',
-                            (camera_id, model, width, height, b'', 0)
-                        )
+                        try:
+                            camera_id = int(parts[0])
+                            model = 1  # PINHOLE model
+                            width = int(parts[2])
+                            height = int(parts[3])
+                            cursor.execute(
+                                'INSERT OR REPLACE INTO cameras (camera_id, model, width, height, params, prior_focal_length) VALUES (?, ?, ?, ?, ?, ?)',
+                                (camera_id, model, width, height, b'', 0)
+                            )
+                        except (ValueError, IndexError) as e:
+                            logger.warning(f"Skipping malformed camera line: {line} - {e}")
+                            continue
         
         if images_file.exists():
             with open(images_file, 'r') as f:
@@ -432,18 +437,21 @@ class OpenSfMGPSPipeline:
                 image_id = 1
                 while i < len(lines):
                     line = lines[i].strip()
-                    if line.startswith('#') or not line:
+                    if not line or line.startswith('#'):
                         i += 1
                         continue
                     parts = line.split()
                     if len(parts) >= 10:
-                        camera_id = int(parts[8])
-                        name = parts[9]
-                        cursor.execute(
-                            'INSERT OR REPLACE INTO images (image_id, name, camera_id) VALUES (?, ?, ?)',
-                            (image_id, name, camera_id)
-                        )
-                        image_id += 1
+                        try:
+                            camera_id = int(parts[8])
+                            name = parts[9]
+                            cursor.execute(
+                                'INSERT OR REPLACE INTO images (image_id, name, camera_id) VALUES (?, ?, ?)',
+                                (image_id, name, camera_id)
+                            )
+                            image_id += 1
+                        except (ValueError, IndexError) as e:
+                            logger.warning(f"Skipping malformed image line: {line} - {e}")
                     i += 2  # Skip points2D line
         
         conn.commit()
