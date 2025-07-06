@@ -2021,9 +2021,18 @@ function initializeMap() {
         currentMarker.remove();
       }
       
-      // Add new marker
+      // Create custom teardrop pin element
+      const pinElement = document.createElement('div');
+      pinElement.className = 'custom-teardrop-pin';
+      pinElement.innerHTML = `
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2C10.48 2 6 6.48 6 12C6 18.5 16 30 16 30C16 30 26 18.5 26 12C26 6.48 21.52 2 16 2ZM16 15C14.34 15 13 13.66 13 12C13 10.34 14.34 9 16 9C17.66 9 19 10.34 19 12C19 13.66 17.66 15 16 15Z" fill="white" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+        </svg>
+      `;
+      
+      // Add new marker with custom element
       currentMarker = new mapboxgl.Marker({
-        color: '#FFFFFF'
+        element: pinElement
       })
       .setLngLat([lng, lat])
       .addTo(map);
@@ -2135,9 +2144,18 @@ async function searchAddress(address) {
         currentMarker.remove();
       }
       
-      // Add new marker
+      // Create custom teardrop pin element
+      const pinElement = document.createElement('div');
+      pinElement.className = 'custom-teardrop-pin';
+      pinElement.innerHTML = `
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2C10.48 2 6 6.48 6 12C6 18.5 16 30 16 30C16 30 26 18.5 26 12C26 6.48 21.52 2 16 2ZM16 15C14.34 15 13 13.66 13 12C13 10.34 14.34 9 16 9C17.66 9 19 10.34 19 12C19 13.66 17.66 15 16 15Z" fill="white" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+        </svg>
+      `;
+      
+      // Add new marker with custom element
       currentMarker = new mapboxgl.Marker({
-        color: '#FFFFFF'
+        element: pinElement
       })
       .setLngLat([lng, lat])
       .addTo(map);
