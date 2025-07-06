@@ -28,15 +28,21 @@ class OpenSfMToCOLMAPConverter:
             output_path: Path to output COLMAP format files
         """
         self.opensfm_path = Path(opensfm_path)
-        # Create COLMAP-compatible sparse/0 directory structure
-        self.output_path = Path(output_path) / "sparse" / "0"
         self.base_output_path = Path(output_path)
+        
+        # Create COLMAP sparse directory structure in temp location first
+        # to avoid permission issues with SageMaker output mount
+        import tempfile
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="colmap_"))
+        self.output_path = self.temp_dir / "sparse" / "0"
+        self.final_sparse_path = self.base_output_path / "sparse" / "0"
         self.reconstruction = None
         
         logger.info(f"🔄 Initializing OpenSfM to COLMAP converter")
         logger.info(f"   Input: {opensfm_path}")
         logger.info(f"   Output: {output_path}")
-        logger.info(f"   COLMAP sparse dir: {self.output_path}")
+        logger.info(f"   Temp COLMAP dir: {self.output_path}")
+        logger.info(f"   Final COLMAP dir: {self.final_sparse_path}")
     
     def load_opensfm_reconstruction(self) -> Dict:
         """Load OpenSfM reconstruction data"""
@@ -325,6 +331,34 @@ class OpenSfMToCOLMAPConverter:
         
         logger.info(f"✅ Generated reference point cloud: {ply_file}")
     
+    def _copy_to_final_location(self) -> None:
+        """Copy COLMAP files from temp directory to final output location"""
+        import shutil
+        
+        try:
+            # Create final sparse directory structure
+            self.final_sparse_path.mkdir(parents=True, exist_ok=True)
+            logger.info(f"📁 Created final sparse directory: {self.final_sparse_path}")
+            
+            # Copy COLMAP files
+            files_to_copy = ["cameras.txt", "images.txt", "points3D.txt"]
+            for filename in files_to_copy:
+                src = self.output_path / filename
+                dst = self.final_sparse_path / filename
+                if src.exists():
+                    shutil.copy2(src, dst)
+                    logger.info(f"📄 Copied {filename} to final location")
+                else:
+                    logger.warning(f"⚠️ Missing file: {filename}")
+            
+            # Clean up temp directory
+            shutil.rmtree(self.temp_dir)
+            logger.info(f"🧹 Cleaned up temp directory: {self.temp_dir}")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to copy files to final location: {e}")
+            raise
+    
     def validate_conversion(self) -> Dict:
         """Validate the COLMAP conversion"""
         validation_results = {
@@ -339,10 +373,10 @@ class OpenSfMToCOLMAPConverter:
         }
         
         try:
-            # Check file existence
-            cameras_file = self.output_path / "cameras.txt"
-            images_file = self.output_path / "images.txt"
-            points_file = self.output_path / "points3D.txt"
+            # Check file existence in final location
+            cameras_file = self.final_sparse_path / "cameras.txt"
+            images_file = self.final_sparse_path / "images.txt"
+            points_file = self.final_sparse_path / "points3D.txt"
             ply_file = self.base_output_path / "dense" / "sparse_points.ply"
             
             validation_results['cameras_file_exists'] = cameras_file.exists()
@@ -393,9 +427,9 @@ class OpenSfMToCOLMAPConverter:
         """Convert complete OpenSfM reconstruction to COLMAP format"""
         logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion")
         
-        # Create output directory structure (sparse/0 for COLMAP files)
+        # Create temp directory structure (sparse/0 for COLMAP files)
         self.output_path.mkdir(parents=True, exist_ok=True)
-        logger.info(f"📁 Created COLMAP sparse directory: {self.output_path}")
+        logger.info(f"📁 Created temp COLMAP sparse directory: {self.output_path}")
         
         # Load reconstruction
         self.load_opensfm_reconstruction()
@@ -405,6 +439,9 @@ class OpenSfMToCOLMAPConverter:
         self.convert_images()
         self.convert_points()
         self.create_reference_point_cloud()
+        
+        # Copy files from temp to final location (avoiding permission issues)
+        self._copy_to_final_location()
         
         # Validate conversion
         validation = self.validate_conversion()
