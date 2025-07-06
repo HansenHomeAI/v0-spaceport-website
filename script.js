@@ -1983,13 +1983,25 @@ function initializeMap() {
     // Hide instructions on any map interaction
     const hideInstructions = () => {
       const instructions = document.getElementById('map-instructions');
+      const mapContainer = document.querySelector('.map-container');
+      
       if (instructions && !instructions.classList.contains('hidden')) {
         instructions.classList.add('hidden');
+        mapContainer.classList.add('instructions-hidden');
+        
+        // Delay removing the instructions to allow for fade out animation
         setTimeout(() => {
           instructions.style.display = 'none';
+          mapContainer.classList.remove('has-instructions', 'instructions-hidden');
         }, 300);
       }
     };
+
+    // Show instructions initially
+    document.addEventListener('DOMContentLoaded', () => {
+      const mapContainer = document.querySelector('.map-container');
+      mapContainer.classList.add('has-instructions');
+    });
 
     // Add interaction event listeners to hide instructions
     map.on('mousedown', hideInstructions);
