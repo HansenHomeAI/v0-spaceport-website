@@ -162,3 +162,26 @@ CHANGES:
 5. Enhanced logging to show both temp and final directory paths
 EXPECTED_OUTCOME: COLMAP conversion should complete successfully without permission errors
 All files should be properly placed in /opt/ml/processing/output/sparse/0/ for 3DGS compatibility
+
+BUILD_TRIGGER_DENSE_PERMISSION_FIX_2025_07_06_v9
+CRITICAL FIX: Complete permission fix for dense directory creation
+ISSUE: [Errno 13] Permission denied: '/opt/ml/processing/output/dense' during PLY file creation
+ROOT CAUSE: create_reference_point_cloud() still tried to create directories in restricted SageMaker output mount
+SOLUTION: Extend temporary directory approach to ALL file operations including PLY creation
+CHANGES:
+1. Modified create_reference_point_cloud() to create PLY file in temp directory
+2. Updated _copy_to_final_location() to copy both sparse/ and dense/ directories
+3. Added proper handling of dense directory copying with cleanup
+4. Enhanced logging for dense directory operations
+5. Ensured all file operations use temp directory before final copy
+EXPECTED_OUTCOME: Complete pipeline success with no permission errors
+All COLMAP files and PLY should be properly placed in final output locations
+
+BUILD_TRIGGER_PERMISSION_FIX_v2.1.0
+Fixed permission issues in SfM container:
+- Container now runs as root to avoid permission errors
+- Pre-created output directory structure with proper permissions
+- Enhanced error handling in COLMAP converter
+- Fixed Step Functions error notification paths
+- Date: 2025-07-07
+- Commit: Permission fix for /opt/ml/processing/output/sparse directory creation

@@ -155,6 +155,53 @@ def lambda_handler(event, context):
                 }
             })
         
+        # Extract hyperparameters from request body (for tuning experiments)
+        hyperparameters = body.get('hyperparameters', {})
+        
+        # Define high-quality default hyperparameters for 3DGS training
+        # These are research-backed values optimized for quality and detail
+        default_hyperparameters = {
+            # Core Training Parameters
+            "max_iterations": 30000,      # Standard for high-quality convergence
+            "min_iterations": 1000,       # Minimum training before early stopping
+            "target_psnr": 35.0,          # High-quality target (Peak Signal-to-Noise Ratio)
+            "plateau_patience": 5000,     # Iterations to wait before early stopping
+            "psnr_plateau_termination": True,  # Enable early stopping on PSNR plateau
+            
+            # Learning Rates (gsplat-optimized values)
+            "learning_rate": 0.0025,      # Base learning rate
+            "position_lr_scale": 0.00016, # Position learning rate multiplier
+            "scaling_lr": 0.005,          # Gaussian scaling learning rate
+            "rotation_lr": 0.001,         # Gaussian rotation learning rate
+            "opacity_lr": 0.05,           # Gaussian opacity learning rate
+            "feature_lr": 0.0025,         # Feature/color learning rate
+            
+            # Logging and Checkpointing
+            "log_interval": 100,          # Log progress every N iterations
+            "save_interval": 5000,        # Save checkpoint every N iterations
+            
+            # Densification Parameters (Critical for Quality)
+            "densification_interval": 100,     # How often to run densification
+            "opacity_reset_interval": 3000,    # Reset low-opacity Gaussians
+            "densify_from_iter": 500,          # Start densification after N iterations
+            "densify_until_iter": 15000,       # Stop densification after N iterations
+            "densify_grad_threshold": 0.0002,  # Lower = more sensitive = higher detail
+            "percent_dense": 0.01,             # Percentage of scene to densify
+            
+            # Quality Enhancement Parameters
+            "lambda_dssim": 0.2,          # SSIM loss weight (preserves fine details)
+            "sh_degree": 3,               # Spherical harmonics degree (3 = photorealistic)
+            
+            # Advanced Optimization Features
+            "progressive_resolution": True,     # Start low-res, increase gradually
+            "optimization_enabled": True       # Enable advanced optimization features
+        }
+        
+        # Merge user-provided hyperparameters with defaults (user values override defaults)
+        final_hyperparameters = {**default_hyperparameters, **hyperparameters}
+        
+        print(f"✅ Using hyperparameters: {json.dumps(final_hyperparameters, indent=2)}")
+        
         # Prepare Step Functions input
         step_function_input = {
             "jobId": job_id,
@@ -179,7 +226,10 @@ def lambda_handler(event, context):
             "hasGpsData": has_gps_data,
             "csvS3Uri": f"s3://{csv_bucket_name}/{csv_object_key}" if has_gps_data else None,
             "pipelineType": "gps_enhanced" if has_gps_data else "standard",
-            "sfmMethod": "opensfm_gps" if has_gps_data else "opensfm_standard"
+            "sfmMethod": "opensfm_gps" if has_gps_data else "opensfm_standard",
+            
+            # Add all hyperparameters to the Step Functions input
+            **final_hyperparameters
         }
         
         # Start Step Functions execution

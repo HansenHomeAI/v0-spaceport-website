@@ -501,7 +501,7 @@ class MLPipelineStack(Stack):
             result_path="$.notificationResult"
         )
 
-        # Error notification
+        # Error notification - handle different error structures
         notify_error = sfn_tasks.LambdaInvoke(
             self, "NotifyError",
             lambda_function=notification_lambda,
@@ -510,7 +510,10 @@ class MLPipelineStack(Stack):
                 "email": sfn.JsonPath.string_at("$.email"),
                 "s3Url": sfn.JsonPath.string_at("$.s3Url"),
                 "status": "failed",
-                "error": sfn.JsonPath.string_at("$.error.Cause")
+                "error": sfn.JsonPath.string_at("$.error.Cause"),
+                "sfmError": sfn.JsonPath.string_at("$.sfmStatus.FailureReason"),
+                "gaussianError": sfn.JsonPath.string_at("$.gaussianStatus.FailureReason"),
+                "compressionError": sfn.JsonPath.string_at("$.compressionStatus.FailureReason")
             })
         )
 

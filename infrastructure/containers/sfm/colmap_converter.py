@@ -299,8 +299,8 @@ class OpenSfMToCOLMAPConverter:
         if not self.reconstruction:
             raise ValueError("Reconstruction not loaded")
         
-        # Create dense directory for PLY file (validation expects it in dense/)
-        dense_dir = self.base_output_path / "dense"
+        # Create dense directory in temp location (avoiding permission issues)
+        dense_dir = self.temp_dir / "dense"
         dense_dir.mkdir(parents=True, exist_ok=True)
         
         ply_file = dense_dir / "sparse_points.ply"
@@ -334,11 +334,22 @@ class OpenSfMToCOLMAPConverter:
     def _copy_to_final_location(self) -> None:
         """Copy COLMAP files from temp directory to final output location"""
         import shutil
+        import os
         
         try:
-            # Create final sparse directory structure
-            self.final_sparse_path.mkdir(parents=True, exist_ok=True)
-            logger.info(f"📁 Created final sparse directory: {self.final_sparse_path}")
+            # Create final sparse directory structure with proper permissions
+            logger.info(f"📁 Creating final sparse directory: {self.final_sparse_path}")
+            
+            # Use os.makedirs with exist_ok to handle permission issues more gracefully
+            os.makedirs(self.final_sparse_path, mode=0o755, exist_ok=True)
+            
+            # Verify directory was created and is writable
+            if not os.path.exists(self.final_sparse_path):
+                raise PermissionError(f"Failed to create directory: {self.final_sparse_path}")
+            if not os.access(self.final_sparse_path, os.W_OK):
+                raise PermissionError(f"Directory not writable: {self.final_sparse_path}")
+            
+            logger.info(f"✅ Final sparse directory created successfully: {self.final_sparse_path}")
             
             # Copy COLMAP files
             files_to_copy = ["cameras.txt", "images.txt", "points3D.txt"]
@@ -351,10 +362,30 @@ class OpenSfMToCOLMAPConverter:
                 else:
                     logger.warning(f"⚠️ Missing file: {filename}")
             
+            # Copy dense directory (contains PLY file)
+            temp_dense_dir = self.temp_dir / "dense"
+            final_dense_dir = self.base_output_path / "dense"
+            if temp_dense_dir.exists():
+                if final_dense_dir.exists():
+                    shutil.rmtree(final_dense_dir)
+                shutil.copytree(temp_dense_dir, final_dense_dir)
+                logger.info(f"📁 Copied dense directory to final location")
+            else:
+                logger.warning(f"⚠️ Missing dense directory: {temp_dense_dir}")
+            
             # Clean up temp directory
             shutil.rmtree(self.temp_dir)
             logger.info(f"🧹 Cleaned up temp directory: {self.temp_dir}")
             
+        except PermissionError as e:
+            logger.error(f"❌ Permission denied while copying files: {e}")
+            logger.error(f"🔍 Debug info:")
+            logger.error(f"   Final sparse path: {self.final_sparse_path}")
+            logger.error(f"   Base output path: {self.base_output_path}")
+            logger.error(f"   Current user: {os.getuid() if hasattr(os, 'getuid') else 'Unknown'}")
+            logger.error(f"   Output path exists: {os.path.exists(self.base_output_path)}")
+            logger.error(f"   Output path writable: {os.access(self.base_output_path, os.W_OK)}")
+            raise
         except Exception as e:
             logger.error(f"❌ Failed to copy files to final location: {e}")
             raise

@@ -39,6 +39,23 @@ CSV_DATA = dedent(
 ).strip()
 TEST_EMAIL = "gbhbyu@gmail.com"
 
+# Hyperparameter tuning configuration
+# These values override the defaults in the Lambda for experimentation
+EXPERIMENTAL_HYPERPARAMETERS = {
+    # Example: High-detail configuration
+    "sh_degree": 3,                    # Maximum spherical harmonics for photorealistic results
+    "densify_grad_threshold": 0.0001,  # More sensitive densification = higher detail
+    "max_iterations": 25000,           # Slightly reduced for faster testing
+    "lambda_dssim": 0.3,              # Higher SSIM weight for better texture preservation
+    "target_psnr": 32.0,              # Reasonable quality target for testing
+    
+    # Example: Fast testing configuration (uncomment to use)
+    # "max_iterations": 5000,
+    # "densify_grad_threshold": 0.0005,
+    # "sh_degree": 1,
+    # "target_psnr": 28.0,
+}
+
 # Polling configuration
 POLL_INTERVAL = 30          # seconds between status checks
 MAX_WAIT_SECONDS = 7200     # 2 hours – adjust if needed
@@ -54,7 +71,8 @@ def start_pipeline() -> str:
             "s3Url": S3_URL,
             "email": TEST_EMAIL,
             "pipelineStep": "sfm",
-            "csvData": CSV_DATA
+            "csvData": CSV_DATA,
+            "hyperparameters": EXPERIMENTAL_HYPERPARAMETERS
         })
     }
 
@@ -125,6 +143,7 @@ if __name__ == "__main__":
     logger.info(f"📍 Test Data: {S3_URL}")
     logger.info(f"📧 Email: {TEST_EMAIL}")
     logger.info(f"🗺️ GPS Data: {len(CSV_DATA.split(chr(10)))} waypoints")
+    logger.info(f"🎛️ Hyperparameters: {json.dumps(EXPERIMENTAL_HYPERPARAMETERS, indent=2)}")
     
     try:
         execution_arn = start_pipeline()

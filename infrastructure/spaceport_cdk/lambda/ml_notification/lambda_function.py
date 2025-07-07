@@ -18,7 +18,15 @@ def lambda_handler(event, context):
         s3_url = event.get('s3Url')
         status = event.get('status')  # 'completed' or 'failed'
         compressed_output_uri = event.get('compressedOutputS3Uri')
+        
+        # Handle different error sources
         error = event.get('error')
+        sfm_error = event.get('sfmError')
+        gaussian_error = event.get('gaussianError')
+        compression_error = event.get('compressionError')
+        
+        # Determine the actual error message to use
+        actual_error = error or sfm_error or gaussian_error or compression_error or 'Unknown error occurred'
         
         # Prepare email content based on status
         if status == 'completed':
@@ -26,7 +34,7 @@ def lambda_handler(event, context):
             body_text, body_html = create_success_email(job_id, s3_url, compressed_output_uri)
         elif status == 'failed':
             subject = "❌ 3D Model Processing Failed"
-            body_text, body_html = create_failure_email(job_id, s3_url, error)
+            body_text, body_html = create_failure_email(job_id, s3_url, actual_error)
         else:
             raise ValueError(f"Unknown status: {status}")
         
