@@ -26,7 +26,7 @@ class GaussianOnlyTester:
         
         self.config = {
             'state_machine_arn': f"arn:aws:states:{region}:{self.account_id}:stateMachine:SpaceportMLPipeline",
-            'existing_sfm_data': "s3://spaceport-ml-pipeline/jobs/prod-validation-1750995274/colmap/",
+            'existing_sfm_data': "s3://spaceport-ml-pipeline/jobs/prod-validation-1750802934/colmap/",
             'container_uri': f"{self.account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",
             'test_email': "test@spaceport.com"
         }
