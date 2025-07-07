@@ -2030,9 +2030,10 @@ function initializeMap() {
         </svg>
       `;
       
-      // Add new marker with custom element
+      // Add new marker with custom element, anchored at bottom center
       currentMarker = new mapboxgl.Marker({
-        element: pinElement
+        element: pinElement,
+        anchor: 'bottom'
       })
       .setLngLat([lng, lat])
       .addTo(map);
@@ -2148,14 +2149,15 @@ async function searchAddress(address) {
       const pinElement = document.createElement('div');
       pinElement.className = 'custom-teardrop-pin';
       pinElement.innerHTML = `
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M16 2C10.48 2 6 6.48 6 12C6 18.5 16 30 16 30C16 30 26 18.5 26 12C26 6.48 21.52 2 16 2ZM16 15C14.34 15 13 13.66 13 12C13 10.34 14.34 9 16 9C17.66 9 19 10.34 19 12C19 13.66 17.66 15 16 15Z" fill="white" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+        <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
         </svg>
       `;
       
-      // Add new marker with custom element
+      // Add new marker with custom element, anchored at bottom center
       currentMarker = new mapboxgl.Marker({
-        element: pinElement
+        element: pinElement,
+        anchor: 'bottom'
       })
       .setLngLat([lng, lat])
       .addTo(map);

@@ -3064,12 +3064,43 @@ body::before {
 /* Custom teardrop pin styling */
 .custom-teardrop-pin {
   cursor: pointer;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  /* Enhanced shadow for better visibility against light backgrounds */
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) 
+          drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2))
+          drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
   transition: transform 0.2s ease;
+  /* Scale down by 20% for better visual balance */
+  transform: scale(0.8);
+  transform-origin: center bottom;
+  /* Additional shadow positioned at the base */
+  position: relative;
+}
+
+.custom-teardrop-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .custom-teardrop-pin:hover {
-  transform: scale(1.1);
+  transform: scale(0.88);
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35)) 
+          drop-shadow(0 1px 5px rgba(0, 0, 0, 0.25))
+          drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
+}
+
+.custom-teardrop-pin:hover::after {
+  bottom: -3px;
+  width: 10px;
+  height: 5px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
 }
 
 /* Map Container */
