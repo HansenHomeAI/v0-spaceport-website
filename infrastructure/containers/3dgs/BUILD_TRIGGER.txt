@@ -1,6 +1,7 @@
-BUILD_TRIGGER_20250107_14:10:00_PERMISSION_FIX
-- CRITICAL: Fixed file permission issue in SageMaker training
-- Added chmod 777 /opt/ml/model to ensure write permissions
-- Resolves "PermissionError: [Errno 13] Permission denied" when saving checkpoints
+BUILD_TRIGGER_20250107_14:15:00_ROOT_USER_FIX
+- CRITICAL: Container now runs as root user to eliminate all permission issues
+- Removed non-root user creation and USER sagemaker directive
+- Ensures write permissions to /opt/ml/model, /opt/ml/output, /opt/ml/input
+- Resolves persistent "PermissionError: [Errno 13] Permission denied" issues
 - NumPy fix confirmed working - training runs successfully for 5000+ iterations
-- Container now has proper permissions for model output in SageMaker environment
+- Root user provides full filesystem access for SageMaker training jobs

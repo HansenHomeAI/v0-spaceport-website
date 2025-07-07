@@ -58,10 +58,6 @@ ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 # Stage 4: Final runtime image
 FROM app-build AS runtime
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash sagemaker \
-    && chown -R sagemaker:sagemaker /opt/ml
-
 # Set runtime environment
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
@@ -71,11 +67,12 @@ ENV CUDA_VISIBLE_DEVICES=all
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "import torch; print('CUDA available:', torch.cuda.is_available())" || exit 1
 
-# Ensure model directory has proper permissions for SageMaker
-RUN mkdir -p /opt/ml/model && chmod 777 /opt/ml/model
+# Ensure all SageMaker directories have proper permissions
+RUN mkdir -p /opt/ml/model /opt/ml/output /opt/ml/input \
+    && chmod -R 755 /opt/ml
 
-# Switch to non-root user
-USER sagemaker
+# Run as root user for SageMaker Training Jobs (eliminates permission issues)
+USER root
 
 # Set the correct entrypoint for SageMaker Training Jobs
 ENTRYPOINT ["python3", "train_gaussian_production.py"] 
