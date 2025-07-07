@@ -71,6 +71,9 @@ ENV CUDA_VISIBLE_DEVICES=all
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "import torch; print('CUDA available:', torch.cuda.is_available())" || exit 1
 
+# Ensure model directory has proper permissions for SageMaker
+RUN mkdir -p /opt/ml/model && chmod 777 /opt/ml/model
+
 # Switch to non-root user
 USER sagemaker
 

@@ -1,6 +1,6 @@
-BUILD_TRIGGER_20250107_14:05:00_NUMPY_FIX
-- CRITICAL: Fixed NumPy compatibility issue
-- Pinned numpy>=1.24.0,<2.0.0 to prevent NumPy 2.x installation
-- Resolves "RuntimeError: Numpy is not available" in 3DGS training
-- Maintains binary compatibility with compiled dependencies (gsplat, PyTorch)
-- Container now has stable NumPy 1.x for production training
+BUILD_TRIGGER_20250107_14:10:00_PERMISSION_FIX
+- CRITICAL: Fixed file permission issue in SageMaker training
+- Added chmod 777 /opt/ml/model to ensure write permissions
+- Resolves "PermissionError: [Errno 13] Permission denied" when saving checkpoints
+- NumPy fix confirmed working - training runs successfully for 5000+ iterations
+- Container now has proper permissions for model output in SageMaker environment
