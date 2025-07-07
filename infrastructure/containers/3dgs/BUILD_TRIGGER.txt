@@ -1,6 +1,6 @@
-BUILD_TRIGGER_20250107_14:00:00_GSPLAT_FIX
-- CRITICAL: Added gsplat>=1.5.0 to requirements_optimized.txt
-- Fixed gsplat import issue by pre-installing in container
-- Removed unreliable dynamic pip install fallback
-- Container now has gsplat available at startup
-- Updated for 3DGS training fix deployment
+BUILD_TRIGGER_20250107_14:05:00_NUMPY_FIX
+- CRITICAL: Fixed NumPy compatibility issue
+- Pinned numpy>=1.24.0,<2.0.0 to prevent NumPy 2.x installation
+- Resolves "RuntimeError: Numpy is not available" in 3DGS training
+- Maintains binary compatibility with compiled dependencies (gsplat, PyTorch)
+- Container now has stable NumPy 1.x for production training
