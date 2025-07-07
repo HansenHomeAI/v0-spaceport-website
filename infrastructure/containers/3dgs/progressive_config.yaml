@@ -4,15 +4,18 @@
 training:
   # Core training parameters
   max_iterations: 30000
+  min_iterations: 5000               # Minimum iterations before early termination
   log_interval: 100
   save_interval: 5000
   
-  # Early termination based on PSNR plateau
-  early_termination:
-    enabled: true
-    psnr_plateau_patience: 1000      # Wait 1000 iterations for improvement
-    psnr_plateau_threshold: 0.1      # Minimum PSNR improvement (dB)
-    min_iterations: 5000             # Don't terminate before this
+  # Enhanced PSNR-based termination and extension
+  target_psnr: 35.0                  # Target PSNR for quality assessment
+  psnr_plateau_termination: false    # Disable early termination, enable auto-extension
+  plateau_patience: 2000             # Wait 2000 iterations for PSNR improvement
+  
+  # Auto-extension for complex scenes
+  auto_extension_enabled: true       # Enable auto-extension if PSNR below target
+  max_extension_iterations: 15000    # Maximum additional iterations allowed
 
 # Progressive Resolution Strategy (Trick-GS core feature)
 progressive_resolution:
@@ -57,12 +60,17 @@ progressive_blur:
 
 # Gaussian Management Strategy
 gaussian_management:
-  # Standard densification phase
+  # Enhanced densification phase for complex scenes
   densification:
     enabled: true
     interval: 100                    # Every 100 iterations
     start_iteration: 500             # Start after initial convergence
     end_iteration: 15000             # End standard densification
+    grad_threshold: 0.0002           # Gradient threshold for densification
+    percent_dense: 0.05              # Increased from 0.01 for better quality
+  
+  # Opacity management
+  opacity_reset_interval: 3000       # Reset low-opacity Gaussians every 3000 iterations
     
   # Late densification recovery (Trick-GS innovation)
   late_densification:

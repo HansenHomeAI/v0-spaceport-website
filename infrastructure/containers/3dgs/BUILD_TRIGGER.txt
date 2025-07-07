@@ -1,7 +1,10 @@
-BUILD_TRIGGER_20250107_14:15:00_ROOT_USER_FIX
-- CRITICAL: Container now runs as root user to eliminate all permission issues
-- Removed non-root user creation and USER sagemaker directive
-- Ensures write permissions to /opt/ml/model, /opt/ml/output, /opt/ml/input
-- Resolves persistent "PermissionError: [Errno 13] Permission denied" issues
-- NumPy fix confirmed working - training runs successfully for 5000+ iterations
-- Root user provides full filesystem access for SageMaker training jobs
+BUILD_TRIGGER_20250107_14:20:00_ENHANCED_TRAINING_QUALITY
+- CRITICAL: Comprehensive training quality improvements for complex scenes
+- Enhanced densification: increased percent_dense from 0.01 to 0.05 for better detail capture
+- Real gradient-based densification with splitting and cloning mechanisms
+- PSNR monitoring and auto-extension: extends training if PSNR below target (35dB)
+- Comprehensive quality metrics: loss curves, PSNR tracking, model size assessment
+- Opacity reset mechanism to prevent degenerate Gaussians
+- Enhanced metadata with densification events and quality flags
+- Designed for complex scenes like town squares requiring high detail fidelity
+- Root user confirmed working - all permission issues resolved
