@@ -31,6 +31,43 @@ class GaussianOnlyTester:
             'test_email': "test@spaceport.com"
         }
     
+    def _get_hyperparameters(self) -> Dict:
+        """Get the same hyperparameter defaults as the Lambda function."""
+        return {
+            # Core training parameters
+            "max_iterations": 30000,
+            "target_psnr": 35.0,
+            "sh_degree": 3,
+            "progressive_resolution": True,
+            
+            # Learning rates (research-backed defaults)
+            "learning_rate": 0.0025,
+            "position_lr_scale": 0.00016,
+            "scaling_lr": 0.005,
+            "rotation_lr": 0.001,
+            "opacity_lr": 0.05,
+            "feature_lr": 0.0025,
+            
+            # Densification parameters
+            "densify_grad_threshold": 0.0002,
+            "densification_interval": 100,
+            "opacity_reset_interval": 3000,
+            "densify_from_iter": 500,
+            "densify_until_iter": 15000,
+            "percent_dense": 0.01,
+            
+            # Quality and loss parameters
+            "lambda_dssim": 0.2,
+            "psnr_plateau_termination": False,
+            "plateau_patience": 2000,
+            "min_iterations": 1000,
+            
+            # Logging and saving
+            "log_interval": 100,
+            "save_interval": 5000,
+            "optimization_enabled": True
+        }
+    
     def create_3dgs_only_input(self) -> Dict:
         """Create test input that skips SfM and starts directly from 3DGS training."""
         job_id = f"3dgs-only-{int(time.time())}"
@@ -57,32 +94,9 @@ class GaussianOnlyTester:
             "gaussianImageUri": self.config['container_uri'],
             "compressorImageUri": f"{self.account_id}.dkr.ecr.{self.region}.amazonaws.com/spaceport/compressor:latest",
             
-            # Enhanced 3DGS training parameters for proper training
-            "optimization_enabled": True,
-            "progressive_resolution": True,
-            "psnr_plateau_termination": False,  # DISABLE early termination for now
-            "target_psnr": 35.0,  # Higher target
-            "max_iterations": 15000,  # More iterations
-            "plateau_patience": 2000,  # More patience
-            "min_iterations": 5000,  # Minimum iterations before early stopping
-            "learning_rate": 0.0025,  # Lower learning rate for stability
-            "position_lr_scale": 0.5,  # Scale position learning rate
-            "scaling_lr": 0.005,  # Scaling learning rate
-            "rotation_lr": 0.001,  # Rotation learning rate
-            "opacity_lr": 0.05,  # Opacity learning rate
-            "feature_lr": 0.0025,  # Feature learning rate
-            "densification_interval": 100,  # Densify every 100 iterations
-            "opacity_reset_interval": 3000,  # Reset opacity every 3000 iterations
-            "densify_from_iter": 500,  # Start densification from iteration 500
-            "densify_until_iter": 12000,  # Stop densification at iteration 12000
-            "densify_grad_threshold": 0.0002,  # Gradient threshold for densification
-            "percent_dense": 0.01,  # Percentage of scene to densify
-            "lambda_dssim": 0.2,  # SSIM loss weight
-            "sh_degree": 3,  # Spherical harmonics degree
-            
-            # Logging and saving parameters
-            "log_interval": 500,  # Log every 500 iterations
-            "save_interval": 5000  # Save every 5000 iterations
+            # Use the same hyperparameter system as the Lambda
+            # These will be the defaults, but can be overridden by passing hyperparameters
+            **self._get_hyperparameters()
         }
     
     def start_3dgs_test(self) -> Tuple[Optional[str], Optional[Dict]]:
@@ -96,13 +110,16 @@ class GaussianOnlyTester:
         logger.info(f"Execution Name: {execution_name}")
         logger.info(f"Using existing SfM data: {self.config['existing_sfm_data']}")
         logger.info("")
-        logger.info("🔧 ENHANCED TRAINING PARAMETERS:")
+        logger.info("🔧 HYPERPARAMETER CONFIGURATION:")
         logger.info(f"  Max Iterations: {test_input['max_iterations']}")
         logger.info(f"  Min Iterations: {test_input['min_iterations']}")
         logger.info(f"  Target PSNR: {test_input['target_psnr']}dB")
         logger.info(f"  Early Termination: {'DISABLED' if not test_input['psnr_plateau_termination'] else 'ENABLED'}")
         logger.info(f"  Learning Rate: {test_input['learning_rate']}")
+        logger.info(f"  Position LR Scale: {test_input['position_lr_scale']}")
         logger.info(f"  Densification: Every {test_input['densification_interval']} iterations")
+        logger.info(f"  SH Degree: {test_input['sh_degree']}")
+        logger.info(f"  Progressive Resolution: {test_input['progressive_resolution']}")
         logger.info("")
         
         try:
