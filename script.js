@@ -2016,6 +2016,9 @@ function initializeMap() {
       // Store the selected coordinates
       selectedCoordinates = { lng, lat };
       
+      // Update address field with coordinates (only if field is empty)
+      updateAddressFieldWithCoordinates(lat, lng);
+      
       // Remove existing marker if any
       if (currentMarker) {
         currentMarker.remove();
@@ -2056,6 +2059,39 @@ function initializeMap() {
 // Function to get selected coordinates (for use in drone path generation)
 function getSelectedCoordinates() {
   return selectedCoordinates;
+}
+
+// Function to update address field with coordinates
+function updateAddressFieldWithCoordinates(lat, lng) {
+  const addressInput = document.getElementById('address-search');
+  if (!addressInput) return;
+  
+  // Only update if the field is empty or contains placeholder text
+  const currentValue = addressInput.value.trim();
+  const placeholder = addressInput.placeholder;
+  
+  if (currentValue === '' || currentValue === placeholder) {
+    // Format coordinates to 6 decimal places for precision
+    const formattedLat = lat.toFixed(6);
+    const formattedLng = lng.toFixed(6);
+    
+    // Update the input field with coordinates
+    addressInput.value = `${formattedLat}, ${formattedLng}`;
+    
+    console.log('Updated address field with coordinates:', { lat: formattedLat, lng: formattedLng });
+  } else {
+    console.log('Address field not empty, keeping existing value:', currentValue);
+  }
+}
+
+// Function to clear address field and restore placeholder
+function clearAddressField() {
+  const addressInput = document.getElementById('address-search');
+  if (addressInput) {
+    addressInput.value = '';
+    // Trigger input event to ensure any listeners are notified
+    addressInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
 }
 
 // Initialize expand/fullscreen button functionality
@@ -2140,6 +2176,12 @@ async function searchAddress(address) {
       // Set the marker and coordinates
       selectedCoordinates = { lng, lat };
       
+      // Update address field with the searched address (not coordinates)
+      const addressInput = document.getElementById('address-search');
+      if (addressInput) {
+        addressInput.value = address;
+      }
+      
       // Remove existing marker if any
       if (currentMarker) {
         currentMarker.remove();
@@ -2204,8 +2246,14 @@ window.closeNewProjectPopup = function() {
     currentMarker = null;
     selectedCoordinates = null;
   }
+  
+  // Clear the address field when closing the popup
+  clearAddressField();
+  
   originalCloseNewProjectPopup();
 };
 
 // Make functions globally available
 window.getSelectedCoordinates = getSelectedCoordinates;
+window.updateAddressFieldWithCoordinates = updateAddressFieldWithCoordinates;
+window.clearAddressField = clearAddressField;
