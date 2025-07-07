@@ -176,3 +176,12 @@ CHANGES:
 5. Ensured all file operations use temp directory before final copy
 EXPECTED_OUTCOME: Complete pipeline success with no permission errors
 All COLMAP files and PLY should be properly placed in final output locations
+
+BUILD_TRIGGER_PERMISSION_FIX_v2.1.0
+Fixed permission issues in SfM container:
+- Container now runs as root to avoid permission errors
+- Pre-created output directory structure with proper permissions
+- Enhanced error handling in COLMAP converter
+- Fixed Step Functions error notification paths
+- Date: 2025-07-07
+- Commit: Permission fix for /opt/ml/processing/output/sparse directory creation

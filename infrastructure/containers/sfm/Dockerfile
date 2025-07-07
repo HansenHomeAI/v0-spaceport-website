@@ -78,7 +78,7 @@ RUN chmod +x /opt/ml/code/run_sfm.sh \
 # Stage 5: Final runtime image
 FROM app-build AS runtime
 
-# Create non-root user for security
+# Create non-root user for security but don't switch to it yet
 RUN useradd --create-home --shell /bin/bash sagemaker \
     && chown -R sagemaker:sagemaker /opt/ml
 
@@ -89,12 +89,14 @@ WORKDIR /opt/ml/code
 ENV PATH="/opt/OpenSfM/bin:${PATH}"
 ENV PYTHONPATH="/opt/OpenSfM"
 
+# Pre-create the output directory structure with proper permissions
+RUN mkdir -p /opt/ml/processing/output/sparse /opt/ml/processing/output/dense \
+    && chmod -R 755 /opt/ml/processing/output
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "import opensfm; print('OpenSfM available')" || exit 1
 
-# Switch to non-root user
-USER sagemaker
-
+# Stay as root for SageMaker compatibility and directory creation
 # Use the expected script name as the entrypoint
 ENTRYPOINT ["/opt/ml/code/run_sfm.sh"] 
