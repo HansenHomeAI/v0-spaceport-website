@@ -385,7 +385,7 @@ class Trainer:
                 
                 # Store position gradients for densification
                 if not hasattr(gaussians['positions'], 'grad_accum'):
-                    gaussians['positions'].grad_accum = torch.zeros_like(gaussians['positions'])
+                    gaussians['positions'].grad_accum = torch.zeros(gaussians['positions'].shape[0], device=self.device)
                     gaussians['positions'].grad_count = 0
                 
                 if gaussians['positions'].grad is not None:
@@ -571,7 +571,7 @@ class Trainer:
             gaussians = self.clone_gaussians(gaussians, clone_mask)
         
         # Reset gradient accumulation
-        gaussians['positions'].grad_accum = torch.zeros_like(gaussians['positions'])
+        gaussians['positions'].grad_accum = torch.zeros(gaussians['positions'].shape[0], device=self.device)
         gaussians['positions'].grad_count = 0
         
         return gaussians
