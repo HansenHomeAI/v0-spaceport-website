@@ -45,10 +45,9 @@ try:
     logger.info("✅ gsplat library loaded successfully")
 except ImportError as e:
     logger.error(f"❌ Failed to import gsplat: {e}")
-    logger.error("Installing gsplat...")
-    os.system("pip install gsplat")
-    import gsplat
-    from gsplat import rasterization
+    logger.error("❌ gsplat must be pre-installed in the container. Dynamic installation is unreliable.")
+    logger.error("❌ Please rebuild the container with gsplat in requirements_optimized.txt")
+    raise ImportError("gsplat not available - container needs to be rebuilt with gsplat pre-installed") from e
 
 class Trainer:
     def __init__(self, config_path: str):

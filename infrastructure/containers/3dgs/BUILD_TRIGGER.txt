@@ -1,1 +1,6 @@
-Updated 3DGS container to output proper spherical harmonics for SOGS compatibility
+BUILD_TRIGGER_20250107_14:00:00_GSPLAT_FIX
+- CRITICAL: Added gsplat>=1.5.0 to requirements_optimized.txt
+- Fixed gsplat import issue by pre-installing in container
+- Removed unreliable dynamic pip install fallback
+- Container now has gsplat available at startup
+- Updated for 3DGS training fix deployment
