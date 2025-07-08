@@ -158,6 +158,9 @@ def lambda_handler(event, context):
         # Extract hyperparameters from request body (for tuning experiments)
         hyperparameters = body.get('hyperparameters', {})
         
+        # Special handling for 3DGS-only tests with existing SfM data
+        existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
+        
         # Define high-quality default hyperparameters for 3DGS training
         # These are research-backed values optimized for quality and detail
         # Source: infrastructure/containers/3dgs/progressive_config.yaml
@@ -235,6 +238,14 @@ def lambda_handler(event, context):
         
         print(f"✅ Using hyperparameters: {json.dumps(final_hyperparameters, indent=2)}")
         
+        # Determine COLMAP output URI - use existing data if provided, otherwise generate new path
+        if existing_colmap_uri:
+            colmap_output_uri = existing_colmap_uri
+            print(f"✅ Using existing COLMAP data: {colmap_output_uri}")
+        else:
+            colmap_output_uri = f"s3://{ml_bucket}/colmap/{job_id}/"
+            print(f"✅ Will generate new COLMAP data: {colmap_output_uri}")
+        
         # Prepare Step Functions input
         step_function_input = {
             "jobId": job_id,
@@ -243,7 +254,7 @@ def lambda_handler(event, context):
             "email": email,
             "pipelineStep": pipeline_step,
             "inputS3Uri": f"s3://{bucket_name}/{object_key}",
-            "colmapOutputS3Uri": f"s3://{ml_bucket}/colmap/{job_id}/",
+            "colmapOutputS3Uri": colmap_output_uri,
             "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",
             "compressedOutputS3Uri": f"s3://{ml_bucket}/compressed/{job_id}/",
             "sfmImageUri": sfm_image_uri,
