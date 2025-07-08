@@ -2990,12 +2990,12 @@ body::before {
 /* Address Search Overlay */
 .address-search-overlay {
   position: absolute;
-  bottom: 8px; /* Reduced from 16px */
-  left: 8px; /* Reduced from 16px */
-  right: 8px; /* Reduced from 16px */
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
   z-index: 15;
   display: flex;
-  gap: 6px; /* Reduced from 12px */
+  gap: 6px;
   align-items: center;
 }
 
@@ -3054,8 +3054,8 @@ body::before {
 
 .expand-button {
   position: absolute;
-  top: 8px; /* Reduced from 16px */
-  right: 8px; /* Reduced from 16px */
+  top: 4px;
+  right: 4px;
   width: 56px;
   height: 56px;
   border-radius: 32px;
@@ -3136,7 +3136,7 @@ body::before {
   height: 300px;
   width: 100%;
   position: relative;
-  border-radius: 40px; /* Adjusted for concentricity with repositioned elements */
+  border-radius: 32px; /* Match inner elements for visual harmony */
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -3154,15 +3154,20 @@ body::before {
 }
 
 .map-container.fullscreen .address-search-overlay {
-  bottom: 10px; /* Reduced from 20px */
-  left: 10px; /* Reduced from 20px */
-  right: 10px; /* Reduced from 20px */
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
 }
 
 .map-container.fullscreen .coordinates-input-overlay {
-  bottom: 10px; /* Reduced from 20px */
-  left: 10px; /* Reduced from 20px */
-  right: 10px; /* Reduced from 20px */
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+}
+
+.map-container.fullscreen .expand-button {
+  top: 16px;
+  right: 16px;
 }
 
 /* Progressive Blur Overlays */
@@ -3539,9 +3544,9 @@ body::before {
 /* Responsive adjustments for map overlays */
 @media (max-width: 480px) {
   .address-search-overlay {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
   }
   
   .address-search-wrapper {
@@ -3557,8 +3562,8 @@ body::before {
     width: 48px;
     height: 48px;
     border-radius: 28px;
-    top: 12px;
-    right: 12px;
+    top: 4px;
+    right: 4px;
   }
   
   .expand-icon {
@@ -3567,9 +3572,9 @@ body::before {
   }
   
   .map-container.fullscreen .address-search-overlay {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
   }
 }
 
