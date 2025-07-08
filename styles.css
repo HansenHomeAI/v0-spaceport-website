@@ -2990,12 +2990,12 @@ body::before {
 /* Address Search Overlay */
 .address-search-overlay {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
+  bottom: 8px; /* Reduced from 16px */
+  left: 8px; /* Reduced from 16px */
+  right: 8px; /* Reduced from 16px */
   z-index: 15;
   display: flex;
-  gap: 12px;
+  gap: 6px; /* Reduced from 12px */
   align-items: center;
 }
 
@@ -3008,7 +3008,7 @@ body::before {
   backdrop-filter: blur(10px);
   border: none;
   border-radius: 32px;
-  padding: 0 20px;
+  padding: 0 10px; /* Reduced from 20px */
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
@@ -3054,8 +3054,8 @@ body::before {
 
 .expand-button {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 8px; /* Reduced from 16px */
+  right: 8px; /* Reduced from 16px */
   width: 56px;
   height: 56px;
   border-radius: 32px;
@@ -3136,7 +3136,7 @@ body::before {
   height: 300px;
   width: 100%;
   position: relative;
-  border-radius: 8px;
+  border-radius: 40px; /* Adjusted for concentricity with repositioned elements */
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -3154,15 +3154,15 @@ body::before {
 }
 
 .map-container.fullscreen .address-search-overlay {
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
+  bottom: 10px; /* Reduced from 20px */
+  left: 10px; /* Reduced from 20px */
+  right: 10px; /* Reduced from 20px */
 }
 
 .map-container.fullscreen .coordinates-input-overlay {
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
+  bottom: 10px; /* Reduced from 20px */
+  left: 10px; /* Reduced from 20px */
+  right: 10px; /* Reduced from 20px */
 }
 
 /* Progressive Blur Overlays */
@@ -3176,9 +3176,9 @@ body::before {
 
 .map-blur-overlay.top {
   top: 0;
-  height: 24px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 30%, rgba(0, 0, 0, 0.1) 70%, transparent 100%);
-  backdrop-filter: blur(3px);
+  height: 0; /* Removed the height */
+  background: none; /* Removed the gradient */
+  backdrop-filter: none; /* Removed the blur */
 }
 
 .map-blur-overlay.bottom {
@@ -3243,7 +3243,7 @@ body::before {
 
 /* Sections */
 .popup-section {
-  padding: 20px 20px; /* Make side padding consistent */
+  padding: 20px 10px; /* Reduced side padding by 50% */
   /* Removed border-bottom for cleaner look */
 }
 
