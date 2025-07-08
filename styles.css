@@ -779,7 +779,7 @@ footer {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  padding: 1.4px;
+  padding: 1.82px;
 }
 .stat-box h1 {
   display: block;       /* Ensure it's a block-level element */
@@ -993,7 +993,7 @@ footer {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  padding: 1.4px;
+  padding: 1.82px;
 }
 
 .stat-box2::after {
@@ -3048,7 +3048,7 @@ body::before {
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1.4px; /* Controls border thickness */
+  padding: 1.82px; /* Increased by 30% for thicker border */
   pointer-events: none;
 }
 
@@ -3243,7 +3243,7 @@ body::before {
 
 /* Sections */
 .popup-section {
-  padding: 20px 16px;
+  padding: 20px 20px; /* Make side padding consistent */
   /* Removed border-bottom for cleaner look */
 }
 
@@ -3258,16 +3258,19 @@ body::before {
   font-weight: 600;
   margin: 0 0 16px 0;
   font-family: inherit;
+  text-align: center; /* Center the category titles */
 }
 
 .input-row-popup {
   display: flex;
   gap: 12px;
-  margin: 0 4px;
+  margin: 0; /* Remove the extra margin since we have consistent section padding */
+  width: 100%; /* Ensure the row takes full width */
 }
 
 .popup-input-wrapper {
-  flex: 1;
+  flex: 1 1 0; /* Allow shrinking and growing with a 0 basis */
+  min-width: 0; /* Allow shrinking below content size */
   position: relative;
   display: flex;
   align-items: center;
@@ -3301,7 +3304,8 @@ body::before {
   font-size: 1.1rem;
   padding: 16px 0;
   outline: none;
-  flex: 1;
+  width: 100%; /* Take full width of wrapper */
+  min-width: 0; /* Allow shrinking below content size */
   font-weight: 400;
   font-family: inherit;
 }
@@ -3459,18 +3463,18 @@ body::before {
 
 @media (max-width: 480px) {
   .popup-modal {
-    width: 95%;
-    margin: 0 auto;
-    max-height: 90vh;
+    width: calc(100% - 24px);
+    max-height: calc(100% - 24px);
+    border-radius: 24px;
   }
-  
+
+  /* Keep input rows side-by-side, do not stack */
   .input-row-popup {
-    flex-direction: column;
-    margin: 0 0;
+    /* The rule causing stacking has been removed. */
   }
-  
+
   .popup-header {
-    padding: 16px 12px 12px 12px;
+    padding: 16px;
     gap: 8px;
   }
   
@@ -3479,11 +3483,11 @@ body::before {
   }
   
   .popup-section {
-    padding: 16px 12px;
+    padding: 16px;
   }
   
   .accordion-header {
-    padding: 16px 12px;
+    padding: 16px;
   }
   
   .section-description {
