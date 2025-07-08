@@ -38,7 +38,7 @@ class GaussianOnlyTester:
         """Create payload for Lambda function that will start 3DGS-only training."""
         return {
             "body": {
-                "s3Url": "dummy://test-bucket/dummy-file.zip",  # Dummy URL since we skip SfM
+                "s3Url": "s3://spaceport-ml-pipeline/test-data/dummy-file.zip",  # Valid S3 format
                 "email": self.config['test_email'],
                 "pipelineStep": "3dgs",  # CRITICAL: Start directly from 3DGS stage
                 "existingColmapUri": self.config['existing_sfm_data'],  # Use existing SfM data

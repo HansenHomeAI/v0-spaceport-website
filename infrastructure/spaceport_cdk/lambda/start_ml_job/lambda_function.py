@@ -28,69 +28,72 @@ def lambda_handler(event, context):
         email = body.get('email', 'noreply@hansenhome.ai')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
         csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
+        existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        if not s3_url:
-            return {
-                'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': 'Missing required field: s3Url'
-                })
-            }
-        
-        # Validate S3 URL format
-        if not validate_s3_url(s3_url):
-            return {
-                'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': 'Invalid S3 URL format'
-                })
-            }
-        
-        # Parse S3 URL to get bucket and key
-        bucket_name, object_key = parse_s3_url(s3_url)
+        # Only require and validate S3 URL if starting from SfM stage and no existing COLMAP data
+        if pipeline_step == 'sfm' and not existing_colmap_uri:
+            if not s3_url:
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'error': 'Missing required field: s3Url'
+                    })
+                }
+            
+            # Validate S3 URL format
+            if not validate_s3_url(s3_url):
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'error': 'Invalid S3 URL format'
+                    })
+                }
+            
+            # Parse S3 URL to get bucket and key
+            bucket_name, object_key = parse_s3_url(s3_url)
+            
+            # Verify the main object exists
+            try:
+                s3.head_object(Bucket=bucket_name, Key=object_key)
+            except s3.exceptions.NoSuchKey:
+                return {
+                    'statusCode': 404,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'error': 'S3 object not found'
+                    })
+                }
+            except Exception as e:
+                return {
+                    'statusCode': 403,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'error': f'Cannot access S3 object: {str(e)}'
+                    })
+                }
         
         # Generate unique job ID early so it can be used for CSV storage
         job_id = str(uuid.uuid4())
         timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
         job_name = f"ml-job-{timestamp}-{job_id[:8]}"
-        
-        # Verify the main object exists
-        try:
-            s3.head_object(Bucket=bucket_name, Key=object_key)
-        except s3.exceptions.NoSuchKey:
-            return {
-                'statusCode': 404,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': 'S3 object not found'
-                })
-            }
-        except Exception as e:
-            return {
-                'statusCode': 403,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': f'Cannot access S3 object: {str(e)}'
-                })
-            }
         
         # Verify CSV file exists if provided
         csv_bucket_name = None
