@@ -172,10 +172,24 @@ class GaussianOnlyTester:
         """Validate the 3DGS training output."""
         logger.info("\n🔍 VALIDATING 3DGS OUTPUT")
         logger.info("=" * 30)
-        
-        job_id = test_input['jobId']
-        bucket = 'spaceport-ml-pipeline'
-        prefix = f"jobs/{job_id}/gaussian/"
+
+        # Prefer the Gaussian output URI provided by the Lambda / Step-Functions payload
+        gaussian_uri = test_input.get('gaussianOutputS3Uri')
+        if gaussian_uri and gaussian_uri.startswith('s3://'):
+            from urllib.parse import urlparse
+            parsed = urlparse(gaussian_uri)
+            bucket = parsed.netloc
+            # Ensure prefix ends with a slash so list_objects_v2 treats it as prefix
+            prefix = parsed.path.lstrip('/')
+            if not prefix.endswith('/'):
+                prefix += '/'
+            logger.info(f"📁 Using Gaussian output URI from payload: s3://{bucket}/{prefix}")
+        else:
+            # Fallback to legacy location for backward compatibility
+            job_id = test_input['jobId']
+            bucket = 'spaceport-ml-pipeline'
+            prefix = f"jobs/{job_id}/gaussian/"
+            logger.info(f"📁 Falling back to legacy output location: s3://{bucket}/{prefix}")
         
         try:
             response = self.s3.list_objects_v2(Bucket=bucket, Prefix=prefix)

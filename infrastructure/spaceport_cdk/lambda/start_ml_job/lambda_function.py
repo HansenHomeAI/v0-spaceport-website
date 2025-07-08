@@ -168,13 +168,13 @@ def lambda_handler(event, context):
         # Source: infrastructure/containers/3dgs/progressive_config.yaml
         default_hyperparameters = {
             # Core Training Parameters
-            "max_iterations": 30000,
-            "min_iterations": 5000,
-            "target_psnr": 35.0,
+            "max_iterations": 250000,  # Increased for higher quality (≈2-3 hours on g4dn.xlarge)
+            "min_iterations": 30000,   # Require at least 30k iters before early-exit logic
+            "target_psnr": 38.0,       # Stricter quality target
             "psnr_plateau_termination": False,
-            "plateau_patience": 2000,
+            "plateau_patience": 5000,
             "auto_extension_enabled": True,
-            "max_extension_iterations": 15000,
+            "max_extension_iterations": 50000,
 
             # Logging and Checkpointing
             "log_interval": 100,
@@ -195,15 +195,15 @@ def lambda_handler(event, context):
             "densification_enabled": True,
             "densification_interval": 100,
             "densify_from_iter": 500,
-            "densify_until_iter": 15000,
-            "densify_grad_threshold": 0.00002,  # CRITICAL FIX: Lowered for quality
-            "percent_dense": 0.02,
+            "densify_until_iter": 80000,        # Continue densification much longer
+            "densify_grad_threshold": 0.00001,  # Even finer threshold
+            "percent_dense": 0.05,              # Higher growth rate
             
             # Progressive Densification Schedule
             "progressive_densification_enabled": True,
             "prog_dens_initial_threshold": 0.00005,
             "prog_dens_final_threshold": 0.00002,
-            "prog_dens_schedule_iterations": 7000,
+            "prog_dens_schedule_iterations": 20000,
 
             # Advanced Densification Controls
             "split_threshold": 0.00005,
@@ -219,8 +219,8 @@ def lambda_handler(event, context):
             "late_densification_start": 20000,
 
             # Learning Rates (Dummy values, as they are not used in the container yet)
-            "learning_rate": 0.0025,
-            "position_lr_scale": 0.00016, 
+            "learning_rate": 0.0015,           # Slightly lower LR for stability
+            "position_lr_scale": 0.0001, 
             "scaling_lr": 0.005,
             "rotation_lr": 0.001,
             "opacity_lr": 0.05,
