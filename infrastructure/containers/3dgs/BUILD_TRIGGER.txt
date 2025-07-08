@@ -1,6 +1,11 @@
-BUILD_TRIGGER_20250107_14:25:00_DENSIFICATION_TENSOR_FIX
-- CRITICAL: Fixed RuntimeError (tensor shape mismatch) in densification logic.
-- Corrected initialization of 'grad_accum' to be a 1D tensor [N] instead of [N, 3].
-- This resolves the crash during gradient accumulation for densification.
-- All previous quality enhancements (A, C, E, F) remain in place.
-- The container is now ready for a robust, high-quality training run.
+BUILD_TRIGGER_20250107_16:45:00_COMPLETE_DENSIFICATION_REWRITE
+- MAJOR REWRITE: Complete densification system overhaul based on latest 3DGS research.
+- CRITICAL FIX: Proper gradient norm computation instead of raw tensor comparison.
+- NEW: Progressive densification with adaptive thresholds (aggressive → conservative).
+- NEW: Advanced splitting using principal component analysis for optimal directions.
+- NEW: Geometry-aware densification with opacity and size filtering.
+- NEW: Automatic Gaussian pruning to prevent memory overflow.
+- FIXED: Proper gradient accumulation (vectors, not norms) for accurate densification.
+- FIXED: Gradient threshold lowered to 2e-5 for proper densification triggering.
+- RESEARCH: Based on GeoTexDensifier, Micro-splatting, and SteepGS papers.
+- This should finally enable proper photorealistic Gaussian splat training!
