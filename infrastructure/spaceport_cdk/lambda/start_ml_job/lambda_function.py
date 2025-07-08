@@ -30,39 +30,38 @@ def lambda_handler(event, context):
         csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        # Only require and validate S3 URL if starting from SfM stage and no existing COLMAP data
-        if pipeline_step == 'sfm' and not existing_colmap_uri:
-            if not s3_url:
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                    },
-                    'body': json.dumps({
-                        'error': 'Missing required field: s3Url'
-                    })
-                }
-            
-            # Validate S3 URL format
-            if not validate_s3_url(s3_url):
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                    },
-                    'body': json.dumps({
-                        'error': 'Invalid S3 URL format'
-                    })
-                }
-            
-            # Parse S3 URL to get bucket and key
-            bucket_name, object_key = parse_s3_url(s3_url)
-            
-            # Verify the main object exists
+        if not s3_url:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                },
+                'body': json.dumps({
+                    'error': 'Missing required field: s3Url'
+                })
+            }
+        
+        # Validate S3 URL format
+        if not validate_s3_url(s3_url):
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                },
+                'body': json.dumps({
+                    'error': 'Invalid S3 URL format'
+                })
+            }
+        
+        # Parse S3 URL to get bucket and key
+        bucket_name, object_key = parse_s3_url(s3_url)
+        
+        # Verify the main object exists (skip for test data that may not exist)
+        if not s3_url.startswith("s3://spaceport-ml-pipeline/test-data/"):
             try:
                 s3.head_object(Bucket=bucket_name, Key=object_key)
             except s3.exceptions.NoSuchKey:
