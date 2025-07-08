@@ -160,41 +160,74 @@ def lambda_handler(event, context):
         
         # Define high-quality default hyperparameters for 3DGS training
         # These are research-backed values optimized for quality and detail
+        # Source: infrastructure/containers/3dgs/progressive_config.yaml
         default_hyperparameters = {
             # Core Training Parameters
-            "max_iterations": 30000,      # Standard for high-quality convergence
-            "min_iterations": 1000,       # Minimum training before early stopping
-            "target_psnr": 35.0,          # High-quality target (Peak Signal-to-Noise Ratio)
-            "plateau_patience": 5000,     # Iterations to wait before early stopping
-            "psnr_plateau_termination": True,  # Enable early stopping on PSNR plateau
-            
-            # Learning Rates (gsplat-optimized values)
-            "learning_rate": 0.0025,      # Base learning rate
-            "position_lr_scale": 0.00016, # Position learning rate multiplier
-            "scaling_lr": 0.005,          # Gaussian scaling learning rate
-            "rotation_lr": 0.001,         # Gaussian rotation learning rate
-            "opacity_lr": 0.05,           # Gaussian opacity learning rate
-            "feature_lr": 0.0025,         # Feature/color learning rate
-            
+            "max_iterations": 30000,
+            "min_iterations": 5000,
+            "target_psnr": 35.0,
+            "psnr_plateau_termination": False,
+            "plateau_patience": 2000,
+            "auto_extension_enabled": True,
+            "max_extension_iterations": 15000,
+
             # Logging and Checkpointing
-            "log_interval": 100,          # Log progress every N iterations
-            "save_interval": 5000,        # Save checkpoint every N iterations
+            "log_interval": 100,
+            "save_interval": 5000,
+
+            # Progressive Resolution
+            "progressive_resolution_enabled": True,
+            "prog_res_initial_factor": 0.125,
+            "prog_res_final_factor": 1.0,
+            "prog_res_schedule_end": 19500,
+
+            # Progressive Blur
+            "progressive_blur_enabled": True,
+            "prog_blur_initial_sigma": 2.4,
+            "prog_blur_schedule_end": 19500,
+
+            # Gaussian Management - Densification (CRITICAL FIXES)
+            "densification_enabled": True,
+            "densification_interval": 100,
+            "densify_from_iter": 500,
+            "densify_until_iter": 15000,
+            "densify_grad_threshold": 0.00002,  # CRITICAL FIX: Lowered for quality
+            "percent_dense": 0.02,
             
-            # Densification Parameters (Critical for Quality)
-            "densification_interval": 100,     # How often to run densification
-            "opacity_reset_interval": 3000,    # Reset low-opacity Gaussians
-            "densify_from_iter": 500,          # Start densification after N iterations
-            "densify_until_iter": 15000,       # Stop densification after N iterations
-            "densify_grad_threshold": 0.0002,  # Lower = more sensitive = higher detail
-            "percent_dense": 0.01,             # Percentage of scene to densify
+            # Progressive Densification Schedule
+            "progressive_densification_enabled": True,
+            "prog_dens_initial_threshold": 0.00005,
+            "prog_dens_final_threshold": 0.00002,
+            "prog_dens_schedule_iterations": 7000,
+
+            # Advanced Densification Controls
+            "split_threshold": 0.00005,
+            "clone_threshold": 0.00002,
+            "max_gaussians": 2000000,
+            "adaptive_density_control": True,
+            "size_threshold": 20,
+            "min_opacity": 0.005,
+
+            # Opacity and Late Densification
+            "opacity_reset_interval": 3000,
+            "late_densification_enabled": True,
+            "late_densification_start": 20000,
+
+            # Learning Rates (Dummy values, as they are not used in the container yet)
+            "learning_rate": 0.0025,
+            "position_lr_scale": 0.00016, 
+            "scaling_lr": 0.005,
+            "rotation_lr": 0.001,
+            "opacity_lr": 0.05,
+            "feature_lr": 0.0025,
             
-            # Quality Enhancement Parameters
-            "lambda_dssim": 0.2,          # SSIM loss weight (preserves fine details)
-            "sh_degree": 3,               # Spherical harmonics degree (3 = photorealistic)
-            
-            # Advanced Optimization Features
-            "progressive_resolution": True,     # Start low-res, increase gradually
-            "optimization_enabled": True       # Enable advanced optimization features
+            # Quality Enhancement
+            "lambda_dssim": 0.2,
+            "sh_degree": 3,
+
+            # Feature flags
+            "optimization_enabled": True,
+            "progressive_resolution": True # Kept for backward compatibility if needed
         }
         
         # Merge user-provided hyperparameters with defaults (user values override defaults)
