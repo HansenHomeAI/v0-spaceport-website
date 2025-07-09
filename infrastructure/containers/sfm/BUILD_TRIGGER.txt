@@ -1,187 +1,47 @@
-CRITICAL FIX: COLMAP PATH Issue Resolution 2025-06-30 18:35:00
-Fixed COLMAP not available error by explicitly setting PATH="/usr/local/bin:$PATH"
-Added comprehensive COLMAP verification during container build
-This should restore working COLMAP functionality that we had before!
-Rebuilding container to fix the "COLMAP not available" runtime error.
+CRITICAL FIX: Train/Test Split Output Structure - 2025-01-09
 
-OPENSFM_GPS_ENHANCED_BUILD_v1.0
+MAJOR ENHANCEMENT: SfM now outputs proper train/test split structure for 3DGS training
 
-This file triggers the automated build of the OpenSfM GPS-enhanced container.
+NEW FEATURES:
+1. TRAIN/TEST SPLIT COLMAP OUTPUT:
+   - Creates separate train/ and test/ directories with COLMAP reconstructions
+   - 80/20 split by default (configurable)
+   - Each directory contains cameras.txt, images.txt, points3D.txt
+   - Maintains backward compatibility with sparse/0/ structure
 
-Container Features:
-- OpenSfM with GPS-constrained reconstruction
-- Drone flight path CSV processing 
-- Enhanced accuracy for low-feature areas
-- COLMAP-compatible output format
-- Production-ready for AWS SageMaker
+2. ENHANCED VALIDATION:
+   - Validates both train and test directories exist
+   - Counts images in each split
+   - Quality check includes train/test split requirements
+   - Comprehensive logging of split statistics
 
-Build Date: 2025-01-27
-Pipeline: Structure-from-Motion (SfM) with GPS constraints
-Technology: OpenSfM + COLMAP + 3D Gaussian Splatting
-Output: High-quality 3D reconstructions from drone imagery
+3. IMPROVED COLMAP CONVERTER:
+   - create_train_test_split() method for consistent splitting
+   - create_split_reconstructions() for separate COLMAP outputs
+   - Enhanced validation with train/test directory checks
+   - Proper file copying to final output locations
 
-Latest Update: GPS-enhanced reconstruction with improved parameter tuning
-- 20,000 max features per image
-- Lowered SIFT peak threshold to 0.006
-- Increased GPS matching distance to 300m
-- Relaxed matching constraints for better coverage
-- Improved triangulation with 1.0° min ray angle
+This addresses the critical issue where 3DGS training expected train/test
+subdirectories but SfM was outputting a flat structure. Now the pipeline
+is properly modular with plug-and-play compatibility.
 
-This container is production-ready and has been tested with:
-- 97 drone images
-- GPS flight path CSV data
-- 10 waypoints with full 3D trajectory
-- Output: 247,705 3D points (high quality)
+Expected Output Structure:
+/opt/ml/processing/output/
+├── sparse/0/           # Original structure (backward compatibility)
+│   ├── cameras.txt
+│   ├── images.txt
+│   └── points3D.txt
+├── train/              # NEW: Training split
+│   ├── cameras.txt
+│   ├── images.txt
+│   └── points3D.txt
+├── test/               # NEW: Test split
+│   ├── cameras.txt
+│   ├── images.txt
+│   └── points3D.txt
+├── dense/
+│   └── sparse_points.ply
+├── images/
+└── database.db
 
-Expected processing time: 40-50 minutes for typical drone surveys
-Memory usage: ~4GB peak during feature matching
-Storage: ~2GB for intermediate files, ~500MB final output
-
-Container will be built automatically when this file is modified.
-Build process includes:
-1. OpenSfM installation with GPS enhancements
-2. COLMAP integration for 3DGS compatibility
-3. Python dependencies and optimizations
-4. Production environment setup
-
-Status: READY FOR PRODUCTION DEPLOYMENT 🚀
-
-BUILD_TRIGGER_TIMESTAMP: 2025-01-27T22:30:00Z
-TRIGGER_REASON: Comprehensive fix for OpenSfM build failures - submodules, stable version, and dependencies
-CONTAINER_UPDATE: Multiple critical fixes applied:
-  1. Fixed missing pybind11 submodule by adding 'git submodule update --init --recursive'
-  2. Switched to stable OpenSfM v0.6.0 release instead of unstable main branch
-  3. Added pybind11 and setuptools to requirements.txt
-  4. Pinned numpy to v1.21.6 for OpenSfM compatibility
-  5. Kept sphinx patching to avoid documentation build issues
-BUILD_VERSION: opensfm-gps-v1.3-stable
-EXPECTED_OUTCOME: OpenSfM should build successfully with all dependencies and submodules properly initialized
-NOTES: Previous builds failed due to: 1) Missing sphinx module, 2) Deprecated sphinx.setup_command, 3) Missing pybind11 submodule. All issues now addressed.
-
-BUILD_TRIGGER_TIMESTAMP: 2025-07-02T20:40:00Z
-TRIGGER_REASON: Fix ECR tag mismatch - Lambda expects :latest but was using :opensfm-gps-latest
-CONTAINER_UPDATE: Updated Lambda to use correct ECR tag :latest to match GitHub Actions workflow
-BUILD_VERSION: opensfm-gps-v1.4-tag-fix
-EXPECTED_OUTCOME: Container will be pushed with :latest tag and pipeline will find the image
-NOTES: Pipeline failed with "Cannot find the requested image" because of tag mismatch. Fixed Lambda to use :latest.
-
-BUILD_TRIGGER_TIMESTAMP: 2025-07-02T21:55:00Z
-TRIGGER_REASON: Fix missing Tuple import causing NameError in run_opensfm_gps.py
-CONTAINER_UPDATE: Added Tuple to typing imports to fix "NameError: name 'Tuple' is not defined"
-BUILD_VERSION: opensfm-gps-v1.5-tuple-fix
-EXPECTED_OUTCOME: Container will execute successfully past the import stage
-NOTES: SageMaker job was failing with exit code 1 due to missing Tuple import. Simple fix to add to imports.
-
-BUILD_TRIGGER_TIMESTAMP: 2025-07-02T22:25:00Z
-TRIGGER_REASON: Fix missing fpdf dependency causing OpenSfM import failure
-CONTAINER_UPDATE: Added fpdf2>=2.5.0 to requirements.txt for OpenSfM report functionality
-BUILD_VERSION: opensfm-gps-v1.6-fpdf-fix
-EXPECTED_OUTCOME: OpenSfM should import successfully and begin feature extraction
-NOTES: OpenSfM was failing on import due to missing fpdf module needed for export_report. Added fpdf2 dependency.
-
-Fix numpy version compatibility issue for OpenSfM pickle unpickling error - Build 2025-07-02-17:00
-
-Add Advanced 3D Path Processor for improved GPS-to-photo mapping - Build 2025-07-02-17:30
-
-Enhanced GPS processor with CSV parameter extraction and curved path support - Build 2025-01-19-15:30
-
-Major improvements:
-- Dynamic extraction of flight speed, photo intervals, and distance intervals from CSV data
-- Support for curved flight paths between waypoints using spline interpolation
-- Fallback to hardcoded values only when CSV doesn't contain the parameters
-- Both time-based and distance-based photo distribution modes
-- Improved waypoint curvature handling with control points
-- Better flight parameter detection with unit conversion (mph/kmh/m/s, feet/meters)
-- Enhanced logging to show which parameters come from CSV vs fallbacks
-
-HOTFIX - Build 2025-01-19-21:00:
-- Fixed run_sfm.sh to pass correct command line arguments to run_opensfm_gps.py
-- Added INPUT_DIR and OUTPUT_DIR arguments to Python script call
-Wed Jul  2 21:31:43 MDT 2025: Fixed heading KeyError in time-based mapping
-Wed Jul  2 22:01:36 MDT 2025: Fixed reference_lla.json format for OpenSfM
-
-BUILD_TRIGGER_NUMPY_FIX_2025_07_03_v2
-BUILD_TRIGGER_ORIENTATION_FIX_2025_07_03_v3
-BUILD_TRIGGER_METHOD_NAME_FIX_2025_07_03_v4
-BUILD_TRIGGER_HIGH_DENSITY_SFM_2025_07_03_v5
-
-BUILD_TRIGGER_DATABASE_PARSING_FIX_2025_07_05_v7
-CRITICAL FIX: COLMAP file parsing error in create_stub_database()
-ISSUE: ValueError: invalid literal for int() with base 10: 'v2' when parsing cameras.txt
-ROOT CAUSE: create_stub_database() method wasn't properly handling COLMAP header lines and malformed data
-SOLUTION: Added robust error handling with try/catch blocks for parsing camera and image files
-CHANGES:
-1. Added try/catch around camera_id = int(parts[0]) parsing
-2. Added try/catch around image parsing with camera_id = int(parts[8])
-3. Enhanced line filtering to skip comments and empty lines more robustly
-4. Added warning logging for malformed lines instead of crashing
-5. Improved line.strip() handling to avoid whitespace issues
-EXPECTED_OUTCOME: Database creation should complete successfully with robust error handling
-Malformed lines should be skipped gracefully with warning messages
-
-BUILD_TRIGGER_COLMAP_PATH_FIX_2025_07_03_v6
-CRITICAL FIX: COLMAP sparse/0 directory structure path mismatch
-ISSUE: OpenSfMToCOLMAPConverter was writing files to /opt/ml/processing/output/ but validation script expected them in /opt/ml/processing/output/sparse/0/
-SOLUTION: Modified OpenSfMToCOLMAPConverter to create proper sparse/0 directory structure
-CHANGES:
-1. Updated __init__ to create output_path as base_path/sparse/0
-2. Added base_output_path to maintain access to root output directory
-3. Updated create_reference_point_cloud to write PLY to dense/ directory
-4. Updated validation to check PLY file in correct dense/ location
-5. Enhanced logging to show both base output and sparse directory paths
-EXPECTED_OUTCOME: Pipeline should complete successfully with files in correct sparse/0 structure
-Validation script should find all required files in expected locations
-
-BUILD_TRIGGER_3DGS_COMPATIBILITY_FIX_2025_07_03_v5
-COMPREHENSIVE FIX: Complete 3DGS compatibility artifact generation
-ISSUE: OpenSfM pipeline missing 3 critical artifacts for 3DGS training
-MISSING ARTIFACTS:
-1. database.db - COLMAP SQLite database
-2. images/ directory - Image files for texture loading
-3. sfm_metadata.json - Processing statistics
-SOLUTION: Extended OpenSfM pipeline to generate all missing COLMAP-compatible artifacts
-CHANGES:
-1. Added copy_images_for_3dgs() to copy images to output/images/ directory
-2. Added generate_metadata_json() to create processing statistics metadata
-3. Added create_stub_database() to generate COLMAP-compatible SQLite database
-4. Updated run() method to generate all three missing artifacts
-5. Added processing time tracking for accurate metadata
-6. Database includes proper COLMAP schema with cameras, images, keypoints, matches tables
-EXPECTED_OUTCOME: Full 'plug and play' modularity with gsplat 3DGS training infrastructure
-
-BUILD_TRIGGER_PERMISSION_FIX_2025_07_06_v8
-CRITICAL FIX: SageMaker output directory permission denied error
-ISSUE: [Errno 13] Permission denied: '/opt/ml/processing/output/sparse' when creating COLMAP directory structure
-ROOT CAUSE: Container runs as root but SageMaker output mount has restricted permissions
-SOLUTION: Create COLMAP files in temporary directory first, then copy to final location
-CHANGES:
-1. Modified OpenSfMToCOLMAPConverter to use temp directory for initial file creation
-2. Added _copy_to_final_location() method to move files from temp to final location
-3. Updated validation to check files in final sparse/0 directory
-4. Added proper cleanup of temporary directory after successful copy
-5. Enhanced logging to show both temp and final directory paths
-EXPECTED_OUTCOME: COLMAP conversion should complete successfully without permission errors
-All files should be properly placed in /opt/ml/processing/output/sparse/0/ for 3DGS compatibility
-
-BUILD_TRIGGER_DENSE_PERMISSION_FIX_2025_07_06_v9
-CRITICAL FIX: Complete permission fix for dense directory creation
-ISSUE: [Errno 13] Permission denied: '/opt/ml/processing/output/dense' during PLY file creation
-ROOT CAUSE: create_reference_point_cloud() still tried to create directories in restricted SageMaker output mount
-SOLUTION: Extend temporary directory approach to ALL file operations including PLY creation
-CHANGES:
-1. Modified create_reference_point_cloud() to create PLY file in temp directory
-2. Updated _copy_to_final_location() to copy both sparse/ and dense/ directories
-3. Added proper handling of dense directory copying with cleanup
-4. Enhanced logging for dense directory operations
-5. Ensured all file operations use temp directory before final copy
-EXPECTED_OUTCOME: Complete pipeline success with no permission errors
-All COLMAP files and PLY should be properly placed in final output locations
-
-BUILD_TRIGGER_PERMISSION_FIX_v2.1.0
-Fixed permission issues in SfM container:
-- Container now runs as root to avoid permission errors
-- Pre-created output directory structure with proper permissions
-- Enhanced error handling in COLMAP converter
-- Fixed Step Functions error notification paths
-- Date: 2025-07-07
-- Commit: Permission fix for /opt/ml/processing/output/sparse directory creation
+Build: 2025-01-09-train-test-split-output

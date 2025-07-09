@@ -43,7 +43,7 @@ def lambda_handler(event, context):
         
         # Fallback to legacy error fields for backward compatibility
         else:
-            error = event.get('error')
+        error = event.get('error')
             sfm_error = event.get('sfmError')
             gaussian_error = event.get('gaussianError')
             compression_error = event.get('compressionError')

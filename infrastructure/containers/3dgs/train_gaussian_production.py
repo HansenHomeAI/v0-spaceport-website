@@ -54,7 +54,8 @@ class Trainer:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # CRITICAL FIX: Enhanced CUDA detection and debugging
+        self.device = self.setup_device()
         
         # Determine paths from SageMaker environment variables FIRST
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
@@ -63,6 +64,80 @@ class Trainer:
         
         # Override config with Step Functions parameters (after paths are set)
         self.apply_step_functions_params()
+    
+    def setup_device(self) -> torch.device:
+        """Enhanced device setup with comprehensive CUDA debugging"""
+        logger.info("🔍 Starting comprehensive CUDA detection...")
+        
+        # 1. Check PyTorch CUDA availability
+        logger.info(f"🐍 PyTorch version: {torch.__version__}")
+        logger.info(f"🎯 PyTorch CUDA version: {torch.version.cuda}")
+        logger.info(f"🎮 PyTorch CUDA available: {torch.cuda.is_available()}")
+        
+        # 2. Check CUDA environment variables
+        cuda_env_vars = ['CUDA_HOME', 'CUDA_PATH', 'CUDA_VISIBLE_DEVICES', 'NVIDIA_VISIBLE_DEVICES']
+        for var in cuda_env_vars:
+            value = os.environ.get(var, 'Not set')
+            logger.info(f"🔧 {var}: {value}")
+        
+        # 3. Try to run nvidia-smi
+        try:
+            import subprocess
+            result = subprocess.run(['nvidia-smi'], capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                logger.info("✅ nvidia-smi output:")
+                for line in result.stdout.split('\n')[:10]:  # First 10 lines
+                    if line.strip():
+                        logger.info(f"   {line}")
+            else:
+                logger.error(f"❌ nvidia-smi failed with return code {result.returncode}")
+                logger.error(f"   stderr: {result.stderr}")
+        except Exception as e:
+            logger.error(f"❌ Failed to run nvidia-smi: {e}")
+        
+        # 4. Check if CUDA is available and get device info
+        if torch.cuda.is_available():
+            device_count = torch.cuda.device_count()
+            logger.info(f"🎮 CUDA devices found: {device_count}")
+            
+            for i in range(device_count):
+                props = torch.cuda.get_device_properties(i)
+                logger.info(f"   Device {i}: {props.name}")
+                logger.info(f"   Memory: {props.total_memory / 1024**3:.1f} GB")
+                logger.info(f"   Compute capability: {props.major}.{props.minor}")
+            
+            # Test CUDA functionality
+            try:
+                test_tensor = torch.randn(10, 10).cuda()
+                logger.info("✅ CUDA tensor creation successful")
+                device = torch.device("cuda")
+            except Exception as e:
+                logger.error(f"❌ CUDA tensor creation failed: {e}")
+                logger.warning("⚠️ Falling back to CPU")
+                device = torch.device("cpu")
+        else:
+            logger.warning("⚠️ CUDA not available, using CPU")
+            logger.warning("⚠️ This will be extremely slow for 3D Gaussian Splatting")
+            
+            # Additional debugging for why CUDA might not be available
+            logger.info("🔍 Additional CUDA debugging:")
+            
+            # Check if CUDA libraries are present
+            import glob
+            cuda_libs = glob.glob('/usr/local/cuda*/lib64/libcuda*')
+            if cuda_libs:
+                logger.info(f"   CUDA libraries found: {cuda_libs}")
+            else:
+                logger.warning("   No CUDA libraries found in /usr/local/cuda*/lib64/")
+            
+            # Check LD_LIBRARY_PATH
+            ld_path = os.environ.get('LD_LIBRARY_PATH', '')
+            logger.info(f"   LD_LIBRARY_PATH: {ld_path}")
+            
+            device = torch.device("cpu")
+        
+        logger.info(f"🎯 Final device: {device}")
+        return device
     
     def apply_step_functions_params(self):
         """Apply parameters passed from Step Functions via environment variables."""
@@ -120,13 +195,8 @@ class Trainer:
         logger.info("✅ Trainer initialized")
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
-        if torch.cuda.is_available():
-            gpu_name = torch.cuda.get_device_name(0)
-            gpu_mem = round(torch.cuda.get_device_properties(0).total_memory / 1024**3, 1)
-            logger.info(f"🎮 Using GPU: {gpu_name}")
-            logger.info(f"💾 GPU Memory: {gpu_mem} GB")
-        else:
-            logger.warning("⚠️ No GPU found, training will be very slow on CPU.")
+        
+        # GPU detection is now handled in setup_device() method
 
     def run_real_training(self):
         """Run real gsplat training with proper spherical harmonics output."""
@@ -195,34 +265,63 @@ class Trainer:
         if test_dir:
             logger.info(f"📂 Loading test data from: {test_dir}")
             test_data = self.load_colmap_reconstruction(test_dir)
-            logger.info(f"✅ Train/Test split detected: {len(train_data['cameras'])} train, {len(test_data['cameras'])} test images")
         else:
-            logger.warning("⚠️ No test directory found - will use subset of training images for validation")
-            # Create a simple 80/20 split from training data
-            train_images = list(train_data['cameras'].keys())
-            split_idx = int(len(train_images) * 0.8)
+            logger.warning("⚠️ No test directory found")
             
-            test_images = train_images[split_idx:]
-            train_images = train_images[:split_idx]
-            
-            # Create test data structure
-            test_data = {
-                'cameras': {img_id: train_data['cameras'][img_id] for img_id in test_images},
-                'images': {img_id: train_data['images'][img_id] for img_id in test_images if img_id in train_data['images']},
-                'points_3d': train_data['points_3d']  # Share the same 3D points
-            }
-            
-            # Update training data to only include training images
-            train_data['cameras'] = {img_id: train_data['cameras'][img_id] for img_id in train_images}
-            train_data['images'] = {img_id: train_data['images'][img_id] for img_id in train_images if img_id in train_data['images']}
-            
-            logger.info(f"✅ Created train/test split: {len(train_images)} train, {len(test_images)} test images")
+            # CRITICAL FIX: Create test split from training data if no separate test set
+            if len(train_data['images']) > 5:  # Need at least 5 images for meaningful split
+                logger.info("🔄 Creating test split from training data (20% split)")
+                train_data, test_data = self.create_train_test_split_from_data(train_data)
+            else:
+                logger.warning("⚠️ Too few images for train/test split, using training data for both")
+                test_data = train_data
+        
+        # Validate that we have both train and test data
+        if not train_data or not test_data:
+            raise Exception("Failed to load both training and test data")
+        
+        train_image_count = len(train_data['images'])
+        test_image_count = len(test_data['images'])
+        
+        logger.info(f"✅ COLMAP data loaded successfully:")
+        logger.info(f"   Training images: {train_image_count}")
+        logger.info(f"   Test images: {test_image_count}")
+        logger.info(f"   3D points: {len(train_data['points_3d']['positions'])}")
         
         return {
             'train': train_data,
-            'test': test_data,
-            'points_3d': train_data['points_3d']
+            'test': test_data
         }
+    
+    def create_train_test_split_from_data(self, data: Dict, train_ratio: float = 0.8) -> Tuple[Dict, Dict]:
+        """Create train/test split from a single COLMAP reconstruction"""
+        images = data['images']
+        image_names = list(images.keys())
+        image_names.sort()  # Ensure consistent ordering
+        
+        split_idx = int(len(image_names) * train_ratio)
+        train_names = image_names[:split_idx]
+        test_names = image_names[split_idx:]
+        
+        # Create training data
+        train_data = {
+            'cameras': data['cameras'],
+            'images': {name: images[name] for name in train_names},
+            'points_3d': data['points_3d'],
+            'scene_path': data['scene_path']
+        }
+        
+        # Create test data (shares cameras and points)
+        test_data = {
+            'cameras': data['cameras'],
+            'images': {name: images[name] for name in test_names},
+            'points_3d': data['points_3d'],
+            'scene_path': data['scene_path']
+        }
+        
+        logger.info(f"📊 Created train/test split: {len(train_names)} train, {len(test_names)} test")
+        
+        return train_data, test_data
     
     def load_colmap_cameras(self, cameras_file: Path) -> Dict:
         """Load COLMAP camera intrinsics."""
@@ -347,7 +446,7 @@ class Trainer:
     def initialize_gaussians_from_colmap(self, scene_data: Dict) -> Dict[str, torch.Tensor]:
         """Initialize Gaussian parameters from COLMAP point cloud with proper SH setup."""
         # Use training data points for initialization
-        points_3d = scene_data['points_3d']
+        points_3d = scene_data['train']['points_3d']
         
         if not points_3d:
             raise Exception("No 3D points available from COLMAP reconstruction")
