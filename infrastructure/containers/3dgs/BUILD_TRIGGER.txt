@@ -1,7 +1,6 @@
-Build trigger updated: 2025-07-08-gpu-detection-fix
-- Added comprehensive CUDA environment setup
-- Fixed GPU detection with nvidia-ml-py3 and pynvml
-- Enhanced health checks for GPU verification
-- Improved CUDA environment variables for SageMaker
-- Added nvidia-cuda-toolkit to base image
-- Fixed gsplat CUDA compilation support
+Build trigger updated: 2025-07-08-dependency-fix
+- FIXED: Removed impossible nvidia-ml-py3>=11.0.0 requirement that caused build failure
+- nvidia-ml-py3 only exists up to version 7.352.0 (released 2017) and is deprecated
+- PyTorch already handles GPU detection via torch.cuda.is_available()
+- Removed unnecessary NVIDIA ML packages to simplify dependencies
+- Container should now build successfully with proper CUDA support
