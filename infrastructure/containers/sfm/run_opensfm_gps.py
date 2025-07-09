@@ -177,6 +177,11 @@ class OpenSfMGPSPipeline:
             
             # Output
             'processes': 4,  # Parallelise where possible
+            
+            # CRITICAL FIX: Enable train/test split for proper 3DGS training
+            'reconstruction_split_ratio': 0.8,     # 80% training, 20% validation
+            'reconstruction_split_method': 'sequential',  # Sequential split for temporal consistency
+            'save_partial_reconstructions': True,   # Save both train and test sets
         }
         
         config_path = self.opensfm_dir / "config.yaml"

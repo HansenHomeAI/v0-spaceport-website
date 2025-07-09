@@ -165,74 +165,74 @@ def lambda_handler(event, context):
         
         # Define high-quality default hyperparameters for 3DGS training
         # These are research-backed values optimized for quality and detail
-        # Source: infrastructure/containers/3dgs/progressive_config.yaml
+        # FIXED: Updated to match Nerfstudio splatfacto defaults for proper training
         default_hyperparameters = {
-            # Core Training Parameters
-            "max_iterations": 250000,  # Increased for higher quality (≈2-3 hours on g4dn.xlarge)
-            "min_iterations": 30000,   # Require at least 30k iters before early-exit logic
-            "target_psnr": 38.0,       # Stricter quality target
-            "psnr_plateau_termination": False,
-            "plateau_patience": 5000,
-            "auto_extension_enabled": True,
-            "max_extension_iterations": 50000,
+            # Core Training Parameters - FIXED to Nerfstudio defaults
+            "max_iterations": 30000,    # Nerfstudio default (was 250000 - too long)
+            "min_iterations": 1000,     # Minimum before early termination
+            "target_psnr": 30.0,        # Realistic target (was 38.0 - too high)
+            "psnr_plateau_termination": True,  # Enable early termination
+            "plateau_patience": 1000,   # Patience for plateau detection
+            "auto_extension_enabled": False,   # Disable auto-extension
+            "max_extension_iterations": 5000,  # Reduced extension
 
             # Logging and Checkpointing
             "log_interval": 100,
             "save_interval": 5000,
 
-            # Progressive Resolution
-            "progressive_resolution_enabled": True,
-            "prog_res_initial_factor": 0.125,
-            "prog_res_final_factor": 1.0,
-            "prog_res_schedule_end": 19500,
+            # Progressive Resolution - DISABLED for now to simplify
+            "progressive_resolution_enabled": False,
+            "prog_res_initial_factor": 1.0,     # Start at full resolution
+            "prog_res_final_factor": 1.0,       # Stay at full resolution
+            "prog_res_schedule_end": 1000,      # Minimal schedule
 
-            # Progressive Blur
-            "progressive_blur_enabled": True,
-            "prog_blur_initial_sigma": 2.4,
-            "prog_blur_schedule_end": 19500,
+            # Progressive Blur - DISABLED for now to simplify
+            "progressive_blur_enabled": False,
+            "prog_blur_initial_sigma": 0.0,     # No blur
+            "prog_blur_schedule_end": 1000,     # Minimal schedule
 
-            # Gaussian Management - Densification (CRITICAL FIXES)
+            # Gaussian Management - FIXED to Nerfstudio defaults
             "densification_enabled": True,
-            "densification_interval": 100,
-            "densify_from_iter": 500,
-            "densify_until_iter": 80000,        # Continue densification much longer
-            "densify_grad_threshold": 0.00001,  # Even finer threshold
-            "percent_dense": 0.05,              # Higher growth rate
+            "densification_interval": 100,      # Nerfstudio default
+            "densify_from_iter": 500,           # Nerfstudio default
+            "densify_until_iter": 15000,        # Nerfstudio default (was 80000)
+            "densify_grad_threshold": 0.0002,   # CRITICAL FIX: Nerfstudio default (was 0.00001)
+            "percent_dense": 0.01,              # Nerfstudio default (was 0.05)
             
-            # Progressive Densification Schedule
-            "progressive_densification_enabled": True,
-            "prog_dens_initial_threshold": 0.00005,
-            "prog_dens_final_threshold": 0.00002,
-            "prog_dens_schedule_iterations": 20000,
+            # Progressive Densification - DISABLED for now
+            "progressive_densification_enabled": False,
+            "prog_dens_initial_threshold": 0.0002,
+            "prog_dens_final_threshold": 0.0002,
+            "prog_dens_schedule_iterations": 1000,
 
-            # Advanced Densification Controls
-            "split_threshold": 0.00005,
-            "clone_threshold": 0.00002,
-            "max_gaussians": 2000000,
-            "adaptive_density_control": True,
-            "size_threshold": 20,
-            "min_opacity": 0.005,
+            # Advanced Densification Controls - Nerfstudio defaults
+            "split_threshold": 0.02,            # Nerfstudio default
+            "clone_threshold": 0.0002,          # Nerfstudio default
+            "max_gaussians": 500000,            # Reasonable limit (was 2000000)
+            "adaptive_density_control": False,   # Disable for now
+            "size_threshold": 20,               # Nerfstudio default
+            "min_opacity": 0.005,               # Nerfstudio default
 
             # Opacity and Late Densification
-            "opacity_reset_interval": 3000,
-            "late_densification_enabled": True,
+            "opacity_reset_interval": 3000,     # Nerfstudio default
+            "late_densification_enabled": False, # Disable for now
             "late_densification_start": 20000,
 
-            # Learning Rates (Dummy values, as they are not used in the container yet)
-            "learning_rate": 0.0015,           # Slightly lower LR for stability
-            "position_lr_scale": 0.0001, 
-            "scaling_lr": 0.005,
-            "rotation_lr": 0.001,
-            "opacity_lr": 0.05,
-            "feature_lr": 0.0025,
+            # Learning Rates - Nerfstudio defaults
+            "learning_rate": 0.0025,            # Nerfstudio default
+            "position_lr_scale": 0.00016,       # Nerfstudio default
+            "scaling_lr": 0.005,                # Nerfstudio default
+            "rotation_lr": 0.001,               # Nerfstudio default
+            "opacity_lr": 0.05,                 # Nerfstudio default
+            "feature_lr": 0.0025,               # Nerfstudio default
             
-            # Quality Enhancement
-            "lambda_dssim": 0.2,
-            "sh_degree": 3,
+            # Quality Enhancement - Nerfstudio defaults
+            "lambda_dssim": 0.2,                # Nerfstudio default
+            "sh_degree": 3,                     # Nerfstudio default
 
             # Feature flags
             "optimization_enabled": True,
-            "progressive_resolution": True # Kept for backward compatibility if needed
+            "progressive_resolution": False     # Disabled for now
         }
         
         # Merge user-provided hyperparameters with defaults (user values override defaults)

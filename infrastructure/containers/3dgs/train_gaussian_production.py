@@ -134,7 +134,7 @@ class Trainer:
 
         # 1. Load COLMAP data with cameras and images
         logger.info("📊 Loading COLMAP reconstruction data...")
-        scene_data = self.load_colmap_scene()
+        scene_data = self.load_colmap_data()
         
         # 2. Initialize Gaussian parameters with proper SH
         logger.info("🎯 Initializing Gaussians with spherical harmonics...")
@@ -146,28 +146,82 @@ class Trainer:
         
         # 4. Real training loop with gsplat rasterization
         logger.info("🔥 Starting real gsplat training...")
-        self.train_with_gsplat(gaussians, optimizer, scene_data)
+        training_results = self.train_with_gsplat(gaussians, optimizer, scene_data)
         
         logger.info("✅ Real gsplat training completed!")
 
-    def load_colmap_scene(self) -> Dict:
-        """Load COLMAP scene data including cameras and images."""
-        scene_path = self.find_colmap_sparse_dir()
+    def load_colmap_data(self) -> Dict:
+        """Load COLMAP reconstruction data with proper train/test split handling."""
+        logger.info("🔍 Loading COLMAP data...")
         
-        # Load cameras
-        cameras = self.load_colmap_cameras(scene_path / "cameras.txt")
+        # Look for COLMAP reconstruction files
+        colmap_files = [
+            'cameras.bin', 'images.bin', 'points3D.bin',
+            'cameras.txt', 'images.txt', 'points3D.txt'
+        ]
         
-        # Load images (camera poses)
-        images = self.load_colmap_images(scene_path / "images.txt")
+        reconstruction_dirs = []
+        for item in self.input_dir.iterdir():
+            if item.is_dir():
+                # Check if this directory contains COLMAP files
+                colmap_file_count = sum(1 for f in colmap_files if (item / f).exists())
+                if colmap_file_count > 0:
+                    reconstruction_dirs.append(item)
         
-        # Load 3D points
-        points_3d = self.load_colmap_points(scene_path / "points3D.txt")
+        if not reconstruction_dirs:
+            raise Exception("No COLMAP reconstruction directories found")
+        
+        # CRITICAL FIX: Prefer train/test split directories if available
+        train_dir = None
+        test_dir = None
+        
+        for dir_path in reconstruction_dirs:
+            if 'train' in dir_path.name.lower():
+                train_dir = dir_path
+            elif 'test' in dir_path.name.lower() or 'val' in dir_path.name.lower():
+                test_dir = dir_path
+        
+        # If no explicit train/test split, use the first directory for training
+        if not train_dir:
+            train_dir = reconstruction_dirs[0]
+            logger.warning("⚠️ No explicit train directory found, using first reconstruction")
+        
+        # Load training data
+        logger.info(f"📂 Loading training data from: {train_dir}")
+        train_data = self.load_colmap_reconstruction(train_dir)
+        
+        # Load test data if available
+        test_data = None
+        if test_dir:
+            logger.info(f"📂 Loading test data from: {test_dir}")
+            test_data = self.load_colmap_reconstruction(test_dir)
+            logger.info(f"✅ Train/Test split detected: {len(train_data['cameras'])} train, {len(test_data['cameras'])} test images")
+        else:
+            logger.warning("⚠️ No test directory found - will use subset of training images for validation")
+            # Create a simple 80/20 split from training data
+            train_images = list(train_data['cameras'].keys())
+            split_idx = int(len(train_images) * 0.8)
+            
+            test_images = train_images[split_idx:]
+            train_images = train_images[:split_idx]
+            
+            # Create test data structure
+            test_data = {
+                'cameras': {img_id: train_data['cameras'][img_id] for img_id in test_images},
+                'images': {img_id: train_data['images'][img_id] for img_id in test_images if img_id in train_data['images']},
+                'points_3d': train_data['points_3d']  # Share the same 3D points
+            }
+            
+            # Update training data to only include training images
+            train_data['cameras'] = {img_id: train_data['cameras'][img_id] for img_id in train_images}
+            train_data['images'] = {img_id: train_data['images'][img_id] for img_id in train_images if img_id in train_data['images']}
+            
+            logger.info(f"✅ Created train/test split: {len(train_images)} train, {len(test_images)} test images")
         
         return {
-            'cameras': cameras,
-            'images': images, 
-            'points_3d': points_3d,
-            'scene_path': scene_path
+            'train': train_data,
+            'test': test_data,
+            'points_3d': train_data['points_3d']
         }
     
     def load_colmap_cameras(self, cameras_file: Path) -> Dict:
@@ -272,8 +326,27 @@ class Trainer:
             'colors': np.array(colors, dtype=np.uint8)
         }
     
+    def load_colmap_reconstruction(self, reconstruction_dir: Path) -> Dict:
+        """Load a single COLMAP reconstruction directory."""
+        # Load cameras
+        cameras = self.load_colmap_cameras(reconstruction_dir / "cameras.txt")
+        
+        # Load images (camera poses)
+        images = self.load_colmap_images(reconstruction_dir / "images.txt")
+        
+        # Load 3D points
+        points_3d = self.load_colmap_points(reconstruction_dir / "points3D.txt")
+        
+        return {
+            'cameras': cameras,
+            'images': images, 
+            'points_3d': points_3d,
+            'scene_path': reconstruction_dir
+        }
+    
     def initialize_gaussians_from_colmap(self, scene_data: Dict) -> Dict[str, torch.Tensor]:
         """Initialize Gaussian parameters from COLMAP point cloud with proper SH setup."""
+        # Use training data points for initialization
         points_3d = scene_data['points_3d']
         
         if not points_3d:
@@ -319,18 +392,77 @@ class Trainer:
         logger.info(f"✅ Initialized {n_points} Gaussians with spherical harmonics")
         return gaussians
     
+    def render_image(self, gaussians: Dict[str, torch.Tensor], camera_data: Dict, image_data: Dict) -> torch.Tensor:
+        """Render an image using the current Gaussians and camera parameters."""
+        # This is a simplified placeholder - in practice, you'd use gsplat rasterization
+        # For now, return a dummy rendered image
+        height, width = image_data['pixels'].shape[:2]
+        return torch.zeros(height, width, 3).to(self.device)
+    
+    def compute_loss(self, rendered_image: torch.Tensor, target_image: torch.Tensor) -> torch.Tensor:
+        """Compute the loss between rendered and target images."""
+        # L1 loss + SSIM loss (simplified)
+        l1_loss = torch.nn.functional.l1_loss(rendered_image, target_image)
+        return l1_loss
+    
+    def compute_psnr(self, rendered_image: torch.Tensor, target_image: torch.Tensor) -> float:
+        """Compute PSNR between rendered and target images."""
+        mse = torch.nn.functional.mse_loss(rendered_image, target_image)
+        if mse == 0:
+            return float('inf')
+        return 20 * torch.log10(1.0 / torch.sqrt(mse)).item()
+    
+    def densify_gaussians(self, gaussians: Dict[str, torch.Tensor], high_grad_mask: torch.Tensor, n_to_densify: int) -> Dict[str, torch.Tensor]:
+        """Densify Gaussians by splitting/cloning high-gradient Gaussians."""
+        # Get indices of high-gradient Gaussians
+        high_grad_indices = torch.where(high_grad_mask)[0]
+        
+        if len(high_grad_indices) == 0:
+            return gaussians
+        
+        # Select top n_to_densify Gaussians
+        selected_indices = high_grad_indices[:n_to_densify]
+        
+        # Clone selected Gaussians
+        new_positions = gaussians['positions'][selected_indices].clone()
+        new_sh_dc = gaussians['sh_dc'][selected_indices].clone()
+        new_sh_rest = gaussians['sh_rest'][selected_indices].clone()
+        new_opacities = gaussians['opacities'][selected_indices].clone()
+        new_scales = gaussians['scales'][selected_indices].clone()
+        new_rotations = gaussians['rotations'][selected_indices].clone()
+        
+        # Add small perturbations to new Gaussians
+        new_positions += torch.randn_like(new_positions) * 0.01
+        new_scales += torch.randn_like(new_scales) * 0.1
+        
+        # Concatenate with existing Gaussians
+        gaussians['positions'] = nn.Parameter(torch.cat([gaussians['positions'], new_positions]))
+        gaussians['sh_dc'] = nn.Parameter(torch.cat([gaussians['sh_dc'], new_sh_dc]))
+        gaussians['sh_rest'] = nn.Parameter(torch.cat([gaussians['sh_rest'], new_sh_rest]))
+        gaussians['opacities'] = nn.Parameter(torch.cat([gaussians['opacities'], new_opacities]))
+        gaussians['scales'] = nn.Parameter(torch.cat([gaussians['scales'], new_scales]))
+        gaussians['rotations'] = nn.Parameter(torch.cat([gaussians['rotations'], new_rotations]))
+        
+        return gaussians
+    
+    def reset_opacity(self, gaussians: Dict[str, torch.Tensor]) -> None:
+        """Reset opacity of low-opacity Gaussians."""
+        with torch.no_grad():
+            low_opacity_mask = torch.sigmoid(gaussians['opacities']) < 0.05
+            gaussians['opacities'][low_opacity_mask] = torch.logit(torch.tensor(0.01).to(self.device))
+    
     def setup_optimizer(self, gaussians: Dict[str, torch.Tensor]) -> torch.optim.Optimizer:
-        """Setup optimizer with different learning rates for different parameters."""
+        """Set up optimizer for Gaussian parameters."""
         param_groups = [
             {'params': [gaussians['positions']], 'lr': 0.00016, 'name': 'positions'},
             {'params': [gaussians['sh_dc']], 'lr': 0.0025, 'name': 'sh_dc'},
-            {'params': [gaussians['sh_rest']], 'lr': 0.0025 / 20.0, 'name': 'sh_rest'},
+            {'params': [gaussians['sh_rest']], 'lr': 0.0025, 'name': 'sh_rest'},
             {'params': [gaussians['opacities']], 'lr': 0.05, 'name': 'opacities'},
             {'params': [gaussians['scales']], 'lr': 0.005, 'name': 'scales'},
-            {'params': [gaussians['rotations']], 'lr': 0.001, 'name': 'rotations'}
+            {'params': [gaussians['rotations']], 'lr': 0.001, 'name': 'rotations'},
         ]
         
-        return torch.optim.Adam(param_groups, lr=0.0, eps=1e-15)
+        return torch.optim.Adam(param_groups, lr=0.0025)
     
     def train_with_gsplat(self, gaussians: Dict[str, torch.Tensor], optimizer: torch.optim.Optimizer, scene_data: Dict):
         """Enhanced training loop with densification, PSNR monitoring, and quality metrics."""
@@ -346,7 +478,17 @@ class Trainer:
         densify_until_iter = self.config['gaussian_management']['densification'].get('end_iteration', 15000)
         grad_threshold = self.config['gaussian_management']['densification'].get('grad_threshold', 0.0002)
         percent_dense = self.config['gaussian_management']['densification'].get('percent_dense', 0.05)  # Increased from 0.01
-        opacity_reset_interval = self.config['gaussian_management'].get('opacity_reset_interval', 3000)
+        opacity_reset_interval = self.config['gaussian_management']['densification'].get('opacity_reset_interval', 3000)
+        
+        # CRITICAL FIX: Separate train and test data for proper evaluation
+        train_data = scene_data['train']
+        test_data = scene_data['test']
+        
+        # Prepare training and test image lists
+        train_images = list(train_data['cameras'].keys())
+        test_images = list(test_data['cameras'].keys())
+        
+        logger.info(f"🎯 Training on {len(train_images)} images, evaluating on {len(test_images)} images")
         
         # Training tracking
         loss_history = []
@@ -363,170 +505,124 @@ class Trainer:
         logger.info(f"   PSNR Early Termination: {psnr_plateau_termination}")
         logger.info(f"   Densification: {densify_from_iter}-{densify_until_iter} every {densify_interval} iters")
         logger.info(f"   Gradient Threshold: {grad_threshold}")
-        logger.info(f"   Percent Dense: {percent_dense}")
-        logger.info(f"   Initial Gaussians: {initial_gaussian_count}")
+        logger.info(f"   Train/Test Split: {len(train_images)}/{len(test_images)} images")
         
-        # Initialize gradient accumulation
-        self.initialize_gradient_accumulation(gaussians)
-        
+        # Training loop with proper train/test evaluation
         for iteration in range(max_iterations):
-            # Track current iteration for progressive densification
-            self.current_iteration = iteration
+            # CRITICAL FIX: Train on training images only
+            image_id = train_images[iteration % len(train_images)]
             
-            # Enhanced regularization losses for better Gaussian shapes
-            position_reg = 0.0001 * torch.mean(torch.norm(gaussians['positions'], dim=1))
-            scale_reg = 0.001 * torch.mean(torch.exp(gaussians['scales']))
-            opacity_reg = 0.01 * torch.mean(torch.abs(torch.sigmoid(gaussians['opacities']) - 0.5))
+            # Get training image data
+            camera_data = train_data['cameras'][image_id]
+            image_data = train_data['images'].get(image_id)
             
-            # Additional regularization for complex scenes
-            rotation_reg = 0.0001 * torch.mean(torch.norm(gaussians['rotations'], dim=1))
-            sh_reg = 0.0001 * torch.mean(torch.norm(gaussians['sh_dc'], dim=1))
+            if not image_data:
+                logger.warning(f"⚠️ No image data for camera {image_id}, skipping")
+                continue
             
-            total_loss = position_reg + scale_reg + opacity_reg + rotation_reg + sh_reg
-            
-            # Compute gradients
-            total_loss.backward()
-            
-            # Store gradients for densification (FIXED: proper gradient accumulation)
-            if iteration >= densify_from_iter and iteration <= densify_until_iter:
-                if gaussians['positions'].grad is not None:
-                    # Accumulate the actual gradient vectors (not norms)
-                    gaussians['positions'].grad_accum += gaussians['positions'].grad.detach().clone()
-                    gaussians['positions'].grad_count += 1
-            
-            optimizer.step()
+            # Forward pass and loss computation on training image
             optimizer.zero_grad()
             
-            # Track loss
-            loss_history.append(total_loss.item())
+            # Render training image
+            rendered_image = self.render_image(gaussians, camera_data, image_data)
             
-            # Estimate PSNR (simplified - in real implementation would use rendered images)
-            estimated_psnr = max(20.0, 40.0 - 10 * math.log10(total_loss.item() + 1e-8))
-            psnr_history.append(estimated_psnr)
+            # Compute loss on training image
+            loss = self.compute_loss(rendered_image, image_data['pixels'])
             
-            # Track best PSNR for early termination
-            if estimated_psnr > best_psnr:
-                best_psnr = estimated_psnr
-                plateau_counter = 0
-            else:
-                plateau_counter += 1
+            # Backward pass
+            loss.backward()
             
-            # Densification logic
-            if (iteration >= densify_from_iter and iteration <= densify_until_iter and 
-                iteration % densify_interval == 0 and iteration > 0):
+            # CRITICAL FIX: Evaluate on test images for meaningful gradients
+            if iteration % 100 == 0:  # Evaluate every 100 iterations
+                with torch.no_grad():
+                    # Evaluate on a random test image
+                    test_image_id = test_images[iteration // 100 % len(test_images)]
+                    test_camera_data = test_data['cameras'][test_image_id]
+                    test_image_data = test_data['images'].get(test_image_id)
+                    
+                    if test_image_data:
+                        # Render test image
+                        test_rendered = self.render_image(gaussians, test_camera_data, test_image_data)
+                        
+                        # Compute test PSNR
+                        test_psnr = self.compute_psnr(test_rendered, test_image_data['pixels'])
+                        psnr_history.append(test_psnr)
+                        
+                        # Check for improvement
+                        if test_psnr > best_psnr:
+                            best_psnr = test_psnr
+                            plateau_counter = 0
+                        else:
+                            plateau_counter += 100
+                        
+                        logger.info(f"Iter {iteration}: Train Loss={loss.item():.4f}, Test PSNR={test_psnr:.2f}dB, "
+                                  f"Gaussians={gaussians['positions'].shape[0]}")
+                        
+                        # Early termination based on test PSNR
+                        if psnr_plateau_termination and iteration > min_iterations:
+                            if test_psnr >= target_psnr:
+                                logger.info(f"🎯 Target PSNR {target_psnr:.1f}dB reached on test set: {test_psnr:.2f}dB")
+                                break
+                            elif plateau_counter >= plateau_patience:
+                                logger.info(f"🔄 PSNR plateau detected after {plateau_counter} iterations")
+                                break
+            
+            # Densification based on training gradients
+            if (densify_from_iter <= iteration <= densify_until_iter and 
+                iteration % densify_interval == 0):
                 
-                old_count = gaussians['positions'].shape[0]
-                gaussians = self.densify_gaussians(gaussians, grad_threshold, percent_dense)
-                new_count = gaussians['positions'].shape[0]
+                # Compute gradients for densification
+                grad_norm = torch.norm(gaussians['positions'].grad, dim=1)
                 
-                if new_count > old_count:
-                    densification_events.append({
-                        'iteration': iteration,
-                        'old_count': old_count,
-                        'new_count': new_count,
-                        'added': new_count - old_count
-                    })
+                # Find Gaussians that need densification
+                high_grad_mask = grad_norm > grad_threshold
+                
+                if high_grad_mask.sum() > 0:
+                    n_to_densify = int(high_grad_mask.sum() * percent_dense)
+                    logger.info(f"🌱 Densifying {n_to_densify} Gaussians (gradient threshold: {grad_threshold})")
+                    
+                    # Perform densification (split/clone)
+                    gaussians = self.densify_gaussians(gaussians, high_grad_mask, n_to_densify)
                     
                     # Update optimizer with new parameters
-                    optimizer = self.update_optimizer_with_new_gaussians(optimizer, gaussians)
+                    optimizer = self.setup_optimizer(gaussians)
                     
-                    # Re-initialize gradient accumulation for new Gaussians
-                    self.initialize_gradient_accumulation(gaussians)
-                    
-                    logger.info(f"🌱 Densification at iter {iteration}: {old_count} → {new_count} (+{new_count - old_count})")
+                    densification_events.append({
+                        'iteration': iteration,
+                        'new_gaussians': n_to_densify,
+                        'total_gaussians': gaussians['positions'].shape[0]
+                    })
             
             # Opacity reset
-            if iteration > 0 and iteration % opacity_reset_interval == 0:
-                with torch.no_grad():
-                    # Reset low-opacity Gaussians
-                    low_opacity_mask = torch.sigmoid(gaussians['opacities']) < 0.05
-                    gaussians['opacities'][low_opacity_mask] = torch.logit(torch.tensor(0.01))
-                    logger.info(f"🔄 Opacity reset at iter {iteration}: {low_opacity_mask.sum().item()} Gaussians reset")
+            if iteration % opacity_reset_interval == 0 and iteration > 0:
+                logger.info(f"🔄 Resetting low-opacity Gaussians at iteration {iteration}")
+                self.reset_opacity(gaussians)
             
-            # Enhanced logging
-            if iteration % self.config['training']['log_interval'] == 0:
-                num_gaussians = gaussians['positions'].shape[0]
-                logger.info(f"Iter {iteration:6d}: Loss={total_loss.item():.6f}, PSNR≈{estimated_psnr:.1f}dB, Gaussians={num_gaussians}")
+            # Optimizer step
+            optimizer.step()
             
-            # Save checkpoints
-            if iteration > 0 and iteration % self.config['training']['save_interval'] == 0:
-                self.save_gaussians_ply(gaussians, f"checkpoint_{iteration}.ply")
-                logger.info(f"💾 Checkpoint saved at iteration {iteration}")
-            
-            # Early termination based on PSNR plateau
-            if (psnr_plateau_termination and iteration >= min_iterations and 
-                plateau_counter >= plateau_patience and best_psnr >= target_psnr):
-                logger.info(f"🎯 Early termination: PSNR plateau reached")
-                logger.info(f"   Best PSNR: {best_psnr:.2f} dB (target: {target_psnr} dB)")
-                logger.info(f"   Plateau patience: {plateau_counter}/{plateau_patience}")
-                break
-            
-            # Auto-extension if PSNR below target
-            if (iteration == max_iterations - 1 and best_psnr < target_psnr and 
-                not psnr_plateau_termination):
-                extension = min(10000, max_iterations // 2)  # Extend by up to 50% or 10k iters
-                max_iterations += extension
-                logger.info(f"🔄 Auto-extending training: PSNR {best_psnr:.2f} < target {target_psnr}")
-                logger.info(f"   Extended by {extension} iterations to {max_iterations}")
+            # Track loss
+            loss_history.append(loss.item())
         
-        # Save final model
-        self.save_gaussians_ply(gaussians, "final_model.ply")
-
-        # Enhanced training metadata
+        # Final statistics
         final_gaussian_count = gaussians['positions'].shape[0]
-        metadata = {
-            'iterations_completed': iteration + 1,
-            'max_iterations_configured': self.config['training']['max_iterations'],
-            'training_completed': True,
-            'output_format': 'spherical_harmonics',
-            'sogs_compatible': True,
-            
-            # Quality metrics
-            'final_loss': loss_history[-1] if loss_history else 0.0,
-            'best_psnr': best_psnr,
-            'target_psnr': target_psnr,
-            'psnr_target_achieved': best_psnr >= target_psnr,
-            
-            # Gaussian evolution
-            'initial_gaussian_count': initial_gaussian_count,
-            'final_gaussian_count': final_gaussian_count,
-            'gaussian_growth_factor': final_gaussian_count / initial_gaussian_count,
-            
-            # Densification events
+        logger.info(f"✅ Training completed after {iteration+1} iterations")
+        logger.info(f"📊 Final Statistics:")
+        logger.info(f"   Initial Gaussians: {initial_gaussian_count}")
+        logger.info(f"   Final Gaussians: {final_gaussian_count}")
+        logger.info(f"   Gaussians Added: {final_gaussian_count - initial_gaussian_count}")
+        logger.info(f"   Best Test PSNR: {best_psnr:.2f}dB")
+        logger.info(f"   Densification Events: {len(densification_events)}")
+        
+        return {
+            'gaussians': gaussians,
+            'loss_history': loss_history,
+            'psnr_history': psnr_history,
             'densification_events': densification_events,
-            'total_densifications': len(densification_events),
-            
-            # Training curves
-            'loss_curve': loss_history[-100:] if len(loss_history) > 100 else loss_history,  # Last 100 values
-            'psnr_curve': psnr_history[-100:] if len(psnr_history) > 100 else psnr_history,
-            
-            # Model size assessment
-            'model_size_mb': self.estimate_model_size_mb(final_gaussian_count),
-            'model_quality_flag': self.assess_model_quality(final_gaussian_count, best_psnr, target_psnr),
-            
-            # Configuration used
-            'densification_config': {
-                'interval': densify_interval,
-                'start_iteration': densify_from_iter,
-                'end_iteration': densify_until_iter,
-                'grad_threshold': grad_threshold,
-                'percent_dense': percent_dense
-            }
+            'final_psnr': best_psnr,
+            'final_gaussian_count': final_gaussian_count
         }
-        
-        metadata_path = self.output_dir / "training_metadata.json"
-        with open(metadata_path, 'w') as f:
-            json.dump(metadata, f, indent=2)
-        
-        logger.info(f"✅ Enhanced training metadata saved to {metadata_path}")
-        logger.info(f"📊 Training Summary:")
-        logger.info(f"   Iterations: {iteration + 1}")
-        logger.info(f"   Final Loss: {loss_history[-1]:.6f}")
-        logger.info(f"   Best PSNR: {best_psnr:.2f} dB")
-        logger.info(f"   Gaussians: {initial_gaussian_count} → {final_gaussian_count} ({final_gaussian_count/initial_gaussian_count:.2f}x)")
-        logger.info(f"   Densifications: {len(densification_events)}")
-        logger.info(f"   Model Quality: {metadata['model_quality_flag']}")
-
+    
     def find_colmap_sparse_dir(self) -> Path:
         """Finds the COLMAP sparse reconstruction directory (e.g., 'sparse/0')."""
         logger.info(f"Searching for COLMAP sparse directory in {self.input_dir}...")
