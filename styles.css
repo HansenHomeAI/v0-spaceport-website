@@ -3024,6 +3024,7 @@ body::before {
   padding: 0 10px; /* Reduced from 20px */
   transition: all 0.2s ease;
   box-sizing: border-box;
+  height: 56px;
 }
 
 .address-search-wrapper:focus-within {
@@ -3281,7 +3282,7 @@ body::before {
 
 .input-row-popup {
   display: flex;
-  gap: 12px;
+  gap: 8px; /* Reduced gap to match 4px margins on each side */
   margin: 0; /* Remove the extra margin since we have consistent section padding */
   width: 100%; /* Ensure the row takes full width */
 }
@@ -3298,6 +3299,7 @@ body::before {
   padding: 0 20px;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  height: 56px;
 }
 
 .popup-input-wrapper:focus-within {
@@ -3480,43 +3482,7 @@ body::before {
   font-size: 1.2rem;
 }
 
-@media (max-width: 480px) {
-  .popup-modal {
-    width: calc(100% - 24px);
-    max-height: calc(100% - 24px);
-    border-radius: 24px;
-  }
-
-  /* Keep input rows side-by-side, do not stack */
-  .input-row-popup {
-    /* The rule causing stacking has been removed. */
-  }
-
-  .popup-header {
-    padding: 16px;
-    gap: 8px;
-  }
-  
-  .popup-title-input {
-    font-size: 1.2rem;
-  }
-  
-  .popup-section {
-    padding: 16px;
-  }
-  
-  .accordion-header {
-    padding: 16px;
-  }
-  
-  .section-description {
-    padding: 0 12px;
-  }
-  
-  .upload-zone {
-    padding: 24px 12px;
-  }
-}
+/* Mobile responsive styles removed to maintain consistent dimensions and concentricity */
 
 /* Specific Input Icon Classes */
 .input-icon.pin {
@@ -3555,42 +3521,7 @@ body::before {
   background-image: url('assets/SpaceportIcons/Controls.svg');
 }
 
-/* Responsive adjustments for map overlays */
-@media (max-width: 480px) {
-  .address-search-overlay {
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
-  }
-  
-  .address-search-wrapper {
-    padding: 0 16px 0 44px;
-  }
-  
-  .address-search-wrapper input {
-    font-size: 1.2rem;
-    padding: 14px 0;
-  }
-  
-  .expand-button {
-    width: 48px;
-    height: 48px;
-    border-radius: 28px;
-    top: 4px;
-    right: 4px;
-  }
-  
-  .expand-icon {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .map-container.fullscreen .address-search-overlay {
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
-  }
-}
+/* Responsive adjustments for map overlays - REMOVED to maintain concentricity */
 
 /* Add background blur when instructions are visible */
 .map-container.has-instructions::before {
