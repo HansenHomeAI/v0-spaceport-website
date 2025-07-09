@@ -2816,9 +2816,6 @@ body::before {
   -webkit-backdrop-filter: none;
   z-index: 10;
   gap: 12px;
-  /* Category outline */
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 29px;
   margin-bottom: 16px;
 }
 
@@ -2989,12 +2986,12 @@ body::before {
 /* Address Search Overlay */
 .address-search-overlay {
   position: absolute;
-  bottom: 4px;
-  left: 4px;
-  right: 4px;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
   z-index: 15;
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
 }
 
@@ -3060,8 +3057,8 @@ body::before {
 
 .expand-button {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 5px;
+  right: 5px;
   width: 50px;
   height: 50px;
   border-radius: 25px;
@@ -3254,9 +3251,10 @@ body::before {
 
 /* Category Outline Containers */
 .category-outline {
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
+  border: none;
   border-radius: 29px;
-  padding: 20px 16px;
+  padding: 5px;
   margin-bottom: 16px;
   background: transparent;
 }
@@ -3269,7 +3267,7 @@ body::before {
   color: #fff;
   font-size: 1.2rem;
   font-weight: 500;
-  margin: 0 0 16px 0;
+  margin: 5px 0 5px 0;
   font-family: inherit;
   text-align: center;
 }
@@ -3287,16 +3285,16 @@ body::before {
   color: #fff;
   font-size: 1.2rem;
   font-weight: 500;
-  margin: 0 0 16px 0;
+  margin: 5px 0 5px 0;
   font-family: inherit;
   text-align: center;
 }
 
 .input-row-popup {
   display: flex;
-  gap: 8px; /* Reduced gap to match 4px margins on each side */
-  margin: 0; /* Remove the extra margin since we have consistent section padding */
-  width: 100%; /* Ensure the row takes full width */
+  gap: 5px;
+  margin: 0;
+  width: 100%;
 }
 
 .popup-input-wrapper {
