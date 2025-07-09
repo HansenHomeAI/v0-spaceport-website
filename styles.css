@@ -3139,9 +3139,10 @@ body::before {
   height: 300px;
   width: 100%;
   position: relative;
-  border-radius: 29px; /* Slightly larger to achieve better visual concentricity with 25px inner radius */
+  border-radius: 31px; /* Slightly larger to achieve better visual concentricity with 25px inner radius */
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
 }
 
 .map-container.fullscreen {
@@ -3253,7 +3254,7 @@ body::before {
 .category-outline {
   box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
   border: none;
-  border-radius: 29px;
+  border-radius: 31px;
   padding: 6px;
   margin-bottom: 16px;
   background: transparent;
