@@ -18,8 +18,13 @@ matplotlib>=3.5.0
 plyfile>=0.7.4
 open3d>=0.16.0
 
-# 3D Gaussian Splatting (CRITICAL - must be pre-installed)
+# 3D Gaussian Splatting (CRITICAL - must be pre-installed with CUDA support)
+# Install from source with CUDA support
 gsplat>=1.5.0
+
+# CUDA toolkit utilities (ensure CUDA is properly detected)
+nvidia-ml-py3>=11.0.0
+pynvml>=11.0.0
 
 # Image processing and utilities
 tqdm>=4.64.0

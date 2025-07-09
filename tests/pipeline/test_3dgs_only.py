@@ -42,17 +42,9 @@ class GaussianOnlyTester:
                 "email": self.config['test_email'],
                 "pipelineStep": "3dgs",  # CRITICAL: Start directly from 3DGS stage
                 "existingColmapUri": self.config['existing_sfm_data'],  # Use existing SfM data
-                "hyperparameters": {
-                    # Override specific test parameters if needed
-                    # The Lambda will merge these with its comprehensive defaults
-                    "min_iterations": 1000,  # Shorter for testing
-                    "max_iterations": 30000,
-                    "target_psnr": 35.0,
-                    "log_interval": 100,
-                    "save_interval": 5000
-                    # All other hyperparameters will use Lambda defaults
-                    # This ensures single source of truth for densification params
-                }
+                # NO hyperparameter overrides - use Lambda's high-quality defaults
+                # Lambda defaults: 250k iterations, 38dB PSNR target, advanced densification
+                # This ensures we get the full production-quality training run
             }
         }
     
@@ -173,6 +165,9 @@ class GaussianOnlyTester:
         logger.info("\n🔍 VALIDATING 3DGS OUTPUT")
         logger.info("=" * 30)
 
+        # Extract job_id for use throughout the function
+        job_id = test_input.get('jobId')
+        
         # Prefer the Gaussian output URI provided by the Lambda / Step-Functions payload
         gaussian_uri = test_input.get('gaussianOutputS3Uri')
         if gaussian_uri and gaussian_uri.startswith('s3://'):
@@ -186,7 +181,6 @@ class GaussianOnlyTester:
             logger.info(f"📁 Using Gaussian output URI from payload: s3://{bucket}/{prefix}")
         else:
             # Fallback to legacy location for backward compatibility
-            job_id = test_input['jobId']
             bucket = 'spaceport-ml-pipeline'
             prefix = f"jobs/{job_id}/gaussian/"
             logger.info(f"📁 Falling back to legacy output location: s3://{bucket}/{prefix}")

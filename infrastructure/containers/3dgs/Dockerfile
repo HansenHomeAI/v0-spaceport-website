@@ -7,6 +7,14 @@ FROM nvidia/cuda:11.8.0-devel-ubuntu22.04 AS base
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Set CUDA environment variables early
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+ENV CUDA_VISIBLE_DEVICES=all
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
 # Install system dependencies (cached layer)
 RUN apt-get update && apt-get install -y \
     python3 \
@@ -16,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     cmake \
+    nvidia-cuda-toolkit \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -39,6 +48,9 @@ RUN pip3 install --no-cache-dir \
 # Install other Python dependencies
 RUN pip3 install --no-cache-dir -r requirements_optimized.txt
 
+# Verify CUDA installation
+RUN python3 -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('CUDA version:', torch.version.cuda if torch.cuda.is_available() else 'None')"
+
 # Stage 3: Application code
 FROM python-deps AS app-build
 
@@ -58,14 +70,17 @@ ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 # Stage 4: Final runtime image
 FROM app-build AS runtime
 
-# Set runtime environment
+# Reinforce CUDA environment variables for runtime
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV CUDA_VISIBLE_DEVICES=all
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
-# Health check
+# Health check with comprehensive GPU detection
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import torch; print('CUDA available:', torch.cuda.is_available())" || exit 1
+    CMD python3 -c "import torch; import gsplat; print('PyTorch CUDA:', torch.cuda.is_available()); print('GPU Count:', torch.cuda.device_count() if torch.cuda.is_available() else 0); print('gsplat loaded:', True)" || exit 1
 
 # Ensure all SageMaker directories have proper permissions
 RUN mkdir -p /opt/ml/model /opt/ml/output /opt/ml/input \

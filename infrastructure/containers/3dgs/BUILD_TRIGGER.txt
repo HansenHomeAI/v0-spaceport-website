@@ -1,11 +1,7 @@
-BUILD_TRIGGER_20250107_16:45:00_COMPLETE_DENSIFICATION_REWRITE
-- MAJOR REWRITE: Complete densification system overhaul based on latest 3DGS research.
-- CRITICAL FIX: Proper gradient norm computation instead of raw tensor comparison.
-- NEW: Progressive densification with adaptive thresholds (aggressive → conservative).
-- NEW: Advanced splitting using principal component analysis for optimal directions.
-- NEW: Geometry-aware densification with opacity and size filtering.
-- NEW: Automatic Gaussian pruning to prevent memory overflow.
-- FIXED: Proper gradient accumulation (vectors, not norms) for accurate densification.
-- FIXED: Gradient threshold lowered to 2e-5 for proper densification triggering.
-- RESEARCH: Based on GeoTexDensifier, Micro-splatting, and SteepGS papers.
-- This should finally enable proper photorealistic Gaussian splat training!
+Build trigger updated: 2025-07-08-gpu-detection-fix
+- Added comprehensive CUDA environment setup
+- Fixed GPU detection with nvidia-ml-py3 and pynvml
+- Enhanced health checks for GPU verification
+- Improved CUDA environment variables for SageMaker
+- Added nvidia-cuda-toolkit to base image
+- Fixed gsplat CUDA compilation support
