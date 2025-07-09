@@ -3156,7 +3156,7 @@ body::before {
   height: 300px;
   width: 100%;
   position: relative;
-  border-radius: 35px; /* Slightly larger to achieve better visual concentricity with 25px inner radius */
+  border-radius: 29px; /* Slightly larger to achieve better visual concentricity with 25px inner radius */
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
