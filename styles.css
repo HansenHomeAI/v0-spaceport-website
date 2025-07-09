@@ -3076,9 +3076,9 @@ body::before {
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 56px;
-  height: 56px;
-  border-radius: 32px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: none;
@@ -3156,7 +3156,7 @@ body::before {
   height: 300px;
   width: 100%;
   position: relative;
-  border-radius: 32px; /* Match inner elements for visual harmony */
+  border-radius: 35px; /* Slightly larger to achieve better visual concentricity with 25px inner radius */
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -3232,7 +3232,7 @@ body::before {
 .instruction-content {
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
-  border-radius: 32px;
+  border-radius: 25px;
   padding: 20px 40px;
   text-align: center;
   border: none;
@@ -3301,11 +3301,11 @@ body::before {
   align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  border-radius: 32px;
+  border-radius: 25px;
   padding: 0 20px;
   transition: all 0.2s ease;
   box-sizing: border-box;
-  height: 56px;
+  height: 50px;
 }
 
 .popup-input-wrapper:focus-within {
@@ -3557,10 +3557,11 @@ body::before {
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: none;
-  border-radius: 32px;
+  border-radius: 25px;
   padding: 0 20px 0 48px;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  height: 50px;
 }
 
 .address-search-wrapper::before {
