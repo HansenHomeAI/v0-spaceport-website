@@ -2756,21 +2756,26 @@ body::before {
 }
 
 /* NEW PROJECT POPUP */
+body.popup-open {
+  overflow: hidden;
+}
+
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85); /* Darker background */
-  backdrop-filter: blur(15px); /* Increased blur */
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 1000;
   opacity: 1;
   transition: opacity 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .popup-overlay.hidden {
@@ -2778,45 +2783,22 @@ body::before {
   pointer-events: none;
 }
 
-.popup-modal {
-  width: 90%;
-  max-width: 420px;
-  max-height: 85vh;
-  background: transparent; /* Remove background */
-  backdrop-filter: none; /* Remove backdrop filter */
-  -webkit-backdrop-filter: none;
-  border-radius: 0; /* Remove border radius */
-  position: relative;
-  box-sizing: border-box;
-  overflow: visible; /* Allow category outlines to be visible */
-  transform: scale(1);
-  transition: transform 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.popup-modal::before {
-  display: none; /* Remove the gradient border */
-}
-
-.popup-overlay.hidden .popup-modal {
-  transform: scale(0.9);
-}
-
 /* Header */
 .popup-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20px 16px 16px 16px;
+  padding: 0 0 16px 0;
   position: sticky;
-  top: 0;
+  top: 20px;
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   z-index: 10;
   gap: 12px;
-  margin-bottom: 16px;
+  margin: 0 auto 16px auto;
+  max-width: 420px;
+  width: 100%;
 }
 
 .popup-title-section {
@@ -2886,27 +2868,10 @@ body::before {
 
 /* Scrollable Content */
 .popup-content-scroll {
-  flex: 1;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-.popup-content-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.popup-content-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.popup-content-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-.popup-content-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 20px;
 }
 
 /* Accordion Sections */

@@ -624,6 +624,7 @@ function openNewProjectPopup() {
   const popup = document.getElementById('newProjectPopup');
   if (popup) {
     popup.classList.remove('hidden');
+    document.body.classList.add('popup-open');
     // Focus on the title input
     const titleInput = document.getElementById('projectTitle');
     if (titleInput) {
@@ -639,6 +640,7 @@ function closeNewProjectPopup() {
   const popup = document.getElementById('newProjectPopup');
   if (popup) {
     popup.classList.add('hidden');
+    document.body.classList.remove('popup-open');
   }
 }
 
@@ -2249,6 +2251,9 @@ window.closeNewProjectPopup = function() {
   
   // Clear the address field when closing the popup
   clearAddressField();
+  
+  // Ensure body class is removed
+  document.body.classList.remove('popup-open');
   
   originalCloseNewProjectPopup();
 };
