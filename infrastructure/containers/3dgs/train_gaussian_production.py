@@ -66,7 +66,7 @@ class Trainer:
         self.apply_step_functions_params()
     
     def setup_device(self) -> torch.device:
-        """Enhanced device setup with comprehensive CUDA debugging"""
+        """Enhanced device setup with comprehensive CUDA debugging and fixes"""
         logger.info("🔍 Starting comprehensive CUDA detection...")
         
         # 1. Check PyTorch CUDA availability
@@ -75,7 +75,7 @@ class Trainer:
         logger.info(f"🎮 PyTorch CUDA available: {torch.cuda.is_available()}")
         
         # 2. Check CUDA environment variables
-        cuda_env_vars = ['CUDA_HOME', 'CUDA_PATH', 'CUDA_VISIBLE_DEVICES', 'NVIDIA_VISIBLE_DEVICES']
+        cuda_env_vars = ['CUDA_HOME', 'CUDA_PATH', 'CUDA_VISIBLE_DEVICES', 'NVIDIA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH']
         for var in cuda_env_vars:
             value = os.environ.get(var, 'Not set')
             logger.info(f"🔧 {var}: {value}")
@@ -95,7 +95,42 @@ class Trainer:
         except Exception as e:
             logger.error(f"❌ Failed to run nvidia-smi: {e}")
         
-        # 4. Check if CUDA is available and get device info
+        # 4. CRITICAL FIX: Try to force CUDA library loading
+        if not torch.cuda.is_available():
+            logger.info("🔧 Attempting CUDA library fixes...")
+            
+            # Try to load CUDA libraries manually
+            try:
+                import ctypes
+                import glob
+                
+                # Find CUDA libraries
+                cuda_lib_paths = [
+                    '/usr/local/cuda/lib64/libcuda.so*',
+                    '/usr/lib/x86_64-linux-gnu/libcuda.so*',
+                    '/usr/local/cuda/lib64/libcudart.so*'
+                ]
+                
+                for pattern in cuda_lib_paths:
+                    libs = glob.glob(pattern)
+                    if libs:
+                        logger.info(f"   Found CUDA libs: {libs}")
+                        try:
+                            # Try to load the library
+                            ctypes.CDLL(libs[0])
+                            logger.info(f"   Successfully loaded: {libs[0]}")
+                        except Exception as e:
+                            logger.warning(f"   Failed to load {libs[0]}: {e}")
+                
+                # Try to reload PyTorch CUDA
+                import importlib
+                torch.cuda._lazy_init()
+                logger.info("   Attempted PyTorch CUDA lazy init")
+                
+            except Exception as e:
+                logger.warning(f"   CUDA library loading failed: {e}")
+        
+        # 5. Check if CUDA is available and get device info
         if torch.cuda.is_available():
             device_count = torch.cuda.device_count()
             logger.info(f"🎮 CUDA devices found: {device_count}")
@@ -124,15 +159,35 @@ class Trainer:
             
             # Check if CUDA libraries are present
             import glob
-            cuda_libs = glob.glob('/usr/local/cuda*/lib64/libcuda*')
-            if cuda_libs:
-                logger.info(f"   CUDA libraries found: {cuda_libs}")
-            else:
-                logger.warning("   No CUDA libraries found in /usr/local/cuda*/lib64/")
+            cuda_lib_locations = [
+                '/usr/local/cuda*/lib64/libcuda*',
+                '/usr/lib/x86_64-linux-gnu/libcuda*',
+                '/usr/local/cuda*/lib64/libcudart*'
+            ]
+            
+            for pattern in cuda_lib_locations:
+                cuda_libs = glob.glob(pattern)
+                if cuda_libs:
+                    logger.info(f"   CUDA libraries found at {pattern}: {cuda_libs}")
+                else:
+                    logger.warning(f"   No CUDA libraries found at {pattern}")
             
             # Check LD_LIBRARY_PATH
             ld_path = os.environ.get('LD_LIBRARY_PATH', '')
             logger.info(f"   LD_LIBRARY_PATH: {ld_path}")
+            
+            # Check if we can use nvidia-ml-py3 for GPU detection
+            try:
+                import pynvml
+                pynvml.nvmlInit()
+                gpu_count = pynvml.nvmlDeviceGetCount()
+                logger.info(f"   pynvml detected {gpu_count} GPUs")
+                for i in range(gpu_count):
+                    handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+                    name = pynvml.nvmlDeviceGetName(handle).decode('utf-8')
+                    logger.info(f"   GPU {i}: {name}")
+            except Exception as e:
+                logger.warning(f"   pynvml detection failed: {e}")
             
             device = torch.device("cpu")
         

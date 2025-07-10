@@ -6,8 +6,10 @@ numpy>=1.24.0,<2.0.0
 Pillow>=9.0.0
 
 # Deep learning framework for progressive training
-torch>=1.13.0
-torchvision>=0.14.0
+# CUDA 11.8 compatible versions - DO NOT CHANGE without updating Dockerfile
+torch==2.0.1+cu118
+torchvision==0.15.2+cu118
+torchaudio==2.0.2+cu118
 
 # 3D reconstruction and computer vision
 opencv-python>=4.5.0
@@ -21,6 +23,11 @@ open3d>=0.16.0
 # 3D Gaussian Splatting (CRITICAL - must be pre-installed with CUDA support)
 # Install from source with CUDA support
 gsplat>=1.5.0
+
+# CUDA-specific dependencies for proper GPU detection
+# These help ensure PyTorch can find CUDA libraries
+pynvml>=11.0.0
+nvidia-ml-py3>=7.352.0
 
 # Image processing and utilities
 tqdm>=4.64.0

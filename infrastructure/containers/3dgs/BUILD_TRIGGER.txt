@@ -1,42 +1,27 @@
-COMPREHENSIVE FIX: Train/Test Split + CUDA Detection - 2025-01-09
-CRITICAL FIXES for proper 3D Gaussian Splatting training:
+CUDA Detection Fix Applied - Build Required
+==========================================
 
-1. TRAIN/TEST SPLIT STRUCTURE:
-   - SfM container now outputs train/ and test/ subdirectories
-   - 3DGS container properly handles train/test split for meaningful gradients
-   - Fallback logic for backward compatibility with existing data
-   - Proper evaluation on held-out test images prevents overfitting
+Changes made to fix CUDA/GPU detection issues:
 
-2. ENHANCED CUDA DETECTION:
-   - Comprehensive CUDA debugging and detection
-   - Detailed logging of PyTorch, CUDA, and GPU status
-   - nvidia-smi integration for GPU validation
-   - Robust fallback to CPU if GPU unavailable
-   - Environment variable checking for CUDA paths
+1. Dockerfile fixes:
+   - Changed base image from nvidia/cuda:11.8.0-devel-ubuntu22.04 to nvidia/cuda:11.8.0-runtime-ubuntu22.04
+   - Added nvidia-cuda-dev package for development tools
+   - Created symlinks for CUDA runtime libraries (libcuda.so)
+   - Added comprehensive CUDA library verification during build
+   - Enhanced LD_LIBRARY_PATH to include /usr/lib/x86_64-linux-gnu
+   - Added ldconfig calls to update library cache
 
-3. HYPERPARAMETER FIXES (from previous build):
-   - Fixed densify_grad_threshold: 0.00001 → 0.0002 (Nerfstudio default)
-   - Fixed max_iterations: 250000 → 30000 (realistic duration)
-   - Fixed target_psnr: 38.0 → 30.0 (achievable target)
-   - Proper densification window: 500-15000 iterations
+2. Requirements fixes:
+   - Pinned exact PyTorch versions (torch==2.0.1+cu118, torchvision==0.15.2+cu118, torchaudio==2.0.2+cu118)
+   - Added pynvml>=11.0.0 and nvidia-ml-py3>=7.352.0 for GPU detection utilities
 
-4. TRAINING QUALITY IMPROVEMENTS:
-   - Training uses only training images for gradient computation
-   - Evaluation uses held-out test images for realistic PSNR
-   - Meaningful gradients enable proper Gaussian densification
-   - Prevents artificial PSNR inflation from overfitting
+3. Training script enhancements:
+   - Added manual CUDA library loading with ctypes
+   - Enhanced debugging with multiple library path checks
+   - Added pynvml-based GPU detection as fallback
+   - Added torch.cuda._lazy_init() call to force CUDA initialization
 
-This build addresses the two critical issues:
-✅ SfM outputs proper train/test structure expected by 3DGS
-✅ CUDA detection works reliably on ml.g4dn.xlarge instances
-✅ Training produces realistic, high-quality 3D scenes
-✅ Proper densification with meaningful gradient signals
+These changes should resolve the torch.cuda.is_available() returning False issue.
 
-Expected outcomes:
-- CUDA properly detected on GPU instances
-- Training/test images properly separated
-- Realistic PSNR values (25-35dB) from test evaluation
-- Gaussian densification triggered by meaningful gradients
-- High-quality 3D scene reconstruction
-
-Build: 2025-01-09-train-test-split-cuda-fix
+Build timestamp: 2025-01-10 00:25:00
+Trigger reason: Fix CUDA detection for Tesla T4 GPU on SageMaker ml.g4dn.xlarge instances
