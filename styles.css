@@ -2758,6 +2758,12 @@ body::before {
 /* NEW PROJECT POPUP */
 body.popup-open {
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overscroll-behavior: none;
+  -ms-scroll-chaining: none;
+  height: 100%;
+  position: fixed;
+  width: 100%;
 }
 
 .popup-overlay {
@@ -2776,6 +2782,10 @@ body.popup-open {
   overflow-x: hidden;
   padding: 20px;
   box-sizing: border-box;
+  pointer-events: all;
+  overscroll-behavior: contain;
+  -webkit-overscroll-behavior: contain;
+  -ms-scroll-chaining: none;
 }
 
 .popup-overlay.hidden {
@@ -2860,6 +2870,8 @@ body.popup-open {
   width: 100%;
   margin: 0 auto;
   padding-bottom: 20px;
+  position: relative;
+  z-index: 1001;
 }
 
 /* Accordion Sections */

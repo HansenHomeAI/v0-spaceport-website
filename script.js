@@ -190,20 +190,19 @@ document.addEventListener('DOMContentLoaded', () => {
       openNewProjectPopup();
     });
 
-    // Close popup when clicking outside of it
+    // Prevent click-through to background - popup can only be closed via X button
     newProjectPopup.addEventListener('click', function(e) {
-      if (e.target === newProjectPopup) {
-        closeNewProjectPopup();
-      }
+      // Stop propagation to prevent any background interactions
+      e.stopPropagation();
     });
   }
 
-  // Handle escape key to close popup
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeNewProjectPopup();
-    }
-  });
+  // Escape key disabled - popup can only be closed via X button
+  // document.addEventListener('keydown', function(e) {
+  //   if (e.key === 'Escape') {
+  //     closeNewProjectPopup();
+  //   }
+  // });
 });
 
 // FILE: dronePathGenerator.js
