@@ -890,7 +890,7 @@ footer {
 
 /* New Project Card Styling - Pill shape, full width on desktop */
 .new-project-card {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   cursor: pointer;
   transition: background 0.3s ease;
   padding: 12px 20px !important;
@@ -899,7 +899,7 @@ footer {
   border: none !important;
 }
 .new-project-card:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 @media (min-width: 640px) {
   .new-project-card {
@@ -2835,6 +2835,11 @@ body.popup-open {
   height: auto;
 }
 
+.popup-title-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+
 .popup-title-input:focus {
   background: rgba(255, 255, 255, 0.05);
 }
@@ -3108,6 +3113,15 @@ body.popup-open {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 16px;
+  transition: filter 0.3s ease;
+}
+
+.map-container.has-instructions {
+  filter: blur(2px);
+}
+
+.map-container.has-instructions.instructions-hidden {
+  filter: none;
 }
 
 .map-container.fullscreen {
@@ -3162,36 +3176,63 @@ body.popup-open {
   backdrop-filter: blur(3px);
 }
 
-/* Centered Instructions */
+/* Instructions aligned with map margins */
 .map-instructions-center {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 20; /* Increased to be above input fields */
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  z-index: 20;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .map-instructions-center.hidden {
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.9);
+  transform: scale(0.95);
+  pointer-events: none;
 }
 
 .instruction-content {
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border-radius: 25px;
-  padding: 20px 40px;
+  padding: 20px 24px;
   text-align: center;
-  border: none;
   transition: all 0.2s ease;
-  max-width: 400px;
-  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
+}
+
+.instruction-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, 0) 57%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  padding: 2.5px;
+  z-index: -1;
 }
 
 .instruction-content:hover {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .instruction-pin {
@@ -3202,6 +3243,8 @@ body.popup-open {
   margin: 0 auto 12px;
   opacity: 1;
   filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  position: relative;
+  z-index: 1;
 }
 
 .instruction-content h3 {
@@ -3210,6 +3253,8 @@ body.popup-open {
   margin: 0;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 1;
 }
 
 /* Coordinates Input Overlay */

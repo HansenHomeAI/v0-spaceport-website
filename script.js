@@ -1998,10 +1998,21 @@ function initializeMap() {
       }
     };
 
-    // Show instructions initially
+    // Show instructions initially and add click handler
     document.addEventListener('DOMContentLoaded', () => {
       const mapContainer = document.querySelector('.map-container');
+      const instructions = document.getElementById('map-instructions');
+      const instructionContent = document.querySelector('.instruction-content');
+      
       mapContainer.classList.add('has-instructions');
+      
+      // Add click handler to instructions
+      if (instructionContent) {
+        instructionContent.addEventListener('click', (e) => {
+          e.stopPropagation();
+          hideInstructions();
+        });
+      }
     });
 
     // Add interaction event listeners to hide instructions
