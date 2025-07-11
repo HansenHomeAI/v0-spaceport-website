@@ -2262,3 +2262,16 @@ window.closeNewProjectPopup = function() {
 window.getSelectedCoordinates = getSelectedCoordinates;
 window.updateAddressFieldWithCoordinates = updateAddressFieldWithCoordinates;
 window.clearAddressField = clearAddressField;
+
+// Auto-resize textarea
+const projectTitle = document.getElementById('projectTitle');
+if (projectTitle) {
+  const resizeTextarea = () => {
+    projectTitle.style.height = 'auto';
+    projectTitle.style.height = projectTitle.scrollHeight + 'px';
+  };
+  
+  projectTitle.addEventListener('input', resizeTextarea);
+  // Initial resize
+  resizeTextarea();
+}

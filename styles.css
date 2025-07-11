@@ -2766,7 +2766,7 @@ body.popup-open {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   z-index: 1000;
@@ -2788,57 +2788,45 @@ body.popup-open {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0 0 16px 0;
-  position: sticky;
-  top: 20px;
+  padding: 0 0 6px 0;
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   z-index: 10;
   gap: 12px;
-  margin: 0 auto 16px auto;
+  margin: 0 auto 6px auto;
   max-width: 420px;
   width: 100%;
 }
 
 .popup-title-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
   flex: 1;
   min-width: 0;
+  margin-right: 12px; /* Reduced from 44px to allow text to extend closer to close button */
 }
 
 .popup-title-input {
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 500;
   outline: none;
   padding: 6px 12px;
   border-radius: 8px;
   transition: background 0.2s ease;
   font-family: inherit;
-  flex: 1;
-  min-width: 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  width: 100%;
+  resize: none;
+  overflow: hidden;
+  display: block;
+  line-height: 1.4;
+  min-height: 36px;
+  height: auto;
 }
 
 .popup-title-input:focus {
   background: rgba(255, 255, 255, 0.05);
-}
-
-.edit-icon {
-  width: 16px;
-  height: 16px;
-  background: url('assets/SpaceportIcons/Edit.svg') no-repeat center;
-  background-size: contain;
-  opacity: 0.6;
-  flex-shrink: 0;
-  margin-top: 8px;
-  transition: opacity 0.2s ease;
 }
 
 .popup-close {
