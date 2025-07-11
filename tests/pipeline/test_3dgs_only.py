@@ -30,21 +30,32 @@ class GaussianOnlyTester:
         
         self.config = {
             'lambda_function_name': 'Spaceport-StartMLJob',
-            'existing_sfm_data': "s3://spaceport-ml-pipeline/jobs/prod-validation-1750802934/colmap/",
-            'test_email': "test@spaceport.com"
+            'existing_sfm_data': "s3://spaceport-ml-processing/colmap/c3c249de-03ab-4a2f-af72-d88a9412565d/",
+            'test_email': "gbhbyu@gmail.com"
         }
     
     def create_lambda_test_payload(self) -> Dict:
         """Create payload for Lambda function that will start 3DGS-only training."""
         return {
             "body": {
-                "s3Url": "s3://spaceport-ml-pipeline/test-data/dummy-file.zip",  # Valid S3 format
+                "s3Url": "s3://spaceport-uploads/1751413909023-l2zkyj-Battery-1.zip",  # Same dataset as successful SfM run
                 "email": self.config['test_email'],
                 "pipelineStep": "3dgs",  # CRITICAL: Start directly from 3DGS stage
                 "existingColmapUri": self.config['existing_sfm_data'],  # Use existing SfM data
-                # NO hyperparameter overrides - use Lambda's high-quality defaults
-                # Lambda defaults: 250k iterations, 38dB PSNR target, advanced densification
-                # This ensures we get the full production-quality training run
+                "hyperparameters": {
+                    "max_iterations": 25000,  # Production quality training
+                    "target_psnr": 30.0,      # Realistic target for 77 training images
+                    "densify_grad_threshold": 0.0002,  # Standard threshold
+                    "densification_interval": 100,     # Standard interval
+                    "lambda_dssim": 0.2,               # Standard DSSIM weight
+                    "sh_degree": 3,                    # Full spherical harmonics
+                    "learning_rate": 0.0025,           # Standard learning rate
+                    "position_lr_scale": 1.0,          # Standard position scaling
+                    "log_interval": 100,               # Log every 100 iterations
+                    "save_interval": 5000,             # Save every 5000 iterations
+                    "plateau_patience": 1000,          # Allow 1000 iterations without improvement
+                    "psnr_plateau_termination": True   # Enable early stopping
+                }
             }
         }
     
