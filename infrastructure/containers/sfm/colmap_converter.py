@@ -648,9 +648,10 @@ class OpenSfMToCOLMAPConverter:
     def _copy_images_for_split(self, data: Dict, output_dir: Path, split_name: str) -> None:
         """Copy actual image files for a specific train/test split"""
         import shutil
+        from pathlib import Path
         
-        # Get the source images directory
-        source_images_dir = self.base_output_path / "images"
+        # CRITICAL FIX: Use the correct source images directory (from OpenSfM input)
+        source_images_dir = self.opensfm_path / "images"
         if not source_images_dir.exists():
             logger.warning(f"⚠️ Source images directory not found: {source_images_dir}")
             return
@@ -664,8 +665,16 @@ class OpenSfMToCOLMAPConverter:
         # Extract image filenames from shots
         image_filenames = []
         for shot_name, shot_data in shots_data.items():
-            # The shot_name is typically the filename without extension
-            # But we need to check the actual files in the images directory
+            # CRITICAL FIX: shot_name may already contain the extension
+            shot_path = Path(shot_name)
+            if shot_path.suffix:
+                # Already has extension (e.g., "DJI_0579.JPG")
+                image_file = source_images_dir / shot_name
+                if image_file.exists():
+                    image_filenames.append(shot_name)
+                    continue
+            
+            # If no extension or file not found, try common extensions
             for ext in ['.JPG', '.jpg', '.PNG', '.png', '.JPEG', '.jpeg']:
                 image_file = source_images_dir / f"{shot_name}{ext}"
                 if image_file.exists():

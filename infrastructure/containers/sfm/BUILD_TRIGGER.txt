@@ -22,10 +22,10 @@ Date: 2025-07-10
 Build required: YES
 Priority: HIGH - fixes pipeline compatibility issue
 
-REBUILD: Fixed SfM container to copy actual image files into train/test directories
-- Added _copy_images_for_split() method to copy actual .JPG files into train/ and test/ directories
-- Modified _create_split_reconstruction() to call image copying after metadata conversion
-- Now 3DGS container will have access to actual image files in both training and validation channels
-- Fixes "File not found" error when 3DGS tries to load images during training
-- Each split directory now contains: cameras.txt, images.txt, points3D.txt + actual image files
-Build timestamp: 2025-01-10-18:15:00
+REBUILD: CRITICAL FIXES for image copying in train/test directories
+- FIXED source directory: Use self.opensfm_path/images (where images actually are) instead of self.base_output_path/images
+- FIXED double extension bug: Check if shot_name already has extension before appending
+- Now correctly handles shot names like "DJI_0579.JPG" without creating "DJI_0579.JPG.JPG"
+- Ensures 100% reliable image copying for 3DGS training
+- Each split directory will contain: cameras.txt, images.txt, points3D.txt + actual image files
+Build timestamp: 2025-01-10-18:45:00
