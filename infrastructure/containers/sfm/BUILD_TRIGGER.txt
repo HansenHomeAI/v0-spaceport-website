@@ -1,47 +1,23 @@
-CRITICAL FIX: Train/Test Split Output Structure - 2025-01-09
+COLMAP Format Fix Applied - Build Required
+==========================================
 
-MAJOR ENHANCEMENT: SfM now outputs proper train/test split structure for 3DGS training
+Changes made to fix COLMAP format compatibility:
 
-NEW FEATURES:
-1. TRAIN/TEST SPLIT COLMAP OUTPUT:
-   - Creates separate train/ and test/ directories with COLMAP reconstructions
-   - 80/20 split by default (configurable)
-   - Each directory contains cameras.txt, images.txt, points3D.txt
-   - Maintains backward compatibility with sparse/0/ structure
+1. COLMAP Converter fixes:
+   - Fixed OpenSfM camera ID conversion (string "v2" -> numeric ID 1)
+   - Added camera_id_mapping to convert between OpenSfM and COLMAP formats
+   - Updated both main and split reconstruction methods
+   - Fixed train/test split to use proper numeric camera IDs
 
-2. ENHANCED VALIDATION:
-   - Validates both train and test directories exist
-   - Counts images in each split
-   - Quality check includes train/test split requirements
-   - Comprehensive logging of split statistics
+2. This addresses the ValueError: invalid literal for int() with base 10: 'v2'
+   that was causing 3DGS training to fail immediately
 
-3. IMPROVED COLMAP CONVERTER:
-   - create_train_test_split() method for consistent splitting
-   - create_split_reconstructions() for separate COLMAP outputs
-   - Enhanced validation with train/test directory checks
-   - Proper file copying to final output locations
+3. The SfM container now properly outputs COLMAP-compatible format:
+   - cameras.txt with numeric camera IDs (1, 2, 3...)
+   - images.txt with matching numeric camera references
+   - points3D.txt with proper format
+   - train/ and test/ directories with correct splits
 
-This addresses the critical issue where 3DGS training expected train/test
-subdirectories but SfM was outputting a flat structure. Now the pipeline
-is properly modular with plug-and-play compatibility.
-
-Expected Output Structure:
-/opt/ml/processing/output/
-├── sparse/0/           # Original structure (backward compatibility)
-│   ├── cameras.txt
-│   ├── images.txt
-│   └── points3D.txt
-├── train/              # NEW: Training split
-│   ├── cameras.txt
-│   ├── images.txt
-│   └── points3D.txt
-├── test/               # NEW: Test split
-│   ├── cameras.txt
-│   ├── images.txt
-│   └── points3D.txt
-├── dense/
-│   └── sparse_points.ply
-├── images/
-└── database.db
-
-Build: 2025-01-09-train-test-split-output
+Date: 2025-07-10
+Build required: YES
+Priority: HIGH - fixes pipeline compatibility issue

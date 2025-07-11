@@ -87,7 +87,14 @@ class OpenSfMToCOLMAPConverter:
             f.write("#   CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]\n")
             f.write("# Number of cameras: {}\n".format(len(cameras_data)))
             
+            # CRITICAL FIX: Convert OpenSfM camera IDs to integers for COLMAP compatibility
+            camera_id_mapping = {}
+            numeric_camera_id = 1
+            
             for camera_id, camera_data in cameras_data.items():
+                # Map OpenSfM camera ID to numeric ID
+                camera_id_mapping[camera_id] = numeric_camera_id
+                
                 # Extract camera parameters
                 width = int(camera_data.get('width', 1920))
                 height = int(camera_data.get('height', 1080))
@@ -134,7 +141,12 @@ class OpenSfMToCOLMAPConverter:
                 
                 # Format: CAMERA_ID MODEL WIDTH HEIGHT PARAMS[]
                 params_str = " ".join([f"{p:.6f}" for p in params])
-                f.write(f"{camera_id} {model} {width} {height} {params_str}\n")
+                f.write(f"{numeric_camera_id} {model} {width} {height} {params_str}\n")
+                
+                numeric_camera_id += 1
+            
+            # Store mapping for use in image conversion
+            self.camera_id_mapping = camera_id_mapping
         
         logger.info(f"✅ Generated cameras.txt with {len(cameras_data)} cameras")
     
@@ -159,7 +171,10 @@ class OpenSfMToCOLMAPConverter:
                 # Extract camera pose
                 rotation = shot_data.get('rotation', [0.0, 0.0, 0.0])
                 translation = shot_data.get('translation', [0.0, 0.0, 0.0])
-                camera_id = shot_data.get('camera', list(self.reconstruction.get('cameras', {}).keys())[0])
+                opensfm_camera_id = shot_data.get('camera', list(self.reconstruction.get('cameras', {}).keys())[0])
+                
+                # CRITICAL FIX: Use numeric camera ID mapping
+                numeric_camera_id = getattr(self, 'camera_id_mapping', {}).get(opensfm_camera_id, 1)
                 
                 # Convert OpenSfM rotation (axis-angle) to quaternion
                 quat = self._axis_angle_to_quaternion(rotation)
@@ -181,7 +196,7 @@ class OpenSfMToCOLMAPConverter:
                 
                 # Write image line
                 f.write(f"{image_id} {qw:.9f} {qx:.9f} {qy:.9f} {qz:.9f} "
-                       f"{tx:.6f} {ty:.6f} {tz:.6f} {camera_id} {shot_name}\n")
+                       f"{tx:.6f} {ty:.6f} {tz:.6f} {numeric_camera_id} {shot_name}\n")
                 
                 # Write empty points2D line (we'll populate this from tracks if available)
                 f.write("\n")

@@ -1,27 +1,26 @@
-CUDA Detection Fix Applied - Build Required
-==========================================
+CUDA 12.4 + COLMAP Format Fix Applied - Build Required
+======================================================
 
-Changes made to fix CUDA/GPU detection issues:
+Changes made to fix both CUDA detection and COLMAP format compatibility:
 
-1. Dockerfile fixes:
-   - Changed base image from nvidia/cuda:11.8.0-devel-ubuntu22.04 to nvidia/cuda:11.8.0-runtime-ubuntu22.04
-   - Added nvidia-cuda-dev package for development tools
-   - Created symlinks for CUDA runtime libraries (libcuda.so)
-   - Added comprehensive CUDA library verification during build
-   - Enhanced LD_LIBRARY_PATH to include /usr/lib/x86_64-linux-gnu
-   - Added ldconfig calls to update library cache
+1. CUDA Version Update:
+   - Updated base image from nvidia/cuda:11.8.0-runtime to nvidia/cuda:12.4.1-runtime
+   - Updated PyTorch from 2.0.1+cu118 to 2.1.0+cu121
+   - Updated torchvision from 0.15.2+cu118 to 0.16.0+cu121
+   - Updated torchaudio from 2.0.2+cu118 to 2.1.0+cu121
+   - This matches SageMaker ml.g4dn.xlarge CUDA 12.4 driver version
 
-2. Requirements fixes:
-   - Pinned exact PyTorch versions (torch==2.0.1+cu118, torchvision==0.15.2+cu118, torchaudio==2.0.2+cu118)
-   - Added pynvml>=11.0.0 and nvidia-ml-py3>=7.352.0 for GPU detection utilities
+2. COLMAP Format Compatibility:
+   - Training script now expects proper numeric camera IDs from SfM
+   - Works with fixed SfM container that outputs COLMAP-compatible format
+   - Handles train/test split directories properly
 
-3. Training script enhancements:
-   - Added manual CUDA library loading with ctypes
-   - Enhanced debugging with multiple library path checks
-   - Added pynvml-based GPU detection as fallback
-   - Added torch.cuda._lazy_init() call to force CUDA initialization
+3. Expected Resolution:
+   - torch.cuda.is_available() should return True
+   - Training should use GPU acceleration
+   - No more "invalid literal for int() with base 10: 'v2'" errors
+   - Proper train/test evaluation with PSNR metrics
 
-These changes should resolve the torch.cuda.is_available() returning False issue.
-
-Build timestamp: 2025-01-10 00:25:00
-Trigger reason: Fix CUDA detection for Tesla T4 GPU on SageMaker ml.g4dn.xlarge instances
+Date: 2025-07-10
+Build required: YES
+Priority: CRITICAL - fixes both GPU detection and format compatibility

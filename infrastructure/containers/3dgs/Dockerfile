@@ -2,7 +2,8 @@
 # Optimized for layer caching and build efficiency with FIXED CUDA DETECTION
 
 # Stage 1: Base environment with CUDA runtime (NOT devel)
-FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04 AS base
+# Updated to CUDA 12.4 to match SageMaker host driver
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04 AS base
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -54,12 +55,12 @@ COPY requirements.txt /opt/ml/
 COPY requirements_optimized.txt /opt/ml/
 
 # Install PyTorch with CUDA support first (largest dependency)
-# Using exact CUDA 11.8 version to match base image
+# Using CUDA 12.4 compatible version to match base image
 RUN pip3 install --no-cache-dir \
-    torch==2.0.1+cu118 \
-    torchvision==0.15.2+cu118 \
-    torchaudio==2.0.2+cu118 \
-    --index-url https://download.pytorch.org/whl/cu118
+    torch==2.1.0+cu121 \
+    torchvision==0.16.0+cu121 \
+    torchaudio==2.1.0+cu121 \
+    --index-url https://download.pytorch.org/whl/cu121
 
 # Install other Python dependencies
 RUN pip3 install --no-cache-dir -r requirements_optimized.txt
