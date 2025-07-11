@@ -1,26 +1,6 @@
-CUDA 12.4 + COLMAP Format Fix Applied - Build Required
-======================================================
-
-Changes made to fix both CUDA detection and COLMAP format compatibility:
-
-1. CUDA Version Update:
-   - Updated base image from nvidia/cuda:11.8.0-runtime to nvidia/cuda:12.4.1-runtime
-   - Updated PyTorch from 2.0.1+cu118 to 2.1.0+cu121
-   - Updated torchvision from 0.15.2+cu118 to 0.16.0+cu121
-   - Updated torchaudio from 2.0.2+cu118 to 2.1.0+cu121
-   - This matches SageMaker ml.g4dn.xlarge CUDA 12.4 driver version
-
-2. COLMAP Format Compatibility:
-   - Training script now expects proper numeric camera IDs from SfM
-   - Works with fixed SfM container that outputs COLMAP-compatible format
-   - Handles train/test split directories properly
-
-3. Expected Resolution:
-   - torch.cuda.is_available() should return True
-   - Training should use GPU acceleration
-   - No more "invalid literal for int() with base 10: 'v2'" errors
-   - Proper train/test evaluation with PSNR metrics
-
-Date: 2025-07-10
-Build required: YES
-Priority: CRITICAL - fixes both GPU detection and format compatibility
+REBUILD: Updated 3DGS container to use separate training and validation channels
+- Fixed Step Functions to use train/ folder for training and test/ folder for validation
+- Updated train_gaussian_production.py to load from both SM_CHANNEL_TRAINING and SM_CHANNEL_VALIDATION
+- Now trains on 77 images (train folder) and validates on 20 images (test folder)
+- Proper PSNR validation during training for quality metrics
+Build timestamp: 2025-01-10-17:10:00

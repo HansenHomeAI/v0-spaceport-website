@@ -339,7 +339,16 @@ class MLPipelineStack(Stack):
                     "DataSource": {
                         "S3DataSource": {
                             "S3DataType": "S3Prefix",
-                            "S3Uri": sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
+                            "S3Uri": sfn.JsonPath.format("{}train/", sfn.JsonPath.string_at("$.colmapOutputS3Uri")),
+                            "S3DataDistributionType": "FullyReplicated"
+                        }
+                    }
+                }, {
+                    "ChannelName": "validation",
+                    "DataSource": {
+                        "S3DataSource": {
+                            "S3DataType": "S3Prefix",
+                            "S3Uri": sfn.JsonPath.format("{}test/", sfn.JsonPath.string_at("$.colmapOutputS3Uri")),
                             "S3DataDistributionType": "FullyReplicated"
                         }
                     }

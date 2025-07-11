@@ -59,8 +59,14 @@ class Trainer:
         
         # Determine paths from SageMaker environment variables FIRST
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
+        self.validation_dir = Path(os.environ.get("SM_CHANNEL_VALIDATION", "/opt/ml/input/data/validation"))
         self.output_dir = Path(os.environ.get("SM_MODEL_DIR", "/opt/ml/model"))
         self.output_dir.mkdir(exist_ok=True, parents=True)
+        
+        # Log the paths for debugging
+        logger.info(f"📁 Training data path: {self.input_dir}")
+        logger.info(f"📁 Validation data path: {self.validation_dir}")
+        logger.info(f"📁 Output path: {self.output_dir}")
         
         # Override config with Step Functions parameters (after paths are set)
         self.apply_step_functions_params()
@@ -285,31 +291,31 @@ class Trainer:
             'cameras.txt', 'images.txt', 'points3D.txt'
         ]
         
-        reconstruction_dirs = []
+        # NEW: Use separate SageMaker channels for training and validation
+        train_dir = None
+        test_dir = None
+        
+        # Find training reconstruction directory
         for item in self.input_dir.iterdir():
             if item.is_dir():
                 # Check if this directory contains COLMAP files
                 colmap_file_count = sum(1 for f in colmap_files if (item / f).exists())
                 if colmap_file_count > 0:
-                    reconstruction_dirs.append(item)
+                    train_dir = item
+                    break
         
-        if not reconstruction_dirs:
-            raise Exception("No COLMAP reconstruction directories found")
+        # Find validation reconstruction directory
+        if self.validation_dir.exists():
+            for item in self.validation_dir.iterdir():
+                if item.is_dir():
+                    # Check if this directory contains COLMAP files
+                    colmap_file_count = sum(1 for f in colmap_files if (item / f).exists())
+                    if colmap_file_count > 0:
+                        test_dir = item
+                        break
         
-        # CRITICAL FIX: Prefer train/test split directories if available
-        train_dir = None
-        test_dir = None
-        
-        for dir_path in reconstruction_dirs:
-            if 'train' in dir_path.name.lower():
-                train_dir = dir_path
-            elif 'test' in dir_path.name.lower() or 'val' in dir_path.name.lower():
-                test_dir = dir_path
-        
-        # If no explicit train/test split, use the first directory for training
         if not train_dir:
-            train_dir = reconstruction_dirs[0]
-            logger.warning("⚠️ No explicit train directory found, using first reconstruction")
+            raise Exception("No COLMAP reconstruction directory found in training channel")
         
         # Load training data
         logger.info(f"📂 Loading training data from: {train_dir}")
@@ -318,10 +324,10 @@ class Trainer:
         # Load test data if available
         test_data = None
         if test_dir:
-            logger.info(f"📂 Loading test data from: {test_dir}")
+            logger.info(f"📂 Loading validation data from: {test_dir}")
             test_data = self.load_colmap_reconstruction(test_dir)
         else:
-            logger.warning("⚠️ No test directory found")
+            logger.warning("⚠️ No validation directory found, creating test split from training data")
             
             # CRITICAL FIX: Create test split from training data if no separate test set
             if len(train_data['images']) > 5:  # Need at least 5 images for meaningful split
