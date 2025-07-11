@@ -613,6 +613,8 @@ class OpenSfMToCOLMAPConverter:
     
     def _create_split_reconstruction(self, data: Dict, output_dir: Path, split_name: str) -> None:
         """Create a COLMAP reconstruction for a specific split"""
+        import shutil
+        
         # Temporarily store original reconstruction
         original_reconstruction = self.reconstruction
         
@@ -629,6 +631,9 @@ class OpenSfMToCOLMAPConverter:
             self.convert_images()
             self.convert_points()
             
+            # CRITICAL FIX: Copy actual image files for this split
+            self._copy_images_for_split(data, output_dir, split_name)
+            
             shots_count = len(data.get('shots', {}))
             points_count = len(data.get('points', {}))
             cameras_count = len(data.get('cameras', {}))
@@ -639,6 +644,60 @@ class OpenSfMToCOLMAPConverter:
             # Restore original values
             self.reconstruction = original_reconstruction
             self.output_path = original_output_path
+
+    def _copy_images_for_split(self, data: Dict, output_dir: Path, split_name: str) -> None:
+        """Copy actual image files for a specific train/test split"""
+        import shutil
+        
+        # Get the source images directory
+        source_images_dir = self.base_output_path / "images"
+        if not source_images_dir.exists():
+            logger.warning(f"⚠️ Source images directory not found: {source_images_dir}")
+            return
+        
+        # Get the shots (images) for this split
+        shots_data = data.get('shots', {})
+        if not shots_data:
+            logger.warning(f"⚠️ No shots found for {split_name} split")
+            return
+        
+        # Extract image filenames from shots
+        image_filenames = []
+        for shot_name, shot_data in shots_data.items():
+            # The shot_name is typically the filename without extension
+            # But we need to check the actual files in the images directory
+            for ext in ['.JPG', '.jpg', '.PNG', '.png', '.JPEG', '.jpeg']:
+                image_file = source_images_dir / f"{shot_name}{ext}"
+                if image_file.exists():
+                    image_filenames.append(f"{shot_name}{ext}")
+                    break
+        
+        if not image_filenames:
+            logger.warning(f"⚠️ No image files found for {split_name} split")
+            return
+        
+        logger.info(f"📸 Copying {len(image_filenames)} images for {split_name} split:")
+        
+        # Copy each image file to the split directory
+        copied_count = 0
+        for image_filename in image_filenames:
+            src_path = source_images_dir / image_filename
+            dst_path = output_dir / image_filename
+            
+            if src_path.exists():
+                try:
+                    shutil.copy2(src_path, dst_path)
+                    copied_count += 1
+                    if copied_count <= 3:  # Log first few files
+                        logger.info(f"   📄 Copied: {image_filename}")
+                    elif copied_count == 4:
+                        logger.info(f"   📄 ... and {len(image_filenames) - 3} more images")
+                except Exception as e:
+                    logger.error(f"❌ Failed to copy {image_filename}: {e}")
+            else:
+                logger.warning(f"⚠️ Source image not found: {src_path}")
+        
+        logger.info(f"✅ Copied {copied_count}/{len(image_filenames)} images for {split_name} split")
 
     def convert(self) -> Dict:
         """Public wrapper to preserve legacy call sites.

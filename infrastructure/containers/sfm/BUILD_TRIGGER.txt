@@ -21,3 +21,11 @@ Changes made to fix COLMAP format compatibility:
 Date: 2025-07-10
 Build required: YES
 Priority: HIGH - fixes pipeline compatibility issue
+
+REBUILD: Fixed SfM container to copy actual image files into train/test directories
+- Added _copy_images_for_split() method to copy actual .JPG files into train/ and test/ directories
+- Modified _create_split_reconstruction() to call image copying after metadata conversion
+- Now 3DGS container will have access to actual image files in both training and validation channels
+- Fixes "File not found" error when 3DGS tries to load images during training
+- Each split directory now contains: cameras.txt, images.txt, points3D.txt + actual image files
+Build timestamp: 2025-01-10-18:15:00
