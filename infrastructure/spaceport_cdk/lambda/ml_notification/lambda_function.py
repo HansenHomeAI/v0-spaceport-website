@@ -19,14 +19,39 @@ def lambda_handler(event, context):
         status = event.get('status')  # 'completed' or 'failed'
         compressed_output_uri = event.get('compressedOutputS3Uri')
         
-        # Handle different error sources
-        error = event.get('error')
-        sfm_error = event.get('sfmError')
-        gaussian_error = event.get('gaussianError')
-        compression_error = event.get('compressionError')
+        # Handle different error sources - new approach with state object
+        state = event.get('state', {})
         
-        # Determine the actual error message to use
-        actual_error = error or sfm_error or gaussian_error or compression_error or 'Unknown error occurred'
+        # Extract error message from different possible sources
+        actual_error = None
+        
+        # Check for catch block errors ($.error.Cause)
+        if 'error' in state and 'Cause' in state['error']:
+            actual_error = state['error']['Cause']
+        
+        # Check for SfM processing errors
+        elif 'sfmStatus' in state and 'FailureReason' in state['sfmStatus']:
+            actual_error = state['sfmStatus']['FailureReason']
+        
+        # Check for Gaussian training errors
+        elif 'gaussianStatus' in state and 'FailureReason' in state['gaussianStatus']:
+            actual_error = state['gaussianStatus']['FailureReason']
+        
+        # Check for compression errors
+        elif 'compressionStatus' in state and 'FailureReason' in state['compressionStatus']:
+            actual_error = state['compressionStatus']['FailureReason']
+        
+        # Fallback to legacy error fields for backward compatibility
+        else:
+            error = event.get('error')
+            sfm_error = event.get('sfmError')
+            gaussian_error = event.get('gaussianError')
+            compression_error = event.get('compressionError')
+            actual_error = error or sfm_error or gaussian_error or compression_error
+        
+        # Final fallback
+        if not actual_error:
+            actual_error = 'Unknown error occurred during processing'
         
         # Prepare email content based on status
         if status == 'completed':

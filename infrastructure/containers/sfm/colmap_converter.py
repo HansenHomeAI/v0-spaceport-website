@@ -87,7 +87,14 @@ class OpenSfMToCOLMAPConverter:
             f.write("#   CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]\n")
             f.write("# Number of cameras: {}\n".format(len(cameras_data)))
             
+            # CRITICAL FIX: Convert OpenSfM camera IDs to integers for COLMAP compatibility
+            camera_id_mapping = {}
+            numeric_camera_id = 1
+            
             for camera_id, camera_data in cameras_data.items():
+                # Map OpenSfM camera ID to numeric ID
+                camera_id_mapping[camera_id] = numeric_camera_id
+                
                 # Extract camera parameters
                 width = int(camera_data.get('width', 1920))
                 height = int(camera_data.get('height', 1080))
@@ -134,7 +141,12 @@ class OpenSfMToCOLMAPConverter:
                 
                 # Format: CAMERA_ID MODEL WIDTH HEIGHT PARAMS[]
                 params_str = " ".join([f"{p:.6f}" for p in params])
-                f.write(f"{camera_id} {model} {width} {height} {params_str}\n")
+                f.write(f"{numeric_camera_id} {model} {width} {height} {params_str}\n")
+                
+                numeric_camera_id += 1
+            
+            # Store mapping for use in image conversion
+            self.camera_id_mapping = camera_id_mapping
         
         logger.info(f"✅ Generated cameras.txt with {len(cameras_data)} cameras")
     
@@ -159,7 +171,10 @@ class OpenSfMToCOLMAPConverter:
                 # Extract camera pose
                 rotation = shot_data.get('rotation', [0.0, 0.0, 0.0])
                 translation = shot_data.get('translation', [0.0, 0.0, 0.0])
-                camera_id = shot_data.get('camera', list(self.reconstruction.get('cameras', {}).keys())[0])
+                opensfm_camera_id = shot_data.get('camera', list(self.reconstruction.get('cameras', {}).keys())[0])
+                
+                # CRITICAL FIX: Use numeric camera ID mapping
+                numeric_camera_id = getattr(self, 'camera_id_mapping', {}).get(opensfm_camera_id, 1)
                 
                 # Convert OpenSfM rotation (axis-angle) to quaternion
                 quat = self._axis_angle_to_quaternion(rotation)
@@ -181,7 +196,7 @@ class OpenSfMToCOLMAPConverter:
                 
                 # Write image line
                 f.write(f"{image_id} {qw:.9f} {qx:.9f} {qy:.9f} {qz:.9f} "
-                       f"{tx:.6f} {ty:.6f} {tz:.6f} {camera_id} {shot_name}\n")
+                       f"{tx:.6f} {ty:.6f} {tz:.6f} {numeric_camera_id} {shot_name}\n")
                 
                 # Write empty points2D line (we'll populate this from tracks if available)
                 f.write("\n")
@@ -351,7 +366,7 @@ class OpenSfMToCOLMAPConverter:
             
             logger.info(f"✅ Final sparse directory created successfully: {self.final_sparse_path}")
             
-            # Copy COLMAP files
+            # Copy COLMAP files from main reconstruction (for backward compatibility)
             files_to_copy = ["cameras.txt", "images.txt", "points3D.txt"]
             for filename in files_to_copy:
                 src = self.output_path / filename
@@ -361,6 +376,28 @@ class OpenSfMToCOLMAPConverter:
                     logger.info(f"📄 Copied {filename} to final location")
                 else:
                     logger.warning(f"⚠️ Missing file: {filename}")
+            
+            # CRITICAL FIX: Copy train/ and test/ directories for 3DGS training
+            train_src = self.temp_dir / "train"
+            test_src = self.temp_dir / "test"
+            train_dst = self.base_output_path / "train"
+            test_dst = self.base_output_path / "test"
+            
+            if train_src.exists():
+                if train_dst.exists():
+                    shutil.rmtree(train_dst)
+                shutil.copytree(train_src, train_dst)
+                logger.info(f"📁 Copied train reconstruction to: {train_dst}")
+            else:
+                logger.warning(f"⚠️ Missing train directory: {train_src}")
+            
+            if test_src.exists():
+                if test_dst.exists():
+                    shutil.rmtree(test_dst)
+                shutil.copytree(test_src, test_dst)
+                logger.info(f"📁 Copied test reconstruction to: {test_dst}")
+            else:
+                logger.warning(f"⚠️ Missing test directory: {test_src}")
             
             # Copy dense directory (contains PLY file)
             temp_dense_dir = self.temp_dir / "dense"
@@ -397,9 +434,13 @@ class OpenSfMToCOLMAPConverter:
             'images_file_exists': False,
             'points_file_exists': False,
             'ply_file_exists': False,
+            'train_dir_exists': False,
+            'test_dir_exists': False,
             'camera_count': 0,
             'image_count': 0,
             'point_count': 0,
+            'train_image_count': 0,
+            'test_image_count': 0,
             'quality_check_passed': False
         }
         
@@ -409,45 +450,72 @@ class OpenSfMToCOLMAPConverter:
             images_file = self.final_sparse_path / "images.txt"
             points_file = self.final_sparse_path / "points3D.txt"
             ply_file = self.base_output_path / "dense" / "sparse_points.ply"
+            train_dir = self.base_output_path / "train"
+            test_dir = self.base_output_path / "test"
             
             validation_results['cameras_file_exists'] = cameras_file.exists()
             validation_results['images_file_exists'] = images_file.exists()
             validation_results['points_file_exists'] = points_file.exists()
             validation_results['ply_file_exists'] = ply_file.exists()
+            validation_results['train_dir_exists'] = train_dir.exists()
+            validation_results['test_dir_exists'] = test_dir.exists()
             
-            # Count entries
+            # Count cameras
             if cameras_file.exists():
                 with open(cameras_file, 'r') as f:
                     camera_count = sum(1 for line in f if line.strip() and not line.startswith('#'))
                 validation_results['camera_count'] = camera_count
             
+            # Count images (each image has 2 lines in COLMAP format)
             if images_file.exists():
                 with open(images_file, 'r') as f:
-                    lines = [line for line in f if line.strip() and not line.startswith('#')]
-                    image_count = len(lines) // 2  # Two lines per image
-                validation_results['image_count'] = image_count
+                    image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
+                validation_results['image_count'] = image_lines // 2
             
+            # Count points
             if points_file.exists():
                 with open(points_file, 'r') as f:
                     point_count = sum(1 for line in f if line.strip() and not line.startswith('#'))
                 validation_results['point_count'] = point_count
+            
+            # Count train/test images
+            if train_dir.exists():
+                train_images_file = train_dir / "images.txt"
+                if train_images_file.exists():
+                    with open(train_images_file, 'r') as f:
+                        train_image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
+                    validation_results['train_image_count'] = train_image_lines // 2
+            
+            if test_dir.exists():
+                test_images_file = test_dir / "images.txt"
+                if test_images_file.exists():
+                    with open(test_images_file, 'r') as f:
+                        test_image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
+                    validation_results['test_image_count'] = test_image_lines // 2
             
             # Quality check (minimum requirements for 3DGS)
             min_points_required = 1000  # Same as current COLMAP pipeline
             validation_results['quality_check_passed'] = (
                 validation_results['point_count'] >= min_points_required and
                 validation_results['image_count'] > 0 and
-                validation_results['camera_count'] > 0
+                validation_results['camera_count'] > 0 and
+                validation_results['train_dir_exists'] and
+                validation_results['test_dir_exists'] and
+                validation_results['train_image_count'] > 0 and
+                validation_results['test_image_count'] > 0
             )
             
             logger.info(f"🔍 Validation Results:")
             logger.info(f"   Cameras: {validation_results['camera_count']}")
             logger.info(f"   Images: {validation_results['image_count']}")
             logger.info(f"   Points: {validation_results['point_count']}")
+            logger.info(f"   Train Images: {validation_results['train_image_count']}")
+            logger.info(f"   Test Images: {validation_results['test_image_count']}")
+            logger.info(f"   Train/Test Split: {'✅ EXISTS' if validation_results['train_dir_exists'] and validation_results['test_dir_exists'] else '❌ MISSING'}")
             logger.info(f"   Quality Check: {'✅ PASSED' if validation_results['quality_check_passed'] else '❌ FAILED'}")
             
             if not validation_results['quality_check_passed']:
-                logger.warning(f"⚠️ Quality check failed: Need at least {min_points_required} points for 3DGS")
+                logger.warning(f"⚠️ Quality check failed: Need at least {min_points_required} points and proper train/test split for 3DGS")
             
         except Exception as e:
             logger.error(f"❌ Validation failed: {e}")
@@ -455,8 +523,8 @@ class OpenSfMToCOLMAPConverter:
         return validation_results
     
     def convert_full_reconstruction(self) -> Dict:
-        """Convert complete OpenSfM reconstruction to COLMAP format"""
-        logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion")
+        """Convert complete OpenSfM reconstruction to COLMAP format with train/test split"""
+        logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion with train/test split")
         
         # Create temp directory structure (sparse/0 for COLMAP files)
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -465,20 +533,186 @@ class OpenSfMToCOLMAPConverter:
         # Load reconstruction
         self.load_opensfm_reconstruction()
         
-        # Convert all components
+        # CRITICAL FIX: Create train/test split for proper 3DGS training
+        train_data, test_data = self.create_train_test_split()
+        
+        # Convert complete reconstruction (for backward compatibility)
         self.convert_cameras()
         self.convert_images()
         self.convert_points()
+        
+        # Create train/test split reconstructions
+        self.create_split_reconstructions(train_data, test_data)
+        
         self.create_reference_point_cloud()
         
-        # Copy files from temp to final location (avoiding permission issues)
+        # Copy to final location
         self._copy_to_final_location()
         
         # Validate conversion
-        validation = self.validate_conversion()
+        validation_results = self.validate_conversion()
         
-        logger.info(f"✅ Full conversion completed")
-        return validation
+        logger.info(f"✅ Full OpenSfM to COLMAP conversion completed")
+        return validation_results
+    
+    def create_train_test_split(self, train_ratio: float = 0.8) -> Tuple[Dict, Dict]:
+        """Create train/test split of the reconstruction data"""
+        if not self.reconstruction:
+            raise ValueError("Reconstruction not loaded")
+        
+        shots_data = self.reconstruction.get('shots', {})
+        shot_names = list(shots_data.keys())
+        
+        # Sort by name for consistent splitting
+        shot_names.sort()
+        
+        # Calculate split index
+        split_idx = int(len(shot_names) * train_ratio)
+        
+        train_shots = shot_names[:split_idx]
+        test_shots = shot_names[split_idx:]
+        
+        logger.info(f"🔄 Creating train/test split:")
+        logger.info(f"   Total images: {len(shot_names)}")
+        logger.info(f"   Training images: {len(train_shots)} ({len(train_shots)/len(shot_names)*100:.1f}%)")
+        logger.info(f"   Test images: {len(test_shots)} ({len(test_shots)/len(shot_names)*100:.1f}%)")
+        
+        # Create train data
+        train_data = {
+            'cameras': self.reconstruction.get('cameras', {}),
+            'shots': {name: shots_data[name] for name in train_shots},
+            'points': self.reconstruction.get('points', {})
+        }
+        
+        # Create test data (shares cameras and points with training)
+        test_data = {
+            'cameras': self.reconstruction.get('cameras', {}),
+            'shots': {name: shots_data[name] for name in test_shots},
+            'points': self.reconstruction.get('points', {})
+        }
+        
+        return train_data, test_data
+    
+    def create_split_reconstructions(self, train_data: Dict, test_data: Dict) -> None:
+        """Create separate COLMAP reconstructions for train and test splits"""
+        # Create train directory
+        train_dir = self.temp_dir / "train"
+        train_dir.mkdir(exist_ok=True)
+        
+        # Create test directory  
+        test_dir = self.temp_dir / "test"
+        test_dir.mkdir(exist_ok=True)
+        
+        logger.info(f"🔄 Creating train reconstruction in: {train_dir}")
+        self._create_split_reconstruction(train_data, train_dir, "train")
+        
+        logger.info(f"🔄 Creating test reconstruction in: {test_dir}")
+        self._create_split_reconstruction(test_data, test_dir, "test")
+        
+        logger.info(f"✅ Created train/test split reconstructions")
+    
+    def _create_split_reconstruction(self, data: Dict, output_dir: Path, split_name: str) -> None:
+        """Create a COLMAP reconstruction for a specific split"""
+        import shutil
+        
+        # CRITICAL FIX: Create subdirectory structure that 3DGS expects
+        # 3DGS looks for directories INSIDE the training/validation channels
+        reconstruction_subdir = output_dir / "0"  # Standard COLMAP sparse/0 structure
+        reconstruction_subdir.mkdir(parents=True, exist_ok=True)
+        
+        # Temporarily store original reconstruction
+        original_reconstruction = self.reconstruction
+        
+        # Set reconstruction to split data
+        self.reconstruction = data
+        
+        # Temporarily change output path to the subdirectory
+        original_output_path = self.output_path
+        self.output_path = reconstruction_subdir
+        
+        try:
+            # Convert split data
+            self.convert_cameras()
+            self.convert_images()
+            self.convert_points()
+            
+            # CRITICAL FIX: Copy actual image files for this split to the subdirectory
+            self._copy_images_for_split(data, reconstruction_subdir, split_name)
+            
+            shots_count = len(data.get('shots', {}))
+            points_count = len(data.get('points', {}))
+            cameras_count = len(data.get('cameras', {}))
+            
+            logger.info(f"✅ {split_name} reconstruction: {cameras_count} cameras, {shots_count} images, {points_count} points")
+            logger.info(f"📁 Created in subdirectory: {reconstruction_subdir}")
+            
+        finally:
+            # Restore original values
+            self.reconstruction = original_reconstruction
+            self.output_path = original_output_path
+
+    def _copy_images_for_split(self, data: Dict, output_dir: Path, split_name: str) -> None:
+        """Copy actual image files for a specific train/test split"""
+        import shutil
+        from pathlib import Path
+        
+        # CRITICAL FIX: Use the correct source images directory (from OpenSfM input)
+        source_images_dir = self.opensfm_path / "images"
+        if not source_images_dir.exists():
+            logger.warning(f"⚠️ Source images directory not found: {source_images_dir}")
+            return
+        
+        # Get the shots (images) for this split
+        shots_data = data.get('shots', {})
+        if not shots_data:
+            logger.warning(f"⚠️ No shots found for {split_name} split")
+            return
+        
+        # Extract image filenames from shots
+        image_filenames = []
+        for shot_name, shot_data in shots_data.items():
+            # CRITICAL FIX: shot_name may already contain the extension
+            shot_path = Path(shot_name)
+            if shot_path.suffix:
+                # Already has extension (e.g., "DJI_0579.JPG")
+                image_file = source_images_dir / shot_name
+                if image_file.exists():
+                    image_filenames.append(shot_name)
+                    continue
+            
+            # If no extension or file not found, try common extensions
+            for ext in ['.JPG', '.jpg', '.PNG', '.png', '.JPEG', '.jpeg']:
+                image_file = source_images_dir / f"{shot_name}{ext}"
+                if image_file.exists():
+                    image_filenames.append(f"{shot_name}{ext}")
+                    break
+        
+        if not image_filenames:
+            logger.warning(f"⚠️ No image files found for {split_name} split")
+            return
+        
+        logger.info(f"📸 Copying {len(image_filenames)} images for {split_name} split:")
+        
+        # Copy each image file to the split directory
+        copied_count = 0
+        for image_filename in image_filenames:
+            src_path = source_images_dir / image_filename
+            dst_path = output_dir / image_filename
+            
+            if src_path.exists():
+                try:
+                    shutil.copy2(src_path, dst_path)
+                    copied_count += 1
+                    if copied_count <= 3:  # Log first few files
+                        logger.info(f"   📄 Copied: {image_filename}")
+                    elif copied_count == 4:
+                        logger.info(f"   📄 ... and {len(image_filenames) - 3} more images")
+                except Exception as e:
+                    logger.error(f"❌ Failed to copy {image_filename}: {e}")
+            else:
+                logger.warning(f"⚠️ Source image not found: {src_path}")
+        
+        logger.info(f"✅ Copied {copied_count}/{len(image_filenames)} images for {split_name} split")
 
     def convert(self) -> Dict:
         """Public wrapper to preserve legacy call sites.

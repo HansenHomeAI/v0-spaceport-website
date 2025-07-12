@@ -2,12 +2,14 @@
 boto3>=1.26.0
 
 # Core dependencies
-numpy>=1.24.0
+numpy>=1.24.0,<2.0.0
 Pillow>=9.0.0
 
 # Deep learning framework for progressive training
-torch>=1.13.0
-torchvision>=0.14.0
+# CUDA 12.1 compatible versions - DO NOT CHANGE without updating Dockerfile
+torch==2.1.0+cu121
+torchvision==0.16.0+cu121
+torchaudio==2.1.0+cu121
 
 # 3D reconstruction and computer vision
 opencv-python>=4.5.0
@@ -17,6 +19,15 @@ matplotlib>=3.5.0
 # Point cloud processing
 plyfile>=0.7.4
 open3d>=0.16.0
+
+# 3D Gaussian Splatting (CRITICAL - must be pre-installed with CUDA support)
+# Install from source with CUDA support
+gsplat>=1.5.0
+
+# CUDA-specific dependencies for proper GPU detection
+# These help ensure PyTorch can find CUDA libraries
+pynvml>=11.0.0
+nvidia-ml-py3>=7.352.0
 
 # Image processing and utilities
 tqdm>=4.64.0
@@ -32,12 +43,8 @@ pandas>=1.5.0
 
 # Optimization and math libraries
 scikit-learn>=1.1.0
-numba>=0.56.0  # For faster numerical computations
+einops>=0.6.0
 
-# Progressive training utilities
-albumentations>=1.3.0  # For advanced image augmentations
-einops>=0.6.0         # For tensor operations
-
-# Memory optimization
-psutil>=5.9.0         # For memory monitoring
-gc-python-utils>=0.0.1  # For garbage collection utilities (fixed version constraint) 
+# Utilities
+requests>=2.28.0
+typing-extensions>=4.4.0 

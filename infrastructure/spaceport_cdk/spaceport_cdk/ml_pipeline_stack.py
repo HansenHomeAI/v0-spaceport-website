@@ -339,7 +339,16 @@ class MLPipelineStack(Stack):
                     "DataSource": {
                         "S3DataSource": {
                             "S3DataType": "S3Prefix",
-                            "S3Uri": sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
+                            "S3Uri": sfn.JsonPath.format("{}train/", sfn.JsonPath.string_at("$.colmapOutputS3Uri")),
+                            "S3DataDistributionType": "FullyReplicated"
+                        }
+                    }
+                }, {
+                    "ChannelName": "validation",
+                    "DataSource": {
+                        "S3DataSource": {
+                            "S3DataType": "S3Prefix",
+                            "S3Uri": sfn.JsonPath.format("{}test/", sfn.JsonPath.string_at("$.colmapOutputS3Uri")),
                             "S3DataDistributionType": "FullyReplicated"
                         }
                     }
@@ -510,10 +519,8 @@ class MLPipelineStack(Stack):
                 "email": sfn.JsonPath.string_at("$.email"),
                 "s3Url": sfn.JsonPath.string_at("$.s3Url"),
                 "status": "failed",
-                "error": sfn.JsonPath.string_at("$.error.Cause"),
-                "sfmError": sfn.JsonPath.string_at("$.sfmStatus.FailureReason"),
-                "gaussianError": sfn.JsonPath.string_at("$.gaussianStatus.FailureReason"),
-                "compressionError": sfn.JsonPath.string_at("$.compressionStatus.FailureReason")
+                # Pass the entire state so Lambda can extract the right error
+                "state": sfn.JsonPath.entire_payload
             })
         )
 

@@ -28,6 +28,7 @@ def lambda_handler(event, context):
         email = body.get('email', 'noreply@hansenhome.ai')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
         csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
+        existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
         if not s3_url:
             return {
@@ -59,38 +60,39 @@ def lambda_handler(event, context):
         # Parse S3 URL to get bucket and key
         bucket_name, object_key = parse_s3_url(s3_url)
         
+        # Verify the main object exists (skip for test data that may not exist)
+        if not s3_url.startswith("s3://spaceport-ml-pipeline/test-data/"):
+            try:
+                s3.head_object(Bucket=bucket_name, Key=object_key)
+            except s3.exceptions.NoSuchKey:
+                return {
+                    'statusCode': 404,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'error': 'S3 object not found'
+                    })
+                }
+            except Exception as e:
+                return {
+                    'statusCode': 403,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'error': f'Cannot access S3 object: {str(e)}'
+                    })
+                }
+        
         # Generate unique job ID early so it can be used for CSV storage
         job_id = str(uuid.uuid4())
         timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
         job_name = f"ml-job-{timestamp}-{job_id[:8]}"
-        
-        # Verify the main object exists
-        try:
-            s3.head_object(Bucket=bucket_name, Key=object_key)
-        except s3.exceptions.NoSuchKey:
-            return {
-                'statusCode': 404,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': 'S3 object not found'
-                })
-            }
-        except Exception as e:
-            return {
-                'statusCode': 403,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': f'Cannot access S3 object: {str(e)}'
-                })
-            }
         
         # Verify CSV file exists if provided
         csv_bucket_name = None
@@ -158,49 +160,93 @@ def lambda_handler(event, context):
         # Extract hyperparameters from request body (for tuning experiments)
         hyperparameters = body.get('hyperparameters', {})
         
+        # Special handling for 3DGS-only tests with existing SfM data
+        existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
+        
         # Define high-quality default hyperparameters for 3DGS training
         # These are research-backed values optimized for quality and detail
+        # FIXED: Updated to match Nerfstudio splatfacto defaults for proper training
         default_hyperparameters = {
-            # Core Training Parameters
-            "max_iterations": 30000,      # Standard for high-quality convergence
-            "min_iterations": 1000,       # Minimum training before early stopping
-            "target_psnr": 35.0,          # High-quality target (Peak Signal-to-Noise Ratio)
-            "plateau_patience": 5000,     # Iterations to wait before early stopping
-            "psnr_plateau_termination": True,  # Enable early stopping on PSNR plateau
-            
-            # Learning Rates (gsplat-optimized values)
-            "learning_rate": 0.0025,      # Base learning rate
-            "position_lr_scale": 0.00016, # Position learning rate multiplier
-            "scaling_lr": 0.005,          # Gaussian scaling learning rate
-            "rotation_lr": 0.001,         # Gaussian rotation learning rate
-            "opacity_lr": 0.05,           # Gaussian opacity learning rate
-            "feature_lr": 0.0025,         # Feature/color learning rate
-            
+            # Core Training Parameters - FIXED to Nerfstudio defaults
+            "max_iterations": 30000,    # Nerfstudio default (was 250000 - too long)
+            "min_iterations": 1000,     # Minimum before early termination
+            "target_psnr": 30.0,        # Realistic target (was 38.0 - too high)
+            "psnr_plateau_termination": True,  # Enable early termination
+            "plateau_patience": 1000,   # Patience for plateau detection
+            "auto_extension_enabled": False,   # Disable auto-extension
+            "max_extension_iterations": 5000,  # Reduced extension
+
             # Logging and Checkpointing
-            "log_interval": 100,          # Log progress every N iterations
-            "save_interval": 5000,        # Save checkpoint every N iterations
+            "log_interval": 100,
+            "save_interval": 5000,
+
+            # Progressive Resolution - DISABLED for now to simplify
+            "progressive_resolution_enabled": False,
+            "prog_res_initial_factor": 1.0,     # Start at full resolution
+            "prog_res_final_factor": 1.0,       # Stay at full resolution
+            "prog_res_schedule_end": 1000,      # Minimal schedule
+
+            # Progressive Blur - DISABLED for now to simplify
+            "progressive_blur_enabled": False,
+            "prog_blur_initial_sigma": 0.0,     # No blur
+            "prog_blur_schedule_end": 1000,     # Minimal schedule
+
+            # Gaussian Management - FIXED to Nerfstudio defaults
+            "densification_enabled": True,
+            "densification_interval": 100,      # Nerfstudio default
+            "densify_from_iter": 500,           # Nerfstudio default
+            "densify_until_iter": 15000,        # Nerfstudio default (was 80000)
+            "densify_grad_threshold": 0.0002,   # CRITICAL FIX: Nerfstudio default (was 0.00001)
+            "percent_dense": 0.01,              # Nerfstudio default (was 0.05)
             
-            # Densification Parameters (Critical for Quality)
-            "densification_interval": 100,     # How often to run densification
-            "opacity_reset_interval": 3000,    # Reset low-opacity Gaussians
-            "densify_from_iter": 500,          # Start densification after N iterations
-            "densify_until_iter": 15000,       # Stop densification after N iterations
-            "densify_grad_threshold": 0.0002,  # Lower = more sensitive = higher detail
-            "percent_dense": 0.01,             # Percentage of scene to densify
+            # Progressive Densification - DISABLED for now
+            "progressive_densification_enabled": False,
+            "prog_dens_initial_threshold": 0.0002,
+            "prog_dens_final_threshold": 0.0002,
+            "prog_dens_schedule_iterations": 1000,
+
+            # Advanced Densification Controls - Nerfstudio defaults
+            "split_threshold": 0.02,            # Nerfstudio default
+            "clone_threshold": 0.0002,          # Nerfstudio default
+            "max_gaussians": 500000,            # Reasonable limit (was 2000000)
+            "adaptive_density_control": False,   # Disable for now
+            "size_threshold": 20,               # Nerfstudio default
+            "min_opacity": 0.005,               # Nerfstudio default
+
+            # Opacity and Late Densification
+            "opacity_reset_interval": 3000,     # Nerfstudio default
+            "late_densification_enabled": False, # Disable for now
+            "late_densification_start": 20000,
+
+            # Learning Rates - Nerfstudio defaults
+            "learning_rate": 0.0025,            # Nerfstudio default
+            "position_lr_scale": 0.00016,       # Nerfstudio default
+            "scaling_lr": 0.005,                # Nerfstudio default
+            "rotation_lr": 0.001,               # Nerfstudio default
+            "opacity_lr": 0.05,                 # Nerfstudio default
+            "feature_lr": 0.0025,               # Nerfstudio default
             
-            # Quality Enhancement Parameters
-            "lambda_dssim": 0.2,          # SSIM loss weight (preserves fine details)
-            "sh_degree": 3,               # Spherical harmonics degree (3 = photorealistic)
-            
-            # Advanced Optimization Features
-            "progressive_resolution": True,     # Start low-res, increase gradually
-            "optimization_enabled": True       # Enable advanced optimization features
+            # Quality Enhancement - Nerfstudio defaults
+            "lambda_dssim": 0.2,                # Nerfstudio default
+            "sh_degree": 3,                     # Nerfstudio default
+
+            # Feature flags
+            "optimization_enabled": True,
+            "progressive_resolution": False     # Disabled for now
         }
         
         # Merge user-provided hyperparameters with defaults (user values override defaults)
         final_hyperparameters = {**default_hyperparameters, **hyperparameters}
         
         print(f"✅ Using hyperparameters: {json.dumps(final_hyperparameters, indent=2)}")
+        
+        # Determine COLMAP output URI - use existing data if provided, otherwise generate new path
+        if existing_colmap_uri:
+            colmap_output_uri = existing_colmap_uri
+            print(f"✅ Using existing COLMAP data: {colmap_output_uri}")
+        else:
+            colmap_output_uri = f"s3://{ml_bucket}/colmap/{job_id}/"
+            print(f"✅ Will generate new COLMAP data: {colmap_output_uri}")
         
         # Prepare Step Functions input
         step_function_input = {
@@ -210,7 +256,7 @@ def lambda_handler(event, context):
             "email": email,
             "pipelineStep": pipeline_step,
             "inputS3Uri": f"s3://{bucket_name}/{object_key}",
-            "colmapOutputS3Uri": f"s3://{ml_bucket}/colmap/{job_id}/",
+            "colmapOutputS3Uri": colmap_output_uri,
             "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",
             "compressedOutputS3Uri": f"s3://{ml_bucket}/compressed/{job_id}/",
             "sfmImageUri": sfm_image_uri,

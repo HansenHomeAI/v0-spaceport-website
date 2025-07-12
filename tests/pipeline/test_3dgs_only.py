@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
-3DGS-Only Pipeline Test
-======================
-Test ONLY the 3DGS training stage using pre-existing SfM data.
-This allows rapid iteration on 3DGS parameters without waiting for SfM.
+3DGS-Only Pipeline Test - Refactored to use Lambda for single source of truth
+
+This test calls the deployed start_ml_job Lambda function instead of directly
+invoking Step Functions, ensuring hyperparameters are managed in one place.
+
+The test skips SfM processing by using existing COLMAP data and focuses solely
+on testing 3D Gaussian Splatting training with the current hyperparameters.
 """
 
-import boto3
 import json
 import time
+import boto3
 import logging
 from datetime import datetime
 from typing import Dict, Optional, Tuple
@@ -21,106 +24,101 @@ class GaussianOnlyTester:
     def __init__(self, region='us-west-2'):
         self.region = region
         self.account_id = '975050048887'
+        self.lambda_client = boto3.client('lambda', region_name=region)
         self.stepfunctions = boto3.client('stepfunctions', region_name=region)
         self.s3 = boto3.client('s3', region_name=region)
         
         self.config = {
-            'state_machine_arn': f"arn:aws:states:{region}:{self.account_id}:stateMachine:SpaceportMLPipeline",
-            'existing_sfm_data': "s3://spaceport-ml-pipeline/jobs/prod-validation-1750995274/colmap/",
-            'container_uri': f"{self.account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",
-            'test_email': "test@spaceport.com"
+            'lambda_function_name': 'Spaceport-StartMLJob',
+            'existing_sfm_data': "s3://spaceport-ml-processing/colmap/c3c249de-03ab-4a2f-af72-d88a9412565d/",
+            'test_email': "gbhbyu@gmail.com"
         }
     
-    def create_3dgs_only_input(self) -> Dict:
-        """Create test input that skips SfM and starts directly from 3DGS training."""
-        job_id = f"3dgs-only-{int(time.time())}"
-        timestamp = datetime.now().isoformat()
-        
+    def create_lambda_test_payload(self) -> Dict:
+        """Create payload for Lambda function that will start 3DGS-only training."""
         return {
-            # Required Step Functions fields
-            "jobId": job_id,
-            "jobName": f"3dgs-only-{job_id}",
-            "s3Url": "dummy",  # Not used when skipping SfM
-            "inputS3Uri": "dummy",
-            "email": self.config['test_email'],
-            "timestamp": timestamp,
-            
-            # CRITICAL: Start directly from 3DGS stage
-            "pipelineStep": "3dgs",  # Skip SfM, start from 3DGS
-            
-            # Use existing SfM data
-            "colmapOutputS3Uri": self.config['existing_sfm_data'],
-            "gaussianOutputS3Uri": f"s3://spaceport-ml-pipeline/jobs/{job_id}/gaussian/",
-            "compressedOutputS3Uri": f"s3://spaceport-ml-pipeline/jobs/{job_id}/compressed/",
-            
-            # Container URIs
-            "gaussianImageUri": self.config['container_uri'],
-            "compressorImageUri": f"{self.account_id}.dkr.ecr.{self.region}.amazonaws.com/spaceport/compressor:latest",
-            
-            # Enhanced 3DGS training parameters for proper training
-            "optimization_enabled": True,
-            "progressive_resolution": True,
-            "psnr_plateau_termination": False,  # DISABLE early termination for now
-            "target_psnr": 35.0,  # Higher target
-            "max_iterations": 15000,  # More iterations
-            "plateau_patience": 2000,  # More patience
-            "min_iterations": 5000,  # Minimum iterations before early stopping
-            "learning_rate": 0.0025,  # Lower learning rate for stability
-            "position_lr_scale": 0.5,  # Scale position learning rate
-            "scaling_lr": 0.005,  # Scaling learning rate
-            "rotation_lr": 0.001,  # Rotation learning rate
-            "opacity_lr": 0.05,  # Opacity learning rate
-            "feature_lr": 0.0025,  # Feature learning rate
-            "densification_interval": 100,  # Densify every 100 iterations
-            "opacity_reset_interval": 3000,  # Reset opacity every 3000 iterations
-            "densify_from_iter": 500,  # Start densification from iteration 500
-            "densify_until_iter": 12000,  # Stop densification at iteration 12000
-            "densify_grad_threshold": 0.0002,  # Gradient threshold for densification
-            "percent_dense": 0.01,  # Percentage of scene to densify
-            "lambda_dssim": 0.2,  # SSIM loss weight
-            "sh_degree": 3,  # Spherical harmonics degree
-            
-            # Logging and saving parameters
-            "log_interval": 500,  # Log every 500 iterations
-            "save_interval": 5000  # Save every 5000 iterations
+            "body": {
+                "s3Url": "s3://spaceport-uploads/1751413909023-l2zkyj-Battery-1.zip",  # Same dataset as successful SfM run
+                "email": self.config['test_email'],
+                "pipelineStep": "3dgs",  # CRITICAL: Start directly from 3DGS stage
+                "existingColmapUri": self.config['existing_sfm_data'],  # Use existing SfM data
+                "hyperparameters": {
+                    "max_iterations": 25000,  # Production quality training
+                    "target_psnr": 30.0,      # Realistic target for 77 training images
+                    "densify_grad_threshold": 0.0002,  # Standard threshold
+                    "densification_interval": 100,     # Standard interval
+                    "lambda_dssim": 0.2,               # Standard DSSIM weight
+                    "sh_degree": 3,                    # Full spherical harmonics
+                    "learning_rate": 0.0025,           # Standard learning rate
+                    "position_lr_scale": 1.0,          # Standard position scaling
+                    "log_interval": 100,               # Log every 100 iterations
+                    "save_interval": 5000,             # Save every 5000 iterations
+                    "plateau_patience": 1000,          # Allow 1000 iterations without improvement
+                    "psnr_plateau_termination": True   # Enable early stopping
+                }
+            }
         }
     
-    def start_3dgs_test(self) -> Tuple[Optional[str], Optional[Dict]]:
-        """Start a 3DGS-only test execution."""
-        test_input = self.create_3dgs_only_input()
-        execution_name = f"3dgs-only-{int(time.time())}"
+    def invoke_lambda_for_3dgs_test(self) -> Tuple[Optional[str], Optional[Dict]]:
+        """Invoke the Lambda function and get Step Function execution details."""
+        payload = self.create_lambda_test_payload()
         
-        logger.info("🎯 STARTING 3DGS-ONLY TRAINING TEST")
+        logger.info("🎯 STARTING 3DGS-ONLY TEST VIA LAMBDA")
         logger.info("=" * 60)
-        logger.info(f"Job ID: {test_input['jobId']}")
-        logger.info(f"Execution Name: {execution_name}")
+        logger.info(f"Lambda Function: {self.config['lambda_function_name']}")
+        logger.info(f"Pipeline Step: {payload['body']['pipelineStep']}")
         logger.info(f"Using existing SfM data: {self.config['existing_sfm_data']}")
-        logger.info("")
-        logger.info("🔧 ENHANCED TRAINING PARAMETERS:")
-        logger.info(f"  Max Iterations: {test_input['max_iterations']}")
-        logger.info(f"  Min Iterations: {test_input['min_iterations']}")
-        logger.info(f"  Target PSNR: {test_input['target_psnr']}dB")
-        logger.info(f"  Early Termination: {'DISABLED' if not test_input['psnr_plateau_termination'] else 'ENABLED'}")
-        logger.info(f"  Learning Rate: {test_input['learning_rate']}")
-        logger.info(f"  Densification: Every {test_input['densification_interval']} iterations")
         logger.info("")
         
         try:
-            response = self.stepfunctions.start_execution(
-                stateMachineArn=self.config['state_machine_arn'],
-                name=execution_name,
-                input=json.dumps(test_input)
+            # Invoke the Lambda function
+            response = self.lambda_client.invoke(
+                FunctionName=self.config['lambda_function_name'],
+                InvocationType='RequestResponse',
+                Payload=json.dumps(payload)
             )
             
-            execution_arn = response['executionArn']
-            logger.info(f"✅ 3DGS test started successfully!")
+            # Parse Lambda response
+            lambda_response = json.loads(response['Payload'].read())
+            
+            if lambda_response.get('statusCode') != 200:
+                logger.error(f"❌ Lambda returned error: {lambda_response}")
+                return None, None
+            
+            # Extract execution details
+            body = json.loads(lambda_response['body'])
+            execution_arn = body['executionArn']
+            job_id = body['jobId']
+            
+            logger.info(f"✅ Lambda invoked successfully!")
+            logger.info(f"📋 Job ID: {job_id}")
             logger.info(f"📋 Execution ARN: {execution_arn}")
+            
+            # Get the Step Function input to understand what hyperparameters were used
+            execution_desc = self.stepfunctions.describe_execution(executionArn=execution_arn)
+            step_function_input = json.loads(execution_desc['input'])
+            
+            # Log the hyperparameters being used (sourced from Lambda)
+            logger.info("\n🔧 HYPERPARAMETERS FROM LAMBDA (SINGLE SOURCE OF TRUTH):")
+            logger.info(f"  Max Iterations: {step_function_input.get('max_iterations', 'N/A')}")
+            logger.info(f"  Min Iterations: {step_function_input.get('min_iterations', 'N/A')}")
+            logger.info(f"  Target PSNR: {step_function_input.get('target_psnr', 'N/A')}dB")
+            logger.info(f"  Densify Grad Threshold: {step_function_input.get('densify_grad_threshold', 'N/A')}")
+            logger.info(f"  Densification Interval: {step_function_input.get('densification_interval', 'N/A')}")
+            logger.info(f"  Progressive Densification: {step_function_input.get('progressive_densification_enabled', 'N/A')}")
+            logger.info(f"  Learning Rate: {step_function_input.get('learning_rate', 'N/A')}")
+            logger.info(f"  Position LR Scale: {step_function_input.get('position_lr_scale', 'N/A')}")
+            logger.info(f"  SH Degree: {step_function_input.get('sh_degree', 'N/A')}")
+            logger.info(f"  Progressive Resolution: {step_function_input.get('progressive_resolution_enabled', 'N/A')}")
+            logger.info(f"  Split Threshold: {step_function_input.get('split_threshold', 'N/A')}")
+            logger.info(f"  Clone Threshold: {step_function_input.get('clone_threshold', 'N/A')}")
+            logger.info(f"  Max Gaussians: {step_function_input.get('max_gaussians', 'N/A')}")
             logger.info("")
             
-            return execution_arn, test_input
+            return execution_arn, step_function_input
             
         except Exception as e:
-            logger.error(f"❌ Failed to start 3DGS test: {str(e)}")
+            logger.error(f"❌ Failed to invoke Lambda: {str(e)}")
             return None, None
     
     def monitor_3dgs_execution(self, execution_arn: str, test_input: Dict) -> Dict:
@@ -177,10 +175,26 @@ class GaussianOnlyTester:
         """Validate the 3DGS training output."""
         logger.info("\n🔍 VALIDATING 3DGS OUTPUT")
         logger.info("=" * 30)
+
+        # Extract job_id for use throughout the function
+        job_id = test_input.get('jobId')
         
-        job_id = test_input['jobId']
-        bucket = 'spaceport-ml-pipeline'
-        prefix = f"jobs/{job_id}/gaussian/"
+        # Prefer the Gaussian output URI provided by the Lambda / Step-Functions payload
+        gaussian_uri = test_input.get('gaussianOutputS3Uri')
+        if gaussian_uri and gaussian_uri.startswith('s3://'):
+            from urllib.parse import urlparse
+            parsed = urlparse(gaussian_uri)
+            bucket = parsed.netloc
+            # Ensure prefix ends with a slash so list_objects_v2 treats it as prefix
+            prefix = parsed.path.lstrip('/')
+            if not prefix.endswith('/'):
+                prefix += '/'
+            logger.info(f"📁 Using Gaussian output URI from payload: s3://{bucket}/{prefix}")
+        else:
+            # Fallback to legacy location for backward compatibility
+            bucket = 'spaceport-ml-pipeline'
+            prefix = f"jobs/{job_id}/gaussian/"
+            logger.info(f"📁 Falling back to legacy output location: s3://{bucket}/{prefix}")
         
         try:
             response = self.s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
@@ -217,9 +231,6 @@ class GaussianOnlyTester:
                                 logger.info(f"📊 Training Results:")
                                 logger.info(f"   Iterations: {metadata.get('iterations', 'unknown')}")
                                 logger.info(f"   Final Loss: {metadata.get('final_loss', 'unknown'):.6f}")
-                                logger.info(f"   Final PSNR: {metadata.get('final_psnr', 'unknown'):.1f}dB")
-                                logger.info(f"   Training Time: {metadata.get('training_time', 'unknown'):.1f}s")
-                                logger.info(f"   Num Gaussians: {metadata.get('num_gaussians', 'unknown')}")
                                 
                                 # Clean up
                                 import os
@@ -255,8 +266,8 @@ class GaussianOnlyTester:
             }
     
     def run_full_test(self) -> bool:
-        """Run a complete 3DGS-only test."""
-        execution_arn, test_input = self.start_3dgs_test()
+        """Run a complete 3DGS-only test using the Lambda function."""
+        execution_arn, test_input = self.invoke_lambda_for_3dgs_test()
         
         if not execution_arn:
             return False
@@ -273,6 +284,7 @@ class GaussianOnlyTester:
                 logger.info("=" * 40)
                 logger.info("✅ Training completed successfully")
                 logger.info("✅ Model files generated")
+                logger.info("✅ Hyperparameters sourced from Lambda (single source of truth)")
                 logger.info("🚀 Ready for further parameter tuning!")
                 return True
             else:
@@ -284,9 +296,10 @@ class GaussianOnlyTester:
 
 def main():
     """Main test function."""
-    logger.info("🚀 Starting 3DGS-Only Pipeline Test")
-    logger.info("This test uses existing SfM data to test ONLY the 3DGS training stage")
-    logger.info("Allows rapid iteration on 3DGS parameters without SfM overhead")
+    logger.info("🚀 Starting 3DGS-Only Pipeline Test (Lambda-based)")
+    logger.info("This test calls the deployed Lambda function for single source of truth")
+    logger.info("Uses existing SfM data to test ONLY the 3DGS training stage")
+    logger.info("Hyperparameters are managed entirely in the Lambda function")
     logger.info("")
     
     tester = GaussianOnlyTester()

@@ -1,1 +1,6 @@
-Updated 3DGS container to output proper spherical harmonics for SOGS compatibility
+REBUILD: Updated 3DGS container to use separate training and validation channels
+- Fixed Step Functions to use train/ folder for training and test/ folder for validation
+- Updated train_gaussian_production.py to load from both SM_CHANNEL_TRAINING and SM_CHANNEL_VALIDATION
+- Now trains on 77 images (train folder) and validates on 20 images (test folder)
+- Proper PSNR validation during training for quality metrics
+Build timestamp: 2025-01-10-17:10:00
