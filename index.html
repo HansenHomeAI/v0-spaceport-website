@@ -279,6 +279,11 @@
           <div class="accordion-content">
             <!-- Map Section -->
             <div class="popup-map-section">
+              <!-- Expand button (moved outside map container to be above blur) -->
+              <button class="expand-button" id="expand-button">
+                <span class="expand-icon"></span>
+              </button>
+              
               <div id="map-container" class="map-container">
                 <div class="map-dim-overlay"></div>
                 <!-- Add blur background -->
@@ -286,11 +291,6 @@
                 <!-- Progressive blur overlays -->
                 <div class="map-blur-overlay top"></div>
                 <div class="map-blur-overlay bottom"></div>
-                
-                <!-- Expand button (fixed in top-right) -->
-                <button class="expand-button" id="expand-button">
-                  <span class="expand-icon"></span>
-                </button>
                 
                 <!-- Centered instructions -->
                 <div class="map-instructions-center" id="map-instructions">
