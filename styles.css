@@ -3623,6 +3623,7 @@ input.text-fade-right,
   z-index: 9999;
   border-radius: 0;
   border: none;
+  overflow: visible;
   transition: all 0.3s ease;
 }
 
@@ -3640,6 +3641,11 @@ input.text-fade-right,
 
 .map-container.fullscreen .expand-button {
   top: 16px;
+  right: 16px;
+}
+
+.map-container.fullscreen .map-instructions-center {
+  left: 16px;
   right: 16px;
 }
 
