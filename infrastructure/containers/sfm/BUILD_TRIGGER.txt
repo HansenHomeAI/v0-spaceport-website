@@ -22,10 +22,10 @@ Date: 2025-07-10
 Build required: YES
 Priority: HIGH - fixes pipeline compatibility issue
 
-REBUILD: CRITICAL FIXES for image copying in train/test directories
-- FIXED source directory: Use self.opensfm_path/images (where images actually are) instead of self.base_output_path/images
-- FIXED double extension bug: Check if shot_name already has extension before appending
-- Now correctly handles shot names like "DJI_0579.JPG" without creating "DJI_0579.JPG.JPG"
-- Ensures 100% reliable image copying for 3DGS training
-- Each split directory will contain: cameras.txt, images.txt, points3D.txt + actual image files
-Build timestamp: 2025-01-10-18:45:00
+REBUILD: DEFINITIVE FIX for 3DGS directory structure mismatch
+- FIXED directory structure: Create subdirectories (train/0/, test/0/) that 3DGS expects
+- 3DGS looks for directories INSIDE training/validation channels, not files in root
+- Now creates proper COLMAP sparse/0 structure: train/0/cameras.txt, train/0/images.txt, etc.
+- Images are copied to the correct subdirectories where 3DGS can find them
+- This fixes "No COLMAP reconstruction directory found in training channel" error
+Build timestamp: 2025-01-10-19:30:00

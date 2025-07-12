@@ -615,15 +615,20 @@ class OpenSfMToCOLMAPConverter:
         """Create a COLMAP reconstruction for a specific split"""
         import shutil
         
+        # CRITICAL FIX: Create subdirectory structure that 3DGS expects
+        # 3DGS looks for directories INSIDE the training/validation channels
+        reconstruction_subdir = output_dir / "0"  # Standard COLMAP sparse/0 structure
+        reconstruction_subdir.mkdir(parents=True, exist_ok=True)
+        
         # Temporarily store original reconstruction
         original_reconstruction = self.reconstruction
         
         # Set reconstruction to split data
         self.reconstruction = data
         
-        # Temporarily change output path
+        # Temporarily change output path to the subdirectory
         original_output_path = self.output_path
-        self.output_path = output_dir
+        self.output_path = reconstruction_subdir
         
         try:
             # Convert split data
@@ -631,14 +636,15 @@ class OpenSfMToCOLMAPConverter:
             self.convert_images()
             self.convert_points()
             
-            # CRITICAL FIX: Copy actual image files for this split
-            self._copy_images_for_split(data, output_dir, split_name)
+            # CRITICAL FIX: Copy actual image files for this split to the subdirectory
+            self._copy_images_for_split(data, reconstruction_subdir, split_name)
             
             shots_count = len(data.get('shots', {}))
             points_count = len(data.get('points', {}))
             cameras_count = len(data.get('cameras', {}))
             
             logger.info(f"✅ {split_name} reconstruction: {cameras_count} cameras, {shots_count} images, {points_count} points")
+            logger.info(f"📁 Created in subdirectory: {reconstruction_subdir}")
             
         finally:
             # Restore original values
