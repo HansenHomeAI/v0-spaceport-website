@@ -3217,6 +3217,7 @@ body.popup-open {
   box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
   width: 100%;
   max-width: 100%;
+  z-index: 31;
 }
 
 .instruction-content::before {
@@ -3243,8 +3244,9 @@ body.popup-open {
   z-index: -1;
 }
 
+/* Remove the hover state for instructions popup */
 .instruction-content:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .instruction-pin {
@@ -3641,4 +3643,9 @@ input.text-fade-right,
   /* For shorter fade effect */
   mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
+}
+
+.instruction-content * {
+  z-index: 32;
+  position: relative;
 }
