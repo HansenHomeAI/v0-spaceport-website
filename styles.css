@@ -3164,22 +3164,22 @@ body.popup-open {
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.2) 15%,
-    rgba(0, 0, 0, 0.4) 30%,
-    rgba(0, 0, 0, 0.6) 45%,
-    rgba(0, 0, 0, 0.8) 60%,
-    rgba(0, 0, 0, 0.9) 75%,
-    rgba(0, 0, 0, 1) 100%
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.4) 25%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 55%,
+    rgba(0, 0, 0, 0.9) 70%,
+    rgba(0, 0, 0, 1) 95%
   );
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.2) 15%,
-    rgba(0, 0, 0, 0.4) 30%,
-    rgba(0, 0, 0, 0.6) 45%,
-    rgba(0, 0, 0, 0.8) 60%,
-    rgba(0, 0, 0, 0.9) 75%,
-    rgba(0, 0, 0, 1) 100%
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.4) 25%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 55%,
+    rgba(0, 0, 0, 0.9) 70%,
+    rgba(0, 0, 0, 1) 95%
   );
 }
 
