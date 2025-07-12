@@ -3150,6 +3150,8 @@ body.popup-open {
 }
 
 /* Progressive bottom blur for seamless edge blending */
+/* Temporarily disabled for performance optimization - can be re-enabled if needed */
+/*
 .map-progressive-bottom-blur {
   position: absolute;
   bottom: 0;
@@ -3159,8 +3161,8 @@ body.popup-open {
   pointer-events: none;
   z-index: 10;
   border-radius: 0 0 31px 31px;
-  backdrop-filter: blur(100px);
-  -webkit-backdrop-filter: blur(100px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
@@ -3182,6 +3184,7 @@ body.popup-open {
     rgba(0, 0, 0, 1) 95%
   );
 }
+*/
 
 /* Fullscreen adjustments for progressive bottom blur */
 .map-container.fullscreen .map-progressive-bottom-blur {
