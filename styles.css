@@ -3155,70 +3155,38 @@ body.popup-open {
   bottom: 0;
   left: 0;
   right: 0;
+  height: 80px;
   pointer-events: none;
   z-index: 10;
   border-radius: 0 0 31px 31px;
-  background: transparent;
-}
-
-/* Layer 1: 2px blur, 8px height */
-.map-progressive-bottom-blur.layer-1 {
-  height: 8px;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-/* Layer 2: 4px blur, 16px height */
-.map-progressive-bottom-blur.layer-2 {
-  height: 16px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-/* Layer 3: 6px blur, 24px height */
-.map-progressive-bottom-blur.layer-3 {
-  height: 24px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-/* Layer 4: 8px blur, 32px height */
-.map-progressive-bottom-blur.layer-4 {
-  height: 32px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* Layer 5: 10px blur, 40px height */
-.map-progressive-bottom-blur.layer-5 {
-  height: 40px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 15%,
+    rgba(0, 0, 0, 0.4) 30%,
+    rgba(0, 0, 0, 0.6) 45%,
+    rgba(0, 0, 0, 0.8) 60%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 15%,
+    rgba(0, 0, 0, 0.4) 30%,
+    rgba(0, 0, 0, 0.6) 45%,
+    rgba(0, 0, 0, 0.8) 60%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 1) 100%
+  );
 }
 
 /* Fullscreen adjustments for progressive bottom blur */
 .map-container.fullscreen .map-progressive-bottom-blur {
   border-radius: 0;
-}
-
-.map-container.fullscreen .map-progressive-bottom-blur.layer-1 {
-  height: 10px;
-}
-
-.map-container.fullscreen .map-progressive-bottom-blur.layer-2 {
-  height: 20px;
-}
-
-.map-container.fullscreen .map-progressive-bottom-blur.layer-3 {
-  height: 30px;
-}
-
-.map-container.fullscreen .map-progressive-bottom-blur.layer-4 {
-  height: 40px;
-}
-
-.map-container.fullscreen .map-progressive-bottom-blur.layer-5 {
-  height: 50px;
+  height: 90px;
 }
 
 /* Instructions aligned with map margins */
