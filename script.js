@@ -1967,6 +1967,23 @@ let selectedCoordinates = null;
 // Mapbox Access Token
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
+// Global function to hide instructions
+function hideInstructions() {
+  const instructions = document.getElementById('map-instructions');
+  const mapContainer = document.querySelector('.map-container');
+  
+  if (instructions && !instructions.classList.contains('hidden')) {
+    instructions.classList.add('hidden');
+    mapContainer.classList.add('instructions-hidden');
+    
+    // Delay removing the instructions to allow for fade out animation
+    setTimeout(() => {
+      instructions.style.display = 'none';
+      mapContainer.classList.remove('has-instructions', 'instructions-hidden');
+    }, 300);
+  }
+}
+
 function initializeMap() {
   // Only initialize if the map container exists and map hasn't been created yet
   const mapContainer = document.getElementById('map-container');
@@ -1982,21 +1999,6 @@ function initializeMap() {
     });
 
     // Hide instructions on any map interaction
-    const hideInstructions = () => {
-      const instructions = document.getElementById('map-instructions');
-      const mapContainer = document.querySelector('.map-container');
-      
-      if (instructions && !instructions.classList.contains('hidden')) {
-        instructions.classList.add('hidden');
-        mapContainer.classList.add('instructions-hidden');
-        
-        // Delay removing the instructions to allow for fade out animation
-        setTimeout(() => {
-          instructions.style.display = 'none';
-          mapContainer.classList.remove('has-instructions', 'instructions-hidden');
-        }, 300);
-      }
-    };
 
     // Show instructions initially and add click handler
     document.addEventListener('DOMContentLoaded', () => {
@@ -2302,12 +2304,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Add focus/click handler to address search input
+  // Add focus/click/touch handler to address search input
   if (addressInput) {
     addressInput.addEventListener('focus', () => {
       hideInstructions();
     });
     addressInput.addEventListener('mousedown', () => {
+      hideInstructions();
+    });
+    addressInput.addEventListener('touchstart', () => {
       hideInstructions();
     });
   }
