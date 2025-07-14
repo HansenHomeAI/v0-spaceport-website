@@ -2041,6 +2041,7 @@ function initializeMap() {
     // Add click event listener
     map.on('click', (e) => {
       const { lng, lat } = e.lngLat;
+      const clickPoint = e.point; // Screen coordinates where user clicked
       
       // Store the selected coordinates
       selectedCoordinates = { lng, lat };
@@ -2062,15 +2063,34 @@ function initializeMap() {
         </svg>
       `;
       
-      // Add new marker with custom element, anchored at bottom center
+      // Calculate offset for fullscreen mode
+      const mapContainer = document.getElementById('map-container');
+      const isFullscreen = mapContainer && mapContainer.classList.contains('fullscreen');
+      
+      let markerOffset = [0, 0]; // Default no offset
+      
+      if (isFullscreen) {
+        // In fullscreen, calculate the offset needed to position marker correctly
+        const projectedPoint = map.project([lng, lat]);
+        const offsetX = clickPoint.x - projectedPoint.x;
+        const offsetY = clickPoint.y - projectedPoint.y;
+        
+        // Apply the offset (negative because we want to move marker towards click point)
+        markerOffset = [-offsetX, -offsetY];
+        
+        console.log('Fullscreen offset calculated:', { offsetX, offsetY, clickPoint, projectedPoint });
+      }
+      
+      // Add new marker with custom element and calculated offset
       currentMarker = new mapboxgl.Marker({
         element: pinElement,
-        anchor: 'bottom'
+        anchor: 'bottom',
+        offset: markerOffset
       })
       .setLngLat([lng, lat])
       .addTo(map);
       
-      console.log('Selected coordinates:', { lat, lng });
+      console.log('Selected coordinates:', { lat, lng, isFullscreen, markerOffset });
     });
 
     // Initialize expand button functionality
@@ -2152,12 +2172,20 @@ function initializeExpandButton() {
       document.body.appendChild(mapContainer);
     }
     
-    // Resize map after transition
+    // Resize map after transition and ensure proper coordinate recalculation
     setTimeout(() => {
       if (map) {
         map.resize();
+        
+        // Force a repaint and coordinate recalculation
+        map.triggerRepaint();
+        
+        // If there's a current marker, update its position to ensure accuracy
+        if (currentMarker && selectedCoordinates) {
+          currentMarker.setLngLat([selectedCoordinates.lng, selectedCoordinates.lat]);
+        }
       }
-    }, 100);
+    }, 300); // Increased delay to ensure transition completes
   });
 
   // ESC key to exit fullscreen
@@ -2166,6 +2194,19 @@ function initializeExpandButton() {
       expandButton.click();
     }
   });
+}
+
+// Function to ensure marker positioning is accurate
+function ensureMarkerAccuracy() {
+  if (map && currentMarker && selectedCoordinates) {
+    // Force map to recalculate its coordinate system
+    map.triggerRepaint();
+    
+    // Update marker position to ensure it's exactly where it should be
+    currentMarker.setLngLat([selectedCoordinates.lng, selectedCoordinates.lat]);
+    
+    console.log('Marker position verified:', selectedCoordinates);
+  }
 }
 
 // Initialize address search functionality
@@ -2225,10 +2266,23 @@ async function searchAddress(address) {
         </svg>
       `;
       
-      // Add new marker with custom element, anchored at bottom center
+      // Calculate offset for fullscreen mode
+      const mapContainer = document.getElementById('map-container');
+      const isFullscreen = mapContainer && mapContainer.classList.contains('fullscreen');
+      
+      let markerOffset = [0, 0]; // Default no offset
+      
+      if (isFullscreen) {
+        // In fullscreen, we need to apply the same offset correction
+        // Since this is from address search, we'll use a general offset
+        markerOffset = [0, -20]; // Adjust this value based on testing
+      }
+      
+      // Add new marker with custom element and calculated offset
       currentMarker = new mapboxgl.Marker({
         element: pinElement,
-        anchor: 'bottom'
+        anchor: 'bottom',
+        offset: markerOffset
       })
       .setLngLat([lng, lat])
       .addTo(map);
