@@ -2041,7 +2041,6 @@ function initializeMap() {
     // Add click event listener
     map.on('click', (e) => {
       const { lng, lat } = e.lngLat;
-      const clickPoint = e.point; // Screen coordinates where user clicked
       
       // Store the selected coordinates
       selectedCoordinates = { lng, lat };
@@ -2063,34 +2062,21 @@ function initializeMap() {
         </svg>
       `;
       
-      // Calculate offset for fullscreen mode
+      // Determine offset based on fullscreen state
       const mapContainer = document.getElementById('map-container');
       const isFullscreen = mapContainer && mapContainer.classList.contains('fullscreen');
+      const offsetY = isFullscreen ? 50 : 0; // 50px down in fullscreen to compensate for coordinate shift
       
-      let markerOffset = [0, 0]; // Default no offset
-      
-      if (isFullscreen) {
-        // In fullscreen, calculate the offset needed to position marker correctly
-        const projectedPoint = map.project([lng, lat]);
-        const offsetX = clickPoint.x - projectedPoint.x;
-        const offsetY = clickPoint.y - projectedPoint.y;
-        
-        // Apply the offset (negative because we want to move marker towards click point)
-        markerOffset = [-offsetX, -offsetY];
-        
-        console.log('Fullscreen offset calculated:', { offsetX, offsetY, clickPoint, projectedPoint });
-      }
-      
-      // Add new marker with custom element and calculated offset
+      // Add new marker with custom element, anchored at bottom so the tip points to exact location
       currentMarker = new mapboxgl.Marker({
         element: pinElement,
         anchor: 'bottom',
-        offset: markerOffset
+        offset: [0, offsetY] // Dynamic offset based on fullscreen state
       })
       .setLngLat([lng, lat])
       .addTo(map);
       
-      console.log('Selected coordinates:', { lat, lng, isFullscreen, markerOffset });
+      console.log('Selected coordinates:', { lat, lng });
     });
 
     // Initialize expand button functionality
@@ -2153,6 +2139,11 @@ function initializeExpandButton() {
   expandButton.addEventListener('click', () => {
     const isFullscreen = mapContainer.classList.contains('fullscreen');
     
+    // Disable map interactions during transition
+    if (map) {
+      map.getCanvas().style.pointerEvents = 'none';
+    }
+    
     if (isFullscreen) {
       // Exit fullscreen
       mapContainer.classList.remove('fullscreen');
@@ -2172,20 +2163,43 @@ function initializeExpandButton() {
       document.body.appendChild(mapContainer);
     }
     
-    // Resize map after transition and ensure proper coordinate recalculation
-    setTimeout(() => {
+    // Wait for CSS transition to complete, then resize map
+    const handleTransitionEnd = () => {
       if (map) {
+        // Re-enable map interactions
+        map.getCanvas().style.pointerEvents = 'auto';
+        
+        // Resize and recalculate map
         map.resize();
         
-        // Force a repaint and coordinate recalculation
-        map.triggerRepaint();
+        // Force complete coordinate system refresh
+        const currentCenter = map.getCenter();
+        const currentZoom = map.getZoom();
         
-        // If there's a current marker, update its position to ensure accuracy
-        if (currentMarker && selectedCoordinates) {
-          currentMarker.setLngLat([selectedCoordinates.lng, selectedCoordinates.lat]);
-        }
+        // Briefly disable transitions to prevent visual glitches
+        mapContainer.style.transition = 'none';
+        
+        // Force map to recalculate its coordinate system
+        map.jumpTo({ 
+          center: currentCenter, 
+          zoom: currentZoom 
+        });
+        
+        // Re-enable transitions after a frame
+        requestAnimationFrame(() => {
+          mapContainer.style.transition = '';
+        });
       }
-    }, 300); // Increased delay to ensure transition completes
+      
+      // Remove the event listener
+      mapContainer.removeEventListener('transitionend', handleTransitionEnd);
+    };
+    
+    // Listen for transition completion
+    mapContainer.addEventListener('transitionend', handleTransitionEnd);
+    
+    // Fallback timeout in case transitionend doesn't fire
+    setTimeout(handleTransitionEnd, 400);
   });
 
   // ESC key to exit fullscreen
@@ -2194,19 +2208,6 @@ function initializeExpandButton() {
       expandButton.click();
     }
   });
-}
-
-// Function to ensure marker positioning is accurate
-function ensureMarkerAccuracy() {
-  if (map && currentMarker && selectedCoordinates) {
-    // Force map to recalculate its coordinate system
-    map.triggerRepaint();
-    
-    // Update marker position to ensure it's exactly where it should be
-    currentMarker.setLngLat([selectedCoordinates.lng, selectedCoordinates.lat]);
-    
-    console.log('Marker position verified:', selectedCoordinates);
-  }
 }
 
 // Initialize address search functionality
@@ -2266,23 +2267,16 @@ async function searchAddress(address) {
         </svg>
       `;
       
-      // Calculate offset for fullscreen mode
+      // Determine offset based on fullscreen state
       const mapContainer = document.getElementById('map-container');
       const isFullscreen = mapContainer && mapContainer.classList.contains('fullscreen');
+      const offsetY = isFullscreen ? 50 : 0; // 50px down in fullscreen to compensate for coordinate shift
       
-      let markerOffset = [0, 0]; // Default no offset
-      
-      if (isFullscreen) {
-        // In fullscreen, we need to apply the same offset correction
-        // Since this is from address search, we'll use a general offset
-        markerOffset = [0, -20]; // Adjust this value based on testing
-      }
-      
-      // Add new marker with custom element and calculated offset
+      // Add new marker with custom element, anchored at bottom so the tip points to exact location
       currentMarker = new mapboxgl.Marker({
         element: pinElement,
         anchor: 'bottom',
-        offset: markerOffset
+        offset: [0, offsetY] // Dynamic offset based on fullscreen state
       })
       .setLngLat([lng, lat])
       .addTo(map);
