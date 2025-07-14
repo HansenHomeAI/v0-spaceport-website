@@ -3412,6 +3412,25 @@ body.popup-open {
   font-weight: 500;
 }
 
+/* Explanatory text styling */
+.popup-input-wrapper input.has-suffix::after {
+  content: attr(data-suffix);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.1rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Adjust text fade for inputs with suffix */
+.popup-input-wrapper input.has-suffix {
+  padding-right: 80px; /* Make room for suffix text */
+}
+
 /* Upload Zone */
 .upload-zone {
   border: 2.4px dashed rgba(255, 255, 255, 0.5);

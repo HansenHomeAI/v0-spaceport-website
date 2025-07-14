@@ -2257,6 +2257,9 @@ window.openNewProjectPopup = function() {
   
   // Initialize flight path button monitoring
   initializeFlightPathButtons();
+  
+  // Initialize explanatory text functionality
+  initializeExplanatoryText();
 };
 
 // Clean up map when popup closes
@@ -2310,6 +2313,40 @@ function initializeFlightPathButtons() {
   // Initial update
   const initialCount = parseInt(batteryQuantityInput.value) || 0;
   updateFlightPathButtons(initialCount, flightPathGrid);
+}
+
+// Explanatory Text Functionality
+function initializeExplanatoryText() {
+  const inputs = document.querySelectorAll('.popup-input-wrapper input[data-suffix]');
+  
+  inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      updateExplanatoryText(this);
+    });
+    
+    // Initial update
+    updateExplanatoryText(input);
+  });
+}
+
+function updateExplanatoryText(input) {
+  const value = input.value.trim();
+  const suffix = input.getAttribute('data-suffix');
+  const plural = input.getAttribute('data-plural');
+  
+  if (value) {
+    // Add suffix with proper pluralization
+    let displaySuffix = suffix;
+    if (plural && value !== '1') {
+      displaySuffix = plural;
+    }
+    
+    input.setAttribute('data-suffix', displaySuffix);
+    input.classList.add('has-suffix');
+  } else {
+    // Remove suffix when empty
+    input.classList.remove('has-suffix');
+  }
 }
 
 function updateFlightPathButtons(batteryCount, container) {
