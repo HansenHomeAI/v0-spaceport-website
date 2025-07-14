@@ -2894,12 +2894,24 @@ body.popup-open {
   align-items: center;
   padding: 20px 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   user-select: none;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .accordion-header:hover {
   background: rgba(255, 255, 255, 0.02);
+}
+
+/* Hide header when section is active */
+.accordion-section.active .accordion-header {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  height: 0;
+  padding: 0 16px;
+  overflow: hidden;
 }
 
 .accordion-title {
@@ -2931,11 +2943,13 @@ body.popup-open {
 .accordion-content {
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
 }
 
 .accordion-section.active .accordion-content {
   max-height: 1000px;
+  opacity: 1;
 }
 
 /* Section Descriptions */

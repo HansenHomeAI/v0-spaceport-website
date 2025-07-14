@@ -624,6 +624,17 @@ function openNewProjectPopup() {
   if (popup) {
     popup.classList.remove('hidden');
     document.body.classList.add('popup-open');
+    
+    // Ensure at least one section is active
+    const activeSection = popup.querySelector('.accordion-section.active');
+    if (!activeSection) {
+      // If no section is active, activate the first one
+      const firstSection = popup.querySelector('.accordion-section');
+      if (firstSection) {
+        firstSection.classList.add('active');
+      }
+    }
+    
     // Focus on the title input
     const titleInput = document.getElementById('projectTitle');
     if (titleInput) {
@@ -650,15 +661,19 @@ function toggleAccordionSection(sectionId) {
   
   if (!targetSection) return;
   
-  // Close all sections
+  // If the target section is already active, don't do anything
+  // (prevents closing the only open section)
+  if (targetSection.classList.contains('active')) {
+    return;
+  }
+  
+  // Close all sections first
   allSections.forEach(section => {
-    if (section !== targetSection) {
-      section.classList.remove('active');
-    }
+    section.classList.remove('active');
   });
   
-  // Toggle target section
-  targetSection.classList.toggle('active');
+  // Open the target section
+  targetSection.classList.add('active');
 }
 
 function handleFileUpload(file) {
