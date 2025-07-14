@@ -3600,6 +3600,71 @@ body.popup-open {
   background-image: url('assets/SpaceportIcons/FlightPath.svg');
 }
 
+/* Flight Path Download Buttons Grid */
+.flight-path-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+.flight-path-download-btn {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 25px;
+  padding: 0 20px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  height: 50px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  font-weight: 500;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.flight-path-download-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.flight-path-download-btn:active {
+  transform: translateY(1px);
+}
+
+.flight-path-download-btn .download-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  background: url('assets/SpaceportIcons/Download.svg') no-repeat center;
+  background-size: contain;
+  filter: brightness(0) invert(1);
+  transition: opacity 0.2s ease;
+}
+
+.flight-path-download-btn:hover .download-icon {
+  opacity: 1;
+}
+
+/* Removed gradient border and text fade effects for cleaner appearance */
+
+/* Placeholder message when no batteries */
+.flight-path-placeholder {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 20px;
+  font-family: inherit;
+}
+
 /* Responsive adjustments for map overlays - REMOVED to maintain concentricity */
 
 /* Add background blur when instructions are visible */

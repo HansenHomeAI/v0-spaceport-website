@@ -2254,6 +2254,9 @@ window.openNewProjectPopup = function() {
   setTimeout(() => {
     initializeMap();
   }, 100);
+  
+  // Initialize flight path button monitoring
+  initializeFlightPathButtons();
 };
 
 // Clean up map when popup closes
@@ -2289,6 +2292,65 @@ window.closeNewProjectPopup = function() {
 window.getSelectedCoordinates = getSelectedCoordinates;
 window.updateAddressFieldWithCoordinates = updateAddressFieldWithCoordinates;
 window.clearAddressField = clearAddressField;
+
+// Flight Path Download Buttons Functionality
+function initializeFlightPathButtons() {
+  // Find the battery quantity input
+  const batteryQuantityInput = document.querySelector('.popup-input-wrapper input[placeholder="Quantity"]');
+  const flightPathGrid = document.getElementById('flight-path-buttons');
+  
+  if (!batteryQuantityInput || !flightPathGrid) return;
+  
+  // Monitor changes to battery quantity
+  batteryQuantityInput.addEventListener('input', function() {
+    const batteryCount = parseInt(this.value) || 0;
+    updateFlightPathButtons(batteryCount, flightPathGrid);
+  });
+  
+  // Initial update
+  const initialCount = parseInt(batteryQuantityInput.value) || 0;
+  updateFlightPathButtons(initialCount, flightPathGrid);
+}
+
+function updateFlightPathButtons(batteryCount, container) {
+  // Clear existing buttons
+  container.innerHTML = '';
+  
+  if (batteryCount <= 0) {
+    // Show placeholder message when no batteries
+    container.innerHTML = '<div class="flight-path-placeholder">Enter battery quantity to generate flight paths</div>';
+    return;
+  }
+  
+  // Generate buttons for each battery
+  for (let i = 1; i <= batteryCount; i++) {
+    const button = document.createElement('button');
+    button.className = 'flight-path-download-btn';
+    button.innerHTML = `
+      <span class="download-icon"></span>
+      Battery ${i}
+    `;
+    
+    // Add click handler for download
+    button.addEventListener('click', function() {
+      downloadBatteryFlightPath(i);
+    });
+    
+    container.appendChild(button);
+  }
+}
+
+function downloadBatteryFlightPath(batteryNumber) {
+  // Placeholder for download functionality
+  console.log(`Downloading flight path for Battery ${batteryNumber}`);
+  
+  // You can integrate this with your existing download logic
+  // For now, we'll show a simple alert
+  alert(`Downloading flight path for Battery ${batteryNumber}`);
+  
+  // TODO: Integrate with actual download functionality
+  // This could call your existing download functions or API endpoints
+}
 
 // Auto-resize textarea
 const projectTitle = document.getElementById('projectTitle');
