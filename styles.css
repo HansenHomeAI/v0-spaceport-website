@@ -3596,6 +3596,10 @@ body.popup-open {
   background-image: url('assets/SpaceportIcons/Controls.svg');
 }
 
+.input-icon.flight {
+  background-image: url('assets/SpaceportIcons/FlightPath.svg');
+}
+
 /* Responsive adjustments for map overlays - REMOVED to maintain concentricity */
 
 /* Add background blur when instructions are visible */
