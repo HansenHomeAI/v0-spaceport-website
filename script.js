@@ -2322,7 +2322,7 @@ function updateFlightPathButtons(batteryCount, container) {
     return;
   }
   
-  // Generate buttons for each battery
+  // Generate buttons for each battery with staggered animation
   for (let i = 1; i <= batteryCount; i++) {
     const button = document.createElement('button');
     button.className = 'flight-path-download-btn';
@@ -2330,6 +2330,9 @@ function updateFlightPathButtons(batteryCount, container) {
       <span class="download-icon"></span>
       Battery ${i}
     `;
+    
+    // Add staggered delay for luxurious sequential appearance
+    button.style.animationDelay = `${(i - 1) * 0.15}s`;
     
     // Add click handler for download
     button.addEventListener('click', function() {
