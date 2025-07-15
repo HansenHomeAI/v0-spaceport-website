@@ -3381,8 +3381,12 @@ body.popup-open {
 .input-row-popup {
   display: flex;
   gap: 6px;
-  margin: 0;
+  margin: 0 0 6px 0;
   width: 100%;
+}
+
+.input-row-popup:last-child {
+  margin-bottom: 0;
 }
 
 .popup-input-wrapper {
