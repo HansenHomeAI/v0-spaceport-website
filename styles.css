@@ -3394,14 +3394,26 @@ body.popup-open {
   min-width: 0;
   position: relative;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 25px;
   padding: 0 20px;
   transition: all 0.2s ease;
   box-sizing: border-box;
-  /* height: 50px; removed so wrapper grows with textarea */
+  height: 50px;
+}
+
+.popup-input-wrapper.listing-description-wrapper {
+  min-height: 50px;
+  height: auto;
+  align-items: stretch;
+}
+
+.popup-input-wrapper.listing-description-wrapper textarea {
+  width: 100%;
+  height: 100%;
+  padding: 12px 0 12px 0;
 }
 
 .popup-input-wrapper:focus-within {
