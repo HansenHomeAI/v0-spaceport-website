@@ -2229,6 +2229,12 @@ function initializeExpandButton() {
       if (mapSection) {
         mapSection.appendChild(mapContainer);
       }
+
+      // Reinitialize scroll zoom to fix cursor alignment when exiting fullscreen
+      if (map && map.scrollZoom) {
+        map.scrollZoom.disable();
+        map.scrollZoom.enable();
+      }
     } else {
       // Enter fullscreen
       mapContainer.classList.add('fullscreen');
@@ -2236,6 +2242,12 @@ function initializeExpandButton() {
       
       // Move to body for true fullscreen
       document.body.appendChild(mapContainer);
+
+      // Reinitialize scroll zoom to fix cursor alignment in fullscreen
+      if (map && map.scrollZoom) {
+        map.scrollZoom.disable();
+        map.scrollZoom.enable();
+      }
     }
     
     // CRITICAL FIX: Force complete Mapbox reinitialization after DOM move
