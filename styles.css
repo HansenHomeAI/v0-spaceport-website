@@ -3390,18 +3390,18 @@ body.popup-open {
 }
 
 .popup-input-wrapper {
-  flex: 1 1 0; /* Allow shrinking and growing with a 0 basis */
-  min-width: 0; /* Allow shrinking below content size */
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 25px;
   padding: 0 20px;
   transition: all 0.2s ease;
   box-sizing: border-box;
-  height: 50px;
+  /* height: 50px; removed so wrapper grows with textarea */
 }
 
 .popup-input-wrapper:focus-within {
@@ -3938,4 +3938,8 @@ input.text-fade-right,
   color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
   opacity: 1;
+}
+
+.popup-input-wrapper textarea {
+  padding: 12px 0 12px 0;
 }

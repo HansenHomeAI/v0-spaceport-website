@@ -2636,3 +2636,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Auto-resize Listing Description textarea
+const listingDescription = document.getElementById('listingDescription');
+if (listingDescription) {
+  listingDescription.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+  // Trigger resize on page load if there's pre-filled content
+  setTimeout(() => {
+    listingDescription.style.height = 'auto';
+    listingDescription.style.height = (listingDescription.scrollHeight) + 'px';
+  }, 0);
+}
