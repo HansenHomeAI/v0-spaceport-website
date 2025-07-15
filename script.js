@@ -2476,8 +2476,11 @@ function initializeFlightPathButtons() {
 // Explanatory Text Functionality
 function initializeExplanatoryText() {
   const inputs = document.querySelectorAll('.popup-input-wrapper input[data-suffix]');
+  console.log('Found inputs with suffixes:', inputs.length);
   
   inputs.forEach(input => {
+    console.log('Setting up suffix for:', input.placeholder, 'with suffix:', input.getAttribute('data-suffix'));
+    
     input.addEventListener('input', function() {
       updateExplanatoryText(this);
     });
@@ -2488,23 +2491,64 @@ function initializeExplanatoryText() {
 }
 
 function updateExplanatoryText(input) {
-  const value = input.value.trim();
+  let value = input.value.trim();
   const suffix = input.getAttribute('data-suffix');
   const plural = input.getAttribute('data-plural');
+  const wrapper = input.closest('.popup-input-wrapper');
+  
+  // Remove any existing suffix from the value
+  const suffixRegex = new RegExp(`${suffix}$|${plural}$`);
+  value = value.replace(suffixRegex, '').trim();
   
   if (value) {
-    // Add suffix with proper pluralization
+    // Determine which suffix to use
     let displaySuffix = suffix;
     if (plural && value !== '1') {
       displaySuffix = plural;
     }
     
-    input.setAttribute('data-suffix', displaySuffix);
-    input.classList.add('has-suffix');
+    // Don't modify the input value while user is typing
+    if (!input.matches(':focus')) {
+      input.value = value + displaySuffix;
+    }
+    
+    // Store the raw value as a data attribute
+    input.setAttribute('data-raw-value', value);
   } else {
-    // Remove suffix when empty
-    input.classList.remove('has-suffix');
+    input.value = '';
+    input.removeAttribute('data-raw-value');
   }
+}
+
+// Add event listeners for focus and blur
+function initializeExplanatoryText() {
+  const inputs = document.querySelectorAll('.popup-input-wrapper input[data-suffix]');
+  
+  inputs.forEach(input => {
+    // Handle input changes
+    input.addEventListener('input', function() {
+      // When user is typing, only show their input
+      const rawValue = this.value.trim();
+      this.setAttribute('data-raw-value', rawValue);
+    });
+    
+    // When input loses focus, show value with suffix
+    input.addEventListener('blur', function() {
+      updateExplanatoryText(this);
+    });
+    
+    // When input gains focus, show only the raw value
+    input.addEventListener('focus', function() {
+      const rawValue = this.getAttribute('data-raw-value') || this.value.trim();
+      const suffix = this.getAttribute('data-suffix');
+      const plural = this.getAttribute('data-plural');
+      const suffixRegex = new RegExp(`${suffix}$|${plural}$`);
+      this.value = rawValue.replace(suffixRegex, '').trim();
+    });
+    
+    // Initial update
+    updateExplanatoryText(input);
+  });
 }
 
 function updateFlightPathButtons(batteryCount, container) {

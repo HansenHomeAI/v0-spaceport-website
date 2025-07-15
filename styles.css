@@ -2823,7 +2823,7 @@ body.popup-open {
   font-weight: 500;
   outline: none;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 25px;
   transition: background 0.2s ease;
   font-family: inherit;
   width: 100%;
@@ -2831,7 +2831,7 @@ body.popup-open {
   overflow: hidden;
   display: block;
   line-height: 1.4;
-  min-height: 36px;
+  min-height: 44px;
   height: auto;
 }
 
@@ -2850,7 +2850,7 @@ body.popup-open {
   cursor: pointer;
   padding: 10px;
   border-radius: 8px;
-  opacity: 0.7;
+  opacity: 1;
   transition: all 0.2s ease;
   flex-shrink: 0;
   min-width: 44px;
@@ -2862,11 +2862,28 @@ body.popup-open {
   background-size: 16px 16px;
   background-repeat: no-repeat;
   background-position: center;
+  position: relative;
+  filter: brightness(0) invert(1);
 }
 
-.popup-close:hover {
+.popup-close::before {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: -1;
+}
+
+.popup-close:hover::before {
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Scrollable Content */
@@ -3421,11 +3438,27 @@ body.popup-open {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1.1rem;
   font-weight: 500;
   pointer-events: none;
   z-index: 2;
+  white-space: nowrap;
+}
+
+/* Alternative approach - position relative to wrapper */
+.popup-input-wrapper.has-suffix::after {
+  content: attr(data-suffix);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
 }
 
 /* Adjust text fade for inputs with suffix */
@@ -3772,22 +3805,45 @@ body.popup-open {
 .text-fade-right,
 input.text-fade-right,
 .address-search-wrapper input.text-fade-right {
-  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-  z-index: 1; /* Ensure the input is above the wrapper's pseudo-elements */
-  position: relative; /* Required for z-index to work */
+  position: relative;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
 }
 
+/* Adjust fade length based on content */
 .text-fade-right.fade-long {
-  /* For wider fade effect */
-  mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
 }
 
 .text-fade-right.fade-short {
-  /* For shorter fade effect */
-  mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
 }
 
 .map-container.has-instructions.instructions-hidden .map-blur-background {
