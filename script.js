@@ -2042,11 +2042,75 @@ function initializeMap() {
     map.on('click', (e) => {
       const { lng, lat } = e.lngLat;
       
-      // Store the selected coordinates
-      selectedCoordinates = { lng, lat };
+      // DIAGNOSTIC: Log click details
+      const mapContainer = document.getElementById('map-container');
+      const isFullscreen = mapContainer.classList.contains('fullscreen');
+      const containerRect = mapContainer.getBoundingClientRect();
+      
+      console.log('🎯 CLICK DIAGNOSTIC:', {
+        coordinates: { lat, lng },
+        isFullscreen,
+        containerRect: {
+          x: containerRect.x,
+          y: containerRect.y,
+          width: containerRect.width,
+          height: containerRect.height,
+          top: containerRect.top,
+          left: containerRect.left
+        },
+        clickPoint: e.point,
+        originalEventDetails: e.originalEvent ? {
+          clientX: e.originalEvent.clientX,
+          clientY: e.originalEvent.clientY,
+          pageX: e.originalEvent.pageX,
+          pageY: e.originalEvent.pageY
+        } : null
+      });
+      
+      // CRITICAL FIX: In fullscreen mode, manually correct the click coordinates
+      // The issue is that Mapbox's coordinate calculation is offset when container moves to document.body
+      let correctedLng = lng;
+      let correctedLat = lat;
+      
+      if (isFullscreen && e.originalEvent) {
+        // Get the actual click position relative to the map canvas
+        const canvas = map.getCanvas();
+        const canvasRect = canvas.getBoundingClientRect();
+        const originalEvent = e.originalEvent;
+        
+        // Calculate the click position relative to the canvas
+        const canvasX = originalEvent.clientX - canvasRect.left;
+        const canvasY = originalEvent.clientY - canvasRect.top;
+        
+        // Convert canvas coordinates to map coordinates
+        const correctedLngLat = map.unproject([canvasX, canvasY]);
+        
+        correctedLng = correctedLngLat.lng;
+        correctedLat = correctedLngLat.lat;
+        
+        console.log('🔧 FULLSCREEN COORDINATE CORRECTION:', {
+          original: { lng, lat },
+          corrected: { lng: correctedLng, lat: correctedLat },
+          canvasRect: { 
+            left: canvasRect.left, 
+            top: canvasRect.top,
+            width: canvasRect.width,
+            height: canvasRect.height
+          },
+          clickPosition: {
+            clientX: originalEvent.clientX,
+            clientY: originalEvent.clientY,
+            canvasX: canvasX,
+            canvasY: canvasY
+          }
+        });
+      }
+      
+      // Store the selected coordinates (use corrected coordinates in fullscreen)
+      selectedCoordinates = { lng: correctedLng, lat: correctedLat };
       
       // Update address field with coordinates (only if field is empty)
-      updateAddressFieldWithCoordinates(lat, lng);
+      updateAddressFieldWithCoordinates(correctedLat, correctedLng);
       
       // Remove existing marker if any
       if (currentMarker) {
@@ -2062,21 +2126,37 @@ function initializeMap() {
         </svg>
       `;
       
-      // Determine offset based on fullscreen state
-      const mapContainer = document.getElementById('map-container');
-      const isFullscreen = mapContainer && mapContainer.classList.contains('fullscreen');
-      const offsetY = isFullscreen ? 50 : 0; // 50px down in fullscreen to compensate for coordinate shift
-      
-      // Add new marker with custom element, anchored at bottom so the tip points to exact location
+      // Add new marker with custom element, anchored at bottom center
       currentMarker = new mapboxgl.Marker({
         element: pinElement,
-        anchor: 'bottom',
-        offset: [0, offsetY] // Dynamic offset based on fullscreen state
+        anchor: 'bottom'
       })
-      .setLngLat([lng, lat])
+      .setLngLat([correctedLng, correctedLat])
       .addTo(map);
       
-      console.log('Selected coordinates:', { lat, lng });
+      // DIAGNOSTIC: Check marker positioning
+      setTimeout(() => {
+        const markerElement = currentMarker.getElement();
+        const markerRect = markerElement.getBoundingClientRect();
+        console.log('📍 MARKER POSITIONING:', {
+          coordinates: { lat: correctedLat, lng: correctedLng },
+          isFullscreen,
+          markerRect: {
+            x: markerRect.x,
+            y: markerRect.y,
+            top: markerRect.top,
+            left: markerRect.left,
+            width: markerRect.width,
+            height: markerRect.height
+          },
+          markerStyle: {
+            transform: markerElement.style.transform,
+            position: markerElement.style.position
+          }
+        });
+      }, 100);
+      
+      console.log('Selected coordinates:', { lat: correctedLat, lng: correctedLng });
     });
 
     // Initialize expand button functionality
@@ -2139,11 +2219,6 @@ function initializeExpandButton() {
   expandButton.addEventListener('click', () => {
     const isFullscreen = mapContainer.classList.contains('fullscreen');
     
-    // Disable map interactions during transition
-    if (map) {
-      map.getCanvas().style.pointerEvents = 'none';
-    }
-    
     if (isFullscreen) {
       // Exit fullscreen
       mapContainer.classList.remove('fullscreen');
@@ -2163,43 +2238,72 @@ function initializeExpandButton() {
       document.body.appendChild(mapContainer);
     }
     
-    // Wait for CSS transition to complete, then resize map
-    const handleTransitionEnd = () => {
+    // CRITICAL FIX: Force complete Mapbox reinitialization after DOM move
+    setTimeout(() => {
       if (map) {
-        // Re-enable map interactions
-        map.getCanvas().style.pointerEvents = 'auto';
+        console.log('🔄 CRITICAL FIX: Forcing Mapbox coordinate system recalculation after DOM move');
         
-        // Resize and recalculate map
-        map.resize();
-        
-        // Force complete coordinate system refresh
+        // Step 1: Get current state
         const currentCenter = map.getCenter();
         const currentZoom = map.getZoom();
+        const currentBearing = map.getBearing();
+        const currentPitch = map.getPitch();
         
-        // Briefly disable transitions to prevent visual glitches
-        mapContainer.style.transition = 'none';
+        // Step 2: NUCLEAR OPTION - Force Mapbox to completely recalculate its coordinate system
+        // The issue is that when we move the container to document.body, Mapbox's internal
+        // coordinate calculations are still based on the old container position
         
-        // Force map to recalculate its coordinate system
-        map.jumpTo({ 
-          center: currentCenter, 
-          zoom: currentZoom 
+        // Force complete internal recalculation
+        map.resize();
+        
+        // Get the canvas and force it to recalculate its position
+        const canvas = map.getCanvas();
+        const container = map.getContainer();
+        
+        // CRITICAL: Force the canvas to recalculate its offset relative to the document
+        // This is the key fix - Mapbox needs to know the container moved to document.body
+        const containerRect = container.getBoundingClientRect();
+        console.log('📐 Container position after DOM move:', {
+          top: containerRect.top,
+          left: containerRect.left,
+          width: containerRect.width,
+          height: containerRect.height,
+          isFullscreen: !isFullscreen // Will be opposite after toggle
         });
         
-        // Re-enable transitions after a frame
-        requestAnimationFrame(() => {
-          mapContainer.style.transition = '';
-        });
+        // Multiple resize calls to force internal recalculation
+        map.resize();
+        map.fire('resize');
+        
+        // Force canvas to recalculate its position by triggering a complete re-render
+        setTimeout(() => {
+          map.resize();
+          
+          // Force re-render with position change
+          map.jumpTo({
+            center: [currentCenter.lng + 0.0000001, currentCenter.lat + 0.0000001],
+            zoom: currentZoom,
+            bearing: currentBearing,
+            pitch: currentPitch
+          });
+          
+          // Return to exact position
+          setTimeout(() => {
+            map.jumpTo({
+              center: currentCenter,
+              zoom: currentZoom,
+              bearing: currentBearing,
+              pitch: currentPitch
+            });
+            
+            // Final resize to lock in the coordinate system
+            map.resize();
+            
+            console.log('✅ Coordinate system reset complete');
+          }, 100);
+        }, 100);
       }
-      
-      // Remove the event listener
-      mapContainer.removeEventListener('transitionend', handleTransitionEnd);
-    };
-    
-    // Listen for transition completion
-    mapContainer.addEventListener('transitionend', handleTransitionEnd);
-    
-    // Fallback timeout in case transitionend doesn't fire
-    setTimeout(handleTransitionEnd, 400);
+    }, 300);
   });
 
   // ESC key to exit fullscreen
@@ -2267,16 +2371,10 @@ async function searchAddress(address) {
         </svg>
       `;
       
-      // Determine offset based on fullscreen state
-      const mapContainer = document.getElementById('map-container');
-      const isFullscreen = mapContainer && mapContainer.classList.contains('fullscreen');
-      const offsetY = isFullscreen ? 50 : 0; // 50px down in fullscreen to compensate for coordinate shift
-      
-      // Add new marker with custom element, anchored at bottom so the tip points to exact location
+      // Add new marker with custom element, anchored at bottom center
       currentMarker = new mapboxgl.Marker({
         element: pinElement,
-        anchor: 'bottom',
-        offset: [0, offsetY] // Dynamic offset based on fullscreen state
+        anchor: 'bottom'
       })
       .setLngLat([lng, lat])
       .addTo(map);
