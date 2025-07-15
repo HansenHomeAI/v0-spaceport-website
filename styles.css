@@ -3093,12 +3093,14 @@ body.popup-open {
   /* transform-origin: center bottom; */
   /* Additional shadow positioned at the base */
   position: relative;
+  /* Shift pin down so the actual bottom tip aligns with the click point */
+  transform: translateY(4px);
 }
 
 .custom-teardrop-pin::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -6px; /* Adjusted to account for the 4px translateY shift */
   left: 50%;
   transform: translateX(-50%);
   width: 8px;
@@ -3116,7 +3118,7 @@ body.popup-open {
 }
 
 .custom-teardrop-pin:hover::after {
-  bottom: -3px;
+  bottom: -7px; /* Adjusted to account for the 4px translateY shift */
   width: 10px;
   height: 5px;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
