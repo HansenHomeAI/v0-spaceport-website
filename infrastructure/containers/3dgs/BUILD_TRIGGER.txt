@@ -5,3 +5,5 @@ Build trigger updated: 2025-07-08-gpu-detection-fix
 - Improved CUDA environment variables for SageMaker
 - Added nvidia-cuda-toolkit to base image
 - Fixed gsplat CUDA compilation support
+
+Build trigger updated: 2025-07-15-revert-to-cuda118-stack
