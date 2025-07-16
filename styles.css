@@ -4055,8 +4055,7 @@ input.text-fade-right,
   box-shadow: none;
   transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
               transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
-              opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
-              color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+              opacity 0.2s ease;
   width: fit-content;
   gap: 10px;
   position: absolute;
@@ -4072,15 +4071,12 @@ input.text-fade-right,
   transform: translate(-100%, 0);
   pointer-events: none;
   z-index: 1;
-  opacity: 0;
   transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
-              opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) 0.4s;
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .upload-btn-with-icon.uploading .upload-btn-icon {
   opacity: 0;
-  transition: opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) 0.4s;
 }
 
 .upload-btn-with-icon:hover {
@@ -4101,9 +4097,7 @@ input.text-fade-right,
   cursor: pointer;
   box-shadow: none;
   transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
-              opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
-              color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
   width: fit-content;
   gap: 10px;
   position: absolute;
@@ -4124,14 +4118,11 @@ input.text-fade-right,
   z-index: 2;
   color: #111;
   transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
-              opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) 0.4s,
-              color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) 0.4s;
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .cancel-btn-with-icon.active .cancel-btn-icon {
   opacity: 1;
-  transition: opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) 0.4s;
 }
 
 .cancel-btn-with-icon:hover {
@@ -4146,7 +4137,6 @@ input.text-fade-right,
   background-size: 18px 18px;
   margin-right: 8px;
   filter: brightness(0);
-  transition: opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
   background-repeat: no-repeat;
   background-position: center;
   opacity: 1;

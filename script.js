@@ -723,8 +723,9 @@ function startUploadProgress(progressContainer, progressBar, progressText, categ
   progressBar.style.width = '0%';
   progressText.textContent = '0%';
   
-  // Slide upload button to cancel position
+  // Slide upload button to cancel position and hide immediately
   uploadButton.classList.add('uploading');
+  uploadButton.style.opacity = '0';
   
   // Slide cancel button to active position
   setTimeout(() => {
@@ -751,11 +752,13 @@ function completeUpload(progressContainer, progressBar, progressText, categoryOu
     progressBar.style.width = '0%';
     progressText.textContent = '0%';
     
-    // Slide transition back to upload button
-    cancelButton.classList.remove('active');
+    // Show upload button first, then slide transition back
+    uploadButton.style.opacity = '1';
+    uploadButton.classList.remove('uploading');
     
+    // Slide cancel button back to center
     setTimeout(() => {
-      uploadButton.classList.remove('uploading');
+      cancelButton.classList.remove('active');
     }, 100);
   }, 1000);
 }
@@ -768,12 +771,13 @@ function cancelUpload(progressContainer, progressBar, progressText, categoryOutl
   progressBar.style.width = '0%';
   progressText.textContent = '0%';
   
-  // Slide cancel button back to center
-  cancelButton.classList.remove('active');
+  // Show upload button first, then slide transition back
+  uploadButton.style.opacity = '1';
+  uploadButton.classList.remove('uploading');
   
-  // Slide upload button back to center
+  // Slide cancel button back to center
   setTimeout(() => {
-    uploadButton.classList.remove('uploading');
+    cancelButton.classList.remove('active');
   }, 100);
 }
 
