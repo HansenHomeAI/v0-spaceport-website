@@ -4034,6 +4034,7 @@ input.text-fade-right,
   justify-content: center;
   align-items: flex-start;
   min-height: 80px;
+  width: 100%;
   margin: 0;
   padding: 0;  /* Remove top padding since we'll position the upload button absolutely */
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -4064,20 +4065,16 @@ input.text-fade-right,
 }
 
 .upload-btn-with-icon.uploading {
-  transform: translate(calc(50% - 6px), 0);
+  transform: translate(-50%, 0);
   pointer-events: none;
   z-index: 1;
+  opacity: 0;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .upload-btn-with-icon.uploading .upload-btn-icon {
   opacity: 0;
   transition: opacity 0.3s ease;
-}
-
-.upload-btn-with-icon.uploading {
-  color: transparent;
-  transition: color 0.3s ease;
 }
 
 .upload-btn-with-icon:hover {
@@ -4102,28 +4099,26 @@ input.text-fade-right,
   gap: 10px;
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translate(-50%, 0);
-  opacity: 1;
+  right: 0;
+  transform: translate(0, 0);
+  opacity: 0;
   pointer-events: none;
   z-index: 1;
   margin: 0;
 }
 
 .cancel-btn-with-icon.active {
-  transform: translate(calc(50% - 6px), 0);
+  transform: translate(0, 0);
+  opacity: 1;
   pointer-events: auto;
   z-index: 2;
+  color: #111;
+  transition: color 0.3s ease, opacity 0.3s ease;
 }
 
 .cancel-btn-with-icon.active .cancel-btn-icon {
   opacity: 1;
   transition: opacity 0.3s ease;
-}
-
-.cancel-btn-with-icon.active {
-  color: #111;
-  transition: color 0.3s ease;
 }
 
 .cancel-btn-with-icon:hover {
@@ -4150,5 +4145,6 @@ input.text-fade-right,
 
 .cancel-btn-icon {
   background-image: url('assets/SpaceportIcons/Close.svg');
+  opacity: 0;
 }
 
