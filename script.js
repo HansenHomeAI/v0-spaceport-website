@@ -643,6 +643,11 @@ function openNewProjectPopup() {
         titleInput.select();
       }, 100);
     }
+    
+    // Initialize upload button functionality
+    setTimeout(() => {
+      initializeUploadButton();
+    }, 100);
   }
 }
 
@@ -674,6 +679,98 @@ function toggleAccordionSection(sectionId) {
   
   // Open the target section
   targetSection.classList.add('active');
+}
+
+// UPLOAD BUTTON PROGRESS FUNCTIONALITY
+function initializeUploadButton() {
+  const uploadButton = document.querySelector('.upload-btn-with-icon');
+  const cancelButton = document.querySelector('.cancel-btn-with-icon');
+  const progressContainer = document.querySelector('.upload-progress-container');
+  const progressBar = document.querySelector('.upload-progress-bar');
+  const categoryOutline = document.querySelector('.category-outline.upload-button-only');
+  
+  if (!uploadButton || !cancelButton || !progressContainer || !progressBar || !categoryOutline) {
+    return;
+  }
+  
+  uploadButton.addEventListener('click', async () => {
+    // Start upload progress with smooth transition
+    startUploadProgress(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton);
+    
+    // Simulate upload progress (replace with actual upload logic)
+    await simulateUpload(progressBar);
+    
+    // Complete upload
+    completeUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton);
+  });
+  
+  cancelButton.addEventListener('click', () => {
+    // Cancel upload and return to original state
+    cancelUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton);
+  });
+}
+
+function startUploadProgress(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton) {
+  // Show container outline
+  categoryOutline.classList.remove('no-outline');
+  
+  // Show progress container
+  progressContainer.classList.add('active');
+  
+  // Reset progress bar
+  progressBar.style.width = '0%';
+  
+  // Smooth transition: upload button slides out, cancel button slides in
+  uploadButton.classList.add('uploading');
+  
+  setTimeout(() => {
+    cancelButton.classList.add('active');
+  }, 200);
+}
+
+function updateUploadProgress(progressBar, percentage) {
+  progressBar.style.width = `${percentage}%`;
+}
+
+function completeUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton) {
+  // Complete the progress bar
+  progressBar.style.width = '100%';
+  
+  // After a delay, hide progress and restore original state
+  setTimeout(() => {
+    progressContainer.classList.remove('active');
+    categoryOutline.classList.add('no-outline');
+    progressBar.style.width = '0%';
+    
+    // Smooth transition back to upload button
+    cancelButton.classList.remove('active');
+    
+    setTimeout(() => {
+      uploadButton.classList.remove('uploading');
+    }, 200);
+  }, 1000);
+}
+
+function cancelUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton) {
+  // Hide progress
+  progressContainer.classList.remove('active');
+  categoryOutline.classList.add('no-outline');
+  progressBar.style.width = '0%';
+  
+  // Smooth transition back to upload button
+  cancelButton.classList.remove('active');
+  
+  setTimeout(() => {
+    uploadButton.classList.remove('uploading');
+  }, 200);
+}
+
+async function simulateUpload(progressBar) {
+  // Simulate upload progress (replace with actual upload logic)
+  for (let i = 0; i <= 100; i += 10) {
+    updateUploadProgress(progressBar, i);
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
 }
 
 function handleFileUpload(file) {
