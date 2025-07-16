@@ -3987,6 +3987,23 @@ input.text-fade-right,
   background: transparent;
 }
 
+.upload-progress-text {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-progress-text.active {
+  opacity: 1;
+}
+
 .upload-progress-container {
   position: absolute;
   bottom: 6px;
@@ -4047,10 +4064,10 @@ input.text-fade-right,
 }
 
 .upload-btn-with-icon.uploading {
-  transform: translate(-50%, 0);
-  opacity: 0;
+  transform: translate(calc(50% - 6px), 0);
   pointer-events: none;
   z-index: 1;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .upload-btn-with-icon.uploading .upload-btn-icon {
@@ -4087,7 +4104,7 @@ input.text-fade-right,
   top: 0;
   left: 50%;
   transform: translate(-50%, 0);
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   z-index: 1;
   margin: 0;
@@ -4095,7 +4112,6 @@ input.text-fade-right,
 
 .cancel-btn-with-icon.active {
   transform: translate(calc(50% - 6px), 0);
-  opacity: 1;
   pointer-events: auto;
   z-index: 2;
 }

@@ -687,38 +687,41 @@ function initializeUploadButton() {
   const cancelButton = document.querySelector('.cancel-btn-with-icon');
   const progressContainer = document.querySelector('.upload-progress-container');
   const progressBar = document.querySelector('.upload-progress-bar');
+  const progressText = document.querySelector('.upload-progress-text');
   const categoryOutline = document.querySelector('.category-outline.upload-button-only');
   
-  if (!uploadButton || !cancelButton || !progressContainer || !progressBar || !categoryOutline) {
+  if (!uploadButton || !cancelButton || !progressContainer || !progressBar || !progressText || !categoryOutline) {
     return;
   }
   
   uploadButton.addEventListener('click', async () => {
     // Start upload progress with smooth transition
-    startUploadProgress(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton);
+    startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
     
     // Simulate upload progress (replace with actual upload logic)
-    await simulateUpload(progressBar);
+    await simulateUpload(progressBar, progressText);
     
     // Complete upload
-    completeUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton);
+    completeUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
   });
   
   cancelButton.addEventListener('click', () => {
     // Cancel upload and return to original state
-    cancelUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton);
+    cancelUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
   });
 }
 
-function startUploadProgress(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton) {
+function startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
   // Show container outline
   categoryOutline.classList.remove('no-outline');
   
-  // Show progress container
+  // Show progress container and text
   progressContainer.classList.add('active');
+  progressText.classList.add('active');
   
-  // Reset progress bar
+  // Reset progress bar and text
   progressBar.style.width = '0%';
+  progressText.textContent = '0%';
   
   // Fade out upload button content while keeping button visible
   uploadButton.classList.add('uploading');
@@ -733,17 +736,22 @@ function updateUploadProgress(progressBar, percentage) {
   progressBar.style.width = `${percentage}%`;
 }
 
-function completeUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton) {
+function completeUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
   // Complete the progress bar
   progressBar.style.width = '100%';
+  if (progressText) {
+    progressText.textContent = '100%';
+  }
   
   // After a delay, hide progress and restore original state
   setTimeout(() => {
     progressContainer.classList.remove('active');
+    progressText.classList.remove('active');
     categoryOutline.classList.add('no-outline');
     progressBar.style.width = '0%';
+    progressText.textContent = '0%';
     
-    // Luxurious fade transition back to upload button
+    // Fade transition back to upload button
     cancelButton.classList.remove('active');
     
     setTimeout(() => {
@@ -752,11 +760,13 @@ function completeUpload(progressContainer, progressBar, categoryOutline, uploadB
   }, 1000);
 }
 
-function cancelUpload(progressContainer, progressBar, categoryOutline, uploadButton, cancelButton) {
+function cancelUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
   // Hide progress
   progressContainer.classList.remove('active');
+  progressText.classList.remove('active');
   categoryOutline.classList.add('no-outline');
   progressBar.style.width = '0%';
+  progressText.textContent = '0%';
   
   // Fade out cancel button content
   cancelButton.classList.remove('active');
@@ -767,10 +777,13 @@ function cancelUpload(progressContainer, progressBar, categoryOutline, uploadBut
   }, 150);
 }
 
-async function simulateUpload(progressBar) {
+async function simulateUpload(progressBar, progressText) {
   // Simulate upload progress (replace with actual upload logic)
   for (let i = 0; i <= 100; i += 10) {
     updateUploadProgress(progressBar, i);
+    if (progressText) {
+      progressText.textContent = i + '%';
+    }
     await new Promise(resolve => setTimeout(resolve, 200));
   }
 }
