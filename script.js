@@ -720,12 +720,12 @@ function startUploadProgress(progressContainer, progressBar, categoryOutline, up
   // Reset progress bar
   progressBar.style.width = '0%';
   
-  // Smooth transition: upload button slides out, cancel button slides in
+  // Luxurious fade transition: upload button fades out, cancel button fades in
   uploadButton.classList.add('uploading');
   
   setTimeout(() => {
     cancelButton.classList.add('active');
-  }, 200);
+  }, 150);
 }
 
 function updateUploadProgress(progressBar, percentage) {
@@ -742,12 +742,12 @@ function completeUpload(progressContainer, progressBar, categoryOutline, uploadB
     categoryOutline.classList.add('no-outline');
     progressBar.style.width = '0%';
     
-    // Smooth transition back to upload button
+    // Luxurious fade transition back to upload button
     cancelButton.classList.remove('active');
     
     setTimeout(() => {
       uploadButton.classList.remove('uploading');
-    }, 200);
+    }, 150);
   }, 1000);
 }
 
@@ -757,12 +757,12 @@ function cancelUpload(progressContainer, progressBar, categoryOutline, uploadBut
   categoryOutline.classList.add('no-outline');
   progressBar.style.width = '0%';
   
-  // Smooth transition back to upload button
+  // Luxurious fade transition back to upload button
   cancelButton.classList.remove('active');
   
   setTimeout(() => {
     uploadButton.classList.remove('uploading');
-  }, 200);
+  }, 150);
 }
 
 async function simulateUpload(progressBar) {
