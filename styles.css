@@ -3363,6 +3363,7 @@ body.popup-open {
 /* Sections - now used inside category outlines */
 .popup-section {
   padding: 0; /* Remove padding since category-outline handles it */
+  position: relative;
 }
 
 .popup-section:last-child {
@@ -3972,11 +3973,12 @@ input.text-fade-right,
   box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 31px;
-  padding: 24px;
+  padding: 15px 24px 24px 24px;  /* Increase top padding to 12px for 6px margin */
   margin-bottom: 16px;
   background: transparent;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  position: relative;
 }
 
 .category-outline.upload-button-only.no-outline {
@@ -4013,8 +4015,10 @@ input.text-fade-right,
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 80px;
+  margin: 0;
+  padding: 6px 0 0 0;  /* Add 6px top padding to create the margin */
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -4037,7 +4041,7 @@ input.text-fade-right,
   transform: translateX(0) rotate(0deg);
   position: relative;
   z-index: 2;
-  margin-bottom: 12px;
+  margin: 0;
 }
 
 .upload-btn-with-icon.uploading {
@@ -4068,16 +4072,17 @@ input.text-fade-right,
   width: fit-content;
   gap: 10px;
   position: absolute;
-  top: calc(50% - 12px);
+  top: 0;
   left: 50%;
-  transform: translate(-50%, -50%) translateY(5px);
+  transform: translate(-50%, 0) translateY(0);
   opacity: 0;
   pointer-events: none;
   z-index: 1;
+  margin: 0;
 }
 
 .cancel-btn-with-icon.active {
-  transform: translate(-50%, -50%) translateY(0);
+  transform: translate(calc(50% - 6px), 0);
   opacity: 1;
   pointer-events: auto;
   z-index: 2;
