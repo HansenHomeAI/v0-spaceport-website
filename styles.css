@@ -4038,7 +4038,6 @@ input.text-fade-right,
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   width: fit-content;
   gap: 10px;
-  transform: translateX(0) rotate(0deg);
   position: absolute;
   top: 0;
   left: 50%;
@@ -4049,9 +4048,9 @@ input.text-fade-right,
 
 .upload-btn-with-icon.uploading {
   transform: translate(-50%, 0);
+  opacity: 0;
   pointer-events: none;
   z-index: 1;
-  visibility: hidden;
 }
 
 .upload-btn-with-icon.uploading .upload-btn-icon {
@@ -4088,18 +4087,17 @@ input.text-fade-right,
   top: 0;
   left: 50%;
   transform: translate(-50%, 0);
-  opacity: 1;
+  opacity: 0;
   pointer-events: none;
   z-index: 1;
   margin: 0;
-  visibility: hidden;
 }
 
 .cancel-btn-with-icon.active {
   transform: translate(calc(50% - 6px), 0);
+  opacity: 1;
   pointer-events: auto;
   z-index: 2;
-  visibility: visible;
 }
 
 .cancel-btn-with-icon.active .cancel-btn-icon {
