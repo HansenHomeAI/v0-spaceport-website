@@ -1,6 +1,14 @@
-REBUILD: Updated 3DGS container to use separate training and validation channels
-- Fixed Step Functions to use train/ folder for training and test/ folder for validation
-- Updated train_gaussian_production.py to load from both SM_CHANNEL_TRAINING and SM_CHANNEL_VALIDATION
-- Now trains on 77 images (train folder) and validates on 20 images (test folder)
-- Proper PSNR validation during training for quality metrics
-Build timestamp: 2025-01-10-17:10:00
+Build trigger updated: 2025-07-08-gpu-detection-fix
+- Added comprehensive CUDA environment setup
+- Fixed GPU detection with nvidia-ml-py3 and pynvml
+- Enhanced health checks for GPU verification
+- Improved CUDA environment variables for SageMaker
+- Added nvidia-cuda-toolkit to base image
+- Fixed gsplat CUDA compilation support
+
+Build trigger updated: 2025-07-15-revert-to-cuda118-stack
+
+Build trigger updated: 2025-07-15-fix-nvidia-ml-py3-dependency
+- Removed nvidia-ml-py3>=11.0.0 (deprecated package, max version is 7.352.0)
+- Kept pynvml>=11.0.0 for GPU detection
+- This should fix the pip install failure
