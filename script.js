@@ -720,9 +720,10 @@ function startUploadProgress(progressContainer, progressBar, categoryOutline, up
   // Reset progress bar
   progressBar.style.width = '0%';
   
-  // Luxurious fade transition: upload button fades out, cancel button fades in
+  // Fade out upload button content while keeping button visible
   uploadButton.classList.add('uploading');
   
+  // Fade in cancel button content
   setTimeout(() => {
     cancelButton.classList.add('active');
   }, 150);
@@ -757,9 +758,10 @@ function cancelUpload(progressContainer, progressBar, categoryOutline, uploadBut
   categoryOutline.classList.add('no-outline');
   progressBar.style.width = '0%';
   
-  // Luxurious fade transition back to upload button
+  // Fade out cancel button content
   cancelButton.classList.remove('active');
   
+  // Fade in upload button content
   setTimeout(() => {
     uploadButton.classList.remove('uploading');
   }, 150);

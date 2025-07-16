@@ -4018,7 +4018,7 @@ input.text-fade-right,
   align-items: flex-start;
   min-height: 80px;
   margin: 0;
-  padding: 6px 0 0 0;  /* Add 6px top padding to create the margin */
+  padding: 0;  /* Remove top padding since we'll position the upload button absolutely */
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -4039,16 +4039,29 @@ input.text-fade-right,
   width: fit-content;
   gap: 10px;
   transform: translateX(0) rotate(0deg);
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
   z-index: 2;
   margin: 0;
 }
 
 .upload-btn-with-icon.uploading {
-  transform: translateY(-5px);
-  opacity: 0;
+  transform: translate(-50%, 0);
   pointer-events: none;
   z-index: 1;
+  visibility: hidden;
+}
+
+.upload-btn-with-icon.uploading .upload-btn-icon {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.upload-btn-with-icon.uploading {
+  color: transparent;
+  transition: color 0.3s ease;
 }
 
 .upload-btn-with-icon:hover {
@@ -4060,7 +4073,7 @@ input.text-fade-right,
   align-items: center;
   justify-content: center;
   background: #fff;
-  color: #111;
+  color: transparent;
   font-size: 1.15rem;
   font-weight: 600;
   border: none;
@@ -4074,18 +4087,29 @@ input.text-fade-right,
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translate(-50%, 0) translateY(0);
-  opacity: 0;
+  transform: translate(-50%, 0);
+  opacity: 1;
   pointer-events: none;
   z-index: 1;
   margin: 0;
+  visibility: hidden;
 }
 
 .cancel-btn-with-icon.active {
   transform: translate(calc(50% - 6px), 0);
-  opacity: 1;
   pointer-events: auto;
   z-index: 2;
+  visibility: visible;
+}
+
+.cancel-btn-with-icon.active .cancel-btn-icon {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.cancel-btn-with-icon.active {
+  color: #111;
+  transition: color 0.3s ease;
 }
 
 .cancel-btn-with-icon:hover {
@@ -4103,6 +4127,7 @@ input.text-fade-right,
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   background-repeat: no-repeat;
   background-position: center;
+  opacity: 1;
 }
 
 .upload-btn-icon {
