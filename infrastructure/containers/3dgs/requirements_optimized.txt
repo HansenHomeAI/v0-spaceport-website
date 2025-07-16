@@ -24,8 +24,7 @@ open3d>=0.16.0
 # Install from source with CUDA support
 gsplat>=1.5.0
 
-# CUDA-specific dependencies for proper GPU detection
-# These help ensure PyTorch can find CUDA libraries
+# CUDA toolkit utilities (ensure CUDA is properly detected)
 pynvml>=11.0.0
 nvidia-ml-py3>=7.352.0
 
