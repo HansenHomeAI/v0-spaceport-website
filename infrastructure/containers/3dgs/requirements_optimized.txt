@@ -5,9 +5,10 @@ boto3>=1.26.0
 numpy>=1.24.0,<2.0.0
 Pillow>=9.0.0
 
-# Deep learning framework for progressive training
-torch>=1.13.0
-torchvision>=0.14.0
+# Deep learning framework for progressive training - PINNED TO CUDA 11.8
+torch==2.0.1+cu118
+torchvision==0.15.2+cu118
+torchaudio==2.0.2+cu118
 
 # 3D reconstruction and computer vision
 opencv-python>=4.5.0

@@ -54,7 +54,8 @@ class Trainer:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # DEFINITIVE GPU DETECTION AND INITIALIZATION
+        self.device = self._initialize_gpu_device()
         
         # Determine paths from SageMaker environment variables FIRST
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
@@ -63,6 +64,67 @@ class Trainer:
         
         # Override config with Step Functions parameters (after paths are set)
         self.apply_step_functions_params()
+    
+    def _initialize_gpu_device(self) -> torch.device:
+        """Definitive GPU detection and initialization for SageMaker ml.g4dn.xlarge"""
+        logger.info("🔍 DEFINITIVE GPU DETECTION AND INITIALIZATION")
+        logger.info("=" * 60)
+        
+        # Step 1: Check CUDA availability
+        logger.info(f"🔧 PyTorch version: {torch.__version__}")
+        logger.info(f"🔧 CUDA compiled version: {torch.version.cuda}")
+        logger.info(f"🔧 CUDA available: {torch.cuda.is_available()}")
+        
+        if not torch.cuda.is_available():
+            logger.error("❌ CRITICAL: CUDA not available in PyTorch!")
+            logger.error("❌ This indicates a PyTorch/CUDA version mismatch")
+            logger.error("❌ Container build failed - GPU training is IMPOSSIBLE")
+            raise RuntimeError("CUDA not available - cannot proceed with GPU training")
+        
+        # Step 2: Check GPU device count
+        gpu_count = torch.cuda.device_count()
+        logger.info(f"🎮 GPU devices detected: {gpu_count}")
+        
+        if gpu_count == 0:
+            logger.error("❌ CRITICAL: No GPU devices found!")
+            logger.error("❌ ml.g4dn.xlarge should have 1 NVIDIA T4 GPU")
+            logger.error("❌ Check SageMaker instance configuration")
+            raise RuntimeError("No GPU devices found - cannot proceed with GPU training")
+        
+        # Step 3: Initialize GPU and get device properties
+        torch.cuda.init()
+        device = torch.device("cuda:0")
+        
+        # Step 4: Get GPU properties and verify
+        gpu_props = torch.cuda.get_device_properties(0)
+        gpu_name = gpu_props.name
+        gpu_memory_gb = gpu_props.total_memory / 1024**3
+        
+        logger.info(f"🎯 Selected GPU: {gpu_name}")
+        logger.info(f"💾 GPU Memory: {gpu_memory_gb:.1f} GB")
+        logger.info(f"🔧 CUDA capability: {gpu_props.major}.{gpu_props.minor}")
+        
+        # Step 5: Test GPU functionality
+        try:
+            # Create test tensor on GPU
+            test_tensor = torch.randn(1000, 1000, device=device)
+            test_result = torch.matmul(test_tensor, test_tensor.T)
+            logger.info(f"✅ GPU functionality test: PASSED")
+            logger.info(f"✅ Test tensor shape: {test_result.shape}")
+        except Exception as e:
+            logger.error(f"❌ GPU functionality test FAILED: {e}")
+            raise RuntimeError(f"GPU functionality test failed: {e}")
+        
+        # Step 6: Initialize CUDA context for training
+        torch.cuda.empty_cache()
+        torch.backends.cudnn.enabled = True
+        torch.backends.cudnn.benchmark = True
+        
+        logger.info("✅ GPU INITIALIZATION COMPLETE")
+        logger.info("🚀 Ready for GPU-accelerated 3D Gaussian Splatting training")
+        logger.info("=" * 60)
+        
+        return device
     
     def apply_step_functions_params(self):
         """Apply parameters passed from Step Functions via environment variables."""
@@ -120,13 +182,7 @@ class Trainer:
         logger.info("✅ Trainer initialized")
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
-        if torch.cuda.is_available():
-            gpu_name = torch.cuda.get_device_name(0)
-            gpu_mem = round(torch.cuda.get_device_properties(0).total_memory / 1024**3, 1)
-            logger.info(f"🎮 Using GPU: {gpu_name}")
-            logger.info(f"💾 GPU Memory: {gpu_mem} GB")
-        else:
-            logger.warning("⚠️ No GPU found, training will be very slow on CPU.")
+        # GPU information already logged in _initialize_gpu_device method
 
     def run_real_training(self):
         """Run real gsplat training with proper spherical harmonics output."""
