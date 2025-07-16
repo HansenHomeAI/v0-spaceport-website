@@ -3972,7 +3972,7 @@ input.text-fade-right,
   box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 31px;
-  padding: 20px 24px 32px 24px;
+  padding: 24px;
   margin-bottom: 16px;
   background: transparent;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3987,9 +3987,9 @@ input.text-fade-right,
 
 .upload-progress-container {
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
   height: 4px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 25px;
@@ -4016,7 +4016,6 @@ input.text-fade-right,
   align-items: center;
   min-height: 80px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-bottom: 20px;
 }
 
 .upload-btn-with-icon {
@@ -4038,6 +4037,7 @@ input.text-fade-right,
   transform: translateX(0) rotate(0deg);
   position: relative;
   z-index: 2;
+  margin-bottom: 12px;
 }
 
 .upload-btn-with-icon.uploading {
@@ -4068,7 +4068,7 @@ input.text-fade-right,
   width: fit-content;
   gap: 10px;
   position: absolute;
-  top: 40%;
+  top: calc(50% - 12px);
   left: 50%;
   transform: translate(-50%, -50%) translateY(5px);
   opacity: 0;
