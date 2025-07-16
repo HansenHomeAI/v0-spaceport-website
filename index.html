@@ -280,23 +280,24 @@
             <!-- Map Section -->
             <div class="popup-map-section">
               <div id="map-container" class="map-container">
+                <!-- Expand button (moved inside map container for fullscreen) -->
+                <button class="expand-button" id="expand-button">
+                  <span class="expand-icon"></span>
+                </button>
                 <div class="map-dim-overlay"></div>
                 <!-- Add blur background -->
                 <div class="map-blur-background"></div>
                 <!-- Progressive blur overlays -->
                 <div class="map-blur-overlay top"></div>
                 <div class="map-blur-overlay bottom"></div>
-                
-                <!-- Expand button (fixed in top-right) -->
-                <button class="expand-button" id="expand-button">
-                  <span class="expand-icon"></span>
-                </button>
+                <!-- Progressive bottom blur for seamless edge blending -->
+                <div class="map-progressive-bottom-blur"></div>
                 
                 <!-- Centered instructions -->
                 <div class="map-instructions-center" id="map-instructions">
                   <div class="instruction-content">
                     <div class="instruction-pin"></div>
-                    <h3>Click anywhere on the map to set your project center</h3>
+                    <h3>Select the focus point for your drone flight.</h3>
               </div>
                 </div>
                 
@@ -316,11 +317,11 @@
                 <div class="input-row-popup">
                   <div class="popup-input-wrapper">
                     <span class="input-icon time"></span>
-                    <input type="text" class="text-fade-right" placeholder="Duration" />
+                    <input type="text" class="text-fade-right" placeholder="Duration" data-suffix=" min/battery" />
                   </div>
                   <div class="popup-input-wrapper">
                     <span class="input-icon number"></span>
-                    <input type="text" class="text-fade-right" placeholder="Quantity" />
+                    <input type="text" class="text-fade-right" placeholder="Quantity" data-suffix=" battery" data-plural=" batteries" />
                   </div>
                 </div>
               </div>
@@ -333,22 +334,23 @@
                 <div class="input-row-popup">
                   <div class="popup-input-wrapper">
                     <span class="input-icon minimum"></span>
-                    <input type="text" class="text-fade-right" placeholder="Minimum" />
+                    <input type="text" class="text-fade-right" placeholder="Minimum" data-suffix=" ft AGL" />
                   </div>
                   <div class="popup-input-wrapper">
                     <span class="input-icon maximum"></span>
-                    <input type="text" class="text-fade-right" placeholder="Maximum" />
+                    <input type="text" class="text-fade-right" placeholder="Maximum" data-suffix=" ft AGL" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Generate Flight Path Button -->
+            <!-- Flight Paths Section -->
             <div class="category-outline">
               <div class="popup-section">
-                <button class="popup-action-btn primary">
-                  Generate Flight Path
-                </button>
+                <h4>Flight Paths</h4>
+                <div id="flight-path-buttons" class="flight-path-grid">
+                  <!-- Dynamic buttons will be generated here -->
+                </div>
               </div>
             </div>
           </div>
@@ -364,15 +366,12 @@
           </div>
           <div class="accordion-content">
             <div class="popup-section">
-              <p class="section-description">Upload your aerial photos and provide property information</p>
               
               <div class="category-outline">
                 <div class="popup-section">
-                  <h4>Photo Upload</h4>
                   <div class="upload-zone">
                     <div class="upload-icon"></div>
-                    <p>Drag and drop photos or click to browse</p>
-                    <span class="upload-hint">Supports JPG, PNG, RAW formats</span>
+                    <p>Upload .jpg photos as a .zip file</p>
                   </div>
                 </div>
               </div>
@@ -383,45 +382,12 @@
                   <div class="input-row-popup">
                     <div class="popup-input-wrapper">
                       <span class="input-icon home"></span>
-                      <input type="text" class="text-fade-right" placeholder="Property Name" />
-                    </div>
-                    <div class="popup-input-wrapper">
-                      <span class="input-icon map"></span>
-                      <input type="text" class="text-fade-right" placeholder="Area (sq ft)" />
+                      <input type="text" class="text-fade-right" placeholder="Property Title" />
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div class="category-outline">
-                <div class="popup-section">
-                  <button class="popup-action-btn primary">
-                    Start Processing
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SECTION 3: MODEL DELIVERY -->
-        <div class="accordion-section" data-section="delivery">
-          <div class="accordion-header" onclick="toggleAccordionSection('delivery')">
-            <div class="accordion-title">
-              <h3>Model Delivery</h3>
-            </div>
-            <span class="accordion-chevron"></span>
-          </div>
-          <div class="accordion-content">
-            <div class="popup-section">
-              <p class="section-description">Receive your completed 3D model and download links</p>
-              
-              <div class="category-outline">
-                <div class="popup-section">
-                  <h4>Processing Status</h4>
-                  <div class="status-indicator">
-                    <div class="status-dot pending"></div>
-                    <span>Waiting for upload...</span>
+                  <div class="popup-input-wrapper listing-description-wrapper">
+                    <span class="input-icon paragraph"></span>
+                    <textarea id="listingDescription" class="text-fade-right" placeholder="Listing Description" rows="3"></textarea>
                   </div>
                 </div>
               </div>
@@ -434,24 +400,34 @@
                       <span class="input-icon email"></span>
                       <input type="email" class="text-fade-right" placeholder="Email Address" />
                     </div>
-                    <div class="popup-input-wrapper">
-                      <span class="input-icon link"></span>
-                      <input type="text" class="text-fade-right" placeholder="Download Link" readonly />
-                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="category-outline">
-                <div class="popup-section">
-                  <button class="popup-action-btn secondary disabled">
-                    Download Model
-                  </button>
+              <div class="category-outline upload-button-only no-outline">
+                <div class="popup-section" style="display: flex; justify-content: center; position: relative;">
+                  <div class="upload-progress-text">0%</div>
+                  <div class="upload-button-container">
+                    <button class="upload-btn-with-icon">
+                      <span class="upload-btn-icon"></span>
+                      Upload
+                    </button>
+                    <button class="cancel-btn-with-icon">
+                      <span class="cancel-btn-icon"></span>
+                      Cancel
+                    </button>
+                  </div>
+                  <div class="upload-progress-container">
+                    <div class="upload-progress-bar"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- SECTION 3: MODEL DELIVERY -->
+        <!-- Model Delivery section removed as requested -->
 
       </div>
   </div>

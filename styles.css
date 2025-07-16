@@ -2798,7 +2798,7 @@ body.popup-open {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0 0 6px 0;
+  padding: 8px 0 6px 0;
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -2823,7 +2823,7 @@ body.popup-open {
   font-weight: 500;
   outline: none;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 25px;
   transition: background 0.2s ease;
   font-family: inherit;
   width: 100%;
@@ -2831,7 +2831,7 @@ body.popup-open {
   overflow: hidden;
   display: block;
   line-height: 1.4;
-  min-height: 36px;
+  min-height: 44px;
   height: auto;
 }
 
@@ -2850,7 +2850,7 @@ body.popup-open {
   cursor: pointer;
   padding: 10px;
   border-radius: 8px;
-  opacity: 0.7;
+  opacity: 1;
   transition: all 0.2s ease;
   flex-shrink: 0;
   min-width: 44px;
@@ -2862,11 +2862,28 @@ body.popup-open {
   background-size: 16px 16px;
   background-repeat: no-repeat;
   background-position: center;
+  position: relative;
+  filter: brightness(0) invert(1);
 }
 
-.popup-close:hover {
+.popup-close::before {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: -1;
+}
+
+.popup-close:hover::before {
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Scrollable Content */
@@ -2882,6 +2899,7 @@ body.popup-open {
 /* Accordion Sections */
 .accordion-section {
   /* Removed border-bottom for cleaner look */
+  margin-bottom: 20px;
 }
 
 .accordion-section:last-child {
@@ -2894,12 +2912,25 @@ body.popup-open {
   align-items: center;
   padding: 20px 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   user-select: none;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .accordion-header:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 25px;
+}
+
+/* Hide header when section is active */
+.accordion-section.active .accordion-header {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  height: 0;
+  padding: 0 16px;
+  overflow: hidden;
 }
 
 .accordion-title {
@@ -2931,11 +2962,13 @@ body.popup-open {
 .accordion-content {
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
 }
 
 .accordion-section.active .accordion-content {
   max-height: 1000px;
+  opacity: 1;
 }
 
 /* Section Descriptions */
@@ -3025,6 +3058,10 @@ body.popup-open {
   z-index: 0; /* Ensure it's below the input */
 }
 
+.popup-map-section {
+  position: relative;
+}
+
 .expand-button {
   position: absolute;
   top: 6px;
@@ -3040,7 +3077,7 @@ body.popup-open {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 15;
+  z-index: 35;
 }
 
 .expand-button:hover {
@@ -3070,17 +3107,19 @@ body.popup-open {
           drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2))
           drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
   transition: transform 0.2s ease;
-  /* Scale down by 20% for better visual balance */
-  transform: scale(0.8);
-  transform-origin: center bottom;
+  /* REMOVED: Scale down by 20% for better visual balance - testing if this causes coordinate issues */
+  /* transform: scale(0.8); */
+  /* transform-origin: center bottom; */
   /* Additional shadow positioned at the base */
   position: relative;
+  /* Shift pin down so the actual bottom tip aligns with the click point */
+  transform: translateY(4px);
 }
 
 .custom-teardrop-pin::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -6px; /* Adjusted to account for the 4px translateY shift */
   left: 50%;
   transform: translateX(-50%);
   width: 8px;
@@ -3091,14 +3130,14 @@ body.popup-open {
 }
 
 .custom-teardrop-pin:hover {
-  transform: scale(0.88);
+  /* REMOVED: transform: scale(0.88); - testing if this causes coordinate issues */
   filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35)) 
           drop-shadow(0 1px 5px rgba(0, 0, 0, 0.25))
           drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
 }
 
 .custom-teardrop-pin:hover::after {
-  bottom: -3px;
+  bottom: -7px; /* Adjusted to account for the 4px translateY shift */
   width: 10px;
   height: 5px;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
@@ -3145,6 +3184,49 @@ body.popup-open {
   opacity: 0;
 }
 
+/* Progressive bottom blur for seamless edge blending */
+/* Temporarily disabled for performance optimization - can be re-enabled if needed */
+/*
+.map-progressive-bottom-blur {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 0 0 31px 31px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.4) 25%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 55%,
+    rgba(0, 0, 0, 0.9) 70%,
+    rgba(0, 0, 0, 1) 95%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.4) 25%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 55%,
+    rgba(0, 0, 0, 0.9) 70%,
+    rgba(0, 0, 0, 1) 95%
+  );
+}
+*/
+
+/* Fullscreen adjustments for progressive bottom blur */
+.map-container.fullscreen .map-progressive-bottom-blur {
+  border-radius: 0;
+  height: 90px;
+}
+
 /* Instructions aligned with map margins */
 .map-instructions-center {
   position: absolute;
@@ -3162,7 +3244,7 @@ body.popup-open {
 }
 
 .instruction-content {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border-radius: 25px;
@@ -3201,13 +3283,13 @@ body.popup-open {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  padding: 2.5px;
+  padding: 1.82px;
   z-index: -1;
 }
 
 /* Remove the hover state for instructions popup */
 .instruction-content:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .instruction-pin {
@@ -3261,6 +3343,8 @@ body.popup-open {
   padding: 6px;
   margin-bottom: 16px;
   background: transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .category-outline:last-child {
@@ -3279,6 +3363,7 @@ body.popup-open {
 /* Sections - now used inside category outlines */
 .popup-section {
   padding: 0; /* Remove padding since category-outline handles it */
+  position: relative;
 }
 
 .popup-section:last-child {
@@ -3297,13 +3382,17 @@ body.popup-open {
 .input-row-popup {
   display: flex;
   gap: 6px;
-  margin: 0;
+  margin: 0 0 6px 0;
   width: 100%;
 }
 
+.input-row-popup:last-child {
+  margin-bottom: 0;
+}
+
 .popup-input-wrapper {
-  flex: 1 1 0; /* Allow shrinking and growing with a 0 basis */
-  min-width: 0; /* Allow shrinking below content size */
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
   display: flex;
   align-items: center;
@@ -3314,6 +3403,18 @@ body.popup-open {
   transition: all 0.2s ease;
   box-sizing: border-box;
   height: 50px;
+}
+
+.popup-input-wrapper.listing-description-wrapper {
+  min-height: 50px;
+  height: auto;
+  align-items: flex-start;
+}
+
+.popup-input-wrapper.listing-description-wrapper textarea {
+  width: 100%;
+  height: 100%;
+  padding: 12px 0 12px 0;
 }
 
 .popup-input-wrapper:focus-within {
@@ -3349,21 +3450,55 @@ body.popup-open {
   font-weight: 500;
 }
 
-/* Upload Zone */
-.upload-zone {
-  border: 2.4px dashed rgba(255, 255, 255, 0.5);
-  border-radius: 24px;
-  padding: 32px 24px;
-  text-align: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.05);
-  box-sizing: border-box;
+/* Explanatory text styling */
+.popup-input-wrapper input.has-suffix::after {
+  content: attr(data-suffix);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
 }
 
+/* Alternative approach - position relative to wrapper */
+.popup-input-wrapper.has-suffix::after {
+  content: attr(data-suffix);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+/* Adjust text fade for inputs with suffix */
+.popup-input-wrapper input.has-suffix {
+  padding-right: 80px; /* Make room for suffix text */
+}
+
+/* Upload Zone */
+.upload-zone {
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  background: none;
+  padding: 32px 24px;
+  text-align: center;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
 .upload-zone:hover {
   border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.08);
+  background: none;
 }
 
 .upload-icon {
@@ -3371,7 +3506,7 @@ body.popup-open {
   height: 48px;
   background: url('assets/SpaceportIcons/Camera.svg') no-repeat center;
   background-size: contain;
-  margin-bottom: 12px;
+  margin: 0 auto 12px auto;
   opacity: 0.7;
 }
 
@@ -3535,6 +3670,106 @@ body.popup-open {
   background-image: url('assets/SpaceportIcons/Controls.svg');
 }
 
+.input-icon.flight {
+  background-image: url('assets/SpaceportIcons/FlightPath.svg');
+}
+
+/* Flight Path Download Buttons Grid */
+.flight-path-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 0;
+}
+
+.flight-path-download-btn {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 25px;
+  padding: 0 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  height: 50px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  font-weight: 500;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  animation: buttonFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.flight-path-download-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.flight-path-download-btn:active {
+  transform: translateY(1px);
+}
+
+.flight-path-download-btn .download-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  background: url('assets/SpaceportIcons/Download.svg') no-repeat center;
+  background-size: contain;
+  filter: brightness(0) invert(1);
+  transition: opacity 0.2s ease;
+}
+
+.flight-path-download-btn:hover .download-icon {
+  opacity: 1;
+}
+
+/* Removed gradient border and text fade effects for cleaner appearance */
+
+/* Placeholder message when no batteries */
+.flight-path-placeholder {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 20px;
+  font-family: inherit;
+  opacity: 0;
+  animation: placeholderFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Luxurious button fade-in animation */
+@keyframes buttonFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Placeholder fade-in animation */
+@keyframes placeholderFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive adjustments for map overlays - REMOVED to maintain concentricity */
 
 /* Add background blur when instructions are visible */
@@ -3588,22 +3823,45 @@ body.popup-open {
 .text-fade-right,
 input.text-fade-right,
 .address-search-wrapper input.text-fade-right {
-  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-  z-index: 1; /* Ensure the input is above the wrapper's pseudo-elements */
-  position: relative; /* Required for z-index to work */
+  position: relative;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
 }
 
+/* Adjust fade length based on content */
 .text-fade-right.fade-long {
-  /* For wider fade effect */
-  mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
 }
 
 .text-fade-right.fade-short {
-  /* For shorter fade effect */
-  mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 10px),
+    transparent calc(100% - 1px)
+  );
 }
 
 .map-container.has-instructions.instructions-hidden .map-blur-background {
@@ -3639,6 +3897,16 @@ input.text-fade-right,
   right: 16px;
 }
 
+.map-container.fullscreen .map-instructions-center {
+  left: 16px;
+  right: 16px;
+}
+
+.map-container.fullscreen .map-progressive-bottom-blur {
+  border-radius: 0;
+  height: 40px; /* Slightly taller in fullscreen for better effect */
+}
+
 /* Instructions aligned with map margins */
 .map-instructions-center {
   position: absolute;
@@ -3654,3 +3922,232 @@ input.text-fade-right,
   box-sizing: border-box;
   padding: 0;
 }
+
+.popup-input-wrapper textarea {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  font-family: inherit;
+  font-weight: 500;
+  width: 100%;
+  min-height: 50px;
+  resize: vertical;
+  box-sizing: border-box;
+  display: block;
+  padding: 0 0 0 0;
+}
+.popup-input-wrapper textarea:focus {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #fff;
+}
+.popup-input-wrapper textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  opacity: 1;
+}
+
+.popup-input-wrapper textarea {
+  padding: 12px 0 12px 0;
+}
+
+.popup-input-wrapper.listing-description-wrapper .input-icon {
+  margin-top: 17px;
+}
+
+.input-icon.paragraph {
+  background-image: url('assets/SpaceportIcons/Paragraph.svg');
+}
+
+.popup-input-wrapper input:focus {
+  color: #fff;
+}
+
+/* Upload button progress functionality */
+.category-outline.upload-button-only {
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 31px;
+  padding: 15px 24px 24px 24px;  /* Increase top padding to 12px for 6px margin */
+  margin-bottom: 16px;
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.category-outline.upload-button-only.no-outline {
+  box-shadow: none;
+  border: none;
+  background: transparent;
+}
+
+.upload-progress-text {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-progress-text.active {
+  opacity: 1;
+}
+
+.upload-progress-container {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 25px;
+  overflow: hidden;
+  display: none;
+}
+
+.upload-progress-container.active {
+  display: block;
+}
+
+.upload-progress-bar {
+  height: 100%;
+  background: #fff;
+  border-radius: 25px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.upload-button-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 80px;
+  width: 100%;
+  margin: 0;
+  padding: 0;  /* Remove top padding since we'll position the upload button absolutely */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #111;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 22px 10px 18px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
+              opacity 0.2s ease;
+  width: fit-content;
+  gap: 10px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 2;
+  margin: 0;
+}
+
+.upload-btn-with-icon.uploading {
+  left: 100%;
+  transform: translate(-100%, 0);
+  pointer-events: none;
+  z-index: 1;
+  transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.upload-btn-with-icon.uploading .upload-btn-icon {
+  opacity: 0;
+}
+
+.upload-btn-with-icon:hover {
+  background: #f2f2f2;
+}
+
+.cancel-btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: transparent;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 22px 10px 18px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  width: fit-content;
+  gap: 10px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  margin: 0;
+}
+
+.cancel-btn-with-icon.active {
+  left: 100%;
+  transform: translate(-100%, 0);
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+  color: #111;
+  transition: left 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cancel-btn-with-icon.active .cancel-btn-icon {
+  opacity: 1;
+}
+
+.cancel-btn-with-icon:hover {
+  background: #f2f2f2;
+}
+
+.upload-btn-icon,
+.cancel-btn-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-size: 18px 18px;
+  margin-right: 8px;
+  filter: brightness(0);
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+}
+
+.upload-btn-icon {
+  background-image: url('assets/SpaceportIcons/Upload.svg');
+}
+
+.cancel-btn-icon {
+  background-image: url('assets/SpaceportIcons/Close.svg');
+  opacity: 0;
+}
+

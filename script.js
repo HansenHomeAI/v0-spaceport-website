@@ -624,6 +624,17 @@ function openNewProjectPopup() {
   if (popup) {
     popup.classList.remove('hidden');
     document.body.classList.add('popup-open');
+    
+    // Ensure at least one section is active
+    const activeSection = popup.querySelector('.accordion-section.active');
+    if (!activeSection) {
+      // If no section is active, activate the first one
+      const firstSection = popup.querySelector('.accordion-section');
+      if (firstSection) {
+        firstSection.classList.add('active');
+      }
+    }
+    
     // Focus on the title input
     const titleInput = document.getElementById('projectTitle');
     if (titleInput) {
@@ -632,6 +643,11 @@ function openNewProjectPopup() {
         titleInput.select();
       }, 100);
     }
+    
+    // Initialize upload button functionality
+    setTimeout(() => {
+      initializeUploadButton();
+    }, 100);
   }
 }
 
@@ -650,15 +666,130 @@ function toggleAccordionSection(sectionId) {
   
   if (!targetSection) return;
   
-  // Close all sections
+  // If the target section is already active, don't do anything
+  // (prevents closing the only open section)
+  if (targetSection.classList.contains('active')) {
+    return;
+  }
+  
+  // Close all sections first
   allSections.forEach(section => {
-    if (section !== targetSection) {
-      section.classList.remove('active');
-    }
+    section.classList.remove('active');
   });
   
-  // Toggle target section
-  targetSection.classList.toggle('active');
+  // Open the target section
+  targetSection.classList.add('active');
+}
+
+// UPLOAD BUTTON PROGRESS FUNCTIONALITY
+function initializeUploadButton() {
+  const uploadButton = document.querySelector('.upload-btn-with-icon');
+  const cancelButton = document.querySelector('.cancel-btn-with-icon');
+  const progressContainer = document.querySelector('.upload-progress-container');
+  const progressBar = document.querySelector('.upload-progress-bar');
+  const progressText = document.querySelector('.upload-progress-text');
+  const categoryOutline = document.querySelector('.category-outline.upload-button-only');
+  
+  if (!uploadButton || !cancelButton || !progressContainer || !progressBar || !progressText || !categoryOutline) {
+    return;
+  }
+  
+  uploadButton.addEventListener('click', async () => {
+    // Start upload progress with smooth transition
+    startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
+    
+    // Simulate upload progress (replace with actual upload logic)
+    await simulateUpload(progressBar, progressText);
+    
+    // Complete upload
+    completeUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
+  });
+  
+  cancelButton.addEventListener('click', () => {
+    // Cancel upload and return to original state
+    cancelUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
+  });
+}
+
+function startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
+  // Show container outline
+  categoryOutline.classList.remove('no-outline');
+  
+  // Show progress container and text
+  progressContainer.classList.add('active');
+  progressText.classList.add('active');
+  
+  // Reset progress bar and text
+  progressBar.style.width = '0%';
+  progressText.textContent = '0%';
+  
+  // Slide upload button to cancel position and hide immediately
+  uploadButton.classList.add('uploading');
+  uploadButton.style.opacity = '0';
+  
+  // Slide cancel button to active position
+  setTimeout(() => {
+    cancelButton.classList.add('active');
+  }, 100);
+}
+
+function updateUploadProgress(progressBar, percentage) {
+  progressBar.style.width = `${percentage}%`;
+}
+
+function completeUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
+  // Complete the progress bar
+  progressBar.style.width = '100%';
+  if (progressText) {
+    progressText.textContent = '100%';
+  }
+  
+  // After a delay, hide progress and restore original state
+  setTimeout(() => {
+    progressContainer.classList.remove('active');
+    progressText.classList.remove('active');
+    categoryOutline.classList.add('no-outline');
+    progressBar.style.width = '0%';
+    progressText.textContent = '0%';
+    
+    // Show upload button first, then slide transition back
+    uploadButton.style.opacity = '1';
+    uploadButton.classList.remove('uploading');
+    
+    // Slide cancel button back to center
+    setTimeout(() => {
+      cancelButton.classList.remove('active');
+    }, 100);
+  }, 1000);
+}
+
+function cancelUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
+  // Hide progress
+  progressContainer.classList.remove('active');
+  progressText.classList.remove('active');
+  categoryOutline.classList.add('no-outline');
+  progressBar.style.width = '0%';
+  progressText.textContent = '0%';
+  
+  // Show upload button first, then slide transition back
+  uploadButton.style.opacity = '1';
+  uploadButton.classList.remove('uploading');
+  
+  // Slide cancel button back to center
+  setTimeout(() => {
+    cancelButton.classList.remove('active');
+  }, 100);
+}
+
+async function simulateUpload(progressBar, progressText) {
+  // Simulate upload progress (replace with actual upload logic)
+  for (let i = 0; i <= 100; i += 10) {
+    updateUploadProgress(progressBar, i);
+    if (progressText) {
+      progressText.textContent = i + '%';
+    }
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
 }
 
 function handleFileUpload(file) {
@@ -1967,6 +2098,23 @@ let selectedCoordinates = null;
 // Mapbox Access Token
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
+// Global function to hide instructions
+function hideInstructions() {
+  const instructions = document.getElementById('map-instructions');
+  const mapContainer = document.querySelector('.map-container');
+  
+  if (instructions && !instructions.classList.contains('hidden')) {
+    instructions.classList.add('hidden');
+    mapContainer.classList.add('instructions-hidden');
+    
+    // Delay removing the instructions to allow for fade out animation
+    setTimeout(() => {
+      instructions.style.display = 'none';
+      mapContainer.classList.remove('has-instructions', 'instructions-hidden');
+    }, 300);
+  }
+}
+
 function initializeMap() {
   // Only initialize if the map container exists and map hasn't been created yet
   const mapContainer = document.getElementById('map-container');
@@ -1982,21 +2130,6 @@ function initializeMap() {
     });
 
     // Hide instructions on any map interaction
-    const hideInstructions = () => {
-      const instructions = document.getElementById('map-instructions');
-      const mapContainer = document.querySelector('.map-container');
-      
-      if (instructions && !instructions.classList.contains('hidden')) {
-        instructions.classList.add('hidden');
-        mapContainer.classList.add('instructions-hidden');
-        
-        // Delay removing the instructions to allow for fade out animation
-        setTimeout(() => {
-          instructions.style.display = 'none';
-          mapContainer.classList.remove('has-instructions', 'instructions-hidden');
-        }, 300);
-      }
-    };
 
     // Show instructions initially and add click handler
     document.addEventListener('DOMContentLoaded', () => {
@@ -2025,11 +2158,75 @@ function initializeMap() {
     map.on('click', (e) => {
       const { lng, lat } = e.lngLat;
       
-      // Store the selected coordinates
-      selectedCoordinates = { lng, lat };
+      // DIAGNOSTIC: Log click details
+      const mapContainer = document.getElementById('map-container');
+      const isFullscreen = mapContainer.classList.contains('fullscreen');
+      const containerRect = mapContainer.getBoundingClientRect();
+      
+      console.log('🎯 CLICK DIAGNOSTIC:', {
+        coordinates: { lat, lng },
+        isFullscreen,
+        containerRect: {
+          x: containerRect.x,
+          y: containerRect.y,
+          width: containerRect.width,
+          height: containerRect.height,
+          top: containerRect.top,
+          left: containerRect.left
+        },
+        clickPoint: e.point,
+        originalEventDetails: e.originalEvent ? {
+          clientX: e.originalEvent.clientX,
+          clientY: e.originalEvent.clientY,
+          pageX: e.originalEvent.pageX,
+          pageY: e.originalEvent.pageY
+        } : null
+      });
+      
+      // CRITICAL FIX: In fullscreen mode, manually correct the click coordinates
+      // The issue is that Mapbox's coordinate calculation is offset when container moves to document.body
+      let correctedLng = lng;
+      let correctedLat = lat;
+      
+      if (isFullscreen && e.originalEvent) {
+        // Get the actual click position relative to the map canvas
+        const canvas = map.getCanvas();
+        const canvasRect = canvas.getBoundingClientRect();
+        const originalEvent = e.originalEvent;
+        
+        // Calculate the click position relative to the canvas
+        const canvasX = originalEvent.clientX - canvasRect.left;
+        const canvasY = originalEvent.clientY - canvasRect.top;
+        
+        // Convert canvas coordinates to map coordinates
+        const correctedLngLat = map.unproject([canvasX, canvasY]);
+        
+        correctedLng = correctedLngLat.lng;
+        correctedLat = correctedLngLat.lat;
+        
+        console.log('🔧 FULLSCREEN COORDINATE CORRECTION:', {
+          original: { lng, lat },
+          corrected: { lng: correctedLng, lat: correctedLat },
+          canvasRect: { 
+            left: canvasRect.left, 
+            top: canvasRect.top,
+            width: canvasRect.width,
+            height: canvasRect.height
+          },
+          clickPosition: {
+            clientX: originalEvent.clientX,
+            clientY: originalEvent.clientY,
+            canvasX: canvasX,
+            canvasY: canvasY
+          }
+        });
+      }
+      
+      // Store the selected coordinates (use corrected coordinates in fullscreen)
+      selectedCoordinates = { lng: correctedLng, lat: correctedLat };
       
       // Update address field with coordinates (only if field is empty)
-      updateAddressFieldWithCoordinates(lat, lng);
+      updateAddressFieldWithCoordinates(correctedLat, correctedLng);
       
       // Remove existing marker if any
       if (currentMarker) {
@@ -2050,10 +2247,32 @@ function initializeMap() {
         element: pinElement,
         anchor: 'bottom'
       })
-      .setLngLat([lng, lat])
+      .setLngLat([correctedLng, correctedLat])
       .addTo(map);
       
-      console.log('Selected coordinates:', { lat, lng });
+      // DIAGNOSTIC: Check marker positioning
+      setTimeout(() => {
+        const markerElement = currentMarker.getElement();
+        const markerRect = markerElement.getBoundingClientRect();
+        console.log('📍 MARKER POSITIONING:', {
+          coordinates: { lat: correctedLat, lng: correctedLng },
+          isFullscreen,
+          markerRect: {
+            x: markerRect.x,
+            y: markerRect.y,
+            top: markerRect.top,
+            left: markerRect.left,
+            width: markerRect.width,
+            height: markerRect.height
+          },
+          markerStyle: {
+            transform: markerElement.style.transform,
+            position: markerElement.style.position
+          }
+        });
+      }, 100);
+      
+      console.log('Selected coordinates:', { lat: correctedLat, lng: correctedLng });
     });
 
     // Initialize expand button functionality
@@ -2126,6 +2345,12 @@ function initializeExpandButton() {
       if (mapSection) {
         mapSection.appendChild(mapContainer);
       }
+
+      // Reinitialize scroll zoom to fix cursor alignment when exiting fullscreen
+      if (map && map.scrollZoom) {
+        map.scrollZoom.disable();
+        map.scrollZoom.enable();
+      }
     } else {
       // Enter fullscreen
       mapContainer.classList.add('fullscreen');
@@ -2133,14 +2358,80 @@ function initializeExpandButton() {
       
       // Move to body for true fullscreen
       document.body.appendChild(mapContainer);
+
+      // Reinitialize scroll zoom to fix cursor alignment in fullscreen
+      if (map && map.scrollZoom) {
+        map.scrollZoom.disable();
+        map.scrollZoom.enable();
+      }
     }
     
-    // Resize map after transition
+    // CRITICAL FIX: Force complete Mapbox reinitialization after DOM move
     setTimeout(() => {
       if (map) {
+        console.log('🔄 CRITICAL FIX: Forcing Mapbox coordinate system recalculation after DOM move');
+        
+        // Step 1: Get current state
+        const currentCenter = map.getCenter();
+        const currentZoom = map.getZoom();
+        const currentBearing = map.getBearing();
+        const currentPitch = map.getPitch();
+        
+        // Step 2: NUCLEAR OPTION - Force Mapbox to completely recalculate its coordinate system
+        // The issue is that when we move the container to document.body, Mapbox's internal
+        // coordinate calculations are still based on the old container position
+        
+        // Force complete internal recalculation
         map.resize();
+        
+        // Get the canvas and force it to recalculate its position
+        const canvas = map.getCanvas();
+        const container = map.getContainer();
+        
+        // CRITICAL: Force the canvas to recalculate its offset relative to the document
+        // This is the key fix - Mapbox needs to know the container moved to document.body
+        const containerRect = container.getBoundingClientRect();
+        console.log('📐 Container position after DOM move:', {
+          top: containerRect.top,
+          left: containerRect.left,
+          width: containerRect.width,
+          height: containerRect.height,
+          isFullscreen: !isFullscreen // Will be opposite after toggle
+        });
+        
+        // Multiple resize calls to force internal recalculation
+        map.resize();
+        map.fire('resize');
+        
+        // Force canvas to recalculate its position by triggering a complete re-render
+        setTimeout(() => {
+          map.resize();
+          
+          // Force re-render with position change
+          map.jumpTo({
+            center: [currentCenter.lng + 0.0000001, currentCenter.lat + 0.0000001],
+            zoom: currentZoom,
+            bearing: currentBearing,
+            pitch: currentPitch
+          });
+          
+          // Return to exact position
+          setTimeout(() => {
+            map.jumpTo({
+              center: currentCenter,
+              zoom: currentZoom,
+              bearing: currentBearing,
+              pitch: currentPitch
+            });
+            
+            // Final resize to lock in the coordinate system
+            map.resize();
+            
+            console.log('✅ Coordinate system reset complete');
+          }, 100);
+        }, 100);
       }
-    }, 100);
+    }, 300);
   });
 
   // ESC key to exit fullscreen
@@ -2237,6 +2528,12 @@ window.openNewProjectPopup = function() {
   setTimeout(() => {
     initializeMap();
   }, 100);
+  
+  // Initialize flight path button monitoring
+  initializeFlightPathButtons();
+  
+  // Initialize explanatory text functionality
+  initializeExplanatoryText();
 };
 
 // Clean up map when popup closes
@@ -2273,6 +2570,146 @@ window.getSelectedCoordinates = getSelectedCoordinates;
 window.updateAddressFieldWithCoordinates = updateAddressFieldWithCoordinates;
 window.clearAddressField = clearAddressField;
 
+// Flight Path Download Buttons Functionality
+function initializeFlightPathButtons() {
+  // Find the battery quantity input
+  const batteryQuantityInput = document.querySelector('.popup-input-wrapper input[placeholder="Quantity"]');
+  const flightPathGrid = document.getElementById('flight-path-buttons');
+  
+  if (!batteryQuantityInput || !flightPathGrid) return;
+  
+  // Monitor changes to battery quantity
+  batteryQuantityInput.addEventListener('input', function() {
+    const batteryCount = parseInt(this.value) || 0;
+    updateFlightPathButtons(batteryCount, flightPathGrid);
+  });
+  
+  // Initial update
+  const initialCount = parseInt(batteryQuantityInput.value) || 0;
+  updateFlightPathButtons(initialCount, flightPathGrid);
+}
+
+// Explanatory Text Functionality
+function initializeExplanatoryText() {
+  const inputs = document.querySelectorAll('.popup-input-wrapper input[data-suffix]');
+  console.log('Found inputs with suffixes:', inputs.length);
+  
+  inputs.forEach(input => {
+    console.log('Setting up suffix for:', input.placeholder, 'with suffix:', input.getAttribute('data-suffix'));
+    
+    input.addEventListener('input', function() {
+      updateExplanatoryText(this);
+    });
+    
+    // Initial update
+    updateExplanatoryText(input);
+  });
+}
+
+function updateExplanatoryText(input) {
+  let value = input.value.trim();
+  const suffix = input.getAttribute('data-suffix');
+  const plural = input.getAttribute('data-plural');
+  const wrapper = input.closest('.popup-input-wrapper');
+  
+  // Remove any existing suffix from the value
+  const suffixRegex = new RegExp(`${suffix}$|${plural}$`);
+  value = value.replace(suffixRegex, '').trim();
+  
+  if (value) {
+    // Determine which suffix to use
+    let displaySuffix = suffix;
+    if (plural && value !== '1') {
+      displaySuffix = plural;
+    }
+    
+    // Don't modify the input value while user is typing
+    if (!input.matches(':focus')) {
+      input.value = value + displaySuffix;
+    }
+    
+    // Store the raw value as a data attribute
+    input.setAttribute('data-raw-value', value);
+  } else {
+    input.value = '';
+    input.removeAttribute('data-raw-value');
+  }
+}
+
+// Add event listeners for focus and blur
+function initializeExplanatoryText() {
+  const inputs = document.querySelectorAll('.popup-input-wrapper input[data-suffix]');
+  
+  inputs.forEach(input => {
+    // Handle input changes
+    input.addEventListener('input', function() {
+      // When user is typing, only show their input
+      const rawValue = this.value.trim();
+      this.setAttribute('data-raw-value', rawValue);
+    });
+    
+    // When input loses focus, show value with suffix
+    input.addEventListener('blur', function() {
+      updateExplanatoryText(this);
+    });
+    
+    // When input gains focus, show only the raw value
+    input.addEventListener('focus', function() {
+      const rawValue = this.getAttribute('data-raw-value') || this.value.trim();
+      const suffix = this.getAttribute('data-suffix');
+      const plural = this.getAttribute('data-plural');
+      const suffixRegex = new RegExp(`${suffix}$|${plural}$`);
+      this.value = rawValue.replace(suffixRegex, '').trim();
+    });
+    
+    // Initial update
+    updateExplanatoryText(input);
+  });
+}
+
+function updateFlightPathButtons(batteryCount, container) {
+  // Clear existing buttons
+  container.innerHTML = '';
+  
+  if (batteryCount <= 0) {
+    // Show placeholder message when no batteries
+    container.innerHTML = '<div class="flight-path-placeholder">Enter battery quantity to generate flight paths</div>';
+    return;
+  }
+  
+  // Generate buttons for each battery with staggered animation
+  for (let i = 1; i <= batteryCount; i++) {
+    const button = document.createElement('button');
+    button.className = 'flight-path-download-btn';
+    button.innerHTML = `
+      <span class="download-icon"></span>
+      Battery ${i}
+    `;
+    
+    // Add staggered delay for luxurious sequential appearance
+    button.style.animationDelay = `${(i - 1) * 0.15}s`;
+    
+    // Add click handler for download
+    button.addEventListener('click', function() {
+      downloadBatteryFlightPath(i);
+    });
+    
+    container.appendChild(button);
+  }
+}
+
+function downloadBatteryFlightPath(batteryNumber) {
+  // Placeholder for download functionality
+  console.log(`Downloading flight path for Battery ${batteryNumber}`);
+  
+  // You can integrate this with your existing download logic
+  // For now, we'll show a simple alert
+  alert(`Downloading flight path for Battery ${batteryNumber}`);
+  
+  // TODO: Integrate with actual download functionality
+  // This could call your existing download functions or API endpoints
+}
+
 // Auto-resize textarea
 const projectTitle = document.getElementById('projectTitle');
 if (projectTitle) {
@@ -2302,7 +2739,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Add focus/click handler to address search input
+  // Add focus/click/touch handler to address search input
   if (addressInput) {
     addressInput.addEventListener('focus', () => {
       hideInstructions();
@@ -2310,5 +2747,22 @@ document.addEventListener('DOMContentLoaded', () => {
     addressInput.addEventListener('mousedown', () => {
       hideInstructions();
     });
+    addressInput.addEventListener('touchstart', () => {
+      hideInstructions();
+    });
   }
 });
+
+// Auto-resize Listing Description textarea
+const listingDescription = document.getElementById('listingDescription');
+if (listingDescription) {
+  listingDescription.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+  // Trigger resize on page load if there's pre-filled content
+  setTimeout(() => {
+    listingDescription.style.height = 'auto';
+    listingDescription.style.height = (listingDescription.scrollHeight) + 'px';
+  }, 0);
+}
