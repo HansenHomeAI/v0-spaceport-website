@@ -694,21 +694,104 @@ function initializeUploadButton() {
     return;
   }
   
+  // Initialize upload zone file selection
+  initializeUploadZone();
+  
+  // Hook into our integrated upload system
   uploadButton.addEventListener('click', async () => {
-    // Start upload progress with smooth transition
-    startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
-    
-    // Simulate upload progress (replace with actual upload logic)
-    await simulateUpload(progressBar, progressText);
-    
-    // Complete upload
-    completeUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
+    if (projectPopupPhotoUpload) {
+      await projectPopupPhotoUpload.handleUpload();
+    } else {
+      console.error('ProjectPopupPhotoUpload not initialized');
+      alert('Upload system not ready. Please try again.');
+    }
   });
   
   cancelButton.addEventListener('click', () => {
     // Cancel upload and return to original state
     cancelUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
   });
+}
+
+// Initialize upload zone with file selection
+function initializeUploadZone() {
+  const uploadZone = document.querySelector('#newProjectPopup .upload-zone');
+  if (!uploadZone) return;
+  
+  // Add click handler to upload zone
+  uploadZone.addEventListener('click', () => {
+    // Create a temporary file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.zip';
+    fileInput.style.display = 'none';
+    
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleUploadZoneFile(e.target.files[0]);
+      }
+      document.body.removeChild(fileInput);
+    });
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+  });
+  
+  // Add drag and drop functionality
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.style.borderColor = 'rgba(255, 255, 255, 0.8)';
+  });
+  
+  uploadZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadZone.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+  });
+  
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleUploadZoneFile(e.dataTransfer.files[0]);
+    }
+  });
+}
+
+// Handle file selection in upload zone
+function handleUploadZoneFile(file) {
+  const uploadZone = document.querySelector('#newProjectPopup .upload-zone');
+  if (!uploadZone) return;
+  
+  // Validate file type
+  if (!file.name.toLowerCase().endsWith('.zip')) {
+    alert('Please upload a .zip file only');
+    return;
+  }
+  
+  // Validate file size (5GB limit)
+  const maxSize = 5 * 1024 * 1024 * 1024; // 5GB
+  if (file.size > maxSize) {
+    alert('File size exceeds 5GB limit');
+    return;
+  }
+  
+  // Store the file in the upload zone
+  if (projectPopupPhotoUpload) {
+    projectPopupPhotoUpload.setSelectedFile(file);
+  }
+  
+  // Update upload zone display
+  const uploadIcon = uploadZone.querySelector('.upload-icon');
+  const uploadText = uploadZone.querySelector('p');
+  
+  if (uploadIcon) {
+    uploadIcon.style.display = 'none';
+  }
+  
+  if (uploadText) {
+    uploadText.innerHTML = `<strong>Selected:</strong> ${file.name}<br><span style="color: rgba(255, 255, 255, 0.6);">Click to select a different file</span>`;
+  }
 }
 
 function startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton) {
@@ -2532,6 +2615,7 @@ window.openNewProjectPopup = function() {
   // Initialize flight path integration
   setTimeout(() => {
     projectPopupFlightPath = new ProjectPopupFlightPath();
+    projectPopupPhotoUpload = new ProjectPopupPhotoUpload();
   }, 150);
   
   // Initialize flight path button monitoring
@@ -3053,6 +3137,396 @@ class ProjectPopupFlightPath {
     alert(`Download failed: ${message}`);
   }
 }
+
+// Photo Upload Integration Class
+class ProjectPopupPhotoUpload {
+  constructor() {
+    this.API_ENDPOINTS = {
+      START_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
+      GET_PRESIGNED_URL: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
+      COMPLETE_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
+      SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission",
+      START_ML_PROCESSING: "https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod/start-job"
+    };
+    
+    this.CHUNK_SIZE = 24 * 1024 * 1024; // 24MB chunks
+    this.MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB max
+    
+    this.uploadData = null;
+    this.isProcessing = false;
+    
+    console.log('📸 ProjectPopupPhotoUpload initialized');
+  }
+
+  // Main upload handler - called by existing upload button
+  async handleUpload() {
+    if (this.isProcessing) {
+      console.log('⏳ Upload already in progress');
+      return;
+    }
+
+    console.log('🚀 Starting integrated upload flow');
+    
+    // Validate form and file
+    const validation = this.validateForm();
+    if (!validation.isValid) {
+      this.showUploadError(validation.error);
+      return;
+    }
+
+    // Start the integrated flow
+    this.isProcessing = true;
+    this.setUploadLoadingState(true, 'Uploading...');
+
+    try {
+      // Step 1: Upload photos to S3
+      console.log('📤 Step 1: Uploading photos to S3');
+      const uploadResult = await this.uploadPhotosToS3(validation.file, validation.formData);
+      
+      // Step 2: Start ML processing automatically
+      console.log('🤖 Step 2: Starting ML processing');
+      this.setUploadLoadingState(true, 'Starting ML Processing...');
+      
+      const mlResult = await this.startMLProcessing(uploadResult.s3Url, validation.formData.email);
+      
+      // Step 3: Show success
+      this.showUploadSuccess(mlResult.jobId, mlResult.executionArn);
+      
+    } catch (error) {
+      console.error('❌ Integrated upload failed:', error);
+      this.showUploadError(error.message);
+    } finally {
+      this.isProcessing = false;
+      this.setUploadLoadingState(false);
+    }
+  }
+
+  // Validate form fields and file
+  validateForm() {
+    const propertyTitle = document.querySelector('#newProjectPopup input[placeholder="Property Title"]');
+    const email = document.querySelector('#newProjectPopup input[placeholder="Email Address"]');
+    const listingDescription = document.querySelector('#newProjectPopup textarea[placeholder="Listing Description"]');
+    const uploadZone = document.querySelector('#newProjectPopup .upload-zone');
+    
+    // Check required fields
+    if (!propertyTitle?.value?.trim()) {
+      return { isValid: false, error: 'Property title is required' };
+    }
+    
+    if (!email?.value?.trim()) {
+      return { isValid: false, error: 'Email address is required' };
+    }
+    
+    if (!this.isValidEmail(email.value.trim())) {
+      return { isValid: false, error: 'Please enter a valid email address' };
+    }
+    
+    // Check file selection - we need to find the selected file
+    const selectedFile = this.getSelectedFile();
+    if (!selectedFile) {
+      return { isValid: false, error: 'Please select a .zip file to upload' };
+    }
+    
+    // Validate file type
+    if (!selectedFile.name.toLowerCase().endsWith('.zip')) {
+      return { isValid: false, error: 'Please upload a .zip file only' };
+    }
+    
+    // Validate file size
+    if (selectedFile.size > this.MAX_FILE_SIZE) {
+      return { isValid: false, error: 'File size exceeds 5GB limit' };
+    }
+    
+    // Gather form data
+    const formData = {
+      propertyTitle: propertyTitle.value.trim(),
+      email: email.value.trim(),
+      listingDescription: listingDescription?.value?.trim() || ''
+    };
+    
+    return { isValid: true, file: selectedFile, formData };
+  }
+
+  // Get the selected file from the upload zone
+  getSelectedFile() {
+    // Check if there's a file stored in the upload zone
+    // We'll need to integrate with the upload zone's file selection mechanism
+    const uploadZone = document.querySelector('#newProjectPopup .upload-zone');
+    if (uploadZone && uploadZone.selectedFile) {
+      return uploadZone.selectedFile;
+    }
+    return null;
+  }
+
+  // Store selected file in upload zone
+  setSelectedFile(file) {
+    const uploadZone = document.querySelector('#newProjectPopup .upload-zone');
+    if (uploadZone) {
+      uploadZone.selectedFile = file;
+    }
+  }
+
+  // Upload photos to S3 using multipart upload
+  async uploadPhotosToS3(file, formData) {
+    try {
+      // Start multipart upload
+      const uploadInit = await this.startMultipartUpload(file.name, file.type, formData);
+      
+      // Upload file in chunks
+      const uploadResult = await this.uploadFileInChunks(file, uploadInit);
+      
+      // Save submission metadata
+      await this.saveSubmissionMetadata(uploadResult.objectKey, formData);
+      
+      // Extract S3 URL from upload result
+      const s3Url = `s3://${uploadInit.bucketName}/${uploadResult.objectKey}`;
+      
+      return { s3Url, objectKey: uploadResult.objectKey };
+      
+    } catch (error) {
+      throw new Error(`Upload failed: ${error.message}`);
+    }
+  }
+
+  // Start ML processing with uploaded S3 URL
+  async startMLProcessing(s3Url, email) {
+    try {
+      const response = await fetch(this.API_ENDPOINTS.START_ML_PROCESSING, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          s3Url: s3Url,
+          email: email,
+          pipelineStep: 'sfm' // Full pipeline by default
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      return await response.json();
+      
+    } catch (error) {
+      throw new Error(`ML processing failed: ${error.message}`);
+    }
+  }
+
+  // Helper methods for upload process
+  async startMultipartUpload(fileName, fileType, formData) {
+    const response = await fetch(this.API_ENDPOINTS.START_UPLOAD, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName,
+        fileType,
+        ...formData
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to start upload: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+
+  async uploadFileInChunks(file, uploadInit) {
+    const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
+    const parts = [];
+    
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * this.CHUNK_SIZE;
+      const end = Math.min(start + this.CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+      const partNumber = i + 1;
+      
+      // Get presigned URL for this chunk
+      const urlResponse = await fetch(this.API_ENDPOINTS.GET_PRESIGNED_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uploadId: uploadInit.uploadId,
+          bucketName: uploadInit.bucketName,
+          objectKey: uploadInit.objectKey,
+          partNumber
+        })
+      });
+      
+      if (!urlResponse.ok) {
+        throw new Error(`Failed to get upload URL for part ${partNumber}`);
+      }
+      
+      const { url } = await urlResponse.json();
+      
+      // Upload chunk
+      const uploadResponse = await fetch(url, {
+        method: 'PUT',
+        body: chunk
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error(`Failed to upload part ${partNumber}`);
+      }
+      
+      const etag = uploadResponse.headers.get('ETag');
+      parts.push({ ETag: etag, PartNumber: partNumber });
+      
+      // Update progress
+      const progress = (partNumber / totalChunks) * 100;
+      this.updateUploadProgress(progress);
+    }
+    
+    // Complete multipart upload
+    const completeResponse = await fetch(this.API_ENDPOINTS.COMPLETE_UPLOAD, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uploadId: uploadInit.uploadId,
+        bucketName: uploadInit.bucketName,
+        objectKey: uploadInit.objectKey,
+        parts
+      })
+    });
+    
+    if (!completeResponse.ok) {
+      throw new Error('Failed to complete upload');
+    }
+    
+    return { objectKey: uploadInit.objectKey };
+  }
+
+  async saveSubmissionMetadata(objectKey, formData) {
+    const response = await fetch(this.API_ENDPOINTS.SAVE_SUBMISSION, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        objectKey,
+        ...formData
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save submission metadata');
+    }
+
+    return await response.json();
+  }
+
+  // UI state management
+  setUploadLoadingState(isLoading, text = 'Upload') {
+    const uploadButton = document.querySelector('#newProjectPopup .upload-btn-with-icon');
+    const uploadSection = document.querySelector('#newProjectPopup .accordion-section[data-section="upload"]');
+    const headline = uploadSection?.querySelector('h3');
+    
+    if (isLoading) {
+      if (uploadButton) {
+        uploadButton.classList.add('loading');
+        uploadButton.innerHTML = `<span class="upload-btn-icon"></span>${text}`;
+      }
+      
+      if (headline) {
+        headline.textContent = text;
+      }
+      
+      // Start the visual progress if uploading
+      if (text === 'Uploading...') {
+        this.startUploadProgress();
+      }
+    } else {
+      if (uploadButton) {
+        uploadButton.classList.remove('loading');
+        uploadButton.innerHTML = `<span class="upload-btn-icon"></span>Upload`;
+      }
+      
+      if (headline) {
+        headline.textContent = 'Property Upload';
+      }
+      
+      // Complete the visual progress
+      this.completeUploadProgress();
+    }
+  }
+
+  // Start the upload progress animation
+  startUploadProgress() {
+    const progressContainer = document.querySelector('#newProjectPopup .upload-progress-container');
+    const progressBar = document.querySelector('#newProjectPopup .upload-progress-bar');
+    const progressText = document.querySelector('#newProjectPopup .upload-progress-text');
+    const categoryOutline = document.querySelector('#newProjectPopup .category-outline.upload-button-only');
+    const uploadButton = document.querySelector('#newProjectPopup .upload-btn-with-icon');
+    const cancelButton = document.querySelector('#newProjectPopup .cancel-btn-with-icon');
+    
+    if (progressContainer && progressBar && progressText && categoryOutline && uploadButton && cancelButton) {
+      startUploadProgress(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
+    }
+  }
+
+  // Complete the upload progress animation
+  completeUploadProgress() {
+    const progressContainer = document.querySelector('#newProjectPopup .upload-progress-container');
+    const progressBar = document.querySelector('#newProjectPopup .upload-progress-bar');
+    const progressText = document.querySelector('#newProjectPopup .upload-progress-text');
+    const categoryOutline = document.querySelector('#newProjectPopup .category-outline.upload-button-only');
+    const uploadButton = document.querySelector('#newProjectPopup .upload-btn-with-icon');
+    const cancelButton = document.querySelector('#newProjectPopup .cancel-btn-with-icon');
+    
+    if (progressContainer && progressBar && progressText && categoryOutline && uploadButton && cancelButton) {
+      completeUpload(progressContainer, progressBar, progressText, categoryOutline, uploadButton, cancelButton);
+    }
+  }
+
+  updateUploadProgress(percentage) {
+    const progressBar = document.querySelector('#newProjectPopup .upload-progress-bar');
+    const progressText = document.querySelector('#newProjectPopup .upload-progress-text');
+    
+    if (progressBar) {
+      progressBar.style.width = `${percentage}%`;
+    }
+    
+    if (progressText) {
+      progressText.textContent = `${Math.round(percentage)}%`;
+      
+      // Show progress elements
+      const progressContainer = document.querySelector('#newProjectPopup .upload-progress-container');
+      if (progressContainer) {
+        progressContainer.classList.add('active');
+      }
+      
+      progressText.classList.add('active');
+    }
+  }
+
+  showUploadSuccess(jobId, executionArn) {
+    const headline = document.querySelector('#newProjectPopup .accordion-section[data-section="upload"] h3');
+    if (headline) {
+      headline.textContent = 'Processing Started!';
+    }
+    
+    // Show success message
+    console.log(`✅ Upload and ML processing started successfully!`);
+    console.log(`Job ID: ${jobId}`);
+    console.log(`Execution ARN: ${executionArn}`);
+    
+    // You could add a success notification here
+    alert(`Upload successful! ML processing started.\nJob ID: ${jobId}\nYou'll receive an email when processing is complete.`);
+  }
+
+  showUploadError(message) {
+    console.error('❌ Upload error:', message);
+    alert(`Upload failed: ${message}`);
+  }
+
+  // Helper method
+  isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+}
+
+// Initialize the popup photo upload integration
+let projectPopupPhotoUpload = null;
 
 // Initialize the popup flight path integration
 let projectPopupFlightPath = null;
