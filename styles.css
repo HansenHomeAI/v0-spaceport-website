@@ -2951,7 +2951,7 @@ body.popup-open {
   height: 16px;
   background: url('assets/SpaceportIcons/Arrow.svg') no-repeat center;
   background-size: contain;
-  opacity: 0.6;
+  opacity: 1;
   transition: transform 0.3s ease;
 }
 
@@ -3422,8 +3422,8 @@ body.popup-open {
 }
 
 .input-icon {
-  width: 16px;
-  height: 16px;
+  width: 19px;
+  height: 19px;
   margin-right: 10px;
   flex-shrink: 0;
   opacity: 0.6;
@@ -3980,7 +3980,7 @@ input.text-fade-right,
 }
 
 .popup-input-wrapper.listing-description-wrapper .input-icon {
-  margin-top: 17px;
+  margin-top: 15px;
 }
 
 .input-icon.paragraph {
