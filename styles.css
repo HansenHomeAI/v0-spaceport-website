@@ -2899,7 +2899,7 @@ body.popup-open {
 /* Accordion Sections */
 .accordion-section {
   /* Removed border-bottom for cleaner look */
-  margin-bottom: 20px;
+  margin-bottom: 3px;
 }
 
 .accordion-section:last-child {
@@ -2931,6 +2931,16 @@ body.popup-open {
   height: 0;
   padding: 0 16px;
   overflow: hidden;
+}
+
+/* Keep Property Upload title visible when active */
+.accordion-section[data-section="upload"].active .accordion-header {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  height: auto;
+  padding: 20px 16px;
+  overflow: visible;
 }
 
 .accordion-title {
