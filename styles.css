@@ -2899,7 +2899,7 @@ body.popup-open {
 /* Accordion Sections */
 .accordion-section {
   /* Removed border-bottom for cleaner look */
-  margin-bottom: 3px;
+  margin-bottom: 0;
 }
 
 .accordion-section:last-child {
@@ -2918,6 +2918,7 @@ body.popup-open {
   transform: translateY(0);
   height: 50px;
   box-sizing: border-box;
+  margin: 2px 0;
 }
 
 .accordion-header:hover {
