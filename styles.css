@@ -2910,12 +2910,14 @@ body.popup-open {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 16px;
+  padding: 15px 16px;
   cursor: pointer;
   transition: all 0.3s ease;
   user-select: none;
   opacity: 1;
   transform: translateY(0);
+  height: 50px;
+  box-sizing: border-box;
 }
 
 .accordion-header:hover {
@@ -2938,8 +2940,8 @@ body.popup-open {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
-  height: auto;
-  padding: 20px 16px;
+  height: 50px;
+  padding: 15px 16px;
   overflow: visible;
 }
 
