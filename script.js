@@ -3514,11 +3514,6 @@ class ProjectPopupPhotoUpload {
   }
 
   showUploadError(message) {
-    const headline = document.querySelector('#newProjectPopup .accordion-section[data-section="upload"] h3');
-    if (headline) {
-      headline.textContent = 'Upload Error';
-    }
-    
     console.error('❌ Upload error:', message);
     alert(`Upload failed: ${message}`);
   }
