@@ -4102,8 +4102,28 @@ input.text-fade-right,
   opacity: 0;
 }
 
+.upload-btn-with-icon.loading {
+  pointer-events: none;
+  background: #e0e0e0;
+  color: #999;
+}
+
+.upload-btn-with-icon.loading .upload-btn-icon {
+  background: none;
+  border: 2px solid rgba(170, 170, 170, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid #999;
+  animation: spin 1s linear infinite;
+  width: 16px;
+  height: 16px;
+}
+
 .upload-btn-with-icon:hover {
   background: #f2f2f2;
+}
+
+.upload-btn-with-icon.loading:hover {
+  background: #e0e0e0;
 }
 
 .cancel-btn-with-icon {
