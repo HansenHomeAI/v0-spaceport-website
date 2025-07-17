@@ -21,3 +21,9 @@ Build trigger updated: 2025-07-15-DEFINITIVE-GPU-FIX
 - Added comprehensive GPU functionality validation
 - Training script now FAILS FAST if GPU not detected
 - NO MORE CPU TRAINING - GPU detection is now GUARANTEED
+
+Build trigger updated: 2025-07-16-FIX-PIP-INDEX-ISSUE
+- Fixed pip installation strategy: PyTorch CUDA index only for PyTorch packages
+- Removed PyTorch packages from requirements_optimized.txt (installed in Dockerfile)
+- Other packages (boto3, etc.) now use default PyPI index
+- This fixes the "boto3 not found" error from PyTorch CUDA index

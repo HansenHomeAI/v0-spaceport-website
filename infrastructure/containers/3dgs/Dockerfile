@@ -45,8 +45,8 @@ RUN pip3 install --no-cache-dir \
     torchaudio==2.0.2+cu118 \
     --index-url https://download.pytorch.org/whl/cu118
 
-# Install other Python dependencies (PyTorch already pinned in requirements_optimized.txt)
-RUN pip3 install --no-cache-dir -r requirements_optimized.txt --index-url https://download.pytorch.org/whl/cu118
+# Install other Python dependencies using default PyPI (PyTorch already installed above)
+RUN pip3 install --no-cache-dir -r requirements_optimized.txt
 
 # Initialize NVIDIA runtime for SageMaker (CRITICAL FOR GPU DETECTION)
 RUN nvidia-smi || echo "nvidia-smi not available in build context (expected)"
