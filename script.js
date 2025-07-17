@@ -2529,6 +2529,11 @@ window.openNewProjectPopup = function() {
     initializeMap();
   }, 100);
   
+  // Initialize flight path integration
+  setTimeout(() => {
+    projectPopupFlightPath = new ProjectPopupFlightPath();
+  }, 150);
+  
   // Initialize flight path button monitoring
   initializeFlightPathButtons();
   
@@ -2699,15 +2704,13 @@ function updateFlightPathButtons(batteryCount, container) {
 }
 
 function downloadBatteryFlightPath(batteryNumber) {
-  // Placeholder for download functionality
-  console.log(`Downloading flight path for Battery ${batteryNumber}`);
-  
-  // You can integrate this with your existing download logic
-  // For now, we'll show a simple alert
-  alert(`Downloading flight path for Battery ${batteryNumber}`);
-  
-  // TODO: Integrate with actual download functionality
-  // This could call your existing download functions or API endpoints
+  // Hook into the ProjectPopupFlightPath integration
+  if (projectPopupFlightPath) {
+    projectPopupFlightPath.handleBatteryClick(batteryNumber);
+  } else {
+    console.error('ProjectPopupFlightPath not initialized');
+    alert('Flight path system not ready. Please try again.');
+  }
 }
 
 // Auto-resize textarea
@@ -2766,3 +2769,232 @@ if (listingDescription) {
     listingDescription.style.height = (listingDescription.scrollHeight) + 'px';
   }, 0);
 }
+
+// PROJECT POPUP FLIGHT PATH INTEGRATION
+class ProjectPopupFlightPath {
+  constructor() {
+    this.optimizedParams = null;
+    this.isOptimizing = false;
+    this.API_BASE = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod";
+    this.initializeEventListeners();
+  }
+
+  initializeEventListeners() {
+    // Setup listeners immediately since we're called after popup is opened
+    this.setupInputListeners();
+  }
+
+  setupInputListeners() {
+    // Battery inputs
+    const batteryDuration = document.querySelector('.popup-input-wrapper input[placeholder="Duration"]');
+    const batteryQuantity = document.querySelector('.popup-input-wrapper input[placeholder="Quantity"]');
+    
+    // Altitude inputs
+    const minAltitude = document.querySelector('.popup-input-wrapper input[placeholder="Minimum"]');
+    const maxAltitude = document.querySelector('.popup-input-wrapper input[placeholder="Maximum"]');
+
+    // Set up input event listeners to clear optimization when params change
+    [batteryDuration, batteryQuantity, minAltitude, maxAltitude].forEach(input => {
+      if (input) {
+        input.addEventListener('input', () => {
+          this.clearOptimizedResults();
+        });
+      }
+    });
+  }
+
+  clearOptimizedResults() {
+    this.optimizedParams = null;
+  }
+
+  canOptimize() {
+    const coordinates = this.getSelectedCoordinates();
+    const batteryDuration = this.getBatteryDuration();
+    const batteryQuantity = this.getBatteryQuantity();
+
+    return coordinates && batteryDuration && batteryQuantity;
+  }
+
+  getSelectedCoordinates() {
+    // Get coordinates from the map
+    if (window.getSelectedCoordinates) {
+      return window.getSelectedCoordinates();
+    }
+    return null;
+  }
+
+  getBatteryDuration() {
+    const input = document.querySelector('.popup-input-wrapper input[placeholder="Duration"]');
+    return input ? parseInt(input.value) || null : null;
+  }
+
+  getBatteryQuantity() {
+    const input = document.querySelector('.popup-input-wrapper input[placeholder="Quantity"]');
+    return input ? parseInt(input.value) || null : null;
+  }
+
+  getMinAltitude() {
+    const input = document.querySelector('.popup-input-wrapper input[placeholder="Minimum"]');
+    return input ? parseFloat(input.value) || 120 : 120; // Default to 120ft
+  }
+
+  getMaxAltitude() {
+    const input = document.querySelector('.popup-input-wrapper input[placeholder="Maximum"]');
+    return input ? parseFloat(input.value) || null : null;
+  }
+
+  // Battery button click handler - this will be called by existing battery buttons
+  async handleBatteryClick(batteryNumber) {
+    console.log(`🔋 Battery ${batteryNumber} clicked`);
+    
+    // Check if we can optimize
+    if (!this.canOptimize()) {
+      this.showOptimizationError('Please select coordinates and enter battery parameters first');
+      return;
+    }
+    
+    // If not already optimized, optimize first
+    if (!this.optimizedParams) {
+      console.log('⚡ Optimizing flight path first...');
+      const success = await this.optimizeFlightPath();
+      if (!success) {
+        return; // Error already shown
+      }
+    }
+    
+    // Download the specific battery CSV
+    await this.downloadBatteryCSV(batteryNumber - 1); // Convert to 0-based index
+  }
+
+  async optimizeFlightPath() {
+    if (this.isOptimizing) return false;
+
+    this.isOptimizing = true;
+
+    try {
+      const coordinates = this.getSelectedCoordinates();
+      const batteryDuration = this.getBatteryDuration();
+      const batteryQuantity = this.getBatteryQuantity();
+
+      if (!coordinates || !batteryDuration || !batteryQuantity) {
+        throw new Error('Missing required parameters');
+      }
+
+      console.log('⚡ Optimizing flight path...', { 
+        batteryDuration, 
+        batteryQuantity, 
+        coordinates 
+      });
+
+      // Step 1: Optimize the spiral pattern
+      const optimizationResponse = await fetch(`${this.API_BASE}/api/optimize-spiral`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          batteryMinutes: batteryDuration,
+          batteries: batteryQuantity,
+          center: `${coordinates.lat}, ${coordinates.lng}`
+        })
+      });
+
+      if (!optimizationResponse.ok) {
+        throw new Error('Flight path optimization failed');
+      }
+
+      const optimizationData = await optimizationResponse.json();
+      
+      // Step 2: Get elevation data
+      const elevationResponse = await fetch(`${this.API_BASE}/api/elevation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          center: `${coordinates.lat}, ${coordinates.lng}`
+        })
+      });
+
+      let elevationFeet = null;
+      if (elevationResponse.ok) {
+        const elevationData = await elevationResponse.json();
+        elevationFeet = elevationData.elevation_feet;
+      }
+
+      // Store the optimized parameters
+      this.optimizedParams = {
+        ...optimizationData.optimized_params,
+        center: `${coordinates.lat}, ${coordinates.lng}`,
+        minHeight: this.getMinAltitude(),
+        maxHeight: this.getMaxAltitude(),
+        elevationFeet: elevationFeet
+      };
+
+      console.log('✅ Flight path optimized successfully:', this.optimizedParams);
+
+      // Show success message
+      this.showOptimizationSuccess();
+
+      return true;
+
+    } catch (error) {
+      console.error('❌ Flight path optimization failed:', error);
+      this.showOptimizationError(error.message);
+      return false;
+    } finally {
+      this.isOptimizing = false;
+    }
+  }
+
+
+
+  async downloadBatteryCSV(batteryIndex) {
+    if (!this.optimizedParams) return;
+
+    try {
+      const response = await fetch(`${this.API_BASE}/api/csv/battery/${batteryIndex + 1}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.optimizedParams)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate battery ${batteryIndex + 1} CSV`);
+      }
+
+      const csvText = await response.text();
+      this.downloadCSVFile(csvText, `battery-${batteryIndex + 1}-flight-plan.csv`);
+
+    } catch (error) {
+      console.error(`❌ Battery ${batteryIndex + 1} CSV download failed:`, error);
+      this.showDownloadError(`Failed to download battery ${batteryIndex + 1} CSV`);
+    }
+  }
+
+  downloadCSVFile(csvText, filename) {
+    const blob = new Blob([csvText], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+
+  showOptimizationSuccess() {
+    console.log('✅ Flight path optimized successfully!');
+    // You could add a toast notification here if desired
+  }
+
+  showOptimizationError(message) {
+    console.error('❌ Optimization error:', message);
+    alert(`Flight path optimization failed: ${message}`);
+  }
+
+  showDownloadError(message) {
+    console.error('❌ Download error:', message);
+    alert(`Download failed: ${message}`);
+  }
+}
+
+// Initialize the popup flight path integration
+let projectPopupFlightPath = null;
