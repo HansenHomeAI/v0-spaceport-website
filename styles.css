@@ -3364,6 +3364,11 @@ body.popup-open {
   margin-bottom: 0;
 }
 
+/* Add margin above the upload zone container in Property Upload section */
+.accordion-section[data-section="upload"] .category-outline:first-child {
+  margin-top: 16px;
+}
+
 .category-outline h4 {
   color: #fff;
   font-size: 1.2rem;
