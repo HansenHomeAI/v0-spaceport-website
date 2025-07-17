@@ -2853,17 +2853,75 @@ class ProjectPopupFlightPath {
       return;
     }
     
-    // If not already optimized, optimize first
-    if (!this.optimizedParams) {
-      console.log('⚡ Optimizing flight path first...');
-      const success = await this.optimizeFlightPath();
-      if (!success) {
-        return; // Error already shown
+    // Start loading state
+    this.setLoadingState(batteryNumber, true);
+    
+    try {
+      // If not already optimized, optimize first
+      if (!this.optimizedParams) {
+        console.log('⚡ Optimizing flight path first...');
+        const success = await this.optimizeFlightPath();
+        if (!success) {
+          return; // Error already shown
+        }
+      }
+      
+      // Download the specific battery CSV
+      await this.downloadBatteryCSV(batteryNumber - 1); // Convert to 0-based index
+    } finally {
+      // Always restore loading state
+      this.setLoadingState(batteryNumber, false);
+    }
+  }
+
+  // Set loading state for button and headline
+  setLoadingState(batteryNumber, isLoading) {
+    // Find the specific battery button
+    const buttons = document.querySelectorAll('.flight-path-download-btn');
+    const targetButton = Array.from(buttons).find(btn => 
+      btn.textContent.includes(`Battery ${batteryNumber}`)
+    );
+    
+    // Find the correct headline - specifically the Flight Paths section
+    const flightPathContainer = document.getElementById('flight-path-buttons');
+    const headline = flightPathContainer ? flightPathContainer.closest('.popup-section').querySelector('h4') : null;
+    
+    if (isLoading) {
+      // Set button loading state
+      if (targetButton) {
+        targetButton.classList.add('loading');
+        const icon = targetButton.querySelector('.download-icon');
+        if (icon) {
+          icon.classList.add('loading');
+        }
+      }
+      
+      // Update headline with progressive text changes
+      if (headline) {
+        headline.textContent = 'This may take a moment...';
+        
+        // Change to "Processing" after 3 seconds
+        setTimeout(() => {
+          if (headline && headline.textContent === 'This may take a moment...') {
+            headline.textContent = 'Processing';
+          }
+        }, 3000);
+      }
+    } else {
+      // Restore button normal state
+      if (targetButton) {
+        targetButton.classList.remove('loading');
+        const icon = targetButton.querySelector('.download-icon');
+        if (icon) {
+          icon.classList.remove('loading');
+        }
+      }
+      
+      // Restore headline
+      if (headline) {
+        headline.textContent = 'Flight Paths';
       }
     }
-    
-    // Download the specific battery CSV
-    await this.downloadBatteryCSV(batteryNumber - 1); // Convert to 0-based index
   }
 
   async optimizeFlightPath() {

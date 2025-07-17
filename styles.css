@@ -3715,6 +3715,16 @@ body.popup-open {
   transform: translateY(1px);
 }
 
+.flight-path-download-btn.loading {
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.flight-path-download-btn.loading:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .flight-path-download-btn .download-icon {
   width: 16px;
   height: 16px;
@@ -3729,6 +3739,19 @@ body.popup-open {
 
 .flight-path-download-btn:hover .download-icon {
   opacity: 1;
+}
+
+.flight-path-download-btn .download-icon.loading {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid rgba(255, 255, 255, 0.8);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Removed gradient border and text fade effects for cleaner appearance */
