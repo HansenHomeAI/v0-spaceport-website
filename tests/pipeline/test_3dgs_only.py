@@ -28,9 +28,12 @@ class GaussianOnlyTester:
         self.stepfunctions = boto3.client('stepfunctions', region_name=region)
         self.s3 = boto3.client('s3', region_name=region)
         
+        # Configuration for 3DGS-only test
+        # Using SfM output from successful execution 1095c89a-589c-41f1-ae57-0370343b941c
+        # This was from the GPS-enhanced OpenSfM run on 2025-07-15 with Battery-1.zip dataset
         self.config = {
             'lambda_function_name': 'Spaceport-StartMLJob',
-            'existing_sfm_data': "s3://spaceport-ml-pipeline/jobs/prod-validation-1750802934/colmap/",
+            'existing_sfm_data': "s3://spaceport-ml-processing/colmap/1095c89a-589c-41f1-ae57-0370343b941c/",
             'test_email': "test@spaceport.com"
         }
     
