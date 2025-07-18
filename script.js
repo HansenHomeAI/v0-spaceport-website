@@ -1494,11 +1494,14 @@ class EnhancedDronePathGenerator {
             filename = `battery-${batteryIndex + 1}`;
         }
 
-        // Add mission title to filename if available
-        const missionTitle = document.getElementById('missionTitle')?.value?.trim();
-        if (missionTitle) {
-            const safeTitle = missionTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
-            filename = `${safeTitle}-${filename}`;
+        // Add project title to filename if available
+        const projectTitle = document.getElementById('projectTitle')?.value?.trim();
+        if (projectTitle && projectTitle !== 'Untitled') {
+            const safeTitle = projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
+            filename = type === 'battery' ? `${safeTitle}-${batteryIndex + 1}` : `${safeTitle}`;
+        } else {
+            // Use "Untitled" for default case
+            filename = type === 'battery' ? `Untitled-${batteryIndex + 1}` : 'Untitled';
         }
 
         console.log(`Downloading ${type} CSV:`, { endpoint, requestBody });
@@ -3094,7 +3097,18 @@ class ProjectPopupFlightPath {
       }
 
       const csvText = await response.text();
-      this.downloadCSVFile(csvText, `battery-${batteryIndex + 1}-flight-plan.csv`);
+      
+      // Get project title for filename
+      const projectTitle = document.getElementById('projectTitle')?.value?.trim();
+      let filename;
+      if (projectTitle && projectTitle !== 'Untitled') {
+        const safeTitle = projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
+        filename = `${safeTitle}-${batteryIndex + 1}.csv`;
+      } else {
+        filename = `Untitled-${batteryIndex + 1}.csv`;
+      }
+      
+      this.downloadCSVFile(csvText, filename);
 
     } catch (error) {
       console.error(`❌ Battery ${batteryIndex + 1} CSV download failed:`, error);
