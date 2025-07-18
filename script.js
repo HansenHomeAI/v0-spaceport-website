@@ -679,16 +679,6 @@ function toggleAccordionSection(sectionId) {
   
   // Open the target section
   targetSection.classList.add('active');
-  
-  // Scroll to the top of the accordion when Property Upload is opened
-  if (sectionId === 'upload') {
-    setTimeout(() => {
-      targetSection.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
-      });
-    }, 300); // Longer delay to allow accordion animation to complete
-  }
 }
 
 // UPLOAD BUTTON PROGRESS FUNCTIONALITY
@@ -2390,22 +2380,14 @@ function updateAddressFieldWithCoordinates(lat, lng) {
   const addressInput = document.getElementById('address-search');
   if (!addressInput) return;
   
-  // Only update if the field is empty or contains placeholder text
-  const currentValue = addressInput.value.trim();
-  const placeholder = addressInput.placeholder;
+  // Always update the field with coordinates, replacing any existing text
+  const formattedLat = lat.toFixed(6);
+  const formattedLng = lng.toFixed(6);
   
-  if (currentValue === '' || currentValue === placeholder) {
-    // Format coordinates to 6 decimal places for precision
-    const formattedLat = lat.toFixed(6);
-    const formattedLng = lng.toFixed(6);
-    
-    // Update the input field with coordinates
-    addressInput.value = `${formattedLat}, ${formattedLng}`;
-    
-    console.log('Updated address field with coordinates:', { lat: formattedLat, lng: formattedLng });
-  } else {
-    console.log('Address field not empty, keeping existing value:', currentValue);
-  }
+  // Update the input field with coordinates
+  addressInput.value = `${formattedLat}, ${formattedLng}`;
+  
+  console.log('Updated address field with coordinates:', { lat: formattedLat, lng: formattedLng });
 }
 
 // Function to clear address field and restore placeholder
