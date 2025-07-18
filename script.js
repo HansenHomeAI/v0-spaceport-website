@@ -679,6 +679,21 @@ function toggleAccordionSection(sectionId) {
   
   // Open the target section
   targetSection.classList.add('active');
+  
+  // Scroll to the top of the accordion when Property Upload is opened
+  if (sectionId === 'upload') {
+    setTimeout(() => {
+      // Get the position of the target section
+      const rect = targetSection.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetPosition = rect.top + scrollTop - 20; // 20px offset from top
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }, 150); // Shorter delay to reduce jumpiness but still allow expansion
+  }
 }
 
 // UPLOAD BUTTON PROGRESS FUNCTIONALITY
