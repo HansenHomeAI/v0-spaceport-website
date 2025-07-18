@@ -2,7 +2,7 @@
 # Optimized for layer caching and build efficiency
 
 # Stage 1: Base environment with system dependencies
-FROM nvidia/cuda:11.8.0-devel-ubuntu22.04 AS base
+FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04 AS base
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Set CUDA environment variables early
 ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
 ENV CUDA_VISIBLE_DEVICES=all
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
