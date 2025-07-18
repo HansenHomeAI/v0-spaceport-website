@@ -1469,7 +1469,7 @@ class SpiralDesigner:
         
         # BOUNCE SPACING CONTROL: Define consistent expansion factor between bounces
         # This controls how much the radius increases between each bounce
-        bounce_expansion_factor = 1.4       # Each bounce is 40% farther than the previous
+        bounce_expansion_factor = 1.3       # Each bounce is 30% farther than the previous
         # Remove maximum radius constraint - let battery duration determine final radius
         
         # BALANCED SCALING: Optimize bounce count based on battery duration
@@ -1535,45 +1535,10 @@ class SpiralDesigner:
                         'battery_utilization': round((initial_time / target_battery_minutes) * 100, 1)
                     }
             
-            # BINARY SEARCH: Optimize expansion factor to utilize battery duration
+            # Use constant expansion factor of 1.3 - no optimization needed
             best_params = test_params.copy()
             best_time = initial_time
-            
-            # Search for optimal expansion factor
-            low_factor, high_factor = 1.2, 2.0  # Expansion factor range
-            tolerance = 0.01    # 1% tolerance for expansion factor
-            max_iterations = 15 # Performance limit
-            iterations = 0
-            
-            while high_factor - low_factor > tolerance and iterations < max_iterations:
-                iterations += 1
-                mid_factor = (low_factor + high_factor) / 2
-                
-                # Test current expansion factor
-                test_rHold = r0 * (mid_factor ** target_bounces)
-                test_params = {
-                    'slices': num_batteries,
-                    'N': target_bounces,
-                    'r0': r0,
-                    'rHold': test_rHold
-                }
-                
-                try:
-                    estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                    
-                    # Apply 5% safety margin (95% utilization maximum)
-                    if estimated_time <= target_battery_minutes * 0.95:
-                        # Configuration fits safely - try larger expansion factor
-                        best_params = test_params.copy()
-                        best_time = estimated_time
-                        low_factor = mid_factor
-                    else:
-                        # Too large - try smaller expansion factor
-                        high_factor = mid_factor
-                        
-                except Exception as e:
-                    print(f"Error estimating time for expansion factor {mid_factor:.2f}: {e}")
-                    high_factor = mid_factor  # Assume failure means too large
+            print(f"Using constant expansion factor: {bounce_expansion_factor} (30% increase per bounce)")
                     
         except Exception as e:
             print(f"Error in optimization: {e}")
@@ -1586,9 +1551,8 @@ class SpiralDesigner:
         
         # BONUS BOUNCE: Attempt to add one more bounce if significant headroom
         if best_params and best_time < target_battery_minutes * 0.85 and target_bounces < max_N:
-            # Calculate new radius with additional bounce using same expansion factor
-            current_expansion_factor = (best_params['rHold'] / best_params['r0']) ** (1.0 / target_bounces)
-            new_rHold = best_params['r0'] * (current_expansion_factor ** (target_bounces + 1))
+            # Calculate new radius with additional bounce using constant 1.3 expansion factor
+            new_rHold = best_params['r0'] * (bounce_expansion_factor ** (target_bounces + 1))
             
             test_params = {
                 'slices': num_batteries,
