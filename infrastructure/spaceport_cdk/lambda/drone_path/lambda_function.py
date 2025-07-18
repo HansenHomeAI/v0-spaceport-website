@@ -309,8 +309,23 @@ class SpiralDesigner:
         Returns:
             List of {x, y} points in feet relative to center
         """
-        # Calculate optimized expansion coefficient (14% reduction for denser coverage)
-        alpha = math.log(r_hold / r0) / (N * dphi) * 0.86  # ← NEURAL NETWORK OPTIMIZATION
+        # Calculate optimized expansion coefficient with adaptive scaling
+        # Base alpha calculation
+        base_alpha = math.log(r_hold / r0) / (N * dphi)
+        
+        # Adaptive scaling based on radius ratio to maintain consistent bounce spacing
+        radius_ratio = r_hold / r0
+        if radius_ratio > 40:  # For large radius ratios (like 10000/150 = 66.67)
+            # More aggressive reduction to prevent huge gaps between bounces
+            density_factor = 0.65  # Increased density for large patterns
+        elif radius_ratio > 25:  # Medium radius ratios
+            density_factor = 0.75  # Moderate density adjustment
+        else:  # Small radius ratios (original behavior)
+            density_factor = 0.86  # Original neural network optimization
+            
+        alpha = base_alpha * density_factor
+        
+        print(f"Spiral parameters: r0={r0}ft, r_hold={r_hold}ft, ratio={radius_ratio:.1f}, density_factor={density_factor:.2f}")
         
         # Time parameters
         t_out = N * dphi          # Time to complete outward spiral
