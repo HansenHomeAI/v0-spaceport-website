@@ -27,3 +27,10 @@ Build trigger updated: 2025-07-16-FIX-PIP-INDEX-ISSUE
 - Removed PyTorch packages from requirements_optimized.txt (installed in Dockerfile)
 - Other packages (boto3, etc.) now use default PyPI index
 - This fixes the "boto3 not found" error from PyTorch CUDA index
+
+Build trigger updated: 2025-07-17-ADD-ECS-GPU-LABEL
+- Added ECS GPU capability label to Dockerfile
+- This is the DEFINITIVE FIX for SageMaker GPU detection
+- SageMaker will now mount /dev/nvidia* devices
+- PyTorch will now see CUDA available: True
+- GPU training will now be GUARANTEED

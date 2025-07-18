@@ -24,7 +24,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     cmake \
-    nvidia-cuda-toolkit \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -72,6 +71,9 @@ ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
 # Stage 4: Final runtime image
 FROM app-build AS runtime
+
+# CRITICAL: Add ECS GPU capability label for SageMaker
+LABEL com.amazonaws.ecs.capability.gpu="true"
 
 # Reinforce CUDA environment variables for runtime
 ENV NVIDIA_VISIBLE_DEVICES=all
