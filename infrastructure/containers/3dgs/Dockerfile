@@ -24,7 +24,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     cmake \
-    nvidia-cuda-toolkit \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
