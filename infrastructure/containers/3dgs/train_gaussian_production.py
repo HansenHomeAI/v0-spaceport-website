@@ -31,6 +31,7 @@ from torch.utils.data import DataLoader
 import yaml
 from tqdm import tqdm
 from plyfile import PlyData, PlyElement
+import subprocess
 
 # Configure production logging
 logging.basicConfig(
@@ -104,7 +105,19 @@ class Trainer:
         logger.info(f"💾 GPU Memory: {gpu_memory_gb:.1f} GB")
         logger.info(f"🔧 CUDA capability: {gpu_props.major}.{gpu_props.minor}")
         
-        # Step 5: Test GPU functionality
+        # Step 5: Log nvidia-smi for definitive proof
+        try:
+            nvidia_smi_output = subprocess.run(
+                ['nvidia-smi', '--query-gpu=name,driver_version,power.draw,utilization.gpu,memory.total,memory.used,memory.free', '--format=csv,noheader'],
+                capture_output=True, text=True, check=True
+            ).stdout.strip()
+            logger.info(f"✅ nvidia-smi check: PASSED")
+            logger.info(f"🖥️  GPU Details: {nvidia_smi_output}")
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            logger.error(f"❌ nvidia-smi check FAILED: {e}")
+            logger.warning(" nvidia-smi not found or failed. This is a strong indicator of a driver/path issue.")
+
+        # Step 6: Test GPU functionality with a tensor operation
         try:
             # Create test tensor on GPU
             test_tensor = torch.randn(1000, 1000, device=device)
@@ -115,10 +128,9 @@ class Trainer:
             logger.error(f"❌ GPU functionality test FAILED: {e}")
             raise RuntimeError(f"GPU functionality test failed: {e}")
         
-        # Step 6: Initialize CUDA context for training
+        # Step 7: Initialize CUDA context for training
         torch.cuda.empty_cache()
         torch.backends.cudnn.enabled = True
-        torch.backends.cudnn.benchmark = True
         
         logger.info("✅ GPU INITIALIZATION COMPLETE")
         logger.info("🚀 Ready for GPU-accelerated 3D Gaussian Splatting training")
