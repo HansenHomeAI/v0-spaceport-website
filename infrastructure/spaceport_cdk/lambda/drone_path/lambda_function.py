@@ -1465,8 +1465,12 @@ class SpiralDesigner:
         """
         # Define parameter constraints for safety and practicality
         min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
-        min_rHold, max_rHold = 200.0, 10000.0  # Hold radius range (feet) - EXPANDED MAX
         min_N, max_N = 3, 12               # Bounce count range
+        
+        # BOUNCE SPACING CONTROL: Define consistent expansion factor between bounces
+        # This controls how much the radius increases between each bounce
+        bounce_expansion_factor = 1.4       # Each bounce is 40% farther than the previous
+        # Remove maximum radius constraint - let battery duration determine final radius
         
         # BALANCED SCALING: Optimize bounce count based on battery duration
         # This approach prioritizes pattern quality over raw coverage area
@@ -1484,88 +1488,119 @@ class SpiralDesigner:
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
         
-        # Initialize base parameters with scaled bounce count
+        # Calculate hold radius based on bounce expansion factor and target bounces
+        # This ensures consistent bounce spacing regardless of overall scale
+        r0 = 150.0  # Standard start radius
+        calculated_rHold = r0 * (bounce_expansion_factor ** target_bounces)
+        
+        # Initialize base parameters with calculated radius
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
-            'r0': 150.0  # Standard start radius for balanced patterns
+            'r0': r0,
+            'rHold': calculated_rHold
         }
         
-        print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
+        print(f"Optimizing for {target_battery_minutes}min battery: {target_bounces} bounces")
+        print(f"Calculated radius: {r0}ft → {calculated_rHold:.0f}ft (expansion factor: {bounce_expansion_factor})")
         
-        # Feasibility check: Test if minimum parameters can fit
+        # Test if this configuration fits within battery duration
         test_params = base_params.copy()
-        test_params['rHold'] = min_rHold
         
         try:
-            min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-            if min_time > target_battery_minutes:
-                # Minimum spiral too large - reduce bounces and retry
-                reduced_bounces = max(min_N, target_bounces - 2)
-                print(f"Minimum spiral too large, reducing bounces from {target_bounces} to {reduced_bounces}")
-                base_params['N'] = reduced_bounces
-                target_bounces = reduced_bounces
+            initial_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+            
+            if initial_time > target_battery_minutes:
+                # Pattern too large - reduce bounces
+                while target_bounces > min_N and initial_time > target_battery_minutes:
+                    target_bounces -= 1
+                    calculated_rHold = r0 * (bounce_expansion_factor ** target_bounces)
+                    test_params = {
+                        'slices': num_batteries,
+                        'N': target_bounces,
+                        'r0': r0,
+                        'rHold': calculated_rHold
+                    }
+                    initial_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+                    print(f"Reduced to {target_bounces} bounces, radius: {calculated_rHold:.0f}ft, time: {initial_time:.1f}min")
                 
-                test_params = base_params.copy()
-                test_params['rHold'] = min_rHold
-                min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                
-                if min_time > target_battery_minutes:
-                    # Still too large - return absolute minimum configuration
+                if initial_time > target_battery_minutes:
+                    # Still too large - return minimum configuration
                     return {
                         'slices': num_batteries,
                         'N': min_N,
                         'r0': 100.0,
-                        'rHold': min_rHold,
-                        'estimated_time_minutes': min_time,
-                        'battery_utilization': round((min_time / target_battery_minutes) * 100, 1)
+                        'rHold': 100.0 * (bounce_expansion_factor ** min_N),
+                        'estimated_time_minutes': initial_time,
+                        'battery_utilization': round((initial_time / target_battery_minutes) * 100, 1)
                     }
-        except Exception as e:
-            print(f"Error testing minimum parameters: {e}")
-        
-        # BINARY SEARCH: Optimize hold radius with fixed bounce count
-        best_params = None
-        best_time = 0.0
-        
-        low, high = min_rHold, max_rHold
-        tolerance = 10.0        # 10ft tolerance for practical purposes
-        max_iterations = 20     # Performance limit
-        iterations = 0
-        
-        while high - low > tolerance and iterations < max_iterations:
-            iterations += 1
-            mid_rHold = (low + high) / 2
             
-            # Test current radius with FIXED bounce count
-            test_params = base_params.copy()
-            test_params['rHold'] = mid_rHold
+            # BINARY SEARCH: Optimize expansion factor to utilize battery duration
+            best_params = test_params.copy()
+            best_time = initial_time
             
-            try:
-                estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+            # Search for optimal expansion factor
+            low_factor, high_factor = 1.2, 2.0  # Expansion factor range
+            tolerance = 0.01    # 1% tolerance for expansion factor
+            max_iterations = 15 # Performance limit
+            iterations = 0
+            
+            while high_factor - low_factor > tolerance and iterations < max_iterations:
+                iterations += 1
+                mid_factor = (low_factor + high_factor) / 2
                 
-                # Apply 5% safety margin (95% utilization maximum)
-                if estimated_time <= target_battery_minutes * 0.95:
-                    # Configuration fits safely - try larger radius
-                    best_params = test_params.copy()
-                    best_time = estimated_time
-                    low = mid_rHold
-                else:
-                    # Too large - try smaller radius
-                    high = mid_rHold
+                # Test current expansion factor
+                test_rHold = r0 * (mid_factor ** target_bounces)
+                test_params = {
+                    'slices': num_batteries,
+                    'N': target_bounces,
+                    'r0': r0,
+                    'rHold': test_rHold
+                }
+                
+                try:
+                    estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
                     
-            except Exception as e:
-                print(f"Error estimating time for rHold={mid_rHold}: {e}")
-                high = mid_rHold  # Assume failure means too large
+                    # Apply 5% safety margin (95% utilization maximum)
+                    if estimated_time <= target_battery_minutes * 0.95:
+                        # Configuration fits safely - try larger expansion factor
+                        best_params = test_params.copy()
+                        best_time = estimated_time
+                        low_factor = mid_factor
+                    else:
+                        # Too large - try smaller expansion factor
+                        high_factor = mid_factor
+                        
+                except Exception as e:
+                    print(f"Error estimating time for expansion factor {mid_factor:.2f}: {e}")
+                    high_factor = mid_factor  # Assume failure means too large
+                    
+        except Exception as e:
+            print(f"Error in optimization: {e}")
+            # Return default configuration
+            best_params = base_params.copy()
+            try:
+                best_time = self.estimate_flight_time_minutes(best_params, center_lat, center_lon)
+            except:
+                best_time = target_battery_minutes * 1.2
         
         # BONUS BOUNCE: Attempt to add one more bounce if significant headroom
         if best_params and best_time < target_battery_minutes * 0.85 and target_bounces < max_N:
-            test_params = best_params.copy()
-            test_params['N'] = target_bounces + 1
+            # Calculate new radius with additional bounce using same expansion factor
+            current_expansion_factor = (best_params['rHold'] / best_params['r0']) ** (1.0 / target_bounces)
+            new_rHold = best_params['r0'] * (current_expansion_factor ** (target_bounces + 1))
+            
+            test_params = {
+                'slices': num_batteries,
+                'N': target_bounces + 1,
+                'r0': best_params['r0'],
+                'rHold': new_rHold
+            }
             
             try:
                 estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
                 if estimated_time <= target_battery_minutes * 0.95:
-                    print(f"Adding bonus bounce: {target_bounces} → {target_bounces + 1}")
+                    print(f"Adding bonus bounce: {target_bounces} → {target_bounces + 1} (radius: {new_rHold:.0f}ft)")
                     best_params = test_params.copy()
                     best_time = estimated_time
             except:
