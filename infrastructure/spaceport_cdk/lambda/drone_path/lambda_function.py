@@ -1465,7 +1465,7 @@ class SpiralDesigner:
         """
         # Define parameter constraints for safety and practicality
         min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
-        min_rHold, max_rHold = 200.0, 4000.0  # Hold radius range (feet)
+        min_rHold, max_rHold = 200.0, 10000.0  # Hold radius range (feet) - EXPANDED MAX
         min_N, max_N = 3, 12               # Bounce count range
         
         # BALANCED SCALING: Optimize bounce count based on battery duration
