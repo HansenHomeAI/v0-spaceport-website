@@ -683,16 +683,11 @@ function toggleAccordionSection(sectionId) {
   // Scroll to the top of the accordion when Property Upload is opened
   if (sectionId === 'upload') {
     setTimeout(() => {
-      // Get the position of the target section
-      const rect = targetSection.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const targetPosition = rect.top + scrollTop - 20; // 20px offset from top
-      
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
+      targetSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
       });
-    }, 150); // Shorter delay to reduce jumpiness but still allow expansion
+    }, 300); // Longer delay to allow accordion animation to complete
   }
 }
 
