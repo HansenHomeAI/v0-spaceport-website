@@ -1490,56 +1490,38 @@ class SpiralDesigner:
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
         
-        # Calculate hold radius based on bounce expansion factor and target bounces
-        # This ensures consistent bounce spacing regardless of overall scale
+        # Initialize base parameters for optimization
         r0 = 150.0  # Standard start radius
-        calculated_rHold = r0 * (bounce_expansion_factor ** target_bounces)
-        
-        # Initialize base parameters with calculated radius
-        base_params = {
-            'slices': num_batteries,
-            'N': target_bounces,
-            'r0': r0,
-            'rHold': calculated_rHold
-        }
         
         print(f"Optimizing for {target_battery_minutes}min battery: {target_bounces} bounces")
-        print(f"Calculated radius: {r0}ft → {calculated_rHold:.0f}ft (expansion factor: {bounce_expansion_factor})")
         
-        # Test if this configuration fits within battery duration
-        test_params = base_params.copy()
+        # BINARY SEARCH: Find optimal expansion factor to match target battery duration
+        # Start with full range to ensure we can reach the target duration
+        best_params = None
+        best_time = 0
         
         try:
-            initial_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+            # First, test if maximum expansion factor can reach target duration
+            max_test_rHold = r0 * (max_expansion_factor ** target_bounces)
+            max_test_params = {
+                'slices': num_batteries,
+                'N': target_bounces,
+                'r0': r0,
+                'rHold': max_test_rHold
+            }
             
-            if initial_time > target_battery_minutes:
-                # Pattern too large - reduce bounces
-                while target_bounces > min_N and initial_time > target_battery_minutes:
-                    target_bounces -= 1
-                    calculated_rHold = r0 * (bounce_expansion_factor ** target_bounces)
-                    test_params = {
-                        'slices': num_batteries,
-                        'N': target_bounces,
-                        'r0': r0,
-                        'rHold': calculated_rHold
-                    }
-                    initial_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                    print(f"Reduced to {target_bounces} bounces, radius: {calculated_rHold:.0f}ft, time: {initial_time:.1f}min")
-                
-                if initial_time > target_battery_minutes:
-                    # Still too large - return minimum configuration
-                    return {
-                        'slices': num_batteries,
-                        'N': min_N,
-                        'r0': 100.0,
-                        'rHold': 100.0 * (bounce_expansion_factor ** min_N),
-                        'estimated_time_minutes': initial_time,
-                        'battery_utilization': round((initial_time / target_battery_minutes) * 100, 1)
-                    }
+            max_time = self.estimate_flight_time_minutes(max_test_params, center_lat, center_lon)
+            print(f"Max expansion factor {max_expansion_factor} test: {max_time:.1f}min (target: {target_battery_minutes}min)")
             
-            # BINARY SEARCH: Optimize expansion factor to utilize battery duration
-            best_params = test_params.copy()
-            best_time = initial_time
+            if max_time < target_battery_minutes * 0.85:
+                # Even maximum expansion factor is too small - increase bounce count
+                while target_bounces < max_N and max_time < target_battery_minutes * 0.95:
+                    target_bounces += 1
+                    max_test_rHold = r0 * (max_expansion_factor ** target_bounces)
+                    max_test_params['N'] = target_bounces
+                    max_test_params['rHold'] = max_test_rHold
+                    max_time = self.estimate_flight_time_minutes(max_test_params, center_lat, center_lon)
+                    print(f"Increased bounces to {target_bounces}, time: {max_time:.1f}min")
             
             # Search for optimal expansion factor
             low_factor, high_factor = min_expansion_factor, max_expansion_factor  # Search range: 1.1 to 1.5
@@ -1563,7 +1545,7 @@ class SpiralDesigner:
                 try:
                     estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
                     
-                    # Apply 5% safety margin (95% utilization maximum)
+                    # Target 95% utilization for optimal battery usage
                     if estimated_time <= target_battery_minutes * 0.95:
                         # Configuration fits safely - try larger expansion factor
                         best_params = test_params.copy()
@@ -1579,15 +1561,21 @@ class SpiralDesigner:
                     
         except Exception as e:
             print(f"Error in optimization: {e}")
-            # Return default configuration
-            best_params = base_params.copy()
+            # Return default configuration with mid-range expansion factor
+            default_expansion_factor = (min_expansion_factor + max_expansion_factor) / 2  # 1.3
+            best_params = {
+                'slices': num_batteries,
+                'N': target_bounces,
+                'r0': r0,
+                'rHold': r0 * (default_expansion_factor ** target_bounces)
+            }
             try:
                 best_time = self.estimate_flight_time_minutes(best_params, center_lat, center_lon)
             except:
                 best_time = target_battery_minutes * 1.2
         
-        # BONUS BOUNCE: Attempt to add one more bounce if significant headroom
-        if best_params and best_time < target_battery_minutes * 0.85 and target_bounces < max_N:
+        # BONUS BOUNCE: Attempt to add one more bounce if under 90% utilization
+        if best_params and best_time < target_battery_minutes * 0.90 and target_bounces < max_N:
             # Calculate new radius with additional bounce using same expansion factor
             current_expansion_factor = (best_params['rHold'] / best_params['r0']) ** (1.0 / target_bounces)
             new_rHold = best_params['r0'] * (current_expansion_factor ** (target_bounces + 1))
@@ -1610,11 +1598,13 @@ class SpiralDesigner:
         
         # Final safety check: Ensure we have valid parameters
         if not best_params:
+            # Use minimum expansion factor as fallback
+            fallback_expansion_factor = min_expansion_factor  # 1.1
             best_params = {
                 'slices': num_batteries,
                 'N': target_bounces,
-                'r0': 150.0,
-                'rHold': min_rHold
+                'r0': r0,
+                'rHold': r0 * (fallback_expansion_factor ** target_bounces)
             }
             try:
                 best_time = self.estimate_flight_time_minutes(best_params, center_lat, center_lon)
