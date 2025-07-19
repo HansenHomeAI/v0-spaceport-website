@@ -34,7 +34,7 @@ COPY progressive_config.yaml /opt/ml/code/
 # ----------------------------------------------------------------------------
 # 4. SageMaker entry point
 # ----------------------------------------------------------------------------
-ENV SAGEMAKER_PROGRAM=train_gaussian_production.py
+ENV SAGEMAKER_PROGRAM=/opt/ml/code/train_gaussian_production.py
 
 # ----------------------------------------------------------------------------
 # 5.  Runtime configuration
@@ -48,4 +48,4 @@ ENV SM_MODEL_DIR=/opt/ml/model \
 # ----------------------------------------------------------------------------
 # 6.  Entrypoint – launch the real training script
 # ----------------------------------------------------------------------------
-ENTRYPOINT ["python3", "train_gaussian_production.py"] 
+ENTRYPOINT ["python3", "/opt/ml/code/train_gaussian_production.py"] 
