@@ -145,23 +145,24 @@ class OpenSfMGPSPipeline:
     def create_opensfm_config(self) -> None:
         """Create OpenSfM configuration file"""
         config = {
-            # Feature extraction - Tuned for sparser, higher-quality features
+            # Feature extraction
             'feature_type': 'SIFT',
-            'feature_process_size': 2048,
-            'feature_max_num_features': 8000,      # Reduced from 20000
-            'sift_peak_threshold': 0.01,           # Increased from 0.006
-
-            # Matching - Stricter requirements for more robust tracks
-            'matching_gps_neighbors': 20,          # Reduced from 30
-            'matching_gps_distance': 150,          # Reduced from 300
-            'matching_graph_rounds': 50,           # Reduced from 80
-            'robust_matching_min_match': 15,       # Increased from 8
-
-            # Reconstruction - Enforce higher quality point triangulation
-            'min_ray_angle_degrees': 1.5,          # Increased from 1.0
-            'reconstruction_min_ratio': 0.8,       # Increased from 0.6
-            'triangulation_min_ray_angle_degrees': 1.5, # Increased from 1.0
-
+            'feature_process_size': 2048,          # High-res processing for drone images
+            'feature_max_num_features': 20000,     # Allow dense feature extraction
+            'feature_min_frames': 4000,            # Lower floor so images with fewer features are still accepted
+            'sift_peak_threshold': 0.006,          # Lower threshold → more features in low-texture areas
+            
+            # Matching
+            'matching_gps_neighbors': 30,          # More temporal neighbors
+            'matching_gps_distance': 300,          # Allow matches up to 300 m apart
+            'matching_graph_rounds': 80,           # More graph refinement rounds
+            'robust_matching_min_match': 8,        # Relax minimum matches to keep difficult pairs
+            
+            # Reconstruction
+            'min_ray_angle_degrees': 1.0,          # Allow shallower angles → more points
+            'reconstruction_min_ratio': 0.6,       # Allow more images even with fewer inliers
+            'triangulation_min_ray_angle_degrees': 1.0,
+            
             # GPS integration
             'use_altitude_tag': True,
             'gps_accuracy': 5.0,
