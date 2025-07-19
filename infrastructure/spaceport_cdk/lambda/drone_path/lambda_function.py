@@ -317,17 +317,17 @@ class SpiralDesigner:
         base_alpha = math.log(r_hold / r0) / (N * dphi)
         radius_ratio = r_hold / r0
         
-        # GOLDILOCKS OPTIMIZATION: Balanced initial and outer spacing
+        # AGGRESSIVE ORIGINAL EXPANSION: Restore early aggressive settings for 4000ft in 11min
         if radius_ratio > 100:  # Very large spirals (>100x expansion)
-            density_factor = 0.72  # 28% reduction for balanced spacing
+            density_factor = 0.35  # 65% reduction for very dense coverage
         elif radius_ratio > 50:   # Large spirals (50-100x expansion)
-            density_factor = 0.78  # 22% reduction for balanced spacing
+            density_factor = 0.45  # 55% reduction for dense coverage
         elif radius_ratio > 20:   # Medium-large spiral (20-50x expansion) 
-            density_factor = 0.82  # 18% reduction for balanced spacing
+            density_factor = 0.55  # 45% reduction for good coverage
         elif radius_ratio > 10:   # Medium spiral (10-20x expansion)
-            density_factor = 0.85  # 15% reduction for balanced spacing
+            density_factor = 0.70  # 30% reduction for moderate coverage
         else:  # Small spiral (<10x expansion)
-            density_factor = 0.88  # 12% reduction for balanced spacing
+            density_factor = 0.86  # 14% reduction (original aggressive settings)
         
         alpha = base_alpha * density_factor
         print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
@@ -1486,26 +1486,26 @@ class SpiralDesigner:
         # Define parameter constraints for safety and practicality
         min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
         min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - INCREASED for unlimited scaling
-        min_N, max_N = 3, 15               # Bounce count range - INCREASED for better coverage
+        min_N, max_N = 3, 15               # Bounce count range - OPTIMIZED for distance balance
         
-        # REFINED BOUNCE SCALING: Slightly fewer bounces for better spacing
-        # Optimized for wider initial gaps with excellent coverage
+        # ORIGINAL AGGRESSIVE BOUNCE SCALING: Restore settings that achieved 4000ft in 11min
+        # Based on early conversation settings that were working
         if target_battery_minutes <= 10:
-            target_bounces = 7   # Reduced by 1 for better spacing
+            target_bounces = 7   # Original aggressive settings
         elif target_battery_minutes <= 12:
-            target_bounces = 8   # Reduced by 1 for better spacing
+            target_bounces = 8   # Original aggressive settings  
         elif target_battery_minutes <= 15:
-            target_bounces = 9   # Reduced by 1 for better spacing
+            target_bounces = 10  # Original aggressive settings
         elif target_battery_minutes <= 18:
-            target_bounces = 10  # Reduced by 1 for better spacing
+            target_bounces = 11  # Original aggressive settings
         elif target_battery_minutes <= 25:
-            target_bounces = 11  # Reduced by 1 for better spacing
+            target_bounces = 12  # Original aggressive settings
         elif target_battery_minutes <= 35:
-            target_bounces = 13  # Reduced by 1 for better spacing
+            target_bounces = 14  # Original aggressive settings
         elif target_battery_minutes <= 45:
-            target_bounces = 14  # Reduced by 1 for better spacing
+            target_bounces = 15  # Original aggressive settings
         else:
-            target_bounces = 14  # Reduced by 1 for better spacing
+            target_bounces = 15  # Maximum for very long duration flights
         
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
@@ -1514,7 +1514,7 @@ class SpiralDesigner:
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
-            'r0': 200.0  # Optimized start radius for balance of detail and initial spacing
+            'r0': 200.0  # Original start radius for proper expansion scaling
         }
         
         print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
