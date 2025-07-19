@@ -1514,7 +1514,7 @@ class SpiralDesigner:
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
-            'r0': 400.0  # Larger start radius for naturally bigger initial bounce spacing
+            'r0': 250.0  # Increased start radius for better initial bounce spacing
         }
         
         print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
