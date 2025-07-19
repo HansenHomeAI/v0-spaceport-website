@@ -1465,8 +1465,8 @@ class SpiralDesigner:
         """
         # Define parameter constraints for safety and practicality
         min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
-        min_rHold, max_rHold = 200.0, 4000.0  # Hold radius range (feet)
-        min_N, max_N = 3, 12               # Bounce count range
+        min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - INCREASED for unlimited scaling
+        min_N, max_N = 3, 15               # Bounce count range - INCREASED for better coverage
         
         # BALANCED SCALING: Optimize bounce count based on battery duration
         # This approach prioritizes pattern quality over raw coverage area
@@ -1478,8 +1478,12 @@ class SpiralDesigner:
             target_bounces = 8
         elif target_battery_minutes <= 35:
             target_bounces = 10
-        else:
+        elif target_battery_minutes <= 45:
             target_bounces = 12
+        elif target_battery_minutes <= 60:
+            target_bounces = 14
+        else:
+            target_bounces = 15  # Maximum for very long duration flights
         
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
@@ -1528,8 +1532,8 @@ class SpiralDesigner:
         best_time = 0.0
         
         low, high = min_rHold, max_rHold
-        tolerance = 10.0        # 10ft tolerance for practical purposes
-        max_iterations = 20     # Performance limit
+        tolerance = 25.0        # 25ft tolerance for large-scale optimization
+        max_iterations = 30     # Increased iterations for large radius ranges
         iterations = 0
         
         while high - low > tolerance and iterations < max_iterations:
