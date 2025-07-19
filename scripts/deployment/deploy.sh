@@ -67,6 +67,10 @@ cache_base_images() {
 login_ecr() {
   log "Authenticating with AWS ECR..."
   aws ecr get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+  
+  log "Authenticating with SageMaker ECR registry..."
+  aws ecr get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin "763104351884.dkr.ecr.${AWS_REGION}.amazonaws.com"
+  
   log "ECR login successful."
 }
 
