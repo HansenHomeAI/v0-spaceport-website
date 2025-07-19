@@ -1,7 +1,7 @@
 # ---- Spaceport 3DGS Training Container ---------------------------------------
 # Re-base on AWS SageMaker's official PyTorch GPU image so the driver mount
 # logic is guaranteed to work.  CUDA 11.8 → compatible with ml.g4dn.xlarge.
-FROM public.ecr.aws/pytorch/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
+FROM public.ecr.aws/deeplearning-containers/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
 # ----------------------------------------------------------------------------
 # 1. Install CUDA development tools for compiling extensions (gsplat, etc.)
