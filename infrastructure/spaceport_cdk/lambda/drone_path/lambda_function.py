@@ -315,6 +315,11 @@ class SpiralDesigner:
         
         # Calculate base parameters
         base_alpha = math.log(r_hold / r0) / (N * dphi)
+        
+        # INITIAL SPACING ENHANCEMENT: Double the initial bounce spacing
+        INITIAL_SPACING_MULTIPLIER = 2.0  # Double the gaps between bounces
+        enhanced_alpha = base_alpha * INITIAL_SPACING_MULTIPLIER
+        
         radius_ratio = r_hold / r0
         
         # GOLDILOCKS OPTIMIZATION: Balanced initial and outer spacing
@@ -329,8 +334,8 @@ class SpiralDesigner:
         else:  # Small spiral (<10x expansion)
             density_factor = 0.88  # 12% reduction for balanced spacing
         
-        alpha = base_alpha * density_factor
-        print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
+        alpha = enhanced_alpha * density_factor
+        print(f"🎯 Spacing optimization: radius_ratio={radius_ratio:.1f}, spacing_multiplier={INITIAL_SPACING_MULTIPLIER}x, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
         
         # Time parameters
         t_out = N * dphi          # Time to complete outward spiral
@@ -1514,7 +1519,7 @@ class SpiralDesigner:
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
-            'r0': 250.0  # Increased start radius for better initial bounce spacing
+            'r0': 200.0  # Optimized start radius for balanced initial spacing
         }
         
         print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
