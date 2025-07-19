@@ -317,17 +317,17 @@ class SpiralDesigner:
         base_alpha = math.log(r_hold / r0) / (N * dphi)
         radius_ratio = r_hold / r0
         
-        # OPTIMIZED DENSITY + UTILIZATION BALANCE: Fine-tuned for 90%+ utilization
+        # FLATTER CURVE OPTIMIZATION: Reduced alpha reduction for more bounces
         if radius_ratio > 100:  # Very large spirals (>100x expansion)
-            density_factor = 0.65  # 35% reduction for good density + high utilization
+            density_factor = 0.75  # 25% reduction (reduced from 35% for flatter curve)
         elif radius_ratio > 50:   # Large spirals (50-100x expansion)
-            density_factor = 0.70  # 30% reduction for balanced performance
+            density_factor = 0.80  # 20% reduction (reduced from 30% for flatter curve)
         elif radius_ratio > 20:   # Medium-large spiral (20-50x expansion) 
-            density_factor = 0.75  # 25% reduction for good coverage
+            density_factor = 0.85  # 15% reduction (reduced from 25% for flatter curve)
         elif radius_ratio > 10:   # Medium spiral (10-20x expansion)
-            density_factor = 0.80  # 20% reduction for moderate coverage
+            density_factor = 0.88  # 12% reduction (reduced from 20% for flatter curve)
         else:  # Small spiral (<10x expansion)
-            density_factor = 0.86  # 14% reduction (original)
+            density_factor = 0.90  # 10% reduction (reduced from 14% for flatter curve)
         
         alpha = base_alpha * density_factor
         print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
@@ -1488,22 +1488,24 @@ class SpiralDesigner:
         min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - INCREASED for unlimited scaling
         min_N, max_N = 3, 15               # Bounce count range - INCREASED for better coverage
         
-        # ENHANCED BOUNCE SCALING: Aggressive bounce count increase for density
-        # This approach prioritizes bounce density for large spirals
-        if target_battery_minutes <= 12:
-            target_bounces = 6   # Increased from 5
+        # OPTIMIZED BOUNCE SCALING: Higher bounce counts for better coverage at all levels
+        # Focus on increasing short flight bounce counts as requested
+        if target_battery_minutes <= 10:
+            target_bounces = 8   # Increased from 6 for better short flight coverage
+        elif target_battery_minutes <= 12:
+            target_bounces = 9   # Increased from 6 for better short flight coverage
+        elif target_battery_minutes <= 15:
+            target_bounces = 10  # Increased from 8 for better medium flight coverage
         elif target_battery_minutes <= 18:
-            target_bounces = 8   # Increased from 6
+            target_bounces = 11  # Increased from 8 for better medium flight coverage
         elif target_battery_minutes <= 25:
-            target_bounces = 11  # Increased from 9 for much better density
+            target_bounces = 12  # Increased from 11 for excellent coverage
         elif target_battery_minutes <= 35:
-            target_bounces = 14  # Increased from 12 for better density
+            target_bounces = 14  # Maintained for comprehensive coverage
         elif target_battery_minutes <= 45:
             target_bounces = 15  # Maximum for very long duration flights
-        elif target_battery_minutes <= 60:
-            target_bounces = 15  # Maximum for very long duration flights
         else:
-            target_bounces = 15  # Maximum for very long duration flights
+            target_bounces = 15  # Maximum for ultra-long duration flights
         
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
