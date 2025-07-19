@@ -1,5 +1,39 @@
 # 🚀 Spaceport ML Pipeline - Current Status & Production Readiness Analysis
 
+## 🆕 2025-07-19 UPDATE – GPU Enablement & 3DGS Training SUCCESS ✅
+**What changed?**
+1. Rebased `spaceport/3dgs` container on the official SageMaker PyTorch 2.0.1 + CUDA 11.8 image and added build tools (`cmake`, `ninja`, `git`).
+2. Added ECR login to SageMaker private registry in `deploy.sh` to pull the base image during CodeBuild.
+3. Fixed runtime paths (`/opt/ml/code/…`) for `train_gaussian_production.py` and `progressive_config.yaml`.
+4. Injected definitive GPU diagnostics (`torch.cuda.is_available`, `nvidia-smi`) into the trainer.
+
+**Outcome of validation run** `ml-job-20250719-062839-793d168c-3dgs`
+- CUDA available **True**; GPU **Tesla T4** detected and functional.
+- Training executed **8 800 iterations** (~15 min wall clock).
+- Initial sparse reconstruction points: **248 093**.
+- PSNR plateaued at **≈ 54 dB**; early-stop triggered ( `PSNR_PLATEAU_TERMINATION=True` ).
+- Densification analysis every 100 iters found **0 gradients above threshold** ⇒ no splits/clones; Gaussian count remained constant.
+- Model artifact written: **35 MB** `model.tar.gz` in S3 (`3dgs/793d168c-…`).
+
+### Immediate Lessons
+1. **GPU pipeline is now fully operational** – infrastructure issue solved.
+2. **Quality is bottlenecked by hyper-params, not infrastructure**:
+   • Very high initial PSNR means gradients ≈ 0 → densification never fires.
+   • Early termination after ~14 min prevents deeper convergence.
+3. **Step-Functions monitor bug fixed** (job now truly `Completed`).
+
+### Next-Step Tuning Roadmap
+| Area | Current | Recommended tweak |
+|------|---------|-------------------|
+| Early stop | `TARGET_PSNR 30 dB`, plateau termination 1 000 iters | Raise target to > 60 dB **or** disable plateau termination to allow full 30 k iters |
+| Densification | grad thr = 2e-4, percent_dense = 0.01 | Lower threshold to 1e-5; increase percent_dense to 0.05 |
+| Progressive res/blur | disabled | Re-enable for coarse-to-fine growth |
+| Initial Gaussians | full sparse cloud (248 k) | Random subsample to ~30 k then let densification grow |
+
+> See *“Tuning Plan – July 2025”* at the bottom of this file for a detailed checklist.
+
+---
+
 ## 📊 Current Pipeline Status
 
 ### ✅ **Infrastructure & Architecture**
