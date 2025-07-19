@@ -1488,24 +1488,24 @@ class SpiralDesigner:
         min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - INCREASED for unlimited scaling
         min_N, max_N = 3, 15               # Bounce count range - INCREASED for better coverage
         
-        # OPTIMIZED BOUNCE SCALING: Higher bounce counts for better coverage at all levels
-        # Focus on increasing short flight bounce counts as requested
+        # REFINED BOUNCE SCALING: Slightly fewer bounces for better spacing
+        # Optimized for wider initial gaps with excellent coverage
         if target_battery_minutes <= 10:
-            target_bounces = 8   # Increased from 6 for better short flight coverage
+            target_bounces = 7   # Reduced by 1 for better spacing
         elif target_battery_minutes <= 12:
-            target_bounces = 9   # Increased from 6 for better short flight coverage
+            target_bounces = 8   # Reduced by 1 for better spacing
         elif target_battery_minutes <= 15:
-            target_bounces = 10  # Increased from 8 for better medium flight coverage
+            target_bounces = 9   # Reduced by 1 for better spacing
         elif target_battery_minutes <= 18:
-            target_bounces = 11  # Increased from 8 for better medium flight coverage
+            target_bounces = 10  # Reduced by 1 for better spacing
         elif target_battery_minutes <= 25:
-            target_bounces = 12  # Increased from 11 for excellent coverage
+            target_bounces = 11  # Reduced by 1 for better spacing
         elif target_battery_minutes <= 35:
-            target_bounces = 14  # Maintained for comprehensive coverage
+            target_bounces = 13  # Reduced by 1 for better spacing
         elif target_battery_minutes <= 45:
-            target_bounces = 15  # Maximum for very long duration flights
+            target_bounces = 14  # Reduced by 1 for better spacing
         else:
-            target_bounces = 15  # Maximum for ultra-long duration flights
+            target_bounces = 14  # Reduced by 1 for better spacing
         
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
@@ -1514,7 +1514,7 @@ class SpiralDesigner:
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
-            'r0': 250.0  # Increased start radius for better initial bounce spacing
+            'r0': 200.0  # Optimized start radius for balance of detail and initial spacing
         }
         
         print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
