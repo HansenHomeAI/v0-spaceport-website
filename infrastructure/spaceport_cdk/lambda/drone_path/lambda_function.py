@@ -309,37 +309,47 @@ class SpiralDesigner:
         Returns:
             List of {x, y} points in feet relative to center
         """
-        # ENHANCED DENSITY ALGORITHM: Aggressive Alpha Reduction for Large Spirals
-        # Problem: Pure exponential creates exponentially increasing gaps at large radii
-        # Solution: Dramatically reduce alpha for large spirals to create flatter expansion curves
+        # PROGRESSIVE ALPHA SYSTEM: Steeper early bounces, normal later bounces
+        # Solution: Use higher alpha for early expansion, then reduce for later bounces
         
         # Calculate base parameters
         base_alpha = math.log(r_hold / r0) / (N * dphi)
         radius_ratio = r_hold / r0
         
-        # ORIGINAL WORKING EXPANSION: Restored from when it achieved 4000ft in 11min
-        if radius_ratio > 100:  # Very large spirals (>100x expansion)
-            density_factor = 0.35  # 65% reduction for very dense coverage
-        elif radius_ratio > 50:   # Large spirals (50-100x expansion)
-            density_factor = 0.45  # 55% reduction for dense coverage
-        elif radius_ratio > 20:   # Medium-large spiral (20-50x expansion) 
-            density_factor = 0.55  # 45% reduction for good coverage
-        elif radius_ratio > 10:   # Medium spiral (10-20x expansion)
-            density_factor = 0.70  # 30% reduction for moderate coverage
-        else:  # Small spiral (<10x expansion)
-            density_factor = 0.86  # 14% reduction (original working settings)
+        # PROGRESSIVE EXPANSION: Different alpha for different parts of spiral
+        # Early bounces (first 40%): More aggressive expansion
+        # Later bounces (last 60%): Normal expansion for good coverage
         
-        alpha = base_alpha * density_factor
-        print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
+        if radius_ratio > 20:   # Medium-large spirals need progressive approach
+            early_density_factor = 1.02   # 2% MORE expansion for early bounces (fine-tuned for 4000ft)
+            late_density_factor = 0.80    # 20% reduction for later bounces (good coverage)
+            print(f"🎯 Progressive expansion: early_boost=+2%, late_reduction=20%, ratio={radius_ratio:.1f}")
+        elif radius_ratio > 10:   # Medium spirals
+            early_density_factor = 1.05   # 5% more expansion for early bounces
+            late_density_factor = 0.85    # 15% reduction for later bounces
+            print(f"🎯 Progressive expansion: early_boost=+5%, late_reduction=15%, ratio={radius_ratio:.1f}")
+        else:  # Small spirals
+            early_density_factor = 1.0    # Normal expansion
+            late_density_factor = 0.90    # 10% reduction
+            print(f"🎯 Progressive expansion: early_boost=0%, late_reduction=10%, ratio={radius_ratio:.1f}")
+        
+        # We'll use these factors dynamically in the spiral generation below
+        alpha_early = base_alpha * early_density_factor
+        alpha_late = base_alpha * late_density_factor
         
         # Time parameters
         t_out = N * dphi          # Time to complete outward spiral
         t_hold = dphi             # Time for hold pattern (one angular step)
         t_total = 2 * t_out + t_hold  # Total spiral time
         
-        # CRITICAL: Calculate the ACTUAL radius reached at end of outbound spiral
-        # This fixes the large gap issue between outbound and hold phases
-        actual_max_radius = r0 * math.exp(alpha * t_out)
+        # PROGRESSIVE ALPHA TRANSITION POINT
+        t_transition = t_out * 0.4  # First 40% uses early alpha, rest uses late alpha
+        
+        # Calculate ACTUAL radius with progressive alpha
+        # Early phase: r0 * exp(alpha_early * t) for t <= t_transition  
+        # Late phase: r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
+        r_transition = r0 * math.exp(alpha_early * t_transition)
+        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
         
         spiral_points = []
         
@@ -347,17 +357,22 @@ class SpiralDesigner:
             # Convert step index to parameter t
             th = i * t_total / (steps - 1)
             
-            # Calculate radius based on current phase
+            # Calculate radius based on current phase with PROGRESSIVE ALPHA
             if th <= t_out:
-                # PHASE 1: Outward spiral - exponential expansion with optimized alpha
-                r = r0 * math.exp(alpha * th)
+                # PHASE 1: Outward spiral - PROGRESSIVE expansion
+                if th <= t_transition:
+                    # Early bounces: Steeper expansion (alpha_early)
+                    r = r0 * math.exp(alpha_early * th)
+                else:
+                    # Later bounces: Normal expansion (alpha_late) from transition point
+                    r = r_transition * math.exp(alpha_late * (th - t_transition))
             elif th <= t_out + t_hold:
                 # PHASE 2: Hold pattern - constant radius at ACTUAL maximum reached
                 r = actual_max_radius  # ← FIXED: Use actual radius reached, not original r_hold
             else:
                 # PHASE 3: Inbound spiral - exponential contraction from actual maximum
                 inbound_t = th - (t_out + t_hold)
-                r = actual_max_radius * math.exp(-alpha * inbound_t)
+                r = actual_max_radius * math.exp(-alpha_late * inbound_t)  # Use late alpha for inbound
             
             # Calculate phase for bounce pattern
             # Phase oscillates between 0 and 2*dphi to create directional changes
@@ -1378,17 +1393,17 @@ class SpiralDesigner:
         min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - RESTORED ORIGINAL
         min_N, max_N = 3, 15               # Bounce count range - RESTORED ORIGINAL
         
-        # ADJUSTED BOUNCE SCALING: Target ~10 bounces for 11min to get closer to 4000ft
+        # BALANCED BOUNCE SCALING: Target 8-10 bounces for good coverage
         if target_battery_minutes <= 12:
-            target_bounces = 10  # Increased to get more bounces and closer to 4000ft
+            target_bounces = 8   # Good coverage with reasonable expansion
         elif target_battery_minutes <= 18:
-            target_bounces = 11  # Slightly more  
+            target_bounces = 7   # Reduced to allow more expansion  
         elif target_battery_minutes <= 25:
-            target_bounces = 12  # Progressive increase
+            target_bounces = 8   # Progressive increase
         elif target_battery_minutes <= 35:
-            target_bounces = 13  # More coverage for longer flights
+            target_bounces = 10  # More coverage for longer flights
         elif target_battery_minutes <= 45:
-            target_bounces = 14  # Maximum coverage
+            target_bounces = 12  # Maximum coverage
         else:
             target_bounces = 15  # Maximum for very long duration flights
         
