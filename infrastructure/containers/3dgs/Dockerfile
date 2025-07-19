@@ -1,104 +1,37 @@
-# 3D Gaussian Splatting Training Container - Multi-Stage Production Build
-# Optimized for layer caching and build efficiency
+# ---- Spaceport 3DGS Training Container ---------------------------------------
+# Re-base on AWS SageMaker’s official PyTorch GPU image so the driver mount
+# logic is guaranteed to work.  CUDA 11.8 → compatible with ml.g4dn.xlarge.
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
-# Stage 1: Base environment with system dependencies
-FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04 AS base
-
-# Prevent interactive prompts during package installation
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Set CUDA environment variables early
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
-ENV CUDA_VISIBLE_DEVICES=all
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-
-# Install system dependencies (cached layer)
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    git \
-    wget \
-    curl \
-    build-essential \
-    cmake \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
-
-# Stage 2: Python dependencies
-FROM base AS python-deps
-
-# Set working directory
+# ----------------------------------------------------------------------------
+# 1.  Install additional Python libraries (gsplat, OpenCV, etc.)
+# ----------------------------------------------------------------------------
 WORKDIR /opt/ml
 
-# Copy requirements first for better caching
-COPY requirements.txt /opt/ml/
+# Copy requirements first for better layer caching
 COPY requirements_optimized.txt /opt/ml/
 
-# Install PyTorch with CUDA support using official PyTorch index
-RUN pip3 install --no-cache-dir \
-    torch==2.0.1+cu118 \
-    torchvision==0.15.2+cu118 \
-    torchaudio==2.0.2+cu118 \
-    --index-url https://download.pytorch.org/whl/cu118
+RUN pip install --no-cache-dir -r /opt/ml/requirements_optimized.txt
 
-# Install other Python dependencies using default PyPI (PyTorch already installed above)
-RUN pip3 install --no-cache-dir -r requirements_optimized.txt
-
-# Initialize NVIDIA runtime for SageMaker (CRITICAL FOR GPU DETECTION)
-RUN nvidia-smi || echo "nvidia-smi not available in build context (expected)"
-
-# Verify CUDA installation and force PyTorch to detect GPU
-RUN python3 -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('CUDA version:', torch.version.cuda if torch.cuda.is_available() else 'None'); print('GPU count:', torch.cuda.device_count())"
-
-# Stage 3: Application code
-FROM python-deps AS app-build
-
-# Set working directory
+# ----------------------------------------------------------------------------
+# 2.  Add application code
+# ----------------------------------------------------------------------------
 WORKDIR /opt/ml/code
+COPY . /opt/ml/code
 
-# Copy source code (most frequently changed)
-COPY . /opt/ml/code/
-
-# Make scripts executable
-RUN chmod +x train_gaussian_production.py \
-    && chmod +x test_production.py
-
-# Add the code directory to python path
+# Ensure the code directory is on PYTHONPATH
 ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
-# Stage 4: Final runtime image
-FROM app-build AS runtime
+# ----------------------------------------------------------------------------
+# 3.  Runtime configuration
+#    NOTE: Do NOT set CUDA_VISIBLE_DEVICES / NVIDIA_VISIBLE_DEVICES here –
+#    SageMaker sets those at runtime.  We only keep standard SageMaker vars.
+# ----------------------------------------------------------------------------
+ENV SM_MODEL_DIR=/opt/ml/model \
+    SM_CHANNEL_TRAINING=/opt/ml/input/data/training \
+    SM_OUTPUT_DATA_DIR=/opt/ml/output
 
-# CRITICAL: Add ECS GPU capability label for SageMaker
-LABEL com.amazonaws.ecs.capability.gpu="true"
-
-# Reinforce CUDA environment variables for runtime
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-ENV CUDA_VISIBLE_DEVICES=all
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-
-# SageMaker specific environment variables for GPU detection
-ENV SM_MODEL_DIR=/opt/ml/model
-ENV SM_CHANNEL_TRAINING=/opt/ml/input/data/training
-ENV SM_OUTPUT_DATA_DIR=/opt/ml/output
-ENV SM_NUM_GPUS=1
-
-# Health check with comprehensive GPU detection
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import torch; import gsplat; print('PyTorch CUDA:', torch.cuda.is_available()); print('GPU Count:', torch.cuda.device_count() if torch.cuda.is_available() else 0); print('gsplat loaded:', True)" || exit 1
-
-# Ensure all SageMaker directories have proper permissions
-RUN mkdir -p /opt/ml/model /opt/ml/output /opt/ml/input \
-    && chmod -R 755 /opt/ml
-
-# Run as root user for SageMaker Training Jobs (eliminates permission issues)
-USER root
-
-# Set the correct entrypoint for SageMaker Training Jobs
+# ----------------------------------------------------------------------------
+# 4.  Entrypoint – launch the real training script
+# ----------------------------------------------------------------------------
 ENTRYPOINT ["python3", "train_gaussian_production.py"] 
