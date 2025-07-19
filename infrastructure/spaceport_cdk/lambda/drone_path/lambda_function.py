@@ -1393,15 +1393,15 @@ class SpiralDesigner:
         min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - RESTORED ORIGINAL
         min_N, max_N = 3, 15               # Bounce count range - RESTORED ORIGINAL
         
-        # BALANCED BOUNCE SCALING: Target 8-10 bounces for good coverage
+        # PROGRESSIVE BOUNCE SCALING: Longer flights = more bounces for better coverage
         if target_battery_minutes <= 12:
-            target_bounces = 8   # Good coverage with reasonable expansion
+            target_bounces = 7   # Minimal for short flights
         elif target_battery_minutes <= 18:
-            target_bounces = 7   # Reduced to allow more expansion  
+            target_bounces = 8   # Good coverage for medium flights
         elif target_battery_minutes <= 25:
-            target_bounces = 8   # Progressive increase
+            target_bounces = 9   # Better coverage for longer flights
         elif target_battery_minutes <= 35:
-            target_bounces = 10  # More coverage for longer flights
+            target_bounces = 10  # Comprehensive coverage
         elif target_battery_minutes <= 45:
             target_bounces = 12  # Maximum coverage
         else:
