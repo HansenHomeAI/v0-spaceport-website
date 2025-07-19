@@ -7,9 +7,11 @@ FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py3
 # 1. Install CUDA development tools for compiling extensions (gsplat, etc.)
 # ----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y \
-    cuda-toolkit-11-8 \
     build-essential \
     g++ \
+    cmake \
+    ninja-build \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------------------------------
@@ -20,8 +22,7 @@ WORKDIR /opt/ml
 # Copy requirements first for better layer caching
 COPY requirements_optimized.txt /opt/ml/
 
-RUN pip install --no-cache-dir -r /opt/ml/requirements_optimized.txt \
-    && pip install --no-cache-dir gsplat==1.3.0
+RUN pip install --no-cache-dir -r /opt/ml/requirements_optimized.txt
 
 # ----------------------------------------------------------------------------
 # 3. Copy training code
