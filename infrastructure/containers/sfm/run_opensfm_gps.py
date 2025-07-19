@@ -143,52 +143,75 @@ class OpenSfMGPSPipeline:
             return False
     
     def create_opensfm_config(self) -> None:
-        """Create OpenSfM configuration file"""
+        """Create OpenSfM configuration file optimized for 3DGS compatibility"""
         config = {
-            # Feature extraction
+            # Feature extraction - OPTIMIZED for quality over quantity
             'feature_type': 'SIFT',
             'feature_process_size': 2048,          # High-res processing for drone images
-            'feature_max_num_features': 20000,     # Allow dense feature extraction
-            'feature_min_frames': 4000,            # Lower floor so images with fewer features are still accepted
-            'sift_peak_threshold': 0.006,          # Lower threshold → more features in low-texture areas
+            'feature_max_num_features': 8000,      # REDUCED: Focus on quality features (was 20000)
+            'feature_min_frames': 6000,            # INCREASED: Stricter quality threshold (was 4000)
+            'sift_peak_threshold': 0.015,          # INCREASED: Higher quality threshold (was 0.006)
+            'sift_edge_threshold': 15,             # INCREASED: Better edge filtering (was 10)
             
-            # Matching
-            'matching_gps_neighbors': 30,          # More temporal neighbors
-            'matching_gps_distance': 300,          # Allow matches up to 300 m apart
-            'matching_graph_rounds': 80,           # More graph refinement rounds
-            'robust_matching_min_match': 8,        # Relax minimum matches to keep difficult pairs
+            # Matching - OPTIMIZED for GPS-constrained reconstruction
+            'matching_gps_neighbors': 20,          # REDUCED: More focused matching (was 30)
+            'matching_gps_distance': 150,          # REDUCED: Tighter GPS constraints (was 300)
+            'matching_graph_rounds': 50,           # REDUCED: Faster processing (was 80)
+            'robust_matching_min_match': 15,       # INCREASED: Higher quality matches (was 8)
+            'lowes_ratio': 0.7,                    # STRICTER: Better match filtering (was 0.8)
+            'matcher_distance': 0.6,               # STRICTER: Tighter distance threshold (was 0.7)
             
-            # Reconstruction
-            'min_ray_angle_degrees': 1.0,          # Allow shallower angles → more points
-            'reconstruction_min_ratio': 0.6,       # Allow more images even with fewer inliers
-            'triangulation_min_ray_angle_degrees': 1.0,
+            # Reconstruction - OPTIMIZED for 3DGS compatibility
+            'min_ray_angle_degrees': 2.0,          # INCREASED: Better triangulation angles (was 1.0)
+            'reconstruction_min_ratio': 0.7,       # INCREASED: Higher quality reconstruction (was 0.6)
+            'triangulation_min_ray_angle_degrees': 2.0,  # INCREASED: Better 3D point quality (was 1.0)
+            'triangulation_threshold': 0.003,      # STRICTER: Better point filtering (was 0.004)
             
-            # GPS integration
+            # GPS integration - ENHANCED for accuracy
             'use_altitude_tag': True,
-            'gps_accuracy': 5.0,
+            'gps_accuracy': 3.0,                   # TIGHTER: More precise GPS constraints (was 5.0)
+            'gps_error_threshold': 5.0,            # TIGHTER: Stricter GPS error tolerance (was 10.0)
             
-            # Bundle adjustment
+            # Bundle adjustment - OPTIMIZED for quality
             'bundle_use_gps': True,
             'bundle_use_gcp': False,
+            'bundle_max_iterations': 200,          # INCREASED: Better convergence (was 100)
+            'bundle_adjustment_loss_function': 'SoftLOneLoss',
+            'bundle_adjustment_loss_function_threshold': 0.8,  # STRICTER: Better outlier rejection
             
             # Optimization
             'optimize_camera_parameters': True,
-            'bundle_max_iterations': 100,
             
             # Output
             'processes': 4,  # Parallelise where possible
             
-            # CRITICAL FIX: Enable train/test split for proper 3DGS training
+            # CRITICAL: Enable train/test split for proper 3DGS training
             'reconstruction_split_ratio': 0.8,     # 80% training, 20% validation
             'reconstruction_split_method': 'sequential',  # Sequential split for temporal consistency
             'save_partial_reconstructions': True,   # Save both train and test sets
+            
+            # Quality Control - ENHANCED for 3DGS
+            'min_reconstructed_points': 5000,      # INCREASED: Ensure sufficient points (was 1000)
+            'max_reconstructed_points': 50000,     # NEW: Cap maximum points for 3DGS
+            'remove_max_outliers': 30,             # REDUCED: Less aggressive outlier removal (was 50)
+            
+            # Track Creation - OPTIMIZED
+            'tracker_type': 'incremental',
+            'retriangulation': True,
+            'retriangulation_ratio': 1.1,          # REDUCED: Less aggressive retriangulation (was 1.25)
+            
+            # Resection settings - ENHANCED
+            'resection_threshold': 0.2,            # STRICTER: Better camera registration (was 0.25)
+            'resection_min_inliers': 20,           # INCREASED: Higher quality resection (was 15)
         }
         
         config_path = self.opensfm_dir / "config.yaml"
         with open(config_path, 'w') as f:
             yaml.dump(config, f)
         
-        logger.info(f"✅ Created OpenSfM config: {config_path}")
+        logger.info(f"✅ Created OpenSfM config optimized for 3DGS: {config_path}")
+        logger.info(f"🎯 Target: ~30,000 high-quality points (reduced from ~250,000)")
+        logger.info(f"🔧 Key changes: Stricter feature filtering, GPS constraints, quality thresholds")
     
     def copy_images_to_opensfm(self) -> None:
         """Copy images to OpenSfM directory structure"""
@@ -229,7 +252,7 @@ class OpenSfMGPSPipeline:
         return True
     
     def validate_reconstruction(self) -> bool:
-        """Validate OpenSfM reconstruction quality"""
+        """Validate OpenSfM reconstruction quality for 3DGS compatibility"""
         reconstruction_file = self.opensfm_dir / "reconstruction.json"
         
         if not reconstruction_file.exists():
@@ -247,12 +270,27 @@ class OpenSfMGPSPipeline:
         recon = max(reconstructions, key=lambda r: len(r.get('points', {})))
         
         shots_dict = recon.get('shots', {})
+        points_dict = recon.get('points', {})
         num_cameras = len(shots_dict)
-        num_points = len(recon.get('points', {}))
+        num_points = len(points_dict)
         
         logger.info(f"📊 Reconstruction statistics:")
         logger.info(f"   Cameras: {num_cameras}")
         logger.info(f"   3D points: {num_points}")
+        
+        # Enhanced quality metrics for 3DGS
+        if points_dict:
+            # Calculate point quality metrics
+            point_errors = [point.get('reprojection_error', 0) for point in points_dict.values()]
+            avg_error = sum(point_errors) / len(point_errors) if point_errors else 0
+            max_error = max(point_errors) if point_errors else 0
+            
+            logger.info(f"   Average reprojection error: {avg_error:.4f}")
+            logger.info(f"   Max reprojection error: {max_error:.4f}")
+            
+            # Count high-quality points (low reprojection error)
+            high_quality_points = sum(1 for error in point_errors if error < 0.005)
+            logger.info(f"   High-quality points (<0.005 error): {high_quality_points}")
         
         # Log which images were registered (first 20 for brevity)
         registered_images = list(shots_dict.keys())
@@ -264,16 +302,28 @@ class OpenSfMGPSPipeline:
         if unregistered:
             logger.warning(f"⚠️ Unregistered images (showing up to 20): {unregistered[:20]}")
         
-        # Validate minimum quality
-        if num_cameras < 5:
-            logger.error("❌ Too few cameras reconstructed")
+        # Enhanced validation for 3DGS compatibility
+        if num_cameras < 10:
+            logger.error(f"❌ Too few cameras reconstructed: {num_cameras} (need ≥10)")
             return False
         
-        if num_points < 1000:
-            logger.error("❌ Too few 3D points reconstructed")
+        if num_points < 5000:
+            logger.error(f"❌ Too few 3D points reconstructed: {num_points} (need ≥5000)")
             return False
         
-        logger.info("✅ Reconstruction validated")
+        if num_points > 100000:
+            logger.warning(f"⚠️ Very high point count: {num_points} (target: ~30,000)")
+            logger.warning(f"   Consider adjusting feature extraction parameters")
+        
+        # Check for optimal point count range
+        if 10000 <= num_points <= 50000:
+            logger.info(f"✅ Optimal point count for 3DGS: {num_points}")
+        elif 5000 <= num_points < 10000:
+            logger.warning(f"⚠️ Low point count: {num_points} (target: 10,000-50,000)")
+        elif num_points > 50000:
+            logger.warning(f"⚠️ High point count: {num_points} (target: 10,000-50,000)")
+        
+        logger.info("✅ Reconstruction validated for 3DGS compatibility")
         return True
     
     def convert_to_colmap(self) -> bool:
