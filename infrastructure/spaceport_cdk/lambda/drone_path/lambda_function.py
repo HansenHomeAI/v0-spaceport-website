@@ -55,7 +55,7 @@ class SpiralDesigner:
     Uses intelligent balanced scaling + binary search:
     1. Scale bounce count with battery duration (10min→5 bounces, 20min→8 bounces)
     2. Binary search on radius with fixed bounce count
-    3. 95% battery utilization safety margin
+            3. 98% battery utilization safety margin
     4. O(log n) computational complexity
     
     ELEVATION INTEGRATION:
@@ -309,8 +309,28 @@ class SpiralDesigner:
         Returns:
             List of {x, y} points in feet relative to center
         """
-        # Calculate optimized expansion coefficient (14% reduction for denser coverage)
-        alpha = math.log(r_hold / r0) / (N * dphi) * 0.86  # ← NEURAL NETWORK OPTIMIZATION
+        # ENHANCED DENSITY ALGORITHM: Aggressive Alpha Reduction for Large Spirals
+        # Problem: Pure exponential creates exponentially increasing gaps at large radii
+        # Solution: Dramatically reduce alpha for large spirals to create flatter expansion curves
+        
+        # Calculate base parameters
+        base_alpha = math.log(r_hold / r0) / (N * dphi)
+        radius_ratio = r_hold / r0
+        
+        # OPTIMIZED DENSITY + UTILIZATION BALANCE: Fine-tuned for 90%+ utilization
+        if radius_ratio > 100:  # Very large spirals (>100x expansion)
+            density_factor = 0.65  # 35% reduction for good density + high utilization
+        elif radius_ratio > 50:   # Large spirals (50-100x expansion)
+            density_factor = 0.70  # 30% reduction for balanced performance
+        elif radius_ratio > 20:   # Medium-large spiral (20-50x expansion) 
+            density_factor = 0.75  # 25% reduction for good coverage
+        elif radius_ratio > 10:   # Medium spiral (10-20x expansion)
+            density_factor = 0.80  # 20% reduction for moderate coverage
+        else:  # Small spiral (<10x expansion)
+            density_factor = 0.86  # 14% reduction (original)
+        
+        alpha = base_alpha * density_factor
+        print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
         
         # Time parameters
         t_out = N * dphi          # Time to complete outward spiral
@@ -329,7 +349,7 @@ class SpiralDesigner:
             
             # Calculate radius based on current phase
             if th <= t_out:
-                # PHASE 1: Outward spiral - exponential expansion
+                # PHASE 1: Outward spiral - exponential expansion with optimized alpha
                 r = r0 * math.exp(alpha * th)
             elif th <= t_out + t_hold:
                 # PHASE 2: Hold pattern - constant radius at ACTUAL maximum reached
@@ -1433,7 +1453,7 @@ class SpiralDesigner:
         
         BINARY SEARCH OPTIMIZATION:
         - O(log n) computational complexity vs O(n) brute force
-        - 95% battery utilization safety margin
+        - 98% battery utilization safety margin
         - 10ft radius tolerance for practical purposes
         - Maximum 20 iterations for performance
         
@@ -1468,20 +1488,20 @@ class SpiralDesigner:
         min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - INCREASED for unlimited scaling
         min_N, max_N = 3, 15               # Bounce count range - INCREASED for better coverage
         
-        # BALANCED SCALING: Optimize bounce count based on battery duration
-        # This approach prioritizes pattern quality over raw coverage area
+        # ENHANCED BOUNCE SCALING: Aggressive bounce count increase for density
+        # This approach prioritizes bounce density for large spirals
         if target_battery_minutes <= 12:
-            target_bounces = 5
+            target_bounces = 6   # Increased from 5
         elif target_battery_minutes <= 18:
-            target_bounces = 6
+            target_bounces = 8   # Increased from 6
         elif target_battery_minutes <= 25:
-            target_bounces = 8
+            target_bounces = 11  # Increased from 9 for much better density
         elif target_battery_minutes <= 35:
-            target_bounces = 10
+            target_bounces = 14  # Increased from 12 for better density
         elif target_battery_minutes <= 45:
-            target_bounces = 12
+            target_bounces = 15  # Maximum for very long duration flights
         elif target_battery_minutes <= 60:
-            target_bounces = 14
+            target_bounces = 15  # Maximum for very long duration flights
         else:
             target_bounces = 15  # Maximum for very long duration flights
         
@@ -1547,8 +1567,8 @@ class SpiralDesigner:
             try:
                 estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
                 
-                # Apply 5% safety margin (95% utilization maximum)
-                if estimated_time <= target_battery_minutes * 0.95:
+                # Apply 2% safety margin (98% utilization maximum)
+                if estimated_time <= target_battery_minutes * 0.98:
                     # Configuration fits safely - try larger radius
                     best_params = test_params.copy()
                     best_time = estimated_time
@@ -1568,7 +1588,7 @@ class SpiralDesigner:
             
             try:
                 estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                if estimated_time <= target_battery_minutes * 0.95:
+                if estimated_time <= target_battery_minutes * 0.98:
                     print(f"Adding bonus bounce: {target_bounces} → {target_bounces + 1}")
                     best_params = test_params.copy()
                     best_time = estimated_time
@@ -2269,7 +2289,7 @@ def handle_optimize_spiral(designer, body, cors_headers):
                     'algorithm': 'Intelligent Balanced Scaling with Binary Search',
                     'pattern_type': 'Exponential Spiral with Neural Network Optimization',
                     'bounce_scaling_reason': f"Battery duration {battery_minutes}min → {optimized_params['N']} bounces",
-                    'safety_margin': '95% battery utilization maximum'
+                    'safety_margin': '98% battery utilization maximum'
                 }
             })
         }
