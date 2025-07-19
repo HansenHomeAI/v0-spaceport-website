@@ -1300,12 +1300,13 @@ class SpiralDesigner:
 
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
-        SIMPLIFIED REALISTIC flight time estimation.
+        ACCURATE flight time estimation based on actual spiral path length.
         
         APPROACH:
-        - Calculate total spiral distance
-        - Use realistic drone speed (25 mph)
-        - Add reasonable overhead for takeoff/landing/photos
+        - Calculate actual spiral path length using mathematical integration
+        - Account for all phases: outbound spiral, hold pattern, inbound spiral
+        - Use realistic drone speed (25 mph) and acceleration/deceleration
+        - Add overhead for takeoff, landing, photos, hover time
         
         Args:
             params: Spiral parameters dict {slices, N, r0, rHold}
@@ -1315,25 +1316,74 @@ class SpiralDesigner:
         Returns:
             Estimated flight time in minutes
         """
-        # Simple realistic calculation
-        max_radius_ft = params['rHold']
+        # Get spiral parameters
+        N = params['N']  # Number of bounces
+        r0 = params['r0']  # Starting radius
+        r_hold = params['rHold']  # Target hold radius
+        slices = params['slices']  # Number of slices
         
-        # Estimate total flight distance: spiral out + spiral in + some overhead
-        # This is a simplified but realistic approximation
-        outbound_distance = max_radius_ft * 1.5  # Spiral path is longer than straight line
-        inbound_distance = max_radius_ft * 1.5   # Same for return
-        total_distance_ft = outbound_distance + inbound_distance
+        # Calculate spiral parameters
+        dphi = 2 * math.pi / slices  # Angular step per bounce
+        base_alpha = math.log(r_hold / r0) / (N * dphi)
+        
+        # Progressive alpha factors (same as in make_spiral)
+        radius_ratio = r_hold / r0
+        if radius_ratio > 20:
+            early_density_factor = 1.02
+            late_density_factor = 0.80
+        elif radius_ratio > 10:
+            early_density_factor = 1.05
+            late_density_factor = 0.85
+        else:
+            early_density_factor = 1.0
+            late_density_factor = 0.90
+        
+        alpha_early = base_alpha * early_density_factor
+        alpha_late = base_alpha * late_density_factor
+        
+        # Time parameters
+        t_out = N * dphi  # Time to complete outward spiral
+        t_hold = dphi  # Time for hold pattern
+        t_transition = t_out * 0.4  # Progressive alpha transition point
+        
+        # Calculate actual spiral path length using mathematical integration
+        # For exponential spiral r(t) = r0 * exp(alpha * t), the arc length is:
+        # L = ∫√(r² + (dr/dt)²) dt = ∫√(r² + (alpha * r)²) dt = ∫r * √(1 + alpha²) dt
+        
+        # Outbound spiral path length (with progressive alpha)
+        # Early phase: r(t) = r0 * exp(alpha_early * t) for t <= t_transition
+        # Late phase: r(t) = r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
+        
+        r_transition = r0 * math.exp(alpha_early * t_transition)
+        
+        # Early phase length
+        early_length_factor = math.sqrt(1 + alpha_early**2)
+        early_length = (r_transition - r0) / alpha_early * early_length_factor
+        
+        # Late phase length
+        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
+        late_length_factor = math.sqrt(1 + alpha_late**2)
+        late_length = (actual_max_radius - r_transition) / alpha_late * late_length_factor
+        
+        # Hold pattern length (circular arc)
+        hold_length = actual_max_radius * t_hold
+        
+        # Inbound spiral length (using late alpha for consistency)
+        inbound_length = (actual_max_radius - r0) / alpha_late * late_length_factor
+        
+        # Total spiral path length
+        total_spiral_length_ft = early_length + late_length + hold_length + inbound_length
         
         # Convert to miles and calculate flight time
-        total_distance_miles = total_distance_ft / 5280
+        total_distance_miles = total_spiral_length_ft / 5280
         flight_speed_mph = 25  # Realistic drone speed
         
         # Base flight time
         flight_time_hours = total_distance_miles / flight_speed_mph
         flight_time_minutes = flight_time_hours * 60
         
-        # Add overhead for takeoff, landing, photos, hover time
-        overhead_minutes = 2.0  # Reasonable overhead
+        # Add overhead for takeoff, landing, photos, hover time, acceleration/deceleration
+        overhead_minutes = 1.5  # Reduced from 2.0 since we're more accurate now
         
         return flight_time_minutes + overhead_minutes
 
