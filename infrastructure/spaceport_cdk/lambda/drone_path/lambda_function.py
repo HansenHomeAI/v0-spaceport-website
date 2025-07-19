@@ -317,17 +317,17 @@ class SpiralDesigner:
         base_alpha = math.log(r_hold / r0) / (N * dphi)
         radius_ratio = r_hold / r0
         
-        # FLATTER CURVE OPTIMIZATION: Reduced alpha reduction for more bounces
+        # GOLDILOCKS OPTIMIZATION: Balanced initial and outer spacing
         if radius_ratio > 100:  # Very large spirals (>100x expansion)
-            density_factor = 0.75  # 25% reduction (reduced from 35% for flatter curve)
+            density_factor = 0.72  # 28% reduction for balanced spacing
         elif radius_ratio > 50:   # Large spirals (50-100x expansion)
-            density_factor = 0.80  # 20% reduction (reduced from 30% for flatter curve)
+            density_factor = 0.78  # 22% reduction for balanced spacing
         elif radius_ratio > 20:   # Medium-large spiral (20-50x expansion) 
-            density_factor = 0.85  # 15% reduction (reduced from 25% for flatter curve)
+            density_factor = 0.82  # 18% reduction for balanced spacing
         elif radius_ratio > 10:   # Medium spiral (10-20x expansion)
-            density_factor = 0.88  # 12% reduction (reduced from 20% for flatter curve)
+            density_factor = 0.85  # 15% reduction for balanced spacing
         else:  # Small spiral (<10x expansion)
-            density_factor = 0.90  # 10% reduction (reduced from 14% for flatter curve)
+            density_factor = 0.88  # 12% reduction for balanced spacing
         
         alpha = base_alpha * density_factor
         print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
@@ -1514,7 +1514,7 @@ class SpiralDesigner:
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
-            'r0': 150.0  # Standard start radius for balanced patterns
+            'r0': 250.0  # Increased start radius for better initial bounce spacing
         }
         
         print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
