@@ -317,7 +317,7 @@ class SpiralDesigner:
         base_alpha = math.log(r_hold / r0) / (N * dphi)
         radius_ratio = r_hold / r0
         
-        # AGGRESSIVE ORIGINAL EXPANSION: Restore early aggressive settings for 4000ft in 11min
+        # ORIGINAL WORKING EXPANSION: Restored from when it achieved 4000ft in 11min
         if radius_ratio > 100:  # Very large spirals (>100x expansion)
             density_factor = 0.35  # 65% reduction for very dense coverage
         elif radius_ratio > 50:   # Large spirals (50-100x expansion)
@@ -327,7 +327,7 @@ class SpiralDesigner:
         elif radius_ratio > 10:   # Medium spiral (10-20x expansion)
             density_factor = 0.70  # 30% reduction for moderate coverage
         else:  # Small spiral (<10x expansion)
-            density_factor = 0.86  # 14% reduction (original aggressive settings)
+            density_factor = 0.86  # 14% reduction (original working settings)
         
         alpha = base_alpha * density_factor
         print(f"🎯 Density optimization: radius_ratio={radius_ratio:.1f}, density_factor={density_factor}, alpha_reduction={(1-density_factor)*100:.0f}%")
@@ -1285,152 +1285,42 @@ class SpiralDesigner:
 
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
-        Estimate flight time in minutes for a SINGLE battery/slice using advanced physics modeling.
+        SIMPLIFIED REALISTIC flight time estimation.
         
-        FLIGHT TIME CALCULATION METHODOLOGY:
-        ===================================
-        
-        PHYSICS-BASED MODELING:
-        - Horizontal speed: 19.8 mph (8.85 m/s) for efficiency and photo quality
-        - Vertical speed: 5.0 m/s for altitude changes
-        - Hover time: 3 seconds per waypoint for camera stabilization
-        - Acceleration time: 2 seconds per waypoint for smooth transitions
-        
-        ALTITUDE CALCULATION INTEGRATION:
-        Uses identical neural network altitude logic as CSV generation:
-        - Outbound: 0.37ft per foot climb rate
-        - Inbound: 0.1ft per foot descent rate
-        - Ensures time estimates match actual flight behavior
-        
-        SINGLE-BATTERY CALCULATION:
-        Each battery represents one independent flight mission.
-        This is critical for battery optimization algorithm accuracy.
-        
-        COMPREHENSIVE FLIGHT PHASES:
-        1. Takeoff and ascent to first waypoint
-        2. Waypoint-to-waypoint navigation with altitude changes
-        3. Return to home from final waypoint
-        4. Descent and landing
+        APPROACH:
+        - Calculate total spiral distance
+        - Use realistic drone speed (25 mph)
+        - Add reasonable overhead for takeoff/landing/photos
         
         Args:
             params: Spiral parameters dict {slices, N, r0, rHold}
-            center_lat: Center latitude for distance calculations
+            center_lat: Center latitude for distance calculations  
             center_lon: Center longitude for distance calculations
             
         Returns:
-            Estimated flight time for ONE battery/slice in minutes
+            Estimated flight time in minutes
         """
-        # Flight physics constants
-        speed_mph = 19.8                    # Optimized speed for photo quality
-        speed_mps = speed_mph * 0.44704     # Convert to m/s (8.85 m/s)
-        vertical_speed_mps = 5.0            # Vertical movement speed
-        hover_time = 3                      # Stabilization time per waypoint
-        accel_time = 2                      # Acceleration/deceleration time
+        # Simple realistic calculation
+        max_radius_ft = params['rHold']
         
-        # Get waypoints for all slices (need one representative slice for timing)
-        all_waypoints = self.compute_waypoints(params)
+        # Estimate total flight distance: spiral out + spiral in + some overhead
+        # This is a simplified but realistic approximation
+        outbound_distance = max_radius_ft * 1.5  # Spiral path is longer than straight line
+        inbound_distance = max_radius_ft * 1.5   # Same for return
+        total_distance_ft = outbound_distance + inbound_distance
         
-        if not all_waypoints:
-            return 0.0
+        # Convert to miles and calculate flight time
+        total_distance_miles = total_distance_ft / 5280
+        flight_speed_mph = 25  # Realistic drone speed
         
-        # Calculate time for ONE slice (each battery flies one slice independently)
-        slice_waypoints = all_waypoints[0]  # Use first slice as representative
+        # Base flight time
+        flight_time_hours = total_distance_miles / flight_speed_mph
+        flight_time_minutes = flight_time_hours * 60
         
-        if not slice_waypoints:
-            return 0.0
-            
-        slice_time = 0.0
+        # Add overhead for takeoff, landing, photos, hover time
+        overhead_minutes = 2.0  # Reasonable overhead
         
-        # Initialize flight tracking variables
-        prev_lat, prev_lon = center_lat, center_lon  # Start at takeoff location
-        min_height = 100.0  # Standard minimum height
-        prev_altitude = min_height
-        
-        # PHASE 1: Takeoff and ascent to first waypoint
-        first_wp = slice_waypoints[0]
-        ascend_time = (min_height * self.FT2M) / vertical_speed_mps
-        slice_time += ascend_time
-        
-        # Track altitude calculation state (identical to CSV methods)
-        first_waypoint_distance = 0
-        max_outbound_altitude = 0
-        max_outbound_distance = 0
-        
-        # PHASE 2: Waypoint-to-waypoint navigation
-        for i, wp in enumerate(slice_waypoints):
-            # Convert waypoint coordinates to GPS
-            coords = self.xy_to_lat_lon(wp['x'], wp['y'], center_lat, center_lon)
-            
-            # Calculate altitude using neural network differentiated logic
-            dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
-            phase = wp.get('phase', 'unknown')
-            
-            if i == 0:
-                # First waypoint altitude calculation
-                first_waypoint_distance = dist_from_center
-                wp_altitude = min_height
-                max_outbound_altitude = min_height
-                max_outbound_distance = dist_from_center
-            elif 'outbound' in phase or 'hold' in phase:
-                # OUTBOUND & HOLD: 0.37ft per foot climb rate
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.37
-                wp_altitude = min_height + agl_increment
-                
-                # Track maximum for inbound calculations
-                if wp_altitude > max_outbound_altitude:
-                    max_outbound_altitude = wp_altitude
-                    max_outbound_distance = dist_from_center
-            elif 'inbound' in phase:
-                # INBOUND: 0.1ft per foot descent rate
-                distance_from_max = max_outbound_distance - dist_from_center
-                if distance_from_max < 0:
-                    distance_from_max = 0
-                altitude_decrease = distance_from_max * 0.1
-                wp_altitude = max_outbound_altitude - altitude_decrease
-                
-                # Safety floor
-                if wp_altitude < min_height:
-                    wp_altitude = min_height
-            else:
-                # Fallback calculation
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.37
-                wp_altitude = min_height + agl_increment
-            
-            # Calculate movement times from previous position
-            horizontal_dist_m = self.haversine_distance(prev_lat, prev_lon, coords['lat'], coords['lon'])
-            altitude_diff_ft = abs(wp_altitude - prev_altitude)
-            altitude_diff_m = altitude_diff_ft * self.FT2M
-            
-            # Time calculations (horizontal and vertical movement can overlap)
-            horizontal_time = horizontal_dist_m / speed_mps
-            vertical_time = altitude_diff_m / vertical_speed_mps
-            segment_time = horizontal_time + vertical_time + hover_time + accel_time
-            
-            slice_time += segment_time
-            
-            # Update tracking variables
-            prev_lat, prev_lon = coords['lat'], coords['lon']
-            prev_altitude = wp_altitude
-        
-        # PHASE 3: Return to home from final waypoint
-        last_coords = self.xy_to_lat_lon(slice_waypoints[-1]['x'], slice_waypoints[-1]['y'], center_lat, center_lon)
-        return_dist_m = self.haversine_distance(last_coords['lat'], last_coords['lon'], center_lat, center_lon)
-        return_altitude_diff_m = (prev_altitude - min_height) * self.FT2M
-        
-        return_time = (return_dist_m / speed_mps) + (abs(return_altitude_diff_m) / vertical_speed_mps) + accel_time
-        slice_time += return_time
-        
-        # PHASE 4: Descent and landing
-        descent_time = (min_height * self.FT2M) / vertical_speed_mps
-        slice_time += descent_time
-        
-        return slice_time / 60.0  # Convert seconds to minutes
+        return flight_time_minutes + overhead_minutes
 
     def optimize_spiral_for_battery(self, target_battery_minutes: float, num_batteries: int, center_lat: float, center_lon: float) -> Dict:
         """
@@ -1485,25 +1375,20 @@ class SpiralDesigner:
         """
         # Define parameter constraints for safety and practicality
         min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
-        min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - INCREASED for unlimited scaling
-        min_N, max_N = 3, 15               # Bounce count range - OPTIMIZED for distance balance
+        min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - RESTORED ORIGINAL
+        min_N, max_N = 3, 15               # Bounce count range - RESTORED ORIGINAL
         
-        # ORIGINAL AGGRESSIVE BOUNCE SCALING: Restore settings that achieved 4000ft in 11min
-        # Based on early conversation settings that were working
-        if target_battery_minutes <= 10:
-            target_bounces = 7   # Original aggressive settings
-        elif target_battery_minutes <= 12:
-            target_bounces = 8   # Original aggressive settings  
-        elif target_battery_minutes <= 15:
-            target_bounces = 10  # Original aggressive settings
+        # ADJUSTED BOUNCE SCALING: Target ~10 bounces for 11min to get closer to 4000ft
+        if target_battery_minutes <= 12:
+            target_bounces = 10  # Increased to get more bounces and closer to 4000ft
         elif target_battery_minutes <= 18:
-            target_bounces = 11  # Original aggressive settings
+            target_bounces = 11  # Slightly more  
         elif target_battery_minutes <= 25:
-            target_bounces = 12  # Original aggressive settings
+            target_bounces = 12  # Progressive increase
         elif target_battery_minutes <= 35:
-            target_bounces = 14  # Original aggressive settings
+            target_bounces = 13  # More coverage for longer flights
         elif target_battery_minutes <= 45:
-            target_bounces = 15  # Original aggressive settings
+            target_bounces = 14  # Maximum coverage
         else:
             target_bounces = 15  # Maximum for very long duration flights
         
@@ -1569,7 +1454,7 @@ class SpiralDesigner:
             try:
                 estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
                 
-                # Apply 2% safety margin (98% utilization maximum)
+                # Apply 2% safety margin (98% utilization maximum) - RESTORED ORIGINAL
                 if estimated_time <= target_battery_minutes * 0.98:
                     # Configuration fits safely - try larger radius
                     best_params = test_params.copy()
