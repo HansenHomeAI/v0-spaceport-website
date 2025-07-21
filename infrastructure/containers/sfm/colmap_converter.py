@@ -523,8 +523,8 @@ class OpenSfMToCOLMAPConverter:
         return validation_results
     
     def convert_full_reconstruction(self) -> Dict:
-        """Convert complete OpenSfM reconstruction to COLMAP format with train/test split"""
-        logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion with train/test split")
+        """Convert complete OpenSfM reconstruction to COLMAP format"""
+        logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion")
         
         # Create temp directory structure (sparse/0 for COLMAP files)
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -533,16 +533,10 @@ class OpenSfMToCOLMAPConverter:
         # Load reconstruction
         self.load_opensfm_reconstruction()
         
-        # CRITICAL FIX: Create train/test split for proper 3DGS training
-        train_data, test_data = self.create_train_test_split()
-        
-        # Convert complete reconstruction (for backward compatibility)
+        # Convert complete reconstruction (NO train/test split - 3DGS handles this)
         self.convert_cameras()
         self.convert_images()
         self.convert_points()
-        
-        # Create train/test split reconstructions
-        self.create_split_reconstructions(train_data, test_data)
         
         self.create_reference_point_cloud()
         

@@ -1,19 +1,981 @@
-============================================================	🚀 SPACEPORT OPENSFM GPS-CONSTRAINED SfM PROCESSING	============================================================	📅 Started at: Thu Jul  3 04:23:02 UTC 2025	🔧 Pipeline: OpenSfM with GPS constraints	📍 GPS Enhancement: Drone flight path integration	🎯 Output: COLMAP-compatible format for 3DGS	============================================================	🔍 Verifying environment...	Python 3.9.23	[notice] A new release of pip is available: 23.0.1 -> 25.1.1	[notice] To update, run: pip install --upgrade pip	[notice] A new release of pip is available: 23.0.1 -> 25.1.1	[notice] To update, run: pip install --upgrade pip	[notice] A new release of pip is available: 23.0.1 -> 25.1.1	[notice] To update, run: pip install --upgrade pip	✅ Environment verification completed	🔍 Verifying required scripts...	✅ Found: run_opensfm_gps.py	✅ Found: gps_processor.py	✅ Found: colmap_converter.py	✅ Found: config_template.yaml	📁 Input directory: /opt/ml/processing/input	📁 Output directory: /opt/ml/processing/output	🔍 Input directory contents:	total 393728	drwxr-xr-x 3 root root      4096 Jul  3 04:23 .	drwxr-xr-x 4 root root      4096 Jul  3 04:06 ..	-rw-r--r-- 1 root root 403160843 Jul  3 04:22 1751413909023-l2zkyj-Battery-1.zip	drwxr-xr-x 2 root root      4096 Jul  3 04:22 gps	📦 ZIP files found: 1	🛰️ CSV files found: 1	✅ GPS flight path data available - will use GPS-constrained reconstruction	============================================================	🚀 LAUNCHING OPENSFM GPS PROCESSOR	============================================================	🔧 Executing OpenSfM GPS-constrained reconstruction...	2025-07-03 04:23:04,234 - INFO - 🏗️ Created workspace: /tmp/opensfm__t__qo7r	2025-07-03 04:23:04,234 - INFO - 📦 Extracting ZIP: /opt/ml/processing/input/1751413909023-l2zkyj-Battery-1.zip	2025-07-03 04:23:05,064 - INFO - 📷 Extracted 97 images	2025-07-03 04:23:05,064 - INFO - 🛰️ Processing GPS data from: /opt/ml/processing/input/gps/gps-flight-path-20250703-042153.csv	2025-07-03 04:23:05,064 - INFO - 🚁 Initializing Advanced 3D Path Processor	2025-07-03 04:23:05,064 - INFO - 📂 CSV: /opt/ml/processing/input/gps/gps-flight-path-20250703-042153.csv	2025-07-03 04:23:05,064 - INFO - 📷 Images: /tmp/opensfm__t__qo7r/images	2025-07-03 04:23:05,067 - INFO - ✅ Mapped column 'latitude' → 'latitude'	2025-07-03 04:23:05,068 - INFO - ✅ Mapped column 'longitude' → 'longitude'	2025-07-03 04:23:05,068 - INFO - ✅ Mapped column 'altitude(ft)' → 'altitude'	2025-07-03 04:23:05,068 - INFO - ✅ Mapped column 'heading(deg)' → 'heading'	2025-07-03 04:23:05,068 - INFO - ✅ Mapped column 'gimbalpitchangle' → 'gimbal_pitch'	2025-07-03 04:23:05,068 - INFO - ✅ Mapped column 'photo_timeinterval' → 'photo_interval'	2025-07-03 04:23:05,069 - INFO - ✅ Mapped column 'photo_distinterval' → 'distance_interval'	2025-07-03 04:23:05,069 - INFO - 📏 Converted altitude from feet to meters	2025-07-03 04:23:05,069 - INFO - 📸 Using CSV photo interval: 3.0 seconds	2025-07-03 04:23:05,070 - WARNING - ⚠️ Using fallback speed: 17.9 mph (8.0 m/s)	2025-07-03 04:23:05,070 - INFO - ⏱️ Using time-based photo distribution: 24.0m intervals	2025-07-03 04:23:05,070 - INFO - 📏 Using CSV distance interval: 0.0m	2025-07-03 04:23:05,070 - INFO - ✅ Loaded 10 waypoints	2025-07-03 04:23:05,070 - INFO - 📊 Coverage: 41.731660 to 41.734230 lat	2025-07-03 04:23:05,071 - INFO - 📊 Altitude: 39.6m to 118.0m	2025-07-03 04:23:05,071 - INFO - 🌍 Local coordinate system:	2025-07-03 04:23:05,071 - INFO -    Origin: 41.732850°, -111.835173°, 70.0m	2025-07-03 04:23:05,071 - INFO -    UTM Zone: 12T	2025-07-03 04:23:05,106 - INFO - 🛤️ Built 3D flight path:	2025-07-03 04:23:05,106 - INFO -    Segments: 9	2025-07-03 04:23:05,106 - INFO -    Total length: 2731.8m	2025-07-03 04:23:05,106 - INFO -    Curved segments: 9	2025-07-03 04:23:05,106 - INFO -    Estimated flight time: 341.4s	2025-07-03 04:23:06,901 - INFO - ✅ Using EXIF timestamps for photo ordering	2025-07-03 04:23:06,901 - INFO - 📸 Ordered 97 photos	2025-07-03 04:23:06,901 - INFO -    First: DJI_0579.JPG	2025-07-03 04:23:06,901 - INFO -    Last: DJI_0675.JPG	2025-07-03 04:23:06,901 - INFO - 📐 Time-based photo mapping parameters:	2025-07-03 04:23:06,901 - INFO -    Photos: 97	2025-07-03 04:23:06,901 - INFO -    Speed: 8.0 m/s (from CSV)	2025-07-03 04:23:06,901 - INFO -    Interval: 3.0 s (from CSV)	2025-07-03 04:23:06,901 - INFO -    Calculated spacing: 24.0 m	2025-07-03 04:23:06,901 - INFO - ✅ Using time-based distribution (CSV parameters)	2025-07-03 04:23:06,947 - INFO - ✅ Mapped 97 photos to 3D positions	2025-07-03 04:23:06,952 - INFO - ✅ Generated OpenSfM files in /tmp/opensfm__t__qo7r/opensfm	2025-07-03 04:23:06,952 - INFO -    - exif_overrides.json	2025-07-03 04:23:06,952 - INFO -    - reference_lla.json	2025-07-03 04:23:06,952 - INFO -    - reference.txt	2025-07-03 04:23:06,952 - INFO -    - gps_priors.json	2025-07-03 04:23:06,952 - INFO - 📊 GPS Processing Summary:	2025-07-03 04:23:06,952 - INFO -    Photos: 97	2025-07-03 04:23:06,952 - INFO -    Path length: 2731.8m	2025-07-03 04:23:06,952 - INFO -    Photo spacing: 24.0m	2025-07-03 04:23:06,952 - INFO -    Confidence: 0.90	2025-07-03 04:23:06,953 - INFO - ✅ Created OpenSfM config: /tmp/opensfm__t__qo7r/opensfm/config.yaml	2025-07-03 04:23:07,156 - INFO - ✅ Copied 97 images to OpenSfM	2025-07-03 04:23:07,156 - INFO - 🔄 Running OpenSfM reconstruction...	2025-07-03 04:23:07,156 - INFO - 🔧 Extract image metadata...	2025-07-03 04:23:12,860 - INFO - ✅ Extract image metadata completed	2025-07-03 04:23:12,860 - INFO - 🔧 Detect features...	2025-07-03 04:26:15,585 - INFO - ✅ Detect features completed	2025-07-03 04:26:15,586 - INFO - 🔧 Match features...	2025-07-03 04:26:16,736 - ERROR - ❌ OpenSfM match_features failed:	2025-07-03 04:26:16,736 - ERROR -    stdout: 	2025-07-03 04:26:16,736 - ERROR -    stderr: Traceback (most recent call last):
-  File "/opt/OpenSfM/bin/opensfm_main.py", line 34, in <module>
-    main()  # pragma: no cover
-  File "/opt/OpenSfM/bin/opensfm_main.py", line 26, in main
-    commands.command_runner(
-  File "/opt/OpenSfM/opensfm/commands/command_runner.py", line 45, in command_runner
-    command.run(data, args)
-  File "/opt/OpenSfM/opensfm/commands/command.py", line 16, in run
-    self.run_impl(data, args)
-  File "/opt/OpenSfM/opensfm/commands/match_features.py", line 15, in run_impl
-    match_features.run_dataset(dataset)
-  File "/opt/OpenSfM/opensfm/actions/match_features.py", line 15, in run_dataset
-    pairs_matches, preport = matching.match_images(data, {}, images, images)
-  File "/opt/OpenSfM/opensfm/matching.py", line 48, in match_images
-    pairs, preport = pairs_selection.match_candidates_from_metadata(
-  File "/opt/OpenSfM/opensfm/pairs_selection.py", line 609, in match_candidates_from_metadata
-    reference = data.load_reference()
-  File "/opt/OpenSfM/opensfm/dataset.py", line 459, in load_reference
-    lla["latitude"], lla["longitude"], lla["altitude"]	KeyError: 'latitude'	2025-07-03 04:26:16,736 - ERROR - ❌ OpenSfM reconstruction failed	2025-07-03 04:26:16,917 - INFO - 🧹 Cleanup completed	2025-07-03 04:26:16,917 - INFO - 🏁 Pipeline finished with exit code: 1
+{
+    "events": [
+        {
+            "timestamp": 1752969187029,
+            "message": "============================================================",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "🚀 SPACEPORT OPENSFM GPS-CONSTRAINED SfM PROCESSING",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "============================================================",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "📅 Started at: Sat Jul 19 23:53:06 UTC 2025",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "🔧 Pipeline: OpenSfM with GPS constraints",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "📍 GPS Enhancement: Drone flight path integration",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "🎯 Output: COLMAP-compatible format for 3DGS",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "============================================================",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "🔍 Verifying environment...",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "Python 3.9.23",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "[notice] A new release of pip is available: 23.0.1 -> 25.1.1",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969187030,
+            "message": "[notice] To update, run: pip install --upgrade pip",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "[notice] A new release of pip is available: 23.0.1 -> 25.1.1",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "[notice] To update, run: pip install --upgrade pip",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "[notice] A new release of pip is available: 23.0.1 -> 25.1.1",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "[notice] To update, run: pip install --upgrade pip",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "✅ Environment verification completed",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "🔍 Verifying required scripts...",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "✅ Found: run_opensfm_gps.py",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "✅ Found: gps_processor.py",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "✅ Found: colmap_converter.py",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "✅ Found: config_template.yaml",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "📁 Input directory: /opt/ml/processing/input",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "📁 Output directory: /opt/ml/processing/output",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "🔍 Input directory contents:",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "total 393728",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "drwxr-xr-x 3 root      root           4096 Jul 19 23:53 .",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "drwxr-xr-x 1 sagemaker sagemaker      4096 Jul  5 23:14 ..",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "-rw-r--r-- 1 root      root      403160843 Jul 19 23:52 1751413909023-l2zkyj-Battery-1.zip",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "drwxr-xr-x 2 root      root           4096 Jul 19 23:52 gps",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188051,
+            "message": "📦 ZIP files found: 1",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188052,
+            "message": "🛰️ CSV files found: 1",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188052,
+            "message": "✅ GPS flight path data available - will use GPS-constrained reconstruction",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188052,
+            "message": "============================================================",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188052,
+            "message": "🚀 LAUNCHING OPENSFM GPS PROCESSOR",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188052,
+            "message": "============================================================",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969188052,
+            "message": "🔧 Executing OpenSfM GPS-constrained reconstruction...",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,073 - INFO - 🏗️ Created workspace: /tmp/opensfm_0iqtt2ax",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,073 - INFO - 📦 Extracting ZIP: /opt/ml/processing/input/1751413909023-l2zkyj-Battery-1.zip",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,833 - INFO - 📷 Extracted 97 images",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,833 - INFO - 🛰️ Processing GPS data from: /opt/ml/processing/input/gps/gps-flight-path-20250719-235204.csv",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,833 - INFO - 🚁 Initializing Advanced 3D Path Processor",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,833 - INFO - 📂 CSV: /opt/ml/processing/input/gps/gps-flight-path-20250719-235204.csv",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,833 - INFO - 📷 Images: /tmp/opensfm_0iqtt2ax/images",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,836 - INFO - ✅ Mapped column 'latitude' → 'latitude'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,837 - INFO - ✅ Mapped column 'longitude' → 'longitude'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,837 - INFO - ✅ Mapped column 'altitude(ft)' → 'altitude'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,837 - INFO - ✅ Mapped column 'heading(deg)' → 'heading'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,837 - INFO - ✅ Mapped column 'gimbalpitchangle' → 'gimbal_pitch'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,838 - INFO - ✅ Mapped column 'photo_timeinterval' → 'photo_interval'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,838 - INFO - ✅ Mapped column 'photo_distinterval' → 'distance_interval'",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,838 - INFO - 📏 Converted altitude from feet to meters",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,839 - INFO - 📸 Using CSV photo interval: 3.0 seconds",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,839 - WARNING - ⚠️ Using fallback speed: 17.9 mph (8.0 m/s)",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,839 - INFO - ⏱️ Using time-based photo distribution: 24.0m intervals",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,839 - INFO - 📏 Using CSV distance interval: 0.0m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,839 - INFO - ✅ Loaded 10 waypoints",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,840 - INFO - 📊 Coverage: 41.731660 to 41.734230 lat",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,840 - INFO - 📊 Altitude: 39.6m to 118.0m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,840 - INFO - 🌍 Local coordinate system:",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,840 - INFO -    Origin: 41.732850°, -111.835173°, 70.0m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,840 - INFO -    UTM Zone: 12T",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,875 - INFO - 🛤️ Built 3D flight path:",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,875 - INFO -    Segments: 9",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,875 - INFO -    Total length: 2731.8m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,875 - INFO -    Curved segments: 9",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969189052,
+            "message": "2025-07-19 23:53:08,875 - INFO -    Estimated flight time: 341.4s",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO - ✅ Using EXIF timestamps for photo ordering",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO - 📸 Ordered 97 photos",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO -    First: DJI_0579.JPG",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO -    Last: DJI_0675.JPG",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO - 📐 Time-based photo mapping parameters:",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO -    Photos: 97",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO -    Speed: 8.0 m/s (from CSV)",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,643 - INFO -    Interval: 3.0 s (from CSV)",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,644 - INFO -    Calculated spacing: 24.0 m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,644 - INFO - ✅ Using time-based distribution (CSV parameters)",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,692 - INFO - ✅ Mapped 97 photos to 3D positions",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO - ✅ Generated OpenSfM files in /tmp/opensfm_0iqtt2ax/opensfm",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    - exif_overrides.json",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    - reference_lla.json",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    - reference.txt",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    - gps_priors.json",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO - 📊 GPS Processing Summary:",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    Photos: 97",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    Path length: 2731.8m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    Photo spacing: 24.0m",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,696 - INFO -    Confidence: 0.90",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,698 - INFO - ✅ Created OpenSfM config optimized for 3DGS: /tmp/opensfm_0iqtt2ax/opensfm/config.yaml",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,698 - INFO - 🎯 Target: ~30,000 high-quality points (reduced from ~250,000)",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,698 - INFO - 🔧 Key changes: Stricter feature filtering, GPS constraints, quality thresholds",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191053,
+            "message": "2025-07-19 23:53:10,893 - INFO - ✅ Copied 97 images to OpenSfM",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191054,
+            "message": "2025-07-19 23:53:10,893 - INFO - 🔄 Running OpenSfM reconstruction...",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969191054,
+            "message": "2025-07-19 23:53:10,893 - INFO - 🔧 Extract image metadata...",
+            "ingestionTime": 1752969193175
+        },
+        {
+            "timestamp": 1752969197055,
+            "message": "2025-07-19 23:53:16,401 - INFO - ✅ Extract image metadata completed",
+            "ingestionTime": 1752969202239
+        },
+        {
+            "timestamp": 1752969197055,
+            "message": "2025-07-19 23:53:16,401 - INFO - 🔧 Detect features...",
+            "ingestionTime": 1752969202239
+        },
+        {
+            "timestamp": 1752969267073,
+            "message": "2025-07-19 23:54:26,345 - INFO - ✅ Detect features completed",
+            "ingestionTime": 1752969272318
+        },
+        {
+            "timestamp": 1752969267073,
+            "message": "2025-07-19 23:54:26,345 - INFO - 🔧 Match features...",
+            "ingestionTime": 1752969272318
+        },
+        {
+            "timestamp": 1752969749208,
+            "message": "2025-07-20 00:02:28,669 - INFO - ✅ Match features completed",
+            "ingestionTime": 1752969754507
+        },
+        {
+            "timestamp": 1752969749208,
+            "message": "2025-07-20 00:02:28,669 - INFO - 🔧 Create tracks...",
+            "ingestionTime": 1752969754507
+        },
+        {
+            "timestamp": 1752969781216,
+            "message": "2025-07-20 00:03:00,903 - INFO - ✅ Create tracks completed",
+            "ingestionTime": 1752969786568
+        },
+        {
+            "timestamp": 1752969781216,
+            "message": "2025-07-20 00:03:00,903 - INFO - 🔧 Reconstruct 3D structure...",
+            "ingestionTime": 1752969786568
+        },
+        {
+            "timestamp": 1752971324603,
+            "message": "2025-07-20 00:28:44,469 - INFO - ✅ Reconstruct 3D structure completed",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,359 - INFO - 📊 Reconstruction statistics:",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,359 - INFO -    Cameras: 97",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,359 - INFO -    3D points: 219916",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,381 - INFO -    Average reprojection error: 0.0000",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,381 - INFO -    Max reprojection error: 0.0000",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,391 - INFO -    High-quality points (<0.005 error): 219916",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,391 - INFO -    Registered images (showing up to 20): ['DJI_0580.JPG', 'DJI_0579.JPG', 'DJI_0589.JPG', 'DJI_0588.JPG', 'DJI_0590.JPG', 'DJI_0587.JPG', 'DJI_0591.JPG', 'DJI_0667.JPG', 'DJI_0582.JPG', 'DJI_0669.JPG', 'DJI_0666.JPG', 'DJI_0670.JPG', 'DJI_0634.JPG', 'DJI_0581.JPG', 'DJI_0635.JPG', 'DJI_0636.JPG', 'DJI_0631.JPG', 'DJI_0586.JPG', 'DJI_0603.JPG', 'DJI_0607.JPG']",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,392 - WARNING - ⚠️ Very high point count: 219916 (target: ~30,000)",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,392 - WARNING -    Consider adjusting feature extraction parameters",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,392 - WARNING - ⚠️ High point count: 219916 (target: 10,000-50,000)",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,392 - INFO - ✅ Reconstruction validated for 3DGS compatibility",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,429 - INFO - 🔄 Converting to COLMAP format...",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO - 🔄 Initializing OpenSfM to COLMAP converter",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO -    Input: /tmp/opensfm_0iqtt2ax/opensfm",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO -    Output: /opt/ml/processing/output",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO -    Temp COLMAP dir: /tmp/colmap_r2m_bdbm/sparse/0",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO -    Final COLMAP dir: /opt/ml/processing/output/sparse/0",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO - 🚀 Starting full OpenSfM to COLMAP conversion with train/test split",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971325604,
+            "message": "2025-07-20 00:28:45,430 - INFO - 📁 Created temp COLMAP sparse directory: /tmp/colmap_r2m_bdbm/sparse/0",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO - ✅ Loaded OpenSfM reconstruction:",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO -    Cameras: 1",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO -    Shots: 97",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO -    Points: 219916",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO - 🔄 Creating train/test split:",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO -    Total images: 97",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO -    Training images: 77 (79.4%)",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO -    Test images: 20 (20.6%)",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO - 🔄 Converting 1 cameras to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO - ✅ Generated cameras.txt with 1 cameras",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,350 - INFO - 🔄 Converting 97 shots to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,354 - INFO - ✅ Generated images.txt with 97 images",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971326604,
+            "message": "2025-07-20 00:28:46,354 - INFO - 🔄 Converting 219916 points to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,906 - INFO - ✅ Generated points3D.txt with 219916 points",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,906 - INFO - 🔄 Creating train reconstruction in: /tmp/colmap_r2m_bdbm/train",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,906 - INFO - 🔄 Converting 1 cameras to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,906 - INFO - ✅ Generated cameras.txt with 1 cameras",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,906 - INFO - 🔄 Converting 77 shots to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,909 - INFO - ✅ Generated images.txt with 77 images",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:46,909 - INFO - 🔄 Converting 219916 points to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:47,465 - INFO - ✅ Generated points3D.txt with 219916 points",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:47,466 - INFO - 📸 Copying 77 images for train split:",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:47,468 - INFO -    📄 Copied: DJI_0579.JPG",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:47,470 - INFO -    📄 Copied: DJI_0580.JPG",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:47,472 - INFO -    📄 Copied: DJI_0581.JPG",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971327605,
+            "message": "2025-07-20 00:28:47,475 - INFO -    📄 ... and 74 more images",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - ✅ Copied 77/77 images for train split",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - ✅ train reconstruction: 1 cameras, 77 images, 219916 points",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - 📁 Created in subdirectory: /tmp/colmap_r2m_bdbm/train/0",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - 🔄 Creating test reconstruction in: /tmp/colmap_r2m_bdbm/test",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - 🔄 Converting 1 cameras to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - ✅ Generated cameras.txt with 1 cameras",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,624 - INFO - 🔄 Converting 20 shots to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,625 - INFO - ✅ Generated images.txt with 20 images",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:47,625 - INFO - 🔄 Converting 219916 points to COLMAP format",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,175 - INFO - ✅ Generated points3D.txt with 219916 points",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,176 - INFO - 📸 Copying 20 images for test split:",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,178 - INFO -    📄 Copied: DJI_0656.JPG",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,180 - INFO -    📄 Copied: DJI_0657.JPG",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,182 - INFO -    📄 Copied: DJI_0658.JPG",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,184 - INFO -    📄 ... and 17 more images",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328605,
+            "message": "2025-07-20 00:28:48,217 - INFO - ✅ Copied 20/20 images for test split",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328606,
+            "message": "2025-07-20 00:28:48,217 - INFO - ✅ test reconstruction: 1 cameras, 20 images, 219916 points",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328606,
+            "message": "2025-07-20 00:28:48,217 - INFO - 📁 Created in subdirectory: /tmp/colmap_r2m_bdbm/test/0",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328606,
+            "message": "2025-07-20 00:28:48,217 - INFO - ✅ Created train/test split reconstructions",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971328606,
+            "message": "2025-07-20 00:28:48,217 - INFO - ☁️ Creating reference point cloud with 219916 points",
+            "ingestionTime": 1752971330097
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,638 - INFO - ✅ Generated reference point cloud: /tmp/colmap_r2m_bdbm/dense/sparse_points.ply",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,638 - INFO - 📁 Creating final sparse directory: /opt/ml/processing/output/sparse/0",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,638 - INFO - ✅ Final sparse directory created successfully: /opt/ml/processing/output/sparse/0",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,638 - INFO - 📄 Copied cameras.txt to final location",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,638 - INFO - 📄 Copied images.txt to final location",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,644 - INFO - 📄 Copied points3D.txt to final location",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,806 - INFO - 📁 Copied train reconstruction to: /opt/ml/processing/output/train",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,852 - INFO - 📁 Copied test reconstruction to: /opt/ml/processing/output/test",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,857 - INFO - 📁 Copied dense directory to final location",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,907 - INFO - 🧹 Cleaned up temp directory: /tmp/colmap_r2m_bdbm",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO - 🔍 Validation Results:",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Cameras: 1",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Images: 48",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Points: 219916",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Train Images: 0",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Test Images: 0",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Train/Test Split: ✅ EXISTS",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - INFO -    Quality Check: ❌ FAILED",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,961 - WARNING - ⚠️ Quality check failed: Need at least 1000 points and proper train/test split for 3DGS",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,962 - INFO - ✅ Full OpenSfM to COLMAP conversion completed",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,962 - INFO - 📊 COLMAP Conversion Results:",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,962 - INFO -    Cameras: 1",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,962 - INFO -    Images: 48",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,962 - INFO -    Points: 219916",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:48,962 - INFO -    Quality Check: ❌ FAILED",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:49,540 - INFO - 🧹 Cleanup completed",
+            "ingestionTime": 1752971335135
+        },
+        {
+            "timestamp": 1752971329606,
+            "message": "2025-07-20 00:28:49,540 - INFO - 🏁 Pipeline finished with exit code: 1",
+            "ingestionTime": 1752971335135
+        }
+    ],
+    "nextForwardToken": "f/39092566961872846888044793093233936648712705126128287770/s",
+    "nextBackwardToken": "b/39092519180809101655897851781588355436611589330752110592/s"
+}

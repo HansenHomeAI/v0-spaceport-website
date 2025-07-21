@@ -1,3 +1,1744 @@
-[
-    "ml-job-20250703-042153-a9efb2d9-sfm/algo-1-1751516546"
-]
+{
+    "logStreams": [
+        {
+            "logStreamName": "3dgs-only-3dgs-only-1750999715-compression/algo-1-1751000112",
+            "creationTime": 1751000139699,
+            "firstEventTimestamp": 1751000133563,
+            "lastEventTimestamp": 1751000133563,
+            "lastIngestionTime": 1751000139709,
+            "uploadSequenceToken": "49039859635186849791968887635346400200118098092286614923",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:3dgs-only-3dgs-only-1750999715-compression/algo-1-1751000112",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "3dgs-only-3dgs-only-1751925550-compression/algo-1-1751925948",
+            "creationTime": 1751926073303,
+            "firstEventTimestamp": 1751926067137,
+            "lastEventTimestamp": 1751926127188,
+            "lastIngestionTime": 1751926132902,
+            "uploadSequenceToken": "49039859636417705868010752425732979626181922896478543296",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:3dgs-only-3dgs-only-1751925550-compression/algo-1-1751925948",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "3dgs-only-3dgs-only-1751929449-compression/algo-1-1751929849",
+            "creationTime": 1751929969408,
+            "firstEventTimestamp": 1751929963247,
+            "lastEventTimestamp": 1751930014291,
+            "lastIngestionTime": 1751930016846,
+            "uploadSequenceToken": "49039859636422868515109613275028049522256225539478330835",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:3dgs-only-3dgs-only-1751929449-compression/algo-1-1751929849",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "3dgs-only-3dgs-only-1751937053-compression/algo-1-1751937455",
+            "creationTime": 1751937580811,
+            "firstEventTimestamp": 1751937574615,
+            "lastEventTimestamp": 1751937624661,
+            "lastIngestionTime": 1751937630423,
+            "uploadSequenceToken": "49039859636432988694806077407464925206979432177390132683",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:3dgs-only-3dgs-only-1751937053-compression/algo-1-1751937455",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "3dgs-only-3dgs-only-1751945243-compression/algo-1-1751945646",
+            "creationTime": 1751945771619,
+            "firstEventTimestamp": 1751945765448,
+            "lastEventTimestamp": 1751945817492,
+            "lastIngestionTime": 1751945820089,
+            "uploadSequenceToken": "49039859636443874628129405276302106179061026557914324260",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:3dgs-only-3dgs-only-1751945243-compression/algo-1-1751945646",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751000924-compression/algo-1-1751000963",
+            "creationTime": 1751000990826,
+            "firstEventTimestamp": 1751000984689,
+            "lastEventTimestamp": 1751000984689,
+            "lastIngestionTime": 1751000990836,
+            "uploadSequenceToken": "49039859635187981133805256063438559531430385110965624150",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751000924-compression/algo-1-1751000963",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751002306-compression/algo-1-1751002344",
+            "creationTime": 1751002371156,
+            "firstEventTimestamp": 1751002365024,
+            "lastEventTimestamp": 1751002365024,
+            "lastIngestionTime": 1751002371168,
+            "uploadSequenceToken": "49039859635189815909743133847935236940662402122529447355",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751002306-compression/algo-1-1751002344",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751045193-compression/algo-1-1751045235",
+            "creationTime": 1751045264682,
+            "firstEventTimestamp": 1751045258515,
+            "lastEventTimestamp": 1751045258516,
+            "lastIngestionTime": 1751045264694,
+            "uploadSequenceToken": "49039859635246831185340262027337449411875343146309459286",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751045193-compression/algo-1-1751045235",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751068882-compression/algo-1-1751069039",
+            "creationTime": 1751069149697,
+            "firstEventTimestamp": 1751069143497,
+            "lastEventTimestamp": 1751069143497,
+            "lastIngestionTime": 1751069149708,
+            "uploadSequenceToken": "49039859635278579814628776683950579447581895896246590855",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751068882-compression/algo-1-1751069039",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751069851-compression/algo-1-1751069891",
+            "creationTime": 1751070005726,
+            "firstEventTimestamp": 1751069999589,
+            "lastEventTimestamp": 1751069999589,
+            "lastIngestionTime": 1751070005737,
+            "uploadSequenceToken": "49039859635279717672340780449700345751452314847460793778",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751069851-compression/algo-1-1751069891",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751085211-compression/algo-1-1751085251",
+            "creationTime": 1751085380122,
+            "firstEventTimestamp": 1751085373899,
+            "lastEventTimestamp": 1751085373899,
+            "lastIngestionTime": 1751085380135,
+            "uploadSequenceToken": "49039859635300153752580720068726886632772720667331468784",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751085211-compression/algo-1-1751085251",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751086909-compression/algo-1-1751086949",
+            "creationTime": 1751087078734,
+            "firstEventTimestamp": 1751087072579,
+            "lastEventTimestamp": 1751087072580,
+            "lastIngestionTime": 1751087078747,
+            "uploadSequenceToken": "49039859635302411595205096276247591852601401592064056631",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751086909-compression/algo-1-1751086949",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751087538-compression/algo-1-1751087581",
+            "creationTime": 1751087710407,
+            "firstEventTimestamp": 1751087704285,
+            "lastEventTimestamp": 1751087704285,
+            "lastIngestionTime": 1751087710416,
+            "uploadSequenceToken": "49039859635303251227323965738272113446502330622949006826",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751087538-compression/algo-1-1751087581",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751089859-compression/algo-1-1751089898",
+            "creationTime": 1751090023277,
+            "firstEventTimestamp": 1751090017140,
+            "lastEventTimestamp": 1751090018141,
+            "lastIngestionTime": 1751090023288,
+            "uploadSequenceToken": "49039859635306325561537032788216908573267378159726435726",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751089859-compression/algo-1-1751089898",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751090477-compression/algo-1-1751090521",
+            "creationTime": 1751090655836,
+            "firstEventTimestamp": 1751090649672,
+            "lastEventTimestamp": 1751090649672,
+            "lastIngestionTime": 1751090655847,
+            "uploadSequenceToken": "49039859635307166376668818498816557055663873700279950699",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751090477-compression/algo-1-1751090521",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751137639-compression/algo-1-1751137684",
+            "creationTime": 1751137799373,
+            "firstEventTimestamp": 1751137793233,
+            "lastEventTimestamp": 1751137793234,
+            "lastIngestionTime": 1751137799384,
+            "uploadSequenceToken": "49039859635369830885869540524312685339161130941559414242",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751137639-compression/algo-1-1751137684",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751139094-compression/algo-1-1751139135",
+            "creationTime": 1751139254829,
+            "firstEventTimestamp": 1751139248697,
+            "lastEventTimestamp": 1751139248698,
+            "lastIngestionTime": 1751139254842,
+            "uploadSequenceToken": "49039859635371765521389829646399230497104216452342554088",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751139094-compression/algo-1-1751139135",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "compression-only-compression-only-1751144770-compression/algo-1-1751144808",
+            "creationTime": 1751144928400,
+            "firstEventTimestamp": 1751144922239,
+            "lastEventTimestamp": 1751144922241,
+            "lastIngestionTime": 1751144928415,
+            "uploadSequenceToken": "49039859635379306993457559058903009294427187815345626518",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:compression-only-compression-only-1751144770-compression/algo-1-1751144808",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "full-pipeline-test-1752964310-sfm/algo-1-1752964366",
+            "creationTime": 1752964409006,
+            "firstEventTimestamp": 1752964402882,
+            "lastEventTimestamp": 1752964404884,
+            "lastIngestionTime": 1752964409018,
+            "uploadSequenceToken": "49039859637797811548752779249638299844893040883668426115",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:full-pipeline-test-1752964310-sfm/algo-1-1752964366",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "gpu-sogs-test-1751063264/algo-1-1751063302",
+            "creationTime": 1751063416478,
+            "firstEventTimestamp": 1751063410300,
+            "lastEventTimestamp": 1751063410300,
+            "lastIngestionTime": 1751063416490,
+            "uploadSequenceToken": "49039859635270959060757238680139565293380487120616234428",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:gpu-sogs-test-1751063264/algo-1-1751063302",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "gpu-sogs-test-1751067021/algo-1-1751067061",
+            "creationTime": 1751067171819,
+            "firstEventTimestamp": 1751067165570,
+            "lastEventTimestamp": 1751067165571,
+            "lastIngestionTime": 1751067171830,
+            "uploadSequenceToken": "49039859635275950763818929606113716208515864012739910959",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:gpu-sogs-test-1751067021/algo-1-1751067061",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250529-210703-302daa28/algo-1-1748552858",
+            "creationTime": 1748552923447,
+            "firstEventTimestamp": 1748552914820,
+            "lastEventTimestamp": 1748552924187,
+            "lastIngestionTime": 1748552929560,
+            "uploadSequenceToken": "49039859631933949550349112290065017199727207793763360148",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250529-210703-302daa28/algo-1-1748552858",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250529-212058-18cd1425/algo-1-1748553692",
+            "creationTime": 1748553752297,
+            "firstEventTimestamp": 1748553743281,
+            "lastEventTimestamp": 1748553753543,
+            "lastIngestionTime": 1748553759360,
+            "uploadSequenceToken": "49039859631935052543740014613256353097464509259409858012",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250529-212058-18cd1425/algo-1-1748553692",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250529-213550-d8ea4c86/algo-1-1748554593",
+            "creationTime": 1748554654565,
+            "firstEventTimestamp": 1748554643952,
+            "lastEventTimestamp": 1748554655902,
+            "lastIngestionTime": 1748554661640,
+            "uploadSequenceToken": "49039859631936251879576051427150157058165565855814196711",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250529-213550-d8ea4c86/algo-1-1748554593",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250530-171915-a555004a/algo-1-1748625592",
+            "creationTime": 1748625654733,
+            "firstEventTimestamp": 1748625648618,
+            "lastEventTimestamp": 1748630090720,
+            "lastIngestionTime": 1748630095636,
+            "uploadSequenceToken": "49039859632036520858893178787967119667550666715459558702",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250530-171915-a555004a/algo-1-1748625592",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250531-041625-ab0a3e7b/algo-1-1748665020",
+            "creationTime": 1748665077073,
+            "firstEventTimestamp": 1748665070962,
+            "lastEventTimestamp": 1748665128983,
+            "lastIngestionTime": 1748665134412,
+            "uploadSequenceToken": "49039859632083095380890415399416640939864571589947629055",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250531-041625-ab0a3e7b/algo-1-1748665020",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-172247-2401aaf7/algo-1-1749576204",
+            "creationTime": 1749576265810,
+            "firstEventTimestamp": 1749576259643,
+            "lastEventTimestamp": 1749576440704,
+            "lastIngestionTime": 1749576442559,
+            "uploadSequenceToken": "49039859633294431682669690894103497204280374920598592892",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-172247-2401aaf7/algo-1-1749576204",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-173437-ad2516b7/algo-1-1749576914",
+            "creationTime": 1749576971699,
+            "firstEventTimestamp": 1749576965582,
+            "lastEventTimestamp": 1749577161650,
+            "lastIngestionTime": 1749577167527,
+            "uploadSequenceToken": "49039859633295395330431339092994044853430582402907184555",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-173437-ad2516b7/algo-1-1749576914",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-174627-b54dc5c7/algo-1-1749577626",
+            "creationTime": 1749577683222,
+            "firstEventTimestamp": 1749577677096,
+            "lastEventTimestamp": 1749577860158,
+            "lastIngestionTime": 1749577865931,
+            "uploadSequenceToken": "49039859633296323668580507261379344665529799079446781382",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-174627-b54dc5c7/algo-1-1749577626",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-175611-a52feed1/algo-1-1749578209",
+            "creationTime": 1749578266543,
+            "firstEventTimestamp": 1749578260415,
+            "lastEventTimestamp": 1749578438479,
+            "lastIngestionTime": 1749578441310,
+            "uploadSequenceToken": "49039859633297088478455493990489380482009623560091671929",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-175611-a52feed1/algo-1-1749578209",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-175920-1bab36c2/algo-1-1749578394",
+            "creationTime": 1749578446840,
+            "firstEventTimestamp": 1749578440733,
+            "lastEventTimestamp": 1749578631802,
+            "lastIngestionTime": 1749578633583,
+            "uploadSequenceToken": "49039859633297344053109927543619011635568184777146441009",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-175920-1bab36c2/algo-1-1749578394",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-180346-f84c8b2d/algo-1-1749578661",
+            "creationTime": 1749578688182,
+            "firstEventTimestamp": 1749578682073,
+            "lastEventTimestamp": 1749578682073,
+            "lastIngestionTime": 1749578688194,
+            "uploadSequenceToken": "49039859633297416643580005353659747111580281956743847214",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-180346-f84c8b2d/algo-1-1749578661",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-181113-0d2bf7b5/algo-1-1749579109",
+            "creationTime": 1749579136466,
+            "firstEventTimestamp": 1749579130356,
+            "lastEventTimestamp": 1749579130357,
+            "lastIngestionTime": 1749579136478,
+            "uploadSequenceToken": "49039859633298012515222867798886916230735398311328816505",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-181113-0d2bf7b5/algo-1-1749579109",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250610-181939-ffaaa4d7/algo-1-1749579615",
+            "creationTime": 1749579643045,
+            "firstEventTimestamp": 1749579636929,
+            "lastEventTimestamp": 1749579636930,
+            "lastIngestionTime": 1749579643055,
+            "uploadSequenceToken": "49039859633298685871553288534215064544557904108905111003",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250610-181939-ffaaa4d7/algo-1-1749579615",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-200210-6d27984f/algo-1-1749672185",
+            "creationTime": 1749672207115,
+            "firstEventTimestamp": 1749672201001,
+            "lastEventTimestamp": 1749672201002,
+            "lastIngestionTime": 1749672207129,
+            "uploadSequenceToken": "49039859633421724630117995175158307464677987603896933749",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-200210-6d27984f/algo-1-1749672185",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-211517-c4cc781e-compression/algo-1-1749676977",
+            "creationTime": 1749677004698,
+            "firstEventTimestamp": 1749676998558,
+            "lastEventTimestamp": 1749676998558,
+            "lastIngestionTime": 1749677004707,
+            "uploadSequenceToken": "49039859633428101705107556980282001901335021475611352572",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-211517-c4cc781e-compression/algo-1-1749676977",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-211517-c4cc781e-sfm/algo-1-1749676553",
+            "creationTime": 1749676579887,
+            "firstEventTimestamp": 1749676573773,
+            "lastEventTimestamp": 1749676573773,
+            "lastIngestionTime": 1749676579899,
+            "uploadSequenceToken": "49039859633427537038421123581739865702602515282340945317",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-211517-c4cc781e-sfm/algo-1-1749676553",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-212945-494fcb50-sfm/algo-1-1749677426",
+            "creationTime": 1749677452701,
+            "firstEventTimestamp": 1749677446585,
+            "lastEventTimestamp": 1749677446586,
+            "lastIngestionTime": 1749677452712,
+            "uploadSequenceToken": "49039859633428697205895808601517642800768088698645716428",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-212945-494fcb50-sfm/algo-1-1749677426",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-214122-12b8e92d-compression/algo-1-1749678541",
+            "creationTime": 1749678577647,
+            "firstEventTimestamp": 1749678571527,
+            "lastEventTimestamp": 1749678571527,
+            "lastIngestionTime": 1749678577659,
+            "uploadSequenceToken": "49039859633430192516941982855274118631890569669701344645",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-214122-12b8e92d-compression/algo-1-1749678541",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-214122-12b8e92d-sfm/algo-1-1749678119",
+            "creationTime": 1749678146723,
+            "firstEventTimestamp": 1749678140601,
+            "lastEventTimestamp": 1749678140601,
+            "lastIngestionTime": 1749678146734,
+            "uploadSequenceToken": "49039859633429619719367899240401587872643940397391093188",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-214122-12b8e92d-sfm/algo-1-1749678119",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-230354-ac53a730-compression/algo-1-1749683498",
+            "creationTime": 1749683535050,
+            "firstEventTimestamp": 1749683528927,
+            "lastEventTimestamp": 1749683528927,
+            "lastIngestionTime": 1749683535059,
+            "uploadSequenceToken": "49039859633436782031808286997222452583841821047627521320",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-230354-ac53a730-compression/algo-1-1749683498",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-230354-ac53a730-sfm/algo-1-1749683077",
+            "creationTime": 1749683104526,
+            "firstEventTimestamp": 1749683098375,
+            "lastEventTimestamp": 1749683098376,
+            "lastIngestionTime": 1749683104536,
+            "uploadSequenceToken": "49039859633436209768583857687886102743310729866008403370",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-230354-ac53a730-sfm/algo-1-1749683077",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-234303-943e4810-compression/algo-1-1749685842",
+            "creationTime": 1749685879307,
+            "firstEventTimestamp": 1749685873192,
+            "lastEventTimestamp": 1749685873193,
+            "lastIngestionTime": 1749685879317,
+            "uploadSequenceToken": "49039859633439898085171229752536834974947403670076333546",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-234303-943e4810-compression/algo-1-1749685842",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250611-234303-943e4810-sfm/algo-1-1749685416",
+            "creationTime": 1749685438089,
+            "firstEventTimestamp": 1749685431943,
+            "lastEventTimestamp": 1749685431944,
+            "lastIngestionTime": 1749685438099,
+            "uploadSequenceToken": "49039859633439311605853385523525224412707420072017468672",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250611-234303-943e4810-sfm/algo-1-1749685416",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-002253-e5544732-sfm/algo-1-1749687813",
+            "creationTime": 1749687875825,
+            "firstEventTimestamp": 1749687869645,
+            "lastEventTimestamp": 1749687869645,
+            "lastIngestionTime": 1749687875835,
+            "uploadSequenceToken": "49039859633442551912790918261205573747835198806052642095",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-002253-e5544732-sfm/algo-1-1749687813",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-003221-6da9772b-sfm/algo-1-1749688377",
+            "creationTime": 1749688444434,
+            "firstEventTimestamp": 1749688438313,
+            "lastEventTimestamp": 1749688489328,
+            "lastIngestionTime": 1749688494658,
+            "uploadSequenceToken": "49039859633443374469646953870200792020367380198124231954",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-003221-6da9772b-sfm/algo-1-1749688377",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-004331-878f6c2e-sfm/algo-1-1749689048",
+            "creationTime": 1749689110293,
+            "firstEventTimestamp": 1749689104157,
+            "lastEventTimestamp": 1749689165177,
+            "lastIngestionTime": 1749689167562,
+            "uploadSequenceToken": "49039859633444268912482229523231332790646764090645880225",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-004331-878f6c2e-sfm/algo-1-1749689048",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-011222-e84b5a9c-sfm/algo-1-1749690777",
+            "creationTime": 1749690839004,
+            "firstEventTimestamp": 1749690832881,
+            "lastEventTimestamp": 1749690893901,
+            "lastIngestionTime": 1749690896290,
+            "uploadSequenceToken": "49039859633446566786136926789278466380015662943439232288",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-011222-e84b5a9c-sfm/algo-1-1749690777",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-013004-f28b3145-sfm/algo-1-1749691842",
+            "creationTime": 1749691909625,
+            "firstEventTimestamp": 1749691903502,
+            "lastEventTimestamp": 1749691962521,
+            "lastIngestionTime": 1749691964918,
+            "uploadSequenceToken": "49039859633447987236391606432357896180179128796060130699",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-013004-f28b3145-sfm/algo-1-1749691842",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-014040-bb790332-compression/algo-1-1749693080",
+            "creationTime": 1749693117702,
+            "firstEventTimestamp": 1749693111585,
+            "lastEventTimestamp": 1749693111586,
+            "lastIngestionTime": 1749693117712,
+            "uploadSequenceToken": "49039859633449519562449779308666684757636037088723148253",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-014040-bb790332-compression/algo-1-1749693080",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-014040-bb790332-sfm/algo-1-1749692478",
+            "creationTime": 1749692540323,
+            "firstEventTimestamp": 1749692534208,
+            "lastEventTimestamp": 1749692589225,
+            "lastIngestionTime": 1749692590577,
+            "uploadSequenceToken": "49039859633448818879850221227042292353012113290211154314",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-014040-bb790332-sfm/algo-1-1749692478",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-182253-d0d92f70-compression/algo-1-1749753160",
+            "creationTime": 1749753191830,
+            "firstEventTimestamp": 1749753185713,
+            "lastEventTimestamp": 1749753185713,
+            "lastIngestionTime": 1749753191842,
+            "uploadSequenceToken": "49039859633529371777868201796858843314964916138711767487",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-182253-d0d92f70-compression/algo-1-1749753160",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-182253-d0d92f70-sfm/algo-1-1749752624",
+            "creationTime": 1749752691015,
+            "firstEventTimestamp": 1749752684907,
+            "lastEventTimestamp": 1749752743926,
+            "lastIngestionTime": 1749752746307,
+            "uploadSequenceToken": "49039859633528779560273099764365409552370066936399976814",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-182253-d0d92f70-sfm/algo-1-1749752624",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-222731-cf53c485-compression/algo-1-1749767890",
+            "creationTime": 1749767927648,
+            "firstEventTimestamp": 1749767921528,
+            "lastEventTimestamp": 1749767921529,
+            "lastIngestionTime": 1749767927658,
+            "uploadSequenceToken": "49039859633548959037036137092737434003001326688672733575",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-222731-cf53c485-compression/algo-1-1749767890",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-222731-cf53c485-sfm/algo-1-1749767287",
+            "creationTime": 1749767349413,
+            "firstEventTimestamp": 1749767343299,
+            "lastEventTimestamp": 1749767402318,
+            "lastIngestionTime": 1749767404689,
+            "uploadSequenceToken": "49039859633548263892000409451068297701878542036822186299",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-222731-cf53c485-sfm/algo-1-1749767287",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-225010-97bb0368-compression/algo-1-1749769277",
+            "creationTime": 1749769314545,
+            "firstEventTimestamp": 1749769308428,
+            "lastEventTimestamp": 1749769308429,
+            "lastIngestionTime": 1749769314555,
+            "uploadSequenceToken": "49039859633550802539355807205206817319721678115444676877",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-225010-97bb0368-compression/algo-1-1749769277",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250612-225010-97bb0368-sfm/algo-1-1749768647",
+            "creationTime": 1749768709582,
+            "firstEventTimestamp": 1749768703467,
+            "lastEventTimestamp": 1749768764489,
+            "lastIngestionTime": 1749768765918,
+            "uploadSequenceToken": "49039859633550073275695883756317055347386218626187843945",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250612-225010-97bb0368-sfm/algo-1-1749768647",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-015530-df956480-compression/algo-1-1749866774",
+            "creationTime": 1749866811057,
+            "firstEventTimestamp": 1749866804917,
+            "lastEventTimestamp": 1749866804917,
+            "lastIngestionTime": 1749866811068,
+            "uploadSequenceToken": "49039859633680397633926815200813290357399212702004206024",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-015530-df956480-compression/algo-1-1749866774",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-015530-df956480-sfm/algo-1-1749866168",
+            "creationTime": 1749866220837,
+            "firstEventTimestamp": 1749866214724,
+            "lastEventTimestamp": 1749866273743,
+            "lastIngestionTime": 1749866275110,
+            "uploadSequenceToken": "49039859633679685223548650308871880924651250351140034821",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-015530-df956480-sfm/algo-1-1749866168",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-021002-4f36179c-compression/algo-1-1749867641",
+            "creationTime": 1749867673105,
+            "firstEventTimestamp": 1749867666989,
+            "lastEventTimestamp": 1749867666990,
+            "lastIngestionTime": 1749867673114,
+            "uploadSequenceToken": "49039859633681543489603669604401865337246708384197827025",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-021002-4f36179c-compression/algo-1-1749867641",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-021002-4f36179c-sfm/algo-1-1749867039",
+            "creationTime": 1749867096212,
+            "firstEventTimestamp": 1749867090105,
+            "lastEventTimestamp": 1749867149126,
+            "lastIngestionTime": 1749867152504,
+            "uploadSequenceToken": "49039859633680851480216784019349273230039836988962298297",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-021002-4f36179c-sfm/algo-1-1749867039",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-023037-acd2cb83-compression/algo-1-1749868893",
+            "creationTime": 1749868930437,
+            "firstEventTimestamp": 1749868924313,
+            "lastEventTimestamp": 1749868924314,
+            "lastIngestionTime": 1749868930447,
+            "uploadSequenceToken": "49039859633683214771827293840031091807006574926985222641",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-023037-acd2cb83-compression/algo-1-1749868893",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-023037-acd2cb83-sfm/algo-1-1749868279",
+            "creationTime": 1749868337019,
+            "firstEventTimestamp": 1749868330907,
+            "lastEventTimestamp": 1749868390927,
+            "lastIngestionTime": 1749868393307,
+            "uploadSequenceToken": "49039859633682500790301637930319120592879410475974842857",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-023037-acd2cb83-sfm/algo-1-1749868279",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-024640-5c04bb0c-compression/algo-1-1749869659",
+            "creationTime": 1749869696729,
+            "firstEventTimestamp": 1749869690612,
+            "lastEventTimestamp": 1749869690613,
+            "lastIngestionTime": 1749869696739,
+            "uploadSequenceToken": "49039859633684233348606639854785171684000224398962121041",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-024640-5c04bb0c-compression/algo-1-1749869659",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250614-024640-5c04bb0c-sfm/algo-1-1749869235",
+            "creationTime": 1749869287230,
+            "firstEventTimestamp": 1749869281079,
+            "lastEventTimestamp": 1749869341098,
+            "lastIngestionTime": 1749869343518,
+            "uploadSequenceToken": "49039859633683763837364740711015629093194183729399781768",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250614-024640-5c04bb0c-sfm/algo-1-1749869235",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250702-215129-c10aa60a-sfm/algo-1-1751493125",
+            "creationTime": 1751493173212,
+            "firstEventTimestamp": 1751493167072,
+            "lastEventTimestamp": 1751493168073,
+            "lastIngestionTime": 1751493173225,
+            "uploadSequenceToken": "49039859635842203744296357887932667689600323790290344270",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250702-215129-c10aa60a-sfm/algo-1-1751493125",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250702-222021-b671f0f4-sfm/algo-1-1751494857",
+            "creationTime": 1751494909142,
+            "firstEventTimestamp": 1751494903026,
+            "lastEventTimestamp": 1751494917031,
+            "lastIngestionTime": 1751494922253,
+            "uploadSequenceToken": "49039859635844528601279369587772021217029174297223813470",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250702-222021-b671f0f4-sfm/algo-1-1751494857",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250702-222156-1d7ec8d3-sfm/algo-1-1751494950",
+            "creationTime": 1751495002785,
+            "firstEventTimestamp": 1751494996612,
+            "lastEventTimestamp": 1751494999613,
+            "lastIngestionTime": 1751495002796,
+            "uploadSequenceToken": "49039859635844635661289834092251172814966293088400365916",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250702-222156-1d7ec8d3-sfm/algo-1-1751494950",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250702-224859-c3c249de-sfm/algo-1-1751496573",
+            "creationTime": 1751496619662,
+            "firstEventTimestamp": 1751496613552,
+            "lastEventTimestamp": 1751497029656,
+            "lastIngestionTime": 1751497034987,
+            "uploadSequenceToken": "49039859635847336906459816236223845388558119762883565985",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250702-224859-c3c249de-sfm/algo-1-1751496573",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-002406-a2e9ddf5-sfm/algo-1-1751502286",
+            "creationTime": 1751502333831,
+            "firstEventTimestamp": 1751502327680,
+            "lastEventTimestamp": 1751502327681,
+            "lastIngestionTime": 1751502333841,
+            "uploadSequenceToken": "49039859635854380291542193120836645537069568125692598678",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-002406-a2e9ddf5-sfm/algo-1-1751502286",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-002834-fd2bbe1f-sfm/algo-1-1751502550",
+            "creationTime": 1751502597137,
+            "firstEventTimestamp": 1751502591018,
+            "lastEventTimestamp": 1751502593019,
+            "lastIngestionTime": 1751502597149,
+            "uploadSequenceToken": "49039859635854730287907307255465308418903724632361982384",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-002834-fd2bbe1f-sfm/algo-1-1751502550",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-003418-44ce5110-sfm/algo-1-1751502892",
+            "creationTime": 1751502940093,
+            "firstEventTimestamp": 1751502933974,
+            "lastEventTimestamp": 1751502934975,
+            "lastIngestionTime": 1751502940103,
+            "uploadSequenceToken": "49039859635855186151965373675503584606146030699982674258",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-003418-44ce5110-sfm/algo-1-1751502892",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-025027-ebf0e183-sfm/algo-1-1751511060",
+            "creationTime": 1751511102697,
+            "firstEventTimestamp": 1751511096551,
+            "lastEventTimestamp": 1751511096552,
+            "lastIngestionTime": 1751511102710,
+            "uploadSequenceToken": "49039859635866036117708363600302160668852176589894244689",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-025027-ebf0e183-sfm/algo-1-1751511060",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-031256-e75c160f-sfm/algo-1-1751512411",
+            "creationTime": 1751512453689,
+            "firstEventTimestamp": 1751512447570,
+            "lastEventTimestamp": 1751512638085,
+            "lastIngestionTime": 1751512642230,
+            "uploadSequenceToken": "49039859635868082490792434393986813875631562641744124162",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-031256-e75c160f-sfm/algo-1-1751512411",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-035348-d72b26ae-sfm/algo-1-1751514861",
+            "creationTime": 1751514908178,
+            "firstEventTimestamp": 1751514902048,
+            "lastEventTimestamp": 1751515086586,
+            "lastIngestionTime": 1751515090804,
+            "uploadSequenceToken": "49039859635871337203902985448585393814854315484385171767",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-035348-d72b26ae-sfm/algo-1-1751514861",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-042153-a9efb2d9-sfm/algo-1-1751516546",
+            "creationTime": 1751516588626,
+            "firstEventTimestamp": 1751516582517,
+            "lastEventTimestamp": 1751516776981,
+            "lastIngestionTime": 1751516781301,
+            "uploadSequenceToken": "49039859635873584259842175861513790394780313944695036365",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-042153-a9efb2d9-sfm/algo-1-1751516546",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-044125-7d03d776-sfm/algo-1-1751517722",
+            "creationTime": 1751517764735,
+            "firstEventTimestamp": 1751517758602,
+            "lastEventTimestamp": 1751519349704,
+            "lastIngestionTime": 1751519355048,
+            "uploadSequenceToken": "49039859635877005356408643301386929288665384437233277245",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-044125-7d03d776-sfm/algo-1-1751517722",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-182002-5eb14f2f-sfm/algo-1-1751566836",
+            "creationTime": 1751566878820,
+            "firstEventTimestamp": 1751566872691,
+            "lastEventTimestamp": 1751568315643,
+            "lastIngestionTime": 1751568320953,
+            "uploadSequenceToken": "49039859635942092208173587892452529504441265362239805792",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-182002-5eb14f2f-sfm/algo-1-1751566836",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-194225-f53cc4a9-sfm/algo-1-1751571780",
+            "creationTime": 1751571823571,
+            "firstEventTimestamp": 1751571817455,
+            "lastEventTimestamp": 1751573589687,
+            "lastIngestionTime": 1751573593792,
+            "uploadSequenceToken": "49039859635949101013389654432478896802677316716580362535",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-194225-f53cc4a9-sfm/algo-1-1751571780",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-210336-0ea1174b-sfm/algo-1-1751576650",
+            "creationTime": 1751576692905,
+            "firstEventTimestamp": 1751576686774,
+            "lastEventTimestamp": 1751578023467,
+            "lastIngestionTime": 1751578029020,
+            "uploadSequenceToken": "49039859635954996442614943573336044549673916805978839401",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-210336-0ea1174b-sfm/algo-1-1751576650",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-220938-df79d78d-sfm/algo-1-1751580611",
+            "creationTime": 1751580658281,
+            "firstEventTimestamp": 1751580652168,
+            "lastEventTimestamp": 1751583480531,
+            "lastIngestionTime": 1751583484762,
+            "uploadSequenceToken": "49039859635962248367619123161830312824038139779998341512",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-220938-df79d78d-sfm/algo-1-1751580611",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250703-232920-5b7f1675-sfm/algo-1-1751585393",
+            "creationTime": 1751585435434,
+            "firstEventTimestamp": 1751585429318,
+            "lastEventTimestamp": 1751588335509,
+            "lastIngestionTime": 1751588338150,
+            "uploadSequenceToken": "49039859635968699626823129723108874040181606407225530722",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250703-232920-5b7f1675-sfm/algo-1-1751585393",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250704-212624-a5a13183-sfm/algo-1-1751664418",
+            "creationTime": 1751664465383,
+            "firstEventTimestamp": 1751664459305,
+            "lastEventTimestamp": 1751666778972,
+            "lastIngestionTime": 1751666781279,
+            "uploadSequenceToken": "49039859636072968429966897335181215334580095880546539993",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250704-212624-a5a13183-sfm/algo-1-1751664418",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250705-195947-79ff57d4-sfm/algo-1-1751745621",
+            "creationTime": 1751745668686,
+            "firstEventTimestamp": 1751745662490,
+            "lastEventTimestamp": 1751747835100,
+            "lastIngestionTime": 1751747836573,
+            "uploadSequenceToken": "49039859636180709395958274452024700372892819380758174037",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250705-195947-79ff57d4-sfm/algo-1-1751745621",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250705-220945-f38f6d1f-sfm/algo-1-1751753419",
+            "creationTime": 1751753466452,
+            "firstEventTimestamp": 1751753460299,
+            "lastEventTimestamp": 1751755465842,
+            "lastIngestionTime": 1751755467252,
+            "uploadSequenceToken": "49039859636190852308111922498092834486410659825801026017",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250705-220945-f38f6d1f-sfm/algo-1-1751753419",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250706-012711-8412a4b4-sfm/algo-1-1751765263",
+            "creationTime": 1751765305493,
+            "firstEventTimestamp": 1751765299389,
+            "lastEventTimestamp": 1751767137859,
+            "lastIngestionTime": 1751767142272,
+            "uploadSequenceToken": "49039859636206371071547271306607304208104296692760500526",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250706-012711-8412a4b4-sfm/algo-1-1751765263",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250706-022926-c051dd70-sfm/algo-1-1751768999",
+            "creationTime": 1751769042160,
+            "firstEventTimestamp": 1751769036028,
+            "lastEventTimestamp": 1751770991551,
+            "lastIngestionTime": 1751770994054,
+            "uploadSequenceToken": "49039859636211490968015331721438069719550055733744425295",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250706-022926-c051dd70-sfm/algo-1-1751768999",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250706-031853-375ce342-sfm/algo-1-1751771967",
+            "creationTime": 1751772009239,
+            "firstEventTimestamp": 1751772003107,
+            "lastEventTimestamp": 1751773961644,
+            "lastIngestionTime": 1751773964054,
+            "uploadSequenceToken": "49039859636215438775162812921580594334781475651390855661",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250706-031853-375ce342-sfm/algo-1-1751771967",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250706-070145-21669b00-sfm/algo-1-1751785339",
+            "creationTime": 1751785386716,
+            "firstEventTimestamp": 1751785380602,
+            "lastEventTimestamp": 1751787268095,
+            "lastIngestionTime": 1751787270546,
+            "uploadSequenceToken": "49039859636233126136854900938364062175666786272297146680",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250706-070145-21669b00-sfm/algo-1-1751785339",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250707-065645-1b2060d1-sfm/algo-1-1751871439",
+            "creationTime": 1751871482282,
+            "firstEventTimestamp": 1751871476169,
+            "lastEventTimestamp": 1751873342642,
+            "lastIngestionTime": 1751873345070,
+            "uploadSequenceToken": "49039859636347538803879561578504302233157582673399306614",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250707-065645-1b2060d1-sfm/algo-1-1751871439",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250707-170718-4544d51b-sfm/algo-1-1751908073",
+            "creationTime": 1751908116017,
+            "firstEventTimestamp": 1751908109892,
+            "lastEventTimestamp": 1751910320514,
+            "lastIngestionTime": 1751910325953,
+            "uploadSequenceToken": "49039859636396694828872008045565001103236902317023090988",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250707-170718-4544d51b-sfm/algo-1-1751908073",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250707-183623-a8a8bfac-sfm/algo-1-1751913423",
+            "creationTime": 1751913464662,
+            "firstEventTimestamp": 1751913459456,
+            "lastEventTimestamp": 1751915577032,
+            "lastIngestionTime": 1751915582593,
+            "uploadSequenceToken": "49039859636403682101923770865739142487554804243849075120",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250707-183623-a8a8bfac-sfm/algo-1-1751913423",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250708-125908-0295623c-compression/algo-1-1751979950",
+            "creationTime": 1751980099500,
+            "firstEventTimestamp": 1751980093338,
+            "lastEventTimestamp": 1751980145392,
+            "lastIngestionTime": 1751980151375,
+            "uploadSequenceToken": "49039859636489508734611904017625008440390101950195882324",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250708-125908-0295623c-compression/algo-1-1751979950",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250708-131724-cd58f745-compression/algo-1-1751981165",
+            "creationTime": 1751981304402,
+            "firstEventTimestamp": 1751981298194,
+            "lastEventTimestamp": 1751981346238,
+            "lastIngestionTime": 1751981347864,
+            "uploadSequenceToken": "49039859636491099141287352715832863571169672215817673013",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250708-131724-cd58f745-compression/algo-1-1751981165",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250708-153918-82f1be96-compression/algo-1-1751989561",
+            "creationTime": 1751989691567,
+            "firstEventTimestamp": 1751989685406,
+            "lastEventTimestamp": 1751989734452,
+            "lastIngestionTime": 1751989740079,
+            "uploadSequenceToken": "49039859636502254308411998823595185409750092456428099993",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250708-153918-82f1be96-compression/algo-1-1751989561",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250709-211918-c5157ba9-compression/algo-1-1752097320",
+            "creationTime": 1752097440402,
+            "firstEventTimestamp": 1752097434221,
+            "lastEventTimestamp": 1752097739476,
+            "lastIngestionTime": 1752097740564,
+            "uploadSequenceToken": "49039859636645811576632347693552995271511271300040284501",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250709-211918-c5157ba9-compression/algo-1-1752097320",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250710-224237-e6243559-sfm/algo-1-1752187392",
+            "creationTime": 1752187434898,
+            "firstEventTimestamp": 1752187428777,
+            "lastEventTimestamp": 1752188409061,
+            "lastIngestionTime": 1752188414491,
+            "uploadSequenceToken": "49039859636766337898888505463113816683174781972545067445",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250710-224237-e6243559-sfm/algo-1-1752187392",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250710-230256-143473b0-sfm/algo-1-1752188670",
+            "creationTime": 1752188713115,
+            "firstEventTimestamp": 1752188706966,
+            "lastEventTimestamp": 1752191224652,
+            "lastIngestionTime": 1752191226120,
+            "uploadSequenceToken": "49039859636770075194869066210344633658729572674557499827",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250710-230256-143473b0-sfm/algo-1-1752188670",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250711-005451-c2087358-sfm/algo-1-1752195325",
+            "creationTime": 1752195372073,
+            "firstEventTimestamp": 1752195365891,
+            "lastEventTimestamp": 1752198042621,
+            "lastIngestionTime": 1752198046199,
+            "uploadSequenceToken": "49039859636779140634809331003606191901208353598582085975",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250711-005451-c2087358-sfm/algo-1-1752195325",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250712-000409-217bbaa0-sfm/algo-1-1752279064",
+            "creationTime": 1752279112009,
+            "firstEventTimestamp": 1752279105894,
+            "lastEventTimestamp": 1752281710603,
+            "lastIngestionTime": 1752281712175,
+            "uploadSequenceToken": "49039859636890351792403199876190581239507322738050914675",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250712-000409-217bbaa0-sfm/algo-1-1752279064",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250712-023757-b282c0b8-sfm/algo-1-1752287910",
+            "creationTime": 1752287952114,
+            "firstEventTimestamp": 1752287946002,
+            "lastEventTimestamp": 1752290299620,
+            "lastIngestionTime": 1752290304085,
+            "uploadSequenceToken": "49039859636901772399712464252732199102235911879724081922",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250712-023757-b282c0b8-sfm/algo-1-1752287910",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250712-052642-b4c58dae-sfm/algo-1-1752298037",
+            "creationTime": 1752298079876,
+            "firstEventTimestamp": 1752298073752,
+            "lastEventTimestamp": 1752300617440,
+            "lastIngestionTime": 1752300620952,
+            "uploadSequenceToken": "49039859636915485868157653790399138035503062635714683847",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250712-052642-b4c58dae-sfm/algo-1-1752298037",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250715-041015-1095c89a-compression/algo-1-1752556571",
+            "creationTime": 1752556700342,
+            "firstEventTimestamp": 1752556694196,
+            "lastEventTimestamp": 1752556868276,
+            "lastIngestionTime": 1752556873500,
+            "uploadSequenceToken": "49039859637256103928950471742796383576858302410959332322",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250715-041015-1095c89a-compression/algo-1-1752556571",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250715-041015-1095c89a-sfm/algo-1-1752552651",
+            "creationTime": 1752552694090,
+            "firstEventTimestamp": 1752552687932,
+            "lastEventTimestamp": 1752555248630,
+            "lastIngestionTime": 1752555250273,
+            "uploadSequenceToken": "49039859637253946290178557781158758240227879521992811481",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250715-041015-1095c89a-sfm/algo-1-1752552651",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250717-034529-bb733d87-sfm/algo-1-1752723962",
+            "creationTime": 1752724009176,
+            "firstEventTimestamp": 1752724003020,
+            "lastEventTimestamp": 1752724003022,
+            "lastIngestionTime": 1752724009189,
+            "uploadSequenceToken": "49039859637478265365864072753021198982417922150882583374",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250717-034529-bb733d87-sfm/algo-1-1752723962",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250719-062839-793d168c-compression/algo-1-1752907046",
+            "creationTime": 1752907171144,
+            "firstEventTimestamp": 1752907164988,
+            "lastEventTimestamp": 1752907164989,
+            "lastIngestionTime": 1752907171159,
+            "uploadSequenceToken": "49039859637721729384151189640586530271284278032982319965",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250719-062839-793d168c-compression/algo-1-1752907046",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250719-230702-77947f69-sfm/algo-1-1752966457",
+            "creationTime": 1752966499511,
+            "firstEventTimestamp": 1752966493387,
+            "lastEventTimestamp": 1752968839009,
+            "lastIngestionTime": 1752968844531,
+            "uploadSequenceToken": "49039859637803707356808047189204831948163906970448274397",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250719-230702-77947f69-sfm/algo-1-1752966457",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-job-20250719-235204-96113a2c-sfm/algo-1-1752969156",
+            "creationTime": 1752969193164,
+            "firstEventTimestamp": 1752969187029,
+            "lastEventTimestamp": 1752971329606,
+            "lastIngestionTime": 1752971335135,
+            "uploadSequenceToken": "49039859637807017937371261083817550100690389910865552248",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-job-20250719-235204-96113a2c-sfm/algo-1-1752969156",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-pipeline-test-gsplat-compression/algo-1-1749752876",
+            "creationTime": 1749752913277,
+            "firstEventTimestamp": 1749752907169,
+            "lastEventTimestamp": 1749752907170,
+            "lastIngestionTime": 1749752913287,
+            "uploadSequenceToken": "49039859633529001514763835929621946943153095826445149180",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-pipeline-test-gsplat-compression/algo-1-1749752876",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-pipeline-test-gsplat-sfm/algo-1-1749752271",
+            "creationTime": 1749752337935,
+            "firstEventTimestamp": 1749752331819,
+            "lastEventTimestamp": 1749752390838,
+            "lastIngestionTime": 1749752395265,
+            "uploadSequenceToken": "49039859633528312945419003435931634204921822517449434008",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-pipeline-test-gsplat-sfm/algo-1-1749752271",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-test-3256EB82-A720-4FE7-905D-AB60CEF87B74-compression/algo-1-1749759088",
+            "creationTime": 1749759125792,
+            "firstEventTimestamp": 1749759119645,
+            "lastEventTimestamp": 1749759119645,
+            "lastIngestionTime": 1749759125804,
+            "uploadSequenceToken": "49039859633537259366284525647825932722806198330734388082",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-test-3256EB82-A720-4FE7-905D-AB60CEF87B74-compression/algo-1-1749759088",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "ml-test-3256EB82-A720-4FE7-905D-AB60CEF87B74-sfm/algo-1-1749758493",
+            "creationTime": 1749758560545,
+            "firstEventTimestamp": 1749758554438,
+            "lastEventTimestamp": 1749758613458,
+            "lastIngestionTime": 1749758615892,
+            "uploadSequenceToken": "49039859633536581576978738969803349026924313066100728621",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:ml-test-3256EB82-A720-4FE7-905D-AB60CEF87B74-sfm/algo-1-1749758493",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "optimized-test-optimized-3dgs-1749764575-sfm/algo-1-1749764612",
+            "creationTime": 1749764674450,
+            "firstEventTimestamp": 1749764668329,
+            "lastEventTimestamp": 1749764727348,
+            "lastIngestionTime": 1749764728729,
+            "uploadSequenceToken": "49039859633544706931052808847593123159605689696206168878",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:optimized-test-optimized-3dgs-1749764575-sfm/algo-1-1749764612",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "optimized-test-optimized-3dgs-1749764997-compression/algo-1-1749765645",
+            "creationTime": 1749765682177,
+            "firstEventTimestamp": 1749765676047,
+            "lastEventTimestamp": 1749765676047,
+            "lastIngestionTime": 1749765682187,
+            "uploadSequenceToken": "49039859633545974294119213941911470650719934807337837478",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:optimized-test-optimized-3dgs-1749764997-compression/algo-1-1749765645",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "optimized-test-optimized-3dgs-1749764997-sfm/algo-1-1749765033",
+            "creationTime": 1749765094711,
+            "firstEventTimestamp": 1749765088513,
+            "lastEventTimestamp": 1749765147533,
+            "lastIngestionTime": 1749765149028,
+            "uploadSequenceToken": "49039859633545265604250209251949589488338013137795523521",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:optimized-test-optimized-3dgs-1749764997-sfm/algo-1-1749765033",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "optimized-test-test-optimized-1749763295-sfm/algo-1-1749763328",
+            "creationTime": 1749763394581,
+            "firstEventTimestamp": 1749763388461,
+            "lastEventTimestamp": 1749763448480,
+            "lastIngestionTime": 1749763449856,
+            "uploadSequenceToken": "49039859633543007017258155404875996126564233846195725234",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:optimized-test-test-optimized-1749763295-sfm/algo-1-1749763328",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750801898-compression/algo-1-1750802519",
+            "creationTime": 1750802556398,
+            "firstEventTimestamp": 1750802550270,
+            "lastEventTimestamp": 1750802550271,
+            "lastIngestionTime": 1750802556410,
+            "uploadSequenceToken": "49039859634924216539438545862748973413083658499263013765",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750801898-compression/algo-1-1750802519",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750801898-sfm/algo-1-1750801936",
+            "creationTime": 1750801998295,
+            "firstEventTimestamp": 1750801992177,
+            "lastEventTimestamp": 1750802106221,
+            "lastIngestionTime": 1750802107693,
+            "uploadSequenceToken": "49039859634923620092239961242653231976107237701171258358",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750801898-sfm/algo-1-1750801936",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750802934-compression/algo-1-1750803572",
+            "creationTime": 1750803609431,
+            "firstEventTimestamp": 1750803603311,
+            "lastEventTimestamp": 1750803603311,
+            "lastIngestionTime": 1750803609441,
+            "uploadSequenceToken": "49039859634925616257724175248495533889902013993434194891",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750802934-compression/algo-1-1750803572",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750802934-sfm/algo-1-1750802969",
+            "creationTime": 1750803036851,
+            "firstEventTimestamp": 1750803030738,
+            "lastEventTimestamp": 1750803187894,
+            "lastIngestionTime": 1750803190596,
+            "uploadSequenceToken": "49039859634925059517224280715406747919469252538019586853",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750802934-sfm/algo-1-1750802969",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750876231-sfm/algo-1-1750876266",
+            "creationTime": 1750876333657,
+            "firstEventTimestamp": 1750876327549,
+            "lastEventTimestamp": 1750876477099,
+            "lastIngestionTime": 1750876479698,
+            "uploadSequenceToken": "49039859635022477443388616984877414439224534017905239028",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750876231-sfm/algo-1-1750876266",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750879970-sfm/algo-1-1750880005",
+            "creationTime": 1750880062645,
+            "firstEventTimestamp": 1750880056535,
+            "lastEventTimestamp": 1750880205606,
+            "lastIngestionTime": 1750880208445,
+            "uploadSequenceToken": "49039859635027433798290216002583757269391501871023629294",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750879970-sfm/algo-1-1750880005",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750884156-sfm/algo-1-1750884194",
+            "creationTime": 1750884247053,
+            "firstEventTimestamp": 1750884240922,
+            "lastEventTimestamp": 1750884394985,
+            "lastIngestionTime": 1750884397704,
+            "uploadSequenceToken": "49039859635033002278634609923468562851486505029097464603",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750884156-sfm/algo-1-1750884194",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750887725-sfm/algo-1-1750887770",
+            "creationTime": 1750887822618,
+            "firstEventTimestamp": 1750887816500,
+            "lastEventTimestamp": 1750887967228,
+            "lastIngestionTime": 1750887970267,
+            "uploadSequenceToken": "49039859635037751029390915269874212074676549155523371827",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750887725-sfm/algo-1-1750887770",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750888239-sfm/algo-1-1750888276",
+            "creationTime": 1750888328574,
+            "firstEventTimestamp": 1750888322457,
+            "lastEventTimestamp": 1750888470620,
+            "lastIngestionTime": 1750888473319,
+            "uploadSequenceToken": "49039859635038419700192650863373908429168419664880444249",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750888239-sfm/algo-1-1750888276",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750889150-compression/algo-1-1750889849",
+            "creationTime": 1750889876862,
+            "firstEventTimestamp": 1750889870733,
+            "lastEventTimestamp": 1750889870733,
+            "lastIngestionTime": 1750889876870,
+            "uploadSequenceToken": "49039859635040285339475362777832238801768459708961104816",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750889150-compression/algo-1-1750889849",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750889150-sfm/algo-1-1750889186",
+            "creationTime": 1750889239207,
+            "firstEventTimestamp": 1750889233088,
+            "lastEventTimestamp": 1750889385203,
+            "lastIngestionTime": 1750889387500,
+            "uploadSequenceToken": "49039859635039634855171065513551516185066627092832559951",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750889150-sfm/algo-1-1750889186",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750964675-sfm/algo-1-1750964714",
+            "creationTime": 1750964766680,
+            "firstEventTimestamp": 1750964760555,
+            "lastEventTimestamp": 1750964914621,
+            "lastIngestionTime": 1750964916342,
+            "uploadSequenceToken": "49039859635140029906446681090499360320089023760018416497",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750964675-sfm/algo-1-1750964714",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750966177-sfm/algo-1-1750966212",
+            "creationTime": 1750966263288,
+            "firstEventTimestamp": 1750966257180,
+            "lastEventTimestamp": 1750966409685,
+            "lastIngestionTime": 1750966411736,
+            "uploadSequenceToken": "49039859635142017626016209878986205791852754361055159116",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750966177-sfm/algo-1-1750966212",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750967252-sfm/algo-1-1750967290",
+            "creationTime": 1750967342754,
+            "firstEventTimestamp": 1750967336638,
+            "lastEventTimestamp": 1750967486724,
+            "lastIngestionTime": 1750967489002,
+            "uploadSequenceToken": "49039859635143449558142317112168945752179256702281425914",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750967252-sfm/algo-1-1750967290",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750968114-sfm/algo-1-1750968159",
+            "creationTime": 1750968212611,
+            "firstEventTimestamp": 1750968206428,
+            "lastEventTimestamp": 1750968358511,
+            "lastIngestionTime": 1750968361276,
+            "uploadSequenceToken": "49039859635144609009163112403877067393239234279506420569",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750968114-sfm/algo-1-1750968159",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750969631-sfm/algo-1-1750969667",
+            "creationTime": 1750969719073,
+            "firstEventTimestamp": 1750969712964,
+            "lastEventTimestamp": 1750969864028,
+            "lastIngestionTime": 1750969866821,
+            "uploadSequenceToken": "49039859635146610221726026405044938733958345532116542283",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750969631-sfm/algo-1-1750969667",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750972601-sfm/algo-1-1750972637",
+            "creationTime": 1750972688819,
+            "firstEventTimestamp": 1750972682698,
+            "lastEventTimestamp": 1750972837002,
+            "lastIngestionTime": 1750972839492,
+            "uploadSequenceToken": "49039859635150561579241484346697759905162324984303428553",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750972601-sfm/algo-1-1750972637",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750973964-sfm/algo-1-1750974001",
+            "creationTime": 1750974054079,
+            "firstEventTimestamp": 1750974047964,
+            "lastEventTimestamp": 1750974203748,
+            "lastIngestionTime": 1750974206208,
+            "uploadSequenceToken": "49039859635152378256410971523779911884043698111373615989",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750973964-sfm/algo-1-1750974001",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750974917-sfm/algo-1-1750974953",
+            "creationTime": 1750975005638,
+            "firstEventTimestamp": 1750974999502,
+            "lastEventTimestamp": 1750975161585,
+            "lastIngestionTime": 1750975164533,
+            "uploadSequenceToken": "49039859635153652088830032103283812782926868453015397323",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750974917-sfm/algo-1-1750974953",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750978221-sfm/algo-1-1750978257",
+            "creationTime": 1750978320088,
+            "firstEventTimestamp": 1750978313905,
+            "lastEventTimestamp": 1750978507272,
+            "lastIngestionTime": 1750978509147,
+            "uploadSequenceToken": "49039859635158097843393926273901149411021217273394733872",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750978221-sfm/algo-1-1750978257",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750980108-sfm/algo-1-1750980144",
+            "creationTime": 1750980206223,
+            "firstEventTimestamp": 1750980200116,
+            "lastEventTimestamp": 1750980346072,
+            "lastIngestionTime": 1750980351675,
+            "uploadSequenceToken": "49039859635160546983194543863374619510414960131288048507",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750980108-sfm/algo-1-1750980144",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750980851-sfm/algo-1-1750980885",
+            "creationTime": 1750980942110,
+            "firstEventTimestamp": 1750980936007,
+            "lastEventTimestamp": 1750981085931,
+            "lastIngestionTime": 1750981091053,
+            "uploadSequenceToken": "49039859635161529785131611322902895718917288971516486597",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750980851-sfm/algo-1-1750980885",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750982689-sfm/algo-1-1750982729",
+            "creationTime": 1750982801749,
+            "firstEventTimestamp": 1750982795628,
+            "lastEventTimestamp": 1750982956700,
+            "lastIngestionTime": 1750982959389,
+            "uploadSequenceToken": "49039859635164013229648344129485213665576332828020810746",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750982689-sfm/algo-1-1750982729",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750984684-sfm/algo-1-1750984729",
+            "creationTime": 1750984797055,
+            "firstEventTimestamp": 1750984790939,
+            "lastEventTimestamp": 1750984942950,
+            "lastIngestionTime": 1750984947356,
+            "uploadSequenceToken": "49039859635166655691039440681338322969883648091640800062",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750984684-sfm/algo-1-1750984729",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750986918-sfm/algo-1-1750986960",
+            "creationTime": 1750987023209,
+            "firstEventTimestamp": 1750987017009,
+            "lastEventTimestamp": 1750987175112,
+            "lastIngestionTime": 1750987177551,
+            "uploadSequenceToken": "49039859635169620128669500221793494029457063958824854297",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750986918-sfm/algo-1-1750986960",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750991898-sfm/algo-1-1750991933",
+            "creationTime": 1750992000697,
+            "firstEventTimestamp": 1750991994581,
+            "lastEventTimestamp": 1750992143659,
+            "lastIngestionTime": 1750992146376,
+            "uploadSequenceToken": "49039859635176224829965656206405675617155990254914085748",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750991898-sfm/algo-1-1750991933",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750993481-sfm/algo-1-1750993516",
+            "creationTime": 1750993578425,
+            "firstEventTimestamp": 1750993572291,
+            "lastEventTimestamp": 1750993720150,
+            "lastIngestionTime": 1750993724278,
+            "uploadSequenceToken": "49039859635178322221478661216731363227753439923971531553",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750993481-sfm/algo-1-1750993516",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750995274-compression/algo-1-1750996035",
+            "creationTime": 1750996063030,
+            "firstEventTimestamp": 1750996056903,
+            "lastEventTimestamp": 1750996056903,
+            "lastIngestionTime": 1750996063040,
+            "uploadSequenceToken": "49039859635181430969404539138148107866941541000165171968",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750995274-compression/algo-1-1750996035",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1750995274-sfm/algo-1-1750995311",
+            "creationTime": 1750995373183,
+            "firstEventTimestamp": 1750995367072,
+            "lastEventTimestamp": 1750995481118,
+            "lastIngestionTime": 1750995482696,
+            "uploadSequenceToken": "49039859635180659559912553336930763745485124218280977290",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1750995274-sfm/algo-1-1750995311",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751002585-sfm/algo-1-1751002621",
+            "creationTime": 1751002683342,
+            "firstEventTimestamp": 1751002677230,
+            "lastEventTimestamp": 1751002836393,
+            "lastIngestionTime": 1751002839289,
+            "uploadSequenceToken": "49039859635190438149281748678546957255092122850147410804",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751002585-sfm/algo-1-1751002621",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751051208-sfm/algo-1-1751051243",
+            "creationTime": 1751051295407,
+            "firstEventTimestamp": 1751051289298,
+            "lastEventTimestamp": 1751051437354,
+            "lastIngestionTime": 1751051440351,
+            "uploadSequenceToken": "49039859635255040041517027113550739703065356435335914368",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751051208-sfm/algo-1-1751051243",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751068844-sfm/algo-1-1751069294",
+            "creationTime": 1751069346215,
+            "firstEventTimestamp": 1751069340099,
+            "lastEventTimestamp": 1751069489273,
+            "lastIngestionTime": 1751069491319,
+            "uploadSequenceToken": "49039859635279033893533644764855218868842269101616767786",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751068844-sfm/algo-1-1751069294",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751147820-sfm/algo-1-1751147855",
+            "creationTime": 1751147906912,
+            "firstEventTimestamp": 1751147900804,
+            "lastEventTimestamp": 1751148049903,
+            "lastIngestionTime": 1751148052743,
+            "uploadSequenceToken": "49039859635383459937703173753550745412915941875681567501",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751147820-sfm/algo-1-1751147855",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751148367-sfm/algo-1-1751148401",
+            "creationTime": 1751148453514,
+            "firstEventTimestamp": 1751148447412,
+            "lastEventTimestamp": 1751148598986,
+            "lastIngestionTime": 1751148602019,
+            "uploadSequenceToken": "49039859635384190050739786509001750917156671928936145858",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751148367-sfm/algo-1-1751148401",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751148974-compression/algo-1-1751149739",
+            "creationTime": 1751149859340,
+            "firstEventTimestamp": 1751149853156,
+            "lastEventTimestamp": 1751149853156,
+            "lastIngestionTime": 1751149859352,
+            "uploadSequenceToken": "49039859635385861332963410744634909489190740470750405397",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751148974-compression/algo-1-1751149739",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751148974-sfm/algo-1-1751149011",
+            "creationTime": 1751149063033,
+            "firstEventTimestamp": 1751149056901,
+            "lastEventTimestamp": 1751149170944,
+            "lastIngestionTime": 1751149172471,
+            "uploadSequenceToken": "49039859635384948311508438005835214432014835536648889164",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751148974-sfm/algo-1-1751149011",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751156568-compression/algo-1-1751157333",
+            "creationTime": 1751157453327,
+            "firstEventTimestamp": 1751157447125,
+            "lastEventTimestamp": 1751157447125,
+            "lastIngestionTime": 1751157453339,
+            "uploadSequenceToken": "49039859635395955473083437450569836165826780390492365641",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751156568-compression/algo-1-1751157333",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751156568-sfm/algo-1-1751156602",
+            "creationTime": 1751156653960,
+            "firstEventTimestamp": 1751156647850,
+            "lastEventTimestamp": 1751156812108,
+            "lastIngestionTime": 1751156814812,
+            "uploadSequenceToken": "49039859635395106725118972895592258950186544089123676939",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751156568-sfm/algo-1-1751156602",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751305445-compression/algo-1-1751306217",
+            "creationTime": 1751306342991,
+            "firstEventTimestamp": 1751306336821,
+            "lastEventTimestamp": 1751306336821,
+            "lastIngestionTime": 1751306343006,
+            "uploadSequenceToken": "49039859635593863786742930978509499204409408815485838197",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751305445-compression/algo-1-1751306217",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751305445-sfm/algo-1-1751305483",
+            "creationTime": 1751305535592,
+            "firstEventTimestamp": 1751305529477,
+            "lastEventTimestamp": 1751305678380,
+            "lastIngestionTime": 1751305684413,
+            "uploadSequenceToken": "49039859635592988366489503003410016205140100858278732607",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751305445-sfm/algo-1-1751305483",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751308557-compression/algo-1-1751309262",
+            "creationTime": 1751309382838,
+            "firstEventTimestamp": 1751309376650,
+            "lastEventTimestamp": 1751309376650,
+            "lastIngestionTime": 1751309382852,
+            "uploadSequenceToken": "49039859635597904435149005771886083143175793008955253563",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751308557-compression/algo-1-1751309262",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751308557-sfm/algo-1-1751308591",
+            "creationTime": 1751308643986,
+            "firstEventTimestamp": 1751308637854,
+            "lastEventTimestamp": 1751308794227,
+            "lastIngestionTime": 1751308796253,
+            "uploadSequenceToken": "49039859635597124711335906336019953989527124535578616809",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751308557-sfm/algo-1-1751308591",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751314664-compression/algo-1-1751315428",
+            "creationTime": 1751315548106,
+            "firstEventTimestamp": 1751315541963,
+            "lastEventTimestamp": 1751315542965,
+            "lastIngestionTime": 1751315548117,
+            "uploadSequenceToken": "49039859635606099477988438661245242260720702239122023256",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751314664-compression/algo-1-1751315428",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751314664-sfm/algo-1-1751314703",
+            "creationTime": 1751314755799,
+            "firstEventTimestamp": 1751314749680,
+            "lastEventTimestamp": 1751314865724,
+            "lastIngestionTime": 1751314871272,
+            "uploadSequenceToken": "49039859635605199796665631619861247035432333664575447814",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751314664-sfm/algo-1-1751314703",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751324247-sfm/algo-1-1751324284",
+            "creationTime": 1751324347107,
+            "firstEventTimestamp": 1751324340932,
+            "lastEventTimestamp": 1751324341932,
+            "lastIngestionTime": 1751324347117,
+            "uploadSequenceToken": "49039859635617795355123350136010923534656110690658575231",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751324247-sfm/algo-1-1751324284",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "production-validation-prod-validation-1751328868-sfm/algo-1-1751328930",
+            "creationTime": 1751328999567,
+            "firstEventTimestamp": 1751328993286,
+            "lastEventTimestamp": 1751328993287,
+            "lastIngestionTime": 1751328999579,
+            "uploadSequenceToken": "49039859635623979537863075617282805724057027822317888378",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:production-validation-prod-validation-1751328868-sfm/algo-1-1751328930",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sfm-debug-1751324681/algo-1-1751324720",
+            "creationTime": 1751324807821,
+            "firstEventTimestamp": 1751324801633,
+            "lastEventTimestamp": 1751324801633,
+            "lastIngestionTime": 1751324807831,
+            "uploadSequenceToken": "49039859635618407749070200187742393311895661558030820158",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sfm-debug-1751324681/algo-1-1751324720",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sfm-debug-1751328599/algo-1-1751328706",
+            "creationTime": 1751328794354,
+            "firstEventTimestamp": 1751328788162,
+            "lastEventTimestamp": 1751328788163,
+            "lastIngestionTime": 1751328794365,
+            "uploadSequenceToken": "49039859635623706761669148611556864402330518957787866091",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sfm-debug-1751328599/algo-1-1751328706",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sfm-diagnostics-sfm-diagnostics-1751155910-sfm/algo-1-1751155944",
+            "creationTime": 1751155996703,
+            "firstEventTimestamp": 1751155990594,
+            "lastEventTimestamp": 1751156143667,
+            "lastIngestionTime": 1751156145918,
+            "uploadSequenceToken": "49039859635394217612487960340074373114170154542755374073",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sfm-diagnostics-sfm-diagnostics-1751155910-sfm/algo-1-1751155944",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sogs-final-test-2025-06-20-20-09-54-507/algo-1-1750450233",
+            "creationTime": 1750450318446,
+            "firstEventTimestamp": 1750450312244,
+            "lastEventTimestamp": 1750450312244,
+            "lastIngestionTime": 1750450318459,
+            "uploadSequenceToken": "49039859634456011993791430458973912406787064345785426758",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sogs-final-test-2025-06-20-20-09-54-507/algo-1-1750450233",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sogs-production-direct-2025-06-20-20-30-40-940/algo-1-1750451483",
+            "creationTime": 1750451613535,
+            "firstEventTimestamp": 1750451607378,
+            "lastEventTimestamp": 1750451658421,
+            "lastIngestionTime": 1750451661999,
+            "uploadSequenceToken": "49039859634457797864772887324845793942536426442694222660",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sogs-production-direct-2025-06-20-20-30-40-940/algo-1-1750451483",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sogs-production-direct-2025-06-20-20-37-33-281/algo-1-1750451898",
+            "creationTime": 1750452027876,
+            "firstEventTimestamp": 1750452021739,
+            "lastEventTimestamp": 1750452070768,
+            "lastIngestionTime": 1750452073304,
+            "uploadSequenceToken": "49039859634458344582893693639668898947126517077951800138",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sogs-production-direct-2025-06-20-20-37-33-281/algo-1-1750451898",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sogs-script-test-1750449058/algo-1-1750449094",
+            "creationTime": 1750449152184,
+            "firstEventTimestamp": 1750449146061,
+            "lastEventTimestamp": 1750449146061,
+            "lastIngestionTime": 1750449152194,
+            "uploadSequenceToken": "49039859634454461761702926364063401328245125930182402928",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sogs-script-test-1750449058/algo-1-1750449094",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sogs-script-test-1750449320/algo-1-1750449356",
+            "creationTime": 1750449414379,
+            "firstEventTimestamp": 1750449408243,
+            "lastEventTimestamp": 1750449408243,
+            "lastIngestionTime": 1750449414389,
+            "uploadSequenceToken": "49039859634454810278637281190080697738326120937770083154",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sogs-script-test-1750449320/algo-1-1750449356",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "sogs-script-test-1750449546/algo-1-1750449584",
+            "creationTime": 1750449642911,
+            "firstEventTimestamp": 1750449636790,
+            "lastEventTimestamp": 1750449636790,
+            "lastIngestionTime": 1750449642922,
+            "uploadSequenceToken": "49039859634455114051098841904259880473208046933111890864",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:sogs-script-test-1750449546/algo-1-1750449584",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "user-pipeline-test-1750738452-sfm/algo-1-1750738489",
+            "creationTime": 1750738546288,
+            "firstEventTimestamp": 1750738540156,
+            "lastEventTimestamp": 1750738540156,
+            "lastIngestionTime": 1750738546297,
+            "uploadSequenceToken": "49039859634839132505225589874032861763808021041578664734",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:user-pipeline-test-1750738452-sfm/algo-1-1750738489",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "user-pipeline-test-1750739202-compression/algo-1-1750739785",
+            "creationTime": 1750739822769,
+            "firstEventTimestamp": 1750739816583,
+            "lastEventTimestamp": 1750739816583,
+            "lastIngestionTime": 1750739822780,
+            "uploadSequenceToken": "49039859634840829242165333390801054021969719988792222622",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:user-pipeline-test-1750739202-compression/algo-1-1750739785",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "user-pipeline-test-1750739202-sfm/algo-1-1750739241",
+            "creationTime": 1750739293555,
+            "firstEventTimestamp": 1750739287440,
+            "lastEventTimestamp": 1750739440530,
+            "lastIngestionTime": 1750739443325,
+            "uploadSequenceToken": "49039859634840324859956192825548501683425841436321538842",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:user-pipeline-test-1750739202-sfm/algo-1-1750739241",
+            "storedBytes": 0
+        }
+    ]
+}
