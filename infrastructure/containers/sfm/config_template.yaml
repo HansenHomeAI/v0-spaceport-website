@@ -1,5 +1,5 @@
 # OpenSfM Configuration for GPS-Constrained Drone Reconstruction
-# Optimized for 3DGS compatibility with ~30,000 high-quality points
+# Optimized for accuracy and 3DGS compatibility
 # Updated: 2025-01-27
 
 # GPS and Coordinate System Configuration
@@ -7,61 +7,60 @@ use_altitude_tag: true
 align_method: 'orientation_prior'
 align_orientation_prior: 'vertical'
 
-# GPS Prior Configuration - ENHANCED for accuracy
+# GPS Prior Configuration  
 use_gps: true
-gps_error_threshold: 5.0   # meters - tighter constraint for better accuracy
-gps_accuracy: 3.0         # assumed GPS accuracy in meters - more precise
+gps_error_threshold: 10.0  # meters - reasonable for consumer drones
+gps_accuracy: 5.0         # assumed GPS accuracy in meters
 
 # Camera and Image Processing
 camera_calibration_linear_constraint_weight: 100.0
 camera_calibration_nonlinear_constraint_weight: 100.0
 
-# Feature Detection - OPTIMIZED for quality over quantity
+# Feature Detection (tuned for drone imagery)
 feature_type: 'sift'
-feature_min_frames: 6000    # INCREASED: Stricter quality threshold
+feature_min_frames: 4000    # Increase for better matching in low-texture areas
 feature_process_size: 2048  # High resolution for drone imagery
 feature_use_adaptive_suppression: false
-feature_max_num_features: 8000  # REDUCED: Focus on quality features
 
-sift_peak_threshold: 0.015   # INCREASED: Higher quality threshold for better features
-sift_edge_threshold: 15      # INCREASED: Better edge filtering
+sift_peak_threshold: 0.04   # Lower threshold for more features in flat areas
+sift_edge_threshold: 10     # Standard edge threshold
 
-# Feature Matching - OPTIMIZED for GPS-constrained reconstruction
-matching_gps_distance: 150   # REDUCED: Tighter GPS constraints for better accuracy
-matching_time_neighbors: 20  # REDUCED: More focused temporal matching
+# Feature Matching (enhanced for GPS-constrained reconstruction)
+matching_gps_distance: 100   # Only match images within 100m GPS distance
+matching_time_neighbors: 10  # Match with temporal neighbors
 matcher_type: 'flann'
-lowes_ratio: 0.7             # STRICTER: Better match filtering
-matcher_distance: 0.6        # STRICTER: Tighter distance threshold
+lowes_ratio: 0.8
+matcher_distance: 0.7
 
 # Robust matching for challenging drone scenarios
 robust_matching_calib_threshold: 4.0
 robust_matching_threshold: 4.0
-robust_matching_min_match: 15  # INCREASED: Higher quality matches
+robust_matching_min_match: 20
 
-# Bundle Adjustment Configuration - ENHANCED for quality
+# Bundle Adjustment Configuration  
 optimize_camera_parameters: true
-bundle_adjustment_max_num_iterations: 200  # INCREASED: Better convergence
+bundle_adjustment_max_num_iterations: 500
 bundle_adjustment_loss_function: 'SoftLOneLoss'
-bundle_adjustment_loss_function_threshold: 0.8  # STRICTER: Better outlier rejection
+bundle_adjustment_loss_function_threshold: 1.0
 
 # GPS-specific bundle adjustment settings
 bundle_use_gps: true
 bundle_use_gcp: false
 bundle_max_num_shots: 500
 
-# Reconstruction Settings - OPTIMIZED for 3DGS compatibility
+# Reconstruction Settings
 reconstruct_with_gps: true
-triangulation_threshold: 0.003      # STRICTER: Better point filtering
-triangulation_min_ray_angle: 2.0    # INCREASED: Better triangulation angles (degrees)
+triangulation_threshold: 0.004
+triangulation_min_ray_angle: 2.0  # degrees
 
-# Resection settings - ENHANCED for accuracy
-resection_threshold: 0.2            # STRICTER: Better camera registration
-resection_min_inliers: 20           # INCREASED: Higher quality resection
+# Resection settings for GPS initialization
+resection_threshold: 0.25
+resection_min_inliers: 15
 
-# Track Creation - OPTIMIZED
+# Track Creation
 tracker_type: 'incremental'
 retriangulation: true
-retriangulation_ratio: 1.1          # REDUCED: Less aggressive retriangulation
+retriangulation_ratio: 1.25
 
 # GPS Coordinate Reference
 # Will be set dynamically based on flight data
@@ -76,16 +75,15 @@ depthmap_max_depth: 1000
 processes: 4  # Match SageMaker instance vCPUs
 
 # Output Settings
-save_partial_reconstructions: true   # Enable for 3DGS train/test split
+save_partial_reconstructions: false
 local_bundle_radius: 3
 
 # Mesh Generation (disabled for 3DGS pipeline)
 mesh_size: 0  # Disable mesh generation
 
-# Quality Control - ENHANCED for 3DGS
-min_reconstructed_points: 5000      # INCREASED: Ensure sufficient points
-max_reconstructed_points: 50000     # NEW: Cap maximum points for 3DGS
-remove_max_outliers: 30             # REDUCED: Less aggressive outlier removal
+# Quality Control
+min_reconstructed_points: 1000  # Minimum points for 3DGS compatibility
+remove_max_outliers: 50
 
 # Advanced GPS Integration Settings
 gps_dop_threshold: 10.0        # Dilution of precision threshold
@@ -112,10 +110,6 @@ two_view_geometry_threshold: 1e-8
 extract_metadata: true
 use_exif_size: true
 use_exif_focal: true
-
-# 3DGS-specific settings
-reconstruction_split_ratio: 0.8     # 80% training, 20% validation
-reconstruction_split_method: 'sequential'  # Sequential split for temporal consistency
 
 # Logging and Debug
 log_level: 'INFO'
