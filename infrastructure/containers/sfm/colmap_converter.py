@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """
 COLMAP Format Converter for OpenSfM Output
-Converts OpenSfM reconstruction to COLMAP text format for 3DGS compatibility
+Converts OpenSfM reconstruction to COLMAP format for 3DGS compatibility
+Generates proper dataset structure: my_dataset/images/ + sparse/0/cameras.bin etc.
 """
 
 import os
 import json
 import numpy as np
+import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 import logging
+import tempfile
+import shutil
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class OpenSfMToCOLMAPConverter:
-    """Convert OpenSfM reconstruction to COLMAP format"""
+    """Convert OpenSfM reconstruction to COLMAP format with proper 2D-3D correspondences"""
     
     def __init__(self, opensfm_path: Path, output_path: Path):
         """
@@ -25,24 +29,25 @@ class OpenSfMToCOLMAPConverter:
         
         Args:
             opensfm_path: Path to OpenSfM reconstruction directory
-            output_path: Path to output COLMAP format files
+            output_path: Path to output dataset directory (will create my_dataset structure)
         """
         self.opensfm_path = Path(opensfm_path)
-        self.base_output_path = Path(output_path)
+        self.output_path = Path(output_path)
         
-        # Create COLMAP sparse directory structure in temp location first
-        # to avoid permission issues with SageMaker output mount
-        import tempfile
-        self.temp_dir = Path(tempfile.mkdtemp(prefix="colmap_"))
-        self.output_path = self.temp_dir / "sparse" / "0"
-        self.final_sparse_path = self.base_output_path / "sparse" / "0"
+        # Create proper dataset structure
+        self.images_dir = self.output_path / "images"
+        self.sparse_dir = self.output_path / "sparse" / "0"
+        
         self.reconstruction = None
+        self.tracks = {}
+        self.camera_id_mapping = {}
+        self.image_id_mapping = {}
+        self.point_id_mapping = {}
         
         logger.info(f"🔄 Initializing OpenSfM to COLMAP converter")
         logger.info(f"   Input: {opensfm_path}")
         logger.info(f"   Output: {output_path}")
-        logger.info(f"   Temp COLMAP dir: {self.output_path}")
-        logger.info(f"   Final COLMAP dir: {self.final_sparse_path}")
+        logger.info(f"   Target structure: my_dataset/images/ + sparse/0/")
     
     def load_opensfm_reconstruction(self) -> Dict:
         """Load OpenSfM reconstruction data"""
@@ -72,12 +77,70 @@ class OpenSfMToCOLMAPConverter:
             logger.error(f"❌ Failed to load OpenSfM reconstruction: {e}")
             raise
     
+    def extract_tracks(self) -> None:
+        """Extract 2D-3D correspondence tracks from OpenSfM data"""
+        logger.info(f"🔄 Extracting 2D-3D correspondence tracks")
+        
+        points_data = self.reconstruction.get('points', {})
+        shots_data = self.reconstruction.get('shots', {})
+        
+        # Initialize tracking structures
+        self.image_observations = {}  # image_id -> [(x, y, point3d_id), ...]
+        self.point_tracks = {}        # point3d_id -> [(image_id, feature_idx), ...]
+        
+        for shot_name in shots_data.keys():
+            self.image_observations[shot_name] = []
+        
+        point_id = 1
+        for opensfm_point_id, point_data in points_data.items():
+            self.point_id_mapping[opensfm_point_id] = point_id
+            self.point_tracks[point_id] = []
+            
+            # Extract observations from OpenSfM point data
+            observations = point_data.get('observations', {})
+            
+            feature_idx = 0
+            for shot_name, obs_data in observations.items():
+                if shot_name in shots_data:
+                    # obs_data typically contains [x, y] normalized coordinates
+                    if isinstance(obs_data, list) and len(obs_data) >= 2:
+                        x, y = obs_data[0], obs_data[1]
+                        
+                        # Convert normalized coordinates to pixel coordinates
+                        camera_id = shots_data[shot_name].get('camera')
+                        if camera_id in self.reconstruction.get('cameras', {}):
+                            camera_data = self.reconstruction['cameras'][camera_id]
+                            width = camera_data.get('width', 4000)
+                            height = camera_data.get('height', 2250)
+                            
+                            # Convert from normalized [-1,1] or [0,1] to pixel coordinates
+                            if abs(x) <= 1.0 and abs(y) <= 1.0:
+                                if x >= 0 and y >= 0:  # [0,1] normalized
+                                    pixel_x = x * width
+                                    pixel_y = y * height
+                                else:  # [-1,1] normalized
+                                    pixel_x = (x + 1) * width / 2
+                                    pixel_y = (y + 1) * height / 2
+                            else:  # Already in pixel coordinates
+                                pixel_x = x
+                                pixel_y = y
+                            
+                            # Add to image observations
+                            self.image_observations[shot_name].append((pixel_x, pixel_y, point_id))
+                            
+                            # Add to point tracks
+                            self.point_tracks[point_id].append((shot_name, feature_idx))
+                            feature_idx += 1
+            
+            point_id += 1
+        
+        total_observations = sum(len(obs) for obs in self.image_observations.values())
+        logger.info(f"✅ Extracted {total_observations} 2D-3D correspondences")
+        logger.info(f"   Average observations per image: {total_observations / len(self.image_observations):.1f}")
+    
     def convert_cameras(self) -> None:
         """Convert OpenSfM cameras to COLMAP cameras.txt format"""
-        if not self.reconstruction:
-            raise ValueError("Reconstruction not loaded")
-        
-        cameras_file = self.output_path / "cameras.txt"
+        cameras_file = self.sparse_dir / "cameras.txt"
         cameras_data = self.reconstruction.get('cameras', {})
         
         logger.info(f"🔄 Converting {len(cameras_data)} cameras to COLMAP format")
@@ -87,109 +150,81 @@ class OpenSfMToCOLMAPConverter:
             f.write("#   CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]\n")
             f.write("# Number of cameras: {}\n".format(len(cameras_data)))
             
-            # CRITICAL FIX: Convert OpenSfM camera IDs to integers for COLMAP compatibility
-            camera_id_mapping = {}
             numeric_camera_id = 1
-            
             for camera_id, camera_data in cameras_data.items():
-                # Map OpenSfM camera ID to numeric ID
-                camera_id_mapping[camera_id] = numeric_camera_id
+                self.camera_id_mapping[camera_id] = numeric_camera_id
                 
-                # Extract camera parameters
-                width = int(camera_data.get('width', 1920))
-                height = int(camera_data.get('height', 1080))
+                width = int(camera_data.get('width', 4000))
+                height = int(camera_data.get('height', 2250))
                 
-                # Convert OpenSfM camera model to COLMAP
                 projection_type = camera_data.get('projection_type', 'perspective')
                 
                 if projection_type == 'perspective':
-                    # OpenSfM perspective camera
                     focal = camera_data.get('focal', 1.0)
                     k1 = camera_data.get('k1', 0.0)
                     k2 = camera_data.get('k2', 0.0)
                     
-                    # Convert normalized focal to pixel focal length
                     focal_pixels = focal * max(width, height)
                     
-                    # COLMAP RADIAL model: f, cx, cy, k1, k2
                     model = "RADIAL"
                     cx = width / 2.0
                     cy = height / 2.0
                     params = [focal_pixels, cx, cy, k1, k2]
                     
-                elif projection_type == 'fisheye':
-                    # OpenSfM fisheye camera
-                    focal = camera_data.get('focal', 1.0)
-                    k1 = camera_data.get('k1', 0.0)
-                    k2 = camera_data.get('k2', 0.0)
-                    
-                    focal_pixels = focal * max(width, height)
-                    
-                    # COLMAP OPENCV_FISHEYE model
-                    model = "OPENCV_FISHEYE"
-                    cx = width / 2.0
-                    cy = height / 2.0
-                    params = [focal_pixels, focal_pixels, cx, cy, k1, k2, 0.0, 0.0]
-                    
                 else:
                     # Default to simple pinhole
                     model = "SIMPLE_PINHOLE"
-                    focal_pixels = max(width, height) * 1.2  # Reasonable default
+                    focal_pixels = max(width, height) * 1.2
                     cx = width / 2.0
                     cy = height / 2.0
                     params = [focal_pixels, cx, cy]
                 
-                # Format: CAMERA_ID MODEL WIDTH HEIGHT PARAMS[]
                 params_str = " ".join([f"{p:.6f}" for p in params])
                 f.write(f"{numeric_camera_id} {model} {width} {height} {params_str}\n")
                 
                 numeric_camera_id += 1
-            
-            # Store mapping for use in image conversion
-            self.camera_id_mapping = camera_id_mapping
         
         logger.info(f"✅ Generated cameras.txt with {len(cameras_data)} cameras")
     
     def convert_images(self) -> None:
-        """Convert OpenSfM shots to COLMAP images.txt format"""
-        if not self.reconstruction:
-            raise ValueError("Reconstruction not loaded")
-        
-        images_file = self.output_path / "images.txt"
+        """Convert OpenSfM shots to COLMAP images.txt format with 2D-3D correspondences"""
+        images_file = self.sparse_dir / "images.txt"
         shots_data = self.reconstruction.get('shots', {})
         
-        logger.info(f"🔄 Converting {len(shots_data)} shots to COLMAP format")
+        logger.info(f"🔄 Converting {len(shots_data)} shots to COLMAP format with correspondences")
         
         with open(images_file, 'w') as f:
             f.write("# Image list with two lines of data per image:\n")
             f.write("#   IMAGE_ID, QW, QX, QY, QZ, TX, TY, TZ, CAMERA_ID, NAME\n")
             f.write("#   POINTS2D[] as (X, Y, POINT3D_ID)\n")
-            f.write("# Number of images: {}, mean observations per image: 0\n".format(len(shots_data)))
+            
+            total_observations = sum(len(self.image_observations.get(shot_name, [])) for shot_name in shots_data.keys())
+            avg_observations = total_observations / len(shots_data) if shots_data else 0
+            f.write("# Number of images: {}, mean observations per image: {:.1f}\n".format(len(shots_data), avg_observations))
             
             image_id = 1
             for shot_name, shot_data in shots_data.items():
+                self.image_id_mapping[shot_name] = image_id
+                
                 # Extract camera pose
                 rotation = shot_data.get('rotation', [0.0, 0.0, 0.0])
                 translation = shot_data.get('translation', [0.0, 0.0, 0.0])
                 opensfm_camera_id = shot_data.get('camera', list(self.reconstruction.get('cameras', {}).keys())[0])
                 
-                # CRITICAL FIX: Use numeric camera ID mapping
-                numeric_camera_id = getattr(self, 'camera_id_mapping', {}).get(opensfm_camera_id, 1)
+                numeric_camera_id = self.camera_id_mapping.get(opensfm_camera_id, 1)
                 
                 # Convert OpenSfM rotation (axis-angle) to quaternion
                 quat = self._axis_angle_to_quaternion(rotation)
                 qw, qx, qy, qz = quat
                 
                 # OpenSfM uses camera-to-world, COLMAP uses world-to-camera
-                # Need to invert the transformation
                 R = self._quaternion_to_rotation_matrix(quat)
                 t = np.array(translation)
                 
-                # Invert: [R|t] -> [R^T | -R^T * t]
+                # Invert transformation
                 R_inv = R.T
                 t_inv = -R_inv @ t
                 
-                # Convert back to quaternion
                 quat_inv = self._rotation_matrix_to_quaternion(R_inv)
                 qw, qx, qy, qz = quat_inv
                 tx, ty, tz = t_inv
@@ -198,52 +233,267 @@ class OpenSfMToCOLMAPConverter:
                 f.write(f"{image_id} {qw:.9f} {qx:.9f} {qy:.9f} {qz:.9f} "
                        f"{tx:.6f} {ty:.6f} {tz:.6f} {numeric_camera_id} {shot_name}\n")
                 
-                # Write empty points2D line (we'll populate this from tracks if available)
-                f.write("\n")
+                # Write 2D-3D correspondences
+                observations = self.image_observations.get(shot_name, [])
+                points2d_str = " ".join([f"{x:.6f} {y:.6f} {point3d_id}" for x, y, point3d_id in observations])
+                f.write(f"{points2d_str}\n")
                 
                 image_id += 1
         
-        logger.info(f"✅ Generated images.txt with {len(shots_data)} images")
+        logger.info(f"✅ Generated images.txt with {len(shots_data)} images and correspondences")
     
     def convert_points(self) -> None:
-        """Convert OpenSfM points to COLMAP points3D.txt format"""
-        if not self.reconstruction:
-            raise ValueError("Reconstruction not loaded")
-        
-        points_file = self.output_path / "points3D.txt"
+        """Convert OpenSfM points to COLMAP points3D.txt format with track information"""
+        points_file = self.sparse_dir / "points3D.txt"
         points_data = self.reconstruction.get('points', {})
         
-        logger.info(f"🔄 Converting {len(points_data)} points to COLMAP format")
+        logger.info(f"🔄 Converting {len(points_data)} points to COLMAP format with tracks")
         
         with open(points_file, 'w') as f:
             f.write("# 3D point list with one line of data per point:\n")
             f.write("#   POINT3D_ID, X, Y, Z, R, G, B, ERROR, TRACK[] as (IMAGE_ID, POINT2D_IDX)\n")
-            f.write("# Number of points: {}, mean track length: 0\n".format(len(points_data)))
             
-            point_id = 1
-            for point_key, point_data in points_data.items():
-                # Extract 3D coordinates
+            avg_track_length = sum(len(track) for track in self.point_tracks.values()) / len(self.point_tracks) if self.point_tracks else 0
+            f.write("# Number of points: {}, mean track length: {:.1f}\n".format(len(points_data), avg_track_length))
+            
+            for opensfm_point_id, point_data in points_data.items():
+                point3d_id = self.point_id_mapping.get(opensfm_point_id, 1)
+                
                 coordinates = point_data.get('coordinates', [0.0, 0.0, 0.0])
                 x, y, z = coordinates
                 
-                # Extract color (default to white if not available)
                 color = point_data.get('color', [255, 255, 255])
                 r, g, b = [int(c) for c in color]
                 
-                # Error estimate (default to small value)
-                error = 0.5
+                error = 0.5  # Default error estimate
                 
-                # Track information (which images see this point)
-                track = []
-                # Note: OpenSfM tracks are more complex, simplified here
+                # Get track information
+                track_data = self.point_tracks.get(point3d_id, [])
+                track_str = ""
+                for shot_name, feature_idx in track_data:
+                    image_id = self.image_id_mapping.get(shot_name, 1)
+                    track_str += f"{image_id} {feature_idx} "
                 
-                # Format: POINT3D_ID X Y Z R G B ERROR TRACK[]
-                track_str = " ".join([f"{img_id} {pt_idx}" for img_id, pt_idx in track])
-                f.write(f"{point_id} {x:.6f} {y:.6f} {z:.6f} {r} {g} {b} {error:.6f} {track_str}\n")
-                
-                point_id += 1
+                f.write(f"{point3d_id} {x:.6f} {y:.6f} {z:.6f} {r} {g} {b} {error:.6f} {track_str.strip()}\n")
         
-        logger.info(f"✅ Generated points3D.txt with {len(points_data)} points")
+        logger.info(f"✅ Generated points3D.txt with {len(points_data)} points and tracks")
+    
+    def convert_to_binary(self) -> None:
+        """Convert COLMAP text files to binary format using COLMAP model_converter"""
+        logger.info(f"🔄 Converting COLMAP text files to binary format")
+        
+        try:
+            cmd = [
+                "colmap", "model_converter",
+                "--input_path", str(self.sparse_dir),
+                "--output_path", str(self.sparse_dir),
+                "--output_type", "BIN"
+            ]
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            
+            if result.returncode == 0:
+                logger.info(f"✅ Successfully converted to binary COLMAP format")
+                
+                # Verify binary files exist
+                binary_files = ["cameras.bin", "images.bin", "points3D.bin"]
+                for filename in binary_files:
+                    filepath = self.sparse_dir / filename
+                    if filepath.exists():
+                        logger.info(f"   📄 Generated: {filename} ({filepath.stat().st_size} bytes)")
+                    else:
+                        logger.warning(f"   ⚠️ Missing: {filename}")
+            else:
+                logger.error(f"❌ COLMAP model_converter failed:")
+                logger.error(f"   stdout: {result.stdout}")
+                logger.error(f"   stderr: {result.stderr}")
+                raise RuntimeError(f"COLMAP conversion failed with exit code {result.returncode}")
+                
+        except subprocess.TimeoutExpired:
+            logger.error(f"❌ COLMAP model_converter timed out after 300 seconds")
+            raise
+        except FileNotFoundError:
+            logger.error(f"❌ COLMAP not found in PATH. Installing COLMAP...")
+            self._install_colmap()
+            # Retry conversion
+            self.convert_to_binary()
+    
+    def _install_colmap(self) -> None:
+        """Install COLMAP if not available"""
+        logger.info(f"📦 Installing COLMAP...")
+        try:
+            # For Ubuntu/Debian systems
+            subprocess.run(["apt-get", "update"], check=True)
+            subprocess.run(["apt-get", "install", "-y", "colmap"], check=True)
+            logger.info(f"✅ COLMAP installed successfully")
+        except subprocess.CalledProcessError:
+            logger.error(f"❌ Failed to install COLMAP via apt-get")
+            raise RuntimeError("COLMAP installation failed")
+    
+    def copy_images(self) -> None:
+        """Copy all images to the dataset images/ directory"""
+        source_images_dir = self.opensfm_path / "images"
+        
+        if not source_images_dir.exists():
+            logger.warning(f"⚠️ Source images directory not found: {source_images_dir}")
+            return
+        
+        logger.info(f"📸 Copying images from {source_images_dir} to {self.images_dir}")
+        
+        # Create images directory
+        self.images_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Copy all images
+        image_files = list(source_images_dir.glob("*.jpg")) + list(source_images_dir.glob("*.JPG")) + \
+                     list(source_images_dir.glob("*.png")) + list(source_images_dir.glob("*.PNG")) + \
+                     list(source_images_dir.glob("*.jpeg")) + list(source_images_dir.glob("*.JPEG"))
+        
+        copied_count = 0
+        for image_file in image_files:
+            dst_path = self.images_dir / image_file.name
+            try:
+                shutil.copy2(image_file, dst_path)
+                copied_count += 1
+                if copied_count <= 3:
+                    logger.info(f"   📄 Copied: {image_file.name}")
+                elif copied_count == 4:
+                    logger.info(f"   📄 ... and {len(image_files) - 3} more images")
+            except Exception as e:
+                logger.error(f"❌ Failed to copy {image_file.name}: {e}")
+        
+        logger.info(f"✅ Copied {copied_count}/{len(image_files)} images")
+    
+    def validate_dataset(self) -> Dict:
+        """Validate the generated dataset structure"""
+        validation = {
+            'structure_valid': False,
+            'images_dir_exists': False,
+            'sparse_dir_exists': False,
+            'binary_files_exist': False,
+            'image_count': 0,
+            'camera_count': 0,
+            'point_count': 0,
+            'avg_observations': 0,
+            'avg_track_length': 0
+        }
+        
+        try:
+            # Check directory structure
+            validation['images_dir_exists'] = self.images_dir.exists()
+            validation['sparse_dir_exists'] = self.sparse_dir.exists()
+            
+            # Check binary files
+            binary_files = ["cameras.bin", "images.bin", "points3D.bin"]
+            validation['binary_files_exist'] = all((self.sparse_dir / f).exists() for f in binary_files)
+            
+            # Count images
+            if self.images_dir.exists():
+                image_files = list(self.images_dir.glob("*.jpg")) + list(self.images_dir.glob("*.JPG")) + \
+                             list(self.images_dir.glob("*.png")) + list(self.images_dir.glob("*.PNG"))
+                validation['image_count'] = len(image_files)
+            
+            # Get statistics from text files if available
+            cameras_file = self.sparse_dir / "cameras.txt"
+            if cameras_file.exists():
+                with open(cameras_file, 'r') as f:
+                    validation['camera_count'] = sum(1 for line in f if line.strip() and not line.startswith('#'))
+            
+            images_file = self.sparse_dir / "images.txt"
+            if images_file.exists():
+                with open(images_file, 'r') as f:
+                    lines = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+                    image_count = len(lines) // 2  # Each image has 2 lines
+                    
+                    # Calculate average observations
+                    total_obs = 0
+                    for i in range(1, len(lines), 2):  # Points2D lines
+                        obs_line = lines[i]
+                        if obs_line:
+                            obs_count = len(obs_line.split()) // 3  # Each observation is x y point3d_id
+                            total_obs += obs_count
+                    
+                    validation['avg_observations'] = total_obs / image_count if image_count > 0 else 0
+            
+            points_file = self.sparse_dir / "points3D.txt"
+            if points_file.exists():
+                with open(points_file, 'r') as f:
+                    lines = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+                    validation['point_count'] = len(lines)
+                    
+                    # Calculate average track length
+                    total_track_length = 0
+                    for line in lines:
+                        parts = line.split()
+                        if len(parts) > 8:  # Has track data
+                            track_data = parts[8:]  # Everything after ERROR
+                            track_length = len(track_data) // 2  # Each track entry is image_id point2d_idx
+                            total_track_length += track_length
+                    
+                    validation['avg_track_length'] = total_track_length / len(lines) if lines else 0
+            
+            # Overall validation
+            validation['structure_valid'] = (
+                validation['images_dir_exists'] and
+                validation['sparse_dir_exists'] and
+                validation['binary_files_exist'] and
+                validation['image_count'] > 0 and
+                validation['camera_count'] > 0 and
+                validation['point_count'] > 0 and
+                validation['avg_observations'] > 0
+            )
+            
+            logger.info(f"🔍 Dataset Validation Results:")
+            logger.info(f"   Structure: {'✅ VALID' if validation['structure_valid'] else '❌ INVALID'}")
+            logger.info(f"   Images: {validation['image_count']} files")
+            logger.info(f"   Cameras: {validation['camera_count']}")
+            logger.info(f"   Points: {validation['point_count']}")
+            logger.info(f"   Avg observations per image: {validation['avg_observations']:.1f}")
+            logger.info(f"   Avg track length: {validation['avg_track_length']:.1f}")
+            logger.info(f"   Binary files: {'✅ EXISTS' if validation['binary_files_exist'] else '❌ MISSING'}")
+            
+        except Exception as e:
+            logger.error(f"❌ Validation failed: {e}")
+        
+        return validation
+    
+    def convert_full_reconstruction(self) -> Dict:
+        """Convert complete OpenSfM reconstruction to proper COLMAP dataset format"""
+        logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion")
+        
+        # Create output directories
+        self.images_dir.mkdir(parents=True, exist_ok=True)
+        self.sparse_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Load reconstruction data
+        self.load_opensfm_reconstruction()
+        
+        # Extract 2D-3D correspondences
+        self.extract_tracks()
+        
+        # Convert to COLMAP format
+        self.convert_cameras()
+        self.convert_images()
+        self.convert_points()
+        
+        # Convert to binary format
+        self.convert_to_binary()
+        
+        # Copy images
+        self.copy_images()
+        
+        # Validate result
+        validation = self.validate_dataset()
+        
+        logger.info(f"✅ Full OpenSfM to COLMAP conversion completed")
+        logger.info(f"📁 Dataset structure: {self.output_path}")
+        logger.info(f"   📸 images/ - {validation['image_count']} image files")
+        logger.info(f"   📊 sparse/0/ - COLMAP reconstruction with {validation['point_count']} points")
+        
+        return validation
+    
+    def convert(self) -> Dict:
+        """Legacy wrapper for backward compatibility"""
+        return self.convert_full_reconstruction()
     
     def _axis_angle_to_quaternion(self, axis_angle: List[float]) -> np.ndarray:
         """Convert axis-angle rotation to quaternion"""
@@ -251,7 +501,7 @@ class OpenSfMToCOLMAPConverter:
         angle = np.linalg.norm(axis_angle)
         
         if angle < 1e-8:
-            return np.array([1.0, 0.0, 0.0, 0.0])  # Identity quaternion
+            return np.array([1.0, 0.0, 0.0, 0.0])
         
         axis = axis_angle / angle
         half_angle = angle / 2.0
@@ -265,11 +515,9 @@ class OpenSfMToCOLMAPConverter:
         """Convert quaternion to rotation matrix"""
         qw, qx, qy, qz = quat
         
-        # Normalize quaternion
         norm = np.sqrt(qw*qw + qx*qx + qy*qy + qz*qz)
         qw, qx, qy, qz = qw/norm, qx/norm, qy/norm, qz/norm
         
-        # Convert to rotation matrix
         R = np.array([
             [1 - 2*(qy*qy + qz*qz), 2*(qx*qy - qw*qz), 2*(qx*qz + qw*qy)],
             [2*(qx*qy + qw*qz), 1 - 2*(qx*qx + qz*qz), 2*(qy*qz - qw*qx)],
@@ -283,446 +531,31 @@ class OpenSfMToCOLMAPConverter:
         trace = np.trace(R)
         
         if trace > 0:
-            s = np.sqrt(trace + 1.0) * 2  # s = 4 * qw
+            s = np.sqrt(trace + 1.0) * 2
             qw = 0.25 * s
             qx = (R[2, 1] - R[1, 2]) / s
             qy = (R[0, 2] - R[2, 0]) / s
             qz = (R[1, 0] - R[0, 1]) / s
         elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
-            s = np.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2]) * 2  # s = 4 * qx
+            s = np.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2]) * 2
             qw = (R[2, 1] - R[1, 2]) / s
             qx = 0.25 * s
             qy = (R[0, 1] + R[1, 0]) / s
             qz = (R[0, 2] + R[2, 0]) / s
         elif R[1, 1] > R[2, 2]:
-            s = np.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2]) * 2  # s = 4 * qy
+            s = np.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2]) * 2
             qw = (R[0, 2] - R[2, 0]) / s
             qx = (R[0, 1] + R[1, 0]) / s
             qy = 0.25 * s
             qz = (R[1, 2] + R[2, 1]) / s
         else:
-            s = np.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1]) * 2  # s = 4 * qz
+            s = np.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1]) * 2
             qw = (R[1, 0] - R[0, 1]) / s
             qx = (R[0, 2] + R[2, 0]) / s
             qy = (R[1, 2] + R[2, 1]) / s
             qz = 0.25 * s
         
         return np.array([qw, qx, qy, qz])
-    
-    def create_reference_point_cloud(self) -> None:
-        """Create reference point cloud PLY file"""
-        if not self.reconstruction:
-            raise ValueError("Reconstruction not loaded")
-        
-        # Create dense directory in temp location (avoiding permission issues)
-        dense_dir = self.temp_dir / "dense"
-        dense_dir.mkdir(parents=True, exist_ok=True)
-        
-        ply_file = dense_dir / "sparse_points.ply"
-        points_data = self.reconstruction.get('points', {})
-        
-        logger.info(f"☁️ Creating reference point cloud with {len(points_data)} points")
-        
-        with open(ply_file, 'w') as f:
-            f.write("ply\n")
-            f.write("format ascii 1.0\n")
-            f.write(f"element vertex {len(points_data)}\n")
-            f.write("property float x\n")
-            f.write("property float y\n")
-            f.write("property float z\n")
-            f.write("property uchar red\n")
-            f.write("property uchar green\n")
-            f.write("property uchar blue\n")
-            f.write("end_header\n")
-            
-            for point_data in points_data.values():
-                coordinates = point_data.get('coordinates', [0.0, 0.0, 0.0])
-                color = point_data.get('color', [255, 255, 255])
-                
-                x, y, z = coordinates
-                r, g, b = [int(c) for c in color]
-                
-                f.write(f"{x:.6f} {y:.6f} {z:.6f} {r} {g} {b}\n")
-        
-        logger.info(f"✅ Generated reference point cloud: {ply_file}")
-    
-    def _copy_to_final_location(self) -> None:
-        """Copy COLMAP files from temp directory to final output location"""
-        import shutil
-        import os
-        
-        try:
-            # Create final sparse directory structure with proper permissions
-            logger.info(f"📁 Creating final sparse directory: {self.final_sparse_path}")
-            
-            # Use os.makedirs with exist_ok to handle permission issues more gracefully
-            os.makedirs(self.final_sparse_path, mode=0o755, exist_ok=True)
-            
-            # Verify directory was created and is writable
-            if not os.path.exists(self.final_sparse_path):
-                raise PermissionError(f"Failed to create directory: {self.final_sparse_path}")
-            if not os.access(self.final_sparse_path, os.W_OK):
-                raise PermissionError(f"Directory not writable: {self.final_sparse_path}")
-            
-            logger.info(f"✅ Final sparse directory created successfully: {self.final_sparse_path}")
-            
-            # Copy COLMAP files from main reconstruction (for backward compatibility)
-            files_to_copy = ["cameras.txt", "images.txt", "points3D.txt"]
-            for filename in files_to_copy:
-                src = self.output_path / filename
-                dst = self.final_sparse_path / filename
-                if src.exists():
-                    shutil.copy2(src, dst)
-                    logger.info(f"📄 Copied {filename} to final location")
-                else:
-                    logger.warning(f"⚠️ Missing file: {filename}")
-            
-            # CRITICAL FIX: Copy train/ and test/ directories for 3DGS training
-            train_src = self.temp_dir / "train"
-            test_src = self.temp_dir / "test"
-            train_dst = self.base_output_path / "train"
-            test_dst = self.base_output_path / "test"
-            
-            if train_src.exists():
-                if train_dst.exists():
-                    shutil.rmtree(train_dst)
-                shutil.copytree(train_src, train_dst)
-                logger.info(f"📁 Copied train reconstruction to: {train_dst}")
-            else:
-                logger.warning(f"⚠️ Missing train directory: {train_src}")
-            
-            if test_src.exists():
-                if test_dst.exists():
-                    shutil.rmtree(test_dst)
-                shutil.copytree(test_src, test_dst)
-                logger.info(f"📁 Copied test reconstruction to: {test_dst}")
-            else:
-                logger.warning(f"⚠️ Missing test directory: {test_src}")
-            
-            # Copy dense directory (contains PLY file)
-            temp_dense_dir = self.temp_dir / "dense"
-            final_dense_dir = self.base_output_path / "dense"
-            if temp_dense_dir.exists():
-                if final_dense_dir.exists():
-                    shutil.rmtree(final_dense_dir)
-                shutil.copytree(temp_dense_dir, final_dense_dir)
-                logger.info(f"📁 Copied dense directory to final location")
-            else:
-                logger.warning(f"⚠️ Missing dense directory: {temp_dense_dir}")
-            
-            # Clean up temp directory
-            shutil.rmtree(self.temp_dir)
-            logger.info(f"🧹 Cleaned up temp directory: {self.temp_dir}")
-            
-        except PermissionError as e:
-            logger.error(f"❌ Permission denied while copying files: {e}")
-            logger.error(f"🔍 Debug info:")
-            logger.error(f"   Final sparse path: {self.final_sparse_path}")
-            logger.error(f"   Base output path: {self.base_output_path}")
-            logger.error(f"   Current user: {os.getuid() if hasattr(os, 'getuid') else 'Unknown'}")
-            logger.error(f"   Output path exists: {os.path.exists(self.base_output_path)}")
-            logger.error(f"   Output path writable: {os.access(self.base_output_path, os.W_OK)}")
-            raise
-        except Exception as e:
-            logger.error(f"❌ Failed to copy files to final location: {e}")
-            raise
-    
-    def validate_conversion(self) -> Dict:
-        """Validate the COLMAP conversion"""
-        validation_results = {
-            'cameras_file_exists': False,
-            'images_file_exists': False,
-            'points_file_exists': False,
-            'ply_file_exists': False,
-            'train_dir_exists': False,
-            'test_dir_exists': False,
-            'camera_count': 0,
-            'image_count': 0,
-            'point_count': 0,
-            'train_image_count': 0,
-            'test_image_count': 0,
-            'quality_check_passed': False
-        }
-        
-        try:
-            # Check file existence in final location
-            cameras_file = self.final_sparse_path / "cameras.txt"
-            images_file = self.final_sparse_path / "images.txt"
-            points_file = self.final_sparse_path / "points3D.txt"
-            ply_file = self.base_output_path / "dense" / "sparse_points.ply"
-            train_dir = self.base_output_path / "train"
-            test_dir = self.base_output_path / "test"
-            
-            validation_results['cameras_file_exists'] = cameras_file.exists()
-            validation_results['images_file_exists'] = images_file.exists()
-            validation_results['points_file_exists'] = points_file.exists()
-            validation_results['ply_file_exists'] = ply_file.exists()
-            validation_results['train_dir_exists'] = train_dir.exists()
-            validation_results['test_dir_exists'] = test_dir.exists()
-            
-            # Count cameras
-            if cameras_file.exists():
-                with open(cameras_file, 'r') as f:
-                    camera_count = sum(1 for line in f if line.strip() and not line.startswith('#'))
-                validation_results['camera_count'] = camera_count
-            
-            # Count images (each image has 2 lines in COLMAP format)
-            if images_file.exists():
-                with open(images_file, 'r') as f:
-                    image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
-                validation_results['image_count'] = image_lines // 2
-            
-            # Count points
-            if points_file.exists():
-                with open(points_file, 'r') as f:
-                    point_count = sum(1 for line in f if line.strip() and not line.startswith('#'))
-                validation_results['point_count'] = point_count
-            
-            # Count train/test images
-            if train_dir.exists():
-                train_images_file = train_dir / "images.txt"
-                if train_images_file.exists():
-                    with open(train_images_file, 'r') as f:
-                        train_image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
-                    validation_results['train_image_count'] = train_image_lines // 2
-            
-            if test_dir.exists():
-                test_images_file = test_dir / "images.txt"
-                if test_images_file.exists():
-                    with open(test_images_file, 'r') as f:
-                        test_image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
-                    validation_results['test_image_count'] = test_image_lines // 2
-            
-            # Quality check (minimum requirements for 3DGS)
-            min_points_required = 1000  # Same as current COLMAP pipeline
-            validation_results['quality_check_passed'] = (
-                validation_results['point_count'] >= min_points_required and
-                validation_results['image_count'] > 0 and
-                validation_results['camera_count'] > 0 and
-                validation_results['train_dir_exists'] and
-                validation_results['test_dir_exists'] and
-                validation_results['train_image_count'] > 0 and
-                validation_results['test_image_count'] > 0
-            )
-            
-            logger.info(f"🔍 Validation Results:")
-            logger.info(f"   Cameras: {validation_results['camera_count']}")
-            logger.info(f"   Images: {validation_results['image_count']}")
-            logger.info(f"   Points: {validation_results['point_count']}")
-            logger.info(f"   Train Images: {validation_results['train_image_count']}")
-            logger.info(f"   Test Images: {validation_results['test_image_count']}")
-            logger.info(f"   Train/Test Split: {'✅ EXISTS' if validation_results['train_dir_exists'] and validation_results['test_dir_exists'] else '❌ MISSING'}")
-            logger.info(f"   Quality Check: {'✅ PASSED' if validation_results['quality_check_passed'] else '❌ FAILED'}")
-            
-            if not validation_results['quality_check_passed']:
-                logger.warning(f"⚠️ Quality check failed: Need at least {min_points_required} points and proper train/test split for 3DGS")
-            
-        except Exception as e:
-            logger.error(f"❌ Validation failed: {e}")
-        
-        return validation_results
-    
-    def convert_full_reconstruction(self) -> Dict:
-        """Convert complete OpenSfM reconstruction to COLMAP format with train/test split"""
-        logger.info(f"🚀 Starting full OpenSfM to COLMAP conversion with train/test split")
-        
-        # Create temp directory structure (sparse/0 for COLMAP files)
-        self.output_path.mkdir(parents=True, exist_ok=True)
-        logger.info(f"📁 Created temp COLMAP sparse directory: {self.output_path}")
-        
-        # Load reconstruction
-        self.load_opensfm_reconstruction()
-        
-        # CRITICAL FIX: Create train/test split for proper 3DGS training
-        train_data, test_data = self.create_train_test_split()
-        
-        # Convert complete reconstruction (for backward compatibility)
-        self.convert_cameras()
-        self.convert_images()
-        self.convert_points()
-        
-        # Create train/test split reconstructions
-        self.create_split_reconstructions(train_data, test_data)
-        
-        self.create_reference_point_cloud()
-        
-        # Copy to final location
-        self._copy_to_final_location()
-        
-        # Validate conversion
-        validation_results = self.validate_conversion()
-        
-        logger.info(f"✅ Full OpenSfM to COLMAP conversion completed")
-        return validation_results
-    
-    def create_train_test_split(self, train_ratio: float = 0.8) -> Tuple[Dict, Dict]:
-        """Create train/test split of the reconstruction data"""
-        if not self.reconstruction:
-            raise ValueError("Reconstruction not loaded")
-        
-        shots_data = self.reconstruction.get('shots', {})
-        shot_names = list(shots_data.keys())
-        
-        # Sort by name for consistent splitting
-        shot_names.sort()
-        
-        # Calculate split index
-        split_idx = int(len(shot_names) * train_ratio)
-        
-        train_shots = shot_names[:split_idx]
-        test_shots = shot_names[split_idx:]
-        
-        logger.info(f"🔄 Creating train/test split:")
-        logger.info(f"   Total images: {len(shot_names)}")
-        logger.info(f"   Training images: {len(train_shots)} ({len(train_shots)/len(shot_names)*100:.1f}%)")
-        logger.info(f"   Test images: {len(test_shots)} ({len(test_shots)/len(shot_names)*100:.1f}%)")
-        
-        # Create train data
-        train_data = {
-            'cameras': self.reconstruction.get('cameras', {}),
-            'shots': {name: shots_data[name] for name in train_shots},
-            'points': self.reconstruction.get('points', {})
-        }
-        
-        # Create test data (shares cameras and points with training)
-        test_data = {
-            'cameras': self.reconstruction.get('cameras', {}),
-            'shots': {name: shots_data[name] for name in test_shots},
-            'points': self.reconstruction.get('points', {})
-        }
-        
-        return train_data, test_data
-    
-    def create_split_reconstructions(self, train_data: Dict, test_data: Dict) -> None:
-        """Create separate COLMAP reconstructions for train and test splits"""
-        # Create train directory
-        train_dir = self.temp_dir / "train"
-        train_dir.mkdir(exist_ok=True)
-        
-        # Create test directory  
-        test_dir = self.temp_dir / "test"
-        test_dir.mkdir(exist_ok=True)
-        
-        logger.info(f"🔄 Creating train reconstruction in: {train_dir}")
-        self._create_split_reconstruction(train_data, train_dir, "train")
-        
-        logger.info(f"🔄 Creating test reconstruction in: {test_dir}")
-        self._create_split_reconstruction(test_data, test_dir, "test")
-        
-        logger.info(f"✅ Created train/test split reconstructions")
-    
-    def _create_split_reconstruction(self, data: Dict, output_dir: Path, split_name: str) -> None:
-        """Create a COLMAP reconstruction for a specific split"""
-        import shutil
-        
-        # CRITICAL FIX: Create subdirectory structure that 3DGS expects
-        # 3DGS looks for directories INSIDE the training/validation channels
-        reconstruction_subdir = output_dir / "0"  # Standard COLMAP sparse/0 structure
-        reconstruction_subdir.mkdir(parents=True, exist_ok=True)
-        
-        # Temporarily store original reconstruction
-        original_reconstruction = self.reconstruction
-        
-        # Set reconstruction to split data
-        self.reconstruction = data
-        
-        # Temporarily change output path to the subdirectory
-        original_output_path = self.output_path
-        self.output_path = reconstruction_subdir
-        
-        try:
-            # Convert split data
-            self.convert_cameras()
-            self.convert_images()
-            self.convert_points()
-            
-            # CRITICAL FIX: Copy actual image files for this split to the subdirectory
-            self._copy_images_for_split(data, reconstruction_subdir, split_name)
-            
-            shots_count = len(data.get('shots', {}))
-            points_count = len(data.get('points', {}))
-            cameras_count = len(data.get('cameras', {}))
-            
-            logger.info(f"✅ {split_name} reconstruction: {cameras_count} cameras, {shots_count} images, {points_count} points")
-            logger.info(f"📁 Created in subdirectory: {reconstruction_subdir}")
-            
-        finally:
-            # Restore original values
-            self.reconstruction = original_reconstruction
-            self.output_path = original_output_path
-
-    def _copy_images_for_split(self, data: Dict, output_dir: Path, split_name: str) -> None:
-        """Copy actual image files for a specific train/test split"""
-        import shutil
-        from pathlib import Path
-        
-        # CRITICAL FIX: Use the correct source images directory (from OpenSfM input)
-        source_images_dir = self.opensfm_path / "images"
-        if not source_images_dir.exists():
-            logger.warning(f"⚠️ Source images directory not found: {source_images_dir}")
-            return
-        
-        # Get the shots (images) for this split
-        shots_data = data.get('shots', {})
-        if not shots_data:
-            logger.warning(f"⚠️ No shots found for {split_name} split")
-            return
-        
-        # Extract image filenames from shots
-        image_filenames = []
-        for shot_name, shot_data in shots_data.items():
-            # CRITICAL FIX: shot_name may already contain the extension
-            shot_path = Path(shot_name)
-            if shot_path.suffix:
-                # Already has extension (e.g., "DJI_0579.JPG")
-                image_file = source_images_dir / shot_name
-                if image_file.exists():
-                    image_filenames.append(shot_name)
-                    continue
-            
-            # If no extension or file not found, try common extensions
-            for ext in ['.JPG', '.jpg', '.PNG', '.png', '.JPEG', '.jpeg']:
-                image_file = source_images_dir / f"{shot_name}{ext}"
-                if image_file.exists():
-                    image_filenames.append(f"{shot_name}{ext}")
-                    break
-        
-        if not image_filenames:
-            logger.warning(f"⚠️ No image files found for {split_name} split")
-            return
-        
-        logger.info(f"📸 Copying {len(image_filenames)} images for {split_name} split:")
-        
-        # Copy each image file to the split directory
-        copied_count = 0
-        for image_filename in image_filenames:
-            src_path = source_images_dir / image_filename
-            dst_path = output_dir / image_filename
-            
-            if src_path.exists():
-                try:
-                    shutil.copy2(src_path, dst_path)
-                    copied_count += 1
-                    if copied_count <= 3:  # Log first few files
-                        logger.info(f"   📄 Copied: {image_filename}")
-                    elif copied_count == 4:
-                        logger.info(f"   📄 ... and {len(image_filenames) - 3} more images")
-                except Exception as e:
-                    logger.error(f"❌ Failed to copy {image_filename}: {e}")
-            else:
-                logger.warning(f"⚠️ Source image not found: {src_path}")
-        
-        logger.info(f"✅ Copied {copied_count}/{len(image_filenames)} images for {split_name} split")
-
-    def convert(self) -> Dict:
-        """Public wrapper to preserve legacy call sites.
-
-        Older pipeline code expects a `convert()` method on the converter.  The
-        implementation was renamed to `convert_full_reconstruction()` during a
-        refactor, which broke the runtime (AttributeError).  This thin wrapper
-        simply forwards to the new implementation while returning its result.
-        """
-        return self.convert_full_reconstruction()
 
 
 def main():
@@ -736,13 +569,9 @@ def main():
     opensfm_dir = Path(sys.argv[1])
     output_dir = Path(sys.argv[2])
     
-    # Initialize converter
     converter = OpenSfMToCOLMAPConverter(opensfm_dir, output_dir)
-    
-    # Run conversion
     validation = converter.convert_full_reconstruction()
     
-    # Print results
     print(json.dumps(validation, indent=2))
 
 
