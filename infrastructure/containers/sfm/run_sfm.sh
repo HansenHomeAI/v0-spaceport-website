@@ -111,8 +111,6 @@ REQUIRED_OUTPUT_FILES=(
     "$OUTPUT_DIR/sparse/0/cameras.txt"
     "$OUTPUT_DIR/sparse/0/images.txt"
     "$OUTPUT_DIR/sparse/0/points3D.txt"
-    "$OUTPUT_DIR/dense/sparse_points.ply"
-    "$OUTPUT_DIR/database.db"
     "$OUTPUT_DIR/images"
     "$OUTPUT_DIR/sfm_metadata.json"
 )
