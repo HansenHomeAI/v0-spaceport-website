@@ -280,7 +280,7 @@ class OpenSfMGPSPipeline:
         """Convert OpenSfM output to COLMAP format"""
         try:
             converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
-            validation_results = converter.convert_full_reconstruction()
+            validation_results = converter.convert()
             
             # Log conversion results
             logger.info(f"📊 COLMAP Conversion Results:")
