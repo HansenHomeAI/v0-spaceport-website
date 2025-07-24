@@ -1,31 +1,15 @@
-COLMAP Format Fix Applied - Build Required
-==========================================
+Build #27 - 2025-01-24 - COLMAP Converter Fix + Binary Support
 
-Changes made to fix COLMAP format compatibility:
+Key Changes:
+- Fixed COLMAP converter to extract proper 2D-3D correspondences from OpenSfM tracks
+- Added binary COLMAP format generation (cameras.bin, images.bin, points3D.bin)
+- Updated dataset structure to my_dataset/images/ + sparse/0/ format
+- Removed train/test split logic (handled in 3DGS stage instead)
+- Added COLMAP binary to container for model_converter tool
+- Enhanced track extraction with proper coordinate conversion
+- Added comprehensive dataset validation
 
-1. COLMAP Converter fixes:
-   - Fixed OpenSfM camera ID conversion (string "v2" -> numeric ID 1)
-   - Added camera_id_mapping to convert between OpenSfM and COLMAP formats
-   - Updated both main and split reconstruction methods
-   - Fixed train/test split to use proper numeric camera IDs
+This fixes the "fast but meaningless" 3DGS training by providing proper
+photometric supervision data for neural rendering optimization.
 
-2. This addresses the ValueError: invalid literal for int() with base 10: 'v2'
-   that was causing 3DGS training to fail immediately
-
-3. The SfM container now properly outputs COLMAP-compatible format:
-   - cameras.txt with numeric camera IDs (1, 2, 3...)
-   - images.txt with matching numeric camera references
-   - points3D.txt with proper format
-   - train/ and test/ directories with correct splits
-
-Date: 2025-07-10
-Build required: YES
-Priority: HIGH - fixes pipeline compatibility issue
-
-REBUILD: DEFINITIVE FIX for 3DGS directory structure mismatch
-- FIXED directory structure: Create subdirectories (train/0/, test/0/) that 3DGS expects
-- 3DGS looks for directories INSIDE training/validation channels, not files in root
-- Now creates proper COLMAP sparse/0 structure: train/0/cameras.txt, train/0/images.txt, etc.
-- Images are copied to the correct subdirectories where 3DGS can find them
-- This fixes "No COLMAP reconstruction directory found in training channel" error
-Build timestamp: 2025-01-10-19:30:00
+Container needs rebuild to include COLMAP binary and updated converter logic.
