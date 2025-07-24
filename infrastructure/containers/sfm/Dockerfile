@@ -7,7 +7,7 @@ FROM python:3.9-slim AS base
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies for OpenSfM, GPS processing, and COLMAP (cached layer)
+# Install system dependencies for OpenSfM and GPS processing (cached layer)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -30,7 +30,6 @@ RUN apt-get update && \
         python3-dev \
         libboost-all-dev \
         libyaml-dev \
-        colmap \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

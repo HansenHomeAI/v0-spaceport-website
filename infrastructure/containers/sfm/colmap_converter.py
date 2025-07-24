@@ -278,57 +278,41 @@ class OpenSfMToCOLMAPConverter:
         
         logger.info(f"✅ Generated points3D.txt with {len(points_data)} points and tracks")
     
-    def convert_to_binary(self) -> None:
-        """Convert COLMAP text files to binary format using COLMAP model_converter"""
-        logger.info(f"🔄 Converting COLMAP text files to binary format")
+    def validate_text_files(self) -> None:
+        """Validate that COLMAP text files are properly formatted"""
+        logger.info(f"🔍 Validating COLMAP text files")
         
-        try:
-            cmd = [
-                "colmap", "model_converter",
-                "--input_path", str(self.sparse_dir),
-                "--output_path", str(self.sparse_dir),
-                "--output_type", "BIN"
-            ]
-            
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-            
-            if result.returncode == 0:
-                logger.info(f"✅ Successfully converted to binary COLMAP format")
-                
-                # Verify binary files exist
-                binary_files = ["cameras.bin", "images.bin", "points3D.bin"]
-                for filename in binary_files:
-                    filepath = self.sparse_dir / filename
-                    if filepath.exists():
-                        logger.info(f"   📄 Generated: {filename} ({filepath.stat().st_size} bytes)")
-                    else:
-                        logger.warning(f"   ⚠️ Missing: {filename}")
+        # Check that all required text files exist
+        text_files = ["cameras.txt", "images.txt", "points3D.txt"]
+        for filename in text_files:
+            filepath = self.sparse_dir / filename
+            if filepath.exists():
+                size = filepath.stat().st_size
+                logger.info(f"   📄 {filename} ({size} bytes)")
             else:
-                logger.error(f"❌ COLMAP model_converter failed:")
-                logger.error(f"   stdout: {result.stdout}")
-                logger.error(f"   stderr: {result.stderr}")
-                raise RuntimeError(f"COLMAP conversion failed with exit code {result.returncode}")
-                
-        except subprocess.TimeoutExpired:
-            logger.error(f"❌ COLMAP model_converter timed out after 300 seconds")
-            raise
-        except FileNotFoundError:
-            logger.error(f"❌ COLMAP not found in PATH. Installing COLMAP...")
-            self._install_colmap()
-            # Retry conversion
-            self.convert_to_binary()
-    
-    def _install_colmap(self) -> None:
-        """Install COLMAP if not available"""
-        logger.info(f"📦 Installing COLMAP...")
-        try:
-            # For Ubuntu/Debian systems
-            subprocess.run(["apt-get", "update"], check=True)
-            subprocess.run(["apt-get", "install", "-y", "colmap"], check=True)
-            logger.info(f"✅ COLMAP installed successfully")
-        except subprocess.CalledProcessError:
-            logger.error(f"❌ Failed to install COLMAP via apt-get")
-            raise RuntimeError("COLMAP installation failed")
+                logger.warning(f"   ⚠️ Missing: {filename}")
+        
+        # Validate file contents
+        cameras_file = self.sparse_dir / "cameras.txt"
+        if cameras_file.exists():
+            with open(cameras_file, 'r') as f:
+                camera_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
+            logger.info(f"   📷 Cameras: {camera_lines}")
+        
+        images_file = self.sparse_dir / "images.txt"
+        if images_file.exists():
+            with open(images_file, 'r') as f:
+                image_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
+            image_count = image_lines // 2  # Each image has 2 lines
+            logger.info(f"   🖼️ Images: {image_count}")
+        
+        points_file = self.sparse_dir / "points3D.txt"
+        if points_file.exists():
+            with open(points_file, 'r') as f:
+                point_lines = sum(1 for line in f if line.strip() and not line.startswith('#'))
+            logger.info(f"   📍 Points: {point_lines}")
+        
+        logger.info(f"✅ COLMAP text files validated")
     
     def copy_images(self) -> None:
         """Copy all images to the dataset images/ directory"""
@@ -369,7 +353,7 @@ class OpenSfMToCOLMAPConverter:
             'structure_valid': False,
             'images_dir_exists': False,
             'sparse_dir_exists': False,
-            'binary_files_exist': False,
+            'text_files_exist': False,
             'image_count': 0,
             'camera_count': 0,
             'point_count': 0,
@@ -382,9 +366,9 @@ class OpenSfMToCOLMAPConverter:
             validation['images_dir_exists'] = self.images_dir.exists()
             validation['sparse_dir_exists'] = self.sparse_dir.exists()
             
-            # Check binary files
-            binary_files = ["cameras.bin", "images.bin", "points3D.bin"]
-            validation['binary_files_exist'] = all((self.sparse_dir / f).exists() for f in binary_files)
+            # Check text files
+            text_files = ["cameras.txt", "images.txt", "points3D.txt"]
+            validation['text_files_exist'] = all((self.sparse_dir / f).exists() for f in text_files)
             
             # Count images
             if self.images_dir.exists():
@@ -435,7 +419,7 @@ class OpenSfMToCOLMAPConverter:
             validation['structure_valid'] = (
                 validation['images_dir_exists'] and
                 validation['sparse_dir_exists'] and
-                validation['binary_files_exist'] and
+                validation['text_files_exist'] and
                 validation['image_count'] > 0 and
                 validation['camera_count'] > 0 and
                 validation['point_count'] > 0 and
@@ -449,7 +433,7 @@ class OpenSfMToCOLMAPConverter:
             logger.info(f"   Points: {validation['point_count']}")
             logger.info(f"   Avg observations per image: {validation['avg_observations']:.1f}")
             logger.info(f"   Avg track length: {validation['avg_track_length']:.1f}")
-            logger.info(f"   Binary files: {'✅ EXISTS' if validation['binary_files_exist'] else '❌ MISSING'}")
+            logger.info(f"   Text files: {'✅ EXISTS' if validation['text_files_exist'] else '❌ MISSING'}")
             
         except Exception as e:
             logger.error(f"❌ Validation failed: {e}")
@@ -475,8 +459,8 @@ class OpenSfMToCOLMAPConverter:
         self.convert_images()
         self.convert_points()
         
-        # Convert to binary format
-        self.convert_to_binary()
+        # Validate text files
+        self.validate_text_files()
         
         # Copy images
         self.copy_images()

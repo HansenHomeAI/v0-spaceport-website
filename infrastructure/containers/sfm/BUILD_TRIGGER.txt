@@ -1,15 +1,15 @@
-Build #27 - 2025-01-24 - COLMAP Converter Fix + Binary Support
+Build #28 - 2025-01-24 - COLMAP Converter Fix (Text Files Only)
 
 Key Changes:
 - Fixed COLMAP converter to extract proper 2D-3D correspondences from OpenSfM tracks
-- Added binary COLMAP format generation (cameras.bin, images.bin, points3D.bin)
+- Generate COLMAP text format (cameras.txt, images.txt, points3D.txt) - NO binary files
 - Updated dataset structure to my_dataset/images/ + sparse/0/ format
 - Removed train/test split logic (handled in 3DGS stage instead)
-- Added COLMAP binary to container for model_converter tool
 - Enhanced track extraction with proper coordinate conversion
 - Added comprehensive dataset validation
+- Removed unnecessary COLMAP binary dependency
 
 This fixes the "fast but meaningless" 3DGS training by providing proper
 photometric supervision data for neural rendering optimization.
 
-Container needs rebuild to include COLMAP binary and updated converter logic.
+Container needs rebuild with updated converter logic (text files only).
