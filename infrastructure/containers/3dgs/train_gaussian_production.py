@@ -219,8 +219,9 @@ class Trainer:
         logger.info("✅ Real gsplat training completed!")
 
     def load_colmap_scene(self) -> Dict:
-        """Load COLMAP scene data including cameras and images."""
+        """Load COLMAP scene data including cameras, images, and image files."""
         scene_path = self.find_colmap_sparse_dir()
+        images_dir = self.find_images_dir()
         
         # Load cameras
         cameras = self.load_colmap_cameras(scene_path / "cameras.txt")
@@ -231,11 +232,16 @@ class Trainer:
         # Load 3D points
         points_3d = self.load_colmap_points(scene_path / "points3D.txt")
         
+        # Validate image files exist
+        image_files = self.validate_image_files(images, images_dir)
+        
         return {
             'cameras': cameras,
             'images': images, 
             'points_3d': points_3d,
-            'scene_path': scene_path
+            'scene_path': scene_path,
+            'images_dir': images_dir,
+            'image_files': image_files
         }
     
     def load_colmap_cameras(self, cameras_file: Path) -> Dict:
@@ -596,18 +602,165 @@ class Trainer:
         logger.info(f"   Model Quality: {metadata['model_quality_flag']}")
 
     def find_colmap_sparse_dir(self) -> Path:
-        """Finds the COLMAP sparse reconstruction directory (e.g., 'sparse/0')."""
-        logger.info(f"Searching for COLMAP sparse directory in {self.input_dir}...")
+        """Finds the COLMAP sparse reconstruction directory with robust path detection."""
+        logger.info(f"🔍 Searching for COLMAP sparse directory in {self.input_dir}...")
         
-        # Search for a 'points3D.txt' file to identify the correct sparse folder
+        # Strategy 1: Look for the standard COLMAP structure
+        # Expected: input_dir/sparse/0/points3D.txt
+        standard_sparse = self.input_dir / "sparse" / "0"
+        if (standard_sparse / "points3D.txt").exists():
+            logger.info(f"✅ Found standard COLMAP structure at: {standard_sparse}")
+            return standard_sparse
+        
+        # Strategy 2: Look for any subdirectory containing points3D.txt
+        # This handles cases where the structure might be different
         sparse_files = list(self.input_dir.glob("**/points3D.txt"))
-        if not sparse_files:
-            raise FileNotFoundError(f"Could not find 'points3D.txt' in any subdirectory of {self.input_dir}")
-            
-        sparse_dir = sparse_files[0].parent
-        logger.info(f"✅ Found COLMAP sparse reconstruction at: {sparse_dir}")
-        return sparse_dir
+        if sparse_files:
+            sparse_dir = sparse_files[0].parent
+            logger.info(f"✅ Found COLMAP sparse reconstruction at: {sparse_dir}")
+            return sparse_dir
+        
+        # Strategy 3: Look for alternative file names (some converters use different names)
+        alternative_files = ["points3d.txt", "points.txt", "3D_points.txt"]
+        for alt_file in alternative_files:
+            alt_files = list(self.input_dir.glob(f"**/{alt_file}"))
+            if alt_files:
+                sparse_dir = alt_files[0].parent
+                logger.info(f"✅ Found alternative COLMAP structure at: {sparse_dir} (file: {alt_file})")
+                return sparse_dir
+        
+        # Strategy 4: Check if we're in a flat structure (all files in same directory)
+        if (self.input_dir / "points3D.txt").exists():
+            logger.info(f"✅ Found flat COLMAP structure at: {self.input_dir}")
+            return self.input_dir
+        
+        # Strategy 5: Look for any directory containing COLMAP files
+        colmap_files = ["cameras.txt", "images.txt"]
+        for colmap_file in colmap_files:
+            colmap_locations = list(self.input_dir.glob(f"**/{colmap_file}"))
+            if colmap_locations:
+                potential_dir = colmap_locations[0].parent
+                logger.info(f"🔍 Found potential COLMAP directory at: {potential_dir}")
+                # Check if this directory has the essential files
+                if (potential_dir / "points3D.txt").exists():
+                    logger.info(f"✅ Confirmed COLMAP structure at: {potential_dir}")
+                    return potential_dir
+        
+        # Final check: List all files for debugging
+        logger.error(f"❌ Could not find COLMAP sparse reconstruction in {self.input_dir}")
+        logger.error("📁 Directory contents:")
+        for item in self.input_dir.rglob("*"):
+            if item.is_file():
+                logger.error(f"   {item.relative_to(self.input_dir)}")
+        
+        raise FileNotFoundError(
+            f"Could not find 'points3D.txt' or equivalent in any subdirectory of {self.input_dir}. "
+            f"Expected structure: sparse/0/points3D.txt or similar COLMAP format."
+        )
 
+    def find_images_dir(self) -> Path:
+        """Finds the images directory with robust path detection."""
+        logger.info(f"🔍 Searching for images directory in {self.input_dir}...")
+        
+        # Strategy 1: Look for standard images directory
+        # Expected: input_dir/images/
+        standard_images = self.input_dir / "images"
+        if standard_images.exists() and standard_images.is_dir():
+            image_files = list(standard_images.glob("*.jpg")) + list(standard_images.glob("*.jpeg")) + list(standard_images.glob("*.png")) + list(standard_images.glob("*.JPG")) + list(standard_images.glob("*.JPEG")) + list(standard_images.glob("*.PNG"))
+            if image_files:
+                logger.info(f"✅ Found standard images directory at: {standard_images} with {len(image_files)} images")
+                return standard_images
+        
+        # Strategy 2: Look for any directory containing image files
+        image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG"]
+        for ext in image_extensions:
+            image_files = list(self.input_dir.glob(f"**/{ext}"))
+            if image_files:
+                images_dir = image_files[0].parent
+                logger.info(f"✅ Found images directory at: {images_dir} with {len(image_files)} {ext} files")
+                return images_dir
+        
+        # Strategy 3: Check if images are in the same directory as COLMAP files
+        sparse_dir = self.find_colmap_sparse_dir()
+        if sparse_dir != self.input_dir:
+            # Check if images are in the parent directory
+            parent_dir = sparse_dir.parent
+            image_files = []
+            for ext in image_extensions:
+                image_files.extend(list(parent_dir.glob(ext)))
+            if image_files:
+                logger.info(f"✅ Found images in parent directory: {parent_dir} with {len(image_files)} images")
+                return parent_dir
+        
+        # Strategy 4: Check if images are in the same directory as sparse files
+        image_files = []
+        for ext in image_extensions:
+            image_files.extend(list(sparse_dir.glob(ext)))
+        if image_files:
+            logger.info(f"✅ Found images in sparse directory: {sparse_dir} with {len(image_files)} images")
+            return sparse_dir
+        
+        # Final check: List all files for debugging
+        logger.error(f"❌ Could not find images directory in {self.input_dir}")
+        logger.error("📁 Directory contents:")
+        for item in self.input_dir.rglob("*"):
+            if item.is_file():
+                logger.error(f"   {item.relative_to(self.input_dir)}")
+        
+        raise FileNotFoundError(
+            f"Could not find image files in any subdirectory of {self.input_dir}. "
+            f"Expected structure: images/ directory with .jpg/.png files or images alongside COLMAP files."
+        )
+
+    def validate_image_files(self, images: Dict, images_dir: Path) -> Dict[str, Path]:
+        """Validate that image files referenced in COLMAP exist in the images directory."""
+        logger.info(f"🔍 Validating image files in {images_dir}...")
+        
+        validated_files = {}
+        missing_files = []
+        found_files = []
+        
+        for image_id, image_data in images.items():
+            image_name = image_data['name']
+            
+            # Try to find the image file with various extensions
+            image_path = None
+            base_name = Path(image_name).stem
+            
+            for ext in ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']:
+                candidate_path = images_dir / f"{base_name}{ext}"
+                if candidate_path.exists():
+                    image_path = candidate_path
+                    break
+            
+            if image_path is not None:
+                validated_files[image_id] = image_path
+                found_files.append(image_name)
+            else:
+                missing_files.append(image_name)
+        
+        logger.info(f"✅ Image validation complete:")
+        logger.info(f"   Found: {len(found_files)}/{len(images)} images")
+        logger.info(f"   Missing: {len(missing_files)} images")
+        
+        if missing_files:
+            logger.warning(f"⚠️  Missing image files:")
+            for missing in missing_files[:10]:  # Show first 10 missing files
+                logger.warning(f"   - {missing}")
+            if len(missing_files) > 10:
+                logger.warning(f"   ... and {len(missing_files) - 10} more")
+        
+        # Require at least 80% of images to be present for training
+        success_rate = len(found_files) / len(images)
+        if success_rate < 0.8:
+            logger.error(f"❌ CRITICAL: Only {success_rate:.1%} of images found!")
+            logger.error(f"❌ Need at least 80% of images for quality training")
+            logger.error(f"❌ 3DGS TRAINING ABORTED - Fix image file availability")
+            raise FileNotFoundError(f"Only {success_rate:.1%} of images found, need at least 80%")
+        
+        logger.info(f"✅ Image validation passed: {success_rate:.1%} success rate")
+        return validated_files
+    
     def densify_gaussians(self, gaussians: Dict[str, torch.Tensor], grad_threshold: float, percent_dense: float) -> Dict[str, torch.Tensor]:
         """
         COMPLETELY REWRITTEN: Proper adaptive densification based on latest 3DGS research.
