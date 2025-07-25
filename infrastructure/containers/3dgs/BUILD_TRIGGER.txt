@@ -1,4 +1,4 @@
-Build trigger updated: 2025-01-27-gsplat-cuda-real-training
+Build trigger updated: 2025-01-27-gsplat-cuda-compilation-fix
 - Added comprehensive CUDA environment setup
 - Fixed GPU detection with nvidia-ml-py3 and pynvml
 - Enhanced health checks for GPU verification

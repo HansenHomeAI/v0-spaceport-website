@@ -31,9 +31,17 @@ RUN pip install --no-cache-dir -r /opt/ml/requirements_optimized.txt || \
 # 2.1 Compile gsplat from source with CUDA 11.8 support
 # ----------------------------------------------------------------------------
 RUN echo "🔧 Compiling gsplat from source with CUDA 11.8..." && \
+    # Set CUDA compilation environment variables
+    export CUDA_HOME=/usr/local/cuda && \
+    export PATH=$CUDA_HOME/bin:$PATH && \
+    export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH && \
+    export TORCH_CUDA_ARCH_LIST="7.5" && \
+    export FORCE_CUDA=1 && \
+    # Clone and compile gsplat
     git clone --recursive https://github.com/nerfstudio-project/gsplat.git /tmp/gsplat && \
     cd /tmp/gsplat && \
-    pip install . && \
+    # Install with specific CUDA flags
+    pip install . --no-cache-dir --verbose && \
     cd / && \
     rm -rf /tmp/gsplat && \
     echo "✅ gsplat CUDA compilation complete"
