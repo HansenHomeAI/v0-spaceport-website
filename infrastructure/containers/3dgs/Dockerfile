@@ -1,56 +1,62 @@
-# ---- Spaceport 3DGS Training Container ---------------------------------------
-# Re-base on AWS SageMaker's official PyTorch GPU image so the driver mount
-# logic is guaranteed to work.  CUDA 11.8 → compatible with ml.g4dn.xlarge.
-FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
+# Use SageMaker PyTorch training container
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.2.0-gpu-py310-cu118-ubuntu20.04-sagemaker
+
+# Set environment variables for CUDA compilation
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+ENV TORCH_CUDA_ARCH_LIST="7.5"  # T4 GPU architecture (sm_75)
+ENV FORCE_CUDA=1
+
+# Set working directory
+WORKDIR /opt/ml/code
 
 # ----------------------------------------------------------------------------
-# 1. Install CUDA development tools for compiling extensions (gsplat, etc.)
+# 1. Install System Dependencies
 # ----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    g++ \
-    cmake \
-    ninja-build \
     git \
+    wget \
+    build-essential \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------------------------------
-# 2.  Install additional Python libraries (excluding gsplat for now)
+# 2. Install Python Dependencies
 # ----------------------------------------------------------------------------
-WORKDIR /opt/ml
-
-# Copy requirements first for better layer caching
+# Copy requirements files
 COPY requirements_optimized.txt /opt/ml/
 
-# Install all requirements EXCEPT gsplat (will be installed at runtime with GPU access)
+# Fix NumPy compatibility and install core dependencies
+RUN pip install --no-cache-dir "numpy<2.0" && \
+    pip install --no-cache-dir \
+        ninja \
+        jaxtyping \
+        rich \
+        pyyaml \
+        scipy \
+        matplotlib \
+        tqdm \
+        opencv-python \
+        scikit-image
+
+# Install gsplat from PyPI (JIT compilation approach - industry standard)
+RUN pip install --no-cache-dir gsplat
+
+# Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
     pip install --no-cache-dir -r /tmp/requirements_no_gsplat.txt && \
     rm /tmp/requirements_no_gsplat.txt
 
 # ----------------------------------------------------------------------------
-# 3. Copy training code and runtime scripts
+# 3. Copy training code
 # ----------------------------------------------------------------------------
 COPY train_gaussian_production.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
 COPY progressive_config.yaml /opt/ml/code/
-COPY install_gsplat_runtime.sh /opt/ml/code/
-RUN chmod +x /opt/ml/code/install_gsplat_runtime.sh
 
-# ----------------------------------------------------------------------------
-# 4. SageMaker entry point
-# ----------------------------------------------------------------------------
-ENV SAGEMAKER_PROGRAM=/opt/ml/code/train_gaussian_production.py
+# Set Python path
+ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
-# ----------------------------------------------------------------------------
-# 5.  Runtime configuration
-#    NOTE: Do NOT set CUDA_VISIBLE_DEVICES / NVIDIA_VISIBLE_DEVICES here –
-#    SageMaker sets those at runtime.  We only keep standard SageMaker vars.
-# ----------------------------------------------------------------------------
-ENV SM_MODEL_DIR=/opt/ml/model \
-    SM_CHANNEL_TRAINING=/opt/ml/input/data/training \
-    SM_OUTPUT_DATA_DIR=/opt/ml/output
-
-# ----------------------------------------------------------------------------
-# 6.  Entrypoint – launch the real training script
-# ----------------------------------------------------------------------------
-ENTRYPOINT ["python3", "/opt/ml/code/train_gaussian_production.py"] 
+# Set the default command
+CMD ["python", "train_gaussian_production.py", "--config", "progressive_config.yaml"] 

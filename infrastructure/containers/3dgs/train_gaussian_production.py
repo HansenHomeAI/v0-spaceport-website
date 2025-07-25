@@ -14,24 +14,26 @@ Key Features:
 5. Production PLY output compatible with SOGS
 """
 
+# ======================= CORE IMPORTS =======================
 import os
 import sys
 import json
+import yaml
 import time
 import math
 import logging
 import argparse
-from pathlib import Path
-from typing import Dict, Optional, Tuple, List
 import numpy as np
+from pathlib import Path
+from typing import Dict, Any, List, Tuple, Optional
+
+# PyTorch imports
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import yaml
 from tqdm import tqdm
 from plyfile import PlyData, PlyElement
-import subprocess
 
 # Configure production logging
 logging.basicConfig(
@@ -40,48 +42,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def install_gsplat_runtime():
-    """Install gsplat at runtime with GPU access."""
-    logger.info("🚀 Installing gsplat at runtime with GPU access...")
-    
-    try:
-        result = subprocess.run(['/opt/ml/code/install_gsplat_runtime.sh'], 
-                              capture_output=True, text=True, check=True)
-        logger.info("✅ gsplat runtime installation successful")
-        logger.info(result.stdout)
-        return True
-    except subprocess.CalledProcessError as e:
-        logger.error("❌ gsplat runtime installation failed")
-        logger.error(f"Return code: {e.returncode}")
-        logger.error(f"STDOUT: {e.stdout}")
-        logger.error(f"STDERR: {e.stderr}")
-        return False
-    except Exception as e:
-        logger.error(f"❌ Unexpected error during gsplat installation: {e}")
-        return False
-
-# Try to import gsplat, install at runtime if needed
+# Import gsplat directly (now pre-installed)
 try:
     import gsplat
     from gsplat import rasterization
-    logger.info("✅ gsplat library already available")
+    logger.info("✅ gsplat library available")
     logger.info(f"✅ gsplat version: {getattr(gsplat, '__version__', 'unknown')}")
     logger.info(f"✅ gsplat rasterization available: {hasattr(gsplat, 'rasterization')}")
-except ImportError:
-    logger.info("📦 gsplat not found, installing at runtime...")
-    if install_gsplat_runtime():
-        try:
-            import gsplat
-            from gsplat import rasterization
-            logger.info("✅ gsplat runtime installation and import successful")
-            logger.info(f"✅ gsplat version: {getattr(gsplat, '__version__', 'unknown')}")
-            logger.info(f"✅ gsplat rasterization available: {hasattr(gsplat, 'rasterization')}")
-        except ImportError as e:
-            logger.error(f"❌ Failed to import gsplat after runtime installation: {e}")
-            raise ImportError("gsplat runtime installation failed") from e
-    else:
-        logger.error("❌ gsplat runtime installation failed")
-        raise ImportError("gsplat runtime installation failed")
+except ImportError as e:
+    logger.error(f"❌ Failed to import gsplat: {e}")
+    raise ImportError("gsplat library not available") from e
 
 # Import dataset utilities
 try:
