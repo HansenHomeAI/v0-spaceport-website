@@ -5,7 +5,8 @@ FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.2.0-gpu-py3
 ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-ENV TORCH_CUDA_ARCH_LIST="7.5"  # T4 GPU architecture (sm_75)
+# T4 GPU architecture (sm_75)
+ENV TORCH_CUDA_ARCH_LIST="7.5"
 ENV FORCE_CUDA=1
 
 # Set working directory
