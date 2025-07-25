@@ -29,11 +29,11 @@ class GaussianOnlyTester:
         self.s3 = boto3.client('s3', region_name=region)
         
         # Configuration for 3DGS-only test
-        # Using SfM output from successful execution 1095c89a-589c-41f1-ae57-0370343b941c
-        # This was from the GPS-enhanced OpenSfM run on 2025-07-15 with Battery-1.zip dataset
+        # Using SfM output from successful execution a46a72b1-0019-46ee-9241-af02891eace3
+        # This was from the GPS-enhanced OpenSfM run on 2025-07-24 with 97 images and 248k+ 3D points
         self.config = {
             'lambda_function_name': 'Spaceport-StartMLJob',
-            'existing_sfm_data': "s3://spaceport-ml-processing/colmap/1095c89a-589c-41f1-ae57-0370343b941c/",
+            'existing_sfm_data': "s3://spaceport-ml-processing/colmap/a46a72b1-0019-46ee-9241-af02891eace3/",
             'test_email': "test@spaceport.com"
         }
     
