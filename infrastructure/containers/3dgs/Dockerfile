@@ -1,5 +1,5 @@
 # Use SageMaker PyTorch training container
-FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.2.0-gpu-py310-cu118-ubuntu20.04-sagemaker
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
 # Set environment variables for CUDA compilation
 ENV CUDA_HOME=/usr/local/cuda
