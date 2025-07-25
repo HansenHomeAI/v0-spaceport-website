@@ -15,14 +15,32 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------------------------------
-# 2.  Install additional Python libraries (gsplat, OpenCV, etc.)
+# 2.  Install additional Python libraries (excluding gsplat for now)
 # ----------------------------------------------------------------------------
 WORKDIR /opt/ml
 
 # Copy requirements first for better layer caching
 COPY requirements_optimized.txt /opt/ml/
 
-RUN pip install --no-cache-dir -r /opt/ml/requirements_optimized.txt
+# Install all requirements EXCEPT gsplat (we'll compile it from source)
+RUN pip install --no-cache-dir -r /opt/ml/requirements_optimized.txt || \
+    (grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
+     pip install --no-cache-dir -r /tmp/requirements_no_gsplat.txt)
+
+# ----------------------------------------------------------------------------
+# 2.1 Compile gsplat from source with CUDA 11.8 support
+# ----------------------------------------------------------------------------
+RUN echo "🔧 Compiling gsplat from source with CUDA 11.8..." && \
+    git clone --recursive https://github.com/nerfstudio-project/gsplat.git /tmp/gsplat && \
+    cd /tmp/gsplat && \
+    pip install . && \
+    cd / && \
+    rm -rf /tmp/gsplat && \
+    echo "✅ gsplat CUDA compilation complete"
+
+# Verify gsplat CUDA installation
+RUN python3 -c "import gsplat; import torch; print('✅ PyTorch CUDA:', torch.cuda.is_available()); print('✅ gsplat imported successfully'); print('✅ gsplat rasterization available:', hasattr(gsplat, 'rasterization'))" || \
+    (echo "❌ gsplat CUDA verification failed" && exit 1)
 
 # ----------------------------------------------------------------------------
 # 3. Copy training code
