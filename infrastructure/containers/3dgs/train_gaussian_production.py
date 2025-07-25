@@ -40,17 +40,48 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def install_gsplat_runtime():
+    """Install gsplat at runtime with GPU access."""
+    logger.info("🚀 Installing gsplat at runtime with GPU access...")
+    
+    try:
+        result = subprocess.run(['/opt/ml/code/install_gsplat_runtime.sh'], 
+                              capture_output=True, text=True, check=True)
+        logger.info("✅ gsplat runtime installation successful")
+        logger.info(result.stdout)
+        return True
+    except subprocess.CalledProcessError as e:
+        logger.error("❌ gsplat runtime installation failed")
+        logger.error(f"Return code: {e.returncode}")
+        logger.error(f"STDOUT: {e.stdout}")
+        logger.error(f"STDERR: {e.stderr}")
+        return False
+    except Exception as e:
+        logger.error(f"❌ Unexpected error during gsplat installation: {e}")
+        return False
+
+# Try to import gsplat, install at runtime if needed
 try:
     import gsplat
     from gsplat import rasterization
-    logger.info("✅ gsplat library loaded successfully")
+    logger.info("✅ gsplat library already available")
     logger.info(f"✅ gsplat version: {getattr(gsplat, '__version__', 'unknown')}")
     logger.info(f"✅ gsplat rasterization available: {hasattr(gsplat, 'rasterization')}")
-except ImportError as e:
-    logger.error(f"❌ Failed to import gsplat: {e}")
-    logger.error("❌ gsplat must be compiled from source with CUDA support in the container.")
-    logger.error("❌ Please rebuild the container with gsplat source compilation")
-    raise ImportError("gsplat not available - container needs to be rebuilt with gsplat CUDA compilation") from e
+except ImportError:
+    logger.info("📦 gsplat not found, installing at runtime...")
+    if install_gsplat_runtime():
+        try:
+            import gsplat
+            from gsplat import rasterization
+            logger.info("✅ gsplat runtime installation and import successful")
+            logger.info(f"✅ gsplat version: {getattr(gsplat, '__version__', 'unknown')}")
+            logger.info(f"✅ gsplat rasterization available: {hasattr(gsplat, 'rasterization')}")
+        except ImportError as e:
+            logger.error(f"❌ Failed to import gsplat after runtime installation: {e}")
+            raise ImportError("gsplat runtime installation failed") from e
+    else:
+        logger.error("❌ gsplat runtime installation failed")
+        raise ImportError("gsplat runtime installation failed")
 
 # Import dataset utilities
 try:
@@ -1451,8 +1482,18 @@ def main():
     parser.add_argument("train", nargs='?', help="SageMaker training argument (ignored)")  # Handle SageMaker's automatic "train" argument
     args = parser.parse_args()
     
-    trainer = Trainer(args.config)
-    trainer.run_real_training()
+    try:
+        logger.info("🚀 Starting 3D Gaussian Splatting Training")
+        logger.info("📦 gsplat library status: READY")
+        
+        trainer = Trainer(args.config)
+        trainer.run_real_training()
+        
+        logger.info("✅ Training completed successfully")
+    except Exception as e:
+        logger.error(f"❌ Training failed: {e}")
+        logger.error("📋 Check logs above for gsplat installation details")
+        raise
 
 if __name__ == "__main__":
     main() 

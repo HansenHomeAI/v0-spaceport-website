@@ -1,6 +1,7 @@
-Build trigger updated: 2025-01-27-gsplat-cuda-compilation-fix
-- Added comprehensive CUDA environment setup
-- Fixed GPU detection with nvidia-ml-py3 and pynvml
+Build trigger updated: 2025-01-27-gsplat-runtime-installation
+- Moved gsplat installation to runtime (when GPU is available)
+- Added robust runtime installation script
+- Eliminated Docker build CUDA compilation issues
 - Enhanced health checks for GPU verification
 - Improved CUDA environment variables for SageMaker
 - Added nvidia-cuda-toolkit to base image
