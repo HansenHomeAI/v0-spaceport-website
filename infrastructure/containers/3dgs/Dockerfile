@@ -59,5 +59,5 @@ COPY progressive_config.yaml /opt/ml/code/
 # Set Python path
 ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
-# Set the default command
-CMD ["python", "train_gaussian_production.py", "--config", "progressive_config.yaml"] 
+# Set the SageMaker entry point (this is the proper way for SageMaker containers)
+ENTRYPOINT ["python", "train_gaussian_production.py", "--config", "progressive_config.yaml"] 
