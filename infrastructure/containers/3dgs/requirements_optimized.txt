@@ -17,9 +17,8 @@ matplotlib>=3.5.0
 plyfile>=0.7.4
 open3d>=0.16.0
 
-# 3D Gaussian Splatting (CRITICAL - must be pre-installed with CUDA support)
-# Install from source with CUDA support
-gsplat>=1.5.0
+# 3D Gaussian Splatting (CRITICAL - installed via pre-compiled wheel in Dockerfile)
+# gsplat>=1.5.0  # Installed directly in Dockerfile for CUDA compatibility
 
 # CUDA toolkit utilities (ensure CUDA is properly detected)
 pynvml>=11.0.0
