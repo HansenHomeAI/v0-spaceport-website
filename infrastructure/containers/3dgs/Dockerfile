@@ -42,10 +42,10 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
 # 3. Install gsplat using pre-compiled wheel (FAST & RELIABLE)
 # ----------------------------------------------------------------------------
 # Download and install the exact pre-compiled wheel for our setup
-RUN wget -O /tmp/gsplat.whl \
+RUN wget -O /tmp/gsplat-1.5.3+pt20cu118-cp310-cp310-linux_x86_64.whl \
     "https://github.com/nerfstudio-project/gsplat/releases/download/v1.5.3/gsplat-1.5.3%2Bpt20cu118-cp310-cp310-linux_x86_64.whl" && \
-    pip install --no-cache-dir /tmp/gsplat.whl && \
-    rm /tmp/gsplat.whl
+    pip install --no-cache-dir /tmp/gsplat-1.5.3+pt20cu118-cp310-cp310-linux_x86_64.whl && \
+    rm /tmp/gsplat-1.5.3+pt20cu118-cp310-cp310-linux_x86_64.whl
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
