@@ -119,7 +119,7 @@ class GaussianOnlyTester:
         logger.info("=" * 40)
         
         start_time = time.time()
-        max_wait_time = 3600  # 1 hour max for 3DGS only
+        max_wait_time = 1800  # 30 minutes max for efficient testing
         last_status = None
         
         while time.time() - start_time < max_wait_time:

@@ -521,13 +521,13 @@ class Trainer:
                 
                 # Render with gsplat
                 rendered_image, rendered_depth = rasterization(
-                    positions=positions,
+                    means=positions,
                     scales=scales,
-                    rotations=rotations,
+                    quats=rotations,
                     opacities=opacities,
                     colors=colors,
-                    world_to_cam=world_to_cam,
-                    fx=fx, fy=fy, cx=cx, cy=cy,
+                    viewmats=world_to_cam.unsqueeze(0),
+                    Ks=torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], device=self.device).unsqueeze(0),
                     width=width, height=height
                 )
                 
@@ -541,13 +541,10 @@ class Trainer:
                 current_psnr = psnr.item()
                 
             except Exception as e:
-                logger.error(f"❌ gsplat rasterization failed: {e}")
-                # Fallback to regularization losses
-                position_reg = 0.0001 * torch.mean(torch.norm(gaussians['positions'], dim=1))
-                scale_reg = 0.001 * torch.mean(torch.exp(gaussians['scales']))
-                opacity_reg = 0.01 * torch.mean(torch.abs(torch.sigmoid(gaussians['opacities']) - 0.5))
-                total_loss = position_reg + scale_reg + opacity_reg
-                current_psnr = max(20.0, 40.0 - 10 * math.log10(total_loss.item() + 1e-8))
+                logger.error(f"❌ CRITICAL: gsplat rasterization failed: {e}")
+                logger.error("❌ No fallback available - training cannot continue with broken rasterization")
+                logger.error("❌ This indicates an API mismatch or missing gsplat dependencies")
+                raise RuntimeError(f"gsplat rasterization failed: {e}") from e
             
             # Backpropagation
             total_loss.backward()
@@ -582,6 +579,7 @@ class Trainer:
             if (iteration >= densify_from_iter and iteration <= densify_until_iter and 
                 iteration % densify_interval == 0 and iteration > 0):
                 
+                logger.info(f"🔍 Attempting densification at iter {iteration}")
                 old_count = gaussians['positions'].shape[0]
                 gaussians = self.densify_gaussians(gaussians, grad_threshold, percent_dense)
                 new_count = gaussians['positions'].shape[0]
@@ -598,7 +596,9 @@ class Trainer:
                     optimizer = self.update_optimizer_with_new_gaussians(optimizer, gaussians)
                     self.initialize_gradient_accumulation(gaussians)
                     
-                    logger.info(f"🌱 Densification at iter {iteration}: {old_count} → {new_count} (+{new_count - old_count})")
+                    logger.info(f"🌱 SUCCESS: Densification at iter {iteration}: {old_count} → {new_count} (+{new_count - old_count})")
+                else:
+                    logger.info(f"📊 No densification occurred at iter {iteration}: {old_count} Gaussians (unchanged)")
             
             # Opacity reset
             if iteration > 0 and iteration % opacity_reset_interval == 0:
@@ -924,13 +924,13 @@ class Trainer:
                     world_to_cam = torch.from_numpy(cam_params['transform']).float().to(self.device)
                     
                     rendered_image, _ = rasterization(
-                        positions=positions,
+                        means=positions,
                         scales=scales,
-                        rotations=rotations,
+                        quats=rotations,
                         opacities=opacities,
                         colors=colors,
-                        world_to_cam=world_to_cam,
-                        fx=fx, fy=fy, cx=cx, cy=cy,
+                        viewmats=world_to_cam.unsqueeze(0),
+                        Ks=torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], device=self.device).unsqueeze(0),
                         width=width, height=height
                     )
                     
@@ -941,6 +941,8 @@ class Trainer:
                     
                 except Exception as e:
                     logger.warning(f"Validation failed for image {val_idx}: {e}")
+                    if "positions" in str(e):
+                        logger.error("⚠️  Validation using old API - this should be fixed!")
                     continue
         
         if psnr_values:
