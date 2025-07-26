@@ -41,8 +41,8 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         opencv-python \
         scikit-image
 
-# Install gsplat from PyPI (JIT compilation approach - industry standard)
-RUN pip install --no-cache-dir gsplat
+# Install gsplat with explicit CUDA compatibility for PyTorch 2.0.1 + CUDA 11.8
+RUN pip install --no-cache-dir gsplat==1.5.3 --extra-index-url https://download.pytorch.org/whl/cu118
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
