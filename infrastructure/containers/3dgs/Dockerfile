@@ -41,9 +41,8 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         opencv-python \
         scikit-image
 
-# Install gsplat from PyPI and force pre-compilation of CUDA extensions
-RUN pip install --no-cache-dir gsplat && \
-    python -c "import gsplat; from gsplat import rasterization; print('✅ gsplat CUDA extensions pre-compiled successfully')"
+# Install gsplat from PyPI (JIT compilation approach - industry standard)
+RUN pip install --no-cache-dir gsplat
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
