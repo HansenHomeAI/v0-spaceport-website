@@ -41,9 +41,9 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
 # ----------------------------------------------------------------------------
 # 3. Install gsplat using pre-compiled wheel (FAST & RELIABLE)
 # ----------------------------------------------------------------------------
-# Install CUDA toolkit for JIT compilation (required by all gsplat wheels)
+# Install CUDA compiler (nvcc) for JIT compilation
 RUN apt-get update && apt-get install -y \
-    cuda-toolkit-11-8 \
+    cuda-nvcc-11-8 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install gsplat dependencies first
