@@ -1,0 +1,1326 @@
+{
+    "events": [
+        {
+            "timestamp": 1753572425065,
+            "message": "2025-07-26 23:27:02,232 - INFO - Created a temporary directory at /tmp/tmpy2csvwsp",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425065,
+            "message": "2025-07-26 23:27:02,232 - INFO - Writing /tmp/tmpy2csvwsp/_remote_module_non_scriptable.py",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425065,
+            "message": "2025-07-26 23:27:02,239 - INFO - \u2705 gsplat library available",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425065,
+            "message": "2025-07-26 23:27:02,239 - INFO - \u2705 gsplat version: 1.5.3+pt20cu118",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425065,
+            "message": "2025-07-26 23:27:02,239 - INFO - \u2705 gsplat rasterization available: True",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425065,
+            "message": "2025-07-26 23:27:02,260 - INFO - \u2705 SpaceportDataset imported successfully",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,261 - INFO - \ud83d\ude80 Starting 3D Gaussian Splatting Training",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,261 - INFO - \ud83d\udce6 gsplat library status: READY",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,336 - INFO - \ud83d\udd0d DEFINITIVE GPU DETECTION AND INITIALIZATION",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,337 - INFO - ============================================================",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,337 - INFO - \ud83d\udd27 PyTorch version: 2.0.1",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,337 - INFO - \ud83d\udd27 CUDA compiled version: 11.8",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425066,
+            "message": "2025-07-26 23:27:02,648 - INFO - \ud83d\udd27 CUDA available: True",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:02,663 - INFO - \ud83c\udfae GPU devices detected: 1",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:02,664 - INFO - \ud83c\udfaf Selected GPU: Tesla T4",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:02,664 - INFO - \ud83d\udcbe GPU Memory: 14.7 GB",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:02,664 - INFO - \ud83d\udd27 CUDA capability: 7.5",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:02,687 - INFO - \u2705 nvidia-smi check: PASSED",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:02,687 - INFO - \ud83d\udda5\ufe0f  GPU Details: Tesla T4, 550.163.01, 13.34 W, 0 %, 15360 MiB, 3 MiB, 15093 MiB",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,130 - INFO - \u2705 GPU functionality test: PASSED",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,130 - INFO - \u2705 Test tensor shape: torch.Size([1000, 1000])",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,130 - INFO - \u2705 GPU INITIALIZATION COMPLETE",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,130 - INFO - \ud83d\ude80 Ready for GPU-accelerated 3D Gaussian Splatting training",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,130 - INFO - ============================================================",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.max_iterations = 30000 (from MAX_ITERATIONS)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.min_iterations = 1000 (from MIN_ITERATIONS)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.target_psnr = 30.0 (from TARGET_PSNR)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.plateau_patience = 1000 (from PLATEAU_PATIENCE)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.psnr_plateau_termination = True (from PSNR_PLATEAU_TERMINATION)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override learning_rates.gaussian_lr = 0.0025 (from LEARNING_RATE)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.log_interval = 100 (from LOG_INTERVAL)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override training.save_interval = 5000 (from SAVE_INTERVAL)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override gaussian_management.densification.interval = 100 (from DENSIFICATION_INTERVAL)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425067,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override gaussian_management.densification.start_iteration = 500 (from DENSIFY_FROM_ITER)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override gaussian_management.densification.end_iteration = 15000 (from DENSIFY_UNTIL_ITER)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override gaussian_management.densification.grad_threshold = 0.0002 (from DENSIFY_GRAD_THRESHOLD)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override gaussian_management.densification.percent_dense = 0.01 (from PERCENT_DENSE)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcdd Override gaussian_management.opacity_reset_interval = 3000 (from OPACITY_RESET_INTERVAL)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \u2705 Trainer initialized",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcc1 Input directory: /opt/ml/input/data/training",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\udcc1 Output directory: /opt/ml/model",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,131 - INFO - \ud83d\ude80 Starting REAL gsplat 3D Gaussian Splatting Training",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,132 - INFO - \ud83d\udcca Loading COLMAP reconstruction data...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,132 - INFO - \ud83d\udd0d Searching for COLMAP sparse directory in /opt/ml/input/data/training...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,132 - INFO - \u2705 Found standard COLMAP structure at: /opt/ml/input/data/training/sparse/0",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,132 - INFO - \ud83d\udd0d Searching for images directory in /opt/ml/input/data/training...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,133 - INFO - \u2705 Found standard images directory at: /opt/ml/input/data/training/images with 97 images",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,133 - INFO - \u2705 Loaded 1 cameras",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,134 - INFO - \u2705 Loaded 97 image poses",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:03,916 - INFO - \u2705 Loaded 247995 3D points from COLMAP",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:04,104 - INFO - \ud83d\udd0d Validating image files in /opt/ml/input/data/training/images...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:04,108 - INFO - \u2705 Image validation complete:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:04,108 - INFO -    Found: 97/97 images",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:04,108 - INFO -    Missing: 0 images",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:04,108 - INFO - \u2705 Image validation passed: 100.0% success rate",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "2025-07-26 23:27:04,108 - INFO - \ud83d\udcca Setting up dataset with 80/20 train/test split...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "\ud83d\udd0d Loading COLMAP data from: /opt/ml/input/data/training/sparse/0",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "\ud83d\udcf7 Loaded 1 cameras",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "\ud83d\uddbc\ufe0f  Loaded 97 images",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425068,
+            "message": "\ud83d\udccd Loaded 1 3D points",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "\ud83d\udcca Dataset initialized:\n   Images: 97\n   Cameras: 1\n   3D Points: 1",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "\ud83d\udcca Dataset split:\n   Training views: 77\n   Validation views: 20",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,013 - INFO - \u2705 Dataset split complete:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,013 - INFO -    Training images: 77",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,013 - INFO -    Validation images: 20",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,014 - INFO - \ud83c\udfaf Initializing Gaussians with spherical harmonics...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,014 - INFO - \ud83c\udfaf Initializing 247995 Gaussians from COLMAP points",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,014 - INFO - \u2705 Quality check passed: 247995 >= 1000 initial splats",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO - \u2705 Initialized 247995 Gaussians with spherical harmonics",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO - \u2699\ufe0f Setting up gsplat training...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO - \u2705 Using gsplat-recommended learning rates:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO -    positions: 0.0001",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO -    sh_dc: 0.0025",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO -    sh_rest: 0.000125",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO -    opacities: 0.05",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO -    scales: 0.005",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO -    rotations: 0.001",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,055 - INFO - \ud83d\udd25 Starting real gsplat training...",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,056 - WARNING - Unsupported camera model: RADIAL, using PINHOLE approximation",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,057 - INFO - \u2705 Extracted camera parameters for 97 images",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,057 - INFO - \ud83d\udd25 REAL gsplat Training Configuration:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,057 - INFO -    Max Iterations: 30000",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,057 - INFO -    Training Images: 77",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425069,
+            "message": "2025-07-26 23:27:05,057 - INFO -    Validation Images: 20",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425070,
+            "message": "2025-07-26 23:27:05,057 - INFO -    Target PSNR: 30.0 dB",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425070,
+            "message": "2025-07-26 23:27:05,057 - INFO -    Densification: 500-15000 every 100 iters",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425070,
+            "message": "2025-07-26 23:27:05,057 - INFO -    Initial Gaussians: 247995",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572425070,
+            "message": "2025-07-26 23:27:05,057 - INFO - \ud83d\udd27 Initialized gradient accumulation for 247995 Gaussians",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "2025-07-26 23:27:06,072 - ERROR - \u274c CRITICAL: gsplat rasterization failed: Error building extension 'gsplat_cuda': [1/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "FAILED: AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "[2/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "FAILED: ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427070,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[3/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[4/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[5/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[6/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[7/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[8/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[9/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "[10/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "ninja: build stopped: subcommand failed.",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "2025-07-26 23:27:06,072 - ERROR - \u274c No fallback available - training cannot continue with broken rasterization",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "2025-07-26 23:27:06,072 - ERROR - \u274c This indicates an API mismatch or missing gsplat dependencies",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "2025-07-26 23:27:06,072 - ERROR - \u274c Training failed: gsplat rasterization failed: Error building extension 'gsplat_cuda': [1/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "FAILED: AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427071,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[2/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[3/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[4/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[5/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[6/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[7/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[8/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[9/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "[10/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "FAILED: QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "ninja: build stopped: subcommand failed.",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "2025-07-26 23:27:06,072 - ERROR - \ud83d\udccb Check logs above for gsplat installation details",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "Traceback (most recent call last):\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_backend.py\", line 166, in <module>\n    from gsplat import csrc as _C",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427072,
+            "message": "ImportError: /usr/lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.32' not found (required by /opt/conda/lib/python3.10/site-packages/gsplat/csrc.so)",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "During handling of the above exception, another exception occurred:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "Traceback (most recent call last):\n  File \"/opt/conda/lib/python3.10/site-packages/torch/utils/cpp_extension.py\", line 1893, in _run_ninja_build\n    subprocess.run(\n  File \"/opt/conda/lib/python3.10/subprocess.py\", line 526, in run\n    raise CalledProcessError(retcode, process.args,",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "subprocess.CalledProcessError: Command '['ninja', '-v', '-j', '10']' returned non-zero exit status 1.",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "The above exception was the direct cause of the following exception:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "Traceback (most recent call last):\n  File \"/opt/ml/code/train_gaussian_production.py\", line 523, in train_with_gsplat\n    rendered_image, rendered_depth = rasterization(\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/rendering.py\", line 409, in rasterization\n    proj_results = fully_fused_projection(\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py\", line 404, in fully_fused_projection\n    return _FullyFusedProjectionPacked.apply(\n  File \"/opt/conda/lib/python3.10/site-packages/torch/autograd/function.py\", line 506, in apply\n    return super().apply(*args, **kwargs)  # type: ignore[misc]\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py\", line 1606, in forward\n    camera_model_type = _make_lazy_cuda_obj(\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py\", line 24, in _make_lazy_cuda_obj\n    from ._backend import _C\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_backend.py\", line 217, in <module>\n    _C = load_extension(\n  File \"/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_backend.py\", line 79, in load_extension\n    compiled = _jit_compile(\n  File \"/opt/conda/lib/python3.10/site-packages/torch/utils/cpp_extension.py\", line 1509, in _jit_compile\n    _write_ninja_file_and_build_library(\n  File \"/opt/conda/lib/python3.10/site-packages/torch/utils/cpp_extension.py\", line 1624, in _write_ninja_file_and_build_library\n    _run_ninja_build(\n  File \"/opt/conda/lib/python3.10/site-packages/torch/utils/cpp_extension.py\", line 1909, in _run_ninja_build\n    raise RuntimeError(message) from e",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "RuntimeError: Error building extension 'gsplat_cuda': [1/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "FAILED: AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "[2/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "FAILED: ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "[3/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "FAILED: IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "[4/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "FAILED: NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "[5/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "FAILED: Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "[6/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "FAILED: Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427073,
+            "message": "[7/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[8/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[9/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[10/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "ninja: build stopped: subcommand failed.",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "The above exception was the direct cause of the following exception:",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "Traceback (most recent call last):\n  File \"/opt/ml/code/train_gaussian_production.py\", line 1472, in <module>\n    main() \n  File \"/opt/ml/code/train_gaussian_production.py\", line 1463, in main\n    trainer.run_real_training()\n  File \"/opt/ml/code/train_gaussian_production.py\", line 243, in run_real_training\n    self.train_with_gsplat(gaussians, optimizer, scene_data)\n  File \"/opt/ml/code/train_gaussian_production.py\", line 547, in train_with_gsplat\n    raise RuntimeError(f\"gsplat rasterization failed: {e}\") from e",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "RuntimeError: gsplat rasterization failed: Error building extension 'gsplat_cuda': [1/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/AdamCUDA.cu -o AdamCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[2/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWASimple.cu -o ProjectionEWASimple.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[3/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/IntersectTile.cu -o IntersectTile.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[4/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/NullCUDA.cu -o NullCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "[5/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427074,
+            "message": "FAILED: Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSFused.cu -o Projection2DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "[6/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "FAILED: Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/Projection2DGSPacked.cu -o Projection2DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "[7/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "FAILED: ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSFused.cu -o ProjectionEWA3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "[8/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "FAILED: ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionEWA3DGSPacked.cu -o ProjectionEWA3DGSPacked.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "[9/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "FAILED: ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/ProjectionUT3DGSFused.cu -o ProjectionUT3DGSFused.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "[10/30] /usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "FAILED: QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/usr/local/cuda/bin/nvcc  -DTORCH_EXTENSION_NAME=gsplat_cuda -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\\\"_gcc\\\" -DPYBIND11_STDLIB=\\\"_libstdcpp\\\" -DPYBIND11_BUILD_ABI=\\\"_cxxabi1011\\\" -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/include -I/opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/third_party/glm -isystem /opt/conda/lib/python3.10/site-packages/torch/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -isystem /opt/conda/lib/python3.10/site-packages/torch/include/TH -isystem /opt/conda/lib/python3.10/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /opt/conda/include/python3.10 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_37,code=sm_37 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 -use_fast_math -std=c++17 -c /opt/conda/lib/python3.10/site-packages/gsplat/cuda/csrc/QuatScaleToCovarCUDA.cu -o QuatScaleToCovarCUDA.cuda.o ",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+            "ingestionTime": 1753572431219
+        },
+        {
+            "timestamp": 1753572427075,
+            "message": "ninja: build stopped: subcommand failed.",
+            "ingestionTime": 1753572431219
+        }
+    ],
+    "nextForwardToken": "f/39105971883368497548134889722836577141192437741015466247/s",
+    "nextBackwardToken": "b/39105971838543999699088337208349783413169231113994829824/s"
+}

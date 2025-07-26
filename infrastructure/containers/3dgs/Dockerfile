@@ -41,10 +41,15 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
 # ----------------------------------------------------------------------------
 # 3. Install gsplat using pre-compiled wheel (FAST & RELIABLE)
 # ----------------------------------------------------------------------------
+# Install CUDA toolkit for JIT compilation (required by all gsplat wheels)
+RUN apt-get update && apt-get install -y \
+    cuda-toolkit-11-8 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install gsplat dependencies first
 RUN pip install ninja numpy jaxtyping rich
 
-# Install gsplat from pre-compiled wheels (NO JIT compilation needed)
+# Install gsplat from pre-compiled wheels (requires JIT compilation on first run)
 RUN pip install gsplat --index-url https://docs.gsplat.studio/whl/pt20cu118
 
 # Install remaining requirements (excluding gsplat which is already installed)
