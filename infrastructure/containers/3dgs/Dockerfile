@@ -41,11 +41,13 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         opencv-python \
         scikit-image
 
-# Install CUDA compiler for gsplat compilation
-RUN apt-get update && apt-get install -y cuda-nvcc-11-8 && rm -rf /var/lib/apt/lists/*
+# Install AWS CLI for downloading cached wheel
+RUN apt-get update && apt-get install -y awscli && rm -rf /var/lib/apt/lists/*
 
-# Install gsplat from source (will compile CUDA extensions)
-RUN pip install --no-cache-dir gsplat==1.5.3
+# Download and install pre-built gsplat wheel from S3 cache
+RUN aws s3 cp s3://spaceport-build-cache/wheels/gsplat-1.5.3-cu118.whl /tmp/gsplat.whl && \
+    pip install /tmp/gsplat.whl && \
+    rm /tmp/gsplat.whl
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
