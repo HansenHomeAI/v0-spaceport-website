@@ -1,13 +1,13 @@
-# Use SageMaker PyTorch training container with CUDA 11.7 (matches gsplat pre-compiled binaries)
-FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu117-ubuntu20.04-sagemaker
+# Use SageMaker PyTorch training container
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
 # Set environment variables for CUDA compilation
 ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-# T4 GPU architecture (sm_75) - CUDA 11.7 compatible
+# T4 GPU architecture (sm_75) - for compilation if needed
 ENV TORCH_CUDA_ARCH_LIST="7.5"
-ENV FORCE_CUDA=1
+# Remove FORCE_CUDA=1 to allow pre-compiled wheels
 
 # Set working directory
 WORKDIR /opt/ml/code
@@ -41,8 +41,8 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         opencv-python \
         scikit-image
 
-# Install gsplat with CUDA 11.7 compatibility (matches PyTorch container)
-RUN pip install --no-cache-dir gsplat==1.5.3 --extra-index-url https://download.pytorch.org/whl/cu117
+# Install gsplat from PyPI (pre-compiled wheels)
+RUN pip install --no-cache-dir gsplat==1.5.3
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
