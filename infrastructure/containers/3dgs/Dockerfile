@@ -1,5 +1,5 @@
-# Use SageMaker PyTorch training container with CUDA 11.8
-FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
+# Use SageMaker PyTorch training container with CUDA 12.1 (supports A10G natively)
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.1.0-gpu-py310-cu121-ubuntu20.04-sagemaker
 
 # Set environment variables for CUDA
 ENV CUDA_HOME=/usr/local/cuda
@@ -7,12 +7,13 @@ ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
 # Set CUDA architecture for A10G GPU (Compute Capability 8.6)
-ENV TORCH_CUDA_ARCH_LIST="8.6"
+# This forces PyTorch to include A10G architecture in compilation
+ENV TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6"
 ENV CUDA_ARCH_FLAGS="-arch=sm_86"
 
-# Set C++ standard for CUDA compilation (required for gsplat JIT build)
+# Set C++ standard for CUDA compilation (required for gsplat source build)
 ENV CXXFLAGS="-std=c++17"
-ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186 -arch=sm_86"
+ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186"
 
 # Set working directory
 WORKDIR /opt/ml/code
@@ -47,23 +48,14 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         scikit-image
 
 # ----------------------------------------------------------------------------
-# 3. Install gsplat using pre-compiled wheel (FAST & RELIABLE)
+# 3. Install gsplat FROM SOURCE for A10G compatibility
 # ----------------------------------------------------------------------------
-# Install CUDA compiler (nvcc) for gsplat JIT build – Ubuntu 20.04
-RUN apt-get update && apt-get install -y wget gnupg2 \
- && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb \
- && dpkg -i cuda-keyring_1.1-1_all.deb \
- && apt-get update \
- && apt-get install -y cuda-toolkit-11-8 \
- && rm -f cuda-keyring_1.1-1_all.deb \
- && rm -rf /var/lib/apt/lists/*
-
-# Install gsplat dependencies first
+# Install gsplat dependencies required for source compilation
 RUN pip install ninja numpy jaxtyping rich
 
-# Install gsplat from pre-compiled wheels (requires JIT compilation on first run)
-# Force recompilation for A10G GPU architecture
-RUN TORCH_CUDA_ARCH_LIST="8.6" pip install gsplat --index-url https://docs.gsplat.studio/whl/pt20cu118 --force-reinstall --no-cache-dir
+# CRITICAL: Install gsplat from source with A10G architecture support
+# This ensures it compiles with compute_86 support for labeled_partition
+RUN TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6" pip install git+https://github.com/nerfstudio-project/gsplat.git --no-cache-dir --force-reinstall
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
