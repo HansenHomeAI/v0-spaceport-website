@@ -6,11 +6,11 @@ Production-ready container for SOGS (Self-Organizing Gaussian Splats) compressio
 - Pure PlayCanvas SOGS implementation
 - GPU-accelerated compression using CUDA
 - No fallback modes - fails fast if GPU unavailable
-- Optimized for ml.g4dn.xlarge instances
+- Optimized for ml.g5.xlarge instances
 
 ## Build Status
 - ✅ Docker Hub authentication configured
-- ✅ GPU quota approved (ml.g4dn.xlarge)
+- ✅ GPU quota approved (ml.g5.xlarge)
 - ✅ Fixed torch import NameError issue
 - ✅ Fixed python3 entry point in CDK
 - ✅ Added missing cupy dependency

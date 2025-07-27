@@ -32,7 +32,7 @@ This production-ready system processes uploaded drone images through a sophistic
 ## 🤖 ML Pipeline - 3D Gaussian Splatting
 
 ### Production-Ready AWS SageMaker Quotas ✅
-- **ml.g4dn.xlarge** (1 instance): 3D Gaussian Splatting Training - 4 vCPUs, 16 GB RAM, 1x NVIDIA T4 GPU
+- **ml.g5.xlarge** (1 instance): 3D Gaussian Splatting Training - 4 vCPUs, 16 GB RAM, 1x NVIDIA A10G GPU
 - **ml.c6i.2xlarge** (1 instance): SfM Processing (COLMAP) - 8 vCPUs, 16 GB RAM  
 - **ml.c6i.4xlarge** (2 instances): Compression (SOGS) - 16 vCPUs, 32 GB RAM
 
@@ -115,7 +115,7 @@ cd scripts/build/
 - **API Gateway**: RESTful endpoints
 - **Lambda**: Serverless backend logic
 - **Step Functions**: ML workflow orchestration
-- **SageMaker**: ML training (ml.g4dn.xlarge, ml.c6i.2xlarge/4xlarge)
+- **SageMaker**: ML training (ml.g5.xlarge, ml.c6i.2xlarge/4xlarge)
 - **ECR**: Container registry
 - **CloudWatch**: Monitoring & logging
 

@@ -79,7 +79,7 @@ class Trainer:
         self.apply_step_functions_params()
     
     def _initialize_gpu_device(self) -> torch.device:
-        """Definitive GPU detection and initialization for SageMaker ml.g4dn.xlarge"""
+        """Definitive GPU detection and initialization for SageMaker ml.g5.xlarge (A10G GPU)"""
         logger.info("🔍 DEFINITIVE GPU DETECTION AND INITIALIZATION")
         logger.info("=" * 60)
         
@@ -100,7 +100,7 @@ class Trainer:
         
         if gpu_count == 0:
             logger.error("❌ CRITICAL: No GPU devices found!")
-            logger.error("❌ ml.g4dn.xlarge should have 1 NVIDIA T4 GPU")
+            logger.error("❌ ml.g5.xlarge should have 1 NVIDIA A10G GPU")
             logger.error("❌ Check SageMaker instance configuration")
             raise RuntimeError("No GPU devices found - cannot proceed with GPU training")
         

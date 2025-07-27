@@ -42,7 +42,7 @@ def test_sogs_compression():
         'ProcessingJobName': job_name,
         'ProcessingResources': {
             'ClusterConfig': {
-                'InstanceType': 'ml.g4dn.xlarge',  # GPU instance for SOGS
+                'InstanceType': 'ml.g5.xlarge',  # A10G GPU instance for SOGS
                 'InstanceCount': 1,
                 'VolumeSizeInGB': 30
             }

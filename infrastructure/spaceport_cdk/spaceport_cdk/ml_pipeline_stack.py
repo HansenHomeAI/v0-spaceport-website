@@ -349,7 +349,7 @@ class MLPipelineStack(Stack):
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g4dn.xlarge",
+                    "InstanceType": "ml.g5.xlarge",  # A10G GPU - supports gsplat labeled_partition
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
@@ -431,7 +431,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.g4dn.xlarge",  # GPU instance for SOGS compression
+                        "InstanceType": "ml.g5.xlarge",  # A10G GPU - better performance for SOGS compression
                         "VolumeSizeInGB": 50
                     }
                 },

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Production SOGS Test using SageMaker Training Job with GPU
-Uses the approved ml.g4dn.xlarge quota for training jobs
+Uses the approved ml.g5.xlarge quota for training jobs
 """
 
 import boto3
@@ -22,7 +22,7 @@ PYTORCH_VERSION = '2.3.0'
 PYTHON_VERSION = 'py311'
 # Correct container URI for us-west-2 region
 CONTAINER_URI = f'763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:{PYTORCH_VERSION}-gpu-{PYTHON_VERSION}-cu121-ubuntu20.04-sagemaker'
-INSTANCE_TYPE = 'ml.g4dn.xlarge'  # Approved GPU quota for training jobs
+INSTANCE_TYPE = 'ml.g5.xlarge'  # Approved A10G GPU quota for training jobs
 
 def create_training_script():
     """Create training script that does SOGS compression"""

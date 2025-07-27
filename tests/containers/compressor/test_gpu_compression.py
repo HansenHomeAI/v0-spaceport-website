@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GPU SOGS Compression Test
-Tests the new production SOGS container with ml.g4dn.xlarge GPU instances
+Tests the new production SOGS container with ml.g5.xlarge GPU instances
 """
 
 import os
@@ -31,7 +31,7 @@ class GPUSOGSCompressionTest:
         print(f"   Region: {region}")
         print(f"   Account: {self.account_id}")
         print(f"   Container: {self.ecr_image_uri}")
-        print(f"   Instance Type: ml.g4dn.xlarge (GPU)")
+        print(f"   Instance Type: ml.g5.xlarge (A10G GPU)")
     
     def get_existing_test_data(self) -> str:
         """Use existing test data from previous runs"""
@@ -98,7 +98,7 @@ class GPUSOGSCompressionTest:
         print(f"   Input: {input_s3_uri}")
         print(f"   Output: {output_s3_uri}")
         print(f"   Container: {self.ecr_image_uri}")
-        print(f"   Instance: ml.g4dn.xlarge (1x NVIDIA T4 GPU)")
+        print(f"   Instance: ml.g5.xlarge (1x NVIDIA A10G GPU)")
         
         # Create processing job with GPU instance
         job_config = {
@@ -106,7 +106,7 @@ class GPUSOGSCompressionTest:
             'ProcessingResources': {
                 'ClusterConfig': {
                     'InstanceCount': 1,
-                    'InstanceType': 'ml.g4dn.xlarge',  # GPU instance!
+                    'InstanceType': 'ml.g5.xlarge',  # A10G GPU instance!
                     'VolumeSizeInGB': 50
                 }
             },

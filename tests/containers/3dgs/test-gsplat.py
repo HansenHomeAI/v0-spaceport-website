@@ -23,7 +23,7 @@ def test_gsplat_container():
     print(f"🎮 Creating test job: {job_name}")
     print(f"📦 Container: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest")
     print(f"📂 Dataset: s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip")
-    print(f"💪 Instance: ml.g4dn.xlarge (NVIDIA T4 GPU)")
+    print(f"💪 Instance: ml.g5.xlarge (NVIDIA A10G GPU)")
     
     training_job_config = {
         'TrainingJobName': job_name,
@@ -46,7 +46,7 @@ def test_gsplat_container():
             'S3OutputPath': 's3://spaceport-sagemaker-us-west-2/gsplat-test-output/'
         },
         'ResourceConfig': {
-            'InstanceType': 'ml.g4dn.xlarge',  # GPU instance for real test
+            'InstanceType': 'ml.g5.xlarge',  # A10G GPU instance for real test
             'InstanceCount': 1,
             'VolumeSizeInGB': 50
         },
