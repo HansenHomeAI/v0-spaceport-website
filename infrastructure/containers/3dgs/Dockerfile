@@ -6,6 +6,10 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
+# Set C++ standard for CUDA compilation (required for gsplat JIT build)
+ENV CXXFLAGS="-std=c++17"
+ENV NVCC_FLAGS="-std=c++17"
+
 # Set working directory
 WORKDIR /opt/ml/code
 
