@@ -8,7 +8,7 @@ ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
 # Set C++ standard for CUDA compilation (required for gsplat JIT build)
 ENV CXXFLAGS="-std=c++17"
-ENV NVCC_FLAGS="-std=c++17"
+ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186"
 
 # Set working directory
 WORKDIR /opt/ml/code
