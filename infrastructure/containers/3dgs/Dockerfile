@@ -6,9 +6,13 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
+# Set CUDA architecture for A10G GPU (Compute Capability 8.6)
+ENV TORCH_CUDA_ARCH_LIST="8.6"
+ENV CUDA_ARCH_FLAGS="-arch=sm_86"
+
 # Set C++ standard for CUDA compilation (required for gsplat JIT build)
 ENV CXXFLAGS="-std=c++17"
-ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186"
+ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186 -arch=sm_86"
 
 # Set working directory
 WORKDIR /opt/ml/code
@@ -58,7 +62,8 @@ RUN apt-get update && apt-get install -y wget gnupg2 \
 RUN pip install ninja numpy jaxtyping rich
 
 # Install gsplat from pre-compiled wheels (requires JIT compilation on first run)
-RUN pip install gsplat --index-url https://docs.gsplat.studio/whl/pt20cu118
+# Force recompilation for A10G GPU architecture
+RUN TORCH_CUDA_ARCH_LIST="8.6" pip install gsplat --index-url https://docs.gsplat.studio/whl/pt20cu118 --force-reinstall --no-cache-dir
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
