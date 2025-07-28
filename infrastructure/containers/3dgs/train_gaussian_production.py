@@ -538,10 +538,20 @@ class Trainer:
                 logger.info(f"🔍 DEBUG: rendered_image shape: {rendered_image.shape}")
                 logger.info(f"🔍 DEBUG: gt_image_tensor shape: {gt_image_tensor.shape}")
                 
-                # Ensure ground truth has the same shape as rendered image
-                if gt_image_tensor.dim() == 4:  # [1, H, W, 3]
+                # Fix tensor shapes for compatibility
+                # Remove batch dimension from rendered image if present
+                if rendered_image.dim() == 4:  # [1, H, W, 3]
+                    rendered_image = rendered_image.squeeze(0)  # [H, W, 3]
+                
+                # Transpose ground truth from [3, H, W] to [H, W, 3] if needed
+                if gt_image_tensor.dim() == 3 and gt_image_tensor.shape[0] == 3:  # [3, H, W]
+                    gt_image_tensor = gt_image_tensor.permute(1, 2, 0)  # [H, W, 3]
+                elif gt_image_tensor.dim() == 4:  # [1, H, W, 3]
                     gt_image_tensor = gt_image_tensor.squeeze(0)  # [H, W, 3]
-                    logger.info(f"🔍 DEBUG: After squeeze, gt_image_tensor shape: {gt_image_tensor.shape}")
+                
+                # Debug tensor shapes after normalization
+                logger.info(f"🔍 DEBUG: rendered_image after normalization: {rendered_image.shape}")
+                logger.info(f"🔍 DEBUG: gt_image_tensor after normalization: {gt_image_tensor.shape}")
                 
                 # Compute photometric loss
                 l1_loss = torch.nn.functional.l1_loss(rendered_image, gt_image_tensor)
