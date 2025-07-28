@@ -1114,20 +1114,14 @@ class Trainer:
         # Offset distance based on scale (more conservative than original)
         offset_scale = 0.1  # Reduced from typical 0.16 for better stability
         
-        # Fix tensor shape broadcasting issue - handle any shape mismatch
-        # Ensure both tensors are [N, 3] for element-wise multiplication
-        if actual_scales.dim() == 3:
-            actual_scales_reshaped = actual_scales.squeeze(-1)  # [N, 3, 1] -> [N, 3]
-        else:
-            actual_scales_reshaped = actual_scales  # Already [N, 3]
+        # Fix tensor shape broadcasting issue
+        # actual_scales: [N, 3, 1] -> [N, 3] by squeezing the last dimension
+        actual_scales_reshaped = actual_scales.squeeze(-1)
         
         # Debug tensor shapes for densification splitting
         logger.info(f"🔧 DEBUG: split_directions shape: {split_directions.shape}")
         logger.info(f"🔧 DEBUG: actual_scales shape: {actual_scales.shape}")
         logger.info(f"🔧 DEBUG: actual_scales_reshaped shape: {actual_scales_reshaped.shape}")
-        
-        # Ensure both tensors have the same shape for element-wise multiplication
-        assert split_directions.shape == actual_scales_reshaped.shape, f"Shape mismatch: {split_directions.shape} vs {actual_scales_reshaped.shape}"
         
         offsets = split_directions * actual_scales_reshaped * offset_scale
         logger.info(f"🔧 DEBUG: offsets shape: {offsets.shape}")
