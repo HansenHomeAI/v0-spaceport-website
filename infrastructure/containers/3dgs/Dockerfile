@@ -28,7 +28,17 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------------------------------
-# 2. Install Core Python Dependencies (CACHED LAYER)
+# 2. Install CUDA Toolkit (CACHED LAYER - rarely changes)
+# ----------------------------------------------------------------------------
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb \
+    && dpkg -i cuda-keyring_1.1-1_all.deb \
+    && apt-get update \
+    && apt-get install -y cuda-toolkit-11-8 \
+    && rm -f cuda-keyring_1.1-1_all.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# ----------------------------------------------------------------------------
+# 3. Install Core Python Dependencies (CACHED LAYER)
 # ----------------------------------------------------------------------------
 # Fix NumPy compatibility and install core dependencies
 RUN pip install --no-cache-dir "numpy<2.0" && \
@@ -44,7 +54,7 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         scikit-image
 
 # ----------------------------------------------------------------------------
-# 3. Install gsplat using pre-compiled wheel (FAST & CACHED)
+# 4. Install gsplat from source (PROVEN APPROACH)
 # ----------------------------------------------------------------------------
 # Copy requirements file first for better caching
 COPY requirements_optimized.txt /opt/ml/
@@ -52,9 +62,9 @@ COPY requirements_optimized.txt /opt/ml/
 # Install gsplat dependencies
 RUN pip install ninja numpy jaxtyping rich
 
-# Use pre-compiled wheels for gsplat (much faster than source compilation)
-# This avoids the 10+ minute source compilation every time
-RUN pip install gsplat --index-url https://docs.gsplat.studio/whl/pt20cu118 --no-cache-dir
+# Install gsplat from source with A10G architecture support
+# This is the proven approach that works with our A10G setup
+RUN pip install gsplat --no-cache-dir --force-reinstall
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
@@ -62,7 +72,7 @@ RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_g
     rm /tmp/requirements_no_gsplat.txt
 
 # ----------------------------------------------------------------------------
-# 4. Copy training code (LAST LAYER - changes most frequently)
+# 5. Copy training code (LAST LAYER - changes most frequently)
 # ----------------------------------------------------------------------------
 COPY train_gaussian_production.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
