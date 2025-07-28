@@ -519,8 +519,8 @@ class Trainer:
                 # Camera pose (world to camera transform)
                 world_to_cam = torch.from_numpy(cam_params['transform']).float().to(self.device)
                 
-                # Render with gsplat
-                rendered_image, rendered_depth = rasterization(
+                # Render with gsplat (API: returns 3 values in v1.5.3+)
+                render_colors, render_alphas, meta = rasterization(
                     means=positions,
                     scales=scales,
                     quats=rotations,
@@ -530,6 +530,9 @@ class Trainer:
                     Ks=torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], device=self.device).unsqueeze(0),
                     width=width, height=height
                 )
+                
+                # Extract rendered image from colors (first 3 channels are RGB)
+                rendered_image = render_colors[..., :3]  # [H, W, 3]
                 
                 # Compute photometric loss
                 l1_loss = torch.nn.functional.l1_loss(rendered_image, gt_image_tensor)

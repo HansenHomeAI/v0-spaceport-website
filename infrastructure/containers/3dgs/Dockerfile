@@ -10,7 +10,7 @@ ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 ENV TORCH_CUDA_ARCH_LIST="8.6"
 ENV CUDA_ARCH_FLAGS="-arch=sm_86"
 
-# Set C++ standard for CUDA compilation (required for gsplat JIT build)
+# Set C++ standard for CUDA compilation
 ENV CXXFLAGS="-std=c++17"
 ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186 -arch=sm_86"
 
@@ -18,7 +18,7 @@ ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppre
 WORKDIR /opt/ml/code
 
 # ----------------------------------------------------------------------------
-# 1. Install System Dependencies
+# 1. Install System Dependencies (CACHED LAYER)
 # ----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y \
     git \
@@ -28,11 +28,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------------------------------
-# 2. Install Python Dependencies
+# 2. Install Core Python Dependencies (CACHED LAYER)
 # ----------------------------------------------------------------------------
-# Copy requirements files
-COPY requirements_optimized.txt /opt/ml/
-
 # Fix NumPy compatibility and install core dependencies
 RUN pip install --no-cache-dir "numpy<2.0" && \
     pip install --no-cache-dir \
@@ -47,23 +44,17 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         scikit-image
 
 # ----------------------------------------------------------------------------
-# 3. Install gsplat using pre-compiled wheel (FAST & RELIABLE)
+# 3. Install gsplat using pre-compiled wheel (FAST & CACHED)
 # ----------------------------------------------------------------------------
-# Install CUDA compiler (nvcc) for gsplat JIT build – Ubuntu 20.04
-RUN apt-get update && apt-get install -y wget gnupg2 \
- && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb \
- && dpkg -i cuda-keyring_1.1-1_all.deb \
- && apt-get update \
- && apt-get install -y cuda-toolkit-11-8 \
- && rm -f cuda-keyring_1.1-1_all.deb \
- && rm -rf /var/lib/apt/lists/*
+# Copy requirements file first for better caching
+COPY requirements_optimized.txt /opt/ml/
 
-# Install gsplat dependencies first
+# Install gsplat dependencies
 RUN pip install ninja numpy jaxtyping rich
 
-# Try installing the latest gsplat version that might have better A10G support
-# Use pip install directly instead of pre-compiled wheels to get the latest version
-RUN pip install gsplat --no-cache-dir --force-reinstall
+# Use pre-compiled wheels for gsplat (much faster than source compilation)
+# This avoids the 10+ minute source compilation every time
+RUN pip install gsplat --index-url https://docs.gsplat.studio/whl/pt20cu118 --no-cache-dir
 
 # Install remaining requirements (excluding gsplat which is already installed)
 RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
@@ -71,7 +62,7 @@ RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_g
     rm /tmp/requirements_no_gsplat.txt
 
 # ----------------------------------------------------------------------------
-# 4. Copy training code
+# 4. Copy training code (LAST LAYER - changes most frequently)
 # ----------------------------------------------------------------------------
 COPY train_gaussian_production.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
