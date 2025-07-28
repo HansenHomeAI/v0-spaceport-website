@@ -1060,6 +1060,24 @@ class Trainer:
         if n_split > 0:
             logger.info(f"   Splitting {n_split} large Gaussians")
             new_gaussians = self.split_gaussians_advanced(new_gaussians, split_mask)
+            
+            # CRITICAL FIX: Update clone_mask after splitting to match new tensor size
+            if n_clone > 0:
+                # The clone_mask was created for the original tensor size
+                # After splitting, we need to pad it to match the new size
+                original_size = len(gaussians['positions'])
+                new_size = len(new_gaussians['positions'])
+                size_increase = new_size - original_size
+                
+                # Pad the clone_mask with False values for the new Gaussians
+                # The new Gaussians (from splitting) should not be cloned
+                padded_clone_mask = torch.cat([
+                    clone_mask, 
+                    torch.zeros(size_increase, dtype=torch.bool, device=clone_mask.device)
+                ])
+                
+                logger.info(f"   Updated clone_mask: {len(clone_mask)} → {len(padded_clone_mask)} (added {size_increase} False values)")
+                clone_mask = padded_clone_mask
         
         if n_clone > 0:
             logger.info(f"   Cloning {n_clone} small Gaussians")
