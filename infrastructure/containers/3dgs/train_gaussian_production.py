@@ -534,9 +534,14 @@ class Trainer:
                 # Extract rendered image from colors (first 3 channels are RGB)
                 rendered_image = render_colors[..., :3]  # [H, W, 3]
                 
+                # Debug tensor shapes
+                logger.info(f"🔍 DEBUG: rendered_image shape: {rendered_image.shape}")
+                logger.info(f"🔍 DEBUG: gt_image_tensor shape: {gt_image_tensor.shape}")
+                
                 # Ensure ground truth has the same shape as rendered image
                 if gt_image_tensor.dim() == 4:  # [1, H, W, 3]
                     gt_image_tensor = gt_image_tensor.squeeze(0)  # [H, W, 3]
+                    logger.info(f"🔍 DEBUG: After squeeze, gt_image_tensor shape: {gt_image_tensor.shape}")
                 
                 # Compute photometric loss
                 l1_loss = torch.nn.functional.l1_loss(rendered_image, gt_image_tensor)
