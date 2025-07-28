@@ -1115,15 +1115,15 @@ class Trainer:
         offset_scale = 0.1  # Reduced from typical 0.16 for better stability
         
         # Fix tensor shape broadcasting issue
-        # actual_scales: [N] -> [N, 1] -> [N, 3] to match split_directions [N, 3]
-        actual_scales_expanded = actual_scales.unsqueeze(-1).expand(-1, 3)
+        # actual_scales: [N, 3, 1] -> [N, 3] by squeezing the last dimension
+        actual_scales_reshaped = actual_scales.squeeze(-1)
         
         # Debug tensor shapes for densification splitting
         logger.info(f"🔧 DEBUG: split_directions shape: {split_directions.shape}")
         logger.info(f"🔧 DEBUG: actual_scales shape: {actual_scales.shape}")
-        logger.info(f"🔧 DEBUG: actual_scales_expanded shape: {actual_scales_expanded.shape}")
+        logger.info(f"🔧 DEBUG: actual_scales_reshaped shape: {actual_scales_reshaped.shape}")
         
-        offsets = split_directions * actual_scales_expanded * offset_scale
+        offsets = split_directions * actual_scales_reshaped * offset_scale
         logger.info(f"🔧 DEBUG: offsets shape: {offsets.shape}")
         
         new_positions_1 = split_positions + offsets
