@@ -534,11 +534,15 @@ class Trainer:
                 # Extract rendered image from colors (first 3 channels are RGB)
                 rendered_image = render_colors[..., :3]  # [H, W, 3]
                 
+                # Ensure ground truth has the same shape as rendered image
+                if gt_image_tensor.dim() == 4:  # [1, H, W, 3]
+                    gt_image_tensor = gt_image_tensor.squeeze(0)  # [H, W, 3]
+                
                 # Compute photometric loss
                 l1_loss = torch.nn.functional.l1_loss(rendered_image, gt_image_tensor)
                 total_loss = l1_loss
                 
-                # Compute PSNR
+                # Compute PSNR (using the same tensor shapes as above)
                 mse_loss = torch.nn.functional.mse_loss(rendered_image, gt_image_tensor)
                 psnr = -10 * torch.log10(mse_loss + 1e-8)
                 current_psnr = psnr.item()
