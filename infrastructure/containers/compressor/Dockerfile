@@ -33,8 +33,8 @@ WORKDIR /opt/ml/code
 # Upgrade pip
 RUN pip3 install --no-cache-dir --upgrade pip
 
-# Install NumPy 2.0+ first (required by PLAS)
-RUN pip3 install --no-cache-dir "numpy>=2.0"
+# Install NumPy 1.24.x (compatible with Python 3.8)
+RUN pip3 install --no-cache-dir "numpy>=1.24.0,<2.0"
 
 # Install PyTorch with CUDA 12.1 support (as per SOGS documentation)
 RUN pip3 install --no-cache-dir \

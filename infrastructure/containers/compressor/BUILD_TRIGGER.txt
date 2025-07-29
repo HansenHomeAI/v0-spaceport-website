@@ -1,19 +1,19 @@
-PlayCanvas SOGS Implementation - NumPy Version Fix
+PlayCanvas SOGS Implementation - Python 3.8 NumPy Fix
 # Major container rewrite to use official PlayCanvas SOGS package
 # 
 # Changes:
 # 1. Completely rewritten compress.py to use real PlayCanvas SOGS CLI
 # 2. Updated Dockerfile with official SOGS dependencies (torch, cupy, torchpq, PLAS)
 # 3. Fixed CUDA base image to use valid nvidia/cuda:12.9.1-devel-ubuntu20.04
-# 4. Fixed NumPy version conflict - install numpy>=2.0 first (required by PLAS)
+# 4. Fixed Python 3.8 NumPy compatibility - using numpy>=1.24.0,<2.0
 # 5. Implemented proper WebP texture output and metadata generation
 # 6. Added SuperSplat viewer bundle creation
 # 
 # FIXED: 
 # - CUDA base image issue - using valid nvidia/cuda:12.9.1-devel-ubuntu20.04
-# - NumPy version conflict - installing numpy>=2.0 before PLAS dependency
+# - Python 3.8 NumPy compatibility - NumPy 2.0+ doesn't exist for Python 3.8
 # This rebuild will create a production-ready SOGS compression container
 # that matches the official PlayCanvas implementation exactly.
 # 
-# Build timestamp: 2025-07-29 11:35:00 UTC
+# Build timestamp: 2025-07-29 11:45:00 UTC
 # Container will take ~20 minutes to build due to CUDA dependencies
