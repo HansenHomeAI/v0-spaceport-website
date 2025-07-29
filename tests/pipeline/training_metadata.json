@@ -1,6 +1,0 @@
-{
-  "iterations": 10000,
-  "training_completed": true,
-  "output_format": "spherical_harmonics",
-  "sogs_compatible": true
-}
