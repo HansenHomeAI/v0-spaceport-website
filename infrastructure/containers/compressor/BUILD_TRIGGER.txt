@@ -1,24 +1,22 @@
-PlayCanvas SOGS Implementation - Skip ALL CUDA Tests
-# Major container rewrite to use official PlayCanvas SOGS package
+CRITICAL CUDA FIX - Rebuild Required
+# Major container rewrite to fix CUDA version mismatch
 # 
-# Changes:
-# 1. Completely rewritten compress.py to use real PlayCanvas SOGS CLI
-# 2. Updated Dockerfile with official SOGS dependencies (torch, cupy, torchpq, PLAS)
-# 3. Fixed CUDA base image to use nvidia/cuda:12.9.1-devel-ubuntu22.04 (Python 3.10+)
-# 4. Fixed Python version compatibility - Kornia requires Python >=3.9
-# 5. Fixed CUDA driver version issue - disabled CUDA during build
-# 6. Skip ALL CUDA-dependent tests during build (TorchPQ, SOGS CLI)
-# 7. Implemented proper WebP texture output and metadata generation
-# 8. Added SuperSplat viewer bundle creation
+# PROBLEM IDENTIFIED:
+# - SOGS container was using CUDA 12.9.1 + PyTorch CUDA 12.1
+# - SageMaker ml.g4dn.xlarge T4 GPU only supports CUDA 11.8
+# - This caused "GPU not available" error in SOGS compression
 # 
-# FIXED: 
-# - Python version compatibility - using Ubuntu 22.04 with Python 3.10+
-# - NumPy 2.0+ compatibility - now available with Python 3.10+
-# - Kornia dependency - now satisfied with Python >=3.9 requirement
-# - CUDA driver version mismatch - disabled CUDA during build with ENV vars
-# - ALL CUDA tests skipped - TorchPQ import, SOGS CLI, health check
-# This rebuild will create a production-ready SOGS compression container
-# that matches the official PlayCanvas implementation exactly.
+# SOLUTION IMPLEMENTED:
+# 1. Changed base image to SageMaker PyTorch CUDA 11.8 (same as working 3DGS container)
+# 2. Updated PyTorch to CUDA 11.8 compatible versions
+# 3. Changed CuPy to cupy-cuda11x for CUDA 11.8 support
+# 4. Set T4 GPU architecture (sm_75) instead of A10G (sm_86)
+# 5. Aligned all environment variables with proven 3DGS container
 # 
-# Build timestamp: 2025-07-29 12:45:00 UTC
+# EXPECTED RESULT:
+# - GPU detection will work properly in SageMaker
+# - SOGS compression will run successfully
+# - Real PlayCanvas SOGS WebP output will be generated
+# 
+# Build timestamp: 2025-07-29 15:30:00 UTC
 # Container will take ~20 minutes to build due to CUDA dependencies

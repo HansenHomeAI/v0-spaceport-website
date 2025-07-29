@@ -31,12 +31,12 @@ class SOGSCompressionTester:
         self.sagemaker = boto3.client('sagemaker', region_name=region)
         self.s3 = boto3.client('s3', region_name=region)
         
-        # Latest 3DGS training output (July 28th)
-        self.latest_3dgs_output = "s3://spaceport-ml-processing/3dgs/5740c423-e8a2-4930-a589-3e811427beef/ml-job-20250728-235313-5740c423-3dgs/output/"
+        # Latest 3DGS training output (July 28th) - model.tar.gz contains the files
+        self.latest_3dgs_output = "s3://spaceport-ml-processing/3dgs/5740c423-e8a2-4930-a589-3e811427beef/ml-job-20250728-235313-5740c423-3dgs/output/model.tar.gz"
         
         # Configuration for SOGS compression test
         self.config = {
-            'sagemaker_role': f'arn:aws:iam::{self.account_id}:role/SageMakerExecutionRole-SpaceportMLPipeline',
+            'sagemaker_role': f'arn:aws:iam::{self.account_id}:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8',
             'instance_type': 'ml.g4dn.xlarge',  # GPU instance for SOGS
             'container_image': f'{self.account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest',
             'test_job_name': f"sogs-compression-test-{int(time.time())}"
@@ -76,14 +76,16 @@ class SOGSCompressionTester:
                         'S3InputMode': 'File'
                     }
                 }],
-                ProcessingOutputs=[{
-                    'OutputName': 'compressed',
-                    'S3Output': {
-                        'S3Uri': f's3://spaceport-ml-processing/compressed/sogs-test-{int(time.time())}/',
-                        'LocalPath': '/opt/ml/processing/output',
-                        'S3UploadMode': 'EndOfJob'
-                    }
-                }],
+                ProcessingOutputConfig={
+                    'Outputs': [{
+                        'OutputName': 'compressed',
+                        'S3Output': {
+                            'S3Uri': f's3://spaceport-ml-processing/compressed/sogs-test-{int(time.time())}/',
+                            'LocalPath': '/opt/ml/processing/output',
+                            'S3UploadMode': 'EndOfJob'
+                        }
+                    }]
+                },
                 ProcessingResources={
                     'ClusterConfig': {
                         'InstanceType': self.config['instance_type'],
@@ -111,43 +113,89 @@ class SOGSCompressionTester:
             # Parse S3 URI
             s3_uri = self.latest_3dgs_output
             bucket = s3_uri.split('/')[2]
-            prefix = '/'.join(s3_uri.split('/')[3:])
+            key = '/'.join(s3_uri.split('/')[3:])
             
-            # List objects in the output directory
-            response = self.s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
-            
-            if 'Contents' not in response:
-                logger.error(f"❌ No files found at {s3_uri}")
+            # Check if model.tar.gz exists
+            try:
+                response = self.s3.head_object(Bucket=bucket, Key=key)
+                file_size_mb = response['ContentLength'] / (1024 * 1024)
+                logger.info(f"✅ Found model.tar.gz ({file_size_mb:.1f} MB)")
+            except Exception as e:
+                logger.error(f"❌ model.tar.gz not found at {s3_uri}")
                 return False
             
-            files = [obj['Key'] for obj in response['Contents']]
-            logger.info(f"📁 Found {len(files)} files in 3DGS output")
+            # Download and extract to verify contents
+            logger.info("📦 Extracting model.tar.gz to verify contents...")
+            temp_dir = "/tmp/sogs_test_extract"
+            import os
+            import tarfile
             
-            # Check for required files
-            required_files = ['final_model.ply', 'training_metadata.json']
-            found_files = []
+            # Create temp directory
+            os.makedirs(temp_dir, exist_ok=True)
             
-            for file_key in files:
-                filename = file_key.split('/')[-1]
-                if filename in required_files:
-                    found_files.append(filename)
-                    file_size_mb = response['Contents'][files.index(file_key)]['Size'] / (1024 * 1024)
-                    logger.info(f"✅ Found {filename} ({file_size_mb:.1f} MB)")
+            # Download tar.gz
+            tar_path = os.path.join(temp_dir, "model.tar.gz")
+            self.s3.download_file(bucket, key, tar_path)
             
-            if len(found_files) < len(required_files):
-                missing = set(required_files) - set(found_files)
-                logger.error(f"❌ Missing required files: {missing}")
-                return False
-            
-            # Verify PLY file has correct format for SOGS
-            return self._verify_ply_format(bucket, prefix + 'final_model.ply')
+            # Extract and check contents
+            with tarfile.open(tar_path, 'r:gz') as tar:
+                tar.extractall(temp_dir)
+                members = tar.getmembers()
+                
+                # Check for required files
+                required_files = ['final_model.ply', 'training_metadata.json']
+                found_files = []
+                
+                for member in members:
+                    if member.name in required_files:
+                        found_files.append(member.name)
+                        file_size_mb = member.size / (1024 * 1024)
+                        logger.info(f"✅ Found {member.name} ({file_size_mb:.1f} MB)")
+                
+                if len(found_files) < len(required_files):
+                    missing = set(required_files) - set(found_files)
+                    logger.error(f"❌ Missing required files in tar.gz: {missing}")
+                    return False
+                
+                # Verify PLY file has correct format for SOGS
+                ply_path = os.path.join(temp_dir, 'final_model.ply')
+                return self._verify_ply_format_local(ply_path)
             
         except Exception as e:
             logger.error(f"❌ Error verifying 3DGS output: {e}")
             return False
 
+    def _verify_ply_format_local(self, ply_path: str) -> bool:
+        """Verify PLY file has required fields for SOGS compression (local file)"""
+        try:
+            logger.info("🔍 Verifying PLY file format for SOGS compatibility...")
+            
+            # Read first part of PLY file to check header
+            with open(ply_path, 'rb') as f:
+                header_bytes = f.read(2048)
+                header = header_bytes.decode('utf-8', errors='ignore')
+            
+            # Check for required SOGS fields
+            required_fields = ['f_dc_0', 'f_dc_1', 'f_dc_2', 'opacity', 'scale_0', 'scale_1', 'scale_2']
+            missing_fields = []
+            
+            for field in required_fields:
+                if field not in header:
+                    missing_fields.append(field)
+            
+            if missing_fields:
+                logger.error(f"❌ PLY missing required SOGS fields: {missing_fields}")
+                return False
+            
+            logger.info("✅ PLY file format is compatible with SOGS compression")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Error verifying PLY format: {e}")
+            return False
+
     def _verify_ply_format(self, bucket: str, ply_key: str) -> bool:
-        """Verify PLY file has required fields for SOGS compression"""
+        """Verify PLY file has required fields for SOGS compression (S3 file)"""
         try:
             logger.info("🔍 Verifying PLY file format for SOGS compatibility...")
             
@@ -221,7 +269,7 @@ class SOGSCompressionTester:
         logger.info("📊 Analyzing SOGS compression results...")
         
         # Get output S3 location
-        output_config = job_response['ProcessingOutputs'][0]['S3Output']
+        output_config = job_response['ProcessingOutputConfig']['Outputs'][0]['S3Output']
         output_s3_uri = output_config['S3Uri']
         
         logger.info(f"📁 Output location: {output_s3_uri}")

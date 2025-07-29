@@ -38,8 +38,8 @@ class PlayCanvasSOGSCompressor:
         # Verify GPU availability
         try:
             import torch
-            if not torch.cuda.is_available():
-                logger.error("GPU not available - SOGS requires CUDA GPU!")
+        if not torch.cuda.is_available():
+            logger.error("GPU not available - SOGS requires CUDA GPU!")
                 sys.exit(1)
             logger.info("✅ GPU available for SOGS compression")
         except ImportError:
@@ -58,7 +58,7 @@ class PlayCanvasSOGSCompressor:
         except (subprocess.TimeoutExpired, FileNotFoundError) as e:
             logger.error(f"❌ SOGS CLI tool not found: {e}")
             sys.exit(1)
-
+    
     def compress_gaussian_splats(self, input_ply_files: List[str], output_dir: str) -> Dict[str, Any]:
         """
         Compress Gaussian splats using real PlayCanvas SOGS CLI tool
