@@ -64,7 +64,9 @@ RUN pip3 install --no-cache-dir \
 
 # Copy application code
 COPY compress.py .
+COPY diagnostic_script.py .
 RUN chmod +x compress.py
+RUN chmod +x diagnostic_script.py
 
 # Verify installations (without CUDA initialization)
 RUN python3 -c "import torch; print('PyTorch version:', torch.__version__)"

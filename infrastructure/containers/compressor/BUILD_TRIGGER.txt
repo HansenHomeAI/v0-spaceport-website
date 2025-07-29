@@ -1,12 +1,11 @@
-CUDA 11.8 COMPATIBILITY UPDATE - 2025-07-29
+DIAGNOSTIC SCRIPT ADDITION - 2025-07-29
 
-Major changes for SageMaker GPU compatibility:
-- Changed base image from CUDA 12.9.1 to CUDA 11.8.0
-- Updated PyTorch to cu118 version (2.0.1+cu118)
-- Changed CuPy from cupy-cuda12x to cupy-cuda11x
-- Added comprehensive GPU diagnostics
-- Ensures compatibility with SageMaker g4dn instances (driver 470.xx)
+Added diagnostic script for troubleshooting:
+- Added diagnostic_script.py to container
+- Script tests GPU detection, PyTorch, CUDA, SOGS CLI
+- Helps identify runtime issues in SageMaker environment
+- Enables detailed debugging of container functionality
 
-This rebuild is required to fix the "GPU not available" error that was preventing SOGS compression from running.
+This rebuild will help us identify why the SOGS compression is failing at runtime.
 
-Build timestamp: 2025-07-29 21:45:00 UTC
+Build timestamp: 2025-07-29 17:45:00 UTC
