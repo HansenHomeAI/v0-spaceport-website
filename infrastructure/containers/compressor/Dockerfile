@@ -3,7 +3,7 @@
 # https://github.com/playcanvas/sogs
 
 # Use NVIDIA CUDA base image (valid, available version)
-FROM nvidia/cuda:12.1-devel-ubuntu20.04
+FROM nvidia/cuda:12.9.1-devel-ubuntu20.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
