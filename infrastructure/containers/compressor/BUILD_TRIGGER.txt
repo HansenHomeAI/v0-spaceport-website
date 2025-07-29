@@ -1,4 +1,4 @@
-PlayCanvas SOGS Implementation - Skip TorchPQ Import Test
+PlayCanvas SOGS Implementation - Skip ALL CUDA Tests
 # Major container rewrite to use official PlayCanvas SOGS package
 # 
 # Changes:
@@ -7,7 +7,7 @@ PlayCanvas SOGS Implementation - Skip TorchPQ Import Test
 # 3. Fixed CUDA base image to use nvidia/cuda:12.9.1-devel-ubuntu22.04 (Python 3.10+)
 # 4. Fixed Python version compatibility - Kornia requires Python >=3.9
 # 5. Fixed CUDA driver version issue - disabled CUDA during build
-# 6. Skip TorchPQ import test during build (CUDA initialization issue)
+# 6. Skip ALL CUDA-dependent tests during build (TorchPQ, SOGS CLI)
 # 7. Implemented proper WebP texture output and metadata generation
 # 8. Added SuperSplat viewer bundle creation
 # 
@@ -16,9 +16,9 @@ PlayCanvas SOGS Implementation - Skip TorchPQ Import Test
 # - NumPy 2.0+ compatibility - now available with Python 3.10+
 # - Kornia dependency - now satisfied with Python >=3.9 requirement
 # - CUDA driver version mismatch - disabled CUDA during build with ENV vars
-# - TorchPQ import test - skipped during build to avoid CUDA initialization
+# - ALL CUDA tests skipped - TorchPQ import, SOGS CLI, health check
 # This rebuild will create a production-ready SOGS compression container
 # that matches the official PlayCanvas implementation exactly.
 # 
-# Build timestamp: 2025-07-29 12:30:00 UTC
+# Build timestamp: 2025-07-29 12:45:00 UTC
 # Container will take ~20 minutes to build due to CUDA dependencies
