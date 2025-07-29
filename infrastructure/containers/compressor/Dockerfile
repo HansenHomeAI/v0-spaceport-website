@@ -7,6 +7,10 @@ FROM nvidia/cuda:12.9.1-devel-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Disable CUDA during build to avoid driver version issues
+ENV CUDA_VISIBLE_DEVICES=""
+ENV CUDA_LAUNCH_BLOCKING=0
 ENV PYTHONUNBUFFERED=1
 
 # Set CUDA environment variables
@@ -62,10 +66,10 @@ RUN pip3 install --no-cache-dir \
 COPY compress.py .
 RUN chmod +x compress.py
 
-# Verify installations
-RUN python3 -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
+# Verify installations (without CUDA initialization)
+RUN python3 -c "import torch; print('PyTorch version:', torch.__version__)"
 RUN python3 -c "import cupy; print('CuPy installed successfully')"
-RUN python3 -c "import torchpq; print('TorchPQ installed successfully')"
+RUN python3 -c "import torchpq; print('TorchPQ imported successfully')"
 RUN python3 -c "from plas import sort_with_plas; print('PLAS installed successfully')"
 RUN sogs-compress --help
 
