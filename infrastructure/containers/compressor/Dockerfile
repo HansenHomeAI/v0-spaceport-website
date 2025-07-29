@@ -2,8 +2,8 @@
 # Official implementation using PlayCanvas SOGS package from:
 # https://github.com/playcanvas/sogs
 
-# Use NVIDIA CUDA 11.8 base image for SageMaker compatibility
-FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
+# Use NVIDIA CUDA 12.4 base image to match SageMaker host driver
+FROM nvidia/cuda:12.4.0-devel-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -40,13 +40,13 @@ RUN pip3 install --no-cache-dir --upgrade pip
 # Install NumPy 2.0+ (compatible with Python 3.10+)
 RUN pip3 install --no-cache-dir "numpy>=2.0"
 
-# Install PyTorch with CUDA 11.8 support (SageMaker g4dn compatible)
+# Install PyTorch with CUDA 12.1 support (compatible with CUDA 12.4 driver)
 RUN pip3 install --no-cache-dir \
-    torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+cu118 \
-    --index-url https://download.pytorch.org/whl/cu118
+    torch==2.0.1+cu121 torchvision==0.15.2+cu121 torchaudio==2.0.2+cu121 \
+    --index-url https://download.pytorch.org/whl/cu121
 
-# Install CUDA-specific dependencies for CUDA 11.8
-RUN pip3 install --no-cache-dir cupy-cuda11x
+# Install CUDA-specific dependencies for CUDA 12.x
+RUN pip3 install --no-cache-dir cupy-cuda12x
 
 # Install TorchPQ (required by SOGS)
 RUN pip3 install --no-cache-dir torchpq

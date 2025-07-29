@@ -1,11 +1,16 @@
-DIAGNOSTIC SCRIPT ADDITION - 2025-07-29
+CUDA 12.4 COMPATIBILITY FIX - 2025-07-29
 
-Added diagnostic script for troubleshooting:
-- Added diagnostic_script.py to container
-- Script tests GPU detection, PyTorch, CUDA, SOGS CLI
-- Helps identify runtime issues in SageMaker environment
-- Enables detailed debugging of container functionality
+CRITICAL FIX: Update to CUDA 12.4 to match host driver
+- Changed base image from CUDA 11.8 to CUDA 12.4.0
+- Updated PyTorch to cu121 version (compatible with CUDA 12.4 driver)
+- Changed CuPy from cupy-cuda11x to cupy-cuda12x
+- Fixes GPU detection issue: torch.cuda.is_available() was returning False
 
-This rebuild will help us identify why the SOGS compression is failing at runtime.
+Diagnostic revealed:
+- Host driver: 550.163.01 (CUDA 12.4)
+- Container runtime: CUDA 11.8 (incompatible)
+- Result: PyTorch couldn't initialize CUDA
 
-Build timestamp: 2025-07-29 17:45:00 UTC
+This rebuild will fix the GPU detection and enable SOGS compression.
+
+Build timestamp: 2025-07-29 18:00:00 UTC
