@@ -2,8 +2,8 @@
 # Official implementation using PlayCanvas SOGS package from:
 # https://github.com/playcanvas/sogs
 
-# Use NVIDIA CUDA base image (valid, available version)
-FROM nvidia/cuda:12.9.1-devel-ubuntu20.04
+# Use NVIDIA CUDA base image with Python 3.10+ (required by Kornia)
+FROM nvidia/cuda:12.9.1-devel-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -33,8 +33,8 @@ WORKDIR /opt/ml/code
 # Upgrade pip
 RUN pip3 install --no-cache-dir --upgrade pip
 
-# Install NumPy 1.24.x (compatible with Python 3.8)
-RUN pip3 install --no-cache-dir "numpy>=1.24.0,<2.0"
+# Install NumPy 2.0+ (compatible with Python 3.10+)
+RUN pip3 install --no-cache-dir "numpy>=2.0"
 
 # Install PyTorch with CUDA 12.1 support (as per SOGS documentation)
 RUN pip3 install --no-cache-dir \
