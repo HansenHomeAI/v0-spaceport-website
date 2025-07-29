@@ -1,13 +1,10 @@
-# Official PlayCanvas SOGS Dependencies - CUDA 11.8 Compatible
+# Official PlayCanvas SOGS Dependencies
 # As per https://github.com/playcanvas/sogs
-# 
-# CRITICAL: Aligned with SageMaker ml.g4dn.xlarge T4 GPU support
-# T4 GPU only supports CUDA 11.8, not CUDA 12.x
 
 # Core dependencies installed via pip install commands in Dockerfile:
-# torch==2.0.1+cu118 (CUDA 11.8 compatible)
-# cupy-cuda11x (CUDA 11.8 compatible)
-# torchpq (CUDA 11.8 compatible)
+# torch (with CUDA 12.1 support)
+# cupy-cuda12x
+# torchpq  
 # git+https://github.com/fraunhoferhhi/PLAS.git
 # git+https://github.com/playcanvas/sogs.git
 
@@ -16,4 +13,4 @@ boto3==1.34.69
 numpy==1.24.3
 
 # Note: Main SOGS dependencies are installed directly from GitHub in Dockerfile
-# to ensure compatibility with CUDA 11.8 for SageMaker T4 GPU support 
+# to ensure compatibility with CUDA version 

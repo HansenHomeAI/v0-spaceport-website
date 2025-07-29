@@ -37,7 +37,7 @@ class SOGSCompressionTester:
         # Configuration for SOGS compression test
         self.config = {
             'sagemaker_role': f'arn:aws:iam::{self.account_id}:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8',
-            'instance_type': 'ml.g5.xlarge',  # A10G GPU instance for SOGS (same as 3DGS)
+            'instance_type': 'ml.g4dn.xlarge',  # GPU instance for SOGS
             'container_image': f'{self.account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest',
             'test_job_name': f"sogs-compression-test-{int(time.time())}"
         }

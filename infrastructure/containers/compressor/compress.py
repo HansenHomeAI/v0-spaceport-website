@@ -27,6 +27,56 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def _diagnose_gpu_environment():
+    """Diagnose GPU and CUDA environment for debugging"""
+    logger.info("=== GPU Environment Diagnosis ===")
+    
+    # Check if CUDA is available in PyTorch
+    try:
+        import torch
+        logger.info(f"PyTorch version: {torch.__version__}")
+        logger.info(f"PyTorch CUDA version: {torch.version.cuda}")
+        logger.info(f"CUDA available: {torch.cuda.is_available()}")
+        
+        if torch.cuda.is_available():
+            logger.info(f"CUDA device count: {torch.cuda.device_count()}")
+            logger.info(f"Current CUDA device: {torch.cuda.current_device()}")
+            logger.info(f"Device name: {torch.cuda.get_device_name(0)}")
+            logger.info(f"Device capability: {torch.cuda.get_device_capability(0)}")
+        else:
+            logger.error("CUDA is not available in PyTorch!")
+            
+    except Exception as e:
+        logger.error(f"Error checking PyTorch CUDA: {e}")
+    
+    # Check system CUDA
+    try:
+        result = subprocess.run(['nvidia-smi'], capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            logger.info("nvidia-smi output:")
+            logger.info(result.stdout)
+        else:
+            logger.error(f"nvidia-smi failed: {result.stderr}")
+    except Exception as e:
+        logger.error(f"Error running nvidia-smi: {e}")
+    
+    # Check CUDA runtime
+    try:
+        result = subprocess.run(['nvcc', '--version'], capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            logger.info("CUDA compiler version:")
+            logger.info(result.stdout)
+        else:
+            logger.error(f"nvcc failed: {result.stderr}")
+    except Exception as e:
+        logger.error(f"Error running nvcc: {e}")
+    
+    # Check environment variables
+    logger.info(f"CUDA_HOME: {os.environ.get('CUDA_HOME', 'Not set')}")
+    logger.info(f"CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', 'Not set')}")
+    logger.info(f"NVIDIA_VISIBLE_DEVICES: {os.environ.get('NVIDIA_VISIBLE_DEVICES', 'Not set')}")
+    logger.info("=== End GPU Diagnosis ===")
+
 class PlayCanvasSOGSCompressor:
     """Real PlayCanvas SOGS Compression Implementation using official package"""
     
@@ -38,8 +88,8 @@ class PlayCanvasSOGSCompressor:
         # Verify GPU availability
         try:
             import torch
-        if not torch.cuda.is_available():
-            logger.error("GPU not available - SOGS requires CUDA GPU!")
+            if not torch.cuda.is_available():
+                logger.error("GPU not available - SOGS requires CUDA GPU!")
                 sys.exit(1)
             logger.info("✅ GPU available for SOGS compression")
         except ImportError:
@@ -213,6 +263,9 @@ class PlayCanvasSOGSCompressor:
     def process_job(self):
         """Main processing function for SageMaker"""
         logger.info("🚀 Starting PlayCanvas SOGS compression job")
+        
+        # Run GPU diagnostics first
+        _diagnose_gpu_environment()
         
         try:
             # Find PLY files in input
