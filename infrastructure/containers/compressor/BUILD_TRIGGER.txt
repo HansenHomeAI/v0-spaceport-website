@@ -3,20 +3,22 @@ CRITICAL CUDA FIX - Rebuild Required
 # 
 # PROBLEM IDENTIFIED:
 # - SOGS container was using CUDA 12.9.1 + PyTorch CUDA 12.1
-# - SageMaker ml.g4dn.xlarge T4 GPU only supports CUDA 11.8
+# - SageMaker ml.g5.xlarge uses A10G GPU which supports CUDA 11.8
 # - This caused "GPU not available" error in SOGS compression
 # 
 # SOLUTION IMPLEMENTED:
 # 1. Changed base image to SageMaker PyTorch CUDA 11.8 (same as working 3DGS container)
 # 2. Updated PyTorch to CUDA 11.8 compatible versions
 # 3. Changed CuPy to cupy-cuda11x for CUDA 11.8 support
-# 4. Set T4 GPU architecture (sm_75) instead of A10G (sm_86)
+# 4. Set A10G GPU architecture (sm_86) - SAME AS 3DGS CONTAINER
 # 5. Aligned all environment variables with proven 3DGS container
+# 6. Test script uses ml.g5.xlarge (A10G GPU) - consistent with 3DGS
 # 
 # EXPECTED RESULT:
 # - GPU detection will work properly in SageMaker
-# - SOGS compression will run successfully
+# - SOGS compression will run successfully on A10G GPU
 # - Real PlayCanvas SOGS WebP output will be generated
+# - Consistent architecture across entire ML pipeline
 # 
-# Build timestamp: 2025-07-29 15:30:00 UTC
+# Build timestamp: 2025-07-29 15:45:00 UTC
 # Container will take ~20 minutes to build due to CUDA dependencies

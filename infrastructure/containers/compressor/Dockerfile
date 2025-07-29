@@ -3,7 +3,7 @@
 # https://github.com/playcanvas/sogs
 # 
 # CRITICAL FIX: Aligned with working 3DGS container CUDA 11.8 setup
-# SageMaker ml.g4dn.xlarge uses T4 GPU which supports CUDA 11.8, not 12.x
+# Both containers should use A10G GPU (ml.g5.xlarge) for consistency
 
 # Use SageMaker PyTorch training container with CUDA 11.8 (PROVEN TO WORK)
 FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
@@ -13,13 +13,13 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
-# Set CUDA architecture for T4 GPU (Compute Capability 7.5)
-ENV TORCH_CUDA_ARCH_LIST="7.5"
-ENV CUDA_ARCH_FLAGS="-arch=sm_75"
+# Set CUDA architecture for A10G GPU (SAME AS 3DGS - Compute Capability 8.6)
+ENV TORCH_CUDA_ARCH_LIST="8.6"
+ENV CUDA_ARCH_FLAGS="-arch=sm_86"
 
-# Set C++ standard for CUDA compilation
+# Set C++ standard for CUDA compilation (SAME AS 3DGS)
 ENV CXXFLAGS="-std=c++17"
-ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186 -arch=sm_75"
+ENV NVCC_FLAGS="-std=c++17 --expt-relaxed-constexpr --use_fast_math -diag-suppress 20012,186 -arch=sm_86"
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
