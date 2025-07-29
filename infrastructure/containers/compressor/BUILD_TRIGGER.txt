@@ -1,2 +1,15 @@
-Triggering container rebuild
-# Trigger container rebuild after syntax fix
+PlayCanvas SOGS Implementation - Rebuild Required
+# Major container rewrite to use official PlayCanvas SOGS package
+# 
+# Changes:
+# 1. Completely rewritten compress.py to use real PlayCanvas SOGS CLI
+# 2. Updated Dockerfile with official SOGS dependencies (torch, cupy, torchpq, PLAS)
+# 3. Added CUDA 12.6 support for A10G GPUs
+# 4. Implemented proper WebP texture output and metadata generation
+# 5. Added SuperSplat viewer bundle creation
+# 
+# This rebuild will create a production-ready SOGS compression container
+# that matches the official PlayCanvas implementation exactly.
+# 
+# Build timestamp: 2025-07-29 10:54:00 UTC
+# Container will take ~20 minutes to build due to CUDA dependencies

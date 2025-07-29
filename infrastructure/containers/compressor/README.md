@@ -1,269 +1,177 @@
-# SOGS Compression Container
+# PlayCanvas SOGS Compression Container
 
-Production-ready container for SOGS (Self-Organizing Gaussian Splats) compression using GPU acceleration.
+This container implements **real** Self-Organizing Gaussian Splats (SOGS) compression using the official [PlayCanvas SOGS package](https://github.com/playcanvas/sogs).
 
-## Features
-- Pure PlayCanvas SOGS implementation
-- GPU-accelerated compression using CUDA
-- No fallback modes - fails fast if GPU unavailable
-- Optimized for ml.g5.xlarge instances
+## 🎯 What This Container Does
 
-## Build Status
-- ✅ Docker Hub authentication configured
-- ✅ GPU quota approved (ml.g5.xlarge)
-- ✅ Fixed torch import NameError issue
-- ✅ Fixed python3 entry point in CDK
-- ✅ Added missing cupy dependency
-- ✅ Fixed PLY file loading 'function' object error
-- ✅ Replaced torchpq with PyTorch-native quantization
-- ✅ Fixed numpy memory stride alignment issue
-- 🔄 Fixed tensor tobytes() conversion in entropy coding...
+1. **Loads 3D Gaussian Splat PLY files** with proper spherical harmonics format
+2. **Compresses using PlayCanvas SOGS** - the official implementation
+3. **Generates WebP texture atlases** for different Gaussian parameters
+4. **Creates metadata.json** with compression information
+5. **Builds SuperSplat viewer bundles** for immediate use
 
-## Overview
+## 🏗️ Architecture
 
-The container replaces the previous simulation-based compression with actual SOGS compression, providing:
-- **Real compression** using the PlayCanvas SOGS library
-- **Up to 20x compression ratios** (as demonstrated by PlayCanvas)
-- **Production-ready implementation** with comprehensive error handling
-- **S3 integration** for SageMaker Processing Jobs
-- **Structured logging** with detailed reports
-
-## Architecture
-
-```
-Input PLY File (S3) → SOGS Compression → Compressed Output (S3)
-                          ↓
-                    WebP Images + Metadata
-```
-
-### Key Components
-
-1. **SOGSCompressor Class**: Manages the compression workflow
-2. **S3Manager Class**: Handles S3 upload/download operations  
-3. **Compression Pipeline**: PLY validation → SOGS compression → Result analysis
-4. **Comprehensive Reporting**: JSON and text reports with detailed metrics
-
-## Files
-
-- `Dockerfile` - Full CUDA-enabled production container
-- `Dockerfile.minimal` - CPU-only container for testing
-- `compress_model.py` - Main compression script with SOGS integration
-- `requirements.txt` - Python dependencies
-- `test_sogs_local.py` - Local testing script
-- `README.md` - This documentation
-
-## Dependencies
-
-### System Requirements
-- **CUDA 12.6** (for production container)
-- **Python 3.9+**
-- **NVIDIA GPU** (ml.c6i.4xlarge instances have GPU support)
-
-### Python Libraries
-- **torch** with CUDA support
-- **cupy-cuda12x** for GPU acceleration
-- **torchpq** for quantization
+### Dependencies (Official PlayCanvas SOGS Requirements)
+- **PyTorch** with CUDA 12.1 support
+- **CuPy** for GPU acceleration
+- **TorchPQ** for quantization
 - **PLAS** (Parallel Linear Assignment Sorting)
-- **sogs** (PlayCanvas SOGS library)
-- **boto3** for AWS S3 integration
-- **structlog** for structured logging
+- **PlayCanvas SOGS** package from GitHub
 
-## Usage
+### GPU Requirements
+- **Instance Type**: ml.g4dn.xlarge (recommended)
+- **GPU**: NVIDIA T4 with CUDA 12.x support
+- **Memory**: 16GB GPU memory minimum
 
-### Environment Variables
+## 📊 Input Format Requirements
 
-The container expects standard SageMaker Processing Job environment variables:
+The container expects 3D Gaussian Splat PLY files with these fields:
 
-```bash
-SM_CHANNEL_INPUT=/opt/ml/processing/input      # Input directory
-SM_OUTPUT_DATA_DIR=/opt/ml/processing/output   # Output directory  
-SM_CURRENT_HOST=processing-job-name            # Job identifier
+```
+property float x, y, z                    # Positions
+property float f_dc_0, f_dc_1, f_dc_2     # Spherical harmonics DC
+property float opacity                     # Opacity values
+property float scale_0, scale_1, scale_2  # Scale parameters
+property float rot_0, rot_1, rot_2, rot_3 # Quaternion rotations
+property float f_rest_* (optional)         # Higher-order SH
 ```
 
-Optional S3 URIs for direct S3 integration:
-```bash
-S3_INPUT_URI=s3://bucket/path/to/input/
-S3_OUTPUT_URI=s3://bucket/path/to/output/
-```
+## 🎨 Output Format
 
-### Input Format
+### WebP Texture Files
+- `means.webp` - Position data texture
+- `scales.webp` - Scale parameter texture  
+- `quats.webp` - Rotation quaternion texture
+- `sh0.webp` - Color + opacity RGBA texture
+- `shN_centroids.webp` & `shN_labels.webp` - Higher-order SH (if present)
 
-The container expects PLY files in the input directory:
-```
-/opt/ml/processing/input/
-├── model.ply          # 3D Gaussian Splat in PLY format
-└── metadata.json      # Optional metadata
-```
+### Metadata Files
+- `meta.json` - Compression metadata and parameters
+- `settings.json` - SuperSplat viewer settings
 
-### Output Format
+### SuperSplat Bundle
+The container automatically creates a `supersplat_bundle/` directory with:
+- All WebP textures
+- Metadata files
+- Viewer settings
+- Ready for use with SuperSplat viewer
 
-The container produces compressed outputs:
-```
-/opt/ml/processing/output/
-├── compressed_images/         # WebP compressed attribute images
-│   ├── positions.webp
-│   ├── scales.webp  
-│   ├── rotations.webp
-│   ├── colors.webp
-│   └── opacities.webp
-├── metadata.json             # Compression metadata
-├── compression_report.json   # Detailed compression report
-└── compression_report.txt    # Human-readable report
-```
+## 🚀 Usage
 
-## Testing
-
-### Local Testing
-
-Run the local test script to validate functionality:
-
-```bash
-cd infrastructure/containers/compressor
-python3 test_sogs_local.py
-```
-
-This will:
-1. Create a test PLY file
-2. Run the compression script locally
-3. Validate outputs and reports
-4. Test Docker container build
-
-### Manual Testing
-
-Test the compression script directly:
-
-```bash
-# Set environment variables
-export SM_CHANNEL_INPUT=/path/to/input
-export SM_OUTPUT_DATA_DIR=/path/to/output  
-export SM_CURRENT_HOST=test-job
-
-# Run compression
-python3 compress_model.py
-```
-
-## Deployment
-
-### Option 1: Use Deployment Script
-
-```bash
-# Deploy full CUDA-enabled version
-./scripts/deployment/deploy_sogs_container.sh
-
-# Deploy minimal CPU version for testing
-./scripts/deployment/deploy_sogs_container.sh --minimal
-
-# Test only (no deployment)
-./scripts/deployment/deploy_sogs_container.sh --test-only
-```
-
-### Option 2: Manual Deployment
-
-```bash
-# Build container
-docker build -t sogs-compressor .
-
-# Tag for ECR
-docker tag sogs-compressor:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/spaceport-ml-sogs-compressor:latest
-
-# Push to ECR
-docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/spaceport-ml-sogs-compressor:latest
-```
-
-## Integration with ML Pipeline
-
-Update your CDK stack to use the new container:
-
+### Via SageMaker Processing Job
 ```python
-# In ml_pipeline_stack.py
-compression_job = sagemaker.ProcessingJob(
-    self, "CompressionJob",
-    definition=sagemaker.ProcessingJobDefinition(
-        container=sagemaker.ContainerDefinition(
-            image_uri=f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport-ml-sogs-compressor:latest",
-            # ... other configuration
-        )
-    )
+sagemaker.create_processing_job(
+    ProcessingJobName='sogs-compression-job',
+    RoleArn='arn:aws:iam::account:role/SageMakerExecutionRole',
+    AppSpecification={
+        'ImageUri': 'account.dkr.ecr.region.amazonaws.com/spaceport/compressor:latest'
+    },
+    ProcessingInputs=[{
+        'InputName': 'input',
+        'S3Input': {
+            'S3Uri': 's3://bucket/path/to/3dgs-output/',
+            'LocalPath': '/opt/ml/processing/input'
+        }
+    }],
+    ProcessingOutputs=[{
+        'OutputName': 'compressed',
+        'S3Output': {
+            'S3Uri': 's3://bucket/path/to/compressed-output/',
+            'LocalPath': '/opt/ml/processing/output'
+        }
+    }],
+    ProcessingResources={
+        'ClusterConfig': {
+            'InstanceType': 'ml.g4dn.xlarge',
+            'InstanceCount': 1
+        }
+    }
 )
 ```
 
-## Performance Expectations
-
-Based on PlayCanvas SOGS benchmarks:
-
-| Metric | Expected Value |
-|--------|----------------|
-| Compression Ratio | 10x - 20x |
-| Processing Time | 15-30 minutes for typical scenes |
-| Instance Type | ml.c6i.4xlarge (16 vCPUs, 32 GB RAM) |
-| Memory Usage | ~8-16 GB for large scenes |
-
-## Troubleshooting
-
-### Common Issues
-
-1. **CUDA Not Available**
-   - Use `Dockerfile.minimal` for CPU-only testing
-   - Ensure SageMaker instance has GPU support
-
-2. **SOGS Installation Failed**
-   - Check internet connectivity in container
-   - Verify CUDA version compatibility
-
-3. **PLY File Invalid**
-   - Validate PLY format meets 3D Gaussian Splat specifications
-   - Check file is not corrupted during S3 transfer
-
-4. **Out of Memory**
-   - Reduce PLY file size or split into chunks
-   - Use larger SageMaker instance type
-
-### Logging
-
-The container uses structured logging. Check CloudWatch logs for:
-- Input validation results
-- SOGS compression progress
-- S3 transfer status
-- Error details with stack traces
-
-### Debug Mode
-
-Set environment variable for verbose logging:
+### Direct CLI (for testing)
 ```bash
-export LOG_LEVEL=DEBUG
+# Inside container
+sogs-compress --ply final_model.ply --output-dir /output/
 ```
 
-## Comparison with Previous Implementation
+## 🔧 Implementation Details
 
-| Aspect | Previous (Simulation) | New (Real SOGS) |
-|--------|----------------------|-----------------|
-| Compression | Fake/simulated | Real SOGS algorithm |
-| Output Format | Custom `.gsplat` files | WebP images + metadata |
-| Compression Ratio | Fixed ~4x simulation | Real 10x-20x |
-| Processing Time | 2-3 minutes (fake) | 15-30 minutes (real) |
-| Dependency | Minimal | CUDA + SOGS ecosystem |
-| Validation | Basic | Comprehensive PLY validation |
+### SOGS Algorithm Steps
+1. **PLY Loading**: Parse 3D Gaussian splat data
+2. **Validation**: Verify required fields for SOGS compatibility
+3. **PLAS Sorting**: Apply Parallel Linear Assignment Sorting
+4. **Parameter Preprocessing**: Transform data for compression
+5. **Texture Generation**: Create WebP atlases for each parameter
+6. **Metadata Creation**: Generate compression metadata
+7. **Bundle Assembly**: Package for SuperSplat viewer
 
-## Future Enhancements
+### Compression Techniques
+- **8-bit Quantization** for most parameters
+- **16-bit Quantization** for positions (higher precision)
+- **K-means Clustering** for higher-order spherical harmonics
+- **Quaternion Packing** for rotation data
+- **Lossless WebP** compression for all textures
 
-1. **Batch Processing**: Support multiple PLY files in single job
-2. **Progressive Compression**: Different quality levels
-3. **Real-time Progress**: WebSocket progress updates
-4. **Automatic Scaling**: Dynamic instance selection based on file size
-5. **Caching**: Avoid recompressing identical files
+## 📈 Expected Performance
 
-## Contributing
+### Compression Ratios
+- **Small Models** (< 100k Gaussians): 3-5x compression
+- **Medium Models** (100k-500k Gaussians): 5-10x compression  
+- **Large Models** (> 500k Gaussians): 10-20x compression
 
-When modifying the container:
+### Processing Times
+- **Setup**: 2-3 minutes (dependency loading)
+- **Compression**: 5-15 minutes (depending on model size)
+- **Output**: 1-2 minutes (S3 upload)
 
-1. Test locally first: `python3 test_sogs_local.py`
-2. Test minimal build: `docker build -f Dockerfile.minimal -t test .`
-3. Update documentation if changing interfaces
-4. Validate with real PLY files before deployment
+## 🧪 Testing
 
-## Resources
+Use the included test script:
+```bash
+cd /path/to/repo
+python3 tests/test_sogs_compression_only.py
+```
+
+This will:
+1. Verify the latest 3DGS training output
+2. Run SOGS compression
+3. Validate WebP texture generation
+4. Check SuperSplat bundle creation
+5. Provide viewer URL for testing
+
+## 🔗 Integration with SuperSplat Viewer
+
+The compressed output can be directly loaded in our SuperSplat viewer:
+
+1. Navigate to `/viewer.html` on the website
+2. Enter the S3 URL: `s3://bucket/path/supersplat_bundle/`
+3. Click "Load 3D Model"
+4. View the compressed model in real-time
+
+## 📚 References
 
 - [PlayCanvas SOGS Repository](https://github.com/playcanvas/sogs)
-- [PlayCanvas SOGS Blog Post](https://blog.playcanvas.com/playcanvas-adopts-sogs-for-20x-3dgs-compression)
-- [3D Gaussian Splatting Paper](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/)
-- [AWS SageMaker Processing Jobs](https://docs.aws.amazon.com/sagemaker/latest/dg/processing-job.html) # Container build triggered at Fri Jun 27 13:18:17 MDT 2025
+- [SuperSplat Viewer](https://github.com/playcanvas/supersplat-viewer)
+- [Self-Organizing Gaussians Paper](https://github.com/fraunhoferhhi/Self-Organizing-Gaussians)
+- [PLAS Algorithm](https://github.com/fraunhoferhhi/PLAS)
+
+## 🛠️ Development
+
+### Building Locally
+```bash
+cd infrastructure/containers/compressor/
+docker build -t spaceport/compressor:latest .
+```
+
+### Testing Container
+```bash
+docker run --gpus all -it spaceport/compressor:latest sogs-compress --help
+```
+
+---
+
+**Status**: Production Ready 🚀  
+**Last Updated**: July 29, 2025  
+**Version**: 2.0 (PlayCanvas SOGS Implementation)

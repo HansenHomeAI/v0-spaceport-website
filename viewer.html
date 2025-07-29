@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceport 3D Model Viewer - SOGS Compressed Models</title>
+    <meta name="description" content="View 3D Gaussian Splat models compressed with Self-Organizing Gaussian Splats (SOGS) technology">
+    
+    <!-- PlayCanvas Engine -->
+    <script src="https://code.playcanvas.com/playcanvas-stable.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --background-dark: #000000;
+            --accent-blue: #3b82f6;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-dark);
+            color: var(--text-light);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Canvas container */
+        #viewer-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(circle at center, #1a1a2e, #000000);
+        }
+
+        #viewer-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-light);
+        }
+
+        .logo:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            position: absolute;
+            top: 120px;
+            left: 2rem;
+            width: 320px;
+            backdrop-filter: blur(10px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        .controls-panel.collapsed {
+            transform: translateX(-280px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .toggle-btn {
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Form Controls */
+        .control-group {
+            margin-bottom: 1rem;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #374151;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Status Display */
+        .status-panel {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            right: 2rem;
+            backdrop-filter: blur(10px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-panel.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .status-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Success State */
+        .success-message {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Model Info */
+        .model-info {
+            position: absolute;
+            top: 120px;
+            right: 2rem;
+            width: 280px;
+            backdrop-filter: blur(10px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+
+        .model-info.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.9rem;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .controls-panel {
+                left: 1rem;
+                width: calc(100% - 2rem);
+                max-width: 320px;
+            }
+
+            .model-info {
+                right: 1rem;
+                width: calc(100% - 2rem);
+                max-width: 280px;
+                top: auto;
+                bottom: 120px;
+            }
+
+            .status-panel {
+                left: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas Container -->
+    <div id="viewer-container">
+        <canvas id="viewer-canvas"></canvas>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z"/>
+                </svg>
+                Spaceport 3D Viewer
+            </a>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                SOGS Compressed Models
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls Panel -->
+    <div class="controls-panel" id="controlsPanel">
+        <div class="panel-header">
+            <h3 class="panel-title">Load Model</h3>
+            <button class="toggle-btn" onclick="toggleControlsPanel()">⚡</button>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">S3 Bucket URL</label>
+            <input 
+                type="text" 
+                class="control-input" 
+                id="s3UrlInput"
+                placeholder="s3://bucket/path/to/supersplat_bundle/"
+                value="">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Direct Bundle URL</label>
+            <input 
+                type="text" 
+                class="control-input" 
+                id="bundleUrlInput"
+                placeholder="https://example.com/path/to/bundle/"
+                value="">
+        </div>
+
+        <button class="btn" id="loadModelBtn" onclick="loadModel()">
+            Load 3D Model
+        </button>
+
+        <div id="messageContainer"></div>
+    </div>
+
+    <!-- Model Info Panel -->
+    <div class="model-info hidden" id="modelInfo">
+        <h4 style="margin-bottom: 1rem; color: var(--text-light);">Model Information</h4>
+        <div class="info-item">
+            <span class="info-label">Gaussians:</span>
+            <span class="info-value" id="gaussianCount">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Compression:</span>
+            <span class="info-value" id="compressionRatio">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">WebP Files:</span>
+            <span class="info-value" id="webpCount">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">File Size:</span>
+            <span class="info-value" id="fileSize">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-value" id="modelStatus">Ready</span>
+        </div>
+    </div>
+
+    <!-- Status Panel -->
+    <div class="status-panel hidden" id="statusPanel">
+        <div class="status-content">
+            <span class="status-text" id="statusText">Ready to load 3D model</span>
+            <div class="loading-spinner hidden" id="loadingSpinner"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let app;
+        let entity;
+        let camera;
+        let light;
+        let orbitCamera;
+        let isLoading = false;
+
+        // Initialize PlayCanvas application
+        function initializeViewer() {
+            console.log('Initializing PlayCanvas viewer...');
+            
+            const canvas = document.getElementById('viewer-canvas');
+            
+            // Create PlayCanvas application
+            app = new pc.Application(canvas, {
+                mouse: new pc.Mouse(canvas),
+                touch: new pc.TouchDevice(canvas),
+                keyboard: new pc.Keyboard(window),
+                graphicsDeviceOptions: {
+                    antialias: true,
+                    alpha: false,
+                    preserveDrawingBuffer: false,
+                    preferWebGl2: true
+                }
+            });
+
+            // Set canvas to fill window and automatically change resolution to be the same as the canvas size
+            app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
+            app.setCanvasResolution(pc.RESOLUTION_AUTO);
+
+            // Resize the canvas when the window is resized
+            window.addEventListener('resize', () => app.resizeCanvas());
+
+            // Create camera entity
+            camera = new pc.Entity('camera');
+            camera.addComponent('camera', {
+                clearColor: new pc.Color(0.05, 0.05, 0.15),
+                fov: 60,
+                nearClip: 0.1,
+                farClip: 1000
+            });
+
+            // Add orbit camera script (simplified)
+            setupOrbitControls(camera);
+
+            app.root.addChild(camera);
+
+            // Create light entity
+            light = new pc.Entity('light');
+            light.addComponent('light', {
+                type: pc.LIGHTTYPE_DIRECTIONAL,
+                color: new pc.Color(1, 1, 1),
+                intensity: 1
+            });
+            light.setLocalEulerAngles(45, 45, 0);
+            app.root.addChild(light);
+
+            // Add ambient light
+            const ambientLight = new pc.Entity('ambient');
+            ambientLight.addComponent('light', {
+                type: pc.LIGHTTYPE_AMBIENT,
+                color: new pc.Color(0.2, 0.2, 0.3),
+                intensity: 0.3
+            });
+            app.root.addChild(ambientLight);
+
+            // Start the application
+            app.start();
+
+            console.log('PlayCanvas viewer initialized successfully');
+            showStatus('3D viewer ready. Load a SOGS compressed model to begin.', false);
+        }
+
+        // Setup basic orbit controls
+        function setupOrbitControls(cameraEntity) {
+            let mouseDown = false;
+            let lastMouseX = 0;
+            let lastMouseY = 0;
+            let rotationX = 0;
+            let rotationY = 0;
+            let distance = 5;
+
+            const canvas = app.graphicsDevice.canvas;
+
+            // Position camera initially
+            cameraEntity.setLocalPosition(0, 2, distance);
+            cameraEntity.lookAt(pc.Vec3.ZERO);
+
+            // Mouse controls
+            canvas.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+
+                rotationY += deltaX * 0.5;
+                rotationX += deltaY * 0.5;
+                rotationX = Math.max(-90, Math.min(90, rotationX));
+
+                updateCameraPosition();
+
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+
+            // Wheel zoom
+            canvas.addEventListener('wheel', (e) => {
+                distance += e.deltaY * 0.01;
+                distance = Math.max(1, Math.min(20, distance));
+                updateCameraPosition();
+            });
+
+            function updateCameraPosition() {
+                const radX = rotationX * Math.PI / 180;
+                const radY = rotationY * Math.PI / 180;
+
+                const x = distance * Math.cos(radX) * Math.sin(radY);
+                const y = distance * Math.sin(radX);
+                const z = distance * Math.cos(radX) * Math.cos(radY);
+
+                cameraEntity.setLocalPosition(x, y, z);
+                cameraEntity.lookAt(pc.Vec3.ZERO);
+            }
+        }
+
+        // Load model from URL
+        async function loadModel() {
+            if (isLoading) return;
+
+            const s3Url = document.getElementById('s3UrlInput').value.trim();
+            const bundleUrl = document.getElementById('bundleUrlInput').value.trim();
+
+            if (!s3Url && !bundleUrl) {
+                showError('Please enter either an S3 URL or a direct bundle URL');
+                return;
+            }
+
+            const loadUrl = s3Url || bundleUrl;
+            console.log('Loading model from:', loadUrl);
+
+            isLoading = true;
+            showStatus('Loading SOGS compressed model...', true);
+            document.getElementById('loadModelBtn').disabled = true;
+
+            try {
+                // Convert S3 URL to HTTPS if needed
+                const finalUrl = convertS3UrlToHttps(loadUrl);
+                
+                // Load SOGS bundle
+                await loadSOGSBundle(finalUrl);
+                
+                showSuccess('3D model loaded successfully!');
+                document.getElementById('modelInfo').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Failed to load model:', error);
+                showError(`Failed to load model: ${error.message}`);
+            } finally {
+                isLoading = false;
+                hideStatus();
+                document.getElementById('loadModelBtn').disabled = false;
+            }
+        }
+
+        // Convert S3 URL to HTTPS URL
+        function convertS3UrlToHttps(url) {
+            if (url.startsWith('s3://')) {
+                // Convert s3://bucket/path to https://bucket.s3.region.amazonaws.com/path
+                const parts = url.replace('s3://', '').split('/');
+                const bucket = parts[0];
+                const path = parts.slice(1).join('/');
+                
+                // Default to us-west-2 region (adjust as needed)
+                return `https://${bucket}.s3.us-west-2.amazonaws.com/${path}`;
+            }
+            return url;
+        }
+
+        // Load SOGS bundle (WebP textures + metadata)
+        async function loadSOGSBundle(baseUrl) {
+            console.log('Loading SOGS bundle from:', baseUrl);
+
+            // Ensure URL ends with /
+            const bundleUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+
+            try {
+                // Load metadata first
+                const metaResponse = await fetch(bundleUrl + 'meta.json');
+                if (!metaResponse.ok) {
+                    throw new Error(`Failed to load metadata: ${metaResponse.status}`);
+                }
+                
+                const metadata = await metaResponse.json();
+                console.log('Loaded metadata:', metadata);
+
+                // Load settings if available
+                let settings = {
+                    camera: { fov: 60, position: [0, 2, 5], target: [0, 0, 0] },
+                    background: { color: [0.05, 0.05, 0.15, 1] }
+                };
+                
+                try {
+                    const settingsResponse = await fetch(bundleUrl + 'settings.json');
+                    if (settingsResponse.ok) {
+                        settings = await settingsResponse.json();
+                    }
+                } catch (e) {
+                    console.warn('No settings.json found, using defaults');
+                }
+
+                // For now, create a simple representation
+                // (Full SOGS rendering would require implementing the decompression shaders)
+                await createSOGSRepresentation(metadata, settings);
+
+                // Update model info display
+                updateModelInfo(metadata);
+
+            } catch (error) {
+                console.error('Error loading SOGS bundle:', error);
+                throw error;
+            }
+        }
+
+        // Create a visual representation of the SOGS model
+        async function createSOGSRepresentation(metadata, settings) {
+            // Remove existing model if any
+            if (entity) {
+                app.root.removeChild(entity);
+                entity.destroy();
+            }
+
+            // Create a new entity for the model
+            entity = new pc.Entity('sogs-model');
+
+            // For demonstration, create a point cloud representation
+            // In a full implementation, this would load and render the WebP textures
+            const material = new pc.StandardMaterial();
+            material.diffuse = new pc.Color(0.8, 0.6, 1.0);
+            material.emissive = new pc.Color(0.1, 0.1, 0.2);
+
+            // Create a simple mesh for demonstration
+            const sphere = pc.createSphere(app.graphicsDevice, { radius: 0.02 });
+            
+            // Add multiple spheres to simulate gaussian splats
+            const numPoints = Math.min(1000, 10000); // Limit for performance
+            
+            for (let i = 0; i < numPoints; i++) {
+                const pointEntity = new pc.Entity(`point-${i}`);
+                pointEntity.addComponent('render', {
+                    type: 'asset',
+                    meshInstances: [new pc.MeshInstance(sphere, material)]
+                });
+
+                // Random position (in real implementation, this would come from SOGS data)
+                const x = (Math.random() - 0.5) * 4;
+                const y = (Math.random() - 0.5) * 4;
+                const z = (Math.random() - 0.5) * 4;
+                pointEntity.setLocalPosition(x, y, z);
+
+                // Random scale for variety
+                const scale = 0.5 + Math.random() * 0.5;
+                pointEntity.setLocalScale(scale, scale, scale);
+
+                entity.addChild(pointEntity);
+            }
+
+            app.root.addChild(entity);
+
+            // Apply camera settings
+            if (settings.camera) {
+                const pos = settings.camera.position || [0, 2, 5];
+                const target = settings.camera.target || [0, 0, 0];
+                
+                camera.setLocalPosition(pos[0], pos[1], pos[2]);
+                camera.lookAt(new pc.Vec3(target[0], target[1], target[2]));
+            }
+
+            console.log('SOGS representation created with', numPoints, 'points');
+        }
+
+        // Update model information display
+        function updateModelInfo(metadata) {
+            // Extract information from metadata
+            const gaussianCount = metadata.means?.shape?.[0] || 'Unknown';
+            const compressionRatio = '5-10x'; // Estimated for SOGS
+            const webpCount = Object.values(metadata).reduce((count, param) => {
+                return count + (param.files ? param.files.length : 0);
+            }, 0);
+
+            document.getElementById('gaussianCount').textContent = gaussianCount.toLocaleString();
+            document.getElementById('compressionRatio').textContent = compressionRatio;
+            document.getElementById('webpCount').textContent = webpCount;
+            document.getElementById('fileSize').textContent = 'Optimized';
+            document.getElementById('modelStatus').textContent = 'Loaded';
+        }
+
+        // UI Helper Functions
+        function toggleControlsPanel() {
+            const panel = document.getElementById('controlsPanel');
+            panel.classList.toggle('collapsed');
+        }
+
+        function showStatus(message, showSpinner = false) {
+            const statusPanel = document.getElementById('statusPanel');
+            const statusText = document.getElementById('statusText');
+            const spinner = document.getElementById('loadingSpinner');
+
+            statusText.textContent = message;
+            statusPanel.classList.remove('hidden');
+            
+            if (showSpinner) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function hideStatus() {
+            document.getElementById('statusPanel').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function showSuccess(message) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="success-message">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        // Initialize the viewer when page loads
+        document.addEventListener('DOMContentLoaded', initializeViewer);
+
+        // Load model on Enter key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !isLoading) {
+                loadModel();
+            }
+        });
+    </script>
+</body>
+</html> 

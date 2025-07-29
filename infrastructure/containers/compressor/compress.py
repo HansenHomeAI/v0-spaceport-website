@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
 Production PlayCanvas SOGS Compression Container
-Real Self-Organizing Gaussian Splats implementation from https://github.com/playcanvas/sogs
+Real implementation using the official PlayCanvas SOGS package from:
+https://github.com/playcanvas/sogs
+
+This container uses the actual `sogs-compress` CLI tool to compress 3D Gaussian splats
+into WebP textures and metadata for use with SuperSplat viewer.
 """
 
 import os
@@ -11,25 +15,10 @@ import logging
 import tarfile
 import tempfile
 import zipfile
+import subprocess
 from pathlib import Path
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Any
 import boto3
-import numpy as np
-
-# Import SOGS dependencies at module level
-try:
-    import torch
-    import torch.nn.functional as F
-    from torchpq.clustering import KMeans
-    from torch import Tensor
-    from plas import sort_with_plas
-    from plyfile import PlyData, PlyElement
-    from PIL import Image
-    SOGS_DEPENDENCIES_AVAILABLE = True
-except ImportError as e:
-    print(f"CRITICAL: SOGS dependencies not available: {e}")
-    print("This container requires GPU with CUDA and all SOGS dependencies!")
-    sys.exit(1)
 
 # Configure logging
 logging.basicConfig(
@@ -39,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class PlayCanvasSOGSCompressor:
-    """Real PlayCanvas SOGS Compression Implementation"""
+    """Real PlayCanvas SOGS Compression Implementation using official package"""
     
     def __init__(self):
         self.s3_client = boto3.client('s3')
@@ -47,15 +36,32 @@ class PlayCanvasSOGSCompressor:
         self.output_dir = "/opt/ml/processing/output"
         
         # Verify GPU availability
-        if not torch.cuda.is_available():
-            logger.error("GPU not available - SOGS requires CUDA GPU!")
+        try:
+            import torch
+            if not torch.cuda.is_available():
+                logger.error("GPU not available - SOGS requires CUDA GPU!")
+                sys.exit(1)
+            logger.info("✅ GPU available for SOGS compression")
+        except ImportError:
+            logger.error("PyTorch not available")
             sys.exit(1)
         
-        logger.info("✅ GPU available and PlayCanvas SOGS dependencies verified")
-    
+        # Verify SOGS CLI is available
+        try:
+            result = subprocess.run(['sogs-compress', '--help'], 
+                                  capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                logger.info("✅ SOGS CLI tool available")
+            else:
+                logger.error("❌ SOGS CLI tool not working properly")
+                sys.exit(1)
+        except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+            logger.error(f"❌ SOGS CLI tool not found: {e}")
+            sys.exit(1)
+
     def compress_gaussian_splats(self, input_ply_files: List[str], output_dir: str) -> Dict[str, Any]:
         """
-        Compress Gaussian splats using real PlayCanvas SOGS algorithm
+        Compress Gaussian splats using real PlayCanvas SOGS CLI tool
         
         Args:
             input_ply_files: List of PLY file paths to compress
@@ -67,10 +73,11 @@ class PlayCanvasSOGSCompressor:
         logger.info(f"🚀 Starting PlayCanvas SOGS compression on {len(input_ply_files)} PLY files")
         
         results = {
-            'method': 'playcanvas_sogs_real',
+            'method': 'playcanvas_sogs_official',
+            'version': self._get_sogs_version(),
             'gpu_accelerated': True,
             'input_files': input_ply_files,
-            'output_files': [],
+            'compressed_outputs': [],
             'compression_stats': {}
         }
         
@@ -78,37 +85,40 @@ class PlayCanvasSOGSCompressor:
             logger.info(f"Processing PLY file {i+1}/{len(input_ply_files)}: {ply_file}")
             
             try:
-                # Load Gaussian splat data using PlayCanvas reader
-                splats = self.read_ply(ply_file)
-                
                 # Create output directory for this PLY file
-                compress_dir = os.path.join(output_dir, f"compressed_{i}")
+                file_base = Path(ply_file).stem
+                compress_dir = os.path.join(output_dir, f"compressed_{file_base}")
                 os.makedirs(compress_dir, exist_ok=True)
                 
-                # Apply PlayCanvas SOGS compression
-                self.run_compression(compress_dir, splats)
+                # Run PlayCanvas SOGS compression
+                compression_result = self._run_sogs_compression(ply_file, compress_dir)
                 
-                # Collect output files
-                output_files = []
-                for file in os.listdir(compress_dir):
-                    full_path = os.path.join(compress_dir, file)
-                    output_files.append(full_path)
-                
-                results['output_files'].extend(output_files)
-                
-                # Calculate compression statistics
+                # Collect output files and calculate statistics
+                output_files = list(Path(compress_dir).glob('*'))
                 original_size = os.path.getsize(ply_file)
-                compressed_size = sum(os.path.getsize(f) for f in output_files)
+                compressed_size = sum(f.stat().st_size for f in output_files)
                 compression_ratio = original_size / compressed_size if compressed_size > 0 else 0
                 
-                results['compression_stats'][f'file_{i}'] = {
+                file_result = {
+                    'input_file': ply_file,
+                    'output_dir': compress_dir,
+                    'output_files': [str(f) for f in output_files],
                     'original_size_mb': original_size / (1024 * 1024),
                     'compressed_size_mb': compressed_size / (1024 * 1024),
                     'compression_ratio': compression_ratio,
-                    'output_files': len(output_files)
+                    'webp_files': [str(f) for f in output_files if f.suffix == '.webp'],
+                    'metadata_file': str(Path(compress_dir) / 'meta.json') if (Path(compress_dir) / 'meta.json').exists() else None
                 }
                 
-                logger.info(f"✅ File {i+1} compressed: {compression_ratio:.2f}x ratio, {len(output_files)} output files")
+                results['compressed_outputs'].append(file_result)
+                results['compression_stats'][f'file_{i}'] = {
+                    'original_size_mb': file_result['original_size_mb'],
+                    'compressed_size_mb': file_result['compressed_size_mb'],
+                    'compression_ratio': compression_ratio,
+                    'webp_count': len(file_result['webp_files'])
+                }
+                
+                logger.info(f"✅ File {i+1} compressed: {compression_ratio:.2f}x ratio, {len(file_result['webp_files'])} WebP files")
             
             except Exception as e:
                 logger.error(f"Failed to compress {ply_file}: {e}")
@@ -122,344 +132,83 @@ class PlayCanvasSOGSCompressor:
         results['overall_compression_ratio'] = overall_ratio
         results['total_original_mb'] = total_original
         results['total_compressed_mb'] = total_compressed
-        results['total_output_files'] = len(results['output_files'])
+        results['total_webp_files'] = sum(stats['webp_count'] for stats in results['compression_stats'].values())
         
         logger.info(f"🎯 PlayCanvas SOGS Compression Complete: {overall_ratio:.2f}x overall compression")
-        logger.info(f"📁 Generated {results['total_output_files']} output files")
+        logger.info(f"📁 Generated {results['total_webp_files']} WebP texture files")
         
         return results
 
-    @torch.no_grad()
-    def read_ply(self, path):
-        """
-        Reads a .ply file and reconstructs a dictionary of PyTorch tensors on GPU.
-        Exact implementation from PlayCanvas SOGS repository.
-        """
-        logger.info(f"Loading PLY file: {path}")
+    def _run_sogs_compression(self, ply_file: str, output_dir: str) -> Dict[str, Any]:
+        """Run the official PlayCanvas SOGS compression CLI tool"""
+        logger.info(f"🔧 Running SOGS compression: {ply_file} -> {output_dir}")
         
-        plydata = PlyData.read(path)
-        vd = plydata['vertex'].data
-
-        def has_col(col_name):
-            return col_name in vd.dtype.names
-
-        xyz = np.stack([vd['x'], vd['y'], vd['z']], axis=-1)
-        f_dc = np.stack([vd[f"f_dc_{i}"] for i in range(3)], axis=-1)
-
-        rest_cols = [c for c in vd.dtype.names if c.startswith('f_rest_')]
-        rest_cols_sorted = sorted(rest_cols, key=lambda c: int(c.split('_')[-1]))
-        if len(rest_cols_sorted) > 0:
-            f_rest = np.stack([vd[c] for c in rest_cols_sorted], axis=-1)
-        else:
-            f_rest = np.empty((len(vd), 0), dtype=np.float32)
-
-        opacities = vd['opacity']
-        scale = np.stack([vd[f"scale_{i}"] for i in range(3)], axis=-1)
-        rotation = np.stack([vd[f"rot_{i}"] for i in range(4)], axis=-1)
-
-        splats = {}
-        splats["means"] = torch.from_numpy(xyz).float().cuda()
-        splats["opacities"] = torch.from_numpy(opacities).float().cuda()
-        splats["scales"] = torch.from_numpy(scale).float().cuda()
-        splats["quats"] = torch.from_numpy(rotation).float().cuda()
-
-        sh0_tensor = torch.from_numpy(f_dc).float()
-        sh0_tensor = sh0_tensor.unsqueeze(-1).transpose(1, 2)
-        splats["sh0"] = sh0_tensor.cuda()
-
-        if f_rest.any():
-            if f_rest.shape[1] % 3 != 0:
-                raise ValueError(f"Number of f_rest columns ({f_rest.shape[1]}) not divisible by 3.")
-            num_rest_per_channel = f_rest.shape[1] // 3
-            shn_tensor = torch.from_numpy(
-                f_rest.reshape(-1, 3, num_rest_per_channel)
-            ).float().transpose(1, 2)
-            splats["shN"] = shn_tensor.cuda()
-
-        logger.info(f"Loaded {len(splats['means'])} Gaussian splats")
-        return splats
-
-    def run_compression(self, compress_dir: str, splats: Dict[str, Tensor]) -> None:
-        """
-        Run PlayCanvas SOGS compression algorithm.
-        Exact implementation from PlayCanvas SOGS repository.
-        """
-        logger.info("🚀 Running PlayCanvas SOGS compression algorithm")
-
-        # Param-specific preprocessing
-        splats["means"] = self.log_transform(splats["means"])
-        splats["quats"] = F.normalize(splats["quats"], dim=-1)
-        neg_mask = splats["quats"][..., 3] < 0
-        splats["quats"][neg_mask] *= -1
-        splats["sh0"] = splats["sh0"].clamp(-3.0, 3.0)
-        if "shN" in splats:
-            splats["shN"] = splats["shN"].clamp(-6.0, 6.0)
-
-        n_gs = len(splats["means"])
-        n_sidelen = int(n_gs**0.5)
-        n_crop = n_gs - n_sidelen**2
-        if n_crop != 0:
-            splats = self._crop_n_splats(splats, n_crop)
-            logger.info(f"Warning: Number of Gaussians was not square. Removed {n_crop} Gaussians.")
-
-        meta: Dict[str, Any] = {}
-
-        # Sort splats using PLAS
-        logger.info("Sorting splats with PLAS...")
-        splats = self.sort_splats(splats)
-
-        # Extract opacities and merge into sh0
-        opacities = splats.pop("opacities")
-
-        # Compress each parameter
-        for param_name in splats.keys():
-            logger.info(f"Compressing parameter: {param_name}")
-            if param_name == "sh0":
-                meta["sh0"] = self._compress_sh0_with_opacity(
-                    compress_dir, "sh0", splats["sh0"], opacities, n_sidelen
-                )
+        # Run the official SOGS CLI command
+        cmd = ['sogs-compress', '--ply', ply_file, '--output-dir', output_dir]
+        
+        logger.info(f"Executing: {' '.join(cmd)}")
+        
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=1800,  # 30 minutes timeout
+                cwd=output_dir
+            )
+            
+            if result.returncode == 0:
+                logger.info("✅ SOGS compression completed successfully")
+                logger.info(f"STDOUT: {result.stdout}")
+                if result.stderr:
+                    logger.info(f"STDERR: {result.stderr}")
+                
+                # Check for expected output files
+                output_files = list(Path(output_dir).glob('*'))
+                webp_files = [f for f in output_files if f.suffix == '.webp']
+                meta_file = Path(output_dir) / 'meta.json'
+                
+                logger.info(f"Generated {len(webp_files)} WebP files: {[f.name for f in webp_files]}")
+                
+                if meta_file.exists():
+                    logger.info("✅ meta.json file generated")
+                    with open(meta_file, 'r') as f:
+                        metadata = json.load(f)
+                        logger.info(f"Metadata keys: {list(metadata.keys())}")
+                else:
+                    logger.warning("⚠️ meta.json file not found")
+                
+                return {
+                    'success': True,
+                    'output_files': len(output_files),
+                    'webp_files': len(webp_files),
+                    'has_metadata': meta_file.exists()
+                }
             else:
-                compress_fn = self._get_compress_fn(param_name)
-                meta[param_name] = compress_fn(
-                    compress_dir, param_name, splats[param_name], n_sidelen=n_sidelen
-                )
+                logger.error(f"❌ SOGS compression failed with return code {result.returncode}")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                raise RuntimeError(f"SOGS compression failed: {result.stderr}")
+                
+        except subprocess.TimeoutExpired:
+            logger.error("❌ SOGS compression timed out after 30 minutes")
+            raise RuntimeError("SOGS compression timed out")
+        except Exception as e:
+            logger.error(f"❌ SOGS compression failed: {e}")
+            raise
 
-        # Save metadata
-        with open(os.path.join(compress_dir, "meta.json"), "w") as f:
-            json.dump(meta, f, indent=2)
-        
-        logger.info("✅ PlayCanvas SOGS compression completed")
-
-    def log_transform(self, x):
-        """Log transform from PlayCanvas SOGS"""
-        return torch.sign(x) * torch.log1p(torch.abs(x))
-
-    def write_image(self, compress_dir, param_name, img, lossless: bool = True, quality: int = 100):
-        """
-        Compresses the image as lossless webp.
-        Exact implementation from PlayCanvas SOGS repository.
-        """
-        filename = f"{param_name}.webp"
-        Image.fromarray(img).save(
-            os.path.join(compress_dir, filename),
-            format="webp",
-            lossless=lossless,
-            quality=quality if not lossless else 100,
-            method=6,
-            exact=True
-        )
-        logger.info(f"✓ {filename}")
-        return filename
-
-    def _crop_n_splats(self, splats: Dict[str, Tensor], n_crop: int) -> Dict[str, Tensor]:
-        """Crop lowest opacity splats"""
-        opacities = splats["opacities"]
-        keep_indices = torch.argsort(opacities, descending=True)[:-n_crop]
-        for k, v in splats.items():
-            splats[k] = v[keep_indices]
-        return splats
-
-    def _get_compress_fn(self, param_name: str) -> Callable:
-        """Get compression function for parameter"""
-        compress_fn_map = {
-            "means": self._compress_16bit,
-            "scales": self._compress,
-            "quats": self._compress_quats,
-            "sh0": self._compress,  # placeholder, actual handling in run_compression
-            "shN": self._compress_kmeans,
-        }
-        return compress_fn_map[param_name]
-
-    def _compress(self, compress_dir: str, param_name: str, params: Tensor, n_sidelen: int) -> Dict[str, Any]:
-        """Compress parameters with 8-bit quantization and lossless WebP compression."""
-        grid = params.reshape((n_sidelen, n_sidelen, -1))
-        mins = torch.amin(grid, dim=(0, 1))
-        maxs = torch.amax(grid, dim=(0, 1))
-        grid_norm = (grid - mins) / (maxs - mins)
-        img_norm = grid_norm.detach().cpu().numpy()
-
-        img = (img_norm * (2**8 - 1)).round().astype(np.uint8)
-        img = img.squeeze()
-
-        meta = {
-            "shape": list(params.shape),
-            "dtype": str(params.dtype).split(".")[1],
-            "mins": mins.tolist(),
-            "maxs": maxs.tolist(),
-            "files": [self.write_image(compress_dir, param_name, img)]
-        }
-        return meta
-
-    def _compress_16bit(self, compress_dir: str, param_name: str, params: Tensor, n_sidelen: int) -> Dict[str, Any]:
-        """Compress parameters with 16-bit quantization and WebP compression."""
-        grid = params.reshape((n_sidelen, n_sidelen, -1))
-        mins = torch.amin(grid, dim=(0, 1))
-        maxs = torch.amax(grid, dim=(0, 1))
-        grid_norm = (grid - mins) / (maxs - mins)
-        img_norm = grid_norm.detach().cpu().numpy()
-        img = (img_norm * (2**16 - 1)).round().astype(np.uint16)
-        img_l = img & 0xFF
-        img_u = (img >> 8) & 0xFF
-
-        meta = {
-            "shape": list(params.shape),
-            "dtype": str(params.dtype).split(".")[1],
-            "mins": mins.tolist(),
-            "maxs": maxs.tolist(),
-            "files": [
-                self.write_image(compress_dir, f"{param_name}_l", img_l.astype(np.uint8)),
-                self.write_image(compress_dir, f"{param_name}_u", img_u.astype(np.uint8))
-            ]
-        }
-        return meta
-
-    def _compress_sh0_with_opacity(self, compress_dir: str, param_name: str, sh0: Tensor, opacities: Tensor, n_sidelen: int) -> Dict[str, Any]:
-        """Combine sh0 (RGB) and opacities as alpha channel into a single RGBA texture."""
-        # Reshape to spatial grid
-        grid_sh0 = sh0.reshape((n_sidelen, n_sidelen, -1))
-        grid_opac = opacities.reshape((n_sidelen, n_sidelen, 1))
-        grid = torch.cat([grid_sh0, grid_opac], dim=-1)
-
-        mins = torch.amin(grid, dim=(0, 1))
-        maxs = torch.amax(grid, dim=(0, 1))
-        grid_norm = (grid - mins) / (maxs - mins)
-        img_norm = grid_norm.detach().cpu().numpy()
-
-        img = (img_norm * (2**8 - 1)).round().astype(np.uint8)
-        filename = self.write_image(compress_dir, param_name, img)
-
-        meta = {
-            # New channel count = original 3 + opacity = 4
-            "shape": [*list(sh0.shape[:-1]), sh0.shape[-1] + 1],
-            "dtype": str(sh0.dtype).split(".")[1],
-            "mins": mins.tolist(),
-            "maxs": maxs.tolist(),
-            "files": [filename]
-        }
-        return meta
-
-    def _compress_kmeans(self, compress_dir: str, param_name: str, params: Tensor, n_sidelen: int, quantization: int = 8) -> Dict[str, Any]:
-        """Run K-means clustering on parameters and save centroids and labels as images."""
-        params = params.reshape(params.shape[0], -1)
-        dim = params.shape[1]
-        n_clusters = round((len(params) >> 2) / 64) * 64
-        n_clusters = min(n_clusters, 2 ** 16)
-
-        kmeans = KMeans(n_clusters=n_clusters, distance="manhattan", verbose=True)
-        labels = kmeans.fit(params.permute(1, 0).contiguous())
-        labels = labels.detach().cpu().numpy()
-        centroids = kmeans.centroids.permute(1, 0)
-
-        mins = torch.min(centroids)
-        maxs = torch.max(centroids)
-        centroids_norm = (centroids - mins) / (maxs - mins)
-        centroids_norm = centroids_norm.detach().cpu().numpy()
-        centroids_quant = (
-            (centroids_norm * (2**quantization - 1)).round().astype(np.uint8)
-        )
-
-        # sort centroids for compact atlas layout
-        sorted_indices = np.lexsort(centroids_quant.T)
-        sorted_indices = sorted_indices.reshape(64, -1).T.reshape(-1)
-        sorted_centroids_quant = centroids_quant[sorted_indices]
-        inverse = np.argsort(sorted_indices)
-
-        centroids_packed = sorted_centroids_quant.reshape(-1, int(dim * 64 / 3), 3)
-        labels = inverse[labels].astype(np.uint16).reshape((n_sidelen, n_sidelen))
-        labels_l = labels & 0xFF
-        labels_u = (labels >> 8) & 0xFF
-
-        # Combine low and high bytes into single texture: R=labels_l, G=labels_u, B=0
-        labels_combined = np.zeros((n_sidelen, n_sidelen, 3), dtype=np.uint8)
-        labels_combined[..., 0] = labels_l.astype(np.uint8)
-        labels_combined[..., 1] = labels_u.astype(np.uint8)
-
-        meta = {
-            "shape": list(params.shape),
-            "dtype": str(params.dtype).split(".")[1],
-            "mins": mins.tolist(),
-            "maxs": maxs.tolist(),
-            "quantization": quantization,
-            "files": [
-                self.write_image(compress_dir, f"{param_name}_centroids", centroids_packed),
-                self.write_image(compress_dir, f"{param_name}_labels", labels_combined)
-            ]
-        }
-        return meta
-
-    def pack_quaternion_to_rgba_tensor(self, q: Tensor) -> Tensor:
-        """
-        Packs a batch of quaternions into RGBA channels.
-        Exact implementation from PlayCanvas SOGS repository.
-        """
-        abs_q = q.abs()
-        max_idx = abs_q.argmax(dim=-1)  # (...)
-
-        # ensure largest component is positive
-        max_vals = q.gather(-1, max_idx.unsqueeze(-1)).squeeze(-1)
-        sign = max_vals.sign()
-        sign[sign == 0] = 1
-        q_signed = q * sign.unsqueeze(-1)
-
-        # build variants dropping each component
-        variants = []
-        for i in range(4):
-            dims = list(range(4))
-            dims.remove(i)
-            variants.append(q_signed[..., dims])  # (...,3)
-        stacked = torch.stack(variants, dim=-2)  # (...,4,3)
-
-        # select the appropriate 3-vector based on max_idx
-        idx_exp = max_idx.unsqueeze(-1).unsqueeze(-1).expand(*max_idx.shape, 1, 3)
-        small = torch.gather(stacked, dim=-2, index=idx_exp).squeeze(-2)  # (...,3)
-
-        # scale by sqrt(2) to normalize range to [-1,1]
-        small = small * torch.sqrt(torch.tensor(2.0, device=small.device, dtype=small.dtype))
-
-        # map from [-1,1] to [0,1]
-        rgb = small * 0.5 + 0.5
-        a = (252.0 + max_idx.to(torch.float32)) / 255.0
-        return torch.cat([rgb, a.unsqueeze(-1)], dim=-1)
-
-    def _compress_quats(self, compress_dir: str, param_name: str, params: Tensor, n_sidelen: int) -> Dict[str, Any]:
-        """Compress quaternions by packing into RGBA and saving as an 8-bit image."""
-        # params: (n_splats,4)
-        rgba = self.pack_quaternion_to_rgba_tensor(params)
-        img = (rgba.view(n_sidelen, n_sidelen, 4).cpu().numpy() * 255.0).round().astype(np.uint8)
-        filename = self.write_image(compress_dir, f"{param_name}", img)
-
-        meta = {
-            "shape": list(params.shape),
-            "dtype": "uint8",
-            "encoding": "quaternion_packed",
-            "files": [filename]
-        }
-        return meta
-
-    def sort_splats(self, splats: Dict[str, Tensor], verbose: bool = True) -> Dict[str, Tensor]:
-        """
-        Sort splats with Parallel Linear Assignment Sorting from the paper.
-        Exact implementation from PlayCanvas SOGS repository.
-        """
-        n_gs = len(splats["means"])
-        n_sidelen = int(n_gs**0.5)
-        assert n_sidelen**2 == n_gs, "Must be a perfect square"
-
-        sort_keys = [k for k in splats if k != "shN"]
-        params_to_sort = torch.cat([splats[k].reshape(n_gs, -1) for k in sort_keys], dim=-1)
-        shuffled_indices = torch.randperm(
-            params_to_sort.shape[0], device=params_to_sort.device
-        )
-        params_to_sort = params_to_sort[shuffled_indices]
-        grid = params_to_sort.reshape((n_sidelen, n_sidelen, -1))
-        _, sorted_indices = sort_with_plas(
-            grid.permute(2, 0, 1), improvement_break=1e-4, verbose=verbose
-        )
-        sorted_indices = sorted_indices.squeeze().flatten()
-        sorted_indices = shuffled_indices[sorted_indices]
-        for k, v in splats.items():
-            splats[k] = v[sorted_indices]
-        return splats
+    def _get_sogs_version(self) -> str:
+        """Get the version of the SOGS package"""
+        try:
+            result = subprocess.run(['pip', 'show', 'sogs'], 
+                                  capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                for line in result.stdout.split('\n'):
+                    if line.startswith('Version:'):
+                        return line.split(':', 1)[1].strip()
+            return "unknown"
+        except:
+            return "unknown"
 
     def process_job(self):
         """Main processing function for SageMaker"""
@@ -486,21 +235,92 @@ class PlayCanvasSOGSCompressor:
             
             logger.info(f"Found {len(ply_files)} PLY files to compress")
             
+            # Verify PLY files are valid for SOGS
+            for ply_file in ply_files:
+                if not self._validate_ply_for_sogs(ply_file):
+                    logger.error(f"PLY file not compatible with SOGS: {ply_file}")
+                    sys.exit(1)
+            
             # Compress using PlayCanvas SOGS
             results = self.compress_gaussian_splats(ply_files, self.output_dir)
             
             # Save compression summary
-            summary_path = os.path.join(self.output_dir, "compression_summary.json")
+            summary_path = os.path.join(self.output_dir, "sogs_compression_summary.json")
             with open(summary_path, 'w') as f:
                 json.dump(results, f, indent=2, cls=NumpyEncoder)
             
+            # Create SuperSplat viewer compatible structure
+            self._create_supersplat_bundle(results)
+            
             logger.info(f"✅ PlayCanvas SOGS compression completed successfully")
             logger.info(f"📊 Overall compression ratio: {results['overall_compression_ratio']:.2f}x")
-            logger.info(f"📁 Output files: {results['total_output_files']}")
+            logger.info(f"📁 WebP texture files: {results['total_webp_files']}")
+            logger.info(f"💾 Output saved to: {self.output_dir}")
             
         except Exception as e:
             logger.error(f"Compression job failed: {e}")
             raise
+
+    def _validate_ply_for_sogs(self, ply_file: str) -> bool:
+        """Validate that PLY file has required fields for SOGS compression"""
+        try:
+            with open(ply_file, 'rb') as f:
+                header = f.read(2048).decode('utf-8', errors='ignore')
+                
+            # Check for required fields
+            required_fields = ['f_dc_0', 'f_dc_1', 'f_dc_2', 'opacity', 'scale_0', 'scale_1', 'scale_2']
+            
+            for field in required_fields:
+                if field not in header:
+                    logger.error(f"Missing required field '{field}' in PLY file: {ply_file}")
+                    return False
+            
+            logger.info(f"✅ PLY file validated for SOGS: {ply_file}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to validate PLY file {ply_file}: {e}")
+            return False
+
+    def _create_supersplat_bundle(self, results: Dict[str, Any]):
+        """Create a bundle compatible with SuperSplat viewer"""
+        logger.info("📦 Creating SuperSplat viewer bundle")
+        
+        # Find the largest/best compression result
+        if not results['compressed_outputs']:
+            logger.warning("No compressed outputs to bundle")
+            return
+        
+        # Use the first result (or could select based on size/quality)
+        best_result = results['compressed_outputs'][0]
+        source_dir = Path(best_result['output_dir'])
+        bundle_dir = Path(self.output_dir) / "supersplat_bundle"
+        bundle_dir.mkdir(exist_ok=True)
+        
+        # Copy all WebP files and metadata
+        for file_path in Path(best_result['output_dir']).glob('*'):
+            if file_path.is_file():
+                dest_path = bundle_dir / file_path.name
+                import shutil
+                shutil.copy2(file_path, dest_path)
+                logger.info(f"Copied {file_path.name} to SuperSplat bundle")
+        
+        # Create viewer settings file for SuperSplat
+        settings = {
+            "background": {"color": [0, 0, 0, 0]},
+            "camera": {
+                "fov": 1.0,
+                "position": [0, 1, -1],
+                "target": [0, 0, 0],
+                "startAnim": "orbit"
+            }
+        }
+        
+        settings_path = bundle_dir / "settings.json"
+        with open(settings_path, 'w') as f:
+            json.dump(settings, f, indent=2)
+        
+        logger.info(f"✅ SuperSplat bundle created at: {bundle_dir}")
 
     def _extract_and_find_plys(self, archive_path: str) -> List[str]:
         """Extract archive and find PLY files"""
@@ -529,6 +349,7 @@ class PlayCanvasSOGSCompressor:
 class NumpyEncoder(json.JSONEncoder):
     """JSON encoder for numpy arrays"""
     def default(self, obj):
+        import numpy as np
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return super().default(obj)

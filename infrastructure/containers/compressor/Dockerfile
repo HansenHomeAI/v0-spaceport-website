@@ -1,82 +1,75 @@
-# Production PlayCanvas SOGS Compression Container - Multi-Stage Build
-# Optimized for layer caching and build efficiency
+# Production PlayCanvas SOGS Compression Container
+# Official implementation using PlayCanvas SOGS package from:
+# https://github.com/playcanvas/sogs
 
-# Stage 1: Base CUDA environment
-FROM nvidia/cuda:12.9.1-runtime-ubuntu22.04 AS base
+# Use NVIDIA CUDA base image
+FROM nvidia/cuda:12.6-devel-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies (cached layer)
+# Set CUDA environment variables
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-minimal \
+    python3-dev \
     python3-pip \
     git \
     build-essential \
+    cmake \
+    wget \
     && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean \
-    && rm -rf /var/cache/apt/*
+    && apt-get clean
 
-# Stage 2: Python dependencies
-FROM base AS python-deps
-
+# Set working directory
 WORKDIR /opt/ml/code
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Upgrade pip
+RUN pip3 install --no-cache-dir --upgrade pip
 
-# Install pip and PyTorch first (largest packages)
-RUN pip3 install --no-cache-dir --upgrade pip \
-    && pip3 install --no-cache-dir \
-    torch==2.0.1+cu118 \
-    --index-url https://download.pytorch.org/whl/cu118 \
-    && pip3 cache purge \
-    && rm -rf ~/.cache/pip \
-    && rm -rf /tmp/*
-
-# Install SOGS dependencies in order of size/complexity
+# Install PyTorch with CUDA 12.6 support (as per SOGS documentation)
 RUN pip3 install --no-cache-dir \
-    cupy-cuda12x \
-    torchpq \
-    plyfile==0.7.4 \
-    Pillow==10.0.0 \
-    numpy==1.24.3 \
-    boto3==1.34.69 \
-    && pip3 cache purge \
-    && rm -rf ~/.cache/pip \
-    && rm -rf /tmp/*
+    torch torchvision torchaudio \
+    --index-url https://download.pytorch.org/whl/cu121
+
+# Install CUDA-specific dependencies (as per SOGS documentation)
+RUN pip3 install --no-cache-dir cupy-cuda12x
+
+# Install TorchPQ (required by SOGS)
+RUN pip3 install --no-cache-dir torchpq
 
 # Install PLAS (Parallel Linear Assignment Sorting) from GitHub
-RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git \
-    && pip3 cache purge \
-    && rm -rf ~/.cache/pip \
-    && rm -rf /tmp/*
+RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git
 
-# Stage 3: Application code
-FROM python-deps AS app-build
+# Install official PlayCanvas SOGS package from GitHub
+RUN pip3 install --no-cache-dir git+https://github.com/playcanvas/sogs.git
 
-# Copy application files (most frequently changed)
+# Install additional dependencies for our container
+RUN pip3 install --no-cache-dir \
+    boto3==1.34.69 \
+    numpy==1.24.3 \
+    pathlib
+
+# Copy application code
 COPY compress.py .
 RUN chmod +x compress.py
 
-# Stage 4: Final runtime image
-FROM app-build AS runtime
+# Verify installations
+RUN python3 -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
+RUN python3 -c "import cupy; print('CuPy installed successfully')"
+RUN python3 -c "import torchpq; print('TorchPQ installed successfully')"
+RUN python3 -c "from plas import sort_with_plas; print('PLAS installed successfully')"
+RUN sogs-compress --help
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash sagemaker \
-    && chown -R sagemaker:sagemaker /opt/ml
-
-# Set CUDA environment
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-
-# Health check
+# Health check to verify SOGS CLI is working
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import torch; print('CUDA available:', torch.cuda.is_available())" || exit 1
-
-# Switch to non-root user
-USER sagemaker
+    CMD sogs-compress --help > /dev/null || exit 1
 
 # Entry point for SageMaker
 ENTRYPOINT ["python3", "/opt/ml/code/compress.py"] 

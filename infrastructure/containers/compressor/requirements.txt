@@ -1,9 +1,16 @@
-# PlayCanvas SOGS Dependencies
-torch==2.0.1
-cupy-cuda12x
-torchpq
-plyfile==0.7.4
-Pillow==10.0.0
-numpy==1.24.3
+# Official PlayCanvas SOGS Dependencies
+# As per https://github.com/playcanvas/sogs
+
+# Core dependencies installed via pip install commands in Dockerfile:
+# torch (with CUDA 12.1 support)
+# cupy-cuda12x
+# torchpq  
+# git+https://github.com/fraunhoferhhi/PLAS.git
+# git+https://github.com/playcanvas/sogs.git
+
+# Additional container dependencies
 boto3==1.34.69
-# PLAS will be installed from GitHub in Dockerfile 
+numpy==1.24.3
+
+# Note: Main SOGS dependencies are installed directly from GitHub in Dockerfile
+# to ensure compatibility with CUDA version 
