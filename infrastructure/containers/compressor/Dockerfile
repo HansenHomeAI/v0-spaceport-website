@@ -33,6 +33,9 @@ WORKDIR /opt/ml/code
 # Upgrade pip
 RUN pip3 install --no-cache-dir --upgrade pip
 
+# Install NumPy 2.0+ first (required by PLAS)
+RUN pip3 install --no-cache-dir "numpy>=2.0"
+
 # Install PyTorch with CUDA 12.1 support (as per SOGS documentation)
 RUN pip3 install --no-cache-dir \
     torch torchvision torchaudio \
@@ -53,7 +56,6 @@ RUN pip3 install --no-cache-dir git+https://github.com/playcanvas/sogs.git
 # Install additional dependencies for our container
 RUN pip3 install --no-cache-dir \
     boto3==1.34.69 \
-    numpy==1.24.3 \
     pathlib
 
 # Copy application code
