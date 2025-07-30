@@ -42,7 +42,7 @@ RUN pip3 install --no-cache-dir "numpy>=2.0"
 
 # Install PyTorch with CUDA 12.1 support (compatible with CUDA 12.4 driver)
 RUN pip3 install --no-cache-dir \
-    torch==2.0.1+cu121 torchvision==0.15.2+cu121 torchaudio==2.0.2+cu121 \
+    torch==2.1.0+cu121 torchvision==0.16.0+cu121 torchaudio==2.1.0+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
 
 # Install CUDA-specific dependencies for CUDA 12.x

@@ -88,8 +88,8 @@ class PlayCanvasSOGSCompressor:
         # Verify GPU availability
         try:
             import torch
-            if not torch.cuda.is_available():
-                logger.error("GPU not available - SOGS requires CUDA GPU!")
+        if not torch.cuda.is_available():
+            logger.error("GPU not available - SOGS requires CUDA GPU!")
                 sys.exit(1)
             logger.info("✅ GPU available for SOGS compression")
         except ImportError:
