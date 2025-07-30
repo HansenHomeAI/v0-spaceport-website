@@ -1,10 +1,10 @@
 NUMPY COMPATIBILITY FIX - 2025-07-29
 
-CRITICAL FIX: Updated NumPy to 1.24.4 for Python 3.10 and PyTorch 2.1.0 compatibility
-- Changed from numpy>=2.0 to numpy==1.24.4
-- NumPy 1.9.3 was too old for Python 3.10 (compilation failed)
-- NumPy 1.24.4 supports Python >=3.8 and is compatible with PyTorch 2.1.0
-- This should resolve both Python compatibility and PyTorch import issues
+CRITICAL FIX: Fixed NumPy installation order - force reinstall after PyTorch
+- PyTorch installation was pulling in NumPy 2.2.6, overwriting our 1.24.4
+- Changed order: Install PyTorch first, then force-reinstall NumPy 1.24.4
+- Added verification step to ensure NumPy 1.24.4 is actually installed
+- This should finally resolve the NumPy compatibility issue
 
 Previous fixes:
 - Syntax error fix - Fixed incomplete try/except block
@@ -15,4 +15,4 @@ Previous fixes:
 
 This rebuild will fix the NumPy compatibility issue and enable GPU detection.
 
-Build timestamp: 2025-07-29 20:00:00 UTC
+Build timestamp: 2025-07-29 20:30:00 UTC

@@ -37,13 +37,13 @@ WORKDIR /opt/ml/code
 # Upgrade pip
 RUN pip3 install --no-cache-dir --upgrade pip
 
-# Install NumPy 1.24.x (compatible with Python 3.10 and PyTorch 2.1.0)
-RUN pip3 install --no-cache-dir "numpy==1.24.4"
-
 # Install PyTorch with CUDA 12.1 support (compatible with CUDA 12.4 driver)
 RUN pip3 install --no-cache-dir \
     torch==2.1.0+cu121 torchvision==0.16.0+cu121 torchaudio==2.1.0+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
+
+# Force install NumPy 1.24.4 AFTER PyTorch to override any newer version
+RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.24.4"
 
 # Install CUDA-specific dependencies for CUDA 12.x
 RUN pip3 install --no-cache-dir cupy-cuda12x
@@ -70,6 +70,7 @@ RUN chmod +x diagnostic_script.py
 
 # Verify installations (without CUDA initialization)
 RUN python3 -c "import torch; print('PyTorch version:', torch.__version__)"
+RUN python3 -c "import numpy; print('NumPy version:', numpy.__version__); assert numpy.__version__.startswith('1.24'), f'Expected NumPy 1.24.x, got {numpy.__version__}'"
 RUN python3 -c "import cupy; print('CuPy installed successfully')"
 # Skip TorchPQ import test during build (CUDA initialization issue)
 RUN python3 -c "print('TorchPQ package installed (CUDA test skipped during build)')"
