@@ -57,8 +57,8 @@ RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git
 # Install official PlayCanvas SOGS package from GitHub
 RUN pip3 install --no-cache-dir git+https://github.com/playcanvas/sogs.git
 
-# Force reinstall NumPy 1.24.4 AFTER all packages to ensure compatibility
-RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.24.4"
+# Force reinstall NumPy 1.26.4 AFTER all packages (better compatibility with PyTorch 2.1.0)
+RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.26.4"
 
 # Install additional dependencies for our container
 RUN pip3 install --no-cache-dir \
@@ -73,7 +73,7 @@ RUN chmod +x diagnostic_script.py
 
 # Verify installations (without CUDA initialization)
 RUN python3 -c "import torch; print('PyTorch version:', torch.__version__)"
-RUN python3 -c "import numpy; print('NumPy version:', numpy.__version__); assert numpy.__version__.startswith('1.24'), f'Expected NumPy 1.24.x, got {numpy.__version__}'"
+RUN python3 -c "import numpy; print('NumPy version:', numpy.__version__); assert numpy.__version__.startswith('1.26'), f'Expected NumPy 1.26.x, got {numpy.__version__}'"
 RUN python3 -c "import cupy; print('CuPy installed successfully')"
 # Skip TorchPQ import test during build (CUDA initialization issue)
 RUN python3 -c "print('TorchPQ package installed (CUDA test skipped during build)')"
