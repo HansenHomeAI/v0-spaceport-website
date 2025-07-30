@@ -9,7 +9,8 @@ FROM nvidia/cuda:12.4.0-devel-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Disable CUDA during build to avoid driver version issues
-ENV CUDA_VISIBLE_DEVICES=""
+ARG DISABLE_CUDA=""
+ENV CUDA_VISIBLE_DEVICES=${DISABLE_CUDA}
 ENV CUDA_LAUNCH_BLOCKING=0
 ENV PYTHONUNBUFFERED=1
 
@@ -84,6 +85,9 @@ RUN python3 -c "print('SOGS CLI installed (CUDA test skipped during build)')"
 # Health check to verify SOGS CLI is working (runtime only)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "print('Container healthy')" || exit 1
+
+# Re-enable GPU for runtime
+ENV CUDA_VISIBLE_DEVICES=0
 
 # Entry point for SageMaker
 ENTRYPOINT ["python3", "/opt/ml/code/compress.py"] 

@@ -1,10 +1,10 @@
 NUMPY COMPATIBILITY FIX - 2025-07-29
 
-CRITICAL FIX: Upgraded to NumPy 1.26.4 for better PyTorch 2.1.0 compatibility
-- PLAS installation pulls in numpy-2.2.6 as dependency
-- NumPy 1.26.4 is much closer to PyTorch 2.1.0's expected NumPy version
-- Better compatibility with both PyTorch and PLAS packages
-- This should resolve the NumPy compatibility issue with minimal risk
+CRITICAL FIX: GPU Detection - Re-enable CUDA_VISIBLE_DEVICES for runtime
+- CUDA_VISIBLE_DEVICES="" was permanently hiding all GPUs from the container
+- Changed to ARG-based approach: disabled during build, enabled for runtime
+- Added ENV CUDA_VISIBLE_DEVICES=0 before ENTRYPOINT to expose Tesla T4
+- This should finally enable GPU detection and SOGS compression
 
 Previous fixes:
 - Syntax error fix - Fixed incomplete try/except block
@@ -15,4 +15,4 @@ Previous fixes:
 
 This rebuild will fix the NumPy compatibility issue and enable GPU detection.
 
-Build timestamp: 2025-07-29 21:15:00 UTC
+Build timestamp: 2025-07-29 21:45:00 UTC
