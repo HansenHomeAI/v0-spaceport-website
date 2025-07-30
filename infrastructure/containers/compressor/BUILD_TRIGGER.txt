@@ -1,16 +1,16 @@
-CUDA 12.4 COMPATIBILITY FIX - 2025-07-29
+SYNTAX ERROR FIX - 2025-07-29
 
-CRITICAL FIX: Update to CUDA 12.4 to match host driver
-- Changed base image from CUDA 11.8 to CUDA 12.4.0
-- Updated PyTorch to cu121 version (compatible with CUDA 12.4 driver)
-- Changed CuPy from cupy-cuda11x to cupy-cuda12x
-- Fixes GPU detection issue: torch.cuda.is_available() was returning False
+CRITICAL FIX: Fixed incomplete try/except block in compress.py
+- Fixed syntax error on line 91: missing except block
+- GPU availability check now properly structured
+- This was causing immediate container failure
 
-Diagnostic revealed:
-- Host driver: 550.163.01 (CUDA 12.4)
-- Container runtime: CUDA 11.8 (incompatible)
-- Result: PyTorch couldn't initialize CUDA
+Previous fixes:
+- CUDA 12.4 compatibility fix - Updated PyTorch to 2.1.0+cu121
+- Base image: nvidia/cuda:12.4.0-devel-ubuntu22.04
+- PyTorch: 2.1.0+cu121 (lowest available for CUDA 12.1)
+- CuPy: cupy-cuda12x
 
-This rebuild will fix the GPU detection and enable SOGS compression.
+This rebuild will fix the syntax error and allow SOGS compression to run.
 
-Build timestamp: 2025-07-29 18:00:00 UTC
+Build timestamp: 2025-07-29 18:45:00 UTC
