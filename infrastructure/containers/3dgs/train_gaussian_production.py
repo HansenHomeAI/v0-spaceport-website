@@ -399,16 +399,36 @@ class Trainer:
         positions = torch.from_numpy(positions).float().to(self.device)
         colors_rgb = colors.astype(np.float32) / 255.0  # Normalize to [0,1]
         
-        # Convert RGB to spherical harmonics DC coefficients
-        # SH DC coefficient is RGB / sqrt(4*pi) for proper normalization
-        sh_dc = torch.from_numpy(colors_rgb).float().to(self.device) / math.sqrt(4 * math.pi)
+        # Get spherical harmonics configuration
+        sh_config = self.config.get('optimization', {}).get('sh_progressive', {})
+        max_sh_degree = sh_config.get('max_bands', 3) - 1  # Convert bands to degree (3 bands = degree 2)
         
-        # Initialize Gaussian parameters
+        # Industry standard: degree 3 = 16 total coefficients
+        if max_sh_degree < 3:
+            logger.warning(f"⚠️  SH degree {max_sh_degree} < 3 (industry standard)")
+            logger.warning(f"⚠️  Consider increasing max_bands to 4+ for photorealistic quality")
+        
+        logger.info(f"🎨 Initializing spherical harmonics:")
+        logger.info(f"   Max SH degree: {max_sh_degree}")
+        logger.info(f"   Total SH coefficients: {(max_sh_degree + 1) ** 2}")
+        logger.info(f"   DC coefficients: 1")
+        logger.info(f"   Higher-order coefficients: {(max_sh_degree + 1) ** 2 - 1}")
+        
+        # Convert RGB to spherical harmonics DC coefficients
+        # Use proper RGB2SH conversion: (rgb - 0.5) / C0 where C0 = 0.28209479177387814
+        C0 = 0.28209479177387814
+        sh_dc = ((torch.from_numpy(colors_rgb).float().to(self.device) - 0.5) / C0).unsqueeze(1)  # [N, 1, 3]
+        
+        # Initialize higher-order SH coefficients (start with zeros, will be trained)
+        num_sh_rest = (max_sh_degree + 1) ** 2 - 1  # Total coefficients minus DC
+        sh_rest = torch.zeros(n_points, num_sh_rest, 3).to(self.device)
+        
+        # Initialize Gaussian parameters with proper SH structure
         gaussians = {
             'positions': nn.Parameter(positions),
-            'sh_dc': nn.Parameter(sh_dc),  # [N, 3] - DC coefficients only
-            'sh_rest': nn.Parameter(torch.zeros(n_points, 0, 3).to(self.device)),  # No higher order SH
-            'opacities': nn.Parameter(torch.logit(torch.full((n_points,), 0.7).to(self.device))),
+            'sh_dc': nn.Parameter(sh_dc),  # [N, 1, 3] - DC coefficients
+            'sh_rest': nn.Parameter(sh_rest),  # [N, num_sh_rest, 3] - Higher-order coefficients
+            'opacities': nn.Parameter(torch.logit(torch.full((n_points,), 0.1).to(self.device))),  # Start with low opacity
             'scales': nn.Parameter(torch.log(torch.full((n_points, 3), 0.01).to(self.device))),
             'rotations': nn.Parameter(torch.zeros(n_points, 4).to(self.device))  # Quaternions
         }
@@ -416,7 +436,11 @@ class Trainer:
         # Initialize rotations as identity quaternions
         gaussians['rotations'].data[:, 0] = 1.0
         
-        logger.info(f"✅ Initialized {n_points} Gaussians with spherical harmonics")
+        logger.info(f"✅ Initialized {n_points} Gaussians with proper spherical harmonics:")
+        logger.info(f"   sh_dc shape: {gaussians['sh_dc'].shape}")
+        logger.info(f"   sh_rest shape: {gaussians['sh_rest'].shape}")
+        logger.info(f"   Compatible with SOGS compression: ✓")
+        
         return gaussians
     
     def setup_optimizer(self, gaussians: Dict[str, torch.Tensor]) -> torch.optim.Optimizer:
@@ -471,6 +495,13 @@ class Trainer:
         plateau_counter = 0
         initial_gaussian_count = gaussians['positions'].shape[0]
         
+        # Get spherical harmonics progressive training configuration
+        sh_config = self.config.get('optimization', {}).get('sh_progressive', {})
+        sh_enabled = sh_config.get('enabled', True)
+        sh_start_bands = sh_config.get('start_bands', 1)
+        sh_max_bands = sh_config.get('max_bands', 3)
+        sh_band_interval = sh_config.get('band_increase_interval', 5000)
+        
         logger.info(f"🔥 REAL gsplat Training Configuration:")
         logger.info(f"   Max Iterations: {max_iterations}")
         logger.info(f"   Training Images: {len(train_indices)}")
@@ -478,12 +509,29 @@ class Trainer:
         logger.info(f"   Target PSNR: {target_psnr} dB")
         logger.info(f"   Densification: {densify_from_iter}-{densify_until_iter} every {densify_interval} iters")
         logger.info(f"   Initial Gaussians: {initial_gaussian_count}")
+        logger.info(f"🎨 Spherical Harmonics Progressive Training:")
+        logger.info(f"   Enabled: {sh_enabled}")
+        logger.info(f"   Start bands: {sh_start_bands}")
+        logger.info(f"   Max bands: {sh_max_bands}")
+        logger.info(f"   Band increase interval: {sh_band_interval}")
         
         # Initialize gradient accumulation
         self.initialize_gradient_accumulation(gaussians)
         
         for iteration in range(max_iterations):
             self.current_iteration = iteration
+            
+            # Progressive spherical harmonics training
+            if sh_enabled:
+                current_sh_bands = min(sh_start_bands + (iteration // sh_band_interval), sh_max_bands)
+                # Convert bands to degree (bands = degree + 1)
+                current_sh_degree = current_sh_bands - 1
+                
+                # Log SH degree changes
+                if iteration % sh_band_interval == 0 and iteration > 0:
+                    logger.info(f"🎨 SH progression at iteration {iteration}: using {current_sh_bands} bands (degree {current_sh_degree})")
+            else:
+                current_sh_degree = 0  # Only DC coefficients
             
             # Sample random training view
             train_idx = np.random.choice(train_indices)
@@ -505,8 +553,25 @@ class Trainer:
                 rotations = gaussians['rotations']  # [N, 4]
                 opacities = torch.sigmoid(gaussians['opacities'])  # [N]
                 
-                # Combine SH coefficients [N, 3] for DC only
-                colors = gaussians['sh_dc']  # [N, 3]
+                # Combine SH coefficients based on progressive training
+                sh_dc = gaussians['sh_dc']  # [N, 1, 3]
+                sh_rest = gaussians['sh_rest']  # [N, num_rest, 3]
+                
+                # Progressive SH: only use coefficients up to current degree
+                if current_sh_degree == 0:
+                    # Only DC coefficients
+                    colors = sh_dc.squeeze(1)  # [N, 3]
+                else:
+                    # Include higher-order coefficients up to current degree
+                    num_coeffs_to_use = (current_sh_degree + 1) ** 2 - 1  # Exclude DC
+                    num_coeffs_available = sh_rest.shape[1]
+                    num_coeffs_to_use = min(num_coeffs_to_use, num_coeffs_available)
+                    
+                    if num_coeffs_to_use > 0:
+                        sh_rest_active = sh_rest[:, :num_coeffs_to_use, :]  # [N, active_coeffs, 3]
+                        colors = torch.cat([sh_dc, sh_rest_active], dim=1)  # [N, 1+active_coeffs, 3]
+                    else:
+                        colors = sh_dc  # [N, 1, 3]
                 
                 # Convert camera parameters to tensors
                 fx = torch.tensor(cam_params['fx'], device=self.device, dtype=torch.float32)
@@ -1436,8 +1501,8 @@ class Trainer:
         
         # Extract parameters
         positions = gaussians['positions'].detach().cpu().numpy()
-        sh_dc = gaussians['sh_dc'].detach().cpu().numpy()
-        sh_rest = gaussians['sh_rest'].detach().cpu().numpy() if gaussians['sh_rest'].numel() > 0 else None
+        sh_dc = gaussians['sh_dc'].detach().cpu().numpy()  # [N, 1, 3]
+        sh_rest = gaussians['sh_rest'].detach().cpu().numpy() if gaussians['sh_rest'].numel() > 0 else None  # [N, num_rest, 3]
         opacities = torch.sigmoid(gaussians['opacities']).detach().cpu().numpy()
         scales = torch.exp(gaussians['scales']).detach().cpu().numpy()
         rotations = gaussians['rotations'].detach().cpu().numpy()
@@ -1467,10 +1532,10 @@ class Trainer:
         vertex_data['y'] = positions[:, 1]
         vertex_data['z'] = positions[:, 2]
         
-        # Fill spherical harmonics DC coefficients
-        vertex_data['f_dc_0'] = sh_dc[:, 0]
-        vertex_data['f_dc_1'] = sh_dc[:, 1]
-        vertex_data['f_dc_2'] = sh_dc[:, 2]
+        # Fill spherical harmonics DC coefficients (sh_dc is [N, 1, 3])
+        vertex_data['f_dc_0'] = sh_dc[:, 0, 0]
+        vertex_data['f_dc_1'] = sh_dc[:, 0, 1]
+        vertex_data['f_dc_2'] = sh_dc[:, 0, 2]
         
         # Fill higher-order SH if present
         if sh_rest is not None and sh_rest.shape[1] > 0:

@@ -150,8 +150,8 @@ optimization:
   sh_progressive:
     enabled: true
     start_bands: 1                   # Start with 1 SH band (diffuse only)
-    max_bands: 3                     # Maximum 3 SH bands
-    band_increase_interval: 5000     # Add band every 5000 iterations
+    max_bands: 4                     # Maximum 4 SH bands (degree 3 = industry standard)
+    band_increase_interval: 2000     # Add band every 2000 iterations (faster progression)
     
   # Adaptive loss weighting
   adaptive_loss:
