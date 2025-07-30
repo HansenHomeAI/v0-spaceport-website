@@ -1,9 +1,9 @@
 NUMPY COMPATIBILITY FIX - 2025-07-29
 
-CRITICAL FIX: Fixed NumPy installation order - force reinstall after PyTorch
-- PyTorch installation was pulling in NumPy 2.2.6, overwriting our 1.24.4
-- Changed order: Install PyTorch first, then force-reinstall NumPy 1.24.4
-- Added verification step to ensure NumPy 1.24.4 is actually installed
+CRITICAL FIX: PLAS package was overwriting NumPy 1.24.4 with 2.2.6
+- PLAS installation pulls in numpy-2.2.6 as dependency
+- Added second force-reinstall AFTER PLAS and SOGS installation
+- Now NumPy 1.24.4 is installed last to override all other packages
 - This should finally resolve the NumPy compatibility issue
 
 Previous fixes:
@@ -15,4 +15,4 @@ Previous fixes:
 
 This rebuild will fix the NumPy compatibility issue and enable GPU detection.
 
-Build timestamp: 2025-07-29 20:30:00 UTC
+Build timestamp: 2025-07-29 21:00:00 UTC

@@ -57,6 +57,9 @@ RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git
 # Install official PlayCanvas SOGS package from GitHub
 RUN pip3 install --no-cache-dir git+https://github.com/playcanvas/sogs.git
 
+# Force reinstall NumPy 1.24.4 AFTER all packages to ensure compatibility
+RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.24.4"
+
 # Install additional dependencies for our container
 RUN pip3 install --no-cache-dir \
     boto3==1.34.69 \
