@@ -553,25 +553,18 @@ class Trainer:
                 rotations = gaussians['rotations']  # [N, 4]
                 opacities = torch.sigmoid(gaussians['opacities'])  # [N]
                 
-                # Combine SH coefficients based on progressive training
+                # Combine SH coefficients for gsplat rasterization
                 sh_dc = gaussians['sh_dc']  # [N, 1, 3]
                 sh_rest = gaussians['sh_rest']  # [N, num_rest, 3]
                 
-                # Progressive SH: only use coefficients up to current degree
-                if current_sh_degree == 0:
-                    # Only DC coefficients
-                    colors = sh_dc.squeeze(1)  # [N, 3]
-                else:
-                    # Include higher-order coefficients up to current degree
-                    num_coeffs_to_use = (current_sh_degree + 1) ** 2 - 1  # Exclude DC
-                    num_coeffs_available = sh_rest.shape[1]
-                    num_coeffs_to_use = min(num_coeffs_to_use, num_coeffs_available)
-                    
-                    if num_coeffs_to_use > 0:
-                        sh_rest_active = sh_rest[:, :num_coeffs_to_use, :]  # [N, active_coeffs, 3]
-                        colors = torch.cat([sh_dc, sh_rest_active], dim=1)  # [N, 1+active_coeffs, 3]
-                    else:
-                        colors = sh_dc  # [N, 1, 3]
+                # CRITICAL FIX: Pass ALL SH coefficients to gsplat and let it handle progressive training
+                # gsplat expects: [N, K, 3] where K is the total number of coefficients
+                colors = torch.cat([sh_dc, sh_rest], dim=1)  # [N, total_coeffs, 3]
+                
+                # Debug tensor shapes
+                logger.info(f"🔧 DEBUG: colors tensor shape: {colors.shape}")
+                logger.info(f"🔧 DEBUG: current_sh_degree: {current_sh_degree}")
+                logger.info(f"🔧 DEBUG: total SH coefficients: {colors.shape[1]}")
                 
                 # Convert camera parameters to tensors
                 fx = torch.tensor(cam_params['fx'], device=self.device, dtype=torch.float32)
@@ -593,7 +586,8 @@ class Trainer:
                     colors=colors,
                     viewmats=world_to_cam.unsqueeze(0),
                     Ks=torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], device=self.device).unsqueeze(0),
-                    width=width, height=height
+                    width=width, height=height,
+                    sh_degree=current_sh_degree  # CRITICAL: Tell gsplat which SH degree to use
                 )
                 
                 # Extract rendered image from colors (first 3 channels are RGB)
@@ -1000,7 +994,11 @@ class Trainer:
                     scales = torch.exp(gaussians['scales'])
                     rotations = gaussians['rotations']
                     opacities = torch.sigmoid(gaussians['opacities'])
-                    colors = gaussians['sh_dc']
+                    
+                    # CRITICAL FIX: Use proper SH coefficients for validation
+                    sh_dc = gaussians['sh_dc']  # [N, 1, 3]
+                    sh_rest = gaussians['sh_rest']  # [N, num_rest, 3]
+                    colors = torch.cat([sh_dc, sh_rest], dim=1)  # [N, total_coeffs, 3]
                     
                     fx = torch.tensor(cam_params['fx'], device=self.device, dtype=torch.float32)
                     fy = torch.tensor(cam_params['fy'], device=self.device, dtype=torch.float32)
@@ -1018,7 +1016,8 @@ class Trainer:
                         colors=colors,
                         viewmats=world_to_cam.unsqueeze(0),
                         Ks=torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], device=self.device).unsqueeze(0),
-                        width=width, height=height
+                        width=width, height=height,
+                        sh_degree=3  # Use full SH degree for validation
                     )
                     
                     # Compute PSNR
