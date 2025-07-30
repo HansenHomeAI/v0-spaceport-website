@@ -37,8 +37,8 @@ WORKDIR /opt/ml/code
 # Upgrade pip
 RUN pip3 install --no-cache-dir --upgrade pip
 
-# Install NumPy 1.9.3 (latest 1.x, compatible with PyTorch 2.1.0+cu121)
-RUN pip3 install --no-cache-dir "numpy==1.9.3"
+# Install NumPy 1.24.x (compatible with Python 3.10 and PyTorch 2.1.0)
+RUN pip3 install --no-cache-dir "numpy==1.24.4"
 
 # Install PyTorch with CUDA 12.1 support (compatible with CUDA 12.4 driver)
 RUN pip3 install --no-cache-dir \
