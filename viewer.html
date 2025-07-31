@@ -632,9 +632,8 @@
                     console.warn('No settings.json found, using defaults');
                 }
 
-                // For now, create a simple representation
-                // (Full SOGS rendering would require implementing the decompression shaders)
-                await createSOGSRepresentation(metadata, settings);
+                // Load and decompress SOGS data
+                await loadAndDecompressSOGS(metadata, bundleUrl, settings);
 
                 // Update model info display
                 updateModelInfo(metadata);
@@ -645,8 +644,8 @@
             }
         }
 
-        // Create a visual representation of the SOGS model
-        async function createSOGSRepresentation(metadata, settings) {
+        // Load and decompress SOGS data from WebP files
+        async function loadAndDecompressSOGS(metadata, bundleUrl, settings) {
             // Remove existing model if any
             if (entity) {
                 app.root.removeChild(entity);
@@ -656,34 +655,345 @@
             // Create a new entity for the model
             entity = new pc.Entity('sogs-model');
 
-            // For demonstration, create a point cloud representation
-            // In a full implementation, this would load and render the WebP textures
+            // Load all required WebP textures
+            const textures = await loadSOGSTextures(metadata, bundleUrl);
+            
+            // Decompress the data
+            const decompressedData = await decompressSOGSData(metadata, textures);
+            
+            // Create the visual representation
+            await createSOGSVisualization(decompressedData, settings);
+        }
+
+        // Load all SOGS WebP textures
+        async function loadSOGSTextures(metadata, bundleUrl) {
+            const textures = {};
+            
+            // Load means (positions)
+            if (metadata.means && metadata.means.files) {
+                for (const file of metadata.means.files) {
+                    const response = await fetch(bundleUrl + file);
+                    const blob = await response.blob();
+                    const imageBitmap = await createImageBitmap(blob);
+                    textures[file] = imageBitmap;
+                }
+            }
+
+            // Load scales
+            if (metadata.scales && metadata.scales.files) {
+                for (const file of metadata.scales.files) {
+                    const response = await fetch(bundleUrl + file);
+                    const blob = await response.blob();
+                    const imageBitmap = await createImageBitmap(blob);
+                    textures[file] = imageBitmap;
+                }
+            }
+
+            // Load quaternions
+            if (metadata.quats && metadata.quats.files) {
+                for (const file of metadata.quats.files) {
+                    const response = await fetch(bundleUrl + file);
+                    const blob = await response.blob();
+                    const imageBitmap = await createImageBitmap(blob);
+                    textures[file] = imageBitmap;
+                }
+            }
+
+            // Load spherical harmonics
+            if (metadata.sh0 && metadata.sh0.files) {
+                for (const file of metadata.sh0.files) {
+                    const response = await fetch(bundleUrl + file);
+                    const blob = await response.blob();
+                    const imageBitmap = await createImageBitmap(blob);
+                    textures[file] = imageBitmap;
+                }
+            }
+
+            // Load higher-order spherical harmonics
+            if (metadata.shN && metadata.shN.files) {
+                for (const file of metadata.shN.files) {
+                    const response = await fetch(bundleUrl + file);
+                    const blob = await response.blob();
+                    const imageBitmap = await createImageBitmap(blob);
+                    textures[file] = imageBitmap;
+                }
+            }
+
+            return textures;
+        }
+
+        // Decompress SOGS data from WebP textures
+        async function decompressSOGSData(metadata, textures) {
+            const numSplats = metadata.means.shape[0];
+            console.log(`Decompressing ${numSplats} splats...`);
+
+            // Create canvas for texture processing
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Decompress means (positions)
+            const positions = await decompressMeans(metadata.means, textures, ctx);
+            
+            // Decompress scales
+            const scales = await decompressScales(metadata.scales, textures, ctx);
+            
+            // Decompress quaternions
+            const quaternions = await decompressQuaternions(metadata.quats, textures, ctx);
+            
+            // Decompress spherical harmonics
+            const sh0 = await decompressSH0(metadata.sh0, textures, ctx);
+            const shN = await decompressSHN(metadata.shN, textures, ctx);
+
+            return {
+                positions,
+                scales,
+                quaternions,
+                sh0,
+                shN,
+                numSplats
+            };
+        }
+
+        // Decompress means (positions) from WebP
+        async function decompressMeans(meansMeta, textures, ctx) {
+            const { shape, mins, maxs, files } = meansMeta;
+            const [numSplats, dims] = shape;
+            
+            const positions = new Float32Array(numSplats * 3);
+            
+            // Process means_l.webp and means_u.webp
+            if (files.includes('means_l.webp') && files.includes('means_u.webp')) {
+                const meansL = textures['means_l.webp'];
+                const meansU = textures['means_u.webp'];
+                
+                // Set canvas size
+                canvas.width = meansL.width;
+                canvas.height = meansL.height;
+                
+                // Draw and extract data from means_l.webp
+                ctx.drawImage(meansL, 0, 0);
+                const imageDataL = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                // Draw and extract data from means_u.webp
+                ctx.drawImage(meansU, 0, 0);
+                const imageDataU = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                // Decompress positions using the range information
+                for (let i = 0; i < numSplats; i++) {
+                    const pixelIndex = i * 4;
+                    
+                    // Combine low and high precision data
+                    const x = (imageDataL.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
+                    const y = (imageDataL.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
+                    const z = (imageDataL.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                    
+                    // Add high precision from means_u.webp
+                    const xH = (imageDataU.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) / 256.0;
+                    const yH = (imageDataU.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) / 256.0;
+                    const zH = (imageDataU.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) / 256.0;
+                    
+                    positions[i * 3] = x + xH;
+                    positions[i * 3 + 1] = y + yH;
+                    positions[i * 3 + 2] = z + zH;
+                }
+            }
+            
+            return positions;
+        }
+
+        // Decompress scales from WebP
+        async function decompressScales(scalesMeta, textures, ctx) {
+            const { shape, mins, maxs, files } = scalesMeta;
+            const [numSplats, dims] = shape;
+            
+            const scales = new Float32Array(numSplats * 3);
+            
+            if (files.includes('scales.webp')) {
+                const scalesTexture = textures['scales.webp'];
+                
+                canvas.width = scalesTexture.width;
+                canvas.height = scalesTexture.height;
+                
+                ctx.drawImage(scalesTexture, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < numSplats; i++) {
+                    const pixelIndex = i * 4;
+                    
+                    // Decompress scales using the range information
+                    scales[i * 3] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
+                    scales[i * 3 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
+                    scales[i * 3 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                }
+            }
+            
+            return scales;
+        }
+
+        // Decompress quaternions from WebP
+        async function decompressQuaternions(quatsMeta, textures, ctx) {
+            const { shape, encoding, files } = quatsMeta;
+            const [numSplats, dims] = shape;
+            
+            const quaternions = new Float32Array(numSplats * 4);
+            
+            if (files.includes('quats.webp')) {
+                const quatsTexture = textures['quats.webp'];
+                
+                canvas.width = quatsTexture.width;
+                canvas.height = quatsTexture.height;
+                
+                ctx.drawImage(quatsTexture, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < numSplats; i++) {
+                    const pixelIndex = i * 4;
+                    
+                    // Decompress packed quaternions
+                    if (encoding === 'quaternion_packed') {
+                        // Convert from packed format to quaternion
+                        const packed = imageData.data[pixelIndex];
+                        const x = imageData.data[pixelIndex + 1] / 128.0 - 1.0;
+                        const y = imageData.data[pixelIndex + 2] / 128.0 - 1.0;
+                        const z = imageData.data[pixelIndex + 3] / 128.0 - 1.0;
+                        
+                        // Reconstruct quaternion from packed format
+                        const w = Math.sqrt(1.0 - x*x - y*y - z*z);
+                        
+                        quaternions[i * 4] = x;
+                        quaternions[i * 4 + 1] = y;
+                        quaternions[i * 4 + 2] = z;
+                        quaternions[i * 4 + 3] = w;
+                    }
+                }
+            }
+            
+            return quaternions;
+        }
+
+        // Decompress SH0 (base color) from WebP
+        async function decompressSH0(sh0Meta, textures, ctx) {
+            const { shape, mins, maxs, files } = sh0Meta;
+            const [numSplats, dims, bands] = shape;
+            
+            const sh0 = new Float32Array(numSplats * 3);
+            
+            if (files.includes('sh0.webp')) {
+                const sh0Texture = textures['sh0.webp'];
+                
+                canvas.width = sh0Texture.width;
+                canvas.height = sh0Texture.height;
+                
+                ctx.drawImage(sh0Texture, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < numSplats; i++) {
+                    const pixelIndex = i * 4;
+                    
+                    // Decompress SH0 coefficients
+                    sh0[i * 3] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
+                    sh0[i * 3 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
+                    sh0[i * 3 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                }
+            }
+            
+            return sh0;
+        }
+
+        // Decompress SHN (higher-order spherical harmonics) from WebP
+        async function decompressSHN(shNMeta, textures, ctx) {
+            const { shape, mins, maxs, quantization, files } = shNMeta;
+            const [numSplats, dims] = shape;
+            
+            const shN = new Float32Array(numSplats * dims);
+            
+            if (files.includes('shN_centroids.webp') && files.includes('shN_labels.webp')) {
+                const centroidsTexture = textures['shN_centroids.webp'];
+                const labelsTexture = textures['shN_labels.webp'];
+                
+                canvas.width = centroidsTexture.width;
+                canvas.height = centroidsTexture.height;
+                
+                // Process centroids
+                ctx.drawImage(centroidsTexture, 0, 0);
+                const centroidsData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                // Process labels
+                ctx.drawImage(labelsTexture, 0, 0);
+                const labelsData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < numSplats; i++) {
+                    const pixelIndex = i * 4;
+                    
+                    // Get label (which centroid to use)
+                    const label = labelsData.data[pixelIndex];
+                    
+                    // Get centroid values
+                    const centroidR = centroidsData.data[label * 4] / 255.0;
+                    const centroidG = centroidsData.data[label * 4 + 1] / 255.0;
+                    const centroidB = centroidsData.data[label * 4 + 2] / 255.0;
+                    
+                    // Decompress using quantization
+                    const scale = (maxs - mins) / (Math.pow(2, quantization) - 1);
+                    
+                    shN[i * dims] = centroidR * scale + mins;
+                    shN[i * dims + 1] = centroidG * scale + mins;
+                    shN[i * dims + 2] = centroidB * scale + mins;
+                    
+                    // Fill remaining dimensions with zeros for now
+                    for (let j = 3; j < dims; j++) {
+                        shN[i * dims + j] = 0;
+                    }
+                }
+            }
+            
+            return shN;
+        }
+
+        // Create visual representation from decompressed data
+        async function createSOGSVisualization(data, settings) {
+            const { positions, scales, quaternions, sh0, shN, numSplats } = data;
+            
+            console.log(`Creating visualization for ${numSplats} splats`);
+
+            // Create material for splats
             const material = new pc.StandardMaterial();
             material.diffuse = new pc.Color(0.8, 0.6, 1.0);
             material.emissive = new pc.Color(0.1, 0.1, 0.2);
 
-            // Create a simple mesh for demonstration
+            // Create a simple mesh for splats
             const sphere = pc.createSphere(app.graphicsDevice, { radius: 0.02 });
             
-            // Add multiple spheres to simulate gaussian splats
-            const numPoints = Math.min(1000, 10000); // Limit for performance
+            // Render all splats (or a reasonable subset for performance)
+            const maxSplatsToRender = Math.min(numSplats, 50000); // Limit for performance
+            const step = Math.max(1, Math.floor(numSplats / maxSplatsToRender));
             
-            for (let i = 0; i < numPoints; i++) {
-                const pointEntity = new pc.Entity(`point-${i}`);
+            console.log(`Rendering ${maxSplatsToRender} splats (every ${step}th splat)`);
+            
+            for (let i = 0; i < numSplats; i += step) {
+                const pointEntity = new pc.Entity(`splat-${i}`);
                 pointEntity.addComponent('render', {
                     type: 'asset',
                     meshInstances: [new pc.MeshInstance(sphere, material)]
                 });
 
-                // Random position (in real implementation, this would come from SOGS data)
-                const x = (Math.random() - 0.5) * 4;
-                const y = (Math.random() - 0.5) * 4;
-                const z = (Math.random() - 0.5) * 4;
+                // Set position from decompressed data
+                const x = positions[i * 3];
+                const y = positions[i * 3 + 1];
+                const z = positions[i * 3 + 2];
                 pointEntity.setLocalPosition(x, y, z);
 
-                // Random scale for variety
-                const scale = 0.5 + Math.random() * 0.5;
-                pointEntity.setLocalScale(scale, scale, scale);
+                // Set scale from decompressed data
+                const scaleX = Math.exp(scales[i * 3]);
+                const scaleY = Math.exp(scales[i * 3 + 1]);
+                const scaleZ = Math.exp(scales[i * 3 + 2]);
+                pointEntity.setLocalScale(scaleX * 0.1, scaleY * 0.1, scaleZ * 0.1);
+
+                // Set color from SH0 coefficients
+                const r = Math.max(0, Math.min(1, sh0[i * 3]));
+                const g = Math.max(0, Math.min(1, sh0[i * 3 + 1]));
+                const b = Math.max(0, Math.min(1, sh0[i * 3 + 2]));
+                material.diffuse = new pc.Color(r, g, b);
 
                 entity.addChild(pointEntity);
             }
@@ -699,7 +1009,7 @@
                 camera.lookAt(new pc.Vec3(target[0], target[1], target[2]));
             }
 
-            console.log('SOGS representation created with', numPoints, 'points');
+            console.log('SOGS representation created with', maxSplatsToRender, 'points');
         }
 
         // Update model information display
