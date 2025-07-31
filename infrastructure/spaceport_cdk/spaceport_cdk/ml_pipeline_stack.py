@@ -431,7 +431,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.4xlarge",  # Changed from ml.g5.xlarge to use available quota
+                        "InstanceType": "ml.g4dn.xlarge",  # T4 GPU - compatible with SOGS compression
                         "VolumeSizeInGB": 50
                     }
                 },
