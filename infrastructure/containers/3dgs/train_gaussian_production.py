@@ -401,7 +401,7 @@ class Trainer:
         
         # Get spherical harmonics configuration
         sh_config = self.config.get('optimization', {}).get('sh_progressive', {})
-        max_sh_degree = sh_config.get('max_bands', 3) - 1  # Convert bands to degree (3 bands = degree 2)
+        max_sh_degree = sh_config.get('max_bands', 4) - 1  # Convert bands to degree (4 bands = degree 3, industry standard)
         
         # Industry standard: degree 3 = 16 total coefficients
         if max_sh_degree < 3:

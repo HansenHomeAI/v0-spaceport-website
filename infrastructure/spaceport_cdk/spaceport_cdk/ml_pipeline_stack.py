@@ -431,7 +431,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.g5.xlarge",  # A10G GPU - better performance for SOGS compression
+                        "InstanceType": "ml.c6i.4xlarge",  # Changed from ml.g5.xlarge to use available quota
                         "VolumeSizeInGB": 50
                     }
                 },
