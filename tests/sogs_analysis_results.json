@@ -1,0 +1,274 @@
+{
+  "metadata_analysis": {
+    "has_required_fields": true,
+    "field_analysis": {
+      "means": {
+        "present": true,
+        "has_shape": true,
+        "has_files": true,
+        "shape": [
+          252004,
+          3
+        ],
+        "file_count": 2,
+        "dtype": "float32",
+        "encoding": null,
+        "mins": [
+          -7.04286003112793,
+          -7.63613748550415,
+          -7.292137622833252
+        ],
+        "maxs": [
+          8.609793663024902,
+          8.590569496154785,
+          6.570199489593506
+        ]
+      },
+      "scales": {
+        "present": true,
+        "has_shape": true,
+        "has_files": true,
+        "shape": [
+          252004,
+          3
+        ],
+        "file_count": 1,
+        "dtype": "float32",
+        "encoding": null,
+        "mins": [
+          2.054199285339564e-05,
+          2.0539455363177694e-06,
+          5.17058151672245e-06
+        ],
+        "maxs": [
+          4032.855224609375,
+          107.27703857421875,
+          37495.51953125
+        ]
+      },
+      "quats": {
+        "present": true,
+        "has_shape": true,
+        "has_files": true,
+        "shape": [
+          252004,
+          4
+        ],
+        "file_count": 1,
+        "dtype": "uint8",
+        "encoding": "quaternion_packed",
+        "mins": null,
+        "maxs": null
+      },
+      "sh0": {
+        "present": true,
+        "has_shape": true,
+        "has_files": true,
+        "shape": [
+          252004,
+          1,
+          4
+        ],
+        "file_count": 1,
+        "dtype": "float32",
+        "encoding": null,
+        "mins": [
+          -1.8397784233093262,
+          -1.831321120262146,
+          -1.8809126615524292,
+          0.0028648325242102146
+        ],
+        "maxs": [
+          3.0,
+          3.0,
+          3.0,
+          1.0
+        ]
+      },
+      "shN": {
+        "present": true,
+        "has_shape": true,
+        "has_files": true,
+        "shape": [
+          252004,
+          45
+        ],
+        "file_count": 2,
+        "dtype": "float32",
+        "encoding": null,
+        "mins": -0.24443724751472473,
+        "maxs": 0.22615550458431244
+      }
+    },
+    "issues": [],
+    "total_splats": 252004
+  },
+  "format_comparison": {
+    "format_compliant": true,
+    "deviations": [],
+    "expected_vs_actual": {
+      "means": {
+        "expected": {
+          "shape": "should be [num_splats, 3]",
+          "dtype": "float32",
+          "files": [
+            "means_l.webp",
+            "means_u.webp"
+          ],
+          "encoding": "split_precision"
+        },
+        "actual": {
+          "shape": [
+            252004,
+            3
+          ],
+          "dtype": "float32",
+          "mins": [
+            -7.04286003112793,
+            -7.63613748550415,
+            -7.292137622833252
+          ],
+          "maxs": [
+            8.609793663024902,
+            8.590569496154785,
+            6.570199489593506
+          ],
+          "files": [
+            "means_l.webp",
+            "means_u.webp"
+          ]
+        },
+        "compliant": true,
+        "issues": []
+      },
+      "scales": {
+        "expected": {
+          "shape": "should be [num_splats, 3]",
+          "dtype": "float32",
+          "files": [
+            "scales.webp"
+          ],
+          "encoding": "direct"
+        },
+        "actual": {
+          "shape": [
+            252004,
+            3
+          ],
+          "dtype": "float32",
+          "mins": [
+            2.054199285339564e-05,
+            2.0539455363177694e-06,
+            5.17058151672245e-06
+          ],
+          "maxs": [
+            4032.855224609375,
+            107.27703857421875,
+            37495.51953125
+          ],
+          "files": [
+            "scales.webp"
+          ]
+        },
+        "compliant": true,
+        "issues": []
+      },
+      "quats": {
+        "expected": {
+          "shape": "should be [num_splats, 4]",
+          "dtype": "uint8",
+          "files": [
+            "quats.webp"
+          ],
+          "encoding": "quaternion_packed"
+        },
+        "actual": {
+          "shape": [
+            252004,
+            4
+          ],
+          "dtype": "uint8",
+          "encoding": "quaternion_packed",
+          "files": [
+            "quats.webp"
+          ]
+        },
+        "compliant": true,
+        "issues": []
+      },
+      "sh0": {
+        "expected": {
+          "shape": "should be [num_splats, 1, 4]",
+          "dtype": "float32",
+          "files": [
+            "sh0.webp"
+          ],
+          "encoding": "direct"
+        },
+        "actual": {
+          "shape": [
+            252004,
+            1,
+            4
+          ],
+          "dtype": "float32",
+          "mins": [
+            -1.8397784233093262,
+            -1.831321120262146,
+            -1.8809126615524292,
+            0.0028648325242102146
+          ],
+          "maxs": [
+            3.0,
+            3.0,
+            3.0,
+            1.0
+          ],
+          "files": [
+            "sh0.webp"
+          ]
+        },
+        "compliant": true,
+        "issues": []
+      },
+      "shN": {
+        "expected": {
+          "shape": "should be [num_splats, num_bands]",
+          "dtype": "float32",
+          "files": [
+            "shN_centroids.webp",
+            "shN_labels.webp"
+          ],
+          "encoding": "quantized"
+        },
+        "actual": {
+          "shape": [
+            252004,
+            45
+          ],
+          "dtype": "float32",
+          "mins": -0.24443724751472473,
+          "maxs": 0.22615550458431244,
+          "quantization": 8,
+          "files": [
+            "shN_centroids.webp",
+            "shN_labels.webp"
+          ]
+        },
+        "compliant": true,
+        "issues": []
+      }
+    }
+  },
+  "recommendations": [
+    "\ud83d\udca1 PERFORMANCE: Large number of splats detected. Consider:",
+    "   - Implementing level-of-detail (LOD) rendering",
+    "   - Using GPU instancing for efficient rendering",
+    "   - Limiting visible splats based on camera distance",
+    "\ud83d\udca1 VIEWER: Your current viewer implementation has issues:",
+    "   - Incorrect SOGS decompression algorithm",
+    "   - Inefficient rendering (252k individual entities)",
+    "   - Missing proper spherical harmonics implementation",
+    "\ud83d\udd27 SOLUTION: Use official PlayCanvas SuperSplat viewer or implement proper SOGS decompression"
+  ]
+}
