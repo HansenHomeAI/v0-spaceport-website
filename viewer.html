@@ -860,13 +860,14 @@
                     // Decompress packed quaternions
                     if (encoding === 'quaternion_packed') {
                         // Convert from packed format to quaternion
+                        // Each pixel contains packed quaternion data
                         const packed = imageData.data[pixelIndex];
-                        const x = imageData.data[pixelIndex + 1] / 128.0 - 1.0;
-                        const y = imageData.data[pixelIndex + 2] / 128.0 - 1.0;
-                        const z = imageData.data[pixelIndex + 3] / 128.0 - 1.0;
+                        const x = (imageData.data[pixelIndex + 1] - 128) / 128.0;
+                        const y = (imageData.data[pixelIndex + 2] - 128) / 128.0;
+                        const z = (imageData.data[pixelIndex + 3] - 128) / 128.0;
                         
                         // Reconstruct quaternion from packed format
-                        const w = Math.sqrt(1.0 - x*x - y*y - z*z);
+                        const w = Math.sqrt(Math.max(0, 1.0 - x*x - y*y - z*z));
                         
                         quaternions[i * 4] = x;
                         quaternions[i * 4 + 1] = y;
@@ -884,7 +885,7 @@
             const { shape, mins, maxs, files } = sh0Meta;
             const [numSplats, dims, bands] = shape;
             
-            const sh0 = new Float32Array(numSplats * 3);
+            const sh0 = new Float32Array(numSplats * 4); // RGBA = 4 components
             
             if (files.includes('sh0.webp')) {
                 const sh0Texture = textures['sh0.webp'];
@@ -902,10 +903,11 @@
                 for (let i = 0; i < numSplats; i++) {
                     const pixelIndex = i * 4;
                     
-                    // Decompress SH0 coefficients
-                    sh0[i * 3] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
-                    sh0[i * 3 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
-                    sh0[i * 3 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                    // Decompress SH0 coefficients (RGBA format)
+                    sh0[i * 4] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0]; // R
+                    sh0[i * 4 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1]; // G
+                    sh0[i * 4 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2]; // B
+                    sh0[i * 4 + 3] = (imageData.data[pixelIndex + 3] / 255.0) * (maxs[3] - mins[3]) + mins[3]; // A
                 }
             }
             
@@ -972,21 +974,18 @@
             
             console.log(`Creating visualization for ${numSplats} splats`);
 
-            // Create material for splats
-            const material = new pc.StandardMaterial();
-            material.diffuse = new pc.Color(0.8, 0.6, 1.0);
-            material.emissive = new pc.Color(0.1, 0.1, 0.2);
-
             // Create a simple mesh for splats
-            const sphere = pc.createSphere(app.graphicsDevice, { radius: 0.02 });
+            const sphere = pc.createSphere(app.graphicsDevice, { radius: 0.01 });
             
-            // Render all splats (or a reasonable subset for performance)
-            const maxSplatsToRender = Math.min(numSplats, 50000); // Limit for performance
-            const step = Math.max(1, Math.floor(numSplats / maxSplatsToRender));
+            // Render ALL splats - no limit!
+            console.log(`Rendering ALL ${numSplats} splats (no limit)`);
             
-            console.log(`Rendering ${maxSplatsToRender} splats (every ${step}th splat)`);
-            
-            for (let i = 0; i < numSplats; i += step) {
+            for (let i = 0; i < numSplats; i++) {
+                // Create material for each splat to have individual colors
+                const material = new pc.StandardMaterial();
+                material.diffuse = new pc.Color(0.8, 0.6, 1.0);
+                material.emissive = new pc.Color(0.1, 0.1, 0.2);
+
                 const pointEntity = new pc.Entity(`splat-${i}`);
                 pointEntity.addComponent('render', {
                     type: 'asset',
@@ -999,17 +998,27 @@
                 const z = positions[i * 3 + 2];
                 pointEntity.setLocalPosition(x, y, z);
 
-                // Set scale from decompressed data
+                // Set scale from decompressed data (proper exponential scaling)
                 const scaleX = Math.exp(scales[i * 3]);
                 const scaleY = Math.exp(scales[i * 3 + 1]);
                 const scaleZ = Math.exp(scales[i * 3 + 2]);
-                pointEntity.setLocalScale(scaleX * 0.1, scaleY * 0.1, scaleZ * 0.1);
+                pointEntity.setLocalScale(scaleX * 0.01, scaleY * 0.01, scaleZ * 0.01);
 
-                // Set color from SH0 coefficients
-                const r = Math.max(0, Math.min(1, sh0[i * 3]));
-                const g = Math.max(0, Math.min(1, sh0[i * 3 + 1]));
-                const b = Math.max(0, Math.min(1, sh0[i * 3 + 2]));
+                // Set rotation from decompressed quaternions
+                const qx = quaternions[i * 4];
+                const qy = quaternions[i * 4 + 1];
+                const qz = quaternions[i * 4 + 2];
+                const qw = quaternions[i * 4 + 3];
+                pointEntity.setLocalRotation(qx, qy, qz, qw);
+
+                // Set color from SH0 coefficients (RGBA format)
+                const r = Math.max(0, Math.min(1, sh0[i * 4])); // First component
+                const g = Math.max(0, Math.min(1, sh0[i * 4 + 1])); // Second component  
+                const b = Math.max(0, Math.min(1, sh0[i * 4 + 2])); // Third component
+                const a = Math.max(0, Math.min(1, sh0[i * 4 + 3])); // Alpha component
+                
                 material.diffuse = new pc.Color(r, g, b);
+                material.opacity = a;
 
                 entity.addChild(pointEntity);
             }
@@ -1025,7 +1034,7 @@
                 camera.lookAt(new pc.Vec3(target[0], target[1], target[2]));
             }
 
-            console.log('SOGS representation created with', maxSplatsToRender, 'points');
+            console.log('SOGS representation created with ALL', numSplats, 'splats');
         }
 
         // Update model information display
