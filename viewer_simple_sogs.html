@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple SOGS Viewer - Mobile Friendly</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        
+        .controls input {
+            width: 300px;
+            padding: 5px;
+            margin: 5px 0;
+        }
+        
+        .controls button {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .status {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="controls">
+        <input type="text" id="urlInput" placeholder="S3 URL or direct bundle URL" 
+               value="s3://spaceport-ml-processing/public-viewer/sogs-test-1753999934/">
+        <button onclick="loadModel()">Load SOGS Model</button>
+    </div>
+    
+    <div class="status" id="status">Ready to load SOGS model</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Simple 3D rendering using 2D canvas (mobile-friendly)
+        class SimpleSOGSViewer {
+            constructor() {
+                this.splats = [];
+                this.camera = { x: 0, y: 0, z: 5 };
+                this.rotation = { x: 0, y: 0 };
+                this.isDragging = false;
+                this.lastMouse = { x: 0, y: 0 };
+                
+                this.setupControls();
+            }
+            
+            setupControls() {
+                // Mouse controls
+                canvas.addEventListener('mousedown', (e) => {
+                    this.isDragging = true;
+                    this.lastMouse = { x: e.clientX, y: e.clientY };
+                });
+                
+                canvas.addEventListener('mousemove', (e) => {
+                    if (!this.isDragging) return;
+                    
+                    const deltaX = e.clientX - this.lastMouse.x;
+                    const deltaY = e.clientY - this.lastMouse.y;
+                    
+                    this.rotation.y += deltaX * 0.01;
+                    this.rotation.x += deltaY * 0.01;
+                    
+                    this.lastMouse = { x: e.clientX, y: e.clientY };
+                    this.render();
+                });
+                
+                canvas.addEventListener('mouseup', () => {
+                    this.isDragging = false;
+                });
+                
+                // Touch controls for mobile
+                canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.isDragging = true;
+                    this.lastMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                });
+                
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (!this.isDragging) return;
+                    
+                    const deltaX = e.touches[0].clientX - this.lastMouse.x;
+                    const deltaY = e.touches[0].clientY - this.lastMouse.y;
+                    
+                    this.rotation.y += deltaX * 0.01;
+                    this.rotation.x += deltaY * 0.01;
+                    
+                    this.lastMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    this.render();
+                });
+                
+                canvas.addEventListener('touchend', () => {
+                    this.isDragging = false;
+                });
+                
+                // Zoom with wheel
+                canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    this.camera.z += e.deltaY * 0.1;
+                    this.camera.z = Math.max(1, Math.min(20, this.camera.z));
+                    this.render();
+                });
+            }
+            
+            async loadSOGSModel(url) {
+                try {
+                    status.textContent = 'Loading SOGS model...';
+                    
+                    // Convert S3 URL to HTTPS
+                    const bundleUrl = url.startsWith('s3://') 
+                        ? url.replace('s3://', 'https://').replace('/', '.s3.us-west-2.amazonaws.com/')
+                        : url;
+                    
+                    // Load metadata
+                    const metaResponse = await fetch(bundleUrl + 'meta.json');
+                    if (!metaResponse.ok) throw new Error('Failed to load metadata');
+                    
+                    const metadata = await metaResponse.json();
+                    console.log('Loaded metadata:', metadata);
+                    
+                    // Load textures
+                    const textures = await this.loadTextures(metadata, bundleUrl);
+                    
+                    // Decompress using official SOGS algorithm
+                    const splatData = await this.decompressSOGS(metadata, textures);
+                    
+                    this.splats = splatData;
+                    status.textContent = `Loaded ${this.splats.length} splats successfully!`;
+                    
+                    this.render();
+                    
+                } catch (error) {
+                    console.error('Error loading SOGS model:', error);
+                    status.textContent = `Error: ${error.message}`;
+                }
+            }
+            
+            async loadTextures(metadata, bundleUrl) {
+                const textures = {};
+                const allFiles = [];
+                
+                // Collect all texture files
+                Object.values(metadata).forEach(param => {
+                    if (param.files) {
+                        allFiles.push(...param.files);
+                    }
+                });
+                
+                // Load all textures
+                for (const file of allFiles) {
+                    const response = await fetch(bundleUrl + file);
+                    const blob = await response.blob();
+                    const imageBitmap = await createImageBitmap(blob);
+                    textures[file] = imageBitmap;
+                    console.log(`Loaded texture: ${file}`);
+                }
+                
+                return textures;
+            }
+            
+            async decompressSOGS(metadata, textures) {
+                const numSplats = metadata.means.shape[0];
+                const n_sidelen = Math.sqrt(numSplats);
+                
+                console.log(`Decompressing ${numSplats} splats using official SOGS algorithm...`);
+                
+                // Decompress positions (means)
+                const positions = await this.decompressMeans(metadata.means, textures, n_sidelen);
+                
+                // Decompress scales
+                const scales = await this.decompressScales(metadata.scales, textures, n_sidelen);
+                
+                // Decompress colors (sh0)
+                const colors = await this.decompressColors(metadata.sh0, textures, n_sidelen);
+                
+                // Create splat objects
+                const splats = [];
+                for (let i = 0; i < numSplats; i++) {
+                    splats.push({
+                        x: positions[i * 3],
+                        y: positions[i * 3 + 1],
+                        z: positions[i * 3 + 2],
+                        scale: Math.exp(scales[i * 3]), // Exponential scaling
+                        r: colors[i * 4],
+                        g: colors[i * 4 + 1],
+                        b: colors[i * 4 + 2],
+                        a: colors[i * 4 + 3]
+                    });
+                }
+                
+                return splats;
+            }
+            
+            async decompressMeans(meansMeta, textures, n_sidelen) {
+                const { mins, maxs } = meansMeta;
+                const positions = new Float32Array(n_sidelen * n_sidelen * 3);
+                
+                if (textures['means_l.webp'] && textures['means_u.webp']) {
+                    const meansL = textures['means_l.webp'];
+                    const meansU = textures['means_u.webp'];
+                    
+                    // Create temporary canvas
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = n_sidelen;
+                    canvas.height = n_sidelen;
+                    
+                    // Process means_l.webp
+                    ctx.drawImage(meansL, 0, 0);
+                    const dataL = ctx.getImageData(0, 0, n_sidelen, n_sidelen);
+                    
+                    // Process means_u.webp
+                    ctx.drawImage(meansU, 0, 0);
+                    const dataU = ctx.getImageData(0, 0, n_sidelen, n_sidelen);
+                    
+                    // Reconstruct 16-bit values using official SOGS algorithm
+                    for (let y = 0; y < n_sidelen; y++) {
+                        for (let x = 0; x < n_sidelen; x++) {
+                            const gridIndex = y * n_sidelen + x;
+                            const pixelIndex = (y * n_sidelen + x) * 4;
+                            
+                            // Reconstruct 16-bit: (high << 8) | low
+                            const x16bit = (dataU.data[pixelIndex] << 8) | dataL.data[pixelIndex];
+                            const y16bit = (dataU.data[pixelIndex + 1] << 8) | dataL.data[pixelIndex + 1];
+                            const z16bit = (dataU.data[pixelIndex + 2] << 8) | dataL.data[pixelIndex + 2];
+                            
+                            // Convert to float using official range mapping
+                            positions[gridIndex * 3] = (x16bit / 65535.0) * (maxs[0] - mins[0]) + mins[0];
+                            positions[gridIndex * 3 + 1] = (y16bit / 65535.0) * (maxs[1] - mins[1]) + mins[1];
+                            positions[gridIndex * 3 + 2] = (z16bit / 65535.0) * (maxs[2] - mins[2]) + mins[2];
+                        }
+                    }
+                }
+                
+                return positions;
+            }
+            
+            async decompressScales(scalesMeta, textures, n_sidelen) {
+                const { mins, maxs } = scalesMeta;
+                const scales = new Float32Array(n_sidelen * n_sidelen * 3);
+                
+                if (textures['scales.webp']) {
+                    const scalesTexture = textures['scales.webp'];
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = n_sidelen;
+                    canvas.height = n_sidelen;
+                    
+                    ctx.drawImage(scalesTexture, 0, 0);
+                    const data = ctx.getImageData(0, 0, n_sidelen, n_sidelen);
+                    
+                    for (let y = 0; y < n_sidelen; y++) {
+                        for (let x = 0; x < n_sidelen; x++) {
+                            const gridIndex = y * n_sidelen + x;
+                            const pixelIndex = (y * n_sidelen + x) * 4;
+                            
+                            scales[gridIndex * 3] = (data.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
+                            scales[gridIndex * 3 + 1] = (data.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
+                            scales[gridIndex * 3 + 2] = (data.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                        }
+                    }
+                }
+                
+                return scales;
+            }
+            
+            async decompressColors(sh0Meta, textures, n_sidelen) {
+                const { mins, maxs } = sh0Meta;
+                const colors = new Float32Array(n_sidelen * n_sidelen * 4);
+                
+                if (textures['sh0.webp']) {
+                    const sh0Texture = textures['sh0.webp'];
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = n_sidelen;
+                    canvas.height = n_sidelen;
+                    
+                    ctx.drawImage(sh0Texture, 0, 0);
+                    const data = ctx.getImageData(0, 0, n_sidelen, n_sidelen);
+                    
+                    for (let y = 0; y < n_sidelen; y++) {
+                        for (let x = 0; x < n_sidelen; x++) {
+                            const gridIndex = y * n_sidelen + x;
+                            const pixelIndex = (y * n_sidelen + x) * 4;
+                            
+                            colors[gridIndex * 4] = (data.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0]; // R
+                            colors[gridIndex * 4 + 1] = (data.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1]; // G
+                            colors[gridIndex * 4 + 2] = (data.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2]; // B
+                            colors[gridIndex * 4 + 3] = (data.data[pixelIndex + 3] / 255.0) * (maxs[3] - mins[3]) + mins[3]; // A
+                        }
+                    }
+                }
+                
+                return colors;
+            }
+            
+            render() {
+                // Clear canvas
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                if (this.splats.length === 0) return;
+                
+                // Simple 3D to 2D projection
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 100;
+                
+                // Sort splats by depth for proper rendering
+                const sortedSplats = [...this.splats].sort((a, b) => {
+                    const aZ = a.z * Math.cos(this.rotation.x) + a.y * Math.sin(this.rotation.x);
+                    const bZ = b.z * Math.cos(this.rotation.x) + b.y * Math.sin(this.rotation.x);
+                    return bZ - aZ; // Back to front
+                });
+                
+                // Render splats
+                for (const splat of sortedSplats) {
+                    // Apply rotation
+                    const cosY = Math.cos(this.rotation.y);
+                    const sinY = Math.sin(this.rotation.y);
+                    const cosX = Math.cos(this.rotation.x);
+                    const sinX = Math.sin(this.rotation.x);
+                    
+                    let x = splat.x;
+                    let y = splat.y;
+                    let z = splat.z;
+                    
+                    // Rotate around Y axis
+                    const tempX = x * cosY - z * sinY;
+                    const tempZ = x * sinY + z * cosY;
+                    x = tempX;
+                    z = tempZ;
+                    
+                    // Rotate around X axis
+                    const tempY = y * cosX - z * sinX;
+                    const tempZ2 = y * sinX + z * cosX;
+                    y = tempY;
+                    z = tempZ2;
+                    
+                    // Apply camera
+                    z += this.camera.z;
+                    
+                    // Project to 2D
+                    if (z > 0) {
+                        const projectedX = centerX + (x / z) * scale;
+                        const projectedY = centerY + (y / z) * scale;
+                        const projectedScale = (splat.scale / z) * scale;
+                        
+                        // Draw splat as a circle
+                        ctx.beginPath();
+                        ctx.arc(projectedX, projectedY, projectedScale, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${Math.floor(splat.r * 255)}, ${Math.floor(splat.g * 255)}, ${Math.floor(splat.b * 255)}, ${splat.a})`;
+                        ctx.fill();
+                    }
+                }
+            }
+        }
+        
+        // Initialize viewer
+        const viewer = new SimpleSOGSViewer();
+        
+        // Load model function
+        async function loadModel() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (url) {
+                await viewer.loadSOGSModel(url);
+            }
+        }
+        
+        // Auto-load on page load
+        window.addEventListener('load', () => {
+            setTimeout(loadModel, 1000);
+        });
+    </script>
+</body>
+</html> 

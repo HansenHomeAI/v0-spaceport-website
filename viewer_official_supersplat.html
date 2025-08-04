@@ -686,6 +686,10 @@
             const { shape, mins, maxs, files } = meansMeta;
             const [numSplats, dims] = shape;
             
+            // Calculate spatial grid dimensions (SOGS stores data in a square grid)
+            const n_sidelen = Math.sqrt(numSplats);
+            console.log(`SOGS spatial grid: ${n_sidelen} x ${n_sidelen} = ${numSplats} splats`);
+            
             const positions = new Float32Array(numSplats * 3);
             
             if (files.includes('means_l.webp') && files.includes('means_u.webp')) {
@@ -696,9 +700,9 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // Set canvas size
-                canvas.width = meansL.width;
-                canvas.height = meansL.height;
+                // Set canvas size to match the spatial grid
+                canvas.width = n_sidelen;
+                canvas.height = n_sidelen;
                 
                 // Draw and extract data from means_l.webp (low 8 bits)
                 ctx.drawImage(meansL, 0, 0);
@@ -708,33 +712,37 @@
                 ctx.drawImage(meansU, 0, 0);
                 const imageDataU = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 
-                // Reconstruct 16-bit values using official algorithm
-                for (let i = 0; i < numSplats; i++) {
-                    const pixelIndex = i * 4;
-                    
-                    // Reconstruct 16-bit values: (high << 8) | low
-                    const x16bit = (imageDataU.data[pixelIndex] << 8) | imageDataL.data[pixelIndex];
-                    const y16bit = (imageDataU.data[pixelIndex + 1] << 8) | imageDataL.data[pixelIndex + 1];
-                    const z16bit = (imageDataU.data[pixelIndex + 2] << 8) | imageDataL.data[pixelIndex + 2];
-                    
-                    // Convert to float using official range mapping
-                    const x = (x16bit / 65535.0) * (maxs[0] - mins[0]) + mins[0];
-                    const y = (y16bit / 65535.0) * (maxs[1] - mins[1]) + mins[1];
-                    const z = (z16bit / 65535.0) * (maxs[2] - mins[2]) + mins[2];
-                    
-                    positions[i * 3] = x;
-                    positions[i * 3 + 1] = y;
-                    positions[i * 3 + 2] = z;
+                // Reconstruct 16-bit values using official SOGS algorithm
+                for (let y = 0; y < n_sidelen; y++) {
+                    for (let x = 0; x < n_sidelen; x++) {
+                        const gridIndex = y * n_sidelen + x;
+                        const pixelIndex = (y * canvas.width + x) * 4;
+                        
+                        // Reconstruct 16-bit values: (high << 8) | low
+                        const x16bit = (imageDataU.data[pixelIndex] << 8) | imageDataL.data[pixelIndex];
+                        const y16bit = (imageDataU.data[pixelIndex + 1] << 8) | imageDataL.data[pixelIndex + 1];
+                        const z16bit = (imageDataU.data[pixelIndex + 2] << 8) | imageDataL.data[pixelIndex + 2];
+                        
+                        // Convert to float using official range mapping
+                        const x = (x16bit / 65535.0) * (maxs[0] - mins[0]) + mins[0];
+                        const y = (y16bit / 65535.0) * (maxs[1] - mins[1]) + mins[1];
+                        const z = (z16bit / 65535.0) * (maxs[2] - mins[2]) + mins[2];
+                        
+                        positions[gridIndex * 3] = x;
+                        positions[gridIndex * 3 + 1] = y;
+                        positions[gridIndex * 3 + 2] = z;
+                    }
                 }
             }
             
             return positions;
         }
 
-        // Decompress scales
+        // Decompress scales with spatial grid
         async function decompressScales(scalesMeta, textures) {
             const { shape, mins, maxs, files } = scalesMeta;
             const [numSplats, dims] = shape;
+            const n_sidelen = Math.sqrt(numSplats);
             
             const scales = new Float32Array(numSplats * 3);
             
@@ -745,19 +753,22 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                canvas.width = scalesTexture.width;
-                canvas.height = scalesTexture.height;
+                canvas.width = n_sidelen;
+                canvas.height = n_sidelen;
                 
                 ctx.drawImage(scalesTexture, 0, 0);
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 
-                for (let i = 0; i < numSplats; i++) {
-                    const pixelIndex = i * 4;
-                    
-                    // Decompress scales using the range information
-                    scales[i * 3] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
-                    scales[i * 3 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
-                    scales[i * 3 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                for (let y = 0; y < n_sidelen; y++) {
+                    for (let x = 0; x < n_sidelen; x++) {
+                        const gridIndex = y * n_sidelen + x;
+                        const pixelIndex = (y * canvas.width + x) * 4;
+                        
+                        // Decompress scales using the range information
+                        scales[gridIndex * 3] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0];
+                        scales[gridIndex * 3 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1];
+                        scales[gridIndex * 3 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2];
+                    }
                 }
             }
             
@@ -768,6 +779,7 @@
         async function decompressQuaternions(quatsMeta, textures) {
             const { shape, encoding, files } = quatsMeta;
             const [numSplats, dims] = shape;
+            const n_sidelen = Math.sqrt(numSplats);
             
             const quaternions = new Float32Array(numSplats * 4);
             
@@ -778,29 +790,32 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                canvas.width = quatsTexture.width;
-                canvas.height = quatsTexture.height;
+                canvas.width = n_sidelen;
+                canvas.height = n_sidelen;
                 
                 ctx.drawImage(quatsTexture, 0, 0);
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 
-                for (let i = 0; i < numSplats; i++) {
-                    const pixelIndex = i * 4;
-                    
-                    // Decompress packed quaternions using official algorithm
-                    if (encoding === 'quaternion_packed') {
-                        // Convert from packed format to quaternion
-                        const x = (imageData.data[pixelIndex] - 128) / 128.0;
-                        const y = (imageData.data[pixelIndex + 1] - 128) / 128.0;
-                        const z = (imageData.data[pixelIndex + 2] - 128) / 128.0;
+                for (let y = 0; y < n_sidelen; y++) {
+                    for (let x = 0; x < n_sidelen; x++) {
+                        const gridIndex = y * n_sidelen + x;
+                        const pixelIndex = (y * canvas.width + x) * 4;
                         
-                        // Reconstruct quaternion from packed format
-                        const w = Math.sqrt(Math.max(0, 1.0 - x*x - y*y - z*z));
-                        
-                        quaternions[i * 4] = x;
-                        quaternions[i * 4 + 1] = y;
-                        quaternions[i * 4 + 2] = z;
-                        quaternions[i * 4 + 3] = w;
+                        // Decompress packed quaternions using official algorithm
+                        if (encoding === 'quaternion_packed') {
+                            // Convert from packed format to quaternion
+                            const x = (imageData.data[pixelIndex] - 128) / 128.0;
+                            const y = (imageData.data[pixelIndex + 1] - 128) / 128.0;
+                            const z = (imageData.data[pixelIndex + 2] - 128) / 128.0;
+                            
+                            // Reconstruct quaternion from packed format
+                            const w = Math.sqrt(Math.max(0, 1.0 - x*x - y*y - z*z));
+                            
+                            quaternions[gridIndex * 4] = x;
+                            quaternions[gridIndex * 4 + 1] = y;
+                            quaternions[gridIndex * 4 + 2] = z;
+                            quaternions[gridIndex * 4 + 3] = w;
+                        }
                     }
                 }
             }
@@ -808,10 +823,11 @@
             return quaternions;
         }
 
-        // Decompress SH0 (base color)
+        // Decompress SH0 (base color) with spatial grid
         async function decompressSH0(sh0Meta, textures) {
             const { shape, mins, maxs, files } = sh0Meta;
             const [numSplats, dims, bands] = shape;
+            const n_sidelen = Math.sqrt(numSplats);
             
             const sh0 = new Float32Array(numSplats * 4); // RGBA = 4 components
             
@@ -822,30 +838,34 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                canvas.width = sh0Texture.width;
-                canvas.height = sh0Texture.height;
+                canvas.width = n_sidelen;
+                canvas.height = n_sidelen;
                 
                 ctx.drawImage(sh0Texture, 0, 0);
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 
-                for (let i = 0; i < numSplats; i++) {
-                    const pixelIndex = i * 4;
-                    
-                    // Decompress SH0 coefficients (RGBA format)
-                    sh0[i * 4] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0]; // R
-                    sh0[i * 4 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1]; // G
-                    sh0[i * 4 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2]; // B
-                    sh0[i * 4 + 3] = (imageData.data[pixelIndex + 3] / 255.0) * (maxs[3] - mins[3]) + mins[3]; // A
+                for (let y = 0; y < n_sidelen; y++) {
+                    for (let x = 0; x < n_sidelen; x++) {
+                        const gridIndex = y * n_sidelen + x;
+                        const pixelIndex = (y * canvas.width + x) * 4;
+                        
+                        // Decompress SH0 coefficients (RGBA format)
+                        sh0[gridIndex * 4] = (imageData.data[pixelIndex] / 255.0) * (maxs[0] - mins[0]) + mins[0]; // R
+                        sh0[gridIndex * 4 + 1] = (imageData.data[pixelIndex + 1] / 255.0) * (maxs[1] - mins[1]) + mins[1]; // G
+                        sh0[gridIndex * 4 + 2] = (imageData.data[pixelIndex + 2] / 255.0) * (maxs[2] - mins[2]) + mins[2]; // B
+                        sh0[gridIndex * 4 + 3] = (imageData.data[pixelIndex + 3] / 255.0) * (maxs[3] - mins[3]) + mins[3]; // A
+                    }
                 }
             }
             
             return sh0;
         }
 
-        // Decompress SHN (higher-order spherical harmonics)
+        // Decompress SHN (higher-order spherical harmonics) with spatial grid
         async function decompressSHN(shNMeta, textures) {
             const { shape, mins, maxs, quantization, files } = shNMeta;
             const [numSplats, dims] = shape;
+            const n_sidelen = Math.sqrt(numSplats);
             
             const shN = new Float32Array(numSplats * dims);
             
@@ -857,8 +877,8 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                canvas.width = centroidsTexture.width;
-                canvas.height = centroidsTexture.height;
+                canvas.width = n_sidelen;
+                canvas.height = n_sidelen;
                 
                 // Process centroids
                 ctx.drawImage(centroidsTexture, 0, 0);
@@ -868,27 +888,30 @@
                 ctx.drawImage(labelsTexture, 0, 0);
                 const labelsData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 
-                for (let i = 0; i < numSplats; i++) {
-                    const pixelIndex = i * 4;
-                    
-                    // Get label (which centroid to use)
-                    const label = labelsData.data[pixelIndex];
-                    
-                    // Get centroid values
-                    const centroidR = centroidsData.data[label * 4] / 255.0;
-                    const centroidG = centroidsData.data[label * 4 + 1] / 255.0;
-                    const centroidB = centroidsData.data[label * 4 + 2] / 255.0;
-                    
-                    // Decompress using quantization
-                    const scale = (maxs - mins) / (Math.pow(2, quantization) - 1);
-                    
-                    shN[i * dims] = centroidR * scale + mins;
-                    shN[i * dims + 1] = centroidG * scale + mins;
-                    shN[i * dims + 2] = centroidB * scale + mins;
-                    
-                    // Fill remaining dimensions with zeros for now
-                    for (let j = 3; j < dims; j++) {
-                        shN[i * dims + j] = 0;
+                for (let y = 0; y < n_sidelen; y++) {
+                    for (let x = 0; x < n_sidelen; x++) {
+                        const gridIndex = y * n_sidelen + x;
+                        const pixelIndex = (y * canvas.width + x) * 4;
+                        
+                        // Get label (which centroid to use)
+                        const label = labelsData.data[pixelIndex];
+                        
+                        // Get centroid values
+                        const centroidR = centroidsData.data[label * 4] / 255.0;
+                        const centroidG = centroidsData.data[label * 4 + 1] / 255.0;
+                        const centroidB = centroidsData.data[label * 4 + 2] / 255.0;
+                        
+                        // Decompress using quantization
+                        const scale = (maxs - mins) / (Math.pow(2, quantization) - 1);
+                        
+                        shN[gridIndex * dims] = centroidR * scale + mins;
+                        shN[gridIndex * dims + 1] = centroidG * scale + mins;
+                        shN[gridIndex * dims + 2] = centroidB * scale + mins;
+                        
+                        // Fill remaining dimensions with zeros for now
+                        for (let j = 3; j < dims; j++) {
+                            shN[gridIndex * dims + j] = 0;
+                        }
                     }
                 }
             }
@@ -911,33 +934,32 @@
             // Create a new entity for the model
             entity = new pc.Entity('supersplat-model');
 
-            // Create efficient batch rendering using GPU instancing
-            // This is the key difference - we render ALL splats efficiently
-            await createBatchRenderedSplats(splatData);
+            // Create simple, efficient rendering using PlayCanvas API correctly
+            await createSimpleSplatRendering(splatData);
 
             app.root.addChild(entity);
 
-            console.log(`Successfully rendered ALL ${numSplats} splats using efficient GPU instancing`);
+            console.log(`Successfully rendered ALL ${numSplats} splats using simple rendering`);
         }
 
-        // Create batch-rendered splats using efficient instancing (NO LIMITS!)
-        async function createBatchRenderedSplats(splatData) {
+        // Create simple splat rendering (mobile-friendly, no complex instancing)
+        async function createSimpleSplatRendering(splatData) {
             const { positions, scales, quaternions, sh0, shN, numSplats } = splatData;
             
-            console.log(`Creating efficient batch rendering for ALL ${numSplats} splats`);
+            console.log(`Creating simple rendering for ALL ${numSplats} splats`);
 
-            // Create a single material for all splats
+            // Create a simple sphere mesh for splats
+            const sphere = pc.createSphere(app.graphicsDevice, { radius: 0.01 });
+
+            // Create a single material that we'll update for each splat
             const material = new pc.StandardMaterial();
             material.diffuse = new pc.Color(0.8, 0.6, 1.0);
             material.emissive = new pc.Color(0.1, 0.1, 0.2);
             material.useLighting = true;
 
-            // Create a simple sphere mesh for splats
-            const sphere = pc.createSphere(app.graphicsDevice, { radius: 0.005 }); // Smaller radius for better performance
-
-            // Render ALL splats using efficient batching
-            // We'll render in chunks of 10,000 for optimal performance
-            const chunkSize = 10000;
+            // Render ALL splats using simple entities (mobile-friendly approach)
+            // We'll render in smaller chunks to avoid overwhelming the GPU
+            const chunkSize = 1000; // Smaller chunks for mobile
             const totalChunks = Math.ceil(numSplats / chunkSize);
             
             console.log(`Rendering ${numSplats} splats in ${totalChunks} chunks of ${chunkSize} each`);
@@ -947,34 +969,44 @@
                 const endIndex = Math.min(startIndex + chunkSize, numSplats);
                 const chunkSizeActual = endIndex - startIndex;
 
-                // Create instances for this chunk
-                const instances = [];
+                // Create a single mesh instance for this chunk
+                const meshInstance = new pc.MeshInstance(sphere, material);
                 
+                // Create a node for this chunk
+                const chunkNode = new pc.GraphNode();
+                chunkNode.setLocalPosition(0, 0, 0);
+                
+                // Add the mesh instance to the entity
+                entity.addComponent('render', {
+                    meshInstances: [meshInstance]
+                });
+
+                // Create individual splat entities for this chunk
                 for (let i = 0; i < chunkSizeActual; i++) {
                     const globalIndex = startIndex + i;
                     
-                    const instance = new pc.MeshInstance(sphere, material);
+                    // Create a simple entity for each splat
+                    const splatEntity = new pc.Entity(`splat-${globalIndex}`);
                     
                     // Set position from decompressed data
                     const x = positions[globalIndex * 3];
                     const y = positions[globalIndex * 3 + 1];
                     const z = positions[globalIndex * 3 + 2];
                     
-                    instance.node = new pc.GraphNode();
-                    instance.node.setLocalPosition(x, y, z);
+                    splatEntity.setLocalPosition(x, y, z);
 
                     // Set scale from decompressed data (proper exponential scaling)
                     const scaleX = Math.exp(scales[globalIndex * 3]);
                     const scaleY = Math.exp(scales[globalIndex * 3 + 1]);
                     const scaleZ = Math.exp(scales[globalIndex * 3 + 2]);
-                    instance.node.setLocalScale(scaleX * 0.005, scaleY * 0.005, scaleZ * 0.005);
+                    splatEntity.setLocalScale(scaleX * 0.01, scaleY * 0.01, scaleZ * 0.01);
 
                     // Set rotation from decompressed quaternions
                     const qx = quaternions[globalIndex * 4];
                     const qy = quaternions[globalIndex * 4 + 1];
                     const qz = quaternions[globalIndex * 4 + 2];
                     const qw = quaternions[globalIndex * 4 + 3];
-                    instance.node.setLocalRotation(qx, qy, qz, qw);
+                    splatEntity.setLocalRotation(qx, qy, qz, qw);
 
                     // Set color from SH0 coefficients (RGBA format)
                     const r = Math.max(0, Math.min(1, sh0[globalIndex * 4]));
@@ -982,21 +1014,25 @@
                     const b = Math.max(0, Math.min(1, sh0[globalIndex * 4 + 2]));
                     const a = Math.max(0, Math.min(1, sh0[globalIndex * 4 + 3]));
                     
-                    material.diffuse = new pc.Color(r, g, b);
-                    material.opacity = a;
+                    // Create material for this splat
+                    const splatMaterial = new pc.StandardMaterial();
+                    splatMaterial.diffuse = new pc.Color(r, g, b);
+                    splatMaterial.opacity = a;
+                    splatMaterial.useLighting = true;
 
-                    instances.push(instance);
+                    // Add render component to splat entity
+                    splatEntity.addComponent('render', {
+                        meshInstances: [new pc.MeshInstance(sphere, splatMaterial)]
+                    });
+
+                    // Add splat entity to main entity
+                    entity.addChild(splatEntity);
                 }
-
-                // Add all instances to the entity
-                entity.addComponent('render', {
-                    meshInstances: instances
-                });
 
                 console.log(`Rendered chunk ${chunk + 1}/${totalChunks}: ${chunkSizeActual} splats`);
             }
 
-            console.log(`Successfully created efficient batch rendering for ALL ${numSplats} splats`);
+            console.log(`Successfully created simple rendering for ALL ${numSplats} splats`);
         }
 
         // Update model information display
