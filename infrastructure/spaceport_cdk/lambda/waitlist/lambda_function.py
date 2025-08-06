@@ -20,8 +20,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+                'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                'Access-Control-Allow-Credentials': 'true'
             },
             'body': json.dumps({'message': 'CORS preflight'})
         }
@@ -43,8 +44,9 @@ def lambda_handler(event, context):
                 'statusCode': 400,
                 'headers': {
                     'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+                    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                    'Access-Control-Allow-Credentials': 'true'
                 },
                 'body': json.dumps({
                     'error': 'Name and email are required'
@@ -57,8 +59,9 @@ def lambda_handler(event, context):
                 'statusCode': 400,
                 'headers': {
                     'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                    'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+                    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                    'Access-Control-Allow-Credentials': 'true'
                 },
                 'body': json.dumps({
                     'error': 'Please provide a valid email address'
@@ -78,8 +81,9 @@ def lambda_handler(event, context):
                     'statusCode': 409,
                     'headers': {
                         'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                        'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+                        'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                        'Access-Control-Allow-Credentials': 'true'
                     },
                     'body': json.dumps({
                         'error': 'This email is already on the waitlist'
@@ -113,8 +117,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+                'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                'Access-Control-Allow-Credentials': 'true'
             },
             'body': json.dumps({
                 'message': 'Successfully added to waitlist',
@@ -128,8 +133,9 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+                'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                'Access-Control-Allow-Credentials': 'true'
             },
             'body': json.dumps({
                 'error': 'Internal server error'

@@ -26,10 +26,16 @@ fi
 # Navigate to the CDK directory
 cd infrastructure/spaceport_cdk
 
-# Install dependencies if needed
-if [ ! -d "node_modules" ]; then
-    echo "📦 Installing CDK dependencies..."
-    npm install
+# Install Python dependencies if needed
+if [ ! -d ".venv" ]; then
+    echo "📦 Installing Python dependencies..."
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    pip install aws-cdk-lib
+else
+    echo "📦 Activating Python virtual environment..."
+    source .venv/bin/activate
 fi
 
 # Deploy the Spaceport stack (which now includes the waitlist functionality)
