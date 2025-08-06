@@ -98,9 +98,9 @@ html, body {
 }
 
 .logo-image {
-  height: 18px;
+  height: 19px;
   width: auto;
-  max-width: 110px;
+  max-width: 116px;
   transition: transform 0.2s ease;
 }
 .logo::before {
@@ -635,18 +635,18 @@ footer {
     height: 50px !important;
   }
   
-  /* Larger logo on desktop */
+  /* Logo maintains consistent size on desktop */
   .logo-image {
-    height: 20px;
-    max-width: 130px;
+    height: 19px;
+    max-width: 116px;
   }
 }
 
-/* Mobile logo adjustments */
+/* Logo maintains consistent size on mobile */
 @media (max-width: 480px) {
   .logo-image {
-    height: 16px;
-    max-width: 90px;
+    height: 19px;
+    max-width: 116px;
   }
 }
 
