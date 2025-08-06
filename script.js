@@ -126,6 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize waitlist mode
   initializeWaitlistMode();
 
+  // Initialize privacy policy modal
+  initializePrivacyPolicyModal();
+
   // Close the header if clicked outside while expanded
   document.addEventListener('click', (e) => {
     const header = document.querySelector('.header');
@@ -3540,6 +3543,47 @@ let projectPopupPhotoUpload = null;
 
 // Initialize the popup flight path integration
 let projectPopupFlightPath = null;
+
+// Privacy Policy Modal functionality
+function initializePrivacyPolicyModal() {
+  // Add click event listener to privacy policy link
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('privacy-policy-link')) {
+      e.preventDefault();
+      openPrivacyPolicy();
+    }
+  });
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(e) {
+    if (e.target.id === 'privacy-policy-modal') {
+      closePrivacyPolicy();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closePrivacyPolicy();
+    }
+  });
+}
+
+function openPrivacyPolicy() {
+  const modal = document.getElementById('privacy-policy-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  }
+}
+
+function closePrivacyPolicy() {
+  const modal = document.getElementById('privacy-policy-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = ''; // Restore scrolling
+  }
+}
 
 // Waitlist functionality
 function initializeWaitlistMode() {
