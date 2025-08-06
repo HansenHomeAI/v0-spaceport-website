@@ -101,7 +101,35 @@ html, body {
   height: 19px;
   width: auto;
   max-width: 116px;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+}
+
+/* Adaptive Header Styles */
+.header.light-background {
+  /* Keep the header transparent - don't change background */
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: none;
+}
+
+.header.light-background .nav-links-desktop a,
+.header.light-background .nav-links a {
+  color: #000 !important;
+  text-shadow: none !important;
+}
+
+.header.light-background .logo-image {
+  filter: brightness(0);
+}
+
+/* Smooth transitions for color changes */
+.nav-links-desktop a,
+.nav-links a {
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.logo-image {
+  transition: all 0.3s ease, filter 0.3s ease;
 }
 .logo::before {
   content: "";
@@ -212,6 +240,7 @@ html, body {
   padding: 6px 12px;
   margin: 4px 0;
   user-select: none;
+  text-shadow: none;
 }
 .nav-links a::before {
   content: "";
@@ -243,6 +272,7 @@ html, body {
   position: relative;
   padding: 6px 12px;
   user-select: none;
+  text-shadow: none;
 }
 .nav-links-desktop a::before {
   content: "";

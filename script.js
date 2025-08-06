@@ -1,3 +1,141 @@
+// Adaptive Header Color System
+let adaptiveColorObserver = null;
+
+function initializeAdaptiveHeader() {
+  // Create observer to watch for background changes
+  adaptiveColorObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        updateHeaderColor(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '-50px 0px 0px 0px'
+  });
+
+  // Observe all sections that might affect header color
+  const sections = document.querySelectorAll('section');
+  sections.forEach(section => {
+    adaptiveColorObserver.observe(section);
+  });
+
+  // Initial color update
+  updateHeaderColor(document.querySelector('section:not(.hidden)'));
+}
+
+function updateHeaderColor(backgroundElement) {
+  const header = document.querySelector('.header');
+  const logo = header.querySelector('.logo-image');
+  const navLinks = header.querySelectorAll('.nav-links-desktop a, .nav-links a');
+  
+  if (!backgroundElement) return;
+
+  // Check specific sections that we know have very bright backgrounds (top 10% only)
+  const veryBrightSections = ['landing-stats']; // Only the brightest sections
+  const currentSectionId = backgroundElement.id;
+  
+  let isLightBackground = false;
+  
+  if (veryBrightSections.includes(currentSectionId)) {
+    isLightBackground = true;
+  }
+  
+  // For the iframe area, only use light mode when it's very bright
+  if (currentSectionId === 'landing') {
+    const iframe = document.querySelector('.landing-iframe');
+    if (iframe) {
+      const iframeRect = iframe.getBoundingClientRect();
+      const headerRect = header.getBoundingClientRect();
+      
+      // Only use light mode if header is over the very top of the iframe (brightest area)
+      if (headerRect.bottom > iframeRect.top && headerRect.top < iframeRect.top + 50) {
+        isLightBackground = true;
+      }
+    }
+  }
+  
+  console.log('Section ID:', currentSectionId);
+  console.log('Is light background:', isLightBackground);
+  
+  // Update logo
+  if (logo) {
+    const newLogoSrc = isLightBackground 
+      ? 'assets/SpaceportIcons/SpaceportFullLogoBlack.svg'
+      : 'assets/SpaceportIcons/SpaceportFullLogoWhite.svg';
+    
+    console.log('Current logo src:', logo.src);
+    console.log('New logo src:', newLogoSrc);
+    
+    if (logo.src !== new URL(newLogoSrc, window.location.href).href) {
+      logo.src = newLogoSrc;
+      console.log('Logo updated!');
+    }
+  }
+  
+  // Update navigation text color
+  navLinks.forEach(link => {
+    if (isLightBackground) {
+      link.style.color = '#000';
+      link.style.textShadow = 'none';
+      console.log('Updated link to black:', link.textContent);
+    } else {
+      link.style.color = '#fff';
+      link.style.textShadow = 'none';
+      console.log('Updated link to white:', link.textContent);
+    }
+  });
+  
+  // Update header class for CSS styling
+  header.classList.toggle('light-background', isLightBackground);
+  console.log('Header light-background class:', header.classList.contains('light-background'));
+}
+
+function getColorLightness(color) {
+  // Convert RGB to lightness
+  const rgb = color.match(/\d+/g);
+  if (!rgb || rgb.length < 3) return 0.5;
+  
+  const r = parseInt(rgb[0]) / 255;
+  const g = parseInt(rgb[1]) / 255;
+  const b = parseInt(rgb[2]) / 255;
+  
+  // Calculate relative luminance
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance;
+}
+
+// Manual test function - call this in console to test
+function testAdaptiveHeader() {
+  console.log('Testing adaptive header...');
+  const sections = document.querySelectorAll('section');
+  sections.forEach((section, index) => {
+    console.log(`Section ${index}:`, section.id || section.className);
+    updateHeaderColor(section);
+  });
+}
+
+// Force light mode for testing
+function forceLightMode() {
+  const header = document.querySelector('.header');
+  const logo = header.querySelector('.logo-image');
+  const navLinks = header.querySelectorAll('.nav-links-desktop a, .nav-links a');
+  
+  // Force black logo
+  logo.src = 'assets/SpaceportIcons/SpaceportFullLogoBlack.svg';
+  
+  // Force black text
+  navLinks.forEach(link => {
+    link.style.color = '#000';
+    link.style.textShadow = 'none';
+  });
+  
+  // Force light background class
+  header.classList.add('light-background');
+  
+  console.log('Forced light mode!');
+}
+
 function toggleMenu() {
   const header = document.querySelector('.header');
   const toggleBtn = header.querySelector('.toggle');
@@ -55,6 +193,14 @@ function showSection(sectionId) {
     header.classList.remove('expanded');
     toggleBtn.classList.remove('rotated');
   }
+  
+  // Update header color based on new section
+  setTimeout(() => {
+    const visibleSection = document.querySelector('section:not(.hidden)');
+    if (visibleSection) {
+      updateHeaderColor(visibleSection);
+    }
+  }, 100);
 }
 
 function sendFeedback(e) {
@@ -1183,6 +1329,11 @@ window.detectAGLIncrement = detectAGLIncrement;
 window.detectCenterCoordinates = detectCenterCoordinates;
 window.displayDetectedParams = displayDetectedParams;
 
+// Make adaptive header functions globally available for testing
+window.testAdaptiveHeader = testAdaptiveHeader;
+window.forceLightMode = forceLightMode;
+window.updateHeaderColor = updateHeaderColor;
+
 // API Endpoints
 const API_ENDPOINTS = {
     DRONE_PATH: "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
@@ -1594,6 +1745,26 @@ class EnhancedDronePathGenerator {
 
 // Initialize the enhanced drone path generator when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize adaptive header color system
+    initializeAdaptiveHeader();
+    
+    // Add scroll listener for header color updates
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('section');
+        let currentSection = null;
+        
+        sections.forEach(section => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 100 && rect.bottom >= 100) {
+                currentSection = section;
+            }
+        });
+        
+        if (currentSection) {
+            updateHeaderColor(currentSection);
+        }
+    });
+    
     new EnhancedDronePathGenerator();
 });
 
