@@ -60,6 +60,20 @@ class SpaceportStack(Stack):
             "Spaceport-DroneFlightPaths"
         )
         
+        # Create DynamoDB table for waitlist entries
+        waitlist_table = dynamodb.Table(
+            self,
+            "Spaceport-WaitlistTable",
+            table_name="Spaceport-Waitlist",
+            partition_key=dynamodb.Attribute(
+                name="email",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=RemovalPolicy.RETAIN,
+            point_in_time_recovery=True
+        )
+        
         # Create Lambda execution role with permissions to S3 and DynamoDB
         lambda_role = iam.Role(
             self, 
@@ -106,6 +120,7 @@ class SpaceportStack(Stack):
         )
         file_metadata_table.grant_read_write_data(lambda_role)
         drone_path_table.grant_read_write_data(lambda_role)
+        waitlist_table.grant_read_write_data(lambda_role)
         
         # Add SES permissions for sending emails
         lambda_role.add_to_policy(
@@ -173,6 +188,30 @@ class SpaceportStack(Stack):
             handler="lambda_function.lambda_handler",
             environment={
                 "ML_BUCKET": "spaceport-ml-processing"  # Will be updated when ML stack is deployed
+            },
+            role=lambda_role,
+            timeout=Duration.seconds(30)
+        )
+        
+        # Create Lambda function for waitlist submissions
+        waitlist_lambda = lambda_.Function(
+            self, 
+            "Spaceport-WaitlistFunction",
+            function_name="Spaceport-WaitlistFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset(
+                os.path.join(lambda_dir, "waitlist"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ]
+                )
+            ),
+            handler="lambda_function.lambda_handler",
+            environment={
+                "WAITLIST_TABLE_NAME": waitlist_table.table_name
             },
             role=lambda_role,
             timeout=Duration.seconds(30)
@@ -339,6 +378,16 @@ class SpaceportStack(Stack):
             "POST", 
             apigw.LambdaIntegration(
                 csv_upload_lambda,
+                proxy=True
+            )
+        )
+        
+        # Add waitlist endpoint
+        waitlist_resource = file_upload_api.root.add_resource("waitlist")
+        waitlist_resource.add_method(
+            "POST", 
+            apigw.LambdaIntegration(
+                waitlist_lambda,
                 proxy=True
             )
         )

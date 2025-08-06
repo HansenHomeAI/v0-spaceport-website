@@ -79,7 +79,7 @@ function sendFeedback(e) {
   button.appendChild(checkSpan);
 
   // Open user's email client
-  window.location.href = `mailto:hello@hansenhome.ai?subject=Feedback&body=${encodeURIComponent(feedback)}`;
+  window.location.href = `mailto:gabriel@spcprt.com?subject=Feedback&body=${encodeURIComponent(feedback)}`;
 
   // Clear input
   feedbackInput.value = '';
@@ -122,6 +122,9 @@ window.addEventListener('resize', updateIframeOverlay);
 
 document.addEventListener('DOMContentLoaded', () => {
   showSection('landing');
+  
+  // Initialize waitlist mode
+  initializeWaitlistMode();
 
   // Close the header if clicked outside while expanded
   document.addEventListener('click', (e) => {
@@ -1189,7 +1192,8 @@ const API_ENDPOINTS = {
     START_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
     GET_PRESIGNED_URL: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
     COMPLETE_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
-    SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission"
+    SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission",
+    WAITLIST: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist"
 };
 
 // Enhanced Drone Path Generator API Configuration
@@ -3536,3 +3540,197 @@ let projectPopupPhotoUpload = null;
 
 // Initialize the popup flight path integration
 let projectPopupFlightPath = null;
+
+// Waitlist functionality
+function initializeWaitlistMode() {
+  if (typeof WAITLIST_MODE !== 'undefined' && WAITLIST_MODE) {
+    // Show waitlist content, hide ALL development content
+    const waitlistContent = document.getElementById('waitlist-content');
+    const developmentContent = document.getElementById('development-content');
+    const createDashboard = document.getElementById('create-dashboard');
+    const createSteps1 = document.getElementById('create-steps1');
+    const createSteps2 = document.getElementById('create-steps2');
+    const createSteps3 = document.getElementById('create-steps3');
+    const createMlProcessing = document.getElementById('create-ml-processing');
+    const newProjectPopup = document.getElementById('newProjectPopup');
+    const addPathPopup = document.getElementById('addPathPopup');
+    const feedbackSection = document.querySelector('.feedback-section');
+    
+    if (waitlistContent) {
+      waitlistContent.style.display = 'flex';
+    }
+    if (developmentContent) {
+      developmentContent.style.display = 'none';
+    }
+    if (createDashboard) {
+      createDashboard.style.display = 'none';
+    }
+    if (createSteps1) {
+      createSteps1.style.display = 'none';
+    }
+    if (createSteps2) {
+      createSteps2.style.display = 'none';
+    }
+    if (createSteps3) {
+      createSteps3.style.display = 'none';
+    }
+    if (createMlProcessing) {
+      createMlProcessing.style.display = 'none';
+    }
+    if (newProjectPopup) {
+      newProjectPopup.style.display = 'none';
+    }
+    if (addPathPopup) {
+      addPathPopup.style.display = 'none';
+    }
+    if (feedbackSection) {
+      feedbackSection.style.display = 'none';
+    }
+  } else {
+    // Show development content, hide waitlist content
+    const waitlistContent = document.getElementById('waitlist-content');
+    const developmentContent = document.getElementById('development-content');
+    const createDashboard = document.getElementById('create-dashboard');
+    const createSteps1 = document.getElementById('create-steps1');
+    const createSteps2 = document.getElementById('create-steps2');
+    const createSteps3 = document.getElementById('create-steps3');
+    const createMlProcessing = document.getElementById('create-ml-processing');
+    const newProjectPopup = document.getElementById('newProjectPopup');
+    const addPathPopup = document.getElementById('addPathPopup');
+    const feedbackSection = document.querySelector('.feedback-section');
+    
+    if (waitlistContent) {
+      waitlistContent.style.display = 'none';
+    }
+    if (developmentContent) {
+      developmentContent.style.display = 'block';
+    }
+    if (createDashboard) {
+      createDashboard.style.display = 'block';
+    }
+    if (createSteps1) {
+      createSteps1.style.display = 'block';
+    }
+    if (createSteps2) {
+      createSteps2.style.display = 'block';
+    }
+    if (createSteps3) {
+      createSteps3.style.display = 'block';
+    }
+    if (createMlProcessing) {
+      createMlProcessing.style.display = 'block';
+    }
+    if (newProjectPopup) {
+      newProjectPopup.style.display = 'block';
+    }
+    if (addPathPopup) {
+      addPathPopup.style.display = 'block';
+    }
+    if (feedbackSection) {
+      feedbackSection.style.display = 'flex';
+    }
+  }
+}
+
+function submitWaitlist(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('waitlist-name').value;
+  const email = document.getElementById('waitlist-email').value;
+  const submitBtn = document.querySelector('.waitlist-submit-btn');
+  const btnText = document.getElementById('waitlist-btn-text');
+  const spinner = document.getElementById('waitlist-spinner');
+  const form = document.querySelector('.waitlist-form');
+  const success = document.getElementById('waitlist-success');
+  
+  // Show loading state
+  btnText.textContent = 'Joining...';
+  spinner.style.display = 'block';
+  submitBtn.disabled = true;
+  
+  // Prepare the data for the API
+  const waitlistData = {
+    name: name,
+    email: email
+  };
+  
+  // Send to the API
+  fetch(API_ENDPOINTS.WAITLIST, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(waitlistData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      // Show error message
+      alert(data.error);
+      // Reset button state
+      btnText.textContent = 'Join Waitlist';
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+    } else {
+      // Show success state
+      form.style.display = 'none';
+      success.style.display = 'block';
+      
+      // Reset form
+      document.getElementById('waitlist-name').value = '';
+      document.getElementById('waitlist-email').value = '';
+      
+      // Reset button state
+      btnText.textContent = 'Join Waitlist';
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+    }
+  })
+  .catch(error => {
+    console.error('Error submitting to waitlist:', error);
+    alert('Failed to join waitlist. Please try again.');
+    
+    // Reset button state
+    btnText.textContent = 'Join Waitlist';
+    spinner.style.display = 'none';
+    submitBtn.disabled = false;
+  });
+}
+
+// Function to send email notification when someone joins the waitlist
+function sendWaitlistNotification(name, email) {
+  const subject = 'New Waitlist Signup - Spaceport AI';
+  const body = `Someone just joined the Spaceport AI waitlist!
+
+Name: ${name}
+Email: ${email}
+Date: ${new Date().toLocaleString()}
+
+This person will be notified when Spaceport AI launches.`;
+
+  // Open email client with pre-filled message
+  window.open(`mailto:gabriel@spcprt.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+}
+
+// Optional: Function to send waitlist data to your backend
+function sendWaitlistToBackend(name, email) {
+  // Replace with your actual backend endpoint
+  fetch('/api/waitlist', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      source: 'website'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Waitlist submission successful:', data);
+  })
+  .catch(error => {
+    console.error('Error submitting to waitlist:', error);
+  });
+}

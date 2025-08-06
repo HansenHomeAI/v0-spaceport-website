@@ -15,7 +15,10 @@
   <link rel="preload" as="image" href="assets/4.png">
   <link rel="preload" as="image" href="assets/MirrRanchGroup2.png">
 
-
+  <!-- Waitlist Toggle - Set to true for production waitlist mode -->
+  <script>
+    const WAITLIST_MODE = true; // Set to true to enable waitlist mode
+  </script>
 
 </head>
 <body>
@@ -23,14 +26,15 @@
   <header class="header">
     <div class="header-top">
       <!-- Logo on the left -->
-      <div class="logo" onclick="showSection('landing')">Hansen AI</div>
+      <div class="logo" onclick="showSection('landing')">
+        <img src="assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" class="logo-image">
+      </div>
 
       <!-- Desktop nav on the right -->
       <div class="nav-links-desktop">
         <a onclick="showSection('pricing')">Pricing</a>
         <a onclick="showSection('about')">About</a>
         <a onclick="showSection('create')">Create</a>
-        <a href="/viewer_simple_sogs.html" target="_blank">3D Viewer</a>
       </div>
 
       <!-- Toggle (+ / X) for small screens -->
@@ -45,7 +49,6 @@
       <a onclick="showSection('pricing')">Pricing</a>
       <a onclick="showSection('about')">About</a>
       <a onclick="showSection('create')">Create</a>
-      <a href="/viewer_simple_sogs.html" target="_blank">3D Viewer</a>
     </div>
   </header>
 
@@ -83,8 +86,7 @@
       <img loading="lazy" src="assets/3.png" alt="Customer 4 Logo">
     </div>
   </div>
-</section>
-
+  </section>
 
   <!-- LANDING-ADDITIONAL (two-col) -->
   <section class="section two-col-section hidden" id="landing-additional">
@@ -148,7 +150,7 @@
   <section class="section hidden" id="landing-stats2">
     <div class="stats-grid">
       <div class="stat-box2 grainy">
-        <img src="assets/WhiteHansenFullLogo.svg" alt="Customer 6 Logo">
+        <img src="assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport Logo">
       </div>
     </div>
   </section>
@@ -174,7 +176,7 @@
         <h2>Custom.</h2>
         <p>High-volume or specialized projects? We'll create a tailored plan to meet your needs.</p>
         <a
-          onclick="window.location.href='mailto:hello@hansenhome.ai?subject=Custom%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20custom%20pricing%20options%20at%20Hansen.'"
+          onclick="window.location.href='mailto:gabriel@spcprt.com?subject=Custom%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20custom%20pricing%20options%20at%20Spaceport.'"
           class="cta-button"
         >
           Contact Us
@@ -185,10 +187,10 @@
 
   <!-- ABOUT (two-col) -->
   <section class="section two-col-section hidden" id="about">
-    <h1>About Hansen AI.</h1>
+    <h1>About Spaceport AI.</h1>
     <p><span class="inline-white">Real estate is all about location—yet most listings fail to showcase it properly. Photos and 3D tours capture the inside of a home well, but they leave out what matters most: the context, the surroundings, the feel of the space.</span></p>
     <div class="right-col">
-      <p><span class="inline-white">That's where Hansen AI comes in.</span></p>
+      <p><span class="inline-white">That's where Spaceport AI comes in.</span></p>
     </div>
   </section>
 
@@ -210,18 +212,67 @@
     <div class="two-col-content">
       <h2>Bringing AI to real estate.</h2>
       <div class="right-col">
-        <p>Noticing firsthand how listings fail to capture what buyers actually care about, 20-year-old founder Gabriel Hansen set out to fix it. Teaching himself computer science from the ground up, he built Hansen—combining advances in neural networks with drone technology to create a whole new way to showcase location. </p>
+        <p>Noticing firsthand how listings fail to capture what buyers actually care about, 20-year-old founder Gabriel Hansen set out to fix it. Teaching himself computer science from the ground up, he built Spaceport—combining advances in neural networks with drone technology to create a whole new way to showcase location. </p>
         <p>Our mission is simple: make the best tool for property marketing.</p>
       </div>
     </div>
   </section>
 
-  <!-- CREATE -->
+  <!-- CREATE SECTION - Waitlist Mode Toggle -->
   <section class="section hidden" id="create">
-    <h1>Create your space.</h1>
-    <p><span class="inline-white">Transform your listings with ease. This streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</span></p>
-    <p>Compatible with: Mini 2, Mini SE (version 1 only), Air 2S, Mavic Mini 1, Mavic Air 2, Mavic 2 (Zoom/Pro), Mavic (Air/Pro), Phantom 4 (Standard/Advanced/Pro/ProV2), Phantom 3 (Standard/4K/Advanced/Professional), Inspire 1 (X3/Z3/Pro/RAW), Inspire 2 and Spark.</p>
-    <p>Unsupported hardware: Air 3 and Mavic 3, as there is no SDK for these yet. DJI RC1/RC2 (with built-in screen), as it's not possible to install apps on it.</p>
+    <!-- Waitlist Content (shown when WAITLIST_MODE is true) -->
+    <div id="waitlist-content" class="waitlist-container" style="display: none;">
+      <div class="waitlist-card">
+        <div class="waitlist-header">
+          <img src="assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" class="waitlist-logo">
+          <h1>Join the waitlist for early access</h1>
+          <p>Be among the first to experience the future of property visualization. We'll notify you when Spaceport AI is ready for launch.</p>
+        </div>
+        
+        <form class="waitlist-form" onsubmit="submitWaitlist(event)">
+          <div class="input-group">
+            <input 
+              type="text" 
+              id="waitlist-name" 
+              name="name" 
+              placeholder="Name" 
+              required
+              class="waitlist-input"
+            >
+          </div>
+          
+          <div class="input-group">
+            <input 
+              type="email" 
+              id="waitlist-email" 
+              name="email" 
+              placeholder="Email Address" 
+              required
+              class="waitlist-input"
+            >
+          </div>
+          
+          <button type="submit" class="waitlist-submit-btn">
+            <span id="waitlist-btn-text">Join Waitlist</span>
+            <div id="waitlist-spinner" class="spinner" style="display:none;"></div>
+          </button>
+        </form>
+        
+        <div id="waitlist-success" class="waitlist-success" style="display: none;">
+          <div class="success-icon">✓</div>
+          <h3>You're on the list!</h3>
+          <p>Thank you for your interest in Spaceport AI. We'll be in touch soon with early access details.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Development Content (shown when WAITLIST_MODE is false) -->
+    <div id="development-content">
+      <h1>Create your space.</h1>
+      <p><span class="inline-white">Transform your listings with ease. This streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</span></p>
+      <p>Compatible with: Mini 2, Mini SE (version 1 only), Air 2S, Mavic Mini 1, Mavic Air 2, Mavic 2 (Zoom/Pro), Mavic (Air/Pro), Phantom 4 (Standard/Advanced/Pro/ProV2), Phantom 3 (Standard/4K/Advanced/Professional), Inspire 1 (X3/Z3/Pro/RAW), Inspire 2 and Spark.</p>
+      <p>Unsupported hardware: Air 3 and Mavic 3, as there is no SDK for these yet. DJI RC1/RC2 (with built-in screen), as it's not possible to install apps on it.</p>
+    </div>
   </section>
 
   <!-- DASHBOARD -->
@@ -259,7 +310,7 @@
           <img src="assets/SpaceportIcons/Controls.svg" class="project-controls-icon" alt="Edit controls" />
         </button>
         <h1>Historic Courthouse</h1>
-        <p>Complete - Hosting at hansenhome.ai</p>
+        <p>Complete - Hosting at spaceport.ai</p>
       </div>
       <div class="project-box">
         <button class="project-controls-btn" tabindex="0" aria-label="Edit project">
@@ -761,6 +812,12 @@
         </div>
         <div class="right-col">
           <p>Already have drone photos uploaded to S3? Paste the S3 URL below to start ML processing directly. This will run your images through our advanced pipeline: Structure from Motion → 3D Gaussian Splatting → Compression.</p>
+          <div class="viewer-button-container">
+            <a href="/viewer_simple_sogs.html" target="_blank" class="viewer-button">
+              <img src="assets/3DSymbol.svg" class="viewer-button-icon" alt="" aria-hidden="true">
+              3D Viewer
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -859,7 +916,10 @@
   </div>
 
   <footer>
-    © 2025 Hansen AI · All rights reserved
+    <div class="footer-content">
+      <img src="assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" class="footer-logo">
+      <p>© 2025 Spaceport AI · All rights reserved</p>
+    </div>
   </footer>
 
   <!-- External script reference -->
