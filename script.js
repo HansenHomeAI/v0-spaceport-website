@@ -79,7 +79,7 @@ function sendFeedback(e) {
   button.appendChild(checkSpan);
 
   // Open user's email client
-  window.location.href = `mailto:hello@hansenhome.ai?subject=Feedback&body=${encodeURIComponent(feedback)}`;
+  window.location.href = `mailto:gabriel@spcprt.com?subject=Feedback&body=${encodeURIComponent(feedback)}`;
 
   // Clear input
   feedbackInput.value = '';
@@ -122,6 +122,9 @@ window.addEventListener('resize', updateIframeOverlay);
 
 document.addEventListener('DOMContentLoaded', () => {
   showSection('landing');
+  
+  // Initialize waitlist mode
+  initializeWaitlistMode();
 
   // Close the header if clicked outside while expanded
   document.addEventListener('click', (e) => {
@@ -3536,3 +3539,109 @@ let projectPopupPhotoUpload = null;
 
 // Initialize the popup flight path integration
 let projectPopupFlightPath = null;
+
+// Waitlist functionality
+function initializeWaitlistMode() {
+  if (typeof WAITLIST_MODE !== 'undefined' && WAITLIST_MODE) {
+    // Show waitlist content, hide development content
+    const waitlistContent = document.getElementById('waitlist-content');
+    const developmentContent = document.getElementById('development-content');
+    
+    if (waitlistContent && developmentContent) {
+      waitlistContent.style.display = 'flex';
+      developmentContent.style.display = 'none';
+    }
+  } else {
+    // Show development content, hide waitlist content
+    const waitlistContent = document.getElementById('waitlist-content');
+    const developmentContent = document.getElementById('development-content');
+    
+    if (waitlistContent && developmentContent) {
+      waitlistContent.style.display = 'none';
+      developmentContent.style.display = 'block';
+    }
+  }
+}
+
+function submitWaitlist(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('waitlist-name').value;
+  const email = document.getElementById('waitlist-email').value;
+  const submitBtn = document.querySelector('.waitlist-submit-btn');
+  const btnText = document.getElementById('waitlist-btn-text');
+  const spinner = document.getElementById('waitlist-spinner');
+  const form = document.querySelector('.waitlist-form');
+  const success = document.getElementById('waitlist-success');
+  
+  // Show loading state
+  btnText.textContent = 'Joining...';
+  spinner.style.display = 'block';
+  submitBtn.disabled = true;
+  
+  // Store in localStorage for demo purposes
+  const waitlistData = {
+    name: name,
+    email: email,
+    timestamp: new Date().toISOString()
+  };
+  
+  // Get existing waitlist or create new array
+  const existingWaitlist = JSON.parse(localStorage.getItem('spaceportWaitlist') || '[]');
+  existingWaitlist.push(waitlistData);
+  localStorage.setItem('spaceportWaitlist', JSON.stringify(existingWaitlist));
+  
+  // Send email notification to Gabriel
+  sendWaitlistNotification(name, email);
+  
+  // Show success state
+  form.style.display = 'none';
+  success.style.display = 'block';
+  
+  // Reset form
+  document.getElementById('waitlist-name').value = '';
+  document.getElementById('waitlist-email').value = '';
+  
+  // Reset button state
+  btnText.textContent = 'Join Waitlist';
+  spinner.style.display = 'none';
+  submitBtn.disabled = false;
+}
+
+// Function to send email notification when someone joins the waitlist
+function sendWaitlistNotification(name, email) {
+  const subject = 'New Waitlist Signup - Spaceport AI';
+  const body = `Someone just joined the Spaceport AI waitlist!
+
+Name: ${name}
+Email: ${email}
+Date: ${new Date().toLocaleString()}
+
+This person will be notified when Spaceport AI launches.`;
+
+  // Open email client with pre-filled message
+  window.open(`mailto:gabriel@spcprt.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+}
+
+// Optional: Function to send waitlist data to your backend
+function sendWaitlistToBackend(name, email) {
+  // Replace with your actual backend endpoint
+  fetch('/api/waitlist', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      source: 'website'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Waitlist submission successful:', data);
+  })
+  .catch(error => {
+    console.error('Error submitting to waitlist:', error);
+  });
+}
