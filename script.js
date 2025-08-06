@@ -1192,7 +1192,8 @@ const API_ENDPOINTS = {
     START_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
     GET_PRESIGNED_URL: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
     COMPLETE_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
-    SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission"
+    SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission",
+    WAITLIST: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist"
 };
 
 // Enhanced Drone Path Generator API Configuration
@@ -3647,33 +3648,53 @@ function submitWaitlist(event) {
   spinner.style.display = 'block';
   submitBtn.disabled = true;
   
-  // Store in localStorage for demo purposes
+  // Prepare the data for the API
   const waitlistData = {
     name: name,
-    email: email,
-    timestamp: new Date().toISOString()
+    email: email
   };
   
-  // Get existing waitlist or create new array
-  const existingWaitlist = JSON.parse(localStorage.getItem('spaceportWaitlist') || '[]');
-  existingWaitlist.push(waitlistData);
-  localStorage.setItem('spaceportWaitlist', JSON.stringify(existingWaitlist));
-  
-  // Send email notification to Gabriel
-  sendWaitlistNotification(name, email);
-  
-  // Show success state
-  form.style.display = 'none';
-  success.style.display = 'block';
-  
-  // Reset form
-  document.getElementById('waitlist-name').value = '';
-  document.getElementById('waitlist-email').value = '';
-  
-  // Reset button state
-  btnText.textContent = 'Join Waitlist';
-  spinner.style.display = 'none';
-  submitBtn.disabled = false;
+  // Send to the API
+  fetch(API_ENDPOINTS.WAITLIST, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(waitlistData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      // Show error message
+      alert(data.error);
+      // Reset button state
+      btnText.textContent = 'Join Waitlist';
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+    } else {
+      // Show success state
+      form.style.display = 'none';
+      success.style.display = 'block';
+      
+      // Reset form
+      document.getElementById('waitlist-name').value = '';
+      document.getElementById('waitlist-email').value = '';
+      
+      // Reset button state
+      btnText.textContent = 'Join Waitlist';
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+    }
+  })
+  .catch(error => {
+    console.error('Error submitting to waitlist:', error);
+    alert('Failed to join waitlist. Please try again.');
+    
+    // Reset button state
+    btnText.textContent = 'Join Waitlist';
+    spinner.style.display = 'none';
+    submitBtn.disabled = false;
+  });
 }
 
 // Function to send email notification when someone joins the waitlist
