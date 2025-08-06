@@ -68,29 +68,30 @@ def lambda_handler(event, context):
                 })
             }
         
-        # Check if email already exists
-        try:
-            response = table.get_item(
-                Key={
-                    'email': email
-                }
-            )
-            
-            if 'Item' in response:
-                return {
-                    'statusCode': 409,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
-                        'Access-Control-Allow-Methods': 'POST,OPTIONS',
-                        'Access-Control-Allow-Credentials': 'true'
-                    },
-                    'body': json.dumps({
-                        'error': 'This email is already on the waitlist'
-                    })
-                }
-        except ClientError as e:
-            print(f"Error checking existing email: {e}")
+        # Allow multiple entries with the same email for testing purposes
+        # Commented out duplicate check to allow repeated testing
+        # try:
+        #     response = table.get_item(
+        #         Key={
+        #             'email': email
+        #         }
+        #     )
+        #     
+        #     if 'Item' in response:
+        #         return {
+        #             'statusCode': 409,
+        #             'headers': {
+        #                 'Access-Control-Allow-Origin': '*',
+        #                 'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+        #                 'Access-Control-Allow-Methods': 'POST,OPTIONS',
+        #                 'Access-Control-Allow-Credentials': 'true'
+        #             },
+        #             'body': json.dumps({
+        #                 'error': 'This email is already on the waitlist'
+        #             })
+        #         }
+        # except ClientError as e:
+        #     print(f"Error checking existing email: {e}")
         
         # Create timestamp
         timestamp = datetime.utcnow().isoformat()
@@ -179,43 +180,52 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
     body_html = f"""<html>
 <head>
     <style>
-        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
-        .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
-        .signature {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }}
-        .footer {{ margin-top: 20px; font-size: 12px; color: #666; text-align: center; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f7; }}
+        .container {{ background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }}
+        .logo {{ text-align: center; padding: 40px 30px 20px; }}
+        .logo img {{ max-width: 200px; height: auto; }}
+        .content {{ padding: 30px; }}
+        .signature {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e7; }}
+        .footer {{ padding: 20px 30px; font-size: 12px; color: #86868b; text-align: center; background-color: #f5f5f7; }}
+        h1 {{ font-size: 28px; font-weight: 600; margin: 0 0 10px 0; color: #1d1d1f; }}
+        p {{ margin: 0 0 16px 0; color: #1d1d1f; }}
+        ul {{ margin: 16px 0; padding-left: 20px; }}
+        li {{ margin: 8px 0; color: #1d1d1f; }}
+        strong {{ font-weight: 600; }}
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🚀 Welcome to Spaceport AI</h1>
-        <p>You're on the waitlist!</p>
-    </div>
-    
-    <div class="content">
-        <p>Hi {name},</p>
-        
-        <p>This is Gabriel, the founder of Spaceport AI. Thanks for signing up for our waitlist!</p>
-        
-        <p>We're excited about your interest in our 3D reconstruction and drone path optimization platform. You'll be among the first to know when we launch and get early access to our features.</p>
-        
-        <p><strong>Stay tuned for updates on:</strong></p>
-        <ul>
-            <li>3D Gaussian Splatting reconstruction</li>
-            <li>Drone path optimization</li>
-            <li>Real-time 3D visualization</li>
-            <li>And much more!</li>
-        </ul>
-        
-        <div class="signature">
-            <p><strong>Best regards,</strong><br>
-            Gabriel<br>
-            Founder, Spaceport AI</p>
+    <div class="container">
+        <div class="logo">
+            <img src="https://spaceport.ai/assets/SpaceportColoredLogoFull.svg" alt="Spaceport AI" />
         </div>
-    </div>
-    
-    <div class="footer">
-        <p>You can unsubscribe from these emails by replying with "unsubscribe".</p>
+        
+        <div class="content">
+            <h1>Welcome to Spaceport AI</h1>
+            <p>Hi {name},</p>
+            
+            <p>This is Gabriel, the founder of Spaceport AI. Thanks for signing up for our waitlist!</p>
+            
+            <p>We're excited about your interest in our 3D reconstruction and drone path optimization platform. You'll be among the first to know when we launch and get early access to our features.</p>
+            
+            <p><strong>Stay tuned for updates on:</strong></p>
+            <ul>
+                <li>3D Gaussian Splatting reconstruction</li>
+                <li>Drone path optimization</li>
+                <li>Real-time 3D visualization</li>
+                <li>And much more!</li>
+            </ul>
+            
+            <div class="signature">
+                <p><strong>Best regards,</strong><br>
+                Gabriel<br>
+                Founder, Spaceport AI</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>You can unsubscribe from these emails by replying with "unsubscribe".</p>
+        </div>
     </div>
 </body>
 </html>"""
