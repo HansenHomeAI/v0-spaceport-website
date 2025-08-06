@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Preview - Clean</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f5f5f7;
+            display: flex;
+            justify-content: center;
+        }
+        .email-container {
+            max-width: 600px;
+            width: 100%;
+        }
+        .email-frame {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 3px solid rgba(128, 128, 128, 0.2);
+        }
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input {
+            padding: 12px 20px;
+            border: 2px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="controls">
+            <input type="text" id="testName" value="John Doe" placeholder="Enter test name">
+            <button onclick="updatePreview()">Update Preview</button>
+        </div>
+        
+        <div class="email-frame" id="emailFrame">
+            <!-- Email content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        function updatePreview() {
+            const testName = document.getElementById('testName').value;
+            
+            const emailHTML = `
+<html>
+<head>
+    <style>
+        body { 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #f5f5f7; 
+        }
+        .container { 
+            background: white; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 3px solid rgba(128, 128, 128, 0.2);
+        }
+        .logo { 
+            text-align: center; 
+            padding: 40px 30px 20px; 
+        }
+        .logo img { 
+            max-width: 200px; 
+            height: auto; 
+        }
+        .content { 
+            padding: 30px; 
+        }
+        .signature { 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid #e5e5e7; 
+        }
+        .footer { 
+            padding: 20px 30px; 
+            font-size: 12px; 
+            color: #86868b; 
+            text-align: center; 
+            background-color: #f5f5f7; 
+        }
+        h1 { 
+            font-size: 28px; 
+            font-weight: 600; 
+            margin: 0 0 10px 0; 
+            color: #1d1d1f; 
+        }
+        p { 
+            margin: 0 0 16px 0; 
+            color: #1d1d1f; 
+        }
+        ul { 
+            margin: 16px 0; 
+            padding-left: 20px; 
+        }
+        li { 
+            margin: 8px 0; 
+            color: #1d1d1f; 
+        }
+        strong { 
+            font-weight: 600; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="assets/SpaceportIcons/SpaceportColoredLogoFull.svg" alt="Spaceport AI" />
+        </div>
+        
+        <div class="content">
+            <h1>Welcome to Spaceport AI</h1>
+            <p>Hi ${testName},</p>
+            
+            <p>This is Gabriel, the founder of Spaceport AI. Thanks for signing up for our waitlist!</p>
+            
+            <p>We're excited about your interest in our 3D reconstruction and drone path optimization platform. You'll be among the first to know when we launch and get early access to our features.</p>
+            
+            <p><strong>Stay tuned for updates on:</strong></p>
+            <ul>
+                <li>3D Gaussian Splatting reconstruction</li>
+                <li>Drone path optimization</li>
+                <li>Real-time 3D visualization</li>
+                <li>And much more!</li>
+            </ul>
+            
+            <div class="signature">
+                <p><strong>Best regards,</strong><br>
+                Gabriel<br>
+                Founder, Spaceport AI</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>You can unsubscribe from these emails by replying with "unsubscribe".</p>
+        </div>
+    </div>
+</body>
+</html>`;
+            
+            document.getElementById('emailFrame').innerHTML = emailHTML;
+        }
+        
+        // Initialize preview on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+        });
+        
+        // Update preview when Enter is pressed
+        document.getElementById('testName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updatePreview();
+            }
+        });
+    </script>
+</body>
+</html> 

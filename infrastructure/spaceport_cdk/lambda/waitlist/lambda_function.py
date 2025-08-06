@@ -180,8 +180,8 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
     body_html = f"""<html>
 <head>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f7; }}
-        .container {{ background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }}
+        body {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f7; }}
+        .container {{ background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 3px solid rgba(128, 128, 128, 0.2); }}
         .logo {{ text-align: center; padding: 40px 30px 20px; }}
         .logo img {{ max-width: 200px; height: auto; }}
         .content {{ padding: 30px; }}
@@ -197,7 +197,7 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
 <body>
     <div class="container">
         <div class="logo">
-            <img src="https://spaceport.ai/assets/SpaceportColoredLogoFull.svg" alt="Spaceport AI" />
+            <img src="https://spaceport.ai/assets/SpaceportIcons/SpaceportColoredLogoFull.svg" alt="Spaceport AI" />
         </div>
         
         <div class="content">
