@@ -86,17 +86,22 @@ html, body {
   z-index: 1;
 }
 
-/* BRAND TEXT (⁶space.ai) */
+/* BRAND LOGO */
 .logo {
-  font-size: 1.2rem;
-  font-weight: 500;
   cursor: pointer;
   position: relative;
   user-select: none;
   display: flex;
   align-items: center;
-  padding: 6px 12px;
+  padding: 8px 16px;
   line-height: 1.2;
+}
+
+.logo-image {
+  height: 18px;
+  width: auto;
+  max-width: 110px;
+  transition: transform 0.2s ease;
 }
 .logo::before {
   content: "";
@@ -112,6 +117,10 @@ html, body {
 .logo:hover::before {
   opacity: 1;
   transform: scale(1);
+}
+
+.logo:hover .logo-image {
+  transform: none;
 }
 
 /* Toggle icon container (+ / X) */
@@ -624,6 +633,20 @@ footer {
   }
   .header.expanded {
     height: 50px !important;
+  }
+  
+  /* Larger logo on desktop */
+  .logo-image {
+    height: 20px;
+    max-width: 130px;
+  }
+}
+
+/* Mobile logo adjustments */
+@media (max-width: 480px) {
+  .logo-image {
+    height: 16px;
+    max-width: 90px;
   }
 }
 
