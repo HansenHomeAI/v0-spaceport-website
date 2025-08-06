@@ -41,8 +41,8 @@ html, body {
   padding: 7px;
   overflow: hidden;
 
-  /* Blur and gradient outline */
-  background: rgba(255, 255, 255, 0);
+  /* Black background with 10% opacity */
+  background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
 
@@ -101,35 +101,7 @@ html, body {
   height: 19px;
   width: auto;
   max-width: 116px;
-  transition: all 0.3s ease;
-}
-
-/* Adaptive Header Styles */
-.header.light-background {
-  /* Keep the header transparent - don't change background */
-  background: transparent;
-  backdrop-filter: none;
-  border-bottom: none;
-}
-
-.header.light-background .nav-links-desktop a,
-.header.light-background .nav-links a {
-  color: #000 !important;
-  text-shadow: none !important;
-}
-
-.header.light-background .logo-image {
-  filter: brightness(0);
-}
-
-/* Smooth transitions for color changes */
-.nav-links-desktop a,
-.nav-links a {
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.logo-image {
-  transition: all 0.3s ease, filter 0.3s ease;
+  transition: transform 0.2s ease;
 }
 .logo::before {
   content: "";
@@ -240,7 +212,6 @@ html, body {
   padding: 6px 12px;
   margin: 4px 0;
   user-select: none;
-  text-shadow: none;
 }
 .nav-links a::before {
   content: "";
@@ -272,7 +243,6 @@ html, body {
   position: relative;
   padding: 6px 12px;
   user-select: none;
-  text-shadow: none;
 }
 .nav-links-desktop a::before {
   content: "";
@@ -290,11 +260,11 @@ html, body {
   opacity: 1;
 }
 
-/* Subtle shadow on header text */
+/* No shadows on header text */
 .header .logo,
 .header .nav-links a,
 .header .nav-links-desktop a {
-  text-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+  text-shadow: none;
 }
 
 /* LANDING SECTION & IFRAME */
