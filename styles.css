@@ -1882,6 +1882,62 @@ body::before {
   filter: invert(0%); /* Makes SVG white on hover */
 }
 
+/* 3D Viewer Button Styles */
+.viewer-button-container {
+  margin-top: 1.5rem;
+}
+
+.viewer-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #FF4F00;
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewer-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.viewer-button:hover {
+  background: #e64500;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 79, 0, 0.3);
+}
+
+.viewer-button:hover::after {
+  left: 100%;
+}
+
+.viewer-button-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  filter: invert(0%); /* Makes SVG white to match button text */
+  transition: transform 0.3s ease;
+}
+
+.viewer-button:hover .viewer-button-icon {
+  transform: scale(1.1);
+}
+
 #dpu-container .input-wrapper textarea {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
