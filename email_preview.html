@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceport AI - Email Preview Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f7;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .editor-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .preview-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1d1d1f;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        textarea {
+            height: 300px;
+            resize: vertical;
+        }
+        .preview-frame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            background: white;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056cc;
+        }
+        .test-name {
+            font-weight: 600;
+            color: #007aff;
+        }
+        .instructions {
+            background: #f2f2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1d1d1f;
+        }
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spaceport AI - Email Preview Tool</h1>
+    
+    <div class="container">
+        <div class="editor-panel">
+            <div class="instructions">
+                <h3>How to use this tool:</h3>
+                <ul>
+                    <li>Edit the HTML template on the left</li>
+                    <li>See live preview on the right</li>
+                    <li>Test with different names</li>
+                    <li>Copy the final HTML to the Lambda function</li>
+                </ul>
+            </div>
+            
+            <div class="controls">
+                <label for="testName">Test Name:</label>
+                <input type="text" id="testName" value="John Doe" placeholder="Enter a test name">
+                <button onclick="updatePreview()">Update Preview</button>
+                <button onclick="copyToClipboard()">Copy HTML</button>
+            </div>
+            
+            <label for="htmlTemplate">Email HTML Template:</label>
+            <textarea id="htmlTemplate" placeholder="Enter your HTML template here...">
+<html>
+<head>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f7; }
+        .container { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .logo { text-align: center; padding: 40px 30px 20px; }
+        .logo img { max-width: 200px; height: auto; }
+        .content { padding: 30px; }
+        .signature { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e7; }
+        .footer { padding: 20px 30px; font-size: 12px; color: #86868b; text-align: center; background-color: #f5f5f7; }
+        h1 { font-size: 28px; font-weight: 600; margin: 0 0 10px 0; color: #1d1d1f; }
+        p { margin: 0 0 16px 0; color: #1d1d1f; }
+        ul { margin: 16px 0; padding-left: 20px; }
+        li { margin: 8px 0; color: #1d1d1f; }
+        strong { font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://spaceport.ai/assets/SpaceportColoredLogoFull.svg" alt="Spaceport AI" />
+        </div>
+        
+        <div class="content">
+            <h1>Welcome to Spaceport AI</h1>
+            <p>Hi {{name}},</p>
+            
+            <p>This is Gabriel, the founder of Spaceport AI. Thanks for signing up for our waitlist!</p>
+            
+            <p>We're excited about your interest in our 3D reconstruction and drone path optimization platform. You'll be among the first to know when we launch and get early access to our features.</p>
+            
+            <p><strong>Stay tuned for updates on:</strong></p>
+            <ul>
+                <li>3D Gaussian Splatting reconstruction</li>
+                <li>Drone path optimization</li>
+                <li>Real-time 3D visualization</li>
+                <li>And much more!</li>
+            </ul>
+            
+            <div class="signature">
+                <p><strong>Best regards,</strong><br>
+                Gabriel<br>
+                Founder, Spaceport AI</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>You can unsubscribe from these emails by replying with "unsubscribe".</p>
+        </div>
+    </div>
+</body>
+</html>
+            </textarea>
+        </div>
+        
+        <div class="preview-panel">
+            <h3>Live Preview</h3>
+            <div id="previewFrame" class="preview-frame"></div>
+        </div>
+    </div>
+
+    <script>
+        function updatePreview() {
+            const template = document.getElementById('htmlTemplate').value;
+            const testName = document.getElementById('testName').value;
+            
+            // Replace {{name}} placeholder with actual name
+            const processedTemplate = template.replace(/\{\{name\}\}/g, testName);
+            
+            const previewFrame = document.getElementById('previewFrame');
+            previewFrame.innerHTML = processedTemplate;
+        }
+        
+        function copyToClipboard() {
+            const template = document.getElementById('htmlTemplate').value;
+            navigator.clipboard.writeText(template).then(() => {
+                alert('HTML template copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = template;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('HTML template copied to clipboard!');
+            });
+        }
+        
+        // Initialize preview on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+        });
+        
+        // Update preview when test name changes
+        document.getElementById('testName').addEventListener('input', updatePreview);
+    </script>
+</body>
+</html> 
