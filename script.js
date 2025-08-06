@@ -3543,22 +3543,90 @@ let projectPopupFlightPath = null;
 // Waitlist functionality
 function initializeWaitlistMode() {
   if (typeof WAITLIST_MODE !== 'undefined' && WAITLIST_MODE) {
-    // Show waitlist content, hide development content
+    // Show waitlist content, hide ALL development content
     const waitlistContent = document.getElementById('waitlist-content');
     const developmentContent = document.getElementById('development-content');
+    const createDashboard = document.getElementById('create-dashboard');
+    const createSteps1 = document.getElementById('create-steps1');
+    const createSteps2 = document.getElementById('create-steps2');
+    const createSteps3 = document.getElementById('create-steps3');
+    const createMlProcessing = document.getElementById('create-ml-processing');
+    const newProjectPopup = document.getElementById('newProjectPopup');
+    const addPathPopup = document.getElementById('addPathPopup');
+    const feedbackSection = document.querySelector('.feedback-section');
     
-    if (waitlistContent && developmentContent) {
+    if (waitlistContent) {
       waitlistContent.style.display = 'flex';
+    }
+    if (developmentContent) {
       developmentContent.style.display = 'none';
+    }
+    if (createDashboard) {
+      createDashboard.style.display = 'none';
+    }
+    if (createSteps1) {
+      createSteps1.style.display = 'none';
+    }
+    if (createSteps2) {
+      createSteps2.style.display = 'none';
+    }
+    if (createSteps3) {
+      createSteps3.style.display = 'none';
+    }
+    if (createMlProcessing) {
+      createMlProcessing.style.display = 'none';
+    }
+    if (newProjectPopup) {
+      newProjectPopup.style.display = 'none';
+    }
+    if (addPathPopup) {
+      addPathPopup.style.display = 'none';
+    }
+    if (feedbackSection) {
+      feedbackSection.style.display = 'none';
     }
   } else {
     // Show development content, hide waitlist content
     const waitlistContent = document.getElementById('waitlist-content');
     const developmentContent = document.getElementById('development-content');
+    const createDashboard = document.getElementById('create-dashboard');
+    const createSteps1 = document.getElementById('create-steps1');
+    const createSteps2 = document.getElementById('create-steps2');
+    const createSteps3 = document.getElementById('create-steps3');
+    const createMlProcessing = document.getElementById('create-ml-processing');
+    const newProjectPopup = document.getElementById('newProjectPopup');
+    const addPathPopup = document.getElementById('addPathPopup');
+    const feedbackSection = document.querySelector('.feedback-section');
     
-    if (waitlistContent && developmentContent) {
+    if (waitlistContent) {
       waitlistContent.style.display = 'none';
+    }
+    if (developmentContent) {
       developmentContent.style.display = 'block';
+    }
+    if (createDashboard) {
+      createDashboard.style.display = 'block';
+    }
+    if (createSteps1) {
+      createSteps1.style.display = 'block';
+    }
+    if (createSteps2) {
+      createSteps2.style.display = 'block';
+    }
+    if (createSteps3) {
+      createSteps3.style.display = 'block';
+    }
+    if (createMlProcessing) {
+      createMlProcessing.style.display = 'block';
+    }
+    if (newProjectPopup) {
+      newProjectPopup.style.display = 'block';
+    }
+    if (addPathPopup) {
+      addPathPopup.style.display = 'block';
+    }
+    if (feedbackSection) {
+      feedbackSection.style.display = 'flex';
     }
   }
 }

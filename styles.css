@@ -609,7 +609,7 @@ footer {
 }
 
 .footer-logo {
-  height: 24px;
+  height: 19px;
   width: auto;
   opacity: 0.7;
   transition: opacity 0.3s ease;
@@ -672,20 +672,22 @@ footer {
   height: 32px;
   width: auto;
   margin-bottom: 24px;
-  opacity: 0.9;
+  opacity: 1;
+  filter: brightness(1) contrast(1);
 }
 
 .waitlist-header h1 {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 500;
   margin-bottom: 16px;
   color: #fff;
 }
 
 .waitlist-header p {
-  color: #ccc;
-  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
   line-height: 1.5;
+  font-weight: 400;
 }
 
 .waitlist-form {
@@ -704,7 +706,7 @@ footer {
   width: 100%;
   padding: 16px 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   font-size: 1rem;
@@ -729,9 +731,9 @@ footer {
   color: #fff;
   border: none;
   padding: 16px 32px;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -773,16 +775,17 @@ footer {
 }
 
 .waitlist-success h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 500;
   margin-bottom: 16px;
   color: #fff;
 }
 
 .waitlist-success p {
-  color: #ccc;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 1rem;
   line-height: 1.5;
+  font-weight: 400;
 }
 
 /* Responsive adjustments for waitlist */
@@ -793,11 +796,11 @@ footer {
   }
   
   .waitlist-header h1 {
-    font-size: 1.75rem;
+    font-size: 1.4rem;
   }
   
   .waitlist-header p {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   
   .waitlist-input {
@@ -806,7 +809,7 @@ footer {
   
   .waitlist-submit-btn {
     padding: 14px 24px;
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -1205,8 +1208,8 @@ footer {
   height: auto;
   margin: 0 17px;
   opacity: 1;
-  scale: 0.9;
-  transform: scale(0.9);
+  scale: 0.702;
+  transform: scale(0.702);
 }
 .stat-box2::before {
   content: "";
