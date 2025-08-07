@@ -160,19 +160,21 @@ def send_confirmation_email(name, email):
     
     body_text = f"""Hi {name},
 
-This is Gabriel, the founder of Spaceport AI. Thanks for signing up for our waitlist!
+This is Gabriel, the founder of Spaceport AI. On behalf of our team, thanks for signing up for our waitlist!
 
-We're excited about your interest in our 3D reconstruction and drone path optimization platform. You'll be among the first to know when we launch and get early access to our features.
+You'll be among the first to know when we launch and get early access to our features. If selected, you'll have the option to become one of our early beta users.
 
-Stay tuned for updates on:
-• 3D Gaussian Splatting reconstruction
-• Drone path optimization
-• Real-time 3D visualization
-• And much more!
+Stay tuned for updates by following our socials at:
+
+Instagram: https://instagram.com/Spaceport_AI
+Facebook: https://facebook.com/SpaceportAI
+LinkedIn: https://linkedin.com/company/SpaceportAI
 
 Best regards,
+
 Gabriel
-Founder, Spaceport AI
+Founder, CEO
+Spaceport AI
 
 ---
 You can unsubscribe from these emails by replying with "unsubscribe"."""
