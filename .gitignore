@@ -47,6 +47,13 @@ yarn-error.log*
 *.tgz
 .npm
 
+# Next.js / Vercel (frontend)
+web/.next/
+web/.vercel/
+
+# Cloudflare Wrangler local
+.wrangler/
+
 # Editor files
 .vscode/
 .idea/
