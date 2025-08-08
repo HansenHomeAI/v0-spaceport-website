@@ -4,6 +4,7 @@ on:
   workflow_dispatch:  # Manual trigger
   push:
     branches: [ main ]
+    # container-only workflow; no change
     paths:
       - 'infrastructure/containers/**'
       - 'scripts/deployment/deploy.sh'
