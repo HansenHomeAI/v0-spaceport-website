@@ -2151,7 +2151,7 @@ footer {
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("assets/ColorSwirl.png") no-repeat center;
+  background: url("assets/ColorSwirl.svg") no-repeat center;
   /* 'contain' keeps the full shape visible within the box 
      If you need it to fill the box entirely, use 'cover' instead. */
   background-size: contain;
@@ -2169,7 +2169,7 @@ footer {
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("assets/ColorSwirl.png") no-repeat center;
+  background: url("assets/ColorSwirl.svg") no-repeat center;
   /* 'contain' keeps the full shape visible within the box 
      If you need it to fill the box entirely, use 'cover' instead. */
   background-size: contain;
@@ -2187,7 +2187,7 @@ footer {
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("assets/ColorSwirl.png") no-repeat center;
+  background: url("assets/ColorSwirl.svg") no-repeat center;
   /* 'contain' keeps the full shape visible within the box 
      If you need it to fill the box entirely, use 'cover' instead. */
   background-size: contain;
