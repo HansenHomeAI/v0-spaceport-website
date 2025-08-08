@@ -1,8 +1,8 @@
-name: Deploy Next.js to Cloudflare Pages (main)
+name: Deploy Next.js to Cloudflare Pages (main & development)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, development ]
     paths:
       - 'web/**'
 
@@ -27,24 +27,25 @@ jobs:
       - name: Install deps
         run: npm ci || npm install
 
-      - name: Build Next
-        run: npm run build
-
-      - name: Transform for Cloudflare Pages
-        run: npm run cf:build
+      - name: Build Next for Cloudflare (dynamic)
+        run: |
+          # next-on-pages will handle output for Pages Functions
+          npm run build
+          npm run cf:build
 
       - name: Install Wrangler
         run: npm install -g wrangler
 
-      - name: Deploy to Cloudflare Pages (production)
+      - name: Deploy to Cloudflare Pages (per-branch)
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
         run: |
+          BRANCH="${{ github.ref_name }}"
           wrangler pages deploy .vercel/output \
             --project-name "$CF_PAGES_PROJECT" \
-            --branch main
+            --branch "$BRANCH"
 
 name: Deploy Next.js to Cloudflare Pages (main)
 
