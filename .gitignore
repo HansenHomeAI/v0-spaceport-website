@@ -57,3 +57,7 @@ tests/pipeline/*.log
 
 # Test logs
 *.log
+.next/
+.vercel/
+web/.next/
+web/.vercel/
