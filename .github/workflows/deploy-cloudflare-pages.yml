@@ -1,0 +1,46 @@
+name: Deploy Next.js to Cloudflare Pages (main & development)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, development ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Generate Cloudflare Pages output
+        run: npm run cf:build
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Deploy to Cloudflare Pages (per-branch)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          wrangler pages deploy .vercel/output \
+            --project-name "$CF_PAGES_PROJECT" \
+            --branch "$BRANCH"
+
