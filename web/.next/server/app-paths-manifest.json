@@ -1,9 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(site)/about/page": "app/(site)/about/page.js",
-  "/(site)/create/page": "app/(site)/create/page.js",
-  "/(site)/landing/page": "app/(site)/landing/page.js",
-  "/legacy/page": "app/legacy/page.js",
-  "/(site)/pricing/page": "app/(site)/pricing/page.js",
-  "/page": "app/page.js"
-}
