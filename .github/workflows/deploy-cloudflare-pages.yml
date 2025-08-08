@@ -40,7 +40,7 @@ jobs:
           CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
         run: |
           BRANCH="${{ github.ref_name }}"
-          wrangler pages deploy .vercel/output \
+          wrangler pages deploy .vercel/output/static \
             --project-name "$CF_PAGES_PROJECT" \
             --branch "$BRANCH"
 
