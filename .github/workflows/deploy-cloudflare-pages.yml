@@ -1,6 +1,7 @@
 name: Deploy Next.js to Cloudflare Pages (main & development)
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, development ]
     paths:
@@ -31,6 +32,13 @@ jobs:
         run: |
           npm run build
           npm run cf:build
+
+      - name: Debug .vercel/output contents
+        run: |
+          echo "Listing .vercel/output" && ls -la .vercel/output || true
+          echo "Functions manifest.json:" && cat .vercel/output/functions/manifest.json || true
+          echo "Functions dir:" && ls -la .vercel/output/functions || true
+          echo "Static dir:" && ls -la .vercel/output/static || true
 
       - name: Install Wrangler
         run: npm install -g wrangler
