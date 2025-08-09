@@ -1,6 +1,2 @@
-import { redirect } from 'next/navigation';
 export const runtime = 'edge';
-
-export default function Page() {
-  redirect('/landing');
-}
+export { default } from './landing/page';
