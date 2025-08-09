@@ -56,7 +56,6 @@ jobs:
             PROJECT_NAME="${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}"
           fi
           echo "Deploying to project: $PROJECT_NAME (branch: $BRANCH)"
-          wrangler --verbose pages deploy .vercel/output \
+          npx wrangler pages deploy .vercel/output \
             --project-name "$PROJECT_NAME" \
-            --branch "$BRANCH" \
-            --commit-dirty=true
+            --branch "$BRANCH"
