@@ -49,6 +49,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
           CF_PAGES_PROJECT_PROD_OVERRIDE: ${{ secrets.CF_PAGES_PROJECT_PROD_OVERRIDE }}
+          CF_PAGES_PROJECT_PROD_FRESH: ${{ secrets.CF_PAGES_PROJECT_PROD_FRESH }}
         run: |
           BRANCH="${{ github.ref_name }}"
           # If the primary project is still in a bad Git-linked state, allow an override project
@@ -57,6 +58,9 @@ jobs:
             PROJECT_NAME="${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}"
             # Use a clean preview environment alias to avoid legacy config on 'development'
             BRANCH_ALIAS=dev-live
+          elif [ -n "$CF_PAGES_PROJECT_PROD_FRESH" ] && [ "$BRANCH" = "main" ]; then
+            PROJECT_NAME="$CF_PAGES_PROJECT_PROD_FRESH"
+            BRANCH_ALIAS="$BRANCH"
           elif [ -n "$CF_PAGES_PROJECT_PROD_OVERRIDE" ] && [ "$BRANCH" = "main" ]; then
             PROJECT_NAME="$CF_PAGES_PROJECT_PROD_OVERRIDE"
             BRANCH_ALIAS="$BRANCH"
