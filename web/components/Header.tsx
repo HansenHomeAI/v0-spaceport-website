@@ -1,35 +1,39 @@
 'use client';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function Header(): JSX.Element {
   const [expanded, setExpanded] = useState(false);
+  const pathname = usePathname();
+
+  const close = () => setExpanded(false);
 
   return (
     <header className={`header${expanded ? ' expanded' : ''}`}>
       <div className="header-top">
-        <div className="logo" onClick={() => setExpanded(false)}>
+        <div className="logo" onClick={close}>
           <Link href="/landing" aria-label="Spaceport AI Home">
             <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="logo-image" />
           </Link>
         </div>
 
         <div className="nav-links-desktop">
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/about">About</Link>
-          <Link href="/create">Create</Link>
+          <Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link>
+          <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
+          <Link href="/create" className={pathname === '/create' ? 'active' : ''}>Create</Link>
         </div>
 
-        <div className={`toggle${expanded ? ' rotated' : ''}`} onClick={() => setExpanded((v) => !v)}>
-          <span></span>
-          <span></span>
+        <div className={`toggle${expanded ? ' rotated' : ''}`} onClick={() => setExpanded(v => !v)}>
+          <span />
+          <span />
         </div>
       </div>
 
-      <div className="nav-links">
-        <Link href="/pricing" onClick={() => setExpanded(false)}>Pricing</Link>
-        <Link href="/about" onClick={() => setExpanded(false)}>About</Link>
-        <Link href="/create" onClick={() => setExpanded(false)}>Create</Link>
+      <div className="nav-links" style={{ display: expanded ? 'flex' : 'none' }}>
+        <Link href="/pricing" onClick={close}>Pricing</Link>
+        <Link href="/about" onClick={close}>About</Link>
+        <Link href="/create" onClick={close}>Create</Link>
       </div>
     </header>
   );

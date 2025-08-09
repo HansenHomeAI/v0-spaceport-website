@@ -1,7 +1,10 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+export const runtime = 'edge';
+import NewProjectModal from '../../components/NewProjectModal';
 
 export default function Create(): JSX.Element {
+  const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     const s = document.createElement('script');
     s.src = '/script.js';
@@ -21,11 +24,12 @@ export default function Create(): JSX.Element {
       <section className="section" id="create-dashboard">
         <h2>Dashboard</h2>
         <div className="project-cards">
-          <div className="project-box new-project-card" onClick={() => (window as any).openNewProjectPopup?.()}>
+          <div className="project-box new-project-card" onClick={() => setModalOpen(true)}>
             <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
           </div>
         </div>
       </section>
+      <NewProjectModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );
 }

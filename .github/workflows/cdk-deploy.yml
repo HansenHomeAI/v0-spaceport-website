@@ -34,6 +34,9 @@ jobs:
         # Now install all dependencies
         pip install -e .
         npm install -g aws-cdk
+        # Build Next.js site for Cloudflare (placeholder; wired in follow-up steps)
+        cd ../../web && npm ci || npm install && npm run build || true
+        cd -
 
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4

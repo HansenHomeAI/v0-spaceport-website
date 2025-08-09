@@ -4,10 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, development ]
+    paths:
+      - 'web/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: web
@@ -21,26 +25,41 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'web/package-lock.json'
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci || npm install
 
-      - name: Build Next.js app
-        run: npm run build
+      - name: Build Next for Cloudflare (dynamic)
+        run: |
+          npm run build
+          npm run cf:build
 
-      - name: Generate Cloudflare Pages output
-        run: npm run cf:build
+      - name: Debug .vercel/output contents
+        run: |
+          echo "Listing .vercel/output" && ls -la .vercel/output || true
+          echo "Functions manifest.json:" && cat .vercel/output/functions/manifest.json || true
+          echo "Functions dir:" && ls -la .vercel/output/functions || true
+          echo "Static dir:" && ls -la .vercel/output/static || true
 
       - name: Install Wrangler
         run: npm install -g wrangler
 
-      - name: Deploy to Cloudflare Pages (dynamic per-branch)
+      - name: Deploy to Cloudflare Pages (per-branch)
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
         run: |
           BRANCH="${{ github.ref_name }}"
-          wrangler pages deploy .vercel/output \
-            --project-name "$CF_PAGES_PROJECT" \
-            --branch "$BRANCH"
-
+          # If the primary project is still in a bad Git-linked state, allow an override project
+          PROJECT_NAME="$CF_PAGES_PROJECT"
+          if [ -n "${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}" ] && [ "$BRANCH" != "main" ]; then
+            PROJECT_NAME="${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}"
+            # Use a clean preview environment alias to avoid legacy config on 'development'
+            BRANCH_ALIAS=dev-live
+          else
+            BRANCH_ALIAS="$BRANCH"
+          fi
+          echo "Deploying to project: $PROJECT_NAME (branch: $BRANCH)"
+          npx wrangler pages deploy .vercel/output \
+            --project-name "$PROJECT_NAME" \
+            --branch "$BRANCH_ALIAS"
