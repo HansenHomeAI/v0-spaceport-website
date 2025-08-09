@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 export default function Landing(): JSX.Element {
   return (
     <section className="section" id="landing">
