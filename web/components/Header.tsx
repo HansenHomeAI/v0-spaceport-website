@@ -22,6 +22,7 @@ export default function Header(): JSX.Element {
           <Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link>
           <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
           <Link href="/create" className={pathname === '/create' ? 'active' : ''}>Create</Link>
+          <Link href="/signup" className={pathname === '/signup' ? 'active' : ''}>Signup</Link>
         </div>
 
         <div className={`toggle${expanded ? ' rotated' : ''}`} onClick={() => setExpanded(v => !v)}>
@@ -34,6 +35,7 @@ export default function Header(): JSX.Element {
         <Link href="/pricing" onClick={close}>Pricing</Link>
         <Link href="/about" onClick={close}>About</Link>
         <Link href="/create" onClick={close}>Create</Link>
+        <Link href="/signup" onClick={close}>Signup</Link>
       </div>
     </header>
   );
