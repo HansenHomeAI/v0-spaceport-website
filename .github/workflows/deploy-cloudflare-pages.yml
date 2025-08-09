@@ -56,8 +56,9 @@ jobs:
             PROJECT_NAME="${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}"
           fi
           echo "Deploying to project: $PROJECT_NAME (branch: $BRANCH)"
-          wrangler pages deploy .vercel/output \
+          wrangler --verbose pages deploy .vercel/output \
             --project-name "$PROJECT_NAME" \
             --branch "$BRANCH" \
             --compatibility-date 2024-11-08 \
-            --compatibility-flags nodejs_compat,nodejs_compat_populate_process_env
+            --compatibility-flags nodejs_compat,nodejs_compat_populate_process_env \
+            --commit-dirty=true
