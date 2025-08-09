@@ -1,17 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
 
 export default function Create(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
-  useEffect(() => {
-    const s = document.createElement('script');
-    s.src = '/script.js';
-    s.async = false;
-    document.body.appendChild(s);
-    return () => { document.body.removeChild(s); };
-  }, []);
 
   return (
     <>
