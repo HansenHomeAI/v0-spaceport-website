@@ -60,6 +60,6 @@ jobs:
             BRANCH_ALIAS="$BRANCH"
           fi
           echo "Deploying to project: $PROJECT_NAME (branch: $BRANCH)"
-          npx wrangler pages deploy .vercel/output \
+          npx wrangler pages deploy .vercel/output/static \
             --project-name "$PROJECT_NAME" \
             --branch "$BRANCH_ALIAS"
