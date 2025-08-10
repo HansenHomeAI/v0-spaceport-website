@@ -41,6 +41,13 @@ jobs:
       - name: Install Wrangler
         run: npm i -g wrangler@4
 
+      - name: Wrangler auth check and project list
+        run: |
+          wrangler --version
+          echo "Account: ${CLOUDFLARE_ACCOUNT_ID}"
+          echo "Listing Pages projects:"
+          wrangler pages project list | cat
+
       - name: Select Pages project
         id: select_project
         shell: bash
@@ -54,6 +61,21 @@ jobs:
             if [[ -n "$CF_PAGES_PROJECT_DEV_OVERRIDE" ]]; then PROJECT="$CF_PAGES_PROJECT_DEV_OVERRIDE"; fi
           fi
           echo "project=$PROJECT" >> $GITHUB_OUTPUT
+          echo "Resolved Pages project: $PROJECT"
+
+      - name: Ensure Pages project exists
+        if: steps.select_project.outputs.project != ''
+        env:
+          PROJECT: ${{ steps.select_project.outputs.project }}
+        run: |
+          if ! wrangler pages project list | awk '{print $1}' | grep -qx "$PROJECT"; then
+            echo "Project $PROJECT not found. Creating..."
+            wrangler pages project create "$PROJECT" --production-branch main || true
+            echo "Re-list projects after create:"
+            wrangler pages project list | cat
+          else
+            echo "Project $PROJECT exists."
+          fi
 
       - name: Deploy to Cloudflare Pages
         env:
