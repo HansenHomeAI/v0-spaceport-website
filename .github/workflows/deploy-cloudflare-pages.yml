@@ -112,12 +112,14 @@ jobs:
               }
             }' | cat || true
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages (static + _worker.js)
         env:
           PROJECT: ${{ steps.select_project.outputs.project }}
         run: |
           if [[ -z "$PROJECT" ]]; then echo "No CF Pages project resolved" && exit 1; fi
-          wrangler pages deploy ./.vercel/output \
+          # Deploy the static directory; it must contain _worker.js at its root for functions to mount
+          test -f ./.vercel/output/static/_worker.js && echo "Found _worker.js in static" || (echo "_worker.js missing" && ls -la ./.vercel/output/static || true)
+          wrangler pages deploy ./.vercel/output/static \
             --project-name "$PROJECT" \
             --branch "${GITHUB_REF_NAME}" \
             --commit-dirty=true
