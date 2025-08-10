@@ -63,9 +63,7 @@ jobs:
           wrangler pages deploy ./.vercel/output \
             --project-name "$PROJECT" \
             --branch "${GITHUB_REF_NAME}" \
-            --commit-dirty=true \
-            --compatibility-date=2025-08-09 \
-            --compatibility-flags=nodejs_compat,nodejs_compat_populate_process_env
+            --commit-dirty=true
 
       - name: Show deployments
         if: always()
