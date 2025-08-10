@@ -13,10 +13,10 @@ jobs:
       run:
         working-directory: web
     env:
-      # Required secrets (repo settings)
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+      # Temporary: inlined credentials provided for troubleshooting
+      CLOUDFLARE_API_TOKEN: q0X2wh5trXUHFddDBHGPgnUg1G2Yu4zzwiCFUd5C
+      CLOUDFLARE_ACCOUNT_ID: 462d86d5639d37fe5a4a21b24c8289c7
+      CF_PAGES_PROJECT: v0-spaceport-website
       CF_PAGES_PROJECT_DEV_OVERRIDE: ${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}
       CF_PAGES_PROJECT_PROD_OVERRIDE: ${{ secrets.CF_PAGES_PROJECT_PROD_OVERRIDE }}
       CF_PAGES_PROJECT_PROD_FRESH: ${{ secrets.CF_PAGES_PROJECT_PROD_FRESH }}
@@ -50,6 +50,7 @@ jobs:
       - name: Wrangler auth check and project list
         run: |
           wrangler --version || true
+          wrangler whoami || true
           echo "Account: ${CLOUDFLARE_ACCOUNT_ID}"
           echo "Listing Pages projects:"
           wrangler pages project list | cat || true
