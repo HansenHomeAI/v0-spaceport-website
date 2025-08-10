@@ -1,3 +1,90 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      # Required secrets (repo settings)
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+      CF_PAGES_PROJECT_DEV_OVERRIDE: ${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}
+      CF_PAGES_PROJECT_PROD_OVERRIDE: ${{ secrets.CF_PAGES_PROJECT_PROD_OVERRIDE }}
+      CF_PAGES_PROJECT_PROD_FRESH: ${{ secrets.CF_PAGES_PROJECT_PROD_FRESH }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Transform to Cloudflare (next-on-pages)
+        run: npx --yes @cloudflare/next-on-pages
+
+      - name: Install Wrangler
+        run: npm i -g wrangler@4
+
+      - name: Select Pages project
+        id: select_project
+        shell: bash
+        run: |
+          BRANCH=${GITHUB_REF_NAME}
+          PROJECT="$CF_PAGES_PROJECT"
+          if [[ "$BRANCH" == "main" ]]; then
+            if [[ -n "$CF_PAGES_PROJECT_PROD_OVERRIDE" ]]; then PROJECT="$CF_PAGES_PROJECT_PROD_OVERRIDE"; fi
+            if [[ -n "$CF_PAGES_PROJECT_PROD_FRESH" ]]; then PROJECT="$CF_PAGES_PROJECT_PROD_FRESH"; fi
+          else
+            if [[ -n "$CF_PAGES_PROJECT_DEV_OVERRIDE" ]]; then PROJECT="$CF_PAGES_PROJECT_DEV_OVERRIDE"; fi
+          fi
+          echo "project=$PROJECT" >> $GITHUB_OUTPUT
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          PROJECT: ${{ steps.select_project.outputs.project }}
+        run: |
+          if [[ -z "$PROJECT" ]]; then echo "No CF Pages project resolved" && exit 1; fi
+          wrangler pages deploy ./.vercel/output \
+            --project-name "$PROJECT" \
+            --branch "${GITHUB_REF_NAME}" \
+            --commit-dirty=true \
+            --compatibility-date=2025-08-09 \
+            --compatibility-flags=nodejs_compat,nodejs_compat_populate_process_env
+
+      - name: Show deployments
+        if: always()
+        env:
+          PROJECT: ${{ steps.select_project.outputs.project }}
+        run: |
+          wrangler pages deployment list --project-name "$PROJECT" | cat
+
+      - name: Verify endpoints
+        env:
+          PROJECT: ${{ steps.select_project.outputs.project }}
+        run: |
+          HOST="https://$PROJECT.pages.dev"
+          echo "Verifying $HOST"
+          for path in "/" "/landing" "/about" "/pricing" "/create" "/signup" "/api/health"; do
+            echo "GET $HOST$path";
+            curl -fsS "$HOST$path" -H 'Accept: text/html,application/json' >/dev/null || (echo "Failed: $path" && curl -i "$HOST$path" && exit 1);
+          done
+
 name: Deploy Next.js to Cloudflare Pages (main & development)
 
 on:
