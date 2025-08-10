@@ -38,6 +38,12 @@ jobs:
       - name: Transform to Cloudflare (next-on-pages)
         run: npx --yes @cloudflare/next-on-pages
 
+      - name: Show output tree
+        run: |
+          echo "Contents of .vercel/output:" && ls -la .vercel/output || true
+          echo "Contents of .vercel/output/static:" && ls -la .vercel/output/static || true
+          echo "Worker file (if present):" && (ls -la .vercel/output/static/_worker.js || true)
+
       - name: Install Wrangler
         run: npm i -g wrangler@4
 
@@ -76,6 +82,29 @@ jobs:
           else
             echo "Project $PROJECT exists."
           fi
+
+      - name: Ensure Pages runtime flags
+        if: steps.select_project.outputs.project != ''
+        env:
+          PROJECT: ${{ steps.select_project.outputs.project }}
+        run: |
+          echo "Setting compatibility date and flags on project $PROJECT"
+          curl -fsS -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}" \
+            --data '{
+              "deployment_configs": {
+                "production": {
+                  "compatibility_date": "2025-08-09",
+                  "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"]
+                },
+                "preview": {
+                  "compatibility_date": "2025-08-09",
+                  "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"]
+                }
+              }
+            }' | cat
 
       - name: Deploy to Cloudflare Pages
         env:
