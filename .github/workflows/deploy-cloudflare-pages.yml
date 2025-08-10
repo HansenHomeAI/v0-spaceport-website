@@ -64,6 +64,7 @@ jobs:
           echo "Functions manifest.json:" && cat .vercel/output/functions/manifest.json || true
           echo "Functions dir:" && ls -la .vercel/output/functions || true
           echo "Static dir:" && ls -la .vercel/output/static || true
+          echo "Worker present?" && (ls -la .vercel/output/static/_worker.js || echo "_worker.js missing")
 
       - name: Install Wrangler
         run: npm install -g wrangler
@@ -75,23 +76,26 @@ jobs:
           CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
         run: |
           BRANCH="${{ github.ref_name }}"
-          # If the primary project is still in a bad Git-linked state, allow an override project
           PROJECT_NAME="$CF_PAGES_PROJECT"
-          if [ -n "${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}" ] && [ "$BRANCH" != "main" ]; then
-            PROJECT_NAME="${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}"
-            # Use a clean preview environment alias to avoid legacy config on 'development'
-            BRANCH_ALIAS=dev-live
+          if [ "$BRANCH" = "main" ]; then
+            PROJECT_NAME="v0-spaceport-website-prod-fresh"
+            BRANCH_ALIAS="main"
           else
-            BRANCH_ALIAS="$BRANCH"
+            if [ -n "${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}" ]; then
+              PROJECT_NAME="${{ secrets.CF_PAGES_PROJECT_DEV_OVERRIDE }}"
+              BRANCH_ALIAS=dev-live
+            else
+              BRANCH_ALIAS="$BRANCH"
+            fi
           fi
-          echo "Deploying to project: $PROJECT_NAME (branch: $BRANCH)"
+          echo "Deploying to project: $PROJECT_NAME (branch alias: $BRANCH_ALIAS)"
           npx wrangler pages deploy .vercel/output \
             --project-name "$PROJECT_NAME" \
             --branch "$BRANCH_ALIAS"
 
       - name: Verify endpoints
         run: |
-          HOST="https://${{ secrets.CF_PAGES_PROJECT }}.pages.dev"
+          HOST="https://v0-spaceport-website-prod-fresh.pages.dev"
           echo "Verifying $HOST"
           for path in "/" "/landing" "/about" "/pricing" "/create" "/signup" "/api/health"; do
             echo "GET $HOST$path";
