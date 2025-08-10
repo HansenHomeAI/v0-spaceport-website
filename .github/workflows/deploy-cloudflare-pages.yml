@@ -49,10 +49,10 @@ jobs:
 
       - name: Wrangler auth check and project list
         run: |
-          wrangler --version
+          wrangler --version || true
           echo "Account: ${CLOUDFLARE_ACCOUNT_ID}"
           echo "Listing Pages projects:"
-          wrangler pages project list | cat
+          wrangler pages project list | cat || true
 
       - name: Select Pages project
         id: select_project
@@ -78,7 +78,7 @@ jobs:
             echo "Project $PROJECT not found. Creating..."
             wrangler pages project create "$PROJECT" --production-branch main || true
             echo "Re-list projects after create:"
-            wrangler pages project list | cat
+            wrangler pages project list | cat || true
           else
             echo "Project $PROJECT exists."
           fi
@@ -104,7 +104,7 @@ jobs:
                   "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"]
                 }
               }
-            }' | cat
+            }' | cat || true
 
       - name: Deploy to Cloudflare Pages
         env:
