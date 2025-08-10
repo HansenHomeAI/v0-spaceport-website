@@ -66,6 +66,11 @@ jobs:
           else
             if [[ -n "$CF_PAGES_PROJECT_DEV_OVERRIDE" ]]; then PROJECT="$CF_PAGES_PROJECT_DEV_OVERRIDE"; fi
           fi
+          if [[ -z "$PROJECT" ]]; then
+            # Fallback to deterministic project name per branch
+            SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
+            PROJECT="spaceport-website-${SAFE_BRANCH}"
+          fi
           echo "project=$PROJECT" >> $GITHUB_OUTPUT
           echo "Resolved Pages project: $PROJECT"
 
