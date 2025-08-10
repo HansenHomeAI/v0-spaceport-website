@@ -32,6 +32,31 @@ jobs:
         run: |
           npm run build
           npm run cf:build
+      
+      - name: Set Pages runtime flags (API)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+        run: |
+          if [[ -n "$CLOUDFLARE_API_TOKEN" && -n "$CLOUDFLARE_ACCOUNT_ID" && -n "$CF_PAGES_PROJECT" ]]; then
+            curl -fsS -X PATCH \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}" \
+              --data '{
+                "deployment_configs": {
+                  "production": {
+                    "compatibility_date": "2025-08-09",
+                    "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"]
+                  },
+                  "preview": {
+                    "compatibility_date": "2025-08-09",
+                    "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"]
+                  }
+                }
+              }' | cat
+          fi
 
       - name: Debug .vercel/output contents
         run: |
@@ -63,3 +88,12 @@ jobs:
           npx wrangler pages deploy .vercel/output \
             --project-name "$PROJECT_NAME" \
             --branch "$BRANCH_ALIAS"
+
+      - name: Verify endpoints
+        run: |
+          HOST="https://${{ secrets.CF_PAGES_PROJECT }}.pages.dev"
+          echo "Verifying $HOST"
+          for path in "/" "/landing" "/about" "/pricing" "/create" "/signup" "/api/health"; do
+            echo "GET $HOST$path";
+            curl -fsS "$HOST$path" -H 'Accept: text/html,application/json' >/dev/null || (echo "Failed: $path" && curl -i "$HOST$path" && exit 1);
+          done
