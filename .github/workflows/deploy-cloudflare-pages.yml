@@ -62,8 +62,8 @@ jobs:
           BRANCH=${GITHUB_REF_NAME}
           PROJECT="$CF_PAGES_PROJECT"
           if [[ "$BRANCH" == "main" ]]; then
-            if [[ -n "$CF_PAGES_PROJECT_PROD_OVERRIDE" ]]; then PROJECT="$CF_PAGES_PROJECT_PROD_OVERRIDE"; fi
-            if [[ -n "$CF_PAGES_PROJECT_PROD_FRESH" ]]; then PROJECT="$CF_PAGES_PROJECT_PROD_FRESH"; fi
+            # Force main to deploy to the clean production project for reliability during troubleshooting
+            PROJECT="v0-spaceport-website-prod-fresh"
           else
             if [[ -n "$CF_PAGES_PROJECT_DEV_OVERRIDE" ]]; then PROJECT="$CF_PAGES_PROJECT_DEV_OVERRIDE"; fi
           fi
@@ -112,14 +112,14 @@ jobs:
               }
             }' | cat || true
 
-      - name: Deploy to Cloudflare Pages (static + _worker.js)
+      - name: Deploy to Cloudflare Pages
         env:
           PROJECT: ${{ steps.select_project.outputs.project }}
         run: |
           if [[ -z "$PROJECT" ]]; then echo "No CF Pages project resolved" && exit 1; fi
-          # Deploy the static directory; it must contain _worker.js at its root for functions to mount
+          # Deploy full .vercel/output (recommended for next-on-pages)
           test -f ./.vercel/output/static/_worker.js && echo "Found _worker.js in static" || (echo "_worker.js missing" && ls -la ./.vercel/output/static || true)
-          wrangler pages deploy ./.vercel/output/static \
+          wrangler pages deploy ./.vercel/output \
             --project-name "$PROJECT" \
             --branch "${GITHUB_REF_NAME}" \
             --commit-dirty=true
