@@ -86,16 +86,11 @@ cd scripts/build/
 
 ## 📚 Documentation
 
-### **Core Documentation**
-- **[Development Guidelines](docs/DEVELOPMENT_GUIDELINES.md)** - 🚨 **MANDATORY**: Rules for AI assistants
-- **[Container Architecture](docs/CONTAINER_ARCHITECTURE.md)** - ⚡ **CRITICAL**: Container organization & maintenance rules
-- **[Project Status](docs/PROJECT_STATUS.md)** - Current development status & recent achievements
-- **[ML Pipeline Guide](docs/README_ML_PIPELINE.md)** - Complete ML pipeline documentation
-
-### **Implementation Guides**  
-- **[Deployment Guide](docs/DEPLOYMENT.md)** - Infrastructure deployment instructions
-- **[API Documentation](docs/api.md)** - API endpoints and usage
-- **[Optimization Guide](docs/OPTIMIZATION_IMPLEMENTATION_GUIDE.md)** - Performance optimization
+See `docs/README.md` for the canonical high-signal index. Start here:
+- `docs/WEB_DEPLOYMENT.md` – Web app deploys (Cloudflare Pages + Next.js, SSR/ISR)
+- `docs/DEVELOPMENT_GUIDELINES.md` – AI/dev rules and web specifics
+- `docs/BRANCHING_STRATEGY.md` – Branch roles and CI/CD flow
+- `docs/CONTAINER_ARCHITECTURE.md` – ML containers reference
 
 ### **Analysis & History**
 - **[ML Pipeline Analysis](docs/ML_PIPELINE_ANALYSIS.md)** - Detailed pipeline testing results

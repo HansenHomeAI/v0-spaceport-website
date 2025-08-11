@@ -1,3 +1,18 @@
+## Spaceport Docs Index
+
+Canonical, concise docs for AI agents and developers. Prefer these over legacy files.
+
+- Development: see `DEVELOPMENT_GUIDELINES.md`
+- Deployment (Cloudflare Pages + Next.js): see `DEPLOYMENT.md`
+- Branching and CI summary: see `BRANCHING_STRATEGY.md`
+
+Legacy/Deep-dive docs remain in this folder (SOGS, 3DGS, COLMAP, etc.). Treat them as reference. If they disagree with the three canonical docs above, the canonical docs win.
+
+Quick facts
+- App: Next.js (App Router) under `web/`, SSR/ISR via Edge.
+- Build: `next build` then `@cloudflare/next-on-pages` → produces `.vercel/output/static/_worker.js`.
+- Deploy: CI uploads `.vercel/output/static` to Cloudflare Pages so the worker mounts.
+- Branches: `development` → staging deploy; `main` → production deploy.
 # 📖 Documentation Overview
 
 This directory contains the essential documentation for the Spaceport ML Pipeline project.
