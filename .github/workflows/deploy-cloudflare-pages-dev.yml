@@ -1,0 +1,15 @@
+name: Dev Deploy to Cloudflare Pages (DISABLED)
+
+on:
+  push:
+    branches: [ never-run ]
+    paths:
+      - 'web/**'
+
+jobs:
+  skip:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This workflow is disabled and kept only for reference."
+
+
