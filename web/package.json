@@ -18,7 +18,8 @@
     "@cloudflare/next-on-pages": "1.13.13",
     "next": "14.2.31",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "mapbox-gl": "^2.15.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.9",
