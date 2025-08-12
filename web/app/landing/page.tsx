@@ -1,4 +1,4 @@
-// Temporarily run on default runtime (not Edge) to isolate CF Pages 500s
+export const runtime = 'edge';
 
 export default function Landing(): JSX.Element {
   return (
