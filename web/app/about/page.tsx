@@ -1,4 +1,4 @@
-export const runtime = 'edge'; // build trigger: 2025-08-12
+export const runtime = 'edge'; // build trigger: 2025-08-12-9:22am
 
 export default function About(): JSX.Element {
   return (
