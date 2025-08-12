@@ -42,19 +42,21 @@ def lambda_handler(event, context):
 
         email = (data.get('email') or '').strip().lower()
         name = (data.get('name') or '').strip()
+        preferred_username = (data.get('preferred_username') or '').strip()
         group = (data.get('group') or INVITE_GROUP).strip()
 
         if not email:
             return _response(400, {'error': 'email is required'})
 
         # Create user with auto-generated temporary password; send default Cognito email
-        cognito.admin_create_user(
+        resp = cognito.admin_create_user(
             UserPoolId=USER_POOL_ID,
             Username=email,
             UserAttributes=[
                 {'Name': 'email', 'Value': email},
                 {'Name': 'email_verified', 'Value': 'true' if data.get('emailVerified') else 'false'},
                 *([{'Name': 'name', 'Value': name}] if name else []),
+                *([{'Name': 'preferred_username', 'Value': preferred_username}] if preferred_username else []),
             ],
             DesiredDeliveryMediums=['EMAIL'],
             MessageAction='RESEND' if data.get('resend') else 'SUPPRESS' if data.get('suppress') else None

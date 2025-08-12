@@ -424,7 +424,7 @@ class SpaceportStack(Stack):
             "SpaceportUserPool",
             user_pool_name="Spaceport-Users",
             self_sign_up_enabled=True,
-            sign_in_aliases=cognito.SignInAliases(email=True),
+            sign_in_aliases=cognito.SignInAliases(email=True, preferred_username=True),
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             standard_attributes=cognito.StandardAttributes(
                 email=cognito.StandardAttribute(required=True, mutable=True)
