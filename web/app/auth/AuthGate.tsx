@@ -7,16 +7,15 @@ type AuthGateProps = {
   children: React.ReactNode;
 };
 
-type View = 'signin' | 'signup' | 'confirm';
+type View = 'signin';
 
 export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [view, setView] = useState<View>('signin');
+  const [view] = useState<View>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const WAITLIST_API = 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist';
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
@@ -55,22 +54,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
     }
   };
 
-  // Disable open sign-up: invite-only flow
-  const signUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('Account creation is invite-only. Please use the invite link we send to approved beta users.');
-  };
-
-  const confirm = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    try {
-      await Auth.confirmSignUp(email, code);
-      await signIn(e);
-    } catch (err: any) {
-      setError(err?.message || 'Confirmation failed');
-    }
-  };
+  // Sign-up and confirm flows are disabled (invite-only)
 
   const joinWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,44 +93,6 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="cta-button" type="submit">Sign in</button>
-                <button type="button" className="cta-button2-fixed" onClick={() => { setView('signup'); setError(null); }}>Request access</button>
-              </div>
-            </form>
-          )}
-
-          {view === 'signup' && (
-            <form onSubmit={signUp} className="waitlist-form" style={{ maxWidth: 520 }}>
-              <label>
-                Name
-                <input value={name} onChange={(e) => setName(e.target.value)} className="waitlist-input" />
-              </label>
-              <label>
-                Email
-                <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="waitlist-input" />
-              </label>
-              <label>
-                Password
-                <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="waitlist-input" />
-              </label>
-              {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="cta-button" type="submit">Create account (invite only)</button>
-                <button type="button" className="cta-button2-fixed" onClick={() => { setView('signin'); setError(null); }}>Back to sign in</button>
-              </div>
-            </form>
-          )}
-
-          {view === 'confirm' && (
-            <form onSubmit={confirm} className="waitlist-form" style={{ maxWidth: 520 }}>
-              <p>We sent a verification code to your email. Enter it below to verify your account.</p>
-              <label>
-                Verification code
-                <input value={code} onChange={(e) => setCode(e.target.value)} required className="waitlist-input" />
-              </label>
-              {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="cta-button" type="submit">Verify</button>
-                <button type="button" className="cta-button2-fixed" onClick={() => setView('signin')}>Back to sign in</button>
               </div>
             </form>
           )}
