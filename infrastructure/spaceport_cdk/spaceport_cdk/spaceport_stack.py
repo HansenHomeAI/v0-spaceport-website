@@ -21,7 +21,8 @@ from aws_cdk import (
     aws_sns as sns,
     aws_events as events,
     aws_events_targets as targets,
-    aws_cloudwatch as cloudwatch
+    aws_cloudwatch as cloudwatch,
+    aws_cognito as cognito,
 )
 from constructs import Construct
 import os
@@ -414,3 +415,50 @@ class SpaceportStack(Stack):
             "FileUploadApiUrl",
             value=file_upload_api.url
         ) 
+
+        # ------------------------
+        # User Authentication (Cognito)
+        # ------------------------
+        user_pool = cognito.UserPool(
+            self,
+            "SpaceportUserPool",
+            user_pool_name="Spaceport-Users",
+            self_sign_up_enabled=True,
+            sign_in_aliases=cognito.SignInAliases(email=True),
+            auto_verify=cognito.AutoVerifiedAttrs(email=True),
+            standard_attributes=cognito.StandardAttributes(
+                email=cognito.StandardAttribute(required=True, mutable=True)
+            ),
+            password_policy=cognito.PasswordPolicy(
+                min_length=8,
+                require_lowercase=True,
+                require_uppercase=True,
+                require_digits=True,
+                require_symbols=False,
+                temp_password_validity=Duration.days(7),
+            ),
+            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
+            removal_policy=RemovalPolicy.RETAIN,
+        )
+
+        user_pool_client = user_pool.add_client(
+            "SpaceportUserPoolClient",
+            user_pool_client_name="Spaceport-Web-Client",
+            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True),
+            o_auth=cognito.OAuthSettings(
+                flows=cognito.OAuthFlows(authorization_code_grant=True),
+                callback_urls=[
+                    # Add app domains as needed
+                    "http://localhost:3000/",
+                    "https://spaceport.ai/",
+                ],
+                logout_urls=[
+                    "http://localhost:3000/",
+                    "https://spaceport.ai/",
+                ],
+            ),
+            prevent_user_existence_errors=True,
+        )
+
+        CfnOutput(self, "CognitoUserPoolId", value=user_pool.user_pool_id)
+        CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)

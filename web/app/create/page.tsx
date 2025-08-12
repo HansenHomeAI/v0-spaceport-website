@@ -2,12 +2,13 @@
 import { useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
+import AuthGate from '../auth/AuthGate';
 
 export default function Create(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <>
+    <AuthGate>
       <section className="section" id="create">
         <div id="development-content">
           <h1>Create your space.</h1>
@@ -54,7 +55,7 @@ export default function Create(): JSX.Element {
         </div>
       </section>
       <NewProjectModal open={modalOpen} onClose={() => setModalOpen(false)} />
-    </>
+    </AuthGate>
   );
 }
 

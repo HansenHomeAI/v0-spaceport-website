@@ -22,7 +22,7 @@ export default function Header(): JSX.Element {
           <Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link>
           <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
           <Link href="/create" className={pathname === '/create' ? 'active' : ''}>Create</Link>
-          <Link href="/signup" className={pathname === '/signup' ? 'active' : ''}>Signup</Link>
+          {/* Signup is now handled inline on the create page via AuthGate */}
         </div>
 
         <div className={`toggle${expanded ? ' rotated' : ''}`} onClick={() => setExpanded(v => !v)}>
