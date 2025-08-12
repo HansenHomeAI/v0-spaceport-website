@@ -55,6 +55,8 @@ jobs:
         npx cdk deploy SpaceportStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
         # Deploy SpaceportMLPipelineStack without parameters
         npx cdk deploy SpaceportMLPipelineStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2
+        # Deploy new dedicated Auth stack (v2)
+        npx cdk deploy SpaceportAuthStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'

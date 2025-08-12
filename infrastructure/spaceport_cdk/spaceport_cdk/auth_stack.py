@@ -82,6 +82,8 @@ class AuthStack(Stack):
             handler="lambda_function.lambda_handler",
             environment={
                 "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
+                # Ensure users are added to the v2 group name
+                "INVITE_GROUP": "beta-testers-v2",
             },
             timeout=Duration.seconds(30),
         )
