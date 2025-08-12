@@ -424,13 +424,13 @@ class SpaceportStack(Stack):
             "SpaceportUserPool",
             user_pool_name="Spaceport-Users",
             self_sign_up_enabled=True,
-            # IMPORTANT: Do NOT enable preferred_username as a sign-in alias to avoid Cognito constraint
-            # that would force username alias and block in-place updates. We keep email sign-in only.
-            sign_in_aliases=cognito.SignInAliases(email=True),
+            # IMPORTANT: Use username_attributes EMAIL to match existing pool (immutable in-place).
+            username_attributes=[cognito.UsernameAttribute.EMAIL],
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             standard_attributes=cognito.StandardAttributes(
                 email=cognito.StandardAttribute(required=True, mutable=True),
-                preferred_username=cognito.StandardAttribute(required=True, mutable=False)
+                # Do not try to change preferred_username schema on existing pool; enforce at app level
+                # preferred_username=cognito.StandardAttribute(required=False, mutable=True)
             ),
             password_policy=cognito.PasswordPolicy(
                 min_length=8,
