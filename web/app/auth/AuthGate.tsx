@@ -7,18 +7,21 @@ type AuthGateProps = {
   children: React.ReactNode;
 };
 
-type View = 'signin';
+type View = 'signin' | 'new_password';
 
 export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [view] = useState<View>('signin');
+  const [view, setView] = useState<View>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const WAITLIST_API = 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist';
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const [pendingUser, setPendingUser] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [handle, setHandle] = useState('');
 
   useEffect(() => {
     const ok = configureAmplify();
@@ -46,7 +49,12 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
     setError(null);
     try {
       if (!isAuthAvailable()) throw new Error('Sign-in temporarily disabled');
-      await Auth.signIn(email, password);
+      const res = await Auth.signIn(email, password);
+      if (res.challengeName === 'NEW_PASSWORD_REQUIRED') {
+        setPendingUser(res);
+        setView('new_password');
+        return;
+      }
       const current = await Auth.currentAuthenticatedUser();
       setUser(current);
     } catch (err: any) {
@@ -93,6 +101,42 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="cta-button" type="submit">Sign in</button>
+              </div>
+            </form>
+          )}
+
+          {view === 'new_password' && (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setError(null);
+                try {
+                  if (!pendingUser) throw new Error('Session expired');
+                  const completed = await Auth.completeNewPassword(pendingUser, newPassword, {
+                    // Cognito requires preferred_username (handle) as we configured
+                    preferred_username: handle,
+                  });
+                  const current = await Auth.currentAuthenticatedUser();
+                  setUser(current || completed);
+                } catch (err: any) {
+                  setError(err?.message || 'Failed to set password/handle');
+                }
+              }}
+              className="waitlist-form"
+              style={{ maxWidth: 520 }}
+            >
+              <p>Finish setup by choosing your password and a unique handle.</p>
+              <label>
+                New password
+                <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" required className="waitlist-input" />
+              </label>
+              <label>
+                Handle (your unique username)
+                <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="e.g. johndoe" />
+              </label>
+              {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="cta-button" type="submit">Save and sign in</button>
               </div>
             </form>
           )}
