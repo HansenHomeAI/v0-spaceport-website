@@ -92,7 +92,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           BRANCH="${{ github.ref_name }}"
-          npx wrangler pages deploy .vercel/output \
+          # Deploy the static subdir so _worker.js sits at the upload root
+          npx wrangler pages deploy .vercel/output/static \
             --project-name "$CF_PAGES_PROJECT" \
             --branch "$BRANCH"
 
