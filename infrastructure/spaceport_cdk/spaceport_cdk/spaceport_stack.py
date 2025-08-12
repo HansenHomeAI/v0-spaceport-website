@@ -471,3 +471,50 @@ class SpaceportStack(Stack):
 
         CfnOutput(self, "CognitoUserPoolId", value=user_pool.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
+
+        # Adminless invite Lambda
+        invite_lambda = lambda_.Function(
+            self,
+            "Spaceport-InviteUserFunction",
+            function_name="Spaceport-InviteUserFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "invite_user")),
+            handler="lambda_function.lambda_handler",
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                # Optional: set INVITE_API_KEY via SSM/Secrets and reference here for extra protection
+            },
+            role=lambda_role,
+            timeout=Duration.seconds(30)
+        )
+
+        # Grant permissions for invite lambda to manage users
+        invite_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "cognito-idp:AdminCreateUser",
+                    "cognito-idp:AdminAddUserToGroup"
+                ],
+                resources=[f"arn:aws:cognito-idp:{Stack.of(self).region}:{Stack.of(self).account}:userpool/*"]
+            )
+        )
+
+        # Expose invite endpoint via API Gateway
+        invite_api = apigw.RestApi(
+            self,
+            "Spaceport-InviteApi",
+            rest_api_name="Spaceport-InviteApi",
+            description="Invite approved users to Spaceport",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS
+            )
+        )
+
+        invite_res = invite_api.root.add_resource("invite")
+        invite_res.add_method(
+            "POST",
+            apigw.LambdaIntegration(invite_lambda, proxy=True)
+        )
+
+        CfnOutput(self, "InviteApiUrl", value=f"{invite_api.url}invite")
