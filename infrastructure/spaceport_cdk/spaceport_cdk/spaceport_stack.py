@@ -441,6 +441,15 @@ class SpaceportStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
         )
 
+        # Allow admin-only invites: create a group for beta testers
+        beta_group = cognito.CfnUserPoolGroup(
+            self,
+            "SpaceportBetaTestersGroup",
+            user_pool_id=user_pool.user_pool_id,
+            group_name="beta-testers",
+            description="Approved beta testers allowed to sign in"
+        )
+
         user_pool_client = user_pool.add_client(
             "SpaceportUserPoolClient",
             user_pool_client_name="Spaceport-Web-Client",

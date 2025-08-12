@@ -2,8 +2,9 @@
 import { Amplify } from 'aws-amplify';
 
 let configured = false;
+let available = false;
 
-export function configureAmplify(): void {
+export function configureAmplify(): boolean {
   if (configured) return;
   const region = process.env.NEXT_PUBLIC_COGNITO_REGION;
   const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
@@ -12,7 +13,8 @@ export function configureAmplify(): void {
   if (!region || !userPoolId || !userPoolWebClientId) {
     // Leave unconfigured in dev if not provided
     configured = true;
-    return;
+    available = false;
+    return false;
   }
 
   Amplify.configure({
@@ -25,6 +27,12 @@ export function configureAmplify(): void {
     ssr: true,
   } as any);
   configured = true;
+  available = true;
+  return true;
+}
+
+export function isAuthAvailable(): boolean {
+  return available;
 }
 
 

@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { configureAmplify } from '../amplifyClient';
+import { configureAmplify, isAuthAvailable } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
 
 type AuthGateProps = {
@@ -19,13 +19,18 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const WAITLIST_API = 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist';
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
 
   useEffect(() => {
-    configureAmplify();
+    const ok = configureAmplify();
     (async () => {
       try {
-        const current = await Auth.currentAuthenticatedUser();
-        setUser(current);
+        if (ok && isAuthAvailable()) {
+          const current = await Auth.currentAuthenticatedUser();
+          setUser(current);
+        } else {
+          setUser(null);
+        }
       } catch {
         setUser(null);
       } finally {
@@ -41,6 +46,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
     e.preventDefault();
     setError(null);
     try {
+      if (!isAuthAvailable()) throw new Error('Sign-in temporarily disabled');
       await Auth.signIn(email, password);
       const current = await Auth.currentAuthenticatedUser();
       setUser(current);
@@ -49,15 +55,10 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
     }
   };
 
+  // Disable open sign-up: invite-only flow
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    try {
-      await Auth.signUp({ username: email, password, attributes: { email, name } });
-      setView('confirm');
-    } catch (err: any) {
-      setError(err?.message || 'Sign up failed');
-    }
+    setError('Account creation is invite-only. Please use the invite link we send to approved beta users.');
   };
 
   const confirm = async (e: React.FormEvent) => {
@@ -74,6 +75,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const joinWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setWaitlistSubmitting(true);
     try {
       const res = await fetch(WAITLIST_API, {
         method: 'POST',
@@ -84,6 +86,8 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
       alert('Thanks! You have been added to the waitlist.');
     } catch (err: any) {
       setError(err?.message || 'Failed to join waitlist');
+    } finally {
+      setWaitlistSubmitting(false);
     }
   };
 
@@ -105,7 +109,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="cta-button" type="submit">Sign in</button>
-                <button type="button" className="cta-button2-fixed" onClick={() => { setView('signup'); setError(null); }}>Create account</button>
+                <button type="button" className="cta-button2-fixed" onClick={() => { setView('signup'); setError(null); }}>Request access</button>
               </div>
             </form>
           )}
@@ -126,7 +130,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               </label>
               {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
               <div style={{ display: 'flex', gap: 8 }}>
-                <button className="cta-button" type="submit">Create account</button>
+                <button className="cta-button" type="submit">Create account (invite only)</button>
                 <button type="button" className="cta-button2-fixed" onClick={() => { setView('signin'); setError(null); }}>Back to sign in</button>
               </div>
             </form>
@@ -162,7 +166,10 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               <div className="input-group">
                 <input className="waitlist-input" placeholder="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
-              <button type="submit" className="waitlist-submit-btn">Join Waitlist</button>
+              <button type="submit" className="waitlist-submit-btn" disabled={waitlistSubmitting}>
+                <span>{waitlistSubmitting ? 'Submitting…' : 'Join Waitlist'}</span>
+                <div className="spinner" style={{ display: waitlistSubmitting ? 'inline-block' : 'none', marginLeft: 8 }} />
+              </button>
             </form>
           </div>
         </div>
