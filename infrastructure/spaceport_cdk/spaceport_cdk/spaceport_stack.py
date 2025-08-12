@@ -427,7 +427,8 @@ class SpaceportStack(Stack):
             sign_in_aliases=cognito.SignInAliases(email=True, preferred_username=True),
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             standard_attributes=cognito.StandardAttributes(
-                email=cognito.StandardAttribute(required=True, mutable=True)
+                email=cognito.StandardAttribute(required=True, mutable=True),
+                preferred_username=cognito.StandardAttribute(required=True, mutable=False)
             ),
             password_policy=cognito.PasswordPolicy(
                 min_length=8,
