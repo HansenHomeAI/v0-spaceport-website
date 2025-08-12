@@ -424,8 +424,6 @@ class SpaceportStack(Stack):
             "SpaceportUserPool",
             user_pool_name="Spaceport-Users",
             self_sign_up_enabled=True,
-            # IMPORTANT: Use username_attributes EMAIL to match existing pool (immutable in-place).
-            username_attributes=[cognito.UsernameAttribute.EMAIL],
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             standard_attributes=cognito.StandardAttributes(
                 email=cognito.StandardAttribute(required=True, mutable=True),
