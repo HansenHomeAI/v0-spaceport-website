@@ -131,13 +131,18 @@ jobs:
         run: |
           wrangler pages deployment list --project-name "$PROJECT" | cat
 
-      - name: Verify endpoints
+      - name: Verify endpoints (branch-aware)
         env:
           PROJECT: ${{ steps.select_project.outputs.project }}
         run: |
-          HOST="https://$PROJECT.pages.dev"
+          BRANCH="${GITHUB_REF_NAME}"
+          if [ "$BRANCH" = "main" ]; then
+            HOST="https://$PROJECT.pages.dev"
+          else
+            HOST="https://$BRANCH.$PROJECT.pages.dev"
+          fi
           echo "Verifying $HOST"
-          for path in "/" "/landing" "/about" "/pricing" "/create" "/signup" "/api/health"; do
+          for path in "/" "/landing" "/about" "/pricing" "/create" "/signup" "/api/health" "/health.txt"; do
             echo "GET $HOST$path";
             curl -fsS "$HOST$path" -H 'Accept: text/html,application/json' >/dev/null || (echo "Failed: $path" && curl -i "$HOST$path" && exit 1);
           done
