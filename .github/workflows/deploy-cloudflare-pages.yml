@@ -51,6 +51,14 @@ jobs:
           echo "Functions manifest.json:" && (cat .vercel/output/functions/manifest.json || true)
           echo "Static dir:" && ls -la .vercel/output/static || true
 
+      - name: Upload .vercel/output for diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-output-${{ github.sha }}
+          path: .vercel/output
+          if-no-files-found: ignore
+          retention-days: 3
+
       - name: Install Wrangler
         run: npm i -g wrangler@4
 
