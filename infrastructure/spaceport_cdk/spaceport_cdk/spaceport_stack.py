@@ -454,7 +454,7 @@ class SpaceportStack(Stack):
         user_pool_client = user_pool.add_client(
             "SpaceportUserPoolClient",
             user_pool_client_name="Spaceport-Web-Client",
-            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True),
+            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
             o_auth=cognito.OAuthSettings(
                 flows=cognito.OAuthFlows(authorization_code_grant=True),
                 callback_urls=[
