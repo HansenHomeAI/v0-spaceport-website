@@ -43,19 +43,26 @@ def lambda_handler(event, context):
         email = (data.get('email') or '').strip().lower()
         name = (data.get('name') or '').strip()
         group = (data.get('group') or INVITE_GROUP).strip()
+        handle = (data.get('handle') or '').strip()
 
         if not email:
             return _response(400, {'error': 'email is required'})
+
+        # Build attributes per pool schema; include preferred_username if provided
+        user_attributes = [
+            {'Name': 'email', 'Value': email},
+            {'Name': 'email_verified', 'Value': 'true' if data.get('emailVerified') else 'false'},
+        ]
+        if name:
+            user_attributes.append({'Name': 'name', 'Value': name})
+        if handle:
+            user_attributes.append({'Name': 'preferred_username', 'Value': handle})
 
         # Create user with auto-generated temporary password; send default Cognito email
         resp = cognito.admin_create_user(
             UserPoolId=USER_POOL_ID,
             Username=email,
-            UserAttributes=[
-                {'Name': 'email', 'Value': email},
-                {'Name': 'email_verified', 'Value': 'true' if data.get('emailVerified') else 'false'},
-                *([{'Name': 'name', 'Value': name}] if name else []),
-            ],
+            UserAttributes=user_attributes,
             DesiredDeliveryMediums=['EMAIL'],
             MessageAction='RESEND' if data.get('resend') else 'SUPPRESS' if data.get('suppress') else None
         )
@@ -72,7 +79,7 @@ def lambda_handler(event, context):
                 GroupName=group,
             )
 
-        return _response(200, {'message': 'Invite sent', 'email': email, 'group': group})
+        return _response(200, {'message': 'Invite sent', 'email': email, 'group': group, 'handle': handle or None})
 
     except cognito.exceptions.UsernameExistsException:
         return _response(200, {'message': 'User already exists. If they did not receive email, you can use resend=true', 'email': email})
