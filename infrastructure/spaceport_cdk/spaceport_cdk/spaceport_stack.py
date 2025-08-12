@@ -419,27 +419,11 @@ class SpaceportStack(Stack):
         # ------------------------
         # User Authentication (Cognito)
         # ------------------------
-        user_pool = cognito.UserPool(
+        # Import existing pool instead of defining new to avoid immutable updates
+        user_pool = cognito.UserPool.from_user_pool_id(
             self,
-            "SpaceportUserPool",
-            user_pool_name="Spaceport-Users",
-            self_sign_up_enabled=True,
-            auto_verify=cognito.AutoVerifiedAttrs(email=True),
-            standard_attributes=cognito.StandardAttributes(
-                email=cognito.StandardAttribute(required=True, mutable=True),
-                # Do not try to change preferred_username schema on existing pool; enforce at app level
-                # preferred_username=cognito.StandardAttribute(required=False, mutable=True)
-            ),
-            password_policy=cognito.PasswordPolicy(
-                min_length=8,
-                require_lowercase=True,
-                require_uppercase=True,
-                require_digits=True,
-                require_symbols=False,
-                temp_password_validity=Duration.days(7),
-            ),
-            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-            removal_policy=RemovalPolicy.RETAIN,
+            "SpaceportUserPoolImported",
+            user_pool_id="us-west-2_0dVDGIChG",
         )
 
         # Allow admin-only invites: create a group for beta testers
@@ -451,7 +435,11 @@ class SpaceportStack(Stack):
             description="Approved beta testers allowed to sign in"
         )
 
-        user_pool_client = user_pool.add_client(
+        # Recreate or reference existing client by name is complicated; add a new client safely
+        user_pool_client = cognito.UserPoolClient(
+            self,
+            "SpaceportUserPoolClient",
+            user_pool=user_pool,
             "SpaceportUserPoolClient",
             user_pool_client_name="Spaceport-Web-Client",
             auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
