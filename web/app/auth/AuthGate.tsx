@@ -13,9 +13,10 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<View>('signin');
-  const [email, setEmail] = useState('');
+  const [signInEmail, setSignInEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [waitlistEmail, setWaitlistEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const WAITLIST_API = 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist';
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
@@ -49,7 +50,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
     setError(null);
     try {
       if (!isAuthAvailable()) throw new Error('Sign-in temporarily disabled');
-      const res = await Auth.signIn(email, password);
+      const res = await Auth.signIn(signInEmail, password);
       if (res.challengeName === 'NEW_PASSWORD_REQUIRED') {
         setPendingUser(res);
         setView('new_password');
@@ -72,7 +73,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
       const res = await fetch(WAITLIST_API, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name: name || 'Friend', email }),
+        body: JSON.stringify({ name: name || 'Friend', email: waitlistEmail }),
       });
       if (!res.ok) throw new Error('Failed to join waitlist');
       alert('Thanks! You have been added to the waitlist.');
@@ -84,26 +85,48 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   };
 
   return (
-    <section className="section" id="signup" style={{ maxWidth: 720, margin: '0 auto' }}>
-      <h1>Sign in to create your model</h1>
-      <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 320px', minWidth: 320 }}>
-          {view === 'signin' && (
-            <form onSubmit={signIn} className="waitlist-form" style={{ maxWidth: 520 }}>
-              <label>
-                Email
-                <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="waitlist-input" />
-              </label>
-              <label>
-                Password
-                <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="waitlist-input" />
-              </label>
-              {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="cta-button" type="submit">Sign in</button>
-              </div>
-            </form>
-          )}
+    <section className="section" id="signup" style={{ maxWidth: 900, margin: '0 auto' }}>
+      <div className="signup-stack">
+        <div className="waitlist-card" style={{ width: '100%', maxWidth: 520 }}>
+          <div className="waitlist-header">
+            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="waitlist-logo" />
+            <h2>New here?</h2>
+            <p>Join the waitlist to be among the first to access Spaceport AI.</p>
+          </div>
+          <form onSubmit={joinWaitlist} className="waitlist-form">
+            <div className="input-group">
+              <input className="waitlist-input" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="input-group">
+              <input className="waitlist-input" placeholder="Email Address" type="email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} />
+            </div>
+            <button type="submit" className="waitlist-submit-btn" disabled={waitlistSubmitting}>
+              <span>{waitlistSubmitting ? 'Submitting…' : 'Join Waitlist'}</span>
+              <div className="spinner" style={{ display: waitlistSubmitting ? 'inline-block' : 'none', marginLeft: 8 }} />
+            </button>
+          </form>
+        </div>
+
+        <div className="signin-block" style={{ width: '100%', maxWidth: 520 }}>
+          <div className="waitlist-card" style={{ width: '100%' }}>
+            <div className="waitlist-header">
+              <h2>Sign in to create your model</h2>
+            </div>
+            {view === 'signin' && (
+              <form onSubmit={signIn} className="waitlist-form">
+                <div className="input-group">
+                  <input value={signInEmail} onChange={(e) => setSignInEmail(e.target.value)} type="email" className="waitlist-input" placeholder="Email" required />
+                </div>
+                <div className="input-group">
+                  <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="waitlist-input" placeholder="Password" required />
+                </div>
+                {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
+                <button className="waitlist-submit-btn" type="submit">
+                  <span>Sign in</span>
+                </button>
+              </form>
+            )}
+          </div>
 
           {view === 'new_password' && (
             <form
@@ -113,7 +136,6 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                 try {
                   if (!pendingUser) throw new Error('Session expired');
                   const completed = await Auth.completeNewPassword(pendingUser, newPassword, {
-                    // Cognito requires preferred_username (handle) as we configured
                     preferred_username: handle,
                   });
                   const current = await Auth.currentAuthenticatedUser();
@@ -128,45 +150,20 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                 }
               }}
               className="waitlist-form"
-              style={{ maxWidth: 520 }}
             >
               <p>Finish setup by choosing your password and a unique handle.</p>
-              <label>
-                New password
-                <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" required className="waitlist-input" />
-              </label>
-              <label>
-                Handle (your unique username)
-                <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="e.g. johndoe" />
-              </label>
+              <div className="input-group">
+                <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" required className="waitlist-input" placeholder="New password" />
+              </div>
+              <div className="input-group">
+                <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="Handle (e.g. johndoe)" />
+              </div>
               {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="cta-button" type="submit">Save and sign in</button>
-              </div>
-            </form>
-          )}
-        </div>
-
-        <div style={{ flex: '1 1 320px', minWidth: 320 }}>
-          <div className="waitlist-card">
-            <div className="waitlist-header">
-              <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="waitlist-logo" />
-              <h2>New here?</h2>
-              <p>Join the waitlist to be among the first to access Spaceport AI.</p>
-            </div>
-            <form onSubmit={joinWaitlist} className="waitlist-form">
-              <div className="input-group">
-                <input className="waitlist-input" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-              <div className="input-group">
-                <input className="waitlist-input" placeholder="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <button type="submit" className="waitlist-submit-btn" disabled={waitlistSubmitting}>
-                <span>{waitlistSubmitting ? 'Submitting…' : 'Join Waitlist'}</span>
-                <div className="spinner" style={{ display: waitlistSubmitting ? 'inline-block' : 'none', marginLeft: 8 }} />
+              <button className="waitlist-submit-btn" type="submit">
+                <span>Save and sign in</span>
               </button>
             </form>
-          </div>
+          )}
         </div>
       </div>
     </section>

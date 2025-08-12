@@ -82,7 +82,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: -7.2px;
+  margin-top: -7.2px; /* Restore original alignment for nav/buttons */
   z-index: 1;
 }
 
@@ -102,6 +102,8 @@ html, body {
   width: auto;
   max-width: 116px;
   transition: transform 0.2s ease;
+  position: relative;
+  top: 1.5px; /* Nudge logo down slightly for perfect vertical centering */
 }
 .logo::before {
   content: "";
@@ -639,6 +641,8 @@ footer {
   text-align: center;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: auto; /* Ensure centered when used standalone */
+  margin-right: auto;
 }
 
 .waitlist-card::before {
@@ -1028,15 +1032,15 @@ footer {
   margin-top: 80px;
 }
 
-/* Ensure About, Pricing, and Create start 35% from the top */
+/* Ensure About, Pricing, and Create start lower from the top */
 #about,
 #pricing-header,
 #create {
   flex-direction: column;
   justify-content: center;
   min-height: 3rem;
-  margin-top: 10rem;
-  margin-bottom: 3rem;
+  margin-top: 12rem;
+  margin-bottom: 3.5rem;
 }
 
 /* LOGO CAROUSEL STYLES */
@@ -1052,7 +1056,8 @@ footer {
 }
 .logos {
   display: flex;
-  animation: scroll 44.1s linear infinite;
+  gap: 34px;
+  animation: scroll 20s linear infinite; /* Shorter loop to fit current logo count */
 }
 .logos img {
   width: auto;
@@ -1061,12 +1066,8 @@ footer {
   opacity: 0.5;
 }
 @keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-1500px);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-600px); }
 }
 .logo-carousel::before,
 .logo-carousel::after {
@@ -2220,6 +2221,70 @@ footer {
   filter: blur(80px);
 }
 
+/* Breathing room below the create header before dashboard */
+#create-dashboard {
+  margin-top: 3.5rem;
+}
+
+/* Signup section spacing and stack layout */
+#signup {
+  margin-top: 10rem;
+  margin-bottom: 4rem;
+  position: relative;
+}
+
+/* Reuse the same swirl background treatment for signup */
+#signup::before {
+  content: "";
+  position: absolute;
+  top: -1200px;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg) scale(0.8);
+  width: 1600px;
+  height: 1600px;
+  pointer-events: none;
+  z-index: -2;
+  background: conic-gradient(
+    from 100deg,
+    #FF4F00 0%,
+    #FF4F00 20%,
+    #4B006D 45%,
+    #CD70E4 80%,
+    #FF4F00 100%
+  );
+  border-radius: 50%;
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  opacity: 0.35;
+  filter: blur(80px);
+}
+
+#signup::after {
+  content: "";
+  position: absolute;
+  top: -1600px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1800px;
+  height: 1800px;
+  pointer-events: none;
+  z-index: -1;
+  background: url("assets/NoiseSwirl.png") repeat center;
+  background-size: 200px 200px;
+  opacity: 0.9;
+}
+
+.signup-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.signin-block h2 {
+  font-weight: 500;
+}
+
 /* Noise overlay layer for all three */
 #pricing-header::after,
 #about::after,
@@ -2374,6 +2439,7 @@ body::before {
 /* Remove arrows (spinners) in Firefox */
 #dfpg-container .input-wrapper input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Add Existing Path Button */
@@ -3027,7 +3093,9 @@ body::before {
   font-weight: 500;
   transition: all 0.3s ease;
   cursor: pointer;
+  -moz-appearance: none;
   appearance: none;
+  -webkit-appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 12px center;
@@ -3380,9 +3448,7 @@ body.popup-open {
   margin-bottom: 0;
 }
 
-.accordion-section:last-child {
-  /* No border needed */
-}
+/* .accordion-section:last-child intentionally has no overrides */
 
 .accordion-header {
   display: flex;
@@ -3647,9 +3713,7 @@ body.popup-open {
 }
 
 /* Remove the direct blur on map container */
-.map-container.has-instructions {
-  /* filter: blur(2px); - removing this */
-}
+/* .map-container.has-instructions blur removed intentionally */
 
 /* Add a new blur overlay */
 .map-blur-background {

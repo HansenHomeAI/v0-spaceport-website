@@ -15,15 +15,12 @@ export default function Landing(): JSX.Element {
         </div>
       </section>
 
-      {/* Logos carousel */}
+      {/* Logos carousel (client logos only, each once) */}
       <section className="section" id="landing-carousel">
         <div className="logo-carousel">
           <div className="logos">
             <img src="/assets/MirrRanchGroup.png" alt="Mirr Ranch Group" />
             <img src="/assets/MullinRealEstate.png" alt="Mullin Real Estate" />
-            <img src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" />
-            <img src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" />
-            <img src="/assets/White6SpaceFullLogo.svg" alt="Spaceport" />
           </div>
         </div>
       </section>
