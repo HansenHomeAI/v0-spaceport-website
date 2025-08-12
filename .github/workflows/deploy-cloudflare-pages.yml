@@ -44,10 +44,6 @@ jobs:
         run: |
           npm run build
           npx @cloudflare/next-on-pages
-          # Workaround: ensure Worker picked up by Pages by placing _worker.js at build root
-          if [ -f .vercel/output/static/_worker.js/index.js ]; then
-            cp .vercel/output/static/_worker.js/index.js .vercel/output/_worker.js
-          fi
 
       - name: Debug .vercel/output contents
         run: |
