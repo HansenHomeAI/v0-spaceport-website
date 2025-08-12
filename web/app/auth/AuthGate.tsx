@@ -119,7 +119,12 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                   const current = await Auth.currentAuthenticatedUser();
                   setUser(current || completed);
                 } catch (err: any) {
-                  setError(err?.message || 'Failed to set password/handle');
+                  const code = err?.name || err?.code || '';
+                  if (code === 'AliasExistsException') {
+                    setError('Username is taken. Please choose another.');
+                  } else {
+                    setError(err?.message || 'Failed to set password/handle');
+                  }
                 }
               }}
               className="waitlist-form"
