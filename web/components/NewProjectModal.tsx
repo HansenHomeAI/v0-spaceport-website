@@ -51,11 +51,10 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
   const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
 
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Accordion open states and toast
   const [setupOpen, setSetupOpen] = useState<boolean>(true);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Map refs
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -462,7 +461,7 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
                   </div>
                   <div className="popup-input-wrapper">
                     <span className="input-icon number"></span>
-                    <input
+              <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Quantity"
@@ -483,7 +482,7 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
                 <div className="input-row-popup">
                   <div className="popup-input-wrapper">
                     <span className="input-icon minimum"></span>
-                    <input
+              <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Minimum"
@@ -493,7 +492,7 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
                   </div>
                   <div className="popup-input-wrapper">
                     <span className="input-icon maximum"></span>
-                    <input
+              <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Maximum"

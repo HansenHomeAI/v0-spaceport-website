@@ -30,7 +30,7 @@ export default function Create(): JSX.Element {
             </div>
             <div className="right-col">
               <p>Our advanced algorithm creates exponential spiral flight patterns optimized for battery duration and neural network training. The system automatically calculates the perfect flight path that captures differentiated altitude data for maximum photo quality while respecting your constraints.</p>
-              <p>Each battery flies one complete slice of the pattern for optimal coverage.</p>
+              <p>Each battery flies one complete slice of the pattern for optimal coverage. The system uses intelligent battery optimization with 95% utilization safety margin and neural network-optimized altitude logic for superior 3D model quality.</p>
             </div>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function Create(): JSX.Element {
               <h2 className="flight-path-title">Step 2: upload drone photos.</h2>
             </div>
             <div className="right-col">
-              <p>Enter the relevant info to create the model. Include optional notes if you want property lines or tags added.</p>
+              <p>Enter the relevant info to create the model. If you'd like property lines or embeded name tags, include the site map documents within the drone photos zip file, and make mention in the "optional notes" field.</p>
             </div>
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function Create(): JSX.Element {
       <section className="section" id="create-steps3">
         <div>
           <h2>Step 3: model processing.</h2>
-          <p>Sit tight—creating your model can take up to 3 days. We'll email you once it's ready.</p>
+          <p>Sit tight—creating your model can take up to 3 days. We'll send a fully immersive 3D tour straight to your inbox once it's ready. If you run into any issues, just reach out using the feedback form below.</p>
         </div>
       </section>
       <NewProjectModal open={modalOpen} onClose={() => setModalOpen(false)} />
