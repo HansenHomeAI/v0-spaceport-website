@@ -34,6 +34,10 @@ jobs:
         run: |
           npm run build
           npx @cloudflare/next-on-pages
+          # Workaround: ensure Worker picked up by Pages by placing _worker.js at build root
+          if [ -f .vercel/output/static/_worker.js/index.js ]; then
+            cp .vercel/output/static/_worker.js/index.js .vercel/output/_worker.js
+          fi
 
       - name: Debug .vercel/output contents
         run: |
@@ -49,10 +53,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
+          BRANCH="${{ github.ref_name }}"
+          PROJECT="v0-spaceport-website-preview2"
+          if [ "$BRANCH" = "main" ]; then PROJECT="v0-spaceport-website-prod-fresh"; fi
           curl -fsS -X PATCH \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H "Content-Type: application/json" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}" \
             --data '{
               "deployment_configs": {
                 "production": {
@@ -74,8 +81,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           BRANCH="${{ github.ref_name }}"
+          PROJECT="v0-spaceport-website-preview2"
+          if [ "$BRANCH" = "main" ]; then PROJECT="v0-spaceport-website-prod-fresh"; fi
           npx wrangler pages deploy .vercel/output \
-            --project-name "$CF_PAGES_PROJECT" \
+            --project-name "$PROJECT" \
             --branch "$BRANCH"
 
       - name: Resolve latest deployment URLs (preview alias + hash URL)
@@ -86,18 +95,20 @@ jobs:
         run: |
           set -euo pipefail
           BRANCH="${{ github.ref_name }}"
+          PROJECT="v0-spaceport-website-preview2"
+          if [ "$BRANCH" = "main" ]; then PROJECT="v0-spaceport-website-prod-fresh"; fi
           # Get most recent deployment for the project (includes preview)
           JSON=$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments?per_page=1")
           HASH_URL=$(echo "$JSON" | jq -r '.result[0].url')
           DEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')
           # Fetch aliases for that deployment (branch alias if any)
           DETAIL=$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments/${DEPLOY_ID}")
           ALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')
           echo "hash_url=$HASH_URL" >> $GITHUB_OUTPUT
           echo "alias_url=$ALIAS" >> $GITHUB_OUTPUT
-          echo "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"
+          echo "Resolved: PROJECT=$PROJECT HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"
 
       - name: Verify preview alias and hash URL with retries
         env:
