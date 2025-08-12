@@ -23,6 +23,10 @@ export function configureAmplify(): boolean {
       userPoolId,
       userPoolWebClientId,
       mandatorySignIn: false,
+      loginWith: { // support email and username sign-in if enabled
+        username: true,
+        email: true,
+      }
     },
     ssr: true,
   } as any);
