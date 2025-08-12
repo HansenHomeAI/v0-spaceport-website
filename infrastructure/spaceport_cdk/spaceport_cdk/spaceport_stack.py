@@ -440,7 +440,6 @@ class SpaceportStack(Stack):
             self,
             "SpaceportUserPoolClient",
             user_pool=user_pool,
-            "SpaceportUserPoolClient",
             user_pool_client_name="Spaceport-Web-Client",
             auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
             o_auth=cognito.OAuthSettings(
