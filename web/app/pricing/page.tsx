@@ -10,17 +10,33 @@ export default function Pricing(): JSX.Element {
       <section className="section" id="pricing">
         <div className="pricing-grid">
           <div className="pricing-card">
-            <h2>Autonomous capture.</h2>
-            <div className="price">$599</div>
-            <p>Your drone follows an automated flight path—no hassle, no extra gear. We train the neural network and host the embeddable link. Hosting continues at $29/month after your free first month.</p>
-            <a href="/create" className="cta-button">Create your model</a>
+            <h2>Single model.</h2>
+            <div className="price">$29/mo</div>
+            <p>Subscribe per model. Ideal for one-off projects or trying Spaceport with a single active model.</p>
+            <a href="/create" className="cta-button">Get started</a>
           </div>
+
           <div className="pricing-card">
-            <h2>Custom.</h2>
-            <p>High-volume or specialized projects? We'll create a tailored plan to meet your needs.</p>
-            <a href="mailto:gabriel@spcprt.com?subject=Custom%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20custom%20pricing%20options%20at%20Spaceport." className="cta-button">Contact Us</a>
+            <h2>Starter (up to 5 models).</h2>
+            <div className="price">$99/mo</div>
+            <p>Includes up to five active models. Need more? Add additional models at $29/mo each.</p>
+            <a href="/create" className="cta-button">Start Starter</a>
+          </div>
+
+          <div className="pricing-card">
+            <h2>Growth (up to 20 models).</h2>
+            <div className="price">$299/mo</div>
+            <p>Includes up to twenty active models. Additional models are $29/mo each beyond your plan.</p>
+            <a href="/create" className="cta-button">Start Growth</a>
+          </div>
+
+          <div className="pricing-card">
+            <h2>Enterprise.</h2>
+            <p>High-volume or specialized projects? We’ll tailor a plan for teams with larger model counts or specific needs.</p>
+            <a href="mailto:gabriel@spcprt.com?subject=Enterprise%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20enterprise%20pricing%20at%20Spaceport." className="cta-button">Contact Us</a>
           </div>
         </div>
+        <p style={{ marginTop: '24px' }}>All plans support additional active models at <span className="inline-white">$29/mo</span> per model beyond your plan.</p>
       </section>
     </>
   );

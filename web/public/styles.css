@@ -2146,16 +2146,26 @@ footer {
   position: absolute;
   top: -1200px;
   left: 50%;
-  transform: translateX(-50%) rotate(160deg);
+  transform: translateX(-50%) rotate(160deg) scale(0.8);
   width: 1600px;         /* Larger bounding box so the swirl is bigger */
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("assets/ColorSwirl.svg") no-repeat center;
-  /* 'contain' keeps the full shape visible within the box 
-     If you need it to fill the box entirely, use 'cover' instead. */
-  background-size: contain;
-  opacity: 0.6;
+  /* Use pure CSS conic-gradient to avoid Safari foreignObject issues */
+  background: conic-gradient(
+    from 100deg,
+    #FF4F00 0%,
+    #FF4F00 20%,
+    #4B006D 45%,
+    #CD70E4 80%,
+    #FF4F00 100%
+  );
+  border-radius: 50%;
+  /* Soft edge for better blending */
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  opacity: 0.4;
+  filter: blur(80px);
 }
 
 /* ABOUT Circle Swirl */
@@ -2164,16 +2174,24 @@ footer {
   position: absolute;
   top: -1200px;
   left: 50%;
-  transform: translateX(-50%) rotate(180deg);
+  transform: translateX(-50%) rotate(180deg) scale(0.8);
   width: 1600px;         /* Larger bounding box so the swirl is bigger */
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("assets/ColorSwirl.svg") no-repeat center;
-  /* 'contain' keeps the full shape visible within the box 
-     If you need it to fill the box entirely, use 'cover' instead. */
-  background-size: contain;
-  opacity: 0.6;
+  background: conic-gradient(
+    from 100deg,
+    #FF4F00 0%,
+    #FF4F00 20%,
+    #4B006D 45%,
+    #CD70E4 80%,
+    #FF4F00 100%
+  );
+  border-radius: 50%;
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  opacity: 0.4;
+  filter: blur(80px);
 }
 
 /* CREATE Circle Swirl */
@@ -2182,16 +2200,24 @@ footer {
   position: absolute;
   top: -1200px;
   left: 50%;
-  transform: translateX(-50%) rotate(200deg);
+  transform: translateX(-50%) rotate(200deg) scale(0.8);
   width: 1600px;         /* Larger bounding box so the swirl is bigger */
   height: 1600px;
   pointer-events: none;
   z-index: -2;
-  background: url("assets/ColorSwirl.svg") no-repeat center;
-  /* 'contain' keeps the full shape visible within the box 
-     If you need it to fill the box entirely, use 'cover' instead. */
-  background-size: contain;
-  opacity: 0.6;
+  background: conic-gradient(
+    from 100deg,
+    #FF4F00 0%,
+    #FF4F00 20%,
+    #4B006D 45%,
+    #CD70E4 80%,
+    #FF4F00 100%
+  );
+  border-radius: 50%;
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
+  opacity: 0.4;
+  filter: blur(80px);
 }
 
 /* Noise overlay layer for all three */
