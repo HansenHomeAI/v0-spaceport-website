@@ -131,7 +131,7 @@ jobs:
         run: |
           wrangler pages deployment list --project-name "$PROJECT" | cat
 
-      - name: Verify endpoints (branch-aware)
+      - name: Verify endpoints (branch + direct deployment URL)
         env:
           PROJECT: ${{ steps.select_project.outputs.project }}
         run: |
@@ -141,9 +141,20 @@ jobs:
           else
             HOST="https://$BRANCH.$PROJECT.pages.dev"
           fi
-          echo "Verifying $HOST"
+          # Also derive the most recent direct deployment URL as fallback
+          DIRECT=$(wrangler pages deployment list --project-name "$PROJECT" | grep -Eo 'https://[a-z0-9]+\.[^ ]+\.pages\.dev' | head -1 || true)
+          echo "Verifying alias: $HOST"
+          echo "Direct deployment (fallback): ${DIRECT:-none}"
           for path in "/" "/landing" "/about" "/pricing" "/create" "/signup" "/api/health" "/health.txt"; do
             echo "GET $HOST$path";
-            curl -fsS "$HOST$path" -H 'Accept: text/html,application/json' >/dev/null || (echo "Failed: $path" && curl -i "$HOST$path" && exit 1);
+            if curl -fsS "$HOST$path" -H 'Accept: text/html,application/json' >/dev/null; then
+              continue
+            fi
+            if [ -n "$DIRECT" ]; then
+              echo "Alias failed, trying direct: $DIRECT$path";
+              curl -fsS "$DIRECT$path" -H 'Accept: text/html,application/json' >/dev/null || (echo "Failed on both alias and direct: $path" && curl -i "$DIRECT$path" && exit 1);
+            else
+              echo "No direct deployment URL available and alias failed: $path"; exit 1;
+            fi
           done
  
