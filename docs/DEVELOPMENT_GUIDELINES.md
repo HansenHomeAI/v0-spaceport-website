@@ -1,4 +1,4 @@
-# 🛠️ Development Guidelines for AI Assistants
+# 🛠️ Development Guidelines for AI Assistants (Condensed)
 
 > **MANDATORY READING**: These guidelines MUST be followed by all AI assistants working on this codebase to maintain consistency and prevent regression.
 
@@ -32,7 +32,7 @@
   └── [other guides]
   ```
 
-### **Container Structure** 
+### **Container Structure**
 ```
 infrastructure/containers/
 ├── sfm/
@@ -165,3 +165,12 @@ tests/
 
 **Last Updated**: December 2024 - After major codebase refactoring and standardization  
 **Next Review**: After successful end-to-end pipeline validation 
+
+---
+
+## Web App (Next.js) specifics
+
+- Location: `web/` (App Router). Keep `export const runtime = 'edge'` on app and API routes.
+- Do not enable static export in `web/next.config.cjs`.
+- CI builds Next.js, runs `@cloudflare/next-on-pages`, deploys `.vercel/output/static` so `_worker.js` mounts on Pages.
+- Endpoints verified automatically in CI for staging and production.
