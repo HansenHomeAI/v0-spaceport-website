@@ -37,8 +37,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'web/package-lock.json'
 
-      - name: Install deps
-        run: npm ci || npm install
+      - name: Install deps (tolerant to peer conflicts in CI)
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
       - name: Build Next for Cloudflare (SSR)
         run: |

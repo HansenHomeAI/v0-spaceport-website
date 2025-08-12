@@ -15,7 +15,7 @@
   "description": "",
   "type": "module",
   "dependencies": {
-    "@cloudflare/next-on-pages": "1.13.12",
+    "@cloudflare/next-on-pages": "1.13.13",
     "next": "14.2.31",
     "react": "18.3.1",
     "react-dom": "18.3.1"
@@ -25,6 +25,6 @@
     "@types/react": "^18.3.23",
     "eslint": "^8.57.1",
     "typescript": "^5.9.2",
-    "wrangler": "4.27.3"
+    "wrangler": "^4.28.1"
   }
 }
