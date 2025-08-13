@@ -35,7 +35,6 @@ export default function Header(): JSX.Element {
         <Link href="/pricing" onClick={close}>Pricing</Link>
         <Link href="/about" onClick={close}>About</Link>
         <Link href="/create" onClick={close}>Create</Link>
-        <Link href="/signup" onClick={close}>Signup</Link>
       </div>
     </header>
   );
