@@ -1057,17 +1057,18 @@ footer {
 .logos {
   display: flex;
   gap: 34px;
-  animation: scroll 20s linear infinite; /* Shorter loop to fit current logo count */
+  will-change: transform;
+  animation: logos-scroll 40s linear infinite; /* Smooth, constant scroll */
 }
 .logos img {
   width: auto;
   height: 60px;
   margin: 0 17px;
-  opacity: 0.5;
+  opacity: 0.5; /* 50% opacity as requested */
 }
-@keyframes scroll {
+@keyframes logos-scroll {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-600px); }
+  100% { transform: translateX(-50%); }
 }
 .logo-carousel::before,
 .logo-carousel::after {
@@ -1393,21 +1394,7 @@ footer {
   padding: 1.82px;
 }
 
-.stat-box2::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  background-image: url("assets/noiseEffect Rectangle 1024.png");
-  background-repeat: repeat;
-  background-size: 200px 200px; /* adjust for finer or coarser grain */
-  opacity: 0.18; /* adjust opacity as needed */
-  pointer-events: none;
-  z-index: -1;
-}
+.stat-box2::after { content: none; }
 
 .stat-box2 h1 {
   font-size: 5rem;
@@ -2269,7 +2256,7 @@ footer {
   height: 1800px;
   pointer-events: none;
   z-index: -1;
-  background: url("assets/NoiseSwirl.png") repeat center;
+  background: none;
   background-size: 200px 200px;
   opacity: 0.9;
 }
@@ -2298,7 +2285,7 @@ footer {
   height: 1800px;
   pointer-events: none;
   z-index: -1;
-  background: url("assets/NoiseSwirl.png") repeat center;
+  background: none;
   background-size: 200px 200px;
   background-position: 0 0;
   opacity: 1;

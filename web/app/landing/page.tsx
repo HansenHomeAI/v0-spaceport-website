@@ -9,18 +9,35 @@ export default function Landing(): JSX.Element {
         <div className="landing-content">
           <h1>Location. Visualized in 3D.</h1>
           <a href="https://10716eforestcreekrd.hansentour.com" className="cta-button with-symbol">
-            <img src="/assets/3DSymbol.svg" className="symbol-3d" alt="" aria-hidden="true" />
+            <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
             View example
           </a>
         </div>
       </section>
 
-      {/* Logos carousel (client logos only, each once) */}
+      {/* Logos carousel (client logos, seamless loop) */}
       <section className="section" id="landing-carousel">
         <div className="logo-carousel">
           <div className="logos">
-            <img src="/assets/MirrRanchGroup.png" alt="Mirr Ranch Group" />
-            <img src="/assets/MullinRealEstate.png" alt="Mullin Real Estate" />
+            {/* Set 1 (reordered to separate BHHS logos) */}
+            <img src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" />
+            <img src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" />
+            <img src="/assets/Engel&Volkers.png" alt="Engel & Volkers" />
+            <img src="/assets/BHHS.png" alt="Berkshire Hathaway HomeServices" />
+            <img src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" />
+            <img src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" />
+            <img src="/assets/VestCapital.png" alt="Vest Capital" />
+            <img src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" />
+
+            {/* Set 2 (duplicate for seamless scrolling) */}
+            <img src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" aria-hidden="true" />
+            <img src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" aria-hidden="true" />
+            <img src="/assets/Engel&Volkers.png" alt="Engel & Volkers" aria-hidden="true" />
+            <img src="/assets/BHHS.png" alt="Berkshire Hathaway HomeServices" aria-hidden="true" />
+            <img src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" aria-hidden="true" />
+            <img src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" aria-hidden="true" />
+            <img src="/assets/VestCapital.png" alt="Vest Capital" aria-hidden="true" />
+            <img src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" aria-hidden="true" />
           </div>
         </div>
       </section>
@@ -32,7 +49,7 @@ export default function Landing(): JSX.Element {
           <div className="right-col">
             <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you're right there—feeling the neighborhood and natural flow around it.</p>
             <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/3DSymbol.svg" className="symbol-3d" alt="" aria-hidden="true" />
+              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
               View example
             </a>
           </div>
@@ -66,7 +83,7 @@ export default function Landing(): JSX.Element {
           <div className="right-col">
             <p>Photos and 3D tours only show parts of a property—never the full picture. We create interactive models that let you explore the land, surroundings, and location in a way <span className="inline-white">no photo or video can match.</span></p>
             <a href="https://dolan-road.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/3DSymbol.svg" className="symbol-3d" alt="" aria-hidden="true" />
+              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
               View example
             </a>
           </div>
