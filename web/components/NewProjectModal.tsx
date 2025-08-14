@@ -136,7 +136,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             el.width = 32;
             el.height = 50;
             el.style.display = 'block';
-            el.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))';
+            el.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.3)) drop-shadow(0 1px 4px rgba(0,0,0,0.2))';
+            el.style.transform = 'translateY(4px)';
+            el.className = 'custom-teardrop-pin';
             markerRef.current = new mapboxgl.default.Marker({ element: el, anchor: 'bottom' })
             .setLngLat([lng, lat])
             .addTo(map);
@@ -149,6 +151,76 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             if (inst) inst.style.display = 'none';
         });
         mapRef.current = map;
+        
+        // Initialize fullscreen button functionality
+        const expandButton = document.getElementById('expand-button');
+        const mapContainer = mapContainerRef.current;
+        
+        if (expandButton && mapContainer) {
+          expandButton.addEventListener('click', () => {
+            const isFullscreen = mapContainer.classList.contains('fullscreen');
+            
+            if (isFullscreen) {
+              // Exit fullscreen
+              mapContainer.classList.remove('fullscreen');
+              expandButton.classList.remove('expanded');
+              
+              // Move back to original parent
+              const mapSection = document.querySelector('.popup-map-section');
+              if (mapSection) {
+                mapSection.appendChild(mapContainer);
+              }
+
+              // Reinitialize scroll zoom to fix cursor alignment when exiting fullscreen
+              if (map && map.scrollZoom) {
+                map.scrollZoom.disable();
+                map.scrollZoom.enable();
+              }
+            } else {
+              // Enter fullscreen
+              mapContainer.classList.add('fullscreen');
+              expandButton.classList.add('expanded');
+              
+              // Move to body for true fullscreen
+              document.body.appendChild(mapContainer);
+
+              // Reinitialize scroll zoom to fix cursor alignment in fullscreen
+              if (map && map.scrollZoom) {
+                map.scrollZoom.disable();
+                map.scrollZoom.enable();
+              }
+            }
+            
+            // Force complete Mapbox reinitialization after DOM move
+            setTimeout(() => {
+              if (map) {
+                // Force complete internal recalculation
+                map.resize();
+                
+                // Multiple resize calls to force internal recalculation
+                map.resize();
+                map.fire('resize');
+                
+                // Force canvas to recalculate its position by triggering a complete re-render
+                setTimeout(() => {
+                  map.resize();
+                }, 100);
+              }
+            }, 50);
+          });
+        }
+        
+        // ESC key to exit fullscreen
+        const handleKeyDown = (e: KeyboardEvent) => {
+          if (e.key === 'Escape' && mapContainer.classList.contains('fullscreen')) {
+            expandButton?.click();
+          }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        
+        return () => {
+          document.removeEventListener('keydown', handleKeyDown);
+        };
       } catch (err: any) {
         console.error('Map init failed', err);
       }
@@ -169,8 +241,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const coords = selectedCoordsRef.current;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
-    return Boolean(coords && minutes && batteries);
-  }, [batteryMinutes, numBatteries]);
+    const minH = parseInt(minHeightFeet || '');
+    const maxH = parseInt(maxHeightFeet || '');
+    return Boolean(coords && minutes && batteries && minH && maxH);
+  }, [batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet]);
 
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
@@ -633,20 +707,60 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
                     onClick={async () => {
                       // Auto-run optimization on first click if needed
-                  if (!optimizedParams) {
+                      if (!optimizedParams) {
                         if (!canOptimize) {
-                          setError('Please set location and battery params first');
+                          // Visual feedback: highlight missing fields
+                          const missingFields = [];
+                          if (!selectedCoordsRef.current) missingFields.push('location');
+                          if (!batteryMinutes) missingFields.push('battery duration');
+                          if (!numBatteries) missingFields.push('battery quantity');
+                          if (!minHeightFeet) missingFields.push('minimum altitude');
+                          if (!maxHeightFeet) missingFields.push('maximum altitude');
+                          
+                          setError(`Please set: ${missingFields.join(', ')}`);
+                          
+                          // Add visual highlighting to missing fields
+                          setTimeout(() => {
+                            if (!selectedCoordsRef.current) {
+                              const mapContainer = document.getElementById('map-container');
+                              if (mapContainer) mapContainer.style.outline = '2px solid #ff6b6b';
+                            }
+                            if (!batteryMinutes) {
+                              const input = document.querySelector('input[placeholder="Duration"]') as HTMLInputElement;
+                              if (input) input.style.outline = '2px solid #ff6b6b';
+                            }
+                            if (!numBatteries) {
+                              const input = document.querySelector('input[placeholder="Quantity"]') as HTMLInputElement;
+                              if (input) input.style.outline = '2px solid #ff6b6b';
+                            }
+                            if (!minHeightFeet) {
+                              const input = document.querySelector('input[placeholder="Minimum"]') as HTMLInputElement;
+                              if (input) input.style.outline = '2px solid #ff6b6b';
+                            }
+                            if (!maxHeightFeet) {
+                              const input = document.querySelector('input[placeholder="Maximum"]') as HTMLInputElement;
+                              if (input) input.style.outline = '2px solid #ff6b6b';
+                            }
+                            
+                            // Remove highlighting after 3 seconds
+                            setTimeout(() => {
+                              const inputs = document.querySelectorAll('input[style*="outline"]');
+                              inputs.forEach(input => (input as HTMLElement).style.outline = '');
+                              const mapContainer = document.getElementById('map-container');
+                              if (mapContainer) mapContainer.style.outline = '';
+                            }, 3000);
+                          }, 100);
                           return;
                         }
-                    setBatteryDownloading(idx + 1);
-                    await handleOptimize();
-                    // Poll optimizedParams until set (max ~5s)
-                    const start = Date.now();
-                    while (!optimizedParams && Date.now() - start < 5000) {
-                      await new Promise(r => setTimeout(r, 150));
-                    }
+                        setBatteryDownloading(idx + 1);
+                        await handleOptimize();
+                        // Poll optimizedParams until set (max ~5s)
+                        const start = Date.now();
+                        while (!optimizedParams && Date.now() - start < 5000) {
+                          await new Promise(r => setTimeout(r, 150));
+                        }
                       }
-                  await downloadBatteryCsv(idx + 1);
+                      await downloadBatteryCsv(idx + 1);
                     }}
                     disabled={batteryDownloading !== null}
                   >
