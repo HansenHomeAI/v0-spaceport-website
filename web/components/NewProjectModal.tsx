@@ -129,13 +129,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           if (markerRef.current) {
             markerRef.current.remove();
           }
-            // Use branded teardrop pin
-            const el = document.createElement('div');
-            el.style.width = '32px';
-            el.style.height = '50px';
-            el.style.backgroundImage = 'url(/assets/SpaceportIcons/TeardropPin.svg)';
-            el.style.backgroundRepeat = 'no-repeat';
-            el.style.backgroundSize = 'contain';
+            // Use branded teardrop pin (serving from /public)
+            const el = document.createElement('img');
+            el.src = '/assets/SpaceportIcons/TeardropPin.svg';
+            el.alt = 'pin';
+            el.width = 32;
+            el.height = 50;
+            el.style.display = 'block';
             el.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))';
             markerRef.current = new mapboxgl.default.Marker({ element: el, anchor: 'bottom' })
             .setLngLat([lng, lat])
@@ -261,7 +261,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
       const progress = STATUS_TO_PROGRESS[status] ?? 0;
       const body = {
         title: projectTitle,
