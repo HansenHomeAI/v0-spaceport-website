@@ -1,6 +1,7 @@
 import json
 import os
 import boto3
+from typing import Optional
 
 cognito = boto3.client('cognito-idp')
 ses = boto3.client('ses')
@@ -109,7 +110,7 @@ def generate_temp_password() -> str:
     return f"Spcprt{digits}A"
 
 
-def send_custom_invite_email(email: str, name: str, temp_password: str | None) -> None:
+def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
     body_text = (
