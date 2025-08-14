@@ -3,10 +3,18 @@ import os
 import time
 import urllib.request
 from typing import Any, Dict, Optional
+from decimal import Decimal
 
 import boto3
 from jose import jwk, jwt
 from jose.utils import base64url_decode
+
+
+# Helper function to convert Decimal to int/float for JSON serialization
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return int(obj) if obj % 1 == 0 else float(obj)
+    raise TypeError
 
 
 dynamodb = boto3.resource('dynamodb')
@@ -26,7 +34,7 @@ def _response(status: int, body: Dict[str, Any]) -> Dict[str, Any]:
     return {
         'statusCode': status,
         'headers': _cors_headers(),
-        'body': json.dumps(body),
+        'body': json.dumps(body, default=decimal_default),
     }
 
 
