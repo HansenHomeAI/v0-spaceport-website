@@ -64,6 +64,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     delivered: 100,
   };
   const [status, setStatus] = useState<string>('draft');
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(project?.projectId || null);
 
   const [setupOpen, setSetupOpen] = useState<boolean>(true);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
@@ -97,8 +98,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setMaxHeightFeet(params.maxHeight || '');
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
+      setCurrentProjectId(project.projectId || null);
     } else {
       setStatus('draft');
+      setCurrentProjectId(null);
     }
   }, [open]);
 
@@ -261,21 +264,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           maxHeight: maxHeightFeet,
         },
       };
-      const url = project?.projectId ? `${apiBase}/${encodeURIComponent(project.projectId)}` : `${apiBase}`;
-      const method = project?.projectId ? 'PATCH' : 'POST';
+      const url = currentProjectId ? `${apiBase}/${encodeURIComponent(currentProjectId)}` : `${apiBase}`;
+      const method = currentProjectId ? 'PATCH' : 'POST';
       const res = await fetch(url, {
         method,
         headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error(`Save failed: ${res.status}`);
-      setToast({ type: 'success', message: 'Saved' });
+      // Capture created id on first POST
+      if (!currentProjectId) {
+        const data = await res.json().catch(() => ({} as any));
+        const created = (data && (data.project || data)) as any;
+        if (created && created.projectId) setCurrentProjectId(created.projectId);
+      }
       onSaved?.();
-      onClose();
     } catch (e: any) {
       setError(e?.message || 'Failed to save project');
     }
-  }, [addressSearch, batteryMinutes, idToken, maxHeightFeet, minHeightFeet, numBatteries, onClose, onSaved, project, projectTitle, status]);
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status]);
+
+  // Debounced autosave on any change
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => {
+      handleSaveProject();
+    }, 600);
+    return () => clearTimeout(t);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, handleSaveProject]);
 
   // Address search via Mapbox Geocoding
   const handleAddressEnter = useCallback(async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -720,12 +736,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           </div>
           )}
         </div>
-        {/* Save button for edit/create metadata only */}
-        <div style={{display:'flex', justifyContent:'center', marginTop:16}}>
-          <button className="popup-action-btn primary" onClick={handleSaveProject}>
-            Save
-          </button>
-        </div>
+        {/* Autosave enabled; no explicit Save button */}
       </div>
     </div>
   );
