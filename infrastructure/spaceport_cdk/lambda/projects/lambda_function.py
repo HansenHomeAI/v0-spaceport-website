@@ -17,7 +17,7 @@ table = dynamodb.Table(TABLE_NAME)
 def _cors_headers() -> Dict[str, str]:
     return {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key',
         'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
     }
 
