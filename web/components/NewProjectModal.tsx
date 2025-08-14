@@ -75,6 +75,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const markerRef = useRef<any>(null);
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
+  // Fullscreen state
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
   // Reset state when opening/closing
   useEffect(() => {
     if (!open) return;
@@ -87,6 +90,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
+    setIsFullscreen(false);
     // If editing, hydrate fields from project
     if (project) {
       setProjectTitle(project.title || 'Untitled');
@@ -122,105 +126,38 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           zoom: 4,
           attributionControl: false,
         });
-          map.on('click', (e: any) => {
+        
+        map.on('click', (e: any) => {
           const { lng, lat } = e.lngLat;
           selectedCoordsRef.current = { lat, lng };
           // place marker
           if (markerRef.current) {
             markerRef.current.remove();
           }
-            // Use branded teardrop pin (serving from /public)
-            const el = document.createElement('img');
-            el.src = '/assets/SpaceportIcons/TeardropPin.svg';
-            el.alt = 'pin';
-            el.width = 32;
-            el.height = 50;
-            el.style.display = 'block';
-            el.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.3)) drop-shadow(0 1px 4px rgba(0,0,0,0.2))';
-            el.style.transform = 'translateY(4px)';
-            el.className = 'custom-teardrop-pin';
-            markerRef.current = new mapboxgl.default.Marker({ element: el, anchor: 'bottom' })
+          
+          // Create custom teardrop pin element with inline SVG
+          const pinElement = document.createElement('div');
+          pinElement.className = 'custom-teardrop-pin';
+          pinElement.innerHTML = `
+            <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
+            </svg>
+          `;
+          
+          markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
             .setLngLat([lng, lat])
             .addTo(map);
+          
           // Fill address input with coordinates formatted
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
           setOptimizedParams(null);
-            // Hide instructions after first click
-            const inst = document.getElementById('map-instructions');
-            if (inst) inst.style.display = 'none';
+          // Hide instructions after first click
+          const inst = document.getElementById('map-instructions');
+          if (inst) inst.style.display = 'none';
         });
+        
         mapRef.current = map;
-        
-        // Initialize fullscreen button functionality
-        const expandButton = document.getElementById('expand-button');
-        const mapContainer = mapContainerRef.current;
-        
-        if (expandButton && mapContainer) {
-          expandButton.addEventListener('click', () => {
-            const isFullscreen = mapContainer.classList.contains('fullscreen');
-            
-            if (isFullscreen) {
-              // Exit fullscreen
-              mapContainer.classList.remove('fullscreen');
-              expandButton.classList.remove('expanded');
-              
-              // Move back to original parent
-              const mapSection = document.querySelector('.popup-map-section');
-              if (mapSection) {
-                mapSection.appendChild(mapContainer);
-              }
-
-              // Reinitialize scroll zoom to fix cursor alignment when exiting fullscreen
-              if (map && map.scrollZoom) {
-                map.scrollZoom.disable();
-                map.scrollZoom.enable();
-              }
-            } else {
-              // Enter fullscreen
-              mapContainer.classList.add('fullscreen');
-              expandButton.classList.add('expanded');
-              
-              // Move to body for true fullscreen
-              document.body.appendChild(mapContainer);
-
-              // Reinitialize scroll zoom to fix cursor alignment in fullscreen
-              if (map && map.scrollZoom) {
-                map.scrollZoom.disable();
-                map.scrollZoom.enable();
-              }
-            }
-            
-            // Force complete Mapbox reinitialization after DOM move
-            setTimeout(() => {
-              if (map) {
-                // Force complete internal recalculation
-                map.resize();
-                
-                // Multiple resize calls to force internal recalculation
-                map.resize();
-                map.fire('resize');
-                
-                // Force canvas to recalculate its position by triggering a complete re-render
-                setTimeout(() => {
-                  map.resize();
-                }, 100);
-              }
-            }, 50);
-          });
-        }
-        
-        // ESC key to exit fullscreen
-        const handleKeyDown = (e: KeyboardEvent) => {
-          if (e.key === 'Escape' && mapContainer.classList.contains('fullscreen')) {
-            expandButton?.click();
-          }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        
-        return () => {
-          document.removeEventListener('keydown', handleKeyDown);
-        };
       } catch (err: any) {
         console.error('Map init failed', err);
       }
@@ -237,14 +174,76 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
   }, [open]);
 
+  // Fullscreen toggle handler
+  const toggleFullscreen = useCallback(() => {
+    if (!mapContainerRef.current) return;
+    
+    const newFullscreen = !isFullscreen;
+    setIsFullscreen(newFullscreen);
+    
+    if (newFullscreen) {
+      // Enter fullscreen - move to body
+      document.body.appendChild(mapContainerRef.current);
+      mapContainerRef.current.classList.add('fullscreen');
+    } else {
+      // Exit fullscreen - move back to original parent
+      const mapSection = document.querySelector('.popup-map-section');
+      if (mapSection) {
+        mapSection.appendChild(mapContainerRef.current);
+      }
+      mapContainerRef.current.classList.remove('fullscreen');
+    }
+    
+    // Force Mapbox to recalculate after DOM move
+    setTimeout(() => {
+      if (mapRef.current) {
+        mapRef.current.resize();
+        // Force coordinate system recalculation
+        const currentCenter = mapRef.current.getCenter();
+        const currentZoom = mapRef.current.getZoom();
+        mapRef.current.jumpTo({
+          center: [currentCenter.lng + 0.0000001, currentCenter.lat + 0.0000001],
+          zoom: currentZoom
+        });
+        setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.jumpTo({
+              center: currentCenter,
+              zoom: currentZoom
+            });
+            mapRef.current.resize();
+          }
+        }, 100);
+      }
+    }, 300);
+  }, [isFullscreen]);
+
+  // ESC key to exit fullscreen
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        toggleFullscreen();
+      }
+    };
+    
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [open, isFullscreen, toggleFullscreen]);
+
   const canOptimize = useMemo(() => {
     const coords = selectedCoordsRef.current;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
-    const minH = parseInt(minHeightFeet || '');
-    const maxH = parseInt(maxHeightFeet || '');
-    return Boolean(coords && minutes && batteries && minH && maxH);
-  }, [batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet]);
+    return Boolean(coords && minutes && batteries);
+  }, [batteryMinutes, numBatteries]);
+
+  // Field validation for white outlines
+  const getFieldValidationStyle = useCallback((fieldName: string) => {
+    const hasError = error && error.includes(fieldName);
+    return hasError ? { outline: '2px solid white', outlineOffset: '2px' } : {};
+  }, [error]);
 
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
@@ -601,7 +600,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           <div className="accordion-content">
             <div className="popup-map-section">
               <div id="map-container" className="map-container" ref={mapContainerRef}>
-                <button className="expand-button" id="expand-button">
+                <button className="expand-button" id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
                 <div className="map-dim-overlay"></div>
@@ -627,6 +626,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={addressSearch}
                       onChange={(e) => setAddressSearch(e.target.value)}
                       onKeyDown={handleAddressEnter}
+                      style={getFieldValidationStyle('location')}
                     />
                   </div>
                 </div>
@@ -648,6 +648,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onChange={(e) => { setBatteryMinutes(e.target.value); setOptimizedParams(null); }}
                       min={10}
                       max={60}
+                      style={getFieldValidationStyle('battery')}
                     />
                   </div>
                   <div className="popup-input-wrapper">
@@ -660,6 +661,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onChange={(e) => { setNumBatteries(e.target.value); setOptimizedParams(null); }}
                       min={1}
                       max={12}
+                      style={getFieldValidationStyle('battery')}
                     />
                   </div>
                 </div>
@@ -679,6 +681,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       placeholder="Minimum"
                       value={minHeightFeet}
                       onChange={(e) => { setMinHeightFeet(e.target.value); setOptimizedParams(null); }}
+                      style={getFieldValidationStyle('altitude')}
                     />
                   </div>
                   <div className="popup-input-wrapper">
@@ -689,6 +692,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       placeholder="Maximum"
                       value={maxHeightFeet}
                       onChange={(e) => { setMaxHeightFeet(e.target.value); setOptimizedParams(null); }}
+                      style={getFieldValidationStyle('altitude')}
                     />
                   </div>
                 </div>
@@ -709,47 +713,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       // Auto-run optimization on first click if needed
                       if (!optimizedParams) {
                         if (!canOptimize) {
-                          // Visual feedback: highlight missing fields
-                          const missingFields = [];
-                          if (!selectedCoordsRef.current) missingFields.push('location');
-                          if (!batteryMinutes) missingFields.push('battery duration');
-                          if (!numBatteries) missingFields.push('battery quantity');
-                          if (!minHeightFeet) missingFields.push('minimum altitude');
-                          if (!maxHeightFeet) missingFields.push('maximum altitude');
-                          
-                          setError(`Please set: ${missingFields.join(', ')}`);
-                          
-                          // Add visual highlighting to missing fields
-                          setTimeout(() => {
-                            if (!selectedCoordsRef.current) {
-                              const mapContainer = document.getElementById('map-container');
-                              if (mapContainer) mapContainer.style.outline = '2px solid #ff6b6b';
-                            }
-                            if (!batteryMinutes) {
-                              const input = document.querySelector('input[placeholder="Duration"]') as HTMLInputElement;
-                              if (input) input.style.outline = '2px solid #ff6b6b';
-                            }
-                            if (!numBatteries) {
-                              const input = document.querySelector('input[placeholder="Quantity"]') as HTMLInputElement;
-                              if (input) input.style.outline = '2px solid #ff6b6b';
-                            }
-                            if (!minHeightFeet) {
-                              const input = document.querySelector('input[placeholder="Minimum"]') as HTMLInputElement;
-                              if (input) input.style.outline = '2px solid #ff6b6b';
-                            }
-                            if (!maxHeightFeet) {
-                              const input = document.querySelector('input[placeholder="Maximum"]') as HTMLInputElement;
-                              if (input) input.style.outline = '2px solid #ff6b6b';
-                            }
-                            
-                            // Remove highlighting after 3 seconds
-                            setTimeout(() => {
-                              const inputs = document.querySelectorAll('input[style*="outline"]');
-                              inputs.forEach(input => (input as HTMLElement).style.outline = '');
-                              const mapContainer = document.getElementById('map-container');
-                              if (mapContainer) mapContainer.style.outline = '';
-                            }, 3000);
-                          }, 100);
+                          // Set specific error messages for missing fields
+                          if (!selectedCoordsRef.current) {
+                            setError('location');
+                          } else if (!batteryMinutes || !numBatteries) {
+                            setError('battery');
+                          } else {
+                            setError('Please set location and battery params first');
+                          }
                           return;
                         }
                         setBatteryDownloading(idx + 1);
