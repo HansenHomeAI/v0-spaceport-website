@@ -103,11 +103,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
+      
+      // CRITICAL FIX: Restore saved coordinates if they exist
+      if (params.latitude && params.longitude) {
+        selectedCoordsRef.current = { 
+          lat: parseFloat(params.latitude), 
+          lng: parseFloat(params.longitude) 
+        };
+      }
     } else {
       setStatus('draft');
       setCurrentProjectId(null);
+      selectedCoordsRef.current = null;
     }
-  }, [open]);
+  }, [open, project]);
 
   // Initialize Mapbox on open
   useEffect(() => {
@@ -158,6 +167,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         });
         
         mapRef.current = map;
+        
+        // CRITICAL FIX: Restore saved location marker if editing existing project
+        if (project && selectedCoordsRef.current) {
+          setTimeout(async () => {
+            await restoreSavedLocation(map, selectedCoordsRef.current!);
+          }, 500); // Small delay to ensure map is fully loaded
+        }
       } catch (err: any) {
         console.error('Map init failed', err);
       }
@@ -172,7 +188,44 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         selectedCoordsRef.current = null;
       }
     };
-  }, [open]);
+  }, [open, project]);
+
+  // Function to restore saved location on map
+  const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
+    if (!map || !coords) return;
+    
+    // Fly to saved location
+    map.flyTo({ 
+      center: [coords.lng, coords.lat], 
+      zoom: 15, 
+      duration: 2000 
+    });
+    
+    // Place marker at saved location
+    if (markerRef.current) {
+      markerRef.current.remove();
+    }
+    
+    // Import mapboxgl and create marker
+    const mapboxgl = await import('mapbox-gl');
+    
+    // Create custom teardrop pin element with inline SVG
+    const pinElement = document.createElement('div');
+    pinElement.className = 'custom-teardrop-pin';
+    pinElement.innerHTML = `
+      <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
+      </svg>
+    `;
+    
+    markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
+      .setLngLat([coords.lng, coords.lat])
+      .addTo(map);
+    
+    // Hide instructions since we have a saved location
+    const inst = document.getElementById('map-instructions');
+    if (inst) inst.style.display = 'none';
+  }, []);
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
@@ -346,6 +399,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           batteries: numBatteries,
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
+          // CRITICAL FIX: Save coordinates for future restoration
+          latitude: selectedCoordsRef.current?.lat || null,
+          longitude: selectedCoordsRef.current?.lng || null,
         },
       };
       const url = currentProjectId ? `${apiBase}/${encodeURIComponent(currentProjectId)}` : `${apiBase}`;
@@ -391,9 +447,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
         selectedCoordsRef.current = { lat, lng };
         // place marker
-        const mapboxgl = (await import('mapbox-gl')).default;
+        const mapboxgl = await import('mapbox-gl');
         if (markerRef.current) markerRef.current.remove();
-        markerRef.current = new mapboxgl.Marker({ anchor: 'bottom' }).setLngLat([lng, lat]).addTo(mapRef.current);
+        
+        // Create custom teardrop pin element with inline SVG
+        const pinElement = document.createElement('div');
+        pinElement.className = 'custom-teardrop-pin';
+        pinElement.innerHTML = `
+          <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
+          </svg>
+        `;
+        
+        markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
+          .setLngLat([lng, lat])
+          .addTo(mapRef.current);
+        
+        // Invalidate previous optimization since coordinates changed
+        setOptimizedParams(null);
         // keep input text as typed address
       }
     } catch (err) {
