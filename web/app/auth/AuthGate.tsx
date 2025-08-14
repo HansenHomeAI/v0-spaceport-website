@@ -26,6 +26,32 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [handle, setHandle] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
 
+  const EyeIcon = ({ hidden = false }: { hidden?: boolean }) => (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
+      style={{ display: 'block' }}
+    >
+      {hidden ? (
+        <>
+          <path d="M3 3l18 18" stroke="#bbb" strokeWidth="2" strokeLinecap="round" />
+          <path d="M2 12s4-7 10-7 10 7 10 7c-.54.95-1.2 1.83-1.95 2.62" stroke="#bbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88" stroke="#bbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      ) : (
+        <>
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z" stroke="#bbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="12" cy="12" r="3" stroke="#bbb" strokeWidth="2" />
+        </>
+      )}
+    </svg>
+  );
+
   useEffect(() => {
     const ok = configureAmplify();
     (async () => {
@@ -121,8 +147,13 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                 </div>
                 <div className="input-group" style={{ position: 'relative' }}>
                   <input value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} className="waitlist-input" placeholder="Password" required />
-                  <button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword((v) => !v)} style={{ position: 'absolute', right: 10, top: 10, background: 'transparent', border: 0, color: '#bbb', cursor: 'pointer' }}>
-                    {showPassword ? '🙈' : '👁️'}
+                  <button
+                    type="button"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowPassword((v) => !v)}
+                    style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
+                  >
+                    <EyeIcon hidden={showPassword} />
                   </button>
                 </div>
                 {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
@@ -140,11 +171,30 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                 setError(null);
                 try {
                   if (!pendingUser) throw new Error('Session expired');
-                  const completed = await Auth.completeNewPassword(pendingUser, newPassword, {
-                    preferred_username: handle,
-                  });
-                  const current = await Auth.currentAuthenticatedUser();
-                  setUser(current || completed);
+                  // First attempt: set password and preferred_username if provided (v3 pool supports this)
+                  const attrs: any = {};
+                  if (handle) attrs.preferred_username = handle;
+                  try {
+                    const completed = await Auth.completeNewPassword(pendingUser, newPassword, attrs);
+                    const current = await Auth.currentAuthenticatedUser();
+                    setUser(current || completed);
+                  } catch (errInner: any) {
+                    const msg = (errInner?.message || '').toLowerCase();
+                    const code = (errInner?.name || errInner?.code || '').toString();
+                    const isPrefUsernameIssue =
+                      code === 'InvalidParameterException' ||
+                      msg.includes('preferred_username') ||
+                      msg.includes('mutability') ||
+                      msg.includes('invalid user attributes');
+                    if (isPrefUsernameIssue) {
+                      // Fallback for v2 pool where preferred_username is immutable; complete without attributes
+                      const completed = await Auth.completeNewPassword(pendingUser, newPassword);
+                      const current = await Auth.currentAuthenticatedUser();
+                      setUser(current || completed);
+                    } else {
+                      throw errInner;
+                    }
+                  }
                 } catch (err: any) {
                   const code = err?.name || err?.code || '';
                   if (code === 'AliasExistsException') {
@@ -159,8 +209,13 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               <p>Finish setup by choosing your password and a unique handle.</p>
               <div className="input-group" style={{ position: 'relative' }}>
                 <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type={showNewPassword ? 'text' : 'password'} required className="waitlist-input" placeholder="New password" />
-                <button type="button" aria-label={showNewPassword ? 'Hide password' : 'Show password'} onClick={() => setShowNewPassword((v) => !v)} style={{ position: 'absolute', right: 10, top: 10, background: 'transparent', border: 0, color: '#bbb', cursor: 'pointer' }}>
-                  {showNewPassword ? '🙈' : '👁️'}
+                <button
+                  type="button"
+                  aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowNewPassword((v) => !v)}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
+                >
+                  <EyeIcon hidden={showNewPassword} />
                 </button>
               </div>
               <div className="input-group">
