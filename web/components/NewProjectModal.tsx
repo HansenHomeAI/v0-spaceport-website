@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 type NewProjectModalProps = {
   open: boolean;
   onClose: () => void;
+  project?: any; // when provided, modal acts in edit mode and pre-fills values
+  onSaved?: () => void; // callback after successful save/update
 };
 
 type OptimizedParams = {
@@ -14,7 +16,7 @@ type OptimizedParams = {
   elevationFeet: number | null;
 };
 
-export default function NewProjectModal({ open, onClose }: NewProjectModalProps): JSX.Element | null {
+export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
   const API_ENHANCED_BASE = 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod';
@@ -53,6 +55,17 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+  // simple, general progress model
+  const STATUS_TO_PROGRESS: Record<string, number> = {
+    draft: 5,
+    path_downloaded: 20,
+    photos_uploaded: 50,
+    processing: 75,
+    delivered: 100,
+  };
+  const [status, setStatus] = useState<string>('draft');
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(project?.projectId || null);
+
   const [setupOpen, setSetupOpen] = useState<boolean>(true);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
 
@@ -74,6 +87,22 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
+    // If editing, hydrate fields from project
+    if (project) {
+      setProjectTitle(project.title || 'Untitled');
+      const params = project.params || {};
+      setAddressSearch(params.address || '');
+      setBatteryMinutes(params.batteryMinutes || '');
+      setNumBatteries(params.batteries || '');
+      setMinHeightFeet(params.minHeight || '');
+      setMaxHeightFeet(params.maxHeight || '');
+      setContactEmail(project.email || '');
+      setStatus(project.status || 'draft');
+      setCurrentProjectId(project.projectId || null);
+    } else {
+      setStatus('draft');
+      setCurrentProjectId(null);
+    }
   }, [open]);
 
   // Initialize Mapbox on open
@@ -215,6 +244,55 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
     }
   }, [API_ENHANCED_BASE, optimizedParams, projectTitle]);
 
+  // Save metadata changes for existing project
+  const handleSaveProject = useCallback(async () => {
+    try {
+      const { Auth } = await import('aws-amplify');
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      const progress = STATUS_TO_PROGRESS[status] ?? 0;
+      const body = {
+        title: projectTitle,
+        status,
+        progress,
+        params: {
+          address: addressSearch,
+          batteryMinutes,
+          batteries: numBatteries,
+          minHeight: minHeightFeet,
+          maxHeight: maxHeightFeet,
+        },
+      };
+      const url = currentProjectId ? `${apiBase}/${encodeURIComponent(currentProjectId)}` : `${apiBase}`;
+      const method = currentProjectId ? 'PATCH' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+      // Capture created id on first POST
+      if (!currentProjectId) {
+        const data = await res.json().catch(() => ({} as any));
+        const created = (data && (data.project || data)) as any;
+        if (created && created.projectId) setCurrentProjectId(created.projectId);
+      }
+      onSaved?.();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save project');
+    }
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status]);
+
+  // Debounced autosave on any change
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => {
+      handleSaveProject();
+    }, 600);
+    return () => clearTimeout(t);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, handleSaveProject]);
+
   // Address search via Mapbox Geocoding
   const handleAddressEnter = useCallback(async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Enter') return;
@@ -349,6 +427,33 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
       }
       const ml = await mlRes.json();
       setToast({ type: 'success', message: `Upload successful. ML processing started. Job ID: ${ml.jobId || 'N/A'}` });
+
+      // Persist a project stub for this user
+      try {
+        const { Auth } = await import('aws-amplify');
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects';
+        await fetch(api, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
+          body: JSON.stringify({
+            title: projectTitle,
+            status: 'uploading',
+            progress: 10,
+            params: {
+              address: addressSearch,
+              batteryMinutes: batteryMinutes,
+              batteries: numBatteries,
+              minHeight: minHeightFeet,
+              maxHeight: maxHeightFeet,
+            },
+            upload: { objectKey: init.objectKey },
+          }),
+        });
+      } catch (e) {
+        console.warn('Failed to persist project:', e);
+      }
       setSetupOpen(false);
       setUploadOpen(true);
     } catch (e: any) {
@@ -398,6 +503,26 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
       )}
 
       <div className="popup-content-scroll">
+        {/* Project Status quick stepper */}
+        <div className="category-outline">
+          <div className="popup-section" style={{padding: 12}}>
+            <h4>Project Status</h4>
+            <div style={{display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center', marginTop:8}}>
+              {[
+                ['draft','Start'],
+                ['path_downloaded','Paths Downloaded'],
+                ['photos_uploaded','Photos Uploaded'],
+                ['processing','Processing'],
+                ['delivered','Delivered'],
+              ].map(([value,label]) => (
+                <button key={value} type="button" onClick={() => setStatus(value)} style={{
+                  padding:'8px 12px', borderRadius:999, border:'1px solid rgba(255,255,255,0.2)',
+                  background: status===value ? 'rgba(255,255,255,0.2)' : 'transparent', color:'#fff', cursor:'pointer'
+                }}>{label}</button>
+              ))}
+            </div>
+          </div>
+        </div>
         {/* SECTION 1: CREATE FLIGHT PLAN */}
         <div className={`accordion-section${setupOpen ? ' active' : ''}`} data-section="setup">
           <div className="accordion-header" onClick={() => setSetupOpen(v => !v)}>
@@ -504,41 +629,33 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
               </div>
             </div>
 
-            {/* Optimization and downloads */}
-            <div className="optimization-section">
-              <h2>
-                Optimization Results
-                <span className="info-wrapper"><span className="info-pill-icon">info</span></span>
-              </h2>
-              <button type="button" id="optimizeButton" className="optimize-btn" disabled={!canOptimize || optimizationLoading} onClick={handleOptimize}>
-                <span id="optimizeButtonText">{optimizationLoading ? 'Optimizing…' : 'Optimize Flight Plan'}</span>
-                <div id="optimizeSpinner" className="spinner" style={{ display: optimizationLoading ? 'inline-block' : 'none' }} />
-              </button>
-            </div>
-
-            <h2>
-              Download Mission Files
-              <span className="info-wrapper"><span className="info-pill-icon">info</span></span>
-            </h2>
-            <div className="download-section">
-              <button type="button" id="downloadMasterCSV" className="download-btn" disabled>
-                <span>📁 Download Master CSV</span>
-              </button>
-              <div id="batteryDownloads" className="battery-downloads" style={{ display: 'block' }}>
-                <p className="download-label">Individual Battery Segments:</p>
-                <div id="batteryButtons" className="battery-buttons">
-                  {Array.from({ length: batteryCount }).map((_, idx) => (
-                    <button
-                      key={idx}
-                      className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
-                      onClick={() => downloadBatteryCsv(idx + 1)}
-                      disabled={!optimizedParams || batteryDownloading !== null}
-                    >
-                      <span className={`download-icon${batteryDownloading === idx + 1 ? ' loading' : ''}`}></span>
-                      Battery {idx + 1}
-                    </button>
-                  ))}
-                </div>
+            {/* Individual Battery Segments (legacy-correct UI) */}
+            <div className="battery-downloads" style={{ display: 'block', marginTop: 12 }}>
+              <div className="popup-section">
+                <h4>Individual Battery Segments:</h4>
+              </div>
+              <div id="batteryButtons" className="flight-path-grid">
+                {Array.from({ length: batteryCount }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
+                    onClick={async () => {
+                      // Auto-run optimization on first click if needed
+                      if (!optimizedParams) {
+                        if (!canOptimize) {
+                          setError('Please set location and battery params first');
+                          return;
+                        }
+                        await handleOptimize();
+                      }
+                      await downloadBatteryCsv(idx + 1);
+                    }}
+                    disabled={batteryDownloading !== null}
+                  >
+                    <span className={`download-icon${batteryDownloading === idx + 1 ? ' loading' : ''}`}></span>
+                    Battery {idx + 1}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -619,6 +736,7 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
           </div>
           )}
         </div>
+        {/* Autosave enabled; no explicit Save button */}
       </div>
     </div>
   );
