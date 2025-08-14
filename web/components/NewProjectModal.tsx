@@ -261,7 +261,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
       const progress = STATUS_TO_PROGRESS[status] ?? 0;
       const body = {
         title: projectTitle,
@@ -633,20 +633,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
                     onClick={async () => {
                       // Auto-run optimization on first click if needed
-                  const ensureOptimized = async () => {
-                    if (optimizedParams) return true;
-                    if (!canOptimize) {
-                      setError('Please set location and battery params first');
-                      return false;
-                    }
+                  if (!optimizedParams) {
+                        if (!canOptimize) {
+                          setError('Please set location and battery params first');
+                          return;
+                        }
                     await handleOptimize();
-                    // Wait briefly for state to settle
-                    await new Promise((r) => setTimeout(r, 500));
-                    return true;
-                  };
-                  if (await ensureOptimized()) {
-                    await downloadBatteryCsv(idx + 1);
-                  }
+                      }
+                      await downloadBatteryCsv(idx + 1);
                     }}
                     disabled={batteryDownloading !== null}
                   >

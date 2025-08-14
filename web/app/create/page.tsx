@@ -15,7 +15,7 @@ export default function Create(): JSX.Element {
       try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
+        const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects', {
           headers: { Authorization: `Bearer ${idToken}` },
         });
         if (res.ok) {

@@ -32,7 +32,7 @@ export function configureAmplify(): boolean {
     ssr: true,
   } as any);
   // Expose Projects API URL for client calls (can be overridden via env)
-  (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects');
+  (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects');
   configured = true;
   available = true;
   return true;
