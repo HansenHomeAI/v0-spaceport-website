@@ -122,20 +122,31 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           zoom: 4,
           attributionControl: false,
         });
-        map.on('click', (e: any) => {
+          map.on('click', (e: any) => {
           const { lng, lat } = e.lngLat;
           selectedCoordsRef.current = { lat, lng };
           // place marker
           if (markerRef.current) {
             markerRef.current.remove();
           }
-          markerRef.current = new mapboxgl.default.Marker({ anchor: 'bottom' })
+            // Use branded teardrop pin
+            const el = document.createElement('div');
+            el.style.width = '32px';
+            el.style.height = '50px';
+            el.style.backgroundImage = 'url(/assets/SpaceportIcons/TeardropPin.svg)';
+            el.style.backgroundRepeat = 'no-repeat';
+            el.style.backgroundSize = 'contain';
+            el.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))';
+            markerRef.current = new mapboxgl.default.Marker({ element: el, anchor: 'bottom' })
             .setLngLat([lng, lat])
             .addTo(map);
           // Fill address input with coordinates formatted
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
           setOptimizedParams(null);
+            // Hide instructions after first click
+            const inst = document.getElementById('map-instructions');
+            if (inst) inst.style.display = 'none';
         });
         mapRef.current = map;
       } catch (err: any) {
@@ -503,26 +514,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       )}
 
       <div className="popup-content-scroll">
-        {/* Project Status quick stepper */}
-        <div className="category-outline">
-          <div className="popup-section" style={{padding: 12}}>
-            <h4>Project Status</h4>
-            <div style={{display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center', marginTop:8}}>
-              {[
-                ['draft','Start'],
-                ['path_downloaded','Paths Downloaded'],
-                ['photos_uploaded','Photos Uploaded'],
-                ['processing','Processing'],
-                ['delivered','Delivered'],
-              ].map(([value,label]) => (
-                <button key={value} type="button" onClick={() => setStatus(value)} style={{
-                  padding:'8px 12px', borderRadius:999, border:'1px solid rgba(255,255,255,0.2)',
-                  background: status===value ? 'rgba(255,255,255,0.2)' : 'transparent', color:'#fff', cursor:'pointer'
-                }}>{label}</button>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* Status is automatic and displayed on the dashboard cards only */}
         {/* SECTION 1: CREATE FLIGHT PLAN */}
         <div className={`accordion-section${setupOpen ? ' active' : ''}`} data-section="setup">
           <div className="accordion-header" onClick={() => setSetupOpen(v => !v)}>
@@ -641,12 +633,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
                     onClick={async () => {
                       // Auto-run optimization on first click if needed
-                      if (!optimizedParams) {
+                  if (!optimizedParams) {
                         if (!canOptimize) {
                           setError('Please set location and battery params first');
                           return;
                         }
-                        await handleOptimize();
+                    await handleOptimize();
                       }
                       await downloadBatteryCsv(idx + 1);
                     }}

@@ -273,7 +273,14 @@ class AuthStack(Stack):
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
-                allow_headers=["Content-Type", "Authorization"],
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                    "X-Api-Key",
+                ],
             ),
         )
         proj_res = projects_api.root.add_resource("projects")
