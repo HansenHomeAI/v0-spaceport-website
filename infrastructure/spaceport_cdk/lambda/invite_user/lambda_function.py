@@ -59,13 +59,20 @@ def lambda_handler(event, context):
             user_attributes.append({'Name': 'preferred_username', 'Value': handle})
 
         # Create user with auto-generated temporary password; send default Cognito email
-        resp = cognito.admin_create_user(
-            UserPoolId=USER_POOL_ID,
-            Username=email,
-            UserAttributes=user_attributes,
-            DesiredDeliveryMediums=['EMAIL'],
-            MessageAction='RESEND' if data.get('resend') else 'SUPPRESS' if data.get('suppress') else None
-        )
+        # Only include MessageAction when explicitly set; omitting it triggers default invite email behavior
+        create_params = {
+            'UserPoolId': USER_POOL_ID,
+            'Username': email,
+            'UserAttributes': user_attributes,
+            'DesiredDeliveryMediums': ['EMAIL'],
+        }
+
+        if data.get('resend'):
+            create_params['MessageAction'] = 'RESEND'
+        elif data.get('suppress'):
+            create_params['MessageAction'] = 'SUPPRESS'
+
+        resp = cognito.admin_create_user(**create_params)
 
         # Ensure invite sent if suppressed flag not set
         if data.get('suppress'):
