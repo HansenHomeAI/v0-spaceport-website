@@ -256,7 +256,16 @@ class AuthStack(Stack):
             "Spaceport-ProjectsFunction",
             function_name="Spaceport-ProjectsFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "projects")),
+            code=lambda_.Code.from_asset(
+                os.path.join(lambda_dir, "projects"),
+                bundling=lambda_.BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             handler="lambda_function.lambda_handler",
             environment={
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
