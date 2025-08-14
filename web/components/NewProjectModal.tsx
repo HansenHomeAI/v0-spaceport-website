@@ -349,6 +349,33 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
       }
       const ml = await mlRes.json();
       setToast({ type: 'success', message: `Upload successful. ML processing started. Job ID: ${ml.jobId || 'N/A'}` });
+
+      // Persist a project stub for this user
+      try {
+        const { Auth } = await import('aws-amplify');
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects';
+        await fetch(api, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
+          body: JSON.stringify({
+            title: projectTitle,
+            status: 'uploading',
+            progress: 10,
+            params: {
+              address: addressSearch,
+              batteryMinutes: batteryMinutes,
+              batteries: numBatteries,
+              minHeight: minHeightFeet,
+              maxHeight: maxHeightFeet,
+            },
+            upload: { objectKey: init.objectKey },
+          }),
+        });
+      } catch (e) {
+        console.warn('Failed to persist project:', e);
+      }
       setSetupOpen(false);
       setUploadOpen(true);
     } catch (e: any) {

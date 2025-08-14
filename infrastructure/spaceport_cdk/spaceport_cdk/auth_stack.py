@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_lambda as lambda_,
     aws_iam as iam,
+    aws_dynamodb as dynamodb,
 )
 from constructs import Construct
 import os
@@ -234,5 +235,56 @@ class AuthStack(Stack):
         invite_res_v3.add_method("POST", apigw.LambdaIntegration(invite_lambda_v3, proxy=True))
 
         CfnOutput(self, "InviteApiUrlV3", value=f"{invite_api_v3.url}invite")
+
+        # -------------------------------------
+        # Per-user Projects storage and REST API
+        # -------------------------------------
+        projects_table = dynamodb.Table(
+            self,
+            "Spaceport-ProjectsTable",
+            table_name="Spaceport-Projects",
+            partition_key=dynamodb.Attribute(name="userSub", type=dynamodb.AttributeType.STRING),
+            sort_key=dynamodb.Attribute(name="projectId", type=dynamodb.AttributeType.STRING),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=RemovalPolicy.RETAIN,
+            point_in_time_recovery=True,
+        )
+
+        lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
+        projects_lambda = lambda_.Function(
+            self,
+            "Spaceport-ProjectsFunction",
+            function_name="Spaceport-ProjectsFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "projects")),
+            handler="lambda_function.lambda_handler",
+            environment={
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
+            },
+            timeout=Duration.seconds(30),
+        )
+        projects_table.grant_read_write_data(projects_lambda)
+
+        projects_api = apigw.RestApi(
+            self,
+            "Spaceport-ProjectsApi",
+            rest_api_name="Spaceport-ProjectsApi",
+            description="CRUD for user projects (requires Cognito JWT)",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["Content-Type", "Authorization"],
+            ),
+        )
+        proj_res = projects_api.root.add_resource("projects")
+        proj_res.add_method("GET", apigw.LambdaIntegration(projects_lambda))
+        proj_res.add_method("POST", apigw.LambdaIntegration(projects_lambda))
+        proj_id = proj_res.add_resource("{id}")
+        proj_id.add_method("GET", apigw.LambdaIntegration(projects_lambda))
+        proj_id.add_method("PUT", apigw.LambdaIntegration(projects_lambda))
+        proj_id.add_method("PATCH", apigw.LambdaIntegration(projects_lambda))
+        proj_id.add_method("DELETE", apigw.LambdaIntegration(projects_lambda))
+
+        CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
 
 
