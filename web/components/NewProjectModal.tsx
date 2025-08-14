@@ -504,41 +504,33 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
               </div>
             </div>
 
-            {/* Optimization and downloads */}
-            <div className="optimization-section">
-              <h2>
-                Optimization Results
-                <span className="info-wrapper"><span className="info-pill-icon">info</span></span>
-              </h2>
-              <button type="button" id="optimizeButton" className="optimize-btn" disabled={!canOptimize || optimizationLoading} onClick={handleOptimize}>
-                <span id="optimizeButtonText">{optimizationLoading ? 'Optimizing…' : 'Optimize Flight Plan'}</span>
-                <div id="optimizeSpinner" className="spinner" style={{ display: optimizationLoading ? 'inline-block' : 'none' }} />
-              </button>
-            </div>
-
-            <h2>
-              Download Mission Files
-              <span className="info-wrapper"><span className="info-pill-icon">info</span></span>
-            </h2>
-            <div className="download-section">
-              <button type="button" id="downloadMasterCSV" className="download-btn" disabled>
-                <span>📁 Download Master CSV</span>
-              </button>
-              <div id="batteryDownloads" className="battery-downloads" style={{ display: 'block' }}>
-                <p className="download-label">Individual Battery Segments:</p>
-                <div id="batteryButtons" className="battery-buttons">
-                  {Array.from({ length: batteryCount }).map((_, idx) => (
-                    <button
-                      key={idx}
-                      className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
-                      onClick={() => downloadBatteryCsv(idx + 1)}
-                      disabled={!optimizedParams || batteryDownloading !== null}
-                    >
-                      <span className={`download-icon${batteryDownloading === idx + 1 ? ' loading' : ''}`}></span>
-                      Battery {idx + 1}
-                    </button>
-                  ))}
-                </div>
+            {/* Individual Battery Segments (legacy-correct UI) */}
+            <div className="battery-downloads" style={{ display: 'block', marginTop: 12 }}>
+              <div className="popup-section">
+                <h4>Individual Battery Segments:</h4>
+              </div>
+              <div id="batteryButtons" className="flight-path-grid">
+                {Array.from({ length: batteryCount }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
+                    onClick={async () => {
+                      // Auto-run optimization on first click if needed
+                      if (!optimizedParams) {
+                        if (!canOptimize) {
+                          setError('Please set location and battery params first');
+                          return;
+                        }
+                        await handleOptimize();
+                      }
+                      await downloadBatteryCsv(idx + 1);
+                    }}
+                    disabled={batteryDownloading !== null}
+                  >
+                    <span className={`download-icon${batteryDownloading === idx + 1 ? ' loading' : ''}`}></span>
+                    Battery {idx + 1}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

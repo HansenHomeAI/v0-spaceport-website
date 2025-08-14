@@ -151,7 +151,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                     type="button"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     onClick={() => setShowPassword((v) => !v)}
-                    style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
+                    style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
                   >
                     <EyeIcon hidden={showPassword} />
                   </button>
@@ -213,7 +213,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                   type="button"
                   aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowNewPassword((v) => !v)}
-                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
+                  style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
                 >
                   <EyeIcon hidden={showNewPassword} />
                 </button>
