@@ -3,6 +3,7 @@ import os
 import boto3
 
 cognito = boto3.client('cognito-idp')
+ses = boto3.client('ses')
 
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 INVITE_GROUP = os.environ.get('INVITE_GROUP', 'beta-testers')
@@ -58,7 +59,7 @@ def lambda_handler(event, context):
         if handle:
             user_attributes.append({'Name': 'preferred_username', 'Value': handle})
 
-        # Create user with auto-generated temporary password; send default Cognito email
+        # Create user with auto-generated temporary password by default; optionally suppress and send custom SES email
         # Only include MessageAction when explicitly set; omitting it triggers default invite email behavior
         create_params = {
             'UserPoolId': USER_POOL_ID,
@@ -71,12 +72,21 @@ def lambda_handler(event, context):
             create_params['MessageAction'] = 'RESEND'
         elif data.get('suppress'):
             create_params['MessageAction'] = 'SUPPRESS'
+            # Provide a memorable but policy-compliant temporary password when suppressing
+            create_params['TemporaryPassword'] = generate_temp_password()
 
         resp = cognito.admin_create_user(**create_params)
 
-        # Ensure invite sent if suppressed flag not set
+        # If suppressed, send a custom SES email with clear next steps
         if data.get('suppress'):
-            pass  # advanced flows can use SES to send custom mail
+            try:
+                send_custom_invite_email(
+                    email=email,
+                    name=name,
+                    temp_password=create_params.get('TemporaryPassword')
+                )
+            except Exception as e:
+                print(f"Failed to send custom invite email: {e}")
 
         # Add to group
         if group:
@@ -92,5 +102,48 @@ def lambda_handler(event, context):
         return _response(200, {'message': 'User already exists. If they did not receive email, you can use resend=true', 'email': email})
     except Exception as e:
         return _response(500, {'error': str(e)})
+def generate_temp_password() -> str:
+    import random
+    digits = ''.join(random.choice('0123456789') for _ in range(4))
+    # Must meet pool policy: length>=8, includes lower, upper, digit
+    return f"Spcprt{digits}A"
 
+
+def send_custom_invite_email(email: str, name: str, temp_password: str | None) -> None:
+    subject = 'You have been invited to Spaceport AI'
+    greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
+    body_text = (
+        greeting
+        + "You've been approved for access. Follow these steps to sign in and finish setup:\n\n"
+        + "1) Go to https://spcprt.com/create\n"
+        + f"2) Sign in with your email ({email}) and the temporary password: {temp_password or '<check your email>'}\n"
+        + "3) You'll be prompted to choose a new password and set your handle.\n\n"
+        + "If you need help, just reply to this email.\n\n— Spaceport AI"
+    )
+
+    body_html = f"""
+    <html><body>
+      <p>{'Hi ' + name + ',' if name else 'Hi,'}</p>
+      <p>You've been approved for access. Follow these steps to sign in and finish setup:</p>
+      <ol>
+        <li>Go to <a href=\"https://spcprt.com/create\">spcprt.com/create</a></li>
+        <li>Sign in with your email (<strong>{email}</strong>) and the temporary password: <code>{temp_password or '&lt;check your email&gt;'}</code></li>
+        <li>You'll be prompted to choose a new password and set your handle.</li>
+      </ol>
+      <p>If you need help, just reply to this email.</p>
+      <p>— Spaceport AI</p>
+    </body></html>
+    """
+
+    ses.send_email(
+        Source='gabriel@spcprt.com',
+        Destination={'ToAddresses': [email]},
+        Message={
+            'Subject': {'Data': subject},
+            'Body': {
+                'Text': {'Data': body_text},
+                'Html': {'Data': body_html},
+            },
+        },
+    )
 

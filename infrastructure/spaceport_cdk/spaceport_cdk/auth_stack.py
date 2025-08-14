@@ -100,6 +100,17 @@ class AuthStack(Stack):
             )
         )
 
+        # Allow invite lambda to send custom SES emails when suppressing Cognito's default email
+        invite_lambda_v2.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ses:SendEmail",
+                    "ses:SendRawEmail",
+                ],
+                resources=["*"],
+            )
+        )
+
         invite_api_v2 = apigw.RestApi(
             self,
             "Spaceport-InviteApiV2",
@@ -195,6 +206,16 @@ class AuthStack(Stack):
                 resources=[
                     f"arn:aws:cognito-idp:{Stack.of(self).region}:{Stack.of(self).account}:userpool/*"
                 ],
+            )
+        )
+
+        invite_lambda_v3.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ses:SendEmail",
+                    "ses:SendRawEmail",
+                ],
+                resources=["*"],
             )
         )
 

@@ -15,6 +15,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [view, setView] = useState<View>('signin');
   const [signInEmail, setSignInEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +24,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [pendingUser, setPendingUser] = useState<any>(null);
   const [newPassword, setNewPassword] = useState('');
   const [handle, setHandle] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   useEffect(() => {
     const ok = configureAmplify();
@@ -117,8 +119,11 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                 <div className="input-group">
                   <input value={signInEmail} onChange={(e) => setSignInEmail(e.target.value)} type="email" className="waitlist-input" placeholder="Email" required />
                 </div>
-                <div className="input-group">
-                  <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="waitlist-input" placeholder="Password" required />
+                <div className="input-group" style={{ position: 'relative' }}>
+                  <input value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} className="waitlist-input" placeholder="Password" required />
+                  <button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword((v) => !v)} style={{ position: 'absolute', right: 10, top: 10, background: 'transparent', border: 0, color: '#bbb', cursor: 'pointer' }}>
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
                 </div>
                 {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
                 <button className="waitlist-submit-btn" type="submit">
@@ -152,8 +157,11 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
               className="waitlist-form"
             >
               <p>Finish setup by choosing your password and a unique handle.</p>
-              <div className="input-group">
-                <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" required className="waitlist-input" placeholder="New password" />
+              <div className="input-group" style={{ position: 'relative' }}>
+                <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type={showNewPassword ? 'text' : 'password'} required className="waitlist-input" placeholder="New password" />
+                <button type="button" aria-label={showNewPassword ? 'Hide password' : 'Show password'} onClick={() => setShowNewPassword((v) => !v)} style={{ position: 'absolute', right: 10, top: 10, background: 'transparent', border: 0, color: '#bbb', cursor: 'pointer' }}>
+                  {showNewPassword ? '🙈' : '👁️'}
+                </button>
               </div>
               <div className="input-group">
                 <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="Handle (e.g. johndoe)" />
