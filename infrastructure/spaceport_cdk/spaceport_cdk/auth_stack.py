@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_dynamodb as dynamodb,
 )
+import aws_cdk.aws_lambda_python_alpha as lambda_python
 from constructs import Construct
 import os
 
@@ -251,22 +252,14 @@ class AuthStack(Stack):
         )
 
         lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
-        projects_lambda = lambda_.Function(
+        projects_lambda = lambda_python.PythonFunction(
             self,
             "Spaceport-ProjectsFunction",
             function_name="Spaceport-ProjectsFunction",
+            entry=os.path.join(lambda_dir, "projects"),
+            index="lambda_function.py",
+            handler="lambda_handler",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(
-                os.path.join(lambda_dir, "projects"),
-                bundling=lambda_.BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
-                    ],
-                ),
-            ),
-            handler="lambda_function.lambda_handler",
             environment={
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
             },
