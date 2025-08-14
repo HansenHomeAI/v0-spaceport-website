@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 type NewProjectModalProps = {
   open: boolean;
   onClose: () => void;
+  project?: any; // when provided, modal acts in edit mode and pre-fills values
+  onSaved?: () => void; // callback after successful save/update
 };
 
 type OptimizedParams = {
@@ -14,7 +16,7 @@ type OptimizedParams = {
   elevationFeet: number | null;
 };
 
-export default function NewProjectModal({ open, onClose }: NewProjectModalProps): JSX.Element | null {
+export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
   const API_ENHANCED_BASE = 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod';
@@ -53,6 +55,16 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+  // simple, general progress model
+  const STATUS_TO_PROGRESS: Record<string, number> = {
+    draft: 5,
+    path_downloaded: 20,
+    photos_uploaded: 50,
+    processing: 75,
+    delivered: 100,
+  };
+  const [status, setStatus] = useState<string>('draft');
+
   const [setupOpen, setSetupOpen] = useState<boolean>(true);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
 
@@ -74,6 +86,20 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
+    // If editing, hydrate fields from project
+    if (project) {
+      setProjectTitle(project.title || 'Untitled');
+      const params = project.params || {};
+      setAddressSearch(params.address || '');
+      setBatteryMinutes(params.batteryMinutes || '');
+      setNumBatteries(params.batteries || '');
+      setMinHeightFeet(params.minHeight || '');
+      setMaxHeightFeet(params.maxHeight || '');
+      setContactEmail(project.email || '');
+      setStatus(project.status || 'draft');
+    } else {
+      setStatus('draft');
+    }
   }, [open]);
 
   // Initialize Mapbox on open
@@ -214,6 +240,42 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
       setBatteryDownloading(null);
     }
   }, [API_ENHANCED_BASE, optimizedParams, projectTitle]);
+
+  // Save metadata changes for existing project
+  const handleSaveProject = useCallback(async () => {
+    try {
+      const { Auth } = await import('aws-amplify');
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      const progress = STATUS_TO_PROGRESS[status] ?? 0;
+      const body = {
+        title: projectTitle,
+        status,
+        progress,
+        params: {
+          address: addressSearch,
+          batteryMinutes,
+          batteries: numBatteries,
+          minHeight: minHeightFeet,
+          maxHeight: maxHeightFeet,
+        },
+      };
+      const url = project?.projectId ? `${apiBase}/${encodeURIComponent(project.projectId)}` : `${apiBase}`;
+      const method = project?.projectId ? 'PATCH' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+      setToast({ type: 'success', message: 'Saved' });
+      onSaved?.();
+      onClose();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save project');
+    }
+  }, [addressSearch, batteryMinutes, idToken, maxHeightFeet, minHeightFeet, numBatteries, onClose, onSaved, project, projectTitle, status]);
 
   // Address search via Mapbox Geocoding
   const handleAddressEnter = useCallback(async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -425,6 +487,26 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
       )}
 
       <div className="popup-content-scroll">
+        {/* Project Status quick stepper */}
+        <div className="category-outline">
+          <div className="popup-section" style={{padding: 12}}>
+            <h4>Project Status</h4>
+            <div style={{display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center', marginTop:8}}>
+              {[
+                ['draft','Start'],
+                ['path_downloaded','Paths Downloaded'],
+                ['photos_uploaded','Photos Uploaded'],
+                ['processing','Processing'],
+                ['delivered','Delivered'],
+              ].map(([value,label]) => (
+                <button key={value} type="button" onClick={() => setStatus(value)} style={{
+                  padding:'8px 12px', borderRadius:999, border:'1px solid rgba(255,255,255,0.2)',
+                  background: status===value ? 'rgba(255,255,255,0.2)' : 'transparent', color:'#fff', cursor:'pointer'
+                }}>{label}</button>
+              ))}
+            </div>
+          </div>
+        </div>
         {/* SECTION 1: CREATE FLIGHT PLAN */}
         <div className={`accordion-section${setupOpen ? ' active' : ''}`} data-section="setup">
           <div className="accordion-header" onClick={() => setSetupOpen(v => !v)}>
@@ -637,6 +719,12 @@ export default function NewProjectModal({ open, onClose }: NewProjectModalProps)
             </div>
           </div>
           )}
+        </div>
+        {/* Save button for edit/create metadata only */}
+        <div style={{display:'flex', justifyContent:'center', marginTop:16}}>
+          <button className="popup-action-btn primary" onClick={handleSaveProject}>
+            Save
+          </button>
         </div>
       </div>
     </div>
