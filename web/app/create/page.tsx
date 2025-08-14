@@ -10,23 +10,23 @@ export default function Create(): JSX.Element {
   const [projects, setProjects] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const session = await Auth.currentSession();
-        const idToken = session.getIdToken().getJwtToken();
-        const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
-          headers: { Authorization: `Bearer ${idToken}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setProjects(data.projects || []);
-        }
-      } catch {
-        // ignore
+  const fetchProjects = async () => {
+    try {
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProjects(data.projects || []);
       }
-    })();
-  }, []);
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => { fetchProjects(); }, []);
 
   return (
     <>
@@ -97,19 +97,7 @@ export default function Create(): JSX.Element {
           open={modalOpen}
           onClose={() => { setModalOpen(false); setEditing(null); }}
           project={editing || undefined}
-          onSaved={async () => {
-            try {
-              const session = await Auth.currentSession();
-              const idToken = session.getIdToken().getJwtToken();
-              const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
-                headers: { Authorization: `Bearer ${idToken}` },
-              });
-              if (res.ok) {
-                const data = await res.json();
-                setProjects(data.projects || []);
-              }
-            } catch {}
-          }}
+          onSaved={fetchProjects}
         />
       </AuthGate>
     </>

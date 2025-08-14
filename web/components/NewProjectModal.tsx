@@ -638,9 +638,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           setError('Please set location and battery params first');
                           return;
                         }
+                    setBatteryDownloading(idx + 1);
                     await handleOptimize();
+                    // Poll optimizedParams until set (max ~5s)
+                    const start = Date.now();
+                    while (!optimizedParams && Date.now() - start < 5000) {
+                      await new Promise(r => setTimeout(r, 150));
+                    }
                       }
-                      await downloadBatteryCsv(idx + 1);
+                  await downloadBatteryCsv(idx + 1);
                     }}
                     disabled={batteryDownloading !== null}
                   >
