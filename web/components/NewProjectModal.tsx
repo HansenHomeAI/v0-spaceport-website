@@ -449,7 +449,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
 
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
-    if (!optimizedParams) {
+    // Use ref to get current optimized params (not stale closure)
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (!currentOptimizedParams) {
       setToast({ type: 'error', message: 'Please optimize first' });
       return;
     }
@@ -458,7 +460,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(optimizedParams),
+        body: JSON.stringify(currentOptimizedParams),
       });
       if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
       const csvText = await res.text();
@@ -480,7 +482,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setBatteryDownloading(null);
     }
-  }, [API_ENHANCED_BASE, optimizedParams, projectTitle]);
+  }, [API_ENHANCED_BASE, projectTitle]);
 
   // Save metadata changes for existing project
   const handleSaveProject = useCallback(async () => {
