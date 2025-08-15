@@ -2,13 +2,14 @@ name: CDK Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, development ]
   pull_request:
     branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -41,15 +42,15 @@ jobs:
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-to-assume: ${{ github.ref_name == 'main' && secrets.AWS_ROLE_TO_ASSUME_PROD || secrets.AWS_ROLE_TO_ASSUME_STAGING }}
         aws-region: us-west-2
 
     - name: CDK Bootstrap
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.event_name == 'push'
       run: npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2
 
     - name: Deploy CDK Stack
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.event_name == 'push'
       run: |
         # Deploy SpaceportStack with GoogleMapsApiKey parameter
         npx cdk deploy SpaceportStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
