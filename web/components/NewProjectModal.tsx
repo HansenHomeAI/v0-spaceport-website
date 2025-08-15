@@ -49,6 +49,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [mlLoading, setMlLoading] = useState<boolean>(false);
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
+  const optimizedParamsRef = useRef<OptimizedParams | null>(null);
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
 
@@ -78,14 +79,35 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  // Function to calculate unit label position next to numbers
+  const getUnitLabelStyle = (value: string) => {
+    // Calculate approximate width based on character count
+    const charWidth = 14; // Approximate character width in pixels for 1.2rem font
+    const numberWidth = value.length * charWidth;
+    const leftPosition = 40 + numberWidth + 8; // Icon width + number width + small gap
+    
+    return {
+      position: 'absolute' as const,
+      left: `${leftPosition}px`,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: 'rgba(255, 255, 255, 0.5)', // Match input text color exactly
+      fontSize: '1.2rem', // Match input font size exactly
+      fontWeight: '500', // Match input font weight exactly
+      pointerEvents: 'none' as const,
+      userSelect: 'none' as const,
+      fontFamily: 'inherit' // Use same font family as input
+    };
+  };
+
   // Reset state when opening/closing
   useEffect(() => {
     if (!open) return;
-    setError(null);
     setUploadProgress(0);
     setUploadLoading(false);
     setMlLoading(false);
     setOptimizedParams(null);
+    optimizedParamsRef.current = null;
     setBatteryDownloading(null);
     setSetupOpen(true);
     setUploadOpen(false);
@@ -111,6 +133,57 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           lat: parseFloat(params.latitude), 
           lng: parseFloat(params.longitude) 
         };
+        
+        // Auto-restore optimization params for existing projects with complete data
+        setTimeout(async () => {
+          const coords = selectedCoordsRef.current;
+          const minutes = parseInt(params.batteryMinutes || '');
+          const batteries = parseInt(params.batteries || '');
+          
+          if (coords && minutes && batteries) {
+            try {
+              setOptimizationLoading(true);
+              
+              // Step 1: optimize spiral
+              const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batteryMinutes: minutes, batteries, center: `${coords.lat}, ${coords.lng}` }),
+              });
+              if (!optRes.ok) throw new Error('Flight path optimization failed');
+              const optData = await optRes.json();
+
+              // Step 2: elevation
+              let elevationFeet: number | null = null;
+              const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
+              });
+              if (elevRes.ok) {
+                const elevData = await elevRes.json();
+                elevationFeet = elevData.elevation_feet ?? null;
+              }
+
+              const minH = parseFloat(params.minHeight || '120') || 120;
+              const maxH = params.maxHeight ? parseFloat(params.maxHeight) : null;
+
+              const optimizedParams: OptimizedParams = {
+                ...optData.optimized_params,
+                center: `${coords.lat}, ${coords.lng}`,
+                minHeight: minH,
+                maxHeight: maxH,
+                elevationFeet,
+              };
+              setOptimizedParams(optimizedParams);
+              optimizedParamsRef.current = optimizedParams;
+            } catch (e) {
+              console.warn('Failed to auto-restore optimization params:', e);
+            } finally {
+              setOptimizationLoading(false);
+            }
+          }
+        }, 2000); // Increased delay to ensure map is fully loaded
       }
     } else {
       // CRITICAL FIX: Reset all fields to blank state for new projects
@@ -173,6 +246,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
           setOptimizedParams(null);
+          optimizedParamsRef.current = null;
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
@@ -302,22 +376,35 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
     return Boolean(coords && minutes && batteries);
-  }, [batteryMinutes, numBatteries]);
-
-  // Field validation for white outlines
-  const getFieldValidationStyle = useCallback((fieldName: string) => {
-    const hasError = error && error.includes(fieldName);
-    return hasError ? { outline: '2px solid white', outlineOffset: '2px' } : {};
-  }, [error]);
+  }, [batteryMinutes, numBatteries, addressSearch]); // Add addressSearch to trigger when coordinates restored
 
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
     setOptimizationLoading(true);
-    setError(null);
+    console.log('Starting optimization...');
     try {
       const coords = selectedCoordsRef.current!;
       const minutes = parseInt(batteryMinutes);
       const batteries = parseInt(numBatteries);
+      
+      // Validate parameters to prevent API errors
+      if (!coords || !coords.lat || !coords.lng) {
+        throw new Error('Invalid coordinates');
+      }
+      if (isNaN(minutes) || minutes <= 0 || minutes > 60) {
+        throw new Error('Battery minutes must be between 1-60');
+      }
+      if (isNaN(batteries) || batteries <= 0 || batteries > 12) {
+        throw new Error('Number of batteries must be between 1-12');
+      }
+      
+      console.log('Optimization params:', { 
+        coords, 
+        minutes, 
+        batteries, 
+        minHeight: minHeightFeet, 
+        maxHeight: maxHeightFeet 
+      });
 
       // Step 1: optimize spiral
       const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
@@ -351,8 +438,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         elevationFeet,
       };
       setOptimizedParams(params);
+      optimizedParamsRef.current = params;
+      console.log('Optimization completed successfully:', params);
     } catch (e: any) {
-      setError(e?.message || 'Optimization failed');
+      console.error('Optimization failed:', e);
+      setToast({ type: 'error', message: e?.message || 'Optimization failed' });
     } finally {
       setOptimizationLoading(false);
     }
@@ -360,11 +450,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     if (!optimizedParams) {
-      setError('Please optimize first');
+      setToast({ type: 'error', message: 'Please optimize first' });
       return;
     }
     setBatteryDownloading(batteryIndex1);
-    setError(null);
     try {
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
         method: 'POST',
@@ -387,7 +476,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e: any) {
-      setError(e?.message || 'CSV download failed');
+      setToast({ type: 'error', message: e?.message || 'CSV download failed' });
     } finally {
       setBatteryDownloading(null);
     }
@@ -396,6 +485,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Save metadata changes for existing project
   const handleSaveProject = useCallback(async () => {
     try {
+      console.log('Saving project...', { currentProjectId, projectTitle });
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
@@ -423,7 +513,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => 'Unknown error');
+        console.error('Save failed:', res.status, errorText);
+        throw new Error(`Save failed: ${res.status}`);
+      }
+      console.log('Project saved successfully');
       // Capture created id on first POST
       if (!currentProjectId) {
         const data = await res.json().catch(() => ({} as any));
@@ -432,18 +527,37 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
       onSaved?.();
     } catch (e: any) {
-      setError(e?.message || 'Failed to save project');
+      setToast({ type: 'error', message: e?.message || 'Failed to save project' });
     }
   }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status]);
 
-  // Debounced autosave on any change
+  // Check if project has meaningful content
+  const hasMeaningfulContent = useCallback(() => {
+    // Always save if editing existing project
+    if (currentProjectId) return true;
+    
+    // For new projects, check if any meaningful data is entered
+    const hasLocation = Boolean(addressSearch.trim() || selectedCoordsRef.current);
+    const hasBatteryData = Boolean(batteryMinutes || numBatteries);
+    const hasAltitudeData = Boolean(minHeightFeet || maxHeightFeet);
+    const hasTitleChange = projectTitle !== 'Untitled' && projectTitle.trim();
+    const hasUploadData = Boolean(propertyTitle.trim() || listingDescription.trim() || contactEmail.trim() || selectedFile);
+    
+    return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
+  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile]);
+
+  // Debounced autosave on any change - only if meaningful content
   useEffect(() => {
     if (!open) return;
-    const t = setTimeout(() => {
-      handleSaveProject();
-    }, 600);
-    return () => clearTimeout(t);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, handleSaveProject]);
+    
+    // Only save if project has meaningful content
+    if (hasMeaningfulContent()) {
+      const t = setTimeout(() => {
+        handleSaveProject();
+      }, 600);
+      return () => clearTimeout(t);
+    }
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, hasMeaningfulContent, handleSaveProject]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -467,7 +581,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       onSaved?.(); // Refresh the projects list
       onClose(); // Close the modal
     } catch (e: any) {
-      setError(e?.message || 'Failed to delete project');
       setToast({ type: 'error', message: e?.message || 'Failed to delete project' });
     }
   }, [currentProjectId, onSaved, onClose]);
@@ -504,6 +617,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         
         // Invalidate previous optimization since coordinates changed
         setOptimizedParams(null);
+        optimizedParamsRef.current = null;
         // keep input text as typed address
       }
     } catch (err) {
@@ -530,13 +644,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const startUpload = useCallback(async () => {
     const validationError = validateUpload();
     if (validationError) {
-      setError(validationError);
+      setToast({ type: 'error', message: validationError });
       return;
     }
     if (!selectedFile) return;
     setUploadLoading(true);
     setMlLoading(false);
-    setError(null);
     setUploadProgress(0);
     try {
       // init multipart
@@ -652,7 +765,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setUploadOpen(true);
     } catch (e: any) {
       const msg = e?.message || 'Upload failed';
-      setError(msg);
       setToast({ type: 'error', message: msg });
     } finally {
       setUploadLoading(false);
@@ -736,7 +848,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={addressSearch}
                       onChange={(e) => setAddressSearch(e.target.value)}
                       onKeyDown={handleAddressEnter}
-                      style={getFieldValidationStyle('location')}
+                                              style={{}}
                     />
                   </div>
                 </div>
@@ -748,31 +860,41 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               <div className="popup-section">
                 <h4>Batteries</h4>
                 <div className="input-row-popup">
-                  <div className="popup-input-wrapper">
+                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon time"></span>
                     <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Duration"
                       value={batteryMinutes}
-                      onChange={(e) => { setBatteryMinutes(e.target.value); setOptimizedParams(null); }}
+                      onChange={(e) => { setBatteryMinutes(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
                       min={10}
                       max={60}
-                      style={getFieldValidationStyle('battery')}
+                      style={{}}
                     />
+                    {batteryMinutes && (
+                      <span style={getUnitLabelStyle(batteryMinutes)}>
+                        min/battery
+                      </span>
+                    )}
                   </div>
-                  <div className="popup-input-wrapper">
+                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon number"></span>
-              <input
+                    <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Quantity"
                       value={numBatteries}
-                      onChange={(e) => { setNumBatteries(e.target.value); setOptimizedParams(null); }}
+                      onChange={(e) => { setNumBatteries(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
                       min={1}
                       max={12}
-                      style={getFieldValidationStyle('battery')}
+                      style={{}}
                     />
+                    {numBatteries && (
+                      <span style={getUnitLabelStyle(numBatteries)}>
+                        {parseInt(numBatteries) === 1 ? 'battery' : 'batteries'}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -783,27 +905,37 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               <div className="popup-section">
                 <h4>Altitude</h4>
                 <div className="input-row-popup">
-                  <div className="popup-input-wrapper">
+                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon minimum"></span>
-              <input
+                    <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Minimum"
                       value={minHeightFeet}
-                      onChange={(e) => { setMinHeightFeet(e.target.value); setOptimizedParams(null); }}
-                      style={getFieldValidationStyle('altitude')}
+                      onChange={(e) => { setMinHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
+                      style={{}}
                     />
+                    {minHeightFeet && (
+                      <span style={getUnitLabelStyle(minHeightFeet)}>
+                        ft AGL
+                      </span>
+                    )}
                   </div>
-                  <div className="popup-input-wrapper">
+                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon maximum"></span>
-              <input
+                    <input
                       type="number"
                       className="text-fade-right"
                       placeholder="Maximum"
                       value={maxHeightFeet}
-                      onChange={(e) => { setMaxHeightFeet(e.target.value); setOptimizedParams(null); }}
-                      style={getFieldValidationStyle('altitude')}
+                      onChange={(e) => { setMaxHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
+                      style={{}}
                     />
+                    {maxHeightFeet && (
+                      <span style={getUnitLabelStyle(maxHeightFeet)}>
+                        ft AGL
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -824,20 +956,54 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         if (!canOptimize) {
                           // Set specific error messages for missing fields
                           if (!selectedCoordsRef.current) {
-                            setError('location');
+                            setToast({ type: 'error', message: 'Please select a location on the map first' });
                           } else if (!batteryMinutes || !numBatteries) {
-                            setError('battery');
+                            setToast({ type: 'error', message: 'Please enter battery duration and quantity first' });
                           } else {
-                            setError('Please set location and battery params first');
+                            setToast({ type: 'error', message: 'Please set location and battery params first' });
                           }
                           return;
                         }
                         setBatteryDownloading(idx + 1);
-                        await handleOptimize();
-                        // Poll optimizedParams until set (max ~5s)
-                        const start = Date.now();
-                        while (!optimizedParams && Date.now() - start < 5000) {
-                          await new Promise(r => setTimeout(r, 150));
+                        
+                        // Small delay to avoid any race conditions with auto-save
+                        await new Promise(r => setTimeout(r, 100));
+                        
+                        try {
+                          await handleOptimize();
+                          // Poll optimizedParams until set (max ~30s) with improved checking
+                          const start = Date.now();
+                          let checkCount = 0;
+                          const maxChecks = 60; // 30 seconds with 500ms intervals
+                          
+                          while (checkCount < maxChecks) {
+                            await new Promise(r => setTimeout(r, 500));
+                            checkCount++;
+                            
+                            // Use ref to get current optimizedParams (not stale closure)
+                            const currentOptimizedParams = optimizedParamsRef.current;
+                            if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
+                              console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
+                              break;
+                            }
+                            
+                            // Log progress every 5 seconds
+                            if (checkCount % 10 === 0) {
+                              console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
+                            }
+                          }
+                          
+                          // Final check after polling using ref
+                          const finalOptimizedParams = optimizedParamsRef.current;
+                          if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
+                            setToast({ type: 'error', message: 'Optimization timed out after 30 seconds. The server may be busy - please try again.' });
+                            setBatteryDownloading(null);
+                            return;
+                          }
+                        } catch (e: any) {
+                          setToast({ type: 'error', message: 'Failed to optimize flight path: ' + (e?.message || 'Unknown error') });
+                          setBatteryDownloading(null);
+                          return;
                         }
                       }
                       await downloadBatteryCsv(idx + 1);
@@ -924,7 +1090,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 </div>
               </div>
 
-              {error && <p style={{ color: '#ff6b6b', marginTop: 8 }}>{error}</p>}
+              {/* Error messages now shown as popups via toast state */}
             </div>
           </div>
           )}
