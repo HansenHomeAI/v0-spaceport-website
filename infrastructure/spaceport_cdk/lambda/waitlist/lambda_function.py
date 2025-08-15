@@ -304,7 +304,7 @@ This person will be notified when Spaceport AI launches."""
         response = ses.send_email(
             Source='gabriel@spcprt.com',  # Your preferred email address
             Destination={
-                'ToAddresses': ['gabriel@spcprt.com']
+                'ToAddresses': ['gabriel@spcprt.com', 'ethan@spcprt.com']
             },
             Message={
                 'Subject': {

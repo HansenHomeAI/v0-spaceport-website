@@ -260,7 +260,8 @@ Please process this submission accordingly.`;
 
         await Promise.all([
           sendEmailNotification(email, userSubject, userBody),
-          sendEmailNotification("hello@hansenhome.ai", adminSubject, adminBody)
+          sendEmailNotification("hello@hansenhome.ai", adminSubject, adminBody),
+          sendEmailNotification("ethan@spcprt.com", adminSubject, adminBody)
         ]);
 
         console.log("Email notifications sent.");
