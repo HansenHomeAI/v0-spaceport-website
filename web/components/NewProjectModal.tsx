@@ -91,6 +91,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadOpen(false);
     setToast(null);
     setIsFullscreen(false);
+    
     // If editing, hydrate fields from project
     if (project) {
       setProjectTitle(project.title || 'Untitled');
@@ -112,6 +113,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         };
       }
     } else {
+      // CRITICAL FIX: Reset all fields to blank state for new projects
+      setProjectTitle('Untitled');
+      setAddressSearch('');
+      setBatteryMinutes('');
+      setNumBatteries('');
+      setMinHeightFeet('');
+      setMaxHeightFeet('');
+      setPropertyTitle('');
+      setListingDescription('');
+      setContactEmail('');
+      setSelectedFile(null);
       setStatus('draft');
       setCurrentProjectId(null);
       selectedCoordsRef.current = null;
@@ -433,6 +445,33 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return () => clearTimeout(t);
   }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, handleSaveProject]);
 
+  // Delete project function
+  const handleDeleteProject = useCallback(async () => {
+    if (!currentProjectId) return;
+    if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
+    
+    try {
+      const { Auth } = await import('aws-amplify');
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      
+      const res = await fetch(`${apiBase}/${encodeURIComponent(currentProjectId)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      
+      if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+      
+      setToast({ type: 'success', message: 'Project deleted successfully' });
+      onSaved?.(); // Refresh the projects list
+      onClose(); // Close the modal
+    } catch (e: any) {
+      setError(e?.message || 'Failed to delete project');
+      setToast({ type: 'error', message: e?.message || 'Failed to delete project' });
+    }
+  }, [currentProjectId, onSaved, onClose]);
+
   // Address search via Mapbox Geocoding
   const handleAddressEnter = useCallback(async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Enter') return;
@@ -671,7 +710,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           <div className="accordion-content">
             <div className="popup-map-section">
               <div id="map-container" className="map-container" ref={mapContainerRef}>
-                <button className="expand-button" id="expand-button" onClick={toggleFullscreen}>
+                <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
                 <div className="map-dim-overlay"></div>
@@ -771,11 +810,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             </div>
 
             {/* Individual Battery Segments (legacy-correct UI) */}
-            <div className="battery-downloads" style={{ display: 'block', marginTop: 12 }}>
+            <div className="category-outline">
               <div className="popup-section">
                 <h4>Individual Battery Segments:</h4>
-              </div>
-              <div id="batteryButtons" className="flight-path-grid">
+                <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <button
                     key={idx}
@@ -810,6 +848,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     Battery {idx + 1}
                   </button>
                 ))}
+                </div>
               </div>
             </div>
           </div>
@@ -891,6 +930,43 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           )}
         </div>
         {/* Autosave enabled; no explicit Save button */}
+        
+        {/* Delete Project Button - Only show when editing existing project */}
+        {currentProjectId && (
+          <div className="popup-section" style={{ marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button 
+                className="delete-project-btn"
+                onClick={handleDeleteProject}
+                style={{
+                  display: 'inline-block',
+                  textDecoration: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '999px',
+                  transition: 'background 0.3s ease',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  border: '2.5px solid #ff4757',
+                  color: '#ff4757',
+                  background: 'transparent',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = '#ff4757';
+                  e.currentTarget.style.color = '#fff';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#ff4757';
+                }}
+              >
+                Delete Project
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
