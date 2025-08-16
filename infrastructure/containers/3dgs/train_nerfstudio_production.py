@@ -171,13 +171,19 @@ class NerfStudioTrainer:
         converted_dir = self.temp_dir / "converted_data"
         converted_dir.mkdir(exist_ok=True, parents=True)
         
+        # First, convert COLMAP text files to binary format (required by ns-process-data)
+        sparse_dir = self.input_dir / "sparse" / "0"
+        if not self.convert_colmap_text_to_binary(sparse_dir):
+            logger.error("❌ Failed to convert COLMAP text files to binary format")
+            return False
+        
         # Use ns-process-data to convert COLMAP to transforms.json
         convert_cmd = [
             "ns-process-data", "images",
             "--data", str(self.input_dir / "images"),
             "--output-dir", str(converted_dir),
             "--skip-colmap",  # Skip COLMAP processing since we already have it
-            "--colmap-model-path", str(self.input_dir / "sparse" / "0")
+            "--colmap-model-path", str(sparse_dir)
         ]
         
         logger.info(f"🚀 Executing COLMAP conversion command:")
@@ -216,6 +222,59 @@ class NerfStudioTrainer:
             return False
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
+            return False
+    
+    def convert_colmap_text_to_binary(self, sparse_dir: Path) -> bool:
+        """Convert COLMAP text files to binary format using COLMAP's model_converter"""
+        logger.info("🔄 Converting COLMAP text files to binary format...")
+        
+        # Check if binary files already exist
+        cameras_bin = sparse_dir / "cameras.bin"
+        images_bin = sparse_dir / "images.bin"
+        points3D_bin = sparse_dir / "points3D.bin"
+        
+        if cameras_bin.exists() and images_bin.exists() and points3D_bin.exists():
+            logger.info("✅ Binary files already exist, skipping conversion")
+            return True
+        
+        # Use COLMAP's model_converter to convert text to binary
+        convert_cmd = [
+            "colmap", "model_converter",
+            "--input_path", str(sparse_dir),
+            "--output_path", str(sparse_dir),
+            "--output_type", "BIN"
+        ]
+        
+        logger.info(f"🚀 Converting text to binary: {' '.join(convert_cmd)}")
+        
+        try:
+            result = subprocess.run(
+                convert_cmd,
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout
+            )
+            
+            if result.returncode != 0:
+                logger.error("❌ COLMAP text to binary conversion failed:")
+                logger.error(f"Exit code: {result.returncode}")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                return False
+            
+            # Verify binary files were created
+            if not (cameras_bin.exists() and images_bin.exists() and points3D_bin.exists()):
+                logger.error("❌ Binary files were not created")
+                return False
+            
+            logger.info("✅ COLMAP text files converted to binary format")
+            return True
+            
+        except subprocess.TimeoutExpired:
+            logger.error("❌ COLMAP conversion timeout (5 minutes exceeded)")
+            return False
+        except Exception as e:
+            logger.error(f"❌ COLMAP text to binary conversion failed: {e}")
             return False
     
     def run_nerfstudio_training(self) -> bool:

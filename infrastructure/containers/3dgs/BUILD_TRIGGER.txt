@@ -11,13 +11,13 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-16-v1.0.8
-Build ID: nerfstudio-vincent-woo-v1.0.8-COLMAP-INSTALLED
+Container Build Timestamp: 2025-08-16-v1.0.9
+Build ID: nerfstudio-vincent-woo-v1.0.9-BINARY-CONVERSION
 
-CRITICAL FIX: Install COLMAP in container for ns-process-data
-- Added: colmap package to system dependencies in Dockerfile
-- Resolves: "Could not find COLMAP" error in ns-process-data conversion
-- Enables: COLMAP to transforms.json conversion pipeline
-Vincent Woo's methodology with complete COLMAP toolchain
+CRITICAL FIX: Convert COLMAP text files to binary format for ns-process-data
+- Added: convert_colmap_text_to_binary() using COLMAP model_converter
+- Resolves: transforms.json not created (ns-process-data expects binary format)
+- Method: colmap model_converter --output_type BIN before ns-process-data
+Vincent Woo's methodology with complete COLMAP text-to-binary pipeline
 
 ** TRIGGER GITHUB ACTIONS BUILD **
