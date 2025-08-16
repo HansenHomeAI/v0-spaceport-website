@@ -57,9 +57,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
+  const [processingMessage, setProcessingMessage] = useState<string>('');
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // System notification helper
+  const showSystemNotification = useCallback((type: 'success' | 'error', message: string) => {
+    if ('Notification' in window) {
+      // Request permission if not already granted
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            new Notification(`Spaceport ${type === 'success' ? 'Success' : 'Error'}`, {
+              body: message,
+              icon: '/assets/SpaceportIcons/Favicon.png'
+            });
+          }
+        });
+      } else if (Notification.permission === 'granted') {
+        new Notification(`Spaceport ${type === 'success' ? 'Success' : 'Error'}`, {
+          body: message,
+          icon: '/assets/SpaceportIcons/Favicon.png'
+        });
+      }
+    }
+    // Fallback to toast for unsupported browsers
+    setToast({ type, message });
+  }, []);
 
   // simple, general progress model
   const STATUS_TO_PROGRESS: Record<string, number> = {
@@ -419,9 +444,32 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return Boolean(coords && minutes && batteries);
   }, [batteryMinutes, numBatteries, selectedCoords]); // Use selectedCoords state for better reactivity
 
+  // Rotating processing messages for optimization
+  const processingMessages = [
+    "This may take a moment...",
+    "Running binary search optimization",
+    "Forming to elevation data", 
+    "Maximizing battery usage",
+    "Calculating optimal flight paths",
+    "Analyzing terrain features"
+  ];
+
+  const startProcessingMessages = useCallback(() => {
+    let messageIndex = 0;
+    setProcessingMessage(processingMessages[0]);
+    
+    const interval = setInterval(() => {
+      messageIndex = (messageIndex + 1) % processingMessages.length;
+      setProcessingMessage(processingMessages[messageIndex]);
+    }, 2000); // Change message every 2 seconds
+    
+    return interval;
+  }, []);
+
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
     setOptimizationLoading(true);
+    const messageInterval = startProcessingMessages();
     console.log('Starting optimization...');
     try {
       const coords = selectedCoordsRef.current!;
@@ -485,6 +533,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       console.error('Optimization failed:', e);
       setToast({ type: 'error', message: e?.message || 'Optimization failed' });
     } finally {
+      clearInterval(messageInterval);
+      setProcessingMessage('');
       setOptimizationLoading(false);
     }
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
@@ -518,6 +568,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      // Update project status to indicate drone path has been downloaded
+      if (status === 'draft') {
+        setStatus('path_downloaded');
+      }
     } catch (e: any) {
       setToast({ type: 'error', message: e?.message || 'CSV download failed' });
     } finally {
@@ -654,11 +709,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       
       if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
       
-      setToast({ type: 'success', message: 'Project deleted successfully' });
+      showSystemNotification('success', 'Project deleted successfully');
       onSaved?.(); // Refresh the projects list
       onClose(); // Close the modal
     } catch (e: any) {
-      setToast({ type: 'error', message: e?.message || 'Failed to delete project' });
+      showSystemNotification('error', e?.message || 'Failed to delete project');
     }
   }, [currentProjectId, onSaved, onClose]);
 
@@ -715,7 +770,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const startUpload = useCallback(async () => {
     const validationError = validateUpload();
     if (validationError) {
-      setToast({ type: 'error', message: validationError });
+      showSystemNotification('error', validationError);
       return;
     }
     if (!selectedFile) return;
@@ -724,6 +779,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadProgress(0);
     setUploadStage('Initializing upload...');
     try {
+      // Show initial progress to indicate activity
+      setUploadProgress(5);
+      
       // init multipart
       const initRes = await fetch(API_UPLOAD.START_UPLOAD, {
         method: 'POST',
@@ -764,7 +822,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         if (!putRes.ok) throw new Error(`Failed to upload part ${partNumber}`);
         const etag = putRes.headers.get('ETag');
         parts.push({ ETag: etag, PartNumber: partNumber });
-        setUploadProgress(((partNumber) / totalChunks) * 100);
+        // Progress from 5% to 95% during upload, saving 5% for finalization
+        const uploadProgress = 5 + ((partNumber / totalChunks) * 90);
+        setUploadProgress(uploadProgress);
       }
 
       // complete multipart
@@ -811,7 +871,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
       const ml = await mlRes.json();
       setUploadStage('Upload completed successfully!');
-      setToast({ type: 'success', message: `Upload successful. ML processing started. Job ID: ${ml.jobId || 'N/A'}` });
+      setStatus('photos_uploaded');
+      showSystemNotification('success', 'Upload successful! Your 3D model is being processed and will be delivered via email.');
 
       // Persist a project stub for this user
       try {
@@ -843,7 +904,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setUploadOpen(true);
     } catch (e: any) {
       const msg = e?.message || 'Upload failed';
-      setToast({ type: 'error', message: msg });
+      showSystemNotification('error', msg);
     } finally {
       setUploadLoading(false);
       setMlLoading(false);
@@ -1024,7 +1085,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
               <div className="popup-section">
-                <h4>Individual Battery Segments:</h4>
+                <h4 className="battery-segments-title">
+                  {optimizationLoading ? processingMessage : "Individual Battery Segments:"}
+                </h4>
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <button
