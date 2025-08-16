@@ -17,6 +17,19 @@ def decimal_default(obj):
     raise TypeError
 
 
+# Helper function to convert float types to Decimal for DynamoDB
+def convert_floats_to_decimal(data):
+    """Recursively convert float values to Decimal for DynamoDB compatibility"""
+    if isinstance(data, float):
+        return Decimal(str(data))
+    elif isinstance(data, dict):
+        return {k: convert_floats_to_decimal(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [convert_floats_to_decimal(v) for v in data]
+    else:
+        return data
+
+
 dynamodb = boto3.resource('dynamodb')
 TABLE_NAME = os.environ['PROJECTS_TABLE_NAME']
 table = dynamodb.Table(TABLE_NAME)
@@ -137,7 +150,7 @@ def lambda_handler(event, context):
                 'email': user_email,
                 'status': body.get('status') or 'draft',
                 'progress': int(body.get('progress') or 0),
-                'params': body.get('params') or {},
+                'params': convert_floats_to_decimal(body.get('params') or {}),
                 'createdAt': now,
                 'updatedAt': now,
             }
@@ -149,7 +162,8 @@ def lambda_handler(event, context):
             update_fields = {}
             for key in ('title', 'status', 'progress', 'params', 'upload', 'ml'):
                 if key in body:
-                    update_fields[key] = body[key]
+                    # Convert floats to Decimal for DynamoDB compatibility
+                    update_fields[key] = convert_floats_to_decimal(body[key])
             if not update_fields:
                 return _response(400, {'error': 'No updatable fields provided'})
 
