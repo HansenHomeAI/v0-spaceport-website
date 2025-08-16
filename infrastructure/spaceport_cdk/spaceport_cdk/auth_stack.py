@@ -2,6 +2,7 @@ from aws_cdk import (
     Stack,
     Duration,
     RemovalPolicy,
+    BundlingOptions,
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -256,7 +257,16 @@ class AuthStack(Stack):
             "Spaceport-ProjectsFunction",
             function_name="Spaceport-ProjectsFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "projects")),
+            code=lambda_.Code.from_asset(
+                os.path.join(lambda_dir, "projects"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ]
+                )
+            ),
             handler="lambda_function.lambda_handler",
             environment={
                 "PROJECTS_TABLE_NAME": projects_table.table_name,

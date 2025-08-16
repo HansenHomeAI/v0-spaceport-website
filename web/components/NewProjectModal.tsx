@@ -47,6 +47,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [mlLoading, setMlLoading] = useState<boolean>(false);
+  const [uploadStage, setUploadStage] = useState<string>('');
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
@@ -106,6 +107,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadProgress(0);
     setUploadLoading(false);
     setMlLoading(false);
+    setUploadStage('');
     setOptimizedParams(null);
     optimizedParamsRef.current = null;
     setBatteryDownloading(null);
@@ -653,6 +655,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadLoading(true);
     setMlLoading(false);
     setUploadProgress(0);
+    setUploadStage('Initializing upload...');
     try {
       // init multipart
       const initRes = await fetch(API_UPLOAD.START_UPLOAD, {
@@ -670,6 +673,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const init = await initRes.json();
 
       // upload chunks
+      setUploadStage(`Uploading file (${Math.round(selectedFile.size / 1024 / 1024)}MB)...`);
       const totalChunks = Math.ceil(selectedFile.size / CHUNK_SIZE);
       const parts: Array<{ ETag: string | null; PartNumber: number }> = [];
       for (let i = 0; i < totalChunks; i++) {
@@ -697,6 +701,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
 
       // complete multipart
+      setUploadStage('Finalizing upload...');
+      setUploadProgress(100);
       const completeRes = await fetch(API_UPLOAD.COMPLETE_UPLOAD, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -710,6 +716,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!completeRes.ok) throw new Error('Failed to complete upload');
 
       // save metadata
+      setUploadStage('Saving metadata...');
       const saveRes = await fetch(API_UPLOAD.SAVE_SUBMISSION, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -723,6 +730,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!saveRes.ok) throw new Error('Failed to save submission metadata');
 
       // start ML processing
+      setUploadStage('Starting ML processing...');
       setMlLoading(true);
       const s3Url = `s3://${init.bucketName}/${init.objectKey}`;
       const mlRes = await fetch(API_UPLOAD.START_ML_PROCESSING, {
@@ -735,6 +743,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         throw new Error(errData?.error || `ML processing failed: ${mlRes.status}`);
       }
       const ml = await mlRes.json();
+      setUploadStage('Upload completed successfully!');
       setToast({ type: 'success', message: `Upload successful. ML processing started. Job ID: ${ml.jobId || 'N/A'}` });
 
       // Persist a project stub for this user
@@ -771,6 +780,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setUploadLoading(false);
       setMlLoading(false);
+      // Keep stage text visible for a few seconds after completion
+      setTimeout(() => setUploadStage(''), 3000);
     }
   }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload]);
 
@@ -1075,7 +1086,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
               <div className="category-outline upload-button-only no-outline">
                 <div className="popup-section" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                  <div className="upload-progress-text">{Math.round(uploadProgress)}%</div>
+                  {uploadLoading && uploadStage && (
+                    <div className="upload-stage-text" style={{ 
+                      position: 'absolute', 
+                      top: '-30px', 
+                      left: '50%', 
+                      transform: 'translateX(-50%)', 
+                      fontSize: '0.85rem', 
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      textAlign: 'center',
+                      width: '100%'
+                    }}>
+                      {uploadStage}
+                    </div>
+                  )}
+                  <div className="upload-progress-text" style={{ 
+                    opacity: uploadLoading ? 1 : 0.5 
+                  }}>
+                    {uploadLoading ? `${Math.round(uploadProgress)}%` : ''}
+                  </div>
                   <div className="upload-button-container">
                     <button className={`upload-btn-with-icon${uploadLoading ? ' loading' : ''}`} onClick={startUpload} disabled={uploadLoading}>
                       <span className="upload-btn-icon"></span>
@@ -1087,7 +1116,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </button>
                   </div>
                   <div className="upload-progress-container">
-                    <div className="upload-progress-bar" style={{ width: `${uploadProgress}%` }}></div>
+                    <div className="upload-progress-bar" style={{ 
+                      width: `${uploadProgress}%`,
+                      background: uploadProgress === 100 && mlLoading 
+                        ? 'linear-gradient(90deg, #4ade80, #22c55e)' 
+                        : 'linear-gradient(90deg, #3b82f6, #1d4ed8)',
+                      transition: 'all 0.3s ease'
+                    }}></div>
                   </div>
                 </div>
               </div>
