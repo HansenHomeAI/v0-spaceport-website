@@ -1,0 +1,365 @@
+{
+  "StartAt": "PipelineStepChoice",
+  "States": {
+    "PipelineStepChoice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.pipelineStep",
+          "StringEquals": "sfm",
+          "Next": "SfMProcessingJob"
+        },
+        {
+          "Variable": "$.pipelineStep",
+          "StringEquals": "3dgs",
+          "Next": "GaussianTrainingJob"
+        },
+        {
+          "Variable": "$.pipelineStep",
+          "StringEquals": "compression",
+          "Next": "CompressionJob"
+        }
+      ],
+      "Default": "SfMProcessingJob"
+    },
+    "SfMProcessingJob": {
+      "Next": "WaitForSfMCompletion",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotifyError"
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.sfmResult",
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:createProcessingJob",
+      "Parameters": {
+        "ProcessingJobName.$": "States.Format('{}-sfm', $.jobName)",
+        "AppSpecification": {
+          "ImageUri.$": "$.sfmImageUri",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.c6i.2xlarge",
+            "VolumeSizeInGB": 100
+          }
+        },
+        "ProcessingInputs.$": "$.sfmProcessingInputs",
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "AppManaged": false,
+              "S3Output": {
+                "S3Uri.$": "$.colmapOutputS3Uri",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              }
+            }
+          ]
+        },
+        "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8"
+      }
+    },
+    "WaitForSfMCompletion": {
+      "Next": "IsSfMComplete",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotifyError"
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.sfmStatus",
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:describeProcessingJob",
+      "Parameters": {
+        "ProcessingJobName.$": "States.Format('{}-sfm', $.jobName)"
+      }
+    },
+    "WaitForSfM": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "WaitForSfMCompletion"
+    },
+    "IsSfMComplete": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.sfmStatus.ProcessingJobStatus",
+          "StringEquals": "Completed",
+          "Next": "GaussianTrainingJob"
+        },
+        {
+          "Variable": "$.sfmStatus.ProcessingJobStatus",
+          "StringEquals": "Failed",
+          "Next": "NotifyError"
+        }
+      ],
+      "Default": "WaitForSfM"
+    },
+    "GaussianTrainingJob": {
+      "Next": "WaitForGaussianCompletion",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotifyError"
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.gaussianResult",
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:createTrainingJob",
+      "Parameters": {
+        "TrainingJobName.$": "States.Format('{}-3dgs', $.jobName)",
+        "AlgorithmSpecification": {
+          "TrainingImage.$": "$.gaussianImageUri",
+          "TrainingInputMode": "File"
+        },
+        "InputDataConfig": [
+          {
+            "ChannelName": "training",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri.$": "$.colmapOutputS3Uri",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            }
+          }
+        ],
+        "OutputDataConfig": {
+          "S3OutputPath.$": "$.gaussianOutputS3Uri"
+        },
+        "ResourceConfig": {
+          "InstanceCount": 1,
+          "InstanceType": "ml.g5.xlarge",
+          "VolumeSizeInGB": 100
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 7200
+        },
+        "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8",
+        "Environment": {
+          "MAX_ITERATIONS.$": "States.Format('{}', $.MAX_ITERATIONS)",
+          "TARGET_PSNR.$": "States.Format('{}', $.TARGET_PSNR)",
+          "LOG_INTERVAL.$": "States.Format('{}', $.LOG_INTERVAL)",
+          "MODEL_VARIANT.$": "States.Format('{}', $.MODEL_VARIANT)",
+          "SH_DEGREE.$": "States.Format('{}', $.SH_DEGREE)",
+          "BILATERAL_PROCESSING.$": "States.Format('{}', $.BILATERAL_PROCESSING)",
+          "FRAMEWORK": "nerfstudio",
+          "METHODOLOGY": "vincent_woo_sutro_tower",
+          "LICENSE": "apache_2_0",
+          "OUTPUT_FORMAT": "ply",
+          "SOGS_COMPATIBLE": "true",
+          "COMMERCIAL_LICENSE": "true"
+        }
+      }
+    },
+    "WaitForGaussianCompletion": {
+      "Next": "IsGaussianComplete",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotifyError"
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.gaussianStatus",
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:describeTrainingJob",
+      "Parameters": {
+        "TrainingJobName.$": "States.Format('{}-3dgs', $.jobName)"
+      }
+    },
+    "WaitForGaussian": {
+      "Type": "Wait",
+      "Seconds": 120,
+      "Next": "WaitForGaussianCompletion"
+    },
+    "IsGaussianComplete": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.gaussianStatus.TrainingJobStatus",
+          "StringEquals": "Completed",
+          "Next": "CompressionJob"
+        },
+        {
+          "Variable": "$.gaussianStatus.TrainingJobStatus",
+          "StringEquals": "Failed",
+          "Next": "NotifyError"
+        }
+      ],
+      "Default": "WaitForGaussian"
+    },
+    "CompressionJob": {
+      "Next": "WaitForCompressionCompletion",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotifyError"
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.compressionResult",
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:createProcessingJob",
+      "Parameters": {
+        "ProcessingJobName.$": "States.Format('{}-compression', $.jobName)",
+        "AppSpecification": {
+          "ImageUri.$": "$.compressorImageUri",
+          "ContainerEntrypoint": [
+            "python3",
+            "compress.py"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 50
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "gaussian-model",
+            "AppManaged": false,
+            "S3Input": {
+              "S3Uri.$": "$.gaussianOutputS3Uri",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "compressed-model",
+              "AppManaged": false,
+              "S3Output": {
+                "S3Uri.$": "$.compressedOutputS3Uri",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              }
+            }
+          ]
+        },
+        "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8"
+      }
+    },
+    "WaitForCompressionCompletion": {
+      "Next": "IsCompressionComplete",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotifyError"
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.compressionStatus",
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:describeProcessingJob",
+      "Parameters": {
+        "ProcessingJobName.$": "States.Format('{}-compression', $.jobName)"
+      }
+    },
+    "WaitForCompression": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "WaitForCompressionCompletion"
+    },
+    "IsCompressionComplete": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.compressionStatus.ProcessingJobStatus",
+          "StringEquals": "Completed",
+          "Next": "NotifyUser"
+        },
+        {
+          "Variable": "$.compressionStatus.ProcessingJobStatus",
+          "StringEquals": "Failed",
+          "Next": "NotifyError"
+        }
+      ],
+      "Default": "WaitForCompression"
+    },
+    "NotifyUser": {
+      "End": true,
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ClientExecutionTimeoutException",
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Type": "Task",
+      "ResultPath": "$.notificationResult",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-MLNotification",
+        "Payload": {
+          "jobId.$": "$.jobId",
+          "email.$": "$.email",
+          "s3Url.$": "$.s3Url",
+          "compressedOutputS3Uri.$": "$.compressedOutputS3Uri",
+          "status": "completed"
+        }
+      }
+    },
+    "NotifyError": {
+      "End": true,
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ClientExecutionTimeoutException",
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-MLNotification",
+        "Payload": {
+          "jobId.$": "$.jobId",
+          "email.$": "$.email",
+          "s3Url.$": "$.s3Url",
+          "status": "failed",
+          "state.$": "$"
+        }
+      }
+    }
+  },
+  "TimeoutSeconds": 28800
+}

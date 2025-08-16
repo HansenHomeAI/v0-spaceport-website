@@ -11,7 +11,10 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-01-27-v1.0.1
-Build ID: nerfstudio-vincent-woo-v1.0.1
+Container Build Timestamp: 2025-08-16-v1.0.2
+Build ID: nerfstudio-vincent-woo-v1.0.2-fixed
+
+FIXED: Removed invalid --machine.num-gpus parameter
+NerfStudio automatically detects available GPUs
 
 ** TRIGGER GITHUB ACTIONS BUILD **

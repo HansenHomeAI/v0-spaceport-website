@@ -193,8 +193,7 @@ class NerfStudioTrainer:
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
             "--viewer.quit_on_train_completion", "True",
-            "--logging.steps_per_log", str(log_interval),
-            "--machine.num_gpus", "1"
+            "--logging.steps_per_log", str(log_interval)
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
