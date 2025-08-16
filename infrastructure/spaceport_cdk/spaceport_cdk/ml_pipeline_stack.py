@@ -323,7 +323,7 @@ class MLPipelineStack(Stack):
             time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
         )
 
-        # 3DGS Training Job - Using CallAwsService for dynamic image URI support
+        # NerfStudio 3DGS Training Job - Vincent Woo's Sutro Tower Methodology
         gaussian_job = sfn_tasks.CallAwsService(
             self, "GaussianTrainingJob",
             service="sagemaker",
@@ -357,35 +357,26 @@ class MLPipelineStack(Stack):
                 },
                 "RoleArn": sagemaker_role.role_arn,
                 "Environment": {
-                    # Core training parameters with Step Functions overrides
+                    # Vincent Woo's NerfStudio Methodology - Core Parameters
                     # Note: All values must be strings for SageMaker environment variables
                     "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.max_iterations")),
-                    "MIN_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.min_iterations")),
                     "TARGET_PSNR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.target_psnr")),
-                    "PLATEAU_PATIENCE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.plateau_patience")),
-                    "PSNR_PLATEAU_TERMINATION": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.psnr_plateau_termination")),
-                    "LEARNING_RATE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.learning_rate")),
                     "LOG_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.log_interval")),
-                    "SAVE_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.save_interval")),
                     
-                    # Additional training parameters for advanced control
-                    "POSITION_LR_SCALE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.position_lr_scale")),
-                    "SCALING_LR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.scaling_lr")),
-                    "ROTATION_LR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.rotation_lr")),
-                    "OPACITY_LR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.opacity_lr")),
-                    "FEATURE_LR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.feature_lr")),
-                    "DENSIFICATION_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.densification_interval")),
-                    "OPACITY_RESET_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.opacity_reset_interval")),
-                    "DENSIFY_FROM_ITER": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.densify_from_iter")),
-                    "DENSIFY_UNTIL_ITER": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.densify_until_iter")),
-                    "DENSIFY_GRAD_THRESHOLD": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.densify_grad_threshold")),
-                    "PERCENT_DENSE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.percent_dense")),
-                    "LAMBDA_DSSIM": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.lambda_dssim")),
-                    "SH_DEGREE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.sh_degree")),
+                    # Vincent Woo's Key Features
+                    "MODEL_VARIANT": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.model_variant")),  # splatfacto vs splatfacto-big
+                    "SH_DEGREE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.sh_degree")),          # Industry standard: 3
+                    "BILATERAL_PROCESSING": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.bilateral_processing")),  # Vincent's innovation
                     
-                    # Feature flags
-                    "PROGRESSIVE_RESOLUTION": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.progressive_resolution")),
-                    "OPTIMIZATION_ENABLED": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.optimization_enabled"))
+                    # NerfStudio Framework Configuration
+                    "FRAMEWORK": "nerfstudio",
+                    "METHODOLOGY": "vincent_woo_sutro_tower",
+                    "LICENSE": "apache_2_0",
+                    
+                    # Quality and Performance Settings
+                    "OUTPUT_FORMAT": "ply",
+                    "SOGS_COMPATIBLE": "true",
+                    "COMMERCIAL_LICENSE": "true"
                 }
             },
             iam_resources=[

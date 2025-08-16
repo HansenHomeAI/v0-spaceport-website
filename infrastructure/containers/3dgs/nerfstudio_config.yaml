@@ -1,0 +1,96 @@
+# NerfStudio Production Configuration
+# Vincent Woo's Sutro Tower Methodology for High-Quality 3D Reconstruction
+# Optimized for AWS ml.g5.xlarge (A10G GPU) deployment
+
+# Model Configuration (Vincent Woo's exact setup)
+model:
+  variant: "splatfacto-big"           # Vincent used splatfacto-big for maximum quality
+  sh_degree: 3                       # Industry standard: 16 coefficients (4^2)
+  bilateral_processing: true         # Vincent's key innovation for exposure correction
+  max_num_gaussians: 1500000         # Conservative limit for A10G GPU (16GB VRAM)
+
+# Training Configuration
+training:
+  max_iterations: 30000              # Vincent's training duration
+  target_psnr: 35.0                  # High quality target
+  log_interval: 100                  # Frequent logging for monitoring
+  early_stopping: false             # Complete full training for quality
+  
+  # Quality thresholds
+  min_iterations: 5000               # Minimum training duration
+  convergence_patience: 2000         # Patience for convergence detection
+
+# Hardware Optimization (A10G GPU specific)
+hardware:
+  gpu_memory_optimization: true      # Enable memory optimizations
+  mixed_precision: true              # Use FP16 for memory efficiency
+  gradient_checkpointing: false      # Disabled for A10G (sufficient memory)
+  
+  # GPU-specific settings
+  num_gpus: 1                        # Single A10G GPU
+  max_memory_gb: 14                  # Conservative memory limit (16GB total)
+
+# Output Configuration
+output:
+  format: "ply"                      # SOGS-compatible PLY format
+  include_spherical_harmonics: true  # Required for high quality
+  compression_ready: true            # Prepare for SOGS compression
+  
+  # Metadata inclusion
+  include_training_metadata: true
+  include_camera_parameters: true
+  include_point_statistics: true
+
+# Advanced Features (Vincent Woo's methodology)
+advanced:
+  # Bilateral guided radiance fields (Vincent's exposure correction)
+  bilateral_guided:
+    enabled: true
+    bilateral_grid_resolution: 64
+    bilateral_sigma: 0.1
+    
+  # Progressive training features
+  progressive_training:
+    enabled: true                    # Built-in NerfStudio progressive training
+    sh_progression: true             # Progressive spherical harmonics
+    
+  # Quality enhancement
+  quality_enhancement:
+    anti_aliasing: true              # Enable anti-aliasing
+    depth_consistency: true          # Enforce depth consistency
+    normal_regularization: true      # Surface normal regularization
+
+# Production Settings
+production:
+  # Error handling
+  error_handling:
+    strict_validation: true          # Strict input validation
+    graceful_degradation: false      # Fail fast for production clarity
+    detailed_logging: true           # Comprehensive logging
+    
+  # Performance monitoring
+  monitoring:
+    gpu_utilization: true            # Monitor GPU usage
+    memory_tracking: true            # Track memory consumption
+    timing_metrics: true             # Collect timing information
+    
+  # AWS SageMaker integration
+  sagemaker:
+    checkpoint_interval: 5000        # Save checkpoints regularly
+    early_termination_support: true  # Support for spot instance interruption
+    output_compression: false        # Keep uncompressed for quality
+
+# Licensing and Compliance
+licensing:
+  framework: "NerfStudio"
+  license: "Apache 2.0"
+  commercial_use: true
+  attribution_required: true
+  methodology: "Vincent Woo Sutro Tower"
+
+# Version and Compatibility
+version:
+  config_version: "1.0.0"
+  nerfstudio_version: ">=1.0.0"
+  target_quality: "sutro_tower"
+  last_updated: "2025-01-27"

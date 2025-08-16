@@ -1,15 +1,30 @@
-# AWS SDK
+# NerfStudio Production Requirements
+# Vincent Woo's Sutro Tower Methodology Implementation
+# Optimized for AWS ml.g5.xlarge deployment
+
+# Core Framework
+nerfstudio[all]>=1.0.0
+
+# AWS Integration
 boto3>=1.26.0
+psutil>=5.9.0
 
-# Core dependencies
-numpy>=1.24.0
-Pillow>=9.0.0
-PyYAML>=6.0
-tqdm>=4.64.0
-
-# 3D Gaussian Splatting
-gsplat>=0.1.0
+# 3D Processing
 plyfile>=0.7.4
 
-# System utilities for multiprocessing
-psutil>=5.9.0 
+# Core Dependencies (managed by nerfstudio[all])
+# torch>=2.0.1
+# torchvision>=0.15.0
+# gsplat>=1.5.0
+# numpy<2.0
+# Pillow>=9.0.0
+# PyYAML>=6.0
+# tqdm>=4.64.0
+# rich>=13.0.0
+# tyro>=0.7.0
+# opencv-python>=4.8.0
+# matplotlib>=3.6.0
+# scipy>=1.9.0
+# mediapy>=1.1.0
+# tensorboard>=2.11.0
+# lpips>=0.1.4

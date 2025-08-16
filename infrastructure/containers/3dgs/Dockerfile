@@ -1,7 +1,10 @@
-# Use SageMaker PyTorch training container with CUDA 11.8
+# NerfStudio-based 3D Gaussian Splatting Container
+# Implements Vincent Woo's Sutro Tower methodology for production use
+# Based on Spaceport ML Pipeline requirements
+
 FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
-# Set environment variables for CUDA
+# Set environment variables for CUDA (optimized for A10G GPU)
 ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
@@ -25,61 +28,71 @@ RUN apt-get update && apt-get install -y \
     wget \
     build-essential \
     cmake \
+    ffmpeg \
+    libavformat-dev \
+    libavcodec-dev \
+    libavdevice-dev \
+    libavutil-dev \
+    libswscale-dev \
+    libswresample-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------------------------------
-# 2. Install CUDA Toolkit (CACHED LAYER - rarely changes)
+# 2. Install Core Dependencies (CACHED LAYER)
 # ----------------------------------------------------------------------------
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb \
-    && dpkg -i cuda-keyring_1.1-1_all.deb \
-    && apt-get update \
-    && apt-get install -y cuda-toolkit-11-8 \
-    && rm -f cuda-keyring_1.1-1_all.deb \
-    && rm -rf /var/lib/apt/lists/*
-
-# ----------------------------------------------------------------------------
-# 3. Install Core Python Dependencies (CACHED LAYER)
-# ----------------------------------------------------------------------------
-# Fix NumPy compatibility and install core dependencies
+# Fix NumPy compatibility first
 RUN pip install --no-cache-dir "numpy<2.0" && \
     pip install --no-cache-dir \
         ninja \
-        jaxtyping \
-        rich \
-        pyyaml \
-        scipy \
-        matplotlib \
+        packaging \
+        wheel \
+        Pillow \
+        PyYAML \
+        requests \
         tqdm \
+        rich \
+        tyro \
+        nuscenes-devkit \
         opencv-python \
-        scikit-image
+        matplotlib \
+        mediapy \
+        scipy \
+        torch-fidelity \
+        lpips \
+        tensorboard
 
 # ----------------------------------------------------------------------------
-# 4. Install gsplat from source (PROVEN APPROACH)
+# 3. Install NerfStudio with Vincent Woo's Exact Configuration
 # ----------------------------------------------------------------------------
-# Copy requirements file first for better caching
-COPY requirements_optimized.txt /opt/ml/
+# Install NerfStudio (includes gsplat as dependency)
+RUN pip install --no-cache-dir nerfstudio[all]>=1.0.0
 
-# Install gsplat dependencies
-RUN pip install ninja numpy jaxtyping rich
-
-# Install gsplat from source with A10G architecture support
-# This is the proven approach that works with our A10G setup
-RUN pip install gsplat --no-cache-dir --force-reinstall
-
-# Install remaining requirements (excluding gsplat which is already installed)
-RUN grep -v "gsplat" /opt/ml/requirements_optimized.txt > /tmp/requirements_no_gsplat.txt && \
-    pip install --no-cache-dir -r /tmp/requirements_no_gsplat.txt && \
-    rm /tmp/requirements_no_gsplat.txt
+# Verify NerfStudio installation includes required components
+RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
+RUN python -c "import gsplat; print('✅ gsplat backend available')"
+RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 
 # ----------------------------------------------------------------------------
-# 5. Copy training code (LAST LAYER - changes most frequently)
+# 4. AWS and Production Dependencies
 # ----------------------------------------------------------------------------
-COPY train_gaussian_production.py /opt/ml/code/
+RUN pip install --no-cache-dir \
+    boto3>=1.26.0 \
+    psutil>=5.9.0 \
+    plyfile>=0.7.4
+
+# ----------------------------------------------------------------------------
+# 5. Copy Training Code and Configuration
+# ----------------------------------------------------------------------------
+COPY train_nerfstudio_production.py /opt/ml/code/
+COPY nerfstudio_config.yaml /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
-COPY progressive_config.yaml /opt/ml/code/
 
 # Set Python path
 ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
-# Set the SageMaker entry point
-ENTRYPOINT ["python", "/opt/ml/code/train_gaussian_production.py", "--config", "/opt/ml/code/progressive_config.yaml"] 
+# Create necessary directories
+RUN mkdir -p /opt/ml/model /opt/ml/input /opt/ml/output
+
+# Set the SageMaker entry point (Vincent Woo's methodology)
+ENTRYPOINT ["python", "/opt/ml/code/train_nerfstudio_production.py"]

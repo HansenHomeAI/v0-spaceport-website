@@ -1,0 +1,68 @@
+{
+  "vincent_woo_defaults": {
+    "description": "Default parameters for Vincent Woo's Sutro Tower methodology",
+    "methodology": "sutro_tower_3dgs",
+    "framework": "nerfstudio",
+    "license": "apache_2_0",
+    "commercial_use": true,
+    
+    "step_functions_parameters": {
+      "max_iterations": 30000,
+      "target_psnr": 35.0,
+      "log_interval": 100,
+      "model_variant": "splatfacto-big",
+      "sh_degree": 3,
+      "bilateral_processing": true
+    },
+    
+    "nerfstudio_command_template": [
+      "ns-train", "{model_variant}",
+      "--data", "{data_path}",
+      "--output-dir", "{output_path}",
+      "--max_num_iterations", "{max_iterations}",
+      "--pipeline.model.sh_degree", "{sh_degree}",
+      "--pipeline.model.enable_bilateral_processing", "{bilateral_processing}",
+      "--viewer.quit_on_train_completion", "True",
+      "--logging.steps_per_log", "{log_interval}",
+      "--machine.num_gpus", "1"
+    ],
+    
+    "quality_expectations": {
+      "target_psnr": 35.0,
+      "target_file_size_mb": 30,
+      "sogs_compression_ratio": 20,
+      "spherical_harmonics_degree": 3,
+      "total_coefficients": 16
+    },
+    
+    "hardware_optimization": {
+      "gpu_type": "A10G",
+      "gpu_memory_gb": 16,
+      "max_gaussians": 1500000,
+      "memory_optimization": true,
+      "instance_type": "ml.g5.xlarge"
+    },
+    
+    "output_specifications": {
+      "format": "ply",
+      "spherical_harmonics": true,
+      "sogs_compatible": true,
+      "playcanvas_ready": true,
+      "compression_ready": true
+    },
+    
+    "licensing_compliance": {
+      "framework_license": "Apache 2.0",
+      "commercial_use_allowed": true,
+      "attribution_required": true,
+      "patent_restrictions": false
+    },
+    
+    "version_info": {
+      "implementation_version": "1.0.0",
+      "nerfstudio_min_version": "1.0.0",
+      "gsplat_backend": "included",
+      "last_updated": "2025-01-27"
+    }
+  }
+}
