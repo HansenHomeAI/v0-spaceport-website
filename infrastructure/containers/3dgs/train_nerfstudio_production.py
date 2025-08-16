@@ -184,6 +184,7 @@ class NerfStudioTrainer:
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
         logger.info(f"   Log interval: {log_interval}")
+        logger.info(f"   Dataparser: COLMAP (for .txt format compatibility)")
         
         # Build NerfStudio command with Vincent's exact parameters
         cmd = [
@@ -192,6 +193,7 @@ class NerfStudioTrainer:
             "--output-dir", str(self.temp_dir),
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
+            "--pipeline.datamanager.dataparser", "colmap",  # CRITICAL: Use COLMAP dataparser for our .txt format
             "--viewer.quit_on_train_completion", "True",
             "--logging.steps_per_log", str(log_interval)
         ]
