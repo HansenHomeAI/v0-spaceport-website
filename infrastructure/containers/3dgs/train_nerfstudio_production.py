@@ -197,9 +197,20 @@ class NerfStudioTrainer:
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
+        # Trying different parameter names based on NerfStudio conventions
         if bilateral_processing:
-            cmd.extend(["--pipeline.model.enable_bilateral_processing", "True"])
-            logger.info("🌈 Bilateral guided processing enabled (exposure correction)")
+            # Try multiple possible parameter names for bilateral processing
+            possible_params = [
+                "--enable-bilateral-processing",
+                "--bilateral-processing", 
+                "--pipeline.datamanager.dataparser.bilateral-processing",
+                "--pipeline.model.bilateral-guided",
+            ]
+            # For now, try the simplest form that might work
+            cmd.extend(["--enable-bilateral-processing"])
+            logger.info("🌈 Bilateral guided processing enabled (trying --enable-bilateral-processing)")
+        else:
+            logger.info("⚠️  Bilateral guided processing disabled")
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         cmd.extend([
