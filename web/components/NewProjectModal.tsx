@@ -48,6 +48,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [mlLoading, setMlLoading] = useState<boolean>(false);
   const [uploadStage, setUploadStage] = useState<string>('');
+  const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
@@ -134,10 +135,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       
       // CRITICAL FIX: Restore saved coordinates if they exist
       if (params.latitude && params.longitude) {
-        selectedCoordsRef.current = { 
+        const coords = { 
           lat: parseFloat(params.latitude), 
           lng: parseFloat(params.longitude) 
         };
+        selectedCoordsRef.current = coords;
+        setSelectedCoords(coords);
         
         // Auto-restore optimization params for existing projects with complete data
         setTimeout(async () => {
@@ -205,6 +208,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setStatus('draft');
       setCurrentProjectId(null);
       selectedCoordsRef.current = null;
+      setSelectedCoords(null);
     }
   }, [open, project]);
 
@@ -296,7 +300,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!mapRef.current) return;
     
     mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
-    selectedCoordsRef.current = { lat, lng };
+    
+    // Update both ref and state for coordinates
+    const coords = { lat, lng };
+    selectedCoordsRef.current = coords;
+    setSelectedCoords(coords); // This will trigger autosave
     
     // Place marker
     const mapboxgl = await import('mapbox-gl');
@@ -393,11 +401,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [open, isFullscreen, toggleFullscreen]);
 
   const canOptimize = useMemo(() => {
-    const coords = selectedCoordsRef.current;
+    const coords = selectedCoords || selectedCoordsRef.current;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
     return Boolean(coords && minutes && batteries);
-  }, [batteryMinutes, numBatteries, addressSearch]); // Add addressSearch to trigger when coordinates restored
+  }, [batteryMinutes, numBatteries, selectedCoords]); // Use selectedCoords state for better reactivity
 
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
@@ -560,14 +568,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (currentProjectId) return true;
     
     // For new projects, check if any meaningful data is entered
-    const hasLocation = Boolean(addressSearch.trim() || selectedCoordsRef.current);
+    const hasLocation = Boolean(addressSearch.trim() || selectedCoords);
     const hasBatteryData = Boolean(batteryMinutes || numBatteries);
     const hasAltitudeData = Boolean(minHeightFeet || maxHeightFeet);
     const hasTitleChange = projectTitle !== 'Untitled' && projectTitle.trim();
     const hasUploadData = Boolean(propertyTitle.trim() || listingDescription.trim() || contactEmail.trim() || selectedFile);
     
     return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
-  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile]);
+  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
 
   // Debounced autosave on any change - only if meaningful content
   useEffect(() => {
@@ -580,7 +588,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }, 600);
       return () => clearTimeout(t);
     }
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, hasMeaningfulContent, handleSaveProject]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, hasMeaningfulContent, handleSaveProject]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
