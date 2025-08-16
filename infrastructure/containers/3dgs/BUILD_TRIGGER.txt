@@ -11,12 +11,13 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-16-v1.0.5
-Build ID: nerfstudio-vincent-woo-v1.0.5-CORRECT-PARAMS
+Container Build Timestamp: 2025-08-16-v1.0.9
+Build ID: nerfstudio-vincent-woo-v1.0.9-BINARY-CONVERSION
 
-FIXED: Using correct NerfStudio parameter names
-- Bilateral processing: --pipeline.model.use-bilateral-grid True
-- GPU optimization: --pipeline.model.max-gauss-ratio 10.0
-Vincent Woo's methodology with proper NerfStudio syntax
+CRITICAL FIX: Convert COLMAP text files to binary format for ns-process-data
+- Added: convert_colmap_text_to_binary() using COLMAP model_converter
+- Resolves: transforms.json not created (ns-process-data expects binary format)
+- Method: colmap model_converter --output_type BIN before ns-process-data
+Vincent Woo's methodology with complete COLMAP text-to-binary pipeline
 
 ** TRIGGER GITHUB ACTIONS BUILD **
