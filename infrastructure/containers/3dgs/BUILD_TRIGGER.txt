@@ -11,13 +11,13 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-16-v1.0.6
-Build ID: nerfstudio-vincent-woo-v1.0.6-COLMAP-DATAPARSER
+Container Build Timestamp: 2025-08-16-v1.0.7
+Build ID: nerfstudio-vincent-woo-v1.0.7-COLMAP-CONVERSION
 
-CRITICAL FIX: Added COLMAP dataparser specification
-- Parameter: --pipeline.datamanager.dataparser colmap
-- Resolves: FileNotFoundError transforms.json (uses COLMAP .txt files directly)
-- Enables: Direct COLMAP format compatibility without conversion
-Vincent Woo's methodology with native COLMAP data support
+CRITICAL FIX: Added COLMAP to transforms.json conversion
+- Method: ns-process-data with --skip-colmap and --colmap-model-path
+- Resolves: FileNotFoundError transforms.json (converts COLMAP .txt to transforms.json)
+- Enables: NerfStudio compatibility via data format conversion
+Vincent Woo's methodology with COLMAP-to-NerfStudio data pipeline
 
 ** TRIGGER GITHUB ACTIONS BUILD **
