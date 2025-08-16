@@ -359,14 +359,14 @@ class MLPipelineStack(Stack):
                 "Environment": {
                     # Vincent Woo's NerfStudio Methodology - Core Parameters
                     # Note: All values must be strings for SageMaker environment variables
-                    "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.max_iterations")),
-                    "TARGET_PSNR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.target_psnr")),
-                    "LOG_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.log_interval")),
+                    "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MAX_ITERATIONS")),
+                    "TARGET_PSNR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.TARGET_PSNR")),
+                    "LOG_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.LOG_INTERVAL")),
                     
                     # Vincent Woo's Key Features
-                    "MODEL_VARIANT": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.model_variant")),  # splatfacto vs splatfacto-big
-                    "SH_DEGREE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.sh_degree")),          # Industry standard: 3
-                    "BILATERAL_PROCESSING": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.bilateral_processing")),  # Vincent's innovation
+                    "MODEL_VARIANT": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MODEL_VARIANT")),  # splatfacto vs splatfacto-big
+                    "SH_DEGREE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.SH_DEGREE")),          # Industry standard: 3
+                    "BILATERAL_PROCESSING": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.BILATERAL_PROCESSING")),  # Vincent's innovation
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",

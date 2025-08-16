@@ -163,76 +163,36 @@ def lambda_handler(event, context):
         # Special handling for 3DGS-only tests with existing SfM data
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        # Define high-quality default hyperparameters for 3DGS training
-        # These are research-backed values optimized for quality and detail
-        # FIXED: Updated to match Nerfstudio splatfacto defaults for proper training
+        # Define Vincent Woo's NerfStudio hyperparameters for Sutro Tower methodology
+        # Updated to use NerfStudio environment variable format for the container
         default_hyperparameters = {
-            # Core Training Parameters - FIXED to Nerfstudio defaults
-            "max_iterations": 30000,    # Nerfstudio default (was 250000 - too long)
-            "min_iterations": 1000,     # Minimum before early termination
-            "target_psnr": 30.0,        # Realistic target (was 38.0 - too high)
-            "psnr_plateau_termination": True,  # Enable early termination
-            "plateau_patience": 1000,   # Patience for plateau detection
-            "auto_extension_enabled": False,   # Disable auto-extension
-            "max_extension_iterations": 5000,  # Reduced extension
-
-            # Logging and Checkpointing
-            "log_interval": 100,
-            "save_interval": 5000,
-
-            # Progressive Resolution - DISABLED for now to simplify
-            "progressive_resolution_enabled": False,
-            "prog_res_initial_factor": 1.0,     # Start at full resolution
-            "prog_res_final_factor": 1.0,       # Stay at full resolution
-            "prog_res_schedule_end": 1000,      # Minimal schedule
-
-            # Progressive Blur - DISABLED for now to simplify
-            "progressive_blur_enabled": False,
-            "prog_blur_initial_sigma": 0.0,     # No blur
-            "prog_blur_schedule_end": 1000,     # Minimal schedule
-
-            # Gaussian Management - FIXED to Nerfstudio defaults
-            "densification_enabled": True,
-            "densification_interval": 100,      # Nerfstudio default
-            "densify_from_iter": 500,           # Nerfstudio default
-            "densify_until_iter": 15000,        # Nerfstudio default (was 80000)
-            "densify_grad_threshold": 0.0002,   # CRITICAL FIX: Nerfstudio default (was 0.00001)
-            "percent_dense": 0.01,              # Nerfstudio default (was 0.05)
+            # Vincent Woo's Core Parameters (NerfStudio Environment Variable Format)
+            "MAX_ITERATIONS": "30000",          # Vincent's exact iteration count
+            "TARGET_PSNR": "35.0",              # Vincent's quality target
+            "MODEL_VARIANT": "splatfacto-big",  # Vincent's model choice
+            "SH_DEGREE": "3",                   # Industry standard (16 coefficients)
+            "BILATERAL_PROCESSING": "true",     # Vincent's exposure correction innovation
+            "LOG_INTERVAL": "100",              # Progress logging frequency
             
-            # Progressive Densification - DISABLED for now
-            "progressive_densification_enabled": False,
-            "prog_dens_initial_threshold": 0.0002,
-            "prog_dens_final_threshold": 0.0002,
-            "prog_dens_schedule_iterations": 1000,
-
-            # Advanced Densification Controls - Nerfstudio defaults
-            "split_threshold": 0.02,            # Nerfstudio default
-            "clone_threshold": 0.0002,          # Nerfstudio default
-            "max_gaussians": 500000,            # Reasonable limit (was 2000000)
-            "adaptive_density_control": False,   # Disable for now
-            "size_threshold": 20,               # Nerfstudio default
-            "min_opacity": 0.005,               # Nerfstudio default
-
-            # Opacity and Late Densification
-            "opacity_reset_interval": 3000,     # Nerfstudio default
-            "late_densification_enabled": False, # Disable for now
-            "late_densification_start": 20000,
-
-            # Learning Rates - Nerfstudio defaults
-            "learning_rate": 0.0025,            # Nerfstudio default
-            "position_lr_scale": 0.00016,       # Nerfstudio default
-            "scaling_lr": 0.005,                # Nerfstudio default
-            "rotation_lr": 0.001,               # Nerfstudio default
-            "opacity_lr": 0.05,                 # Nerfstudio default
-            "feature_lr": 0.0025,               # Nerfstudio default
+            # NerfStudio Framework Configuration
+            "FRAMEWORK": "nerfstudio",
+            "METHODOLOGY": "vincent_woo_sutro_tower",
+            "LICENSE": "apache_2_0",
+            "COMMERCIAL_LICENSE": "true",
             
-            # Quality Enhancement - Nerfstudio defaults
-            "lambda_dssim": 0.2,                # Nerfstudio default
-            "sh_degree": 3,                     # Nerfstudio default
-
-            # Feature flags
-            "optimization_enabled": True,
-            "progressive_resolution": False     # Disabled for now
+            # Quality and Output Settings
+            "OUTPUT_FORMAT": "ply",             # SOGS-compatible format
+            "SOGS_COMPATIBLE": "true",          # Enable SOGS export
+            
+            # GPU Optimization for A10G (16GB)
+            "MAX_NUM_GAUSSIANS": "1500000",     # Conservative limit for A10G
+            "MEMORY_OPTIMIZATION": "true",      # Enable memory optimization
+            
+            # Legacy G-Splat parameters for backward compatibility (will be ignored by NerfStudio)
+            "max_iterations": 30000,
+            "target_psnr": 35.0,
+            "sh_degree": 3,
+            "log_interval": 100
         }
         
         # Merge user-provided hyperparameters with defaults (user values override defaults)
