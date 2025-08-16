@@ -4772,5 +4772,66 @@ input.text-fade-right,
   user-select: none;
 }
 
+/* Luxury text overflow fade effect */
+.battery-segments-title {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-right: 20px;
+}
+
+.battery-segments-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, rgba(17, 17, 17, 1));
+  pointer-events: none;
+}
+
+/* Apply luxury fade to any text that might overflow */
+.luxury-text-fade {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-right: 20px;
+}
+
+.luxury-text-fade::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, var(--bg-color, rgba(17, 17, 17, 1)));
+  pointer-events: none;
+}
+
+/* Battery download button text fade */
+.flight-path-download-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.flight-path-download-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  background: linear-gradient(to right, transparent, #2c2c2c);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.flight-path-download-btn:hover::after {
+  opacity: 1;
+}
+
 
 
