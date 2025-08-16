@@ -49,6 +49,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [mlLoading, setMlLoading] = useState<boolean>(false);
   const [uploadStage, setUploadStage] = useState<string>('');
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
@@ -210,6 +212,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       selectedCoordsRef.current = null;
       setSelectedCoords(null);
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [open, project]);
 
   // Initialize Mapbox on open
@@ -329,7 +338,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
-  }, []);
+    
+    // Trigger save after coordinate placement
+    triggerSave();
+  }, [triggerSave]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
@@ -513,15 +525,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_ENHANCED_BASE, projectTitle]);
 
-  // Save metadata changes for existing project
-  const handleSaveProject = useCallback(async () => {
+  // SIMPLE, ROBUST save function with rate limiting
+  const saveProject = useCallback(async () => {
+    // Prevent multiple simultaneous saves
+    if (isSaving) return;
+    
     try {
+      setIsSaving(true);
       console.log('Saving project...', { currentProjectId, projectTitle });
+      
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
       const progress = STATUS_TO_PROGRESS[status] ?? 0;
+      
       const body = {
         title: projectTitle,
         status,
@@ -532,35 +550,58 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           batteries: numBatteries,
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
-          // CRITICAL FIX: Save coordinates for future restoration
           latitude: selectedCoordsRef.current?.lat || null,
           longitude: selectedCoordsRef.current?.lng || null,
         },
       };
+      
       const url = currentProjectId ? `${apiBase}/${encodeURIComponent(currentProjectId)}` : `${apiBase}`;
       const method = currentProjectId ? 'PATCH' : 'POST';
+      
       const res = await fetch(url, {
         method,
         headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
         body: JSON.stringify(body),
       });
+      
       if (!res.ok) {
         const errorText = await res.text().catch(() => 'Unknown error');
         console.error('Save failed:', res.status, errorText);
-        throw new Error(`Save failed: ${res.status}`);
+        throw new Error(`Save failed: ${res.status} - ${errorText}`);
       }
+      
       console.log('Project saved successfully');
+      
       // Capture created id on first POST
       if (!currentProjectId) {
         const data = await res.json().catch(() => ({} as any));
         const created = (data && (data.project || data)) as any;
         if (created && created.projectId) setCurrentProjectId(created.projectId);
       }
+      
       onSaved?.();
     } catch (e: any) {
+      console.error('Save failed:', e);
       setToast({ type: 'error', message: e?.message || 'Failed to save project' });
+    } finally {
+      setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status]);
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
+
+  // SIMPLE debounced save trigger
+  const triggerSave = useCallback(() => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Only save if we have meaningful content
+    if (hasMeaningfulContent()) {
+      saveTimeoutRef.current = setTimeout(() => {
+        saveProject();
+      }, 1000); // Longer debounce to prevent spam
+    }
+  }, [hasMeaningfulContent, saveProject]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -577,18 +618,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
   }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
 
-  // Debounced autosave on any change - only if meaningful content
+  // Simple autosave trigger - much more controlled
   useEffect(() => {
     if (!open) return;
-    
-    // Only save if project has meaningful content
-    if (hasMeaningfulContent()) {
-      const t = setTimeout(() => {
-        handleSaveProject();
-      }, 600);
-      return () => clearTimeout(t);
-    }
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, hasMeaningfulContent, handleSaveProject]);
+    triggerSave();
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, triggerSave]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
