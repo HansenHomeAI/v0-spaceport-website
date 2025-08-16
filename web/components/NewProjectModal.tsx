@@ -51,6 +51,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const initialRenderRef = useRef<boolean>(true);
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
@@ -621,8 +622,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Simple autosave trigger - much more controlled
   useEffect(() => {
     if (!open) return;
-    triggerSave();
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, triggerSave]);
+    
+    // Skip saving on initial render to avoid render-phase updates
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+      return;
+    }
+    
+    // Don't trigger save immediately, use timeout to avoid render-phase updates
+    const timer = setTimeout(() => {
+      triggerSave();
+    }, 100); // Small delay to avoid render-phase updates
+    
+    return () => clearTimeout(timer);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
