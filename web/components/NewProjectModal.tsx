@@ -588,21 +588,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
 
-  // SIMPLE debounced save trigger
-  const triggerSave = useCallback(() => {
-    // Clear any existing timeout
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    
-    // Only save if we have meaningful content
-    if (hasMeaningfulContent()) {
-      saveTimeoutRef.current = setTimeout(() => {
-        saveProject();
-      }, 1000); // Longer debounce to prevent spam
-    }
-  }, [hasMeaningfulContent, saveProject]);
-
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
     // Always save if editing existing project
@@ -617,6 +602,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     
     return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
   }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
+
+  // SIMPLE debounced save trigger
+  const triggerSave = useCallback(() => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Only save if we have meaningful content
+    if (hasMeaningfulContent()) {
+      saveTimeoutRef.current = setTimeout(() => {
+        saveProject();
+      }, 1000); // Longer debounce to prevent spam
+    }
+  }, [hasMeaningfulContent, saveProject]);
 
   // Simple autosave trigger - much more controlled
   useEffect(() => {
