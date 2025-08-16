@@ -197,26 +197,24 @@ class NerfStudioTrainer:
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
-        # Trying different parameter names based on NerfStudio conventions
+        # INVESTIGATION: Both bilateral processing and max_num_gaussians are invalid parameters
+        # Need to research correct NerfStudio splatfacto-big parameter names
         if bilateral_processing:
-            # Try multiple possible parameter names for bilateral processing
-            possible_params = [
-                "--enable-bilateral-processing",
-                "--bilateral-processing", 
-                "--pipeline.datamanager.dataparser.bilateral-processing",
-                "--pipeline.model.bilateral-guided",
-            ]
-            # For now, try the simplest form that might work
-            cmd.extend(["--enable-bilateral-processing"])
-            logger.info("🌈 Bilateral guided processing enabled (trying --enable-bilateral-processing)")
+            # Temporarily comment out until we find correct parameter syntax
+            # cmd.extend(["--enable-bilateral-processing"])  # INVALID
+            logger.info("🔬 Bilateral processing requested - investigating correct parameter name")
         else:
             logger.info("⚠️  Bilateral guided processing disabled")
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
+        # INVESTIGATION: max_num_gaussians is also invalid - may need different approach
+        # cmd.extend([
+        #     "--pipeline.model.max_num_gaussians", "1500000",  # INVALID PARAMETER
+        # ])
         cmd.extend([
-            "--pipeline.model.max_num_gaussians", "1500000",  # Conservative limit for A10G
             "--viewer.websocket_port", "7007"  # Avoid conflicts
         ])
+        logger.info("🔬 GPU memory limits temporarily removed - investigating correct parameter")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")

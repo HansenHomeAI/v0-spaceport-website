@@ -11,11 +11,11 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-16-v1.0.3
-Build ID: nerfstudio-vincent-woo-v1.0.3-bilateral-fix
+Container Build Timestamp: 2025-08-16-v1.0.4
+Build ID: nerfstudio-vincent-woo-v1.0.4-core-test
 
-FIXED: Testing correct bilateral processing parameter name
-Trying --enable-bilateral-processing for Vincent Woo's methodology
-Investigating proper NerfStudio bilateral processing configuration
+INVESTIGATION: Test core NerfStudio training without invalid parameters
+Remove --enable-bilateral-processing and --pipeline.model.max_num_gaussians
+Focus on getting basic splatfacto-big training working first
 
 ** TRIGGER GITHUB ACTIONS BUILD **
