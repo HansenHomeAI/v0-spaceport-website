@@ -47,6 +47,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [mlLoading, setMlLoading] = useState<boolean>(false);
+  const [uploadStage, setUploadStage] = useState<string>('');
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
@@ -106,6 +107,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadProgress(0);
     setUploadLoading(false);
     setMlLoading(false);
+    setUploadStage('');
     setOptimizedParams(null);
     optimizedParamsRef.current = null;
     setBatteryDownloading(null);
@@ -118,7 +120,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (project) {
       setProjectTitle(project.title || 'Untitled');
       const params = project.params || {};
-      setAddressSearch(params.address || '');
+      // Don't set address search yet if we have coordinates - restoreSavedLocation will handle it
+      if (!(params.latitude && params.longitude)) {
+        setAddressSearch(params.address || '');
+      }
       setBatteryMinutes(params.batteryMinutes || '');
       setNumBatteries(params.batteries || '');
       setMinHeightFeet(params.minHeight || '');
@@ -255,10 +260,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         mapRef.current = map;
         
         // CRITICAL FIX: Restore saved location marker if editing existing project
-        if (project && selectedCoordsRef.current) {
-          setTimeout(async () => {
-            await restoreSavedLocation(map, selectedCoordsRef.current!);
-          }, 500); // Small delay to ensure map is fully loaded
+        if (project) {
+          // Check if we have saved coordinates to restore
+          const params = project.params || {};
+          if (params.latitude && params.longitude) {
+            const coords = { 
+              lat: parseFloat(params.latitude), 
+              lng: parseFloat(params.longitude) 
+            };
+            
+            // Wait a bit longer for map to be fully ready, then restore coordinates
+            setTimeout(async () => {
+              await restoreSavedLocation(map, coords);
+            }, 1000); // Increased delay to ensure map is fully ready
+          }
         }
       } catch (err: any) {
         console.error('Map init failed', err);
@@ -276,26 +291,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
   }, [open, project]);
 
-  // Function to restore saved location on map
-  const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
-    if (!map || !coords) return;
+  // Helper function to place marker at coordinates
+  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
+    if (!mapRef.current) return;
     
-    // Fly to saved location
-    map.flyTo({ 
-      center: [coords.lng, coords.lat], 
-      zoom: 15, 
-      duration: 2000 
-    });
+    mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
+    selectedCoordsRef.current = { lat, lng };
     
-    // Place marker at saved location
-    if (markerRef.current) {
-      markerRef.current.remove();
-    }
-    
-    // Import mapboxgl and create marker
+    // Place marker
     const mapboxgl = await import('mapbox-gl');
+    if (markerRef.current) markerRef.current.remove();
     
-    // Create custom teardrop pin element with inline SVG
     const pinElement = document.createElement('div');
     pinElement.className = 'custom-teardrop-pin';
     pinElement.innerHTML = `
@@ -305,13 +311,28 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     `;
     
     markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
-      .setLngLat([coords.lng, coords.lat])
-      .addTo(map);
+      .setLngLat([lng, lat])
+      .addTo(mapRef.current);
     
-    // Hide instructions since we have a saved location
+    // Invalidate previous optimization since coordinates changed
+    setOptimizedParams(null);
+    optimizedParamsRef.current = null;
+    
+    // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
   }, []);
+
+  // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
+  const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
+    if (!map || !coords) return;
+    
+    // Use the same function as user interaction to ensure consistency
+    await placeMarkerAtCoords(coords.lat, coords.lng);
+    
+    // Update the address search field to show the coordinates
+    setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
+  }, [placeMarkerAtCoords]);
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
@@ -587,43 +608,37 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [currentProjectId, onSaved, onClose]);
 
-  // Address search via Mapbox Geocoding
+  // Address search via Mapbox Geocoding or direct coordinates
   const handleAddressEnter = useCallback(async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
     const query = addressSearch.trim();
     if (!query || !mapRef.current) return;
+    
+    // Check if input looks like coordinates (lat, lng)
+    const coordsMatch = query.match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
+    
+    if (coordsMatch) {
+      // Handle direct coordinate input
+      const lat = parseFloat(coordsMatch[1]);
+      const lng = parseFloat(coordsMatch[2]);
+      
+      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        await placeMarkerAtCoords(lat, lng);
+        return;
+      }
+    }
+    
+    // Handle geocoding search
     try {
       const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`);
       const data = await res.json();
       if (data?.features?.length) {
         const [lng, lat] = data.features[0].center;
-        mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
-        selectedCoordsRef.current = { lat, lng };
-        // place marker
-        const mapboxgl = await import('mapbox-gl');
-        if (markerRef.current) markerRef.current.remove();
-        
-        // Create custom teardrop pin element with inline SVG
-        const pinElement = document.createElement('div');
-        pinElement.className = 'custom-teardrop-pin';
-        pinElement.innerHTML = `
-          <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-          </svg>
-        `;
-        
-        markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
-          .setLngLat([lng, lat])
-          .addTo(mapRef.current);
-        
-        // Invalidate previous optimization since coordinates changed
-        setOptimizedParams(null);
-        optimizedParamsRef.current = null;
-        // keep input text as typed address
+        await placeMarkerAtCoords(lat, lng);
       }
     } catch (err) {
-      // ignore
+      console.warn('Geocoding failed:', err);
     }
   }, [addressSearch, MAPBOX_TOKEN]);
 
@@ -653,6 +668,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadLoading(true);
     setMlLoading(false);
     setUploadProgress(0);
+    setUploadStage('Initializing upload...');
     try {
       // init multipart
       const initRes = await fetch(API_UPLOAD.START_UPLOAD, {
@@ -670,6 +686,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const init = await initRes.json();
 
       // upload chunks
+      setUploadStage(`Uploading file (${Math.round(selectedFile.size / 1024 / 1024)}MB)...`);
       const totalChunks = Math.ceil(selectedFile.size / CHUNK_SIZE);
       const parts: Array<{ ETag: string | null; PartNumber: number }> = [];
       for (let i = 0; i < totalChunks; i++) {
@@ -697,6 +714,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
 
       // complete multipart
+      setUploadStage('Finalizing upload...');
+      setUploadProgress(100);
       const completeRes = await fetch(API_UPLOAD.COMPLETE_UPLOAD, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -710,6 +729,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!completeRes.ok) throw new Error('Failed to complete upload');
 
       // save metadata
+      setUploadStage('Saving metadata...');
       const saveRes = await fetch(API_UPLOAD.SAVE_SUBMISSION, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -723,6 +743,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!saveRes.ok) throw new Error('Failed to save submission metadata');
 
       // start ML processing
+      setUploadStage('Starting ML processing...');
       setMlLoading(true);
       const s3Url = `s3://${init.bucketName}/${init.objectKey}`;
       const mlRes = await fetch(API_UPLOAD.START_ML_PROCESSING, {
@@ -735,6 +756,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         throw new Error(errData?.error || `ML processing failed: ${mlRes.status}`);
       }
       const ml = await mlRes.json();
+      setUploadStage('Upload completed successfully!');
       setToast({ type: 'success', message: `Upload successful. ML processing started. Job ID: ${ml.jobId || 'N/A'}` });
 
       // Persist a project stub for this user
@@ -771,6 +793,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setUploadLoading(false);
       setMlLoading(false);
+      // Keep stage text visible for a few seconds after completion
+      setTimeout(() => setUploadStage(''), 3000);
     }
   }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload]);
 
@@ -1075,7 +1099,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
               <div className="category-outline upload-button-only no-outline">
                 <div className="popup-section" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                  <div className="upload-progress-text">{Math.round(uploadProgress)}%</div>
+                  {uploadLoading && uploadStage && (
+                    <div className="upload-stage-text" style={{ 
+                      position: 'absolute', 
+                      top: '-30px', 
+                      left: '50%', 
+                      transform: 'translateX(-50%)', 
+                      fontSize: '0.85rem', 
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      textAlign: 'center',
+                      width: '100%'
+                    }}>
+                      {uploadStage}
+                    </div>
+                  )}
+                  <div className="upload-progress-text" style={{ 
+                    opacity: uploadLoading ? 1 : 0.5 
+                  }}>
+                    {uploadLoading ? `${Math.round(uploadProgress)}%` : ''}
+                  </div>
                   <div className="upload-button-container">
                     <button className={`upload-btn-with-icon${uploadLoading ? ' loading' : ''}`} onClick={startUpload} disabled={uploadLoading}>
                       <span className="upload-btn-icon"></span>
@@ -1087,7 +1129,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </button>
                   </div>
                   <div className="upload-progress-container">
-                    <div className="upload-progress-bar" style={{ width: `${uploadProgress}%` }}></div>
+                    <div className="upload-progress-bar" style={{ 
+                      width: `${uploadProgress}%`,
+                      background: uploadProgress === 100 && mlLoading 
+                        ? 'linear-gradient(90deg, #4ade80, #22c55e)' 
+                        : 'linear-gradient(90deg, #3b82f6, #1d4ed8)',
+                      transition: 'all 0.3s ease'
+                    }}></div>
                   </div>
                 </div>
               </div>
