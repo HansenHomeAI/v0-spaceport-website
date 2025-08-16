@@ -340,9 +340,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
     
-    // Trigger save after coordinate placement
-    triggerSave();
-  }, [triggerSave]);
+    // Save will be triggered by autosave useEffect when selectedCoords changes
+  }, []);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
