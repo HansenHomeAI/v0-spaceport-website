@@ -93,7 +93,7 @@ class NerfStudioTrainer:
                 logger.info(f"📝 Override {config_path} = {value} (from {env_var})")
     
     def validate_input_data(self) -> bool:
-        """Validate COLMAP data format for NerfStudio compatibility"""
+        """Validate COLMAP data format and convert to NerfStudio format"""
         logger.info("🔍 Validating COLMAP data format for NerfStudio...")
         
         # Check for required COLMAP structure
@@ -160,8 +160,122 @@ class NerfStudioTrainer:
             logger.error(f"❌ Missing image files: {image_file_count} < {image_count * 0.8}")
             return False
         
-        logger.info("✅ COLMAP data validation passed - ready for NerfStudio")
-        return True
+        logger.info("✅ COLMAP data validation passed - converting to NerfStudio format")
+        return self.convert_colmap_to_nerfstudio()
+    
+    def convert_colmap_to_nerfstudio(self) -> bool:
+        """Convert COLMAP data to NerfStudio transforms.json format"""
+        logger.info("🔄 Converting COLMAP data to NerfStudio format...")
+        
+        # Create converted data directory
+        converted_dir = self.temp_dir / "converted_data"
+        converted_dir.mkdir(exist_ok=True, parents=True)
+        
+        # First, convert COLMAP text files to binary format (required by ns-process-data)
+        sparse_dir = self.input_dir / "sparse" / "0"
+        if not self.convert_colmap_text_to_binary(sparse_dir):
+            logger.error("❌ Failed to convert COLMAP text files to binary format")
+            return False
+        
+        # Use ns-process-data to convert COLMAP to transforms.json
+        convert_cmd = [
+            "ns-process-data", "images",
+            "--data", str(self.input_dir / "images"),
+            "--output-dir", str(converted_dir),
+            "--skip-colmap",  # Skip COLMAP processing since we already have it
+            "--colmap-model-path", str(sparse_dir)
+        ]
+        
+        logger.info(f"🚀 Executing COLMAP conversion command:")
+        logger.info(f"   {' '.join(convert_cmd)}")
+        
+        try:
+            result = subprocess.run(
+                convert_cmd,
+                capture_output=True,
+                text=True,
+                timeout=600  # 10 minute timeout
+            )
+            
+            if result.returncode != 0:
+                logger.error("❌ COLMAP to NerfStudio conversion failed:")
+                logger.error(f"Exit code: {result.returncode}")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                return False
+            
+            # Verify transforms.json was created
+            transforms_file = converted_dir / "transforms.json"
+            if not transforms_file.exists():
+                logger.error("❌ transforms.json was not created during conversion")
+                return False
+            
+            # Update input directory to point to converted data
+            self.input_dir = converted_dir
+            logger.info(f"✅ COLMAP data converted successfully")
+            logger.info(f"📁 Updated input directory: {self.input_dir}")
+            
+            return True
+            
+        except subprocess.TimeoutExpired:
+            logger.error("❌ COLMAP conversion timeout (10 minutes exceeded)")
+            return False
+        except Exception as e:
+            logger.error(f"❌ COLMAP conversion failed: {e}")
+            return False
+    
+    def convert_colmap_text_to_binary(self, sparse_dir: Path) -> bool:
+        """Convert COLMAP text files to binary format using COLMAP's model_converter"""
+        logger.info("🔄 Converting COLMAP text files to binary format...")
+        
+        # Check if binary files already exist
+        cameras_bin = sparse_dir / "cameras.bin"
+        images_bin = sparse_dir / "images.bin"
+        points3D_bin = sparse_dir / "points3D.bin"
+        
+        if cameras_bin.exists() and images_bin.exists() and points3D_bin.exists():
+            logger.info("✅ Binary files already exist, skipping conversion")
+            return True
+        
+        # Use COLMAP's model_converter to convert text to binary
+        convert_cmd = [
+            "colmap", "model_converter",
+            "--input_path", str(sparse_dir),
+            "--output_path", str(sparse_dir),
+            "--output_type", "BIN"
+        ]
+        
+        logger.info(f"🚀 Converting text to binary: {' '.join(convert_cmd)}")
+        
+        try:
+            result = subprocess.run(
+                convert_cmd,
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout
+            )
+            
+            if result.returncode != 0:
+                logger.error("❌ COLMAP text to binary conversion failed:")
+                logger.error(f"Exit code: {result.returncode}")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                return False
+            
+            # Verify binary files were created
+            if not (cameras_bin.exists() and images_bin.exists() and points3D_bin.exists()):
+                logger.error("❌ Binary files were not created")
+                return False
+            
+            logger.info("✅ COLMAP text files converted to binary format")
+            return True
+            
+        except subprocess.TimeoutExpired:
+            logger.error("❌ COLMAP conversion timeout (5 minutes exceeded)")
+            return False
+        except Exception as e:
+            logger.error(f"❌ COLMAP text to binary conversion failed: {e}")
+            return False
     
     def run_nerfstudio_training(self) -> bool:
         """Execute NerfStudio training with Vincent Woo's exact methodology"""
@@ -184,8 +298,10 @@ class NerfStudioTrainer:
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
         logger.info(f"   Log interval: {log_interval}")
+        logger.info(f"   Dataparser: NerfStudio (COLMAP converted to transforms.json)")
         
         # Build NerfStudio command with Vincent's exact parameters
+        # INVESTIGATION: Try converting COLMAP to transforms.json format instead
         cmd = [
             "ns-train", model_variant,
             "--data", str(self.input_dir),
@@ -197,26 +313,20 @@ class NerfStudioTrainer:
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
-        # Trying different parameter names based on NerfStudio conventions
+        # CORRECT PARAMETER FOUND: --pipeline.model.use-bilateral-grid True
         if bilateral_processing:
-            # Try multiple possible parameter names for bilateral processing
-            possible_params = [
-                "--enable-bilateral-processing",
-                "--bilateral-processing", 
-                "--pipeline.datamanager.dataparser.bilateral-processing",
-                "--pipeline.model.bilateral-guided",
-            ]
-            # For now, try the simplest form that might work
-            cmd.extend(["--enable-bilateral-processing"])
-            logger.info("🌈 Bilateral guided processing enabled (trying --enable-bilateral-processing)")
+            cmd.extend(["--pipeline.model.use-bilateral-grid", "True"])
+            logger.info("🌈 Bilateral guided processing enabled (--pipeline.model.use-bilateral-grid True)")
         else:
             logger.info("⚠️  Bilateral guided processing disabled")
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
+        # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
         cmd.extend([
-            "--pipeline.model.max_num_gaussians", "1500000",  # Conservative limit for A10G
+            "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
             "--viewer.websocket_port", "7007"  # Avoid conflicts
         ])
+        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
