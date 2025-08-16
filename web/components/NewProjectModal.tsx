@@ -62,28 +62,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // System notification helper
+  // Center-screen modal popup system (replacing Safari notifications)
+  const [modalPopup, setModalPopup] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  
   const showSystemNotification = useCallback((type: 'success' | 'error', message: string) => {
-    if ('Notification' in window) {
-      // Request permission if not already granted
-      if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            new Notification(`Spaceport ${type === 'success' ? 'Success' : 'Error'}`, {
-              body: message,
-              icon: '/assets/SpaceportIcons/Favicon.png'
-            });
-          }
-        });
-      } else if (Notification.permission === 'granted') {
-        new Notification(`Spaceport ${type === 'success' ? 'Success' : 'Error'}`, {
-          body: message,
-          icon: '/assets/SpaceportIcons/Favicon.png'
-        });
-      }
+    // Show center-screen modal instead of browser notifications
+    setModalPopup({ type, message });
+    
+    // Auto-dismiss success messages after 3 seconds
+    if (type === 'success') {
+      setTimeout(() => setModalPopup(null), 3000);
     }
-    // Fallback to toast for unsupported browsers
-    setToast({ type, message });
   }, []);
 
   // simple, general progress model
@@ -531,7 +520,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
       console.error('Optimization failed:', e);
-      setToast({ type: 'error', message: e?.message || 'Optimization failed' });
+      showSystemNotification('error', e?.message || 'Optimization failed');
     } finally {
       clearInterval(messageInterval);
       setProcessingMessage('');
@@ -543,7 +532,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Use ref to get current optimized params (not stale closure)
     const currentOptimizedParams = optimizedParamsRef.current;
     if (!currentOptimizedParams) {
-      setToast({ type: 'error', message: 'Please optimize first' });
+      showSystemNotification('error', 'Please optimize first');
       return;
     }
     setBatteryDownloading(batteryIndex1);
@@ -574,7 +563,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         setStatus('path_downloaded');
       }
     } catch (e: any) {
-      setToast({ type: 'error', message: e?.message || 'CSV download failed' });
+      showSystemNotification('error', e?.message || 'CSV download failed');
     } finally {
       setBatteryDownloading(null);
     }
@@ -637,7 +626,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       onSaved?.();
     } catch (e: any) {
       console.error('Save failed:', e);
-      setToast({ type: 'error', message: e?.message || 'Failed to save project' });
+      showSystemNotification('error', e?.message || 'Failed to save project');
     } finally {
       setIsSaving(false);
     }
@@ -879,7 +868,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const { Auth } = await import('aws-amplify');
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects';
+        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects';
         await fetch(api, {
           method: 'POST',
           headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
@@ -1005,7 +994,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon time"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Duration"
                       value={batteryMinutes}
                       onChange={(e) => { setBatteryMinutes(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -1023,7 +1012,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon number"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Quantity"
                       value={numBatteries}
                       onChange={(e) => { setNumBatteries(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -1050,7 +1039,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon minimum"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Minimum"
                       value={minHeightFeet}
                       onChange={(e) => { setMinHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -1066,7 +1055,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon maximum"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Maximum"
                       value={maxHeightFeet}
                       onChange={(e) => { setMaxHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -1099,11 +1088,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         if (!canOptimize) {
                           // Set specific error messages for missing fields
                           if (!selectedCoordsRef.current) {
-                            setToast({ type: 'error', message: 'Please select a location on the map first' });
+                            showSystemNotification('error', 'Please select a location on the map first');
                           } else if (!batteryMinutes || !numBatteries) {
-                            setToast({ type: 'error', message: 'Please enter battery duration and quantity first' });
+                            showSystemNotification('error', 'Please enter battery duration and quantity first');
                           } else {
-                            setToast({ type: 'error', message: 'Please set location and battery params first' });
+                            showSystemNotification('error', 'Please set location and battery params first');
                           }
                           return;
                         }
@@ -1139,12 +1128,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           // Final check after polling using ref
                           const finalOptimizedParams = optimizedParamsRef.current;
                           if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
-                            setToast({ type: 'error', message: 'Optimization timed out after 30 seconds. The server may be busy - please try again.' });
+                            showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
                             setBatteryDownloading(null);
                             return;
                           }
                         } catch (e: any) {
-                          setToast({ type: 'error', message: 'Failed to optimize flight path: ' + (e?.message || 'Unknown error') });
+                          showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
                           setBatteryDownloading(null);
                           return;
                         }
@@ -1301,6 +1290,27 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           </div>
         )}
       </div>
+
+      {/* Center-screen modal popup system */}
+      {modalPopup && (
+        <div className="modal-popup-overlay" onClick={() => setModalPopup(null)}>
+          <div className="modal-popup-content" onClick={(e) => e.stopPropagation()}>
+            <div className={`modal-popup-icon ${modalPopup.type}`}>
+              {modalPopup.type === 'success' ? '✓' : '⚠'}
+            </div>
+            <h3 className="modal-popup-title">
+              {modalPopup.type === 'success' ? 'Success' : 'Error'}
+            </h3>
+            <p className="modal-popup-message">{modalPopup.message}</p>
+            <button 
+              className="modal-popup-button"
+              onClick={() => setModalPopup(null)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

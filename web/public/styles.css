@@ -4833,5 +4833,130 @@ input.text-fade-right,
   opacity: 1;
 }
 
+/* Center-screen modal popup system */
+.modal-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-popup-content {
+  background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 32px;
+  min-width: 320px;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-popup-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 auto 16px;
+  color: white;
+}
+
+.modal-popup-icon.success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.modal-popup-icon.error {
+  background: linear-gradient(135deg, #dc3545, #fd7e14);
+}
+
+.modal-popup-title {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.modal-popup-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.modal-popup-button {
+  background: linear-gradient(135deg, #0a84ff, #007aff);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.modal-popup-button:hover {
+  background: linear-gradient(135deg, #007aff, #0051d5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* Unit labels with no-wrap and luxury fade */
+.popup-input-wrapper span[style*="position: absolute"] {
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+  padding-right: 15px;
+  position: relative;
+}
+
+.popup-input-wrapper span[style*="position: absolute"]:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  background: linear-gradient(to right, transparent, var(--input-bg, #2c2c2c));
+  pointer-events: none;
+}
+
+/* Enhance input wrapper positioning for better unit display */
+.popup-input-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Better luxury fade for input fields */
+.popup-input-wrapper input.luxury-text-fade {
+  padding-right: 80px; /* Make room for units */
+}
+
 
 
