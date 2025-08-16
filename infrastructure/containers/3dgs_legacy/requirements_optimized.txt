@@ -1,0 +1,48 @@
+# AWS SDK
+boto3>=1.26.0
+
+# Core dependencies
+numpy>=1.24.0,<2.0.0
+Pillow>=9.0.0
+
+# NOTE: PyTorch packages (torch, torchvision, torchaudio) are installed 
+# in Dockerfile with explicit CUDA 11.8 support from PyTorch index
+
+# 3D reconstruction and computer vision
+opencv-python>=4.5.0
+scikit-image>=0.19.0
+matplotlib>=3.5.0
+
+# Point cloud processing
+plyfile>=0.7.4
+open3d>=0.16.0
+
+# 3D Gaussian Splatting (CRITICAL - installed via pre-compiled wheel in Dockerfile)
+# gsplat>=1.5.0  # Installed directly in Dockerfile for CUDA compatibility
+
+# CUDA toolkit utilities (ensure CUDA is properly detected)
+pynvml>=11.0.0
+
+# Image processing and utilities
+tqdm>=4.64.0
+PyYAML>=6.0
+scipy>=1.9.0
+
+# Logging and monitoring
+tensorboard>=2.10.0
+wandb>=0.13.0
+
+# Data handling
+pandas>=1.5.0
+
+# Optimization and math libraries
+scikit-learn>=1.1.0
+numba>=0.56.0  # For faster numerical computations
+
+# Progressive training utilities
+albumentations>=1.3.0  # For advanced image augmentations
+einops>=0.6.0         # For tensor operations
+
+# Memory optimization
+psutil>=5.9.0         # For memory monitoring
+gc-python-utils>=0.0.1  # For garbage collection utilities (fixed version constraint) 
