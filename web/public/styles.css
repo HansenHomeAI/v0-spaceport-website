@@ -3691,7 +3691,8 @@ body.popup-open {
 }
 
 /* Map Container */
-.map-container {
+/* Map wrapper contains the empty map container and all overlays */
+.map-wrapper {
   height: 300px;
   width: 100%;
   position: relative;
@@ -3700,6 +3701,16 @@ body.popup-open {
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 16px;
   transition: all 0.3s ease;
+}
+
+/* Empty map container for Mapbox - no children to avoid warnings */
+.map-container {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 /* Remove the direct blur on map container */
@@ -4441,7 +4452,7 @@ input.text-fade-right,
   opacity: 0;
 }
 
-.map-container.fullscreen {
+.map-wrapper.fullscreen {
   position: fixed;
   top: 0;
   left: 0;
@@ -4453,29 +4464,29 @@ input.text-fade-right,
   transition: all 0.3s ease;
 }
 
-.map-container.fullscreen .address-search-overlay {
+.map-wrapper.fullscreen .address-search-overlay {
   bottom: 16px;
   left: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .coordinates-input-overlay {
+.map-wrapper.fullscreen .coordinates-input-overlay {
   bottom: 16px;
   left: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .expand-button {
+.map-wrapper.fullscreen .expand-button {
   top: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .map-instructions-center {
+.map-wrapper.fullscreen .map-instructions-center {
   left: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .map-progressive-bottom-blur {
+.map-wrapper.fullscreen .map-progressive-bottom-blur {
   border-radius: 0;
   height: 40px; /* Slightly taller in fullscreen for better effect */
 }

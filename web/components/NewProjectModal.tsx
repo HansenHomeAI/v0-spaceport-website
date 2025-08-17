@@ -375,17 +375,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const newFullscreen = !isFullscreen;
     setIsFullscreen(newFullscreen);
     
+    // Find the map-wrapper (parent of map-container)
+    const mapWrapper = mapContainerRef.current.parentElement;
+    if (!mapWrapper) return;
+    
     if (newFullscreen) {
-      // Enter fullscreen - move to body
-      document.body.appendChild(mapContainerRef.current);
-      mapContainerRef.current.classList.add('fullscreen');
+      // Enter fullscreen - move wrapper to body
+      document.body.appendChild(mapWrapper);
+      mapWrapper.classList.add('fullscreen');
     } else {
-      // Exit fullscreen - move back to original parent
+      // Exit fullscreen - move wrapper back to original parent
       const mapSection = document.querySelector('.popup-map-section');
       if (mapSection) {
-        mapSection.appendChild(mapContainerRef.current);
+        mapSection.appendChild(mapWrapper);
       }
-      mapContainerRef.current.classList.remove('fullscreen');
+      mapWrapper.classList.remove('fullscreen');
     }
     
     // Force Mapbox to recalculate after DOM move
@@ -951,7 +955,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           {setupOpen && (
           <div className="accordion-content">
             <div className="popup-map-section">
-              <div id="map-container" className="map-container" ref={mapContainerRef}>
+                            <div className="map-wrapper">
+                {/* Empty map container for Mapbox - avoids the warning */}
+                <div id="map-container" className="map-container" ref={mapContainerRef}></div>
+                
+                {/* Map overlays and controls as siblings */}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
@@ -978,7 +986,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={addressSearch}
                       onChange={(e) => setAddressSearch(e.target.value)}
                       onKeyDown={handleAddressEnter}
-                                              style={{}}
+                      style={{}}
                     />
                   </div>
                 </div>
