@@ -49,14 +49,31 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [mlLoading, setMlLoading] = useState<boolean>(false);
   const [uploadStage, setUploadStage] = useState<string>('');
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const initialRenderRef = useRef<boolean>(true);
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
+  const [processingMessage, setProcessingMessage] = useState<string>('');
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Center-screen modal popup system (replacing Safari notifications)
+  const [modalPopup, setModalPopup] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  
+  const showSystemNotification = useCallback((type: 'success' | 'error', message: string) => {
+    // Show center-screen modal instead of browser notifications
+    setModalPopup({ type, message });
+    
+    // Auto-dismiss success messages after 3 seconds
+    if (type === 'success') {
+      setTimeout(() => setModalPopup(null), 3000);
+    }
+  }, []);
 
   // simple, general progress model
   const STATUS_TO_PROGRESS: Record<string, number> = {
@@ -210,6 +227,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       selectedCoordsRef.current = null;
       setSelectedCoords(null);
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [open, project]);
 
   // Initialize Mapbox on open
@@ -329,6 +353,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
+    
+    // Save will be triggered by autosave useEffect when selectedCoords changes
   }, []);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
@@ -349,17 +375,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const newFullscreen = !isFullscreen;
     setIsFullscreen(newFullscreen);
     
+    // Find the map-wrapper (parent of map-container)
+    const mapWrapper = mapContainerRef.current.parentElement;
+    if (!mapWrapper) return;
+    
     if (newFullscreen) {
-      // Enter fullscreen - move to body
-      document.body.appendChild(mapContainerRef.current);
-      mapContainerRef.current.classList.add('fullscreen');
+      // Enter fullscreen - move wrapper to body
+      document.body.appendChild(mapWrapper);
+      mapWrapper.classList.add('fullscreen');
     } else {
-      // Exit fullscreen - move back to original parent
+      // Exit fullscreen - move wrapper back to original parent
       const mapSection = document.querySelector('.popup-map-section');
       if (mapSection) {
-        mapSection.appendChild(mapContainerRef.current);
+        mapSection.appendChild(mapWrapper);
       }
-      mapContainerRef.current.classList.remove('fullscreen');
+      mapWrapper.classList.remove('fullscreen');
     }
     
     // Force Mapbox to recalculate after DOM move
@@ -407,9 +437,32 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return Boolean(coords && minutes && batteries);
   }, [batteryMinutes, numBatteries, selectedCoords]); // Use selectedCoords state for better reactivity
 
+  // Rotating processing messages for optimization
+  const processingMessages = [
+    "This may take a moment...",
+    "Running binary search optimization",
+    "Forming to elevation data", 
+    "Maximizing battery usage",
+    "Calculating optimal flight paths",
+    "Analyzing terrain features"
+  ];
+
+  const startProcessingMessages = useCallback(() => {
+    let messageIndex = 0;
+    setProcessingMessage(processingMessages[0]);
+    
+    const interval = setInterval(() => {
+      messageIndex = (messageIndex + 1) % processingMessages.length;
+      setProcessingMessage(processingMessages[messageIndex]);
+    }, 2000); // Change message every 2 seconds
+    
+    return interval;
+  }, []);
+
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
     setOptimizationLoading(true);
+    const messageInterval = startProcessingMessages();
     console.log('Starting optimization...');
     try {
       const coords = selectedCoordsRef.current!;
@@ -471,8 +524,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
       console.error('Optimization failed:', e);
-      setToast({ type: 'error', message: e?.message || 'Optimization failed' });
+      showSystemNotification('error', e?.message || 'Optimization failed');
     } finally {
+      clearInterval(messageInterval);
+      setProcessingMessage('');
       setOptimizationLoading(false);
     }
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
@@ -481,7 +536,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Use ref to get current optimized params (not stale closure)
     const currentOptimizedParams = optimizedParamsRef.current;
     if (!currentOptimizedParams) {
-      setToast({ type: 'error', message: 'Please optimize first' });
+      showSystemNotification('error', 'Please optimize first');
       return;
     }
     setBatteryDownloading(batteryIndex1);
@@ -506,22 +561,33 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      // Update project status to indicate drone path has been downloaded
+      if (status === 'draft') {
+        setStatus('path_downloaded');
+      }
     } catch (e: any) {
-      setToast({ type: 'error', message: e?.message || 'CSV download failed' });
+      showSystemNotification('error', e?.message || 'CSV download failed');
     } finally {
       setBatteryDownloading(null);
     }
   }, [API_ENHANCED_BASE, projectTitle]);
 
-  // Save metadata changes for existing project
-  const handleSaveProject = useCallback(async () => {
+  // SIMPLE, ROBUST save function with rate limiting
+  const saveProject = useCallback(async () => {
+    // Prevent multiple simultaneous saves
+    if (isSaving) return;
+    
     try {
+      setIsSaving(true);
       console.log('Saving project...', { currentProjectId, projectTitle });
+      
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
       const progress = STATUS_TO_PROGRESS[status] ?? 0;
+      
       const body = {
         title: projectTitle,
         status,
@@ -532,35 +598,43 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           batteries: numBatteries,
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
-          // CRITICAL FIX: Save coordinates for future restoration
           latitude: selectedCoordsRef.current?.lat || null,
           longitude: selectedCoordsRef.current?.lng || null,
         },
       };
+      
       const url = currentProjectId ? `${apiBase}/${encodeURIComponent(currentProjectId)}` : `${apiBase}`;
       const method = currentProjectId ? 'PATCH' : 'POST';
+      
       const res = await fetch(url, {
         method,
         headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
         body: JSON.stringify(body),
       });
+      
       if (!res.ok) {
         const errorText = await res.text().catch(() => 'Unknown error');
         console.error('Save failed:', res.status, errorText);
-        throw new Error(`Save failed: ${res.status}`);
+        throw new Error(`Save failed: ${res.status} - ${errorText}`);
       }
+      
       console.log('Project saved successfully');
+      
       // Capture created id on first POST
       if (!currentProjectId) {
         const data = await res.json().catch(() => ({} as any));
         const created = (data && (data.project || data)) as any;
         if (created && created.projectId) setCurrentProjectId(created.projectId);
       }
+      
       onSaved?.();
     } catch (e: any) {
-      setToast({ type: 'error', message: e?.message || 'Failed to save project' });
+      console.error('Save failed:', e);
+      showSystemNotification('error', e?.message || 'Failed to save project');
+    } finally {
+      setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status]);
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -577,18 +651,38 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
   }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
 
-  // Debounced autosave on any change - only if meaningful content
+  // SIMPLE debounced save trigger
+  const triggerSave = useCallback(() => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Only save if we have meaningful content
+    if (hasMeaningfulContent()) {
+      saveTimeoutRef.current = setTimeout(() => {
+        saveProject();
+      }, 1000); // Longer debounce to prevent spam
+    }
+  }, [hasMeaningfulContent, saveProject]);
+
+  // Simple autosave trigger - much more controlled
   useEffect(() => {
     if (!open) return;
     
-    // Only save if project has meaningful content
-    if (hasMeaningfulContent()) {
-      const t = setTimeout(() => {
-        handleSaveProject();
-      }, 600);
-      return () => clearTimeout(t);
+    // Skip saving on initial render to avoid render-phase updates
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+      return;
     }
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, hasMeaningfulContent, handleSaveProject]);
+    
+    // Don't trigger save immediately, use timeout to avoid render-phase updates
+    const timer = setTimeout(() => {
+      triggerSave();
+    }, 100); // Small delay to avoid render-phase updates
+    
+    return () => clearTimeout(timer);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -608,11 +702,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       
       if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
       
-      setToast({ type: 'success', message: 'Project deleted successfully' });
+      showSystemNotification('success', 'Project deleted successfully');
       onSaved?.(); // Refresh the projects list
       onClose(); // Close the modal
     } catch (e: any) {
-      setToast({ type: 'error', message: e?.message || 'Failed to delete project' });
+      showSystemNotification('error', e?.message || 'Failed to delete project');
     }
   }, [currentProjectId, onSaved, onClose]);
 
@@ -669,7 +763,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const startUpload = useCallback(async () => {
     const validationError = validateUpload();
     if (validationError) {
-      setToast({ type: 'error', message: validationError });
+      showSystemNotification('error', validationError);
       return;
     }
     if (!selectedFile) return;
@@ -678,6 +772,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadProgress(0);
     setUploadStage('Initializing upload...');
     try {
+      // Show initial progress to indicate activity
+      setUploadProgress(5);
+      
       // init multipart
       const initRes = await fetch(API_UPLOAD.START_UPLOAD, {
         method: 'POST',
@@ -718,7 +815,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         if (!putRes.ok) throw new Error(`Failed to upload part ${partNumber}`);
         const etag = putRes.headers.get('ETag');
         parts.push({ ETag: etag, PartNumber: partNumber });
-        setUploadProgress(((partNumber) / totalChunks) * 100);
+        // Progress from 5% to 95% during upload, saving 5% for finalization
+        const uploadProgress = 5 + ((partNumber / totalChunks) * 90);
+        setUploadProgress(uploadProgress);
       }
 
       // complete multipart
@@ -765,14 +864,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
       const ml = await mlRes.json();
       setUploadStage('Upload completed successfully!');
-      setToast({ type: 'success', message: `Upload successful. ML processing started. Job ID: ${ml.jobId || 'N/A'}` });
+      setStatus('photos_uploaded');
+      showSystemNotification('success', 'Upload successful! Your 3D model is being processed and will be delivered via email.');
 
       // Persist a project stub for this user
       try {
         const { Auth } = await import('aws-amplify');
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://gcqqr7bwpg.execute-api.us-west-2.amazonaws.com/prod/projects';
+        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects';
         await fetch(api, {
           method: 'POST',
           headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
@@ -797,7 +897,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setUploadOpen(true);
     } catch (e: any) {
       const msg = e?.message || 'Upload failed';
-      setToast({ type: 'error', message: msg });
+      showSystemNotification('error', msg);
     } finally {
       setUploadLoading(false);
       setMlLoading(false);
@@ -855,7 +955,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           {setupOpen && (
           <div className="accordion-content">
             <div className="popup-map-section">
-              <div id="map-container" className="map-container" ref={mapContainerRef}>
+                            <div className="map-wrapper">
+                {/* Empty map container for Mapbox - avoids the warning */}
+                <div id="map-container" className="map-container" ref={mapContainerRef}></div>
+                
+                {/* Map overlays and controls as siblings */}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
@@ -882,7 +986,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={addressSearch}
                       onChange={(e) => setAddressSearch(e.target.value)}
                       onKeyDown={handleAddressEnter}
-                                              style={{}}
+                      style={{}}
                     />
                   </div>
                 </div>
@@ -898,7 +1002,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon time"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Duration"
                       value={batteryMinutes}
                       onChange={(e) => { setBatteryMinutes(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -916,7 +1020,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon number"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Quantity"
                       value={numBatteries}
                       onChange={(e) => { setNumBatteries(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -943,7 +1047,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon minimum"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Minimum"
                       value={minHeightFeet}
                       onChange={(e) => { setMinHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -959,7 +1063,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <span className="input-icon maximum"></span>
                     <input
                       type="number"
-                      className="text-fade-right"
+                      className="text-fade-right luxury-text-fade"
                       placeholder="Maximum"
                       value={maxHeightFeet}
                       onChange={(e) => { setMaxHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
@@ -978,7 +1082,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
               <div className="popup-section">
-                <h4>Individual Battery Segments:</h4>
+                <h4 className="battery-segments-title">
+                  {optimizationLoading ? processingMessage : "Individual Battery Segments:"}
+                </h4>
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <button
@@ -990,11 +1096,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         if (!canOptimize) {
                           // Set specific error messages for missing fields
                           if (!selectedCoordsRef.current) {
-                            setToast({ type: 'error', message: 'Please select a location on the map first' });
+                            showSystemNotification('error', 'Please select a location on the map first');
                           } else if (!batteryMinutes || !numBatteries) {
-                            setToast({ type: 'error', message: 'Please enter battery duration and quantity first' });
+                            showSystemNotification('error', 'Please enter battery duration and quantity first');
                           } else {
-                            setToast({ type: 'error', message: 'Please set location and battery params first' });
+                            showSystemNotification('error', 'Please set location and battery params first');
                           }
                           return;
                         }
@@ -1030,12 +1136,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           // Final check after polling using ref
                           const finalOptimizedParams = optimizedParamsRef.current;
                           if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
-                            setToast({ type: 'error', message: 'Optimization timed out after 30 seconds. The server may be busy - please try again.' });
+                            showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
                             setBatteryDownloading(null);
                             return;
                           }
                         } catch (e: any) {
-                          setToast({ type: 'error', message: 'Failed to optimize flight path: ' + (e?.message || 'Unknown error') });
+                          showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
                           setBatteryDownloading(null);
                           return;
                         }
@@ -1192,6 +1298,27 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           </div>
         )}
       </div>
+
+      {/* Center-screen modal popup system */}
+      {modalPopup && (
+        <div className="modal-popup-overlay" onClick={() => setModalPopup(null)}>
+          <div className="modal-popup-content" onClick={(e) => e.stopPropagation()}>
+            <div className={`modal-popup-icon ${modalPopup.type}`}>
+              {modalPopup.type === 'success' ? '✓' : '⚠'}
+            </div>
+            <h3 className="modal-popup-title">
+              {modalPopup.type === 'success' ? 'Success' : 'Error'}
+            </h3>
+            <p className="modal-popup-message">{modalPopup.message}</p>
+            <button 
+              className="modal-popup-button"
+              onClick={() => setModalPopup(null)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

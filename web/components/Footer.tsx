@@ -1,11 +1,72 @@
+'use client';
+import { useState } from 'react';
+
 export default function Footer(): JSX.Element {
+  const [feedback, setFeedback] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedback.trim()) return;
+
+    setIsSubmitting(true);
+    
+    // Create mailto link
+    const subject = encodeURIComponent('Spaceport AI Feedback');
+    const body = encodeURIComponent(feedback);
+    const mailtoLink = `mailto:gabriel@spcprt.com?subject=${subject}&body=${body}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+    
+    // Reset form
+    setFeedback('');
+    setIsSubmitting(false);
+  };
+
   return (
-    <footer>
-      <div className="footer-content">
-        <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="footer-logo" />
-        <p>© 2025 Spaceport AI · All rights reserved</p>
-      </div>
-    </footer>
+    <>
+      {/* Gradient logo section (previously landing-stats2) */}
+      <section className="section" id="footer-stats">
+        <div className="stats-grid">
+          <div className="stat-box2 grainy">
+            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport Logo" />
+          </div>
+        </div>
+      </section>
+
+      {/* Feedback form section */}
+      <section className="section" id="feedback-section">
+        <div className="feedback-container">
+          <form onSubmit={handleFeedbackSubmit} className="feedback-form">
+            <div className="feedback-input-container">
+              <input
+                type="text"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Where do we have room for improvement?"
+                className="feedback-input"
+                disabled={isSubmitting}
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting || !feedback.trim()}
+                className="cta-button2 feedback-submit"
+              >
+                {isSubmitting ? 'Sending...' : 'Send Feedback'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* Traditional footer content */}
+      <footer>
+        <div className="footer-content">
+          <p>© 2025 Spaceport AI · All rights reserved</p>
+        </div>
+      </footer>
+    </>
   );
 }
 

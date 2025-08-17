@@ -590,6 +590,94 @@ html, body {
   color: #ccc;
 }
 
+/* Footer stats section (gradient logo) */
+#footer-stats {
+  padding: 70px 20px 10px;
+  position: relative;
+}
+
+/* Feedback form section */
+#feedback-section {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-container {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  justify-content: center;
+}
+
+.feedback-form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.feedback-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 500px;
+}
+
+.feedback-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.feedback-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.feedback-input:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.feedback-submit {
+  white-space: nowrap;
+  min-width: auto;
+}
+
+.feedback-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments for feedback form */
+@media (max-width: 600px) {
+  .feedback-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .feedback-input {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .feedback-submit {
+    width: 100%;
+  }
+}
+
 /* Footer */
 footer {
   text-align: center;
@@ -3691,7 +3779,8 @@ body.popup-open {
 }
 
 /* Map Container */
-.map-container {
+/* Map wrapper contains the empty map container and all overlays */
+.map-wrapper {
   height: 300px;
   width: 100%;
   position: relative;
@@ -3700,6 +3789,16 @@ body.popup-open {
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 16px;
   transition: all 0.3s ease;
+}
+
+/* Empty map container for Mapbox - no children to avoid warnings */
+.map-container {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 /* Remove the direct blur on map container */
@@ -4441,7 +4540,7 @@ input.text-fade-right,
   opacity: 0;
 }
 
-.map-container.fullscreen {
+.map-wrapper.fullscreen {
   position: fixed;
   top: 0;
   left: 0;
@@ -4453,29 +4552,29 @@ input.text-fade-right,
   transition: all 0.3s ease;
 }
 
-.map-container.fullscreen .address-search-overlay {
+.map-wrapper.fullscreen .address-search-overlay {
   bottom: 16px;
   left: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .coordinates-input-overlay {
+.map-wrapper.fullscreen .coordinates-input-overlay {
   bottom: 16px;
   left: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .expand-button {
+.map-wrapper.fullscreen .expand-button {
   top: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .map-instructions-center {
+.map-wrapper.fullscreen .map-instructions-center {
   left: 16px;
   right: 16px;
 }
 
-.map-container.fullscreen .map-progressive-bottom-blur {
+.map-wrapper.fullscreen .map-progressive-bottom-blur {
   border-radius: 0;
   height: 40px; /* Slightly taller in fullscreen for better effect */
 }
@@ -4770,6 +4869,192 @@ input.text-fade-right,
   display: block;
   pointer-events: none;
   user-select: none;
+}
+
+/* Luxury text overflow fade effect */
+.battery-segments-title {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-right: 20px;
+}
+
+.battery-segments-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, rgba(17, 17, 17, 1));
+  pointer-events: none;
+}
+
+/* Apply luxury fade to any text that might overflow */
+.luxury-text-fade {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-right: 20px;
+}
+
+.luxury-text-fade::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, var(--bg-color, rgba(17, 17, 17, 1)));
+  pointer-events: none;
+}
+
+/* Battery download button text fade */
+.flight-path-download-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.flight-path-download-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  background: linear-gradient(to right, transparent, #2c2c2c);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.flight-path-download-btn:hover::after {
+  opacity: 1;
+}
+
+/* Center-screen modal popup system */
+.modal-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-popup-content {
+  background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 32px;
+  min-width: 320px;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-popup-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 auto 16px;
+  color: white;
+}
+
+.modal-popup-icon.success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.modal-popup-icon.error {
+  background: linear-gradient(135deg, #dc3545, #fd7e14);
+}
+
+.modal-popup-title {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.modal-popup-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.modal-popup-button {
+  background: linear-gradient(135deg, #0a84ff, #007aff);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.modal-popup-button:hover {
+  background: linear-gradient(135deg, #007aff, #0051d5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* Unit labels with no-wrap and luxury fade */
+.popup-input-wrapper span[style*="position: absolute"] {
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+  padding-right: 15px;
+  position: relative;
+}
+
+.popup-input-wrapper span[style*="position: absolute"]:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  background: linear-gradient(to right, transparent, var(--input-bg, #2c2c2c));
+  pointer-events: none;
+}
+
+/* Enhance input wrapper positioning for better unit display */
+.popup-input-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Better luxury fade for input fields */
+.popup-input-wrapper input.luxury-text-fade {
+  padding-right: 80px; /* Make room for units */
 }
 
 
