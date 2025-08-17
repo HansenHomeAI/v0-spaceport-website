@@ -417,13 +417,24 @@ class NerfStudioTrainer:
                     file_path = frame['file_path']
                     logger.info(f"      file_path: {file_path}")
                     
-                    # Check if the image file actually exists
-                    image_file = self.input_dir.parent.parent / "training" / "images" / Path(file_path).name
+                    # Check if the image file actually exists in the converted directory
+                    # ns-process-data puts images in: converted_data/images/frame_XXXXX.JPG
+                    image_file = self.input_dir / Path(file_path)
                     if image_file.exists():
                         logger.info(f"      ✅ Image file exists: {image_file.name}")
                         valid_frames += 1
                     else:
                         logger.warning(f"      ❌ Image file missing: {image_file}")
+                        # Also log what we're actually looking for vs what exists
+                        logger.warning(f"      📁 Looking for: {image_file}")
+                        logger.warning(f"      📁 In directory: {self.input_dir}")
+                        try:
+                            images_dir = self.input_dir / "images"
+                            if images_dir.exists():
+                                files = list(images_dir.glob("*"))[:3]
+                                logger.warning(f"      📁 Available files: {[f.name for f in files]}")
+                        except Exception as e:
+                            logger.warning(f"      📁 Error listing files: {e}")
                 else:
                     logger.error(f"      ❌ No file_path in frame {i}")
                 

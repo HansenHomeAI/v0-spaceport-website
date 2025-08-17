@@ -11,15 +11,15 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-16-v1.0.10
-Build ID: nerfstudio-vincent-woo-v1.0.10-COMPREHENSIVE-LOGGING
+Container Build Timestamp: 2025-08-17-v1.0.11
+Build ID: nerfstudio-vincent-woo-v1.0.11-VALIDATION-PATH-FIX
 
-CRITICAL ENHANCEMENT: Super comprehensive logging for debugging data conversion
-- Added: Complete STDOUT/STDERR logging for all subprocess calls
-- Added: validate_transforms_json() with detailed frame analysis
-- Added: Binary file verification with sizes
-- Added: COLMAP data structure analysis and sampling
-- Resolves: Visibility into exactly what's failing in conversion pipeline
-Vincent Woo's methodology with comprehensive diagnostic capabilities
+CRITICAL FIX: File path validation bug resolved - the exact issue causing n_samples=1 error
+- Fixed: validate_transforms_json() to check converted directory (self.input_dir) instead of wrong path
+- Fixed: Image file validation now looks in /converted_data/images/ where ns-process-data puts files
+- Added: Enhanced error logging to show actual vs expected file paths
+- Resolves: 97 frames created but 0 detected as valid due to wrong validation path
+- Result: Should now properly detect all 97 valid frames and proceed to training
+Vincent Woo's methodology with corrected validation logic - READY FOR PRODUCTION!
 
 ** TRIGGER GITHUB ACTIONS BUILD **
