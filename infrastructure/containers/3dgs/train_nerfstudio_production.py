@@ -143,6 +143,33 @@ class NerfStudioTrainer:
         logger.info(f"   Image files: {image_file_count}")
         logger.info(f"   3D points: {point_count}")
         
+        # COMPREHENSIVE LOGGING: Sample a few image names and camera details
+        logger.info("📊 DETAILED COLMAP ANALYSIS:")
+        logger.info(f"   Sample image files (first 5):")
+        for i, img_file in enumerate(image_files[:5]):
+            logger.info(f"      {i+1}. {img_file.name}")
+        
+        # Read and log camera parameters for debugging
+        try:
+            with open(cameras_file, 'r') as f:
+                camera_lines = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+            if camera_lines:
+                logger.info(f"   Camera parameters (first camera):")
+                logger.info(f"      {camera_lines[0]}")
+        except Exception as e:
+            logger.warning(f"   Could not read camera details: {e}")
+        
+        # Check images.txt structure
+        try:
+            with open(images_file, 'r') as f:
+                image_lines = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+            if len(image_lines) >= 2:
+                logger.info(f"   Sample image registration (first image):")
+                logger.info(f"      {image_lines[0]}")  # Image line
+                logger.info(f"      {image_lines[1]}")  # Points line
+        except Exception as e:
+            logger.warning(f"   Could not read image registration details: {e}")
+        
         # Quality checks
         if camera_count == 0:
             logger.error("❌ No cameras found in COLMAP data")
@@ -197,17 +224,43 @@ class NerfStudioTrainer:
                 timeout=600  # 10 minute timeout
             )
             
+            # COMPREHENSIVE LOGGING: Always log the output for debugging
+            logger.info("📊 ns-process-data STDOUT:")
+            if result.stdout:
+                for line in result.stdout.split('\n'):
+                    if line.strip():
+                        logger.info(f"   STDOUT: {line}")
+            else:
+                logger.info("   STDOUT: (empty)")
+                
+            logger.info("📊 ns-process-data STDERR:")
+            if result.stderr:
+                for line in result.stderr.split('\n'):
+                    if line.strip():
+                        logger.info(f"   STDERR: {line}")
+            else:
+                logger.info("   STDERR: (empty)")
+            
             if result.returncode != 0:
                 logger.error("❌ COLMAP to NerfStudio conversion failed:")
                 logger.error(f"Exit code: {result.returncode}")
-                logger.error(f"STDOUT: {result.stdout}")
-                logger.error(f"STDERR: {result.stderr}")
                 return False
             
             # Verify transforms.json was created
             transforms_file = converted_dir / "transforms.json"
             if not transforms_file.exists():
                 logger.error("❌ transforms.json was not created during conversion")
+                logger.error(f"📁 Contents of {converted_dir}:")
+                try:
+                    for item in converted_dir.iterdir():
+                        logger.error(f"   Found: {item.name}")
+                except Exception as e:
+                    logger.error(f"   Failed to list directory: {e}")
+                return False
+            
+            # COMPREHENSIVE VALIDATION: Analyze the transforms.json file
+            if not self.validate_transforms_json(transforms_file):
+                logger.error("❌ transforms.json validation failed")
                 return False
             
             # Update input directory to point to converted data
@@ -255,19 +308,50 @@ class NerfStudioTrainer:
                 timeout=300  # 5 minute timeout
             )
             
+            # COMPREHENSIVE LOGGING: Always log the output
+            logger.info("📊 COLMAP model_converter STDOUT:")
+            if result.stdout:
+                for line in result.stdout.split('\n'):
+                    if line.strip():
+                        logger.info(f"   STDOUT: {line}")
+            else:
+                logger.info("   STDOUT: (empty)")
+                
+            logger.info("📊 COLMAP model_converter STDERR:")
+            if result.stderr:
+                for line in result.stderr.split('\n'):
+                    if line.strip():
+                        logger.info(f"   STDERR: {line}")
+            else:
+                logger.info("   STDERR: (empty)")
+            
             if result.returncode != 0:
                 logger.error("❌ COLMAP text to binary conversion failed:")
                 logger.error(f"Exit code: {result.returncode}")
-                logger.error(f"STDOUT: {result.stdout}")
-                logger.error(f"STDERR: {result.stderr}")
                 return False
             
-            # Verify binary files were created
-            if not (cameras_bin.exists() and images_bin.exists() and points3D_bin.exists()):
-                logger.error("❌ Binary files were not created")
+            # Verify binary files were created and log their sizes
+            logger.info("📊 BINARY FILE VERIFICATION:")
+            binary_files = [
+                ("cameras.bin", cameras_bin),
+                ("images.bin", images_bin), 
+                ("points3D.bin", points3D_bin)
+            ]
+            
+            all_exist = True
+            for name, path in binary_files:
+                if path.exists():
+                    size = path.stat().st_size
+                    logger.info(f"   ✅ {name}: {size} bytes")
+                else:
+                    logger.error(f"   ❌ {name}: MISSING")
+                    all_exist = False
+            
+            if not all_exist:
+                logger.error("❌ Some binary files were not created")
                 return False
             
-            logger.info("✅ COLMAP text files converted to binary format")
+            logger.info("✅ COLMAP text files converted to binary format successfully")
             return True
             
         except subprocess.TimeoutExpired:
@@ -275,6 +359,108 @@ class NerfStudioTrainer:
             return False
         except Exception as e:
             logger.error(f"❌ COLMAP text to binary conversion failed: {e}")
+            return False
+    
+    def validate_transforms_json(self, transforms_file: Path) -> bool:
+        """Comprehensive validation of the generated transforms.json file"""
+        logger.info("🔍 COMPREHENSIVE transforms.json validation...")
+        
+        try:
+            # Read and parse the transforms.json file
+            with open(transforms_file, 'r') as f:
+                data = json.load(f)
+            
+            # Log the file size and basic structure
+            file_size = transforms_file.stat().st_size
+            logger.info(f"📄 transforms.json file size: {file_size} bytes")
+            
+            # Validate required fields
+            required_fields = ['frames']
+            optional_fields = ['camera_angle_x', 'fl_x', 'fl_y', 'cx', 'cy', 'w', 'h', 'k1', 'k2', 'p1', 'p2']
+            
+            logger.info("📊 TOP-LEVEL STRUCTURE:")
+            for field in required_fields:
+                if field in data:
+                    logger.info(f"   ✅ {field}: present")
+                else:
+                    logger.error(f"   ❌ {field}: MISSING (required)")
+                    return False
+            
+            for field in optional_fields:
+                if field in data:
+                    logger.info(f"   ✅ {field}: {data[field]}")
+                else:
+                    logger.info(f"   ⚠️  {field}: not present (optional)")
+            
+            # Validate frames array
+            frames = data.get('frames', [])
+            num_frames = len(frames)
+            logger.info(f"📊 FRAMES ANALYSIS:")
+            logger.info(f"   Total frames: {num_frames}")
+            
+            if num_frames == 0:
+                logger.error("   ❌ No frames found in transforms.json")
+                return False
+            elif num_frames == 1:
+                logger.warning("   ⚠️  Only 1 frame found - this will cause k-nearest neighbors error!")
+                logger.warning("   ⚠️  NerfStudio needs multiple valid frames for training")
+            else:
+                logger.info(f"   ✅ {num_frames} frames available")
+            
+            # Analyze each frame in detail
+            valid_frames = 0
+            for i, frame in enumerate(frames[:5]):  # Check first 5 frames
+                logger.info(f"   📋 FRAME {i}:")
+                
+                # Check required frame fields
+                if 'file_path' in frame:
+                    file_path = frame['file_path']
+                    logger.info(f"      file_path: {file_path}")
+                    
+                    # Check if the image file actually exists
+                    image_file = self.input_dir.parent.parent / "training" / "images" / Path(file_path).name
+                    if image_file.exists():
+                        logger.info(f"      ✅ Image file exists: {image_file.name}")
+                        valid_frames += 1
+                    else:
+                        logger.warning(f"      ❌ Image file missing: {image_file}")
+                else:
+                    logger.error(f"      ❌ No file_path in frame {i}")
+                
+                # Check transformation matrix
+                if 'transform_matrix' in frame:
+                    matrix = frame['transform_matrix']
+                    if isinstance(matrix, list) and len(matrix) == 4:
+                        logger.info(f"      ✅ transform_matrix: 4x4 matrix present")
+                        # Check if matrix is reasonable (not all zeros)
+                        flat_matrix = [val for row in matrix for val in row]
+                        if all(val == 0 for val in flat_matrix):
+                            logger.warning(f"      ⚠️  transform_matrix is all zeros!")
+                        else:
+                            logger.info(f"      ✅ transform_matrix has non-zero values")
+                    else:
+                        logger.error(f"      ❌ Invalid transform_matrix format")
+                else:
+                    logger.error(f"      ❌ No transform_matrix in frame {i}")
+            
+            logger.info(f"📊 VALIDATION SUMMARY:")
+            logger.info(f"   Total frames: {num_frames}")
+            logger.info(f"   Valid frames: {valid_frames}")
+            logger.info(f"   Success rate: {valid_frames/num_frames*100:.1f}%" if num_frames > 0 else "   Success rate: 0%")
+            
+            if valid_frames < 2:
+                logger.error("❌ Insufficient valid frames for NerfStudio training (need at least 2)")
+                logger.error("   This will cause the 'n_samples = 1, n_neighbors = 4' error")
+                return False
+            
+            logger.info("✅ transforms.json validation passed")
+            return True
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ Invalid JSON format: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"❌ transforms.json validation error: {e}")
             return False
     
     def run_nerfstudio_training(self) -> bool:
