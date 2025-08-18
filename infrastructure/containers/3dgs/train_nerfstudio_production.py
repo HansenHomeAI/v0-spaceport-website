@@ -298,12 +298,11 @@ class NerfStudioTrainer:
             logger.info("✅ Binary files already exist, skipping conversion")
             return True
 
-        # Use COLMAP's model_converter with explicit input/output types and separate output dir
+        # Use COLMAP's model_converter (auto-detects text format, converts to binary)
         convert_cmd = [
             "colmap", "model_converter",
             "--input_path", str(sparse_txt_dir),
             "--output_path", str(sparse_bin_dir),
-            "--input_type", "TXT",
             "--output_type", "BIN"
         ]
         
