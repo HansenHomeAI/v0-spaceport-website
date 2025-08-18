@@ -21,7 +21,7 @@ async function sendEmailNotification(toAddress, subject, bodyText) {
       Subject: { Data: subject },
       Body: { Text: { Data: bodyText } },
     },
-    Source: "hello@hansenhome.ai", // Must be a verified sender in SES
+    Source: "gabriel@spcprt.com", // Must be a verified sender in SES
   };
   const command = new SendEmailCommand(params);
   return sesClient.send(command);
@@ -243,7 +243,7 @@ Thank you for your submission! We have received your photos and will start proce
 Your upload ID is: ${objectKey}
 
 Best,
-The Hansen AI Team
+The Spaceport Team
 `;
 
         const adminSubject = "New Upload Received";
@@ -260,7 +260,7 @@ Please process this submission accordingly.`;
 
         await Promise.all([
           sendEmailNotification(email, userSubject, userBody),
-          sendEmailNotification("hello@hansenhome.ai", adminSubject, adminBody)
+          sendEmailNotification("gabriel@spcprt.com", adminSubject, adminBody)
         ]);
 
         console.log("Email notifications sent.");

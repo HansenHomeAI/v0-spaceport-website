@@ -25,7 +25,7 @@ def lambda_handler(event, context):
             body = event.get('body', {})
             
         s3_url = body.get('s3Url')
-        email = body.get('email', 'noreply@hansenhome.ai')  # Optional email for notifications
+        email = body.get('email', 'gabriel@spcprt.com')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
         csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
