@@ -568,6 +568,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     setBatteryDownloading(batteryIndex1);
     try {
+      console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, currentOptimizedParams);
+      
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
