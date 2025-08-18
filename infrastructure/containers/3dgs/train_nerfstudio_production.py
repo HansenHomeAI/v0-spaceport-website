@@ -258,15 +258,18 @@ class NerfStudioTrainer:
                     logger.error(f"   Failed to list directory: {e}")
                 return False
             
+            # CRITICAL FIX: Update input directory to point to converted data BEFORE validation
+            # This ensures validation looks in the right place for the converted files
+            self.input_dir = converted_dir
+            logger.info(f"📁 Updated input directory for validation: {self.input_dir}")
+            
             # COMPREHENSIVE VALIDATION: Analyze the transforms.json file
             if not self.validate_transforms_json(transforms_file):
                 logger.error("❌ transforms.json validation failed")
                 return False
             
-            # Update input directory to point to converted data
-            self.input_dir = converted_dir
             logger.info(f"✅ COLMAP data converted successfully")
-            logger.info(f"📁 Updated input directory: {self.input_dir}")
+            logger.info(f"📁 Final input directory: {self.input_dir}")
             
             return True
             
