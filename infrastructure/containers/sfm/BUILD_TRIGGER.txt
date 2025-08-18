@@ -1,31 +1,28 @@
-COLMAP Format Fix Applied - Build Required
-==========================================
+CRITICAL FIX: OpenSfM Track Export Issue
+=========================================
 
-Changes made to fix COLMAP format compatibility:
+ROOT CAUSE IDENTIFIED: Missing 'export_colmap' command in OpenSfM pipeline
 
-1. COLMAP Converter fixes:
-   - Fixed OpenSfM camera ID conversion (string "v2" -> numeric ID 1)
-   - Added camera_id_mapping to convert between OpenSfM and COLMAP formats
-   - Updated both main and split reconstruction methods
-   - Fixed train/test split to use proper numeric camera IDs
+PROBLEM:
+- OpenSfM creates tracks successfully (✅ Create tracks completed)
+- But never exports tracks to COLMAP format (❌ No tracks.json or features.json)
+- COLMAP converter finds 0 correspondences (⚠️ No tracks available)
+- Result: "mean observations per image: 0.0" → n_samples=1 error
 
-2. This addresses the ValueError: invalid literal for int() with base 10: 'v2'
-   that was causing 3DGS training to fail immediately
+SOLUTION IMPLEMENTED:
+1. Added 'export_colmap' command to OpenSfM pipeline after 'reconstruct'
+2. Modified convert_to_colmap() to prioritize exported COLMAP files with tracks
+3. Added comprehensive track validation for exported files
+4. Fallback to custom converter if export_colmap fails
 
-3. The SfM container now properly outputs COLMAP-compatible format:
-   - cameras.txt with numeric camera IDs (1, 2, 3...)
-   - images.txt with matching numeric camera references
-   - points3D.txt with proper format
-   - train/ and test/ directories with correct splits
+EXPECTED RESULT:
+- OpenSfM exports native COLMAP files with proper 2D-3D correspondences
+- images.txt will have non-zero observations per image
+- points3D.txt will have proper track information
+- NerfStudio will receive multiple valid training samples
 
-Date: 2025-07-10
-Build required: YES
-Priority: HIGH - fixes pipeline compatibility issue
+Build timestamp: 2025-08-18-TRACK-EXPORT-FIX
+Container: spaceport/sfm:latest
+Priority: CRITICAL - fixes core pipeline issue
 
-REBUILD: DEFINITIVE FIX for 3DGS directory structure mismatch
-- FIXED directory structure: Create subdirectories (train/0/, test/0/) that 3DGS expects
-- 3DGS looks for directories INSIDE training/validation channels, not files in root
-- Now creates proper COLMAP sparse/0 structure: train/0/cameras.txt, train/0/images.txt, etc.
-- Images are copied to the correct subdirectories where 3DGS can find them
-- This fixes "No COLMAP reconstruction directory found in training channel" error
-Build timestamp: 2025-01-10-19:30:00
+** TRIGGER AUTOMATED BUILD **

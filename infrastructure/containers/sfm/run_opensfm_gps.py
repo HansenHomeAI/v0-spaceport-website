@@ -206,6 +206,7 @@ class OpenSfMGPSPipeline:
             ("match_features", "Match features"),
             ("create_tracks", "Create tracks"),
             ("reconstruct", "Reconstruct 3D structure"),
+            ("export_colmap", "Export tracks to COLMAP format"),
         ]
         
         for cmd, description in commands:
@@ -276,20 +277,134 @@ class OpenSfMGPSPipeline:
         logger.info("✅ Reconstruction validated")
         return True
     
+    def validate_exported_colmap(self) -> Dict:
+        """Validate OpenSfM exported COLMAP files for track quality"""
+        sparse_dir = self.output_dir / "sparse" / "0"
+        
+        # Initialize results
+        results = {
+            'camera_count': 0,
+            'image_count': 0,
+            'point_count': 0,
+            'has_tracks': False,
+            'mean_observations': 0.0,
+            'mean_track_length': 0.0,
+            'quality_check_passed': False
+        }
+        
+        try:
+            # Validate cameras.txt
+            cameras_file = sparse_dir / "cameras.txt"
+            if cameras_file.exists():
+                with open(cameras_file, 'r') as f:
+                    camera_lines = [line for line in f if line.strip() and not line.startswith('#')]
+                    results['camera_count'] = len(camera_lines)
+            
+            # Validate images.txt and check for observations
+            images_file = sparse_dir / "images.txt"
+            if images_file.exists():
+                with open(images_file, 'r') as f:
+                    lines = f.readlines()
+                    
+                # Check header for mean observations
+                for line in lines:
+                    if line.startswith('# Number of images:') and 'mean observations per image:' in line:
+                        parts = line.split('mean observations per image:')
+                        if len(parts) > 1:
+                            try:
+                                results['mean_observations'] = float(parts[1].strip())
+                                if results['mean_observations'] > 0:
+                                    results['has_tracks'] = True
+                            except ValueError:
+                                pass
+                        break
+                
+                # Count images
+                image_lines = [line for line in lines if line.strip() and not line.startswith('#')]
+                results['image_count'] = len(image_lines) // 2  # COLMAP format: 2 lines per image
+            
+            # Validate points3D.txt and check for track length
+            points_file = sparse_dir / "points3D.txt"
+            if points_file.exists():
+                with open(points_file, 'r') as f:
+                    lines = f.readlines()
+                    
+                # Check header for mean track length
+                for line in lines:
+                    if line.startswith('# Number of points:') and 'mean track length:' in line:
+                        parts = line.split('mean track length:')
+                        if len(parts) > 1:
+                            try:
+                                results['mean_track_length'] = float(parts[1].strip())
+                                if results['mean_track_length'] > 0:
+                                    results['has_tracks'] = True
+                            except ValueError:
+                                pass
+                        break
+                
+                # Count points
+                point_lines = [line for line in lines if line.strip() and not line.startswith('#')]
+                results['point_count'] = len(point_lines)
+            
+            # Quality check
+            results['quality_check_passed'] = (
+                results['camera_count'] > 0 and
+                results['image_count'] > 0 and
+                results['point_count'] > 0 and
+                results['has_tracks']  # NEW: Must have tracks for quality
+            )
+            
+        except Exception as e:
+            logger.error(f"❌ Validation error: {e}")
+        
+        return results
+    
     def convert_to_colmap(self) -> bool:
         """Convert OpenSfM output to COLMAP format"""
         try:
-            converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
-            validation_results = converter.convert()
+            # Check if OpenSfM exported COLMAP files directly
+            exported_colmap_dir = self.opensfm_dir / "colmap"
+            if exported_colmap_dir.exists():
+                logger.info("🔄 Using OpenSfM exported COLMAP files (with tracks)")
+                
+                # Copy exported COLMAP files to output
+                sparse_output = self.output_dir / "sparse" / "0"
+                sparse_output.mkdir(parents=True, exist_ok=True)
+                
+                # Copy COLMAP files if they exist
+                colmap_files = ["cameras.txt", "images.txt", "points3D.txt"]
+                for file_name in colmap_files:
+                    src_file = exported_colmap_dir / file_name
+                    if src_file.exists():
+                        dst_file = sparse_output / file_name
+                        shutil.copy2(src_file, dst_file)
+                        logger.info(f"✅ Copied {file_name} with track data")
+                
+                # Validate the exported files
+                validation_results = self.validate_exported_colmap()
+                logger.info(f"📊 Exported COLMAP Validation:")
+                logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
+                logger.info(f"   Images: {validation_results.get('image_count', 0)}")
+                logger.info(f"   Points: {validation_results.get('point_count', 0)}")
+                logger.info(f"   Track Quality: {'✅ WITH TRACKS' if validation_results.get('has_tracks', False) else '❌ NO TRACKS'}")
+                
+                return validation_results.get('quality_check_passed', False)
             
-            # Log conversion results
-            logger.info(f"📊 COLMAP Conversion Results:")
-            logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
-            logger.info(f"   Images: {validation_results.get('image_count', 0)}")
-            logger.info(f"   Points: {validation_results.get('point_count', 0)}")
-            logger.info(f"   Quality Check: {'✅ PASSED' if validation_results.get('quality_check_passed', False) else '❌ FAILED'}")
-            
-            return validation_results.get('quality_check_passed', False)
+            else:
+                # Fallback to custom converter
+                logger.info("🔄 Using custom OpenSfM to COLMAP converter")
+                converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
+                validation_results = converter.convert()
+                
+                # Log conversion results
+                logger.info(f"📊 COLMAP Conversion Results:")
+                logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
+                logger.info(f"   Images: {validation_results.get('image_count', 0)}")
+                logger.info(f"   Points: {validation_results.get('point_count', 0)}")
+                logger.info(f"   Quality Check: {'✅ PASSED' if validation_results.get('quality_check_passed', False) else '❌ FAILED'}")
+                
+                return validation_results.get('quality_check_passed', False)
+                
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False
