@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBarFill = document.getElementById('progressBarFill');
 
   let selectedFile = null;
-  const MAX_FILE_SIZE = 7 * 1024 * 1024 * 1024; // 7GB
+  const MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB
   const CHUNK_SIZE    = 24 * 1024 * 1024;       // 24MB
 
   // Required text fields
@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     if (file.size > MAX_FILE_SIZE) {
-      alert("File size exceeds 5GB. Please upload a smaller .zip file.");
+      alert("File size exceeds 20GB. Please upload a smaller .zip file.");
       fileInput.value = "";
       selectedFile = null;
       return;
@@ -772,10 +772,10 @@ function handleUploadZoneFile(file) {
     return;
   }
   
-  // Validate file size (5GB limit)
-  const maxSize = 5 * 1024 * 1024 * 1024; // 5GB
+  // Validate file size (20GB limit)
+  const maxSize = 20 * 1024 * 1024 * 1024; // 20GB
   if (file.size > maxSize) {
-    alert('File size exceeds 5GB limit');
+    alert('File size exceeds 20GB limit');
     return;
   }
   
@@ -3160,7 +3160,7 @@ class ProjectPopupPhotoUpload {
     };
     
     this.CHUNK_SIZE = 24 * 1024 * 1024; // 24MB chunks
-    this.MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB max
+    this.MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB max
     
     this.uploadData = null;
     this.isProcessing = false;
@@ -3244,7 +3244,7 @@ class ProjectPopupPhotoUpload {
     
     // Validate file size
     if (selectedFile.size > this.MAX_FILE_SIZE) {
-      return { isValid: false, error: 'File size exceeds 5GB limit' };
+      return { isValid: false, error: 'File size exceeds 20GB limit' };
     }
     
     // Gather form data

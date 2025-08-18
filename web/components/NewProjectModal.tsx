@@ -29,7 +29,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   } as const;
 
   const CHUNK_SIZE = 24 * 1024 * 1024; // 24MB
-  const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
+  const MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB
 
   // UI state
   const [projectTitle, setProjectTitle] = useState<string>("Untitled");
@@ -756,7 +756,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!emailRegex.test(contactEmail.trim())) return 'Please enter a valid email address';
     if (!selectedFile) return 'Please select a .zip file to upload';
     if (!selectedFile.name.toLowerCase().endsWith('.zip')) return 'Please upload a .zip file only';
-    if (selectedFile.size > MAX_FILE_SIZE) return 'File size exceeds 5GB limit';
+    if (selectedFile.size > MAX_FILE_SIZE) return 'File size exceeds 20GB limit';
     return null;
   }, [propertyTitle, contactEmail, selectedFile]);
 
