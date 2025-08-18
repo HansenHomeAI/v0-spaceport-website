@@ -1083,7 +1083,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
               <div className="popup-section">
-                <h4 className="battery-segments-title">
+                <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
                   {optimizationLoading ? processingMessage : "Individual Battery Segments:"}
                 </h4>
                 <div id="batteryButtons" className="flight-path-grid">
@@ -1163,7 +1163,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         </div>
 
         {/* SECTION 2: PROPERTY UPLOAD */}
-        <div className={`accordion-section${uploadOpen ? ' active' : ''}`} data-section="upload">
+        <div className={`accordion-section${uploadOpen ? ' active' : ''}`} data-section="upload" style={{ marginTop: '16px' }}>
           <div className="accordion-header" onClick={() => setUploadOpen(v => !v)}>
             <div className="accordion-title"><h3>Property Upload</h3></div>
             <span className="accordion-chevron"></span>
