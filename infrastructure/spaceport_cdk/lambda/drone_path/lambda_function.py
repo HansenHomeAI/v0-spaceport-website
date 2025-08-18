@@ -4,6 +4,7 @@ import csv
 import io
 import os
 import requests
+import time
 from typing import List, Dict, Tuple, Optional
 
 class SpiralDesigner:
@@ -169,6 +170,9 @@ class SpiralDesigner:
             # Google Maps Elevation API endpoint
             url = f"https://maps.googleapis.com/maps/api/elevation/json?locations={lat},{lon}&key={self.api_key}"
             response = requests.get(url, timeout=10)
+            
+            # Small delay to respect Google API rate limits and prevent progressive slowdown
+            time.sleep(0.1)  # 100ms delay between elevation API calls
             
             if response.status_code != 200:
                 raise ValueError(f"Elevation HTTP error {response.status_code}")
