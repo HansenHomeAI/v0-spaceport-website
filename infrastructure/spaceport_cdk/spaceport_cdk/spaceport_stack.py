@@ -160,7 +160,8 @@ class SpaceportStack(Stack):
                 "GOOGLE_MAPS_API_KEY": api_key_param.value_as_string
             },
             role=lambda_role,
-            timeout=Duration.seconds(30)
+            timeout=Duration.seconds(30),
+            memory_size=512  # Increase from default 128MB to handle elevation API calls and terrain avoidance
         )
         
         # Create Lambda function for file upload

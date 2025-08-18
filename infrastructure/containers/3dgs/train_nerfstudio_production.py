@@ -298,12 +298,11 @@ class NerfStudioTrainer:
             logger.info("✅ Binary files already exist, skipping conversion")
             return True
 
-        # Use COLMAP's model_converter with explicit input/output types and separate output dir
+        # Use COLMAP's model_converter (auto-detects text format, converts to binary)
         convert_cmd = [
             "colmap", "model_converter",
             "--input_path", str(sparse_txt_dir),
             "--output_path", str(sparse_bin_dir),
-            "--input_type", "TXT",
             "--output_type", "BIN"
         ]
         
@@ -504,10 +503,10 @@ class NerfStudioTrainer:
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
         logger.info(f"   Log interval: {log_interval}")
-        logger.info(f"   Dataparser: COLMAP (native text format, bypassing conversion)")
+        logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
         
-        # Build NerfStudio command with Vincent's exact parameters + native COLMAP dataparser
-        # BREAKTHROUGH: Using COLMAP dataparser directly with 247,995 3D points preserved
+        # Build NerfStudio command with Vincent's exact parameters on converted transforms.json dataset
+        # Using industry-standard ns-process-data conversion flow (COLMAP → transforms.json)
         cmd = [
             "ns-train", model_variant,
             "--data", str(self.input_dir),
@@ -515,8 +514,7 @@ class NerfStudioTrainer:
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
             "--viewer.quit_on_train_completion", "True",
-            "--logging.steps_per_log", str(log_interval),
-            "--pipeline.datamanager.dataparser", "colmap"
+            "--logging.steps_per_log", str(log_interval)
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
