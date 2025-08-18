@@ -590,6 +590,94 @@ html, body {
   color: #ccc;
 }
 
+/* Footer stats section (gradient logo) */
+#footer-stats {
+  padding: 70px 20px 10px;
+  position: relative;
+}
+
+/* Feedback form section */
+#feedback-section {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-container {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  justify-content: center;
+}
+
+.feedback-form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.feedback-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 500px;
+}
+
+.feedback-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.feedback-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.feedback-input:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.feedback-submit {
+  white-space: nowrap;
+  min-width: auto;
+}
+
+.feedback-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments for feedback form */
+@media (max-width: 600px) {
+  .feedback-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .feedback-input {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .feedback-submit {
+    width: 100%;
+  }
+}
+
 /* Footer */
 footer {
   text-align: center;

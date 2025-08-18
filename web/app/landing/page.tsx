@@ -100,13 +100,7 @@ export default function Landing(): JSX.Element {
         </div>
       </section>
 
-      <section className="section" id="landing-stats2">
-        <div className="stats-grid">
-          <div className="stat-box2 grainy">
-            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport Logo" />
-          </div>
-        </div>
-      </section>
+
     </>
   );
 }
