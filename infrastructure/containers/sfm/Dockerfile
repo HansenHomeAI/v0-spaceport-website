@@ -2,7 +2,7 @@
 # Optimized for layer caching and build efficiency
 
 # Stage 1: Base system with dependencies
-FROM python:3.9-slim AS base
+FROM python:3.9-slim-bullseye AS base
 
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,13 +51,11 @@ RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
 # Stage 3: OpenSfM build
 FROM python-deps AS opensfm-build
 
-# Clone and build OpenSfM with proper submodule initialization (skip tests to avoid C++ compatibility issues)
+# Clone and build OpenSfM with proper submodule initialization
 RUN cd /opt && \
     git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
     git submodule update --init --recursive && \
-    export CMAKE_BUILD_TYPE=Release && \
-    export OPENSFM_BUILD_TESTS=OFF && \
     python3 setup.py build && \
     python3 setup.py install && \
     rm -rf /opt/OpenSfM/.git
