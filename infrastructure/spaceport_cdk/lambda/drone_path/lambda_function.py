@@ -1091,9 +1091,8 @@ class SpiralDesigner:
         # Get takeoff elevation for reference
         takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
         
-        # Generate waypoints for all slices, then extract the specific battery slice
-        all_waypoints = self.compute_waypoints(params)
-        spiral_path = all_waypoints[battery_index]
+        # OPTIMIZED: Generate waypoints only for the requested battery slice
+        spiral_path = self.build_slice(battery_index, params)
         
         # Ensure minimum curve radius for flight safety
         for wp in spiral_path:
