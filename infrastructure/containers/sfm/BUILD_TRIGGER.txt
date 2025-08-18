@@ -21,7 +21,7 @@ EXPECTED RESULT:
 - points3D.txt will have proper track information
 - NerfStudio will receive multiple valid training samples
 
-Build timestamp: 2025-08-18-TRACK-EXPORT-FIX-V7-GLOG-FIX
+Build timestamp: 2025-08-18-TRACK-EXPORT-FIX-V8-GLOG-DEBUG
 
 DOCKER BUILD FIX: Replace obsolete libatlas-base-dev with libopenblas-dev
 - ISSUE: Package 'libatlas-base-dev' has no installation candidate
@@ -34,11 +34,11 @@ STABLE BASE IMAGE FIX: Use Debian Bullseye with GCC 11 instead of latest
 - PROVEN FIX: python:3.9-slim-bullseye uses Debian Bullseye with GCC 11
 - CONFIDENCE: 95% - This is the tested, stable environment for OpenSfM
 
-GLOG PATH FIX: Explicit glog library paths for CMake detection  
-- ISSUE: CMake Error - "Failed to find glog include directory"
-- ROOT CAUSE: CMake FindGlog.cmake can't locate glog headers in Debian Bullseye
-- TARGETED FIX: Export GLOG_INCLUDE_DIR=/usr/include and GLOG_LIBRARY paths
-- CONFIDENCE: 95% - This directly addresses the logged CMake error
+GLOG PATH DEBUG: Find exact glog file locations in Debian Bullseye
+- ISSUE: Environment variables didn't work - glog still not found
+- DEBUG APPROACH: Add filesystem search to find actual glog paths
+- WILL SHOW: Where glog/logging.h and libglog.so actually exist
+- THEN FIX: Use the actual paths found during build
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 

@@ -51,12 +51,17 @@ RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
 # Stage 3: OpenSfM build
 FROM python-deps AS opensfm-build
 
-# Clone and build OpenSfM with explicit glog path configuration
+# Clone and build OpenSfM with glog path debugging and explicit configuration
 RUN cd /opt && \
     git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
     git submodule update --init --recursive && \
-    export GLOG_INCLUDE_DIR=/usr/include && \
+    echo "=== DEBUGGING GLOG PATHS ===" && \
+    find /usr -name "logging.h" 2>/dev/null | grep glog || echo "No glog/logging.h found" && \
+    find /usr -name "libglog*" 2>/dev/null || echo "No libglog found" && \
+    ls -la /usr/include/glog/ 2>/dev/null || echo "No /usr/include/glog/ directory" && \
+    echo "=== END DEBUG ===" && \
+    export GLOG_INCLUDE_DIR=/usr/include/glog && \
     export GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so && \
     python3 setup.py build && \
     python3 setup.py install && \
