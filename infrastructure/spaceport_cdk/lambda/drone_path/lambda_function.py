@@ -1091,8 +1091,9 @@ class SpiralDesigner:
         # Get takeoff elevation for reference
         takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
         
-        # OPTIMIZED: Generate waypoints only for the requested battery slice
-        spiral_path = self.build_slice(battery_index, params)
+        # Generate waypoints for all slices, then extract the specific battery slice
+        all_waypoints = self.compute_waypoints(params)
+        spiral_path = all_waypoints[battery_index]
         
         # Ensure minimum curve radius for flight safety
         for wp in spiral_path:
@@ -2206,9 +2207,17 @@ def lambda_handler(event, context):
 def handle_optimize_spiral(designer, body, cors_headers):
     """Handle /api/optimize-spiral endpoint"""
     try:
-        battery_minutes = body.get('batteryMinutes', 20)
-        batteries = body.get('batteries', 3)
+        battery_minutes = float(body.get('batteryMinutes', 20))
+        batteries = int(body.get('batteries', 3))
         center = body.get('center', '')
+        
+        # Validate battery minutes to prevent division by zero
+        if battery_minutes <= 0:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Battery minutes must be greater than 0'})
+            }
         
         if not center:
             return {
@@ -2379,11 +2388,11 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
                 'body': json.dumps({'error': 'Invalid battery ID'})
             }
         
-        # Extract parameters from body
-        slices = body.get('slices', 3)
-        N = body.get('N', 8)
-        r0 = body.get('r0', 150)
-        rHold = body.get('rHold', 1595)
+        # Extract parameters from body with type conversion
+        slices = int(body.get('slices', 3))
+        N = int(body.get('N', 8))
+        r0 = float(body.get('r0', 150))
+        rHold = float(body.get('rHold', 1595))
         center = body.get('center', '')
         # Robustly parse minHeight / maxHeight so blank strings don't cause errors
         def _parse_height(value, default=None):
