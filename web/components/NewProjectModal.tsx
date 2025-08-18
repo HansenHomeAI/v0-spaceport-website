@@ -82,7 +82,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, []);
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
+  const [batteryQueue, setBatteryQueue] = useState<number[]>([]);
   const [processingMessage, setProcessingMessage] = useState<string>('');
+  const [batteryProcessingMessage, setBatteryProcessingMessage] = useState<string>('');
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -134,6 +136,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadStage('');
     setOptimizedParamsWithLogging(null, 'Modal opened/reset');
     setBatteryDownloading(null);
+    setBatteryQueue([]);
+    setBatteryProcessingMessage('');
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
@@ -468,6 +472,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     "Analyzing terrain features"
   ];
 
+  // Battery download processing messages
+  const batteryProcessingMessages = [
+    "Generating flight path...",
+    "Running binary search optimization",
+    "Forming to the terrain",
+    "Calculating waypoints",
+    "Optimizing battery usage",
+    "Finalizing CSV data"
+  ];
+
   const startProcessingMessages = useCallback(() => {
     let messageIndex = 0;
     setProcessingMessage(processingMessages[0]);
@@ -476,6 +490,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       messageIndex = (messageIndex + 1) % processingMessages.length;
       setProcessingMessage(processingMessages[messageIndex]);
     }, 2000); // Change message every 2 seconds
+    
+    return interval;
+  }, []);
+
+  const startBatteryProcessingMessages = useCallback(() => {
+    let messageIndex = 0;
+    setBatteryProcessingMessage(batteryProcessingMessages[0]);
+    
+    const interval = setInterval(() => {
+      messageIndex = (messageIndex + 1) % batteryProcessingMessages.length;
+      setBatteryProcessingMessage(batteryProcessingMessages[messageIndex]);
+    }, 1500); // Change message every 1.5 seconds for more dynamic feel
     
     return interval;
   }, []);
@@ -552,55 +578,100 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
 
-  const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
+  // Queue processing ref to manage async queue operations
+  const isProcessingQueueRef = useRef(false);
+
+  // Process battery download queue
+  const processDownloadQueue = useCallback(async () => {
+    if (isProcessingQueueRef.current) return;
+    isProcessingQueueRef.current = true;
+
+    try {
+      while (batteryQueue.length > 0) {
+        const nextBattery = batteryQueue[0];
+        setBatteryQueue(prev => prev.slice(1)); // Remove from queue
+        setBatteryDownloading(nextBattery);
+        
+        const messageInterval = startBatteryProcessingMessages();
+        
+        try {
+          await downloadSingleBattery(nextBattery);
+          showSystemNotification('success', `Battery ${nextBattery} downloaded successfully`);
+        } catch (e: any) {
+          showSystemNotification('error', `Battery ${nextBattery} failed: ${e?.message || 'Unknown error'}`);
+        } finally {
+          clearInterval(messageInterval);
+          setBatteryProcessingMessage('');
+        }
+      }
+    } finally {
+      setBatteryDownloading(null);
+      isProcessingQueueRef.current = false;
+    }
+  }, [batteryQueue]);
+
+  // Download a single battery (internal function)
+  const downloadSingleBattery = useCallback(async (batteryIndex1: number) => {
     // Use ref to get current optimized params (not stale closure)
     const currentOptimizedParams = optimizedParamsRef.current;
     
-    console.log(`🔍 downloadBatteryCsv called for battery ${batteryIndex1}:`, {
+    console.log(`🔍 downloadSingleBattery called for battery ${batteryIndex1}:`, {
       currentOptimizedParams: currentOptimizedParams ? 'EXISTS' : 'NULL',
       optimizedParamsState: optimizedParams ? 'EXISTS' : 'NULL'
     });
     
     if (!currentOptimizedParams) {
       console.log(`🔍 No optimized params found - showing error`);
-      showSystemNotification('error', 'Please optimize first');
-      return;
+      throw new Error('Please optimize first');
     }
-    setBatteryDownloading(batteryIndex1);
-    try {
-      console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, currentOptimizedParams);
-      
-      const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentOptimizedParams),
-      });
-      if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
-      const csvText = await res.text();
-      const safeTitle = (projectTitle && projectTitle !== 'Untitled')
-        ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
-        : 'Untitled';
-      const filename = `${safeTitle}-${batteryIndex1}.csv`;
-      const blob = new Blob([csvText], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // Update project status to indicate drone path has been downloaded
-      if (status === 'draft') {
-        setStatus('path_downloaded');
-      }
-    } catch (e: any) {
-      showSystemNotification('error', e?.message || 'CSV download failed');
-    } finally {
-      setBatteryDownloading(null);
+
+    console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, currentOptimizedParams);
+    
+    const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentOptimizedParams),
+    });
+    if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
+    const csvText = await res.text();
+    const safeTitle = (projectTitle && projectTitle !== 'Untitled')
+      ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
+      : 'Untitled';
+    const filename = `${safeTitle}-${batteryIndex1}.csv`;
+    const blob = new Blob([csvText], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    // Update project status to indicate drone path has been downloaded
+    if (status === 'draft') {
+      setStatus('path_downloaded');
     }
   }, [API_ENHANCED_BASE, projectTitle]);
+
+  // Add battery to download queue
+  const queueBatteryDownload = useCallback((batteryIndex1: number) => {
+    // Check if battery is already in queue or currently downloading
+    if (batteryQueue.includes(batteryIndex1) || batteryDownloading === batteryIndex1) {
+      showSystemNotification('success', `Battery ${batteryIndex1} is already queued or downloading`);
+      return;
+    }
+
+    setBatteryQueue(prev => [...prev, batteryIndex1]);
+    showSystemNotification('success', `Battery ${batteryIndex1} added to download queue`);
+  }, [batteryQueue, batteryDownloading]);
+
+  // Effect to process queue when items are added
+  useEffect(() => {
+    if (batteryQueue.length > 0 && !batteryDownloading) {
+      processDownloadQueue();
+    }
+  }, [batteryQueue, batteryDownloading, processDownloadQueue]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1144,13 +1215,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             <div className="category-outline">
               <div className="popup-section">
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
-                  {optimizationLoading ? processingMessage : "Individual Battery Segments:"}
+                  {optimizationLoading ? processingMessage : 
+                   batteryDownloading ? `Battery ${batteryDownloading}: ${batteryProcessingMessage}` :
+                   batteryQueue.length > 0 ? `Queue: ${batteryQueue.length} batteries waiting` :
+                   "Individual Battery Segments:"}
                 </h4>
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <button
                     key={idx}
-                    className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
+                    className={`flight-path-download-btn${
+                      batteryDownloading === idx + 1 ? ' loading' : 
+                      batteryQueue.includes(idx + 1) ? ' queued' : ''
+                    }`}
                     onClick={async () => {
                       console.log(`🔍 Battery ${idx + 1} clicked:`, {
                         optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
@@ -1161,7 +1238,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
                       });
                       
-                      // Auto-run optimization on first click if needed
+                      // Check if optimization is needed first
                       if (!optimizedParams) {
                         if (!canOptimize) {
                           // Set specific error messages for missing fields
@@ -1174,15 +1251,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           }
                           return;
                         }
-                        setBatteryDownloading(idx + 1);
                         
-                        // Small delay to avoid any race conditions with auto-save
-                        await new Promise(r => setTimeout(r, 100));
-                        
+                        // Need to optimize first - run optimization then queue the battery
                         try {
+                          setOptimizationLoading(true);
+                          const messageInterval = startProcessingMessages();
+                          
                           await handleOptimize();
-                          // Poll optimizedParams until set (max ~30s) with improved checking
-                          const start = Date.now();
+                          
+                          // Poll optimizedParams until set (max ~30s)
                           let checkCount = 0;
                           const maxChecks = 60; // 30 seconds with 500ms intervals
                           
@@ -1190,38 +1267,47 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                             await new Promise(r => setTimeout(r, 500));
                             checkCount++;
                             
-                            // Use ref to get current optimizedParams (not stale closure)
                             const currentOptimizedParams = optimizedParamsRef.current;
                             if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
                               console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
                               break;
                             }
                             
-                            // Log progress every 5 seconds
                             if (checkCount % 10 === 0) {
                               console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
                             }
                           }
                           
-                          // Final check after polling using ref
                           const finalOptimizedParams = optimizedParamsRef.current;
                           if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
                             showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
-                            setBatteryDownloading(null);
                             return;
                           }
+                          
+                          clearInterval(messageInterval);
+                          setProcessingMessage('');
+                          setOptimizationLoading(false);
+                          
+                          // Now queue the battery for download
+                          queueBatteryDownload(idx + 1);
+                          
                         } catch (e: any) {
                           showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                          setBatteryDownloading(null);
+                          setOptimizationLoading(false);
                           return;
                         }
+                      } else {
+                        // Already optimized, just queue the battery
+                        queueBatteryDownload(idx + 1);
                       }
-                      await downloadBatteryCsv(idx + 1);
                     }}
-                    disabled={batteryDownloading !== null}
+                    disabled={optimizationLoading}
                   >
                     <span className={`download-icon${batteryDownloading === idx + 1 ? ' loading' : ''}`}></span>
                     Battery {idx + 1}
+                    {batteryQueue.includes(idx + 1) && (
+                      <span className="queue-indicator">#{batteryQueue.indexOf(idx + 1) + 1}</span>
+                    )}
                   </button>
                 ))}
                 </div>
