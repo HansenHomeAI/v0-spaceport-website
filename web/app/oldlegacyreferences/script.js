@@ -2908,22 +2908,34 @@ class ProjectPopupFlightPath {
 
   getBatteryDuration() {
     const input = document.querySelector('.popup-input-wrapper input[placeholder="Duration"]');
-    return input ? parseInt(input.value) || null : null;
+    if (!input || !input.value) return null;
+    // Extract numbers from value that may contain units like "20 min/battery"
+    const numericValue = input.value.replace(/[^0-9]/g, '');
+    return numericValue ? parseInt(numericValue) : null;
   }
 
   getBatteryQuantity() {
     const input = document.querySelector('.popup-input-wrapper input[placeholder="Quantity"]');
-    return input ? parseInt(input.value) || null : null;
+    if (!input || !input.value) return null;
+    // Extract numbers from value that may contain units like "2 batteries"
+    const numericValue = input.value.replace(/[^0-9]/g, '');
+    return numericValue ? parseInt(numericValue) : null;
   }
 
   getMinAltitude() {
     const input = document.querySelector('.popup-input-wrapper input[placeholder="Minimum"]');
-    return input ? parseFloat(input.value) || 120 : 120; // Default to 120ft
+    if (!input || !input.value) return 120; // Default to 120ft
+    // Extract numbers from value that may contain units like "120 ft AGL"
+    const numericValue = input.value.replace(/[^0-9.]/g, '');
+    return numericValue ? parseFloat(numericValue) : 120;
   }
 
   getMaxAltitude() {
     const input = document.querySelector('.popup-input-wrapper input[placeholder="Maximum"]');
-    return input ? parseFloat(input.value) || null : null;
+    if (!input || !input.value) return null;
+    // Extract numbers from value that may contain units like "400 ft AGL"
+    const numericValue = input.value.replace(/[^0-9.]/g, '');
+    return numericValue ? parseFloat(numericValue) : null;
   }
 
   // Battery button click handler - this will be called by existing battery buttons
