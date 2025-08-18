@@ -23,7 +23,7 @@ RUN apt-get update && \
         libceres-dev \
         libgoogle-glog-dev \
         libgflags-dev \
-        libatlas-base-dev \
+        libopenblas-dev \
         libsuitesparse-dev \
         libproj-dev \
         libgdal-dev \

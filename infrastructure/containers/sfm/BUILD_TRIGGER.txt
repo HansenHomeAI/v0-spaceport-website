@@ -21,7 +21,12 @@ EXPECTED RESULT:
 - points3D.txt will have proper track information
 - NerfStudio will receive multiple valid training samples
 
-Build timestamp: 2025-08-18-TRACK-EXPORT-FIX
+Build timestamp: 2025-08-18-TRACK-EXPORT-FIX-V2
+
+DOCKER BUILD FIX: Replace obsolete libatlas-base-dev with libopenblas-dev
+- ISSUE: Package 'libatlas-base-dev' has no installation candidate
+- FIX: Use libopenblas-dev (modern BLAS/LAPACK implementation)
+- This fixes the apt-get failure during Docker build
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 
