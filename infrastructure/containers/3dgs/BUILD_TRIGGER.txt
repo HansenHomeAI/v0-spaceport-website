@@ -11,16 +11,14 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-18-v1.0.14
-Build ID: nerfstudio-vincent-woo-v1.0.14-NATIVE-COLMAP-DATAPARSER
+Container Build Timestamp: 2025-08-18-v1.0.15
+Build ID: nerfstudio-vincent-woo-v1.0.15-TXT-to-BIN-NSPD-STANDARD
 
-ULTIMATE BREAKTHROUGH: Use NerfStudio's native COLMAP dataparser - Vincent Wu's approach!
-- DISCOVERED: ns-process-data requires binary files, corrupts our 247,995 points
-- SOLUTION: Bypass ns-process-data entirely with --pipeline.datamanager.dataparser colmap
-- PRESERVES: All 247,995 3D points directly from high-quality COLMAP text format
-- METHODOLOGY: This is likely Vincent Wu's actual approach - direct COLMAP integration
-- ADVANTAGES: No conversion corruption, native NerfStudio support, production-ready
-- RESULT: Pure pipeline from COLMAP → NerfStudio with all quality preserved
-🎯 FINAL IMPLEMENTATION: True Vincent Wu methodology with native COLMAP support! 🚀
+INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → transforms.json → ns-train
+- FIX: Use colmap model_converter with explicit --input_type TXT --output_type BIN into a clean output dir
+- RUN: ns-process-data with --skip-colmap --colmap-model-path pointing to the BIN directory
+- TRAIN: ns-train splatfacto-big on the converted dataset (transforms.json)
+- RESULT: Follows NerfStudio documentation and avoids TXT/BIN ambiguity
+🎯 This aligns with the recommended workflow and should be robust in production.
 
 ** TRIGGER GITHUB ACTIONS BUILD **

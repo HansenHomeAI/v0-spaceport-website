@@ -187,9 +187,8 @@ class NerfStudioTrainer:
             logger.error(f"❌ Missing image files: {image_file_count} < {image_count * 0.8}")
             return False
         
-        logger.info("✅ COLMAP data validation passed - ready for direct NerfStudio training")
-        logger.info("🎯 Using native COLMAP dataparser (bypassing problematic ns-process-data conversion)")
-        return True
+        logger.info("✅ COLMAP data validation passed - converting to NerfStudio format")
+        return self.convert_colmap_to_nerfstudio()
     
     def convert_colmap_to_nerfstudio(self) -> bool:
         """Convert COLMAP data to NerfStudio transforms.json format"""
@@ -199,19 +198,22 @@ class NerfStudioTrainer:
         converted_dir = self.temp_dir / "converted_data"
         converted_dir.mkdir(exist_ok=True, parents=True)
         
-        # CRITICAL FIX: Skip binary conversion that's losing 3D points (247,995 → 1)
-        # ns-process-data can handle COLMAP text format directly
-        sparse_dir = self.input_dir / "sparse" / "0"
-        logger.info("🔧 Using COLMAP text format directly (skipping problematic binary conversion)")
-        logger.info(f"📊 This preserves all 247,995 3D points for NerfStudio initialization")
+        # Convert COLMAP TXT to BIN into a dedicated directory (industry-standard for NerfStudio)
+        sparse_txt_dir = self.input_dir / "sparse" / "0"
+        sparse_bin_dir = self.temp_dir / "colmap_bin" / "0"
+        sparse_bin_dir.mkdir(parents=True, exist_ok=True)
+
+        if not self.convert_colmap_text_to_binary(sparse_txt_dir, sparse_bin_dir):
+            logger.error("❌ Failed to convert COLMAP text files to binary format")
+            return False
         
         # Use ns-process-data to convert COLMAP to transforms.json
         convert_cmd = [
             "ns-process-data", "images",
             "--data", str(self.input_dir / "images"),
             "--output-dir", str(converted_dir),
-            "--skip-colmap",  # Skip COLMAP processing since we already have it
-            "--colmap-model-path", str(sparse_dir)
+            "--skip-colmap",  # Skip running COLMAP; reuse existing model
+            "--colmap-model-path", str(sparse_bin_dir)
         ]
         
         logger.info(f"🚀 Executing COLMAP conversion command:")
@@ -281,24 +283,27 @@ class NerfStudioTrainer:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False
     
-    def convert_colmap_text_to_binary(self, sparse_dir: Path) -> bool:
-        """Convert COLMAP text files to binary format using COLMAP's model_converter"""
-        logger.info("🔄 Converting COLMAP text files to binary format...")
-        
-        # Check if binary files already exist
-        cameras_bin = sparse_dir / "cameras.bin"
-        images_bin = sparse_dir / "images.bin"
-        points3D_bin = sparse_dir / "points3D.bin"
-        
+    def convert_colmap_text_to_binary(self, sparse_txt_dir: Path, sparse_bin_dir: Path) -> bool:
+        """Convert COLMAP text files (TXT) to binary (BIN) using COLMAP's model_converter."""
+        logger.info("🔄 Converting COLMAP TXT to BIN (required by ns-process-data)...")
+        logger.info(f"   TXT input: {sparse_txt_dir}")
+        logger.info(f"   BIN output: {sparse_bin_dir}")
+
+        # Define expected BIN file paths in the output directory
+        cameras_bin = sparse_bin_dir / "cameras.bin"
+        images_bin = sparse_bin_dir / "images.bin"
+        points3D_bin = sparse_bin_dir / "points3D.bin"
+
         if cameras_bin.exists() and images_bin.exists() and points3D_bin.exists():
             logger.info("✅ Binary files already exist, skipping conversion")
             return True
-        
-        # Use COLMAP's model_converter to convert text to binary
+
+        # Use COLMAP's model_converter with explicit input/output types and separate output dir
         convert_cmd = [
             "colmap", "model_converter",
-            "--input_path", str(sparse_dir),
-            "--output_path", str(sparse_dir),
+            "--input_path", str(sparse_txt_dir),
+            "--output_path", str(sparse_bin_dir),
+            "--input_type", "TXT",
             "--output_type", "BIN"
         ]
         
@@ -355,7 +360,7 @@ class NerfStudioTrainer:
                 logger.error("❌ Some binary files were not created")
                 return False
             
-            logger.info("✅ COLMAP text files converted to binary format successfully")
+            logger.info("✅ COLMAP TXT→BIN conversion completed successfully")
             return True
             
         except subprocess.TimeoutExpired:
