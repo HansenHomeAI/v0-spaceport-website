@@ -98,26 +98,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // Function to calculate unit label position next to numbers
-  const getUnitLabelStyle = (value: string) => {
-    // Calculate approximate width based on character count
-    const charWidth = 14; // Approximate character width in pixels for 1.2rem font
-    const numberWidth = value.length * charWidth;
-    const leftPosition = 40 + numberWidth + 8; // Icon width + number width + small gap
-    
-    return {
-      position: 'absolute' as const,
-      left: `${leftPosition}px`,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: 'rgba(255, 255, 255, 0.5)', // Match input text color exactly
-      fontSize: '1.2rem', // Match input font size exactly
-      fontWeight: '500', // Match input font weight exactly
-      pointerEvents: 'none' as const,
-      userSelect: 'none' as const,
-      fontFamily: 'inherit' // Use same font family as input
-    };
-  };
+
 
   // Reset state when opening/closing
   useEffect(() => {
@@ -1001,38 +982,46 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon time"></span>
                     <input
-                      type="number"
-                      className="text-fade-right luxury-text-fade"
+                      type="text"
+                      className="text-fade-right"
                       placeholder="Duration"
-                      value={batteryMinutes}
-                      onChange={(e) => { setBatteryMinutes(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
-                      min={10}
-                      max={60}
+                      value={batteryMinutes ? `${batteryMinutes} min/battery` : ''}
+                      onChange={(e) => { 
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setBatteryMinutes(value); 
+                        setOptimizedParams(null); 
+                        optimizedParamsRef.current = null; 
+                      }}
+                      onKeyDown={(e) => {
+                        // Allow only numbers, backspace, delete, arrow keys
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                       style={{}}
                     />
-                    {batteryMinutes && (
-                      <span style={getUnitLabelStyle(batteryMinutes)}>
-                        min/battery
-                      </span>
-                    )}
                   </div>
                   <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon number"></span>
                     <input
-                      type="number"
-                      className="text-fade-right luxury-text-fade"
+                      type="text"
+                      className="text-fade-right"
                       placeholder="Quantity"
-                      value={numBatteries}
-                      onChange={(e) => { setNumBatteries(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
-                      min={1}
-                      max={12}
+                      value={numBatteries ? `${numBatteries} ${parseInt(numBatteries) === 1 ? 'battery' : 'batteries'}` : ''}
+                      onChange={(e) => { 
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setNumBatteries(value); 
+                        setOptimizedParams(null); 
+                        optimizedParamsRef.current = null; 
+                      }}
+                      onKeyDown={(e) => {
+                        // Allow only numbers, backspace, delete, arrow keys
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                       style={{}}
                     />
-                    {numBatteries && (
-                      <span style={getUnitLabelStyle(numBatteries)}>
-                        {parseInt(numBatteries) === 1 ? 'battery' : 'batteries'}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1046,34 +1035,46 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon minimum"></span>
                     <input
-                      type="number"
-                      className="text-fade-right luxury-text-fade"
+                      type="text"
+                      className="text-fade-right"
                       placeholder="Minimum"
-                      value={minHeightFeet}
-                      onChange={(e) => { setMinHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
+                      value={minHeightFeet ? `${minHeightFeet} ft AGL` : ''}
+                      onChange={(e) => { 
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setMinHeightFeet(value); 
+                        setOptimizedParams(null); 
+                        optimizedParamsRef.current = null; 
+                      }}
+                      onKeyDown={(e) => {
+                        // Allow only numbers, backspace, delete, arrow keys
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                       style={{}}
                     />
-                    {minHeightFeet && (
-                      <span style={getUnitLabelStyle(minHeightFeet)}>
-                        ft AGL
-                      </span>
-                    )}
                   </div>
                   <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon maximum"></span>
                     <input
-                      type="number"
-                      className="text-fade-right luxury-text-fade"
+                      type="text"
+                      className="text-fade-right"
                       placeholder="Maximum"
-                      value={maxHeightFeet}
-                      onChange={(e) => { setMaxHeightFeet(e.target.value); setOptimizedParams(null); optimizedParamsRef.current = null; }}
+                      value={maxHeightFeet ? `${maxHeightFeet} ft AGL` : ''}
+                      onChange={(e) => { 
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setMaxHeightFeet(value); 
+                        setOptimizedParams(null); 
+                        optimizedParamsRef.current = null; 
+                      }}
+                      onKeyDown={(e) => {
+                        // Allow only numbers, backspace, delete, arrow keys
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                       style={{}}
                     />
-                    {maxHeightFeet && (
-                      <span style={getUnitLabelStyle(maxHeightFeet)}>
-                        ft AGL
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
