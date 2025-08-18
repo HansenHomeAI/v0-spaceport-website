@@ -1088,6 +1088,9 @@ class SpiralDesigner:
         if battery_index < 0 or battery_index >= params['slices']:
             raise ValueError(f"Battery index must be between 0 and {params['slices'] - 1}")
         
+        # Clear elevation cache to prevent memory accumulation across battery downloads
+        self.elevation_cache = {}
+        
         # Get takeoff elevation for reference
         takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
         
