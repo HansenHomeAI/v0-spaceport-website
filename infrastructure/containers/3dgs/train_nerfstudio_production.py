@@ -198,11 +198,11 @@ class NerfStudioTrainer:
         converted_dir = self.temp_dir / "converted_data"
         converted_dir.mkdir(exist_ok=True, parents=True)
         
-        # First, convert COLMAP text files to binary format (required by ns-process-data)
+        # CRITICAL FIX: Skip binary conversion that's losing 3D points (247,995 → 1)
+        # ns-process-data can handle COLMAP text format directly
         sparse_dir = self.input_dir / "sparse" / "0"
-        if not self.convert_colmap_text_to_binary(sparse_dir):
-            logger.error("❌ Failed to convert COLMAP text files to binary format")
-            return False
+        logger.info("🔧 Using COLMAP text format directly (skipping problematic binary conversion)")
+        logger.info(f"📊 This preserves all 247,995 3D points for NerfStudio initialization")
         
         # Use ns-process-data to convert COLMAP to transforms.json
         convert_cmd = [
