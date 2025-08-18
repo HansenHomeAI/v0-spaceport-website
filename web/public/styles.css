@@ -4398,30 +4398,6 @@ body.popup-open {
   animation: spin 1s linear infinite;
 }
 
-/* Queue system styles */
-.flight-path-download-btn.queued {
-  background: rgba(255, 165, 0, 0.2);
-  border: 1px solid rgba(255, 165, 0, 0.4);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.flight-path-download-btn.queued:hover {
-  background: rgba(255, 165, 0, 0.3);
-  color: #fff;
-}
-
-.queue-indicator {
-  margin-left: auto;
-  background: rgba(255, 165, 0, 0.8);
-  color: #000;
-  border-radius: 12px;
-  padding: 2px 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  min-width: 20px;
-  text-align: center;
-}
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
