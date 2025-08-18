@@ -21,15 +21,15 @@ EXPECTED RESULT:
 - points3D.txt will have proper track information
 - NerfStudio will receive multiple valid training samples
 
-Build timestamp: 2025-08-18-TRACK-EXPORT-ONLY-CLEAN
+Build timestamp: 2025-08-18-MINIMAL-BULLSEYE-FIX
 
-REVERT TO WORKING BASELINE: Stop creating unnecessary version conflicts
-- REVERTED: Back to python:3.9-slim (original working base)
-- REVERTED: Simple OpenSfM build without glog path hacks
-- KEPT: libopenblas-dev (only necessary change for modern apt packages)
-- KEPT: export_colmap command (the actual fix we need)
+MINIMAL CHANGE: Pin to stable base image that worked in July 2025
+- ONLY CHANGE: python:3.9-slim → python:3.9-slim-bullseye  
+- REASON: Rolling tag updated from GCC 11 → GCC 14 between July-August
+- EVIDENCE: SfM built successfully in July with same Dockerfile
+- NO OTHER CHANGES: Keep simple OpenSfM build, no glog hacks
 
-LESSON LEARNED: Don't fix what isn't broken - focus on the core issue
+LESSON: Pin production Docker tags to avoid environment drift
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 

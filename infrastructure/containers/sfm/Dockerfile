@@ -2,7 +2,7 @@
 # Optimized for layer caching and build efficiency
 
 # Stage 1: Base system with dependencies  
-FROM python:3.9-slim AS base
+FROM python:3.9-slim-bullseye AS base
 
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
