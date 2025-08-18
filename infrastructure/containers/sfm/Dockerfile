@@ -1,8 +1,8 @@
 # Production OpenSfM Container with GPS-Constrained Reconstruction - Multi-Stage Build
 # Optimized for layer caching and build efficiency
 
-# Stage 1: Base system with dependencies
-FROM python:3.9-slim-bullseye AS base
+# Stage 1: Base system with dependencies  
+FROM python:3.9-slim AS base
 
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,18 +51,11 @@ RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
 # Stage 3: OpenSfM build
 FROM python-deps AS opensfm-build
 
-# Clone and build OpenSfM with glog path debugging and explicit configuration
+# Clone and build OpenSfM with proper submodule initialization
 RUN cd /opt && \
     git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
     git submodule update --init --recursive && \
-    echo "=== DEBUGGING GLOG PATHS ===" && \
-    find /usr -name "logging.h" 2>/dev/null | grep glog || echo "No glog/logging.h found" && \
-    find /usr -name "libglog*" 2>/dev/null || echo "No libglog found" && \
-    ls -la /usr/include/glog/ 2>/dev/null || echo "No /usr/include/glog/ directory" && \
-    echo "=== END DEBUG ===" && \
-    export GLOG_INCLUDE_DIR=/usr/include/glog && \
-    export GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so && \
     python3 setup.py build && \
     python3 setup.py install && \
     rm -rf /opt/OpenSfM/.git

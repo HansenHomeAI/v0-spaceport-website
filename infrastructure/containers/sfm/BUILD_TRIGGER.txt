@@ -21,24 +21,15 @@ EXPECTED RESULT:
 - points3D.txt will have proper track information
 - NerfStudio will receive multiple valid training samples
 
-Build timestamp: 2025-08-18-TRACK-EXPORT-FIX-V8-GLOG-DEBUG
+Build timestamp: 2025-08-18-TRACK-EXPORT-ONLY-CLEAN
 
-DOCKER BUILD FIX: Replace obsolete libatlas-base-dev with libopenblas-dev
-- ISSUE: Package 'libatlas-base-dev' has no installation candidate
-- FIX: Use libopenblas-dev (modern BLAS/LAPACK implementation)
-- This fixes the apt-get failure during Docker build
+REVERT TO WORKING BASELINE: Stop creating unnecessary version conflicts
+- REVERTED: Back to python:3.9-slim (original working base)
+- REVERTED: Simple OpenSfM build without glog path hacks
+- KEPT: libopenblas-dev (only necessary change for modern apt packages)
+- KEPT: export_colmap command (the actual fix we need)
 
-STABLE BASE IMAGE FIX: Use Debian Bullseye with GCC 11 instead of latest
-- ISSUE: OpenSfM tests fail with GCC 14 (C++ compatibility issues)
-- ROOT CAUSE: python:3.9-slim uses latest Debian (Trixie) with GCC 14
-- PROVEN FIX: python:3.9-slim-bullseye uses Debian Bullseye with GCC 11
-- CONFIDENCE: 95% - This is the tested, stable environment for OpenSfM
-
-GLOG PATH DEBUG: Find exact glog file locations in Debian Bullseye
-- ISSUE: Environment variables didn't work - glog still not found
-- DEBUG APPROACH: Add filesystem search to find actual glog paths
-- WILL SHOW: Where glog/logging.h and libglog.so actually exist
-- THEN FIX: Use the actual paths found during build
+LESSON LEARNED: Don't fix what isn't broken - focus on the core issue
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 
