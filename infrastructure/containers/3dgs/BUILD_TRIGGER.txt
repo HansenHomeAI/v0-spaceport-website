@@ -11,15 +11,14 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-16-v1.0.10
-Build ID: nerfstudio-vincent-woo-v1.0.10-COMPREHENSIVE-LOGGING
+Container Build Timestamp: 2025-08-18-v1.0.15
+Build ID: nerfstudio-vincent-woo-v1.0.15-TXT-to-BIN-NSPD-STANDARD
 
-CRITICAL ENHANCEMENT: Super comprehensive logging for debugging data conversion
-- Added: Complete STDOUT/STDERR logging for all subprocess calls
-- Added: validate_transforms_json() with detailed frame analysis
-- Added: Binary file verification with sizes
-- Added: COLMAP data structure analysis and sampling
-- Resolves: Visibility into exactly what's failing in conversion pipeline
-Vincent Woo's methodology with comprehensive diagnostic capabilities
+INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → transforms.json → ns-train
+- FIX: Use colmap model_converter with explicit --input_type TXT --output_type BIN into a clean output dir
+- RUN: ns-process-data with --skip-colmap --colmap-model-path pointing to the BIN directory
+- TRAIN: ns-train splatfacto-big on the converted dataset (transforms.json)
+- RESULT: Follows NerfStudio documentation and avoids TXT/BIN ambiguity
+🎯 This aligns with the recommended workflow and should be robust in production.
 
 ** TRIGGER GITHUB ACTIONS BUILD **

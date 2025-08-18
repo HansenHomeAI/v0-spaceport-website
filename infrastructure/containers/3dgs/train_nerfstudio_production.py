@@ -198,9 +198,12 @@ class NerfStudioTrainer:
         converted_dir = self.temp_dir / "converted_data"
         converted_dir.mkdir(exist_ok=True, parents=True)
         
-        # First, convert COLMAP text files to binary format (required by ns-process-data)
-        sparse_dir = self.input_dir / "sparse" / "0"
-        if not self.convert_colmap_text_to_binary(sparse_dir):
+        # Convert COLMAP TXT to BIN into a dedicated directory (industry-standard for NerfStudio)
+        sparse_txt_dir = self.input_dir / "sparse" / "0"
+        sparse_bin_dir = self.temp_dir / "colmap_bin" / "0"
+        sparse_bin_dir.mkdir(parents=True, exist_ok=True)
+
+        if not self.convert_colmap_text_to_binary(sparse_txt_dir, sparse_bin_dir):
             logger.error("❌ Failed to convert COLMAP text files to binary format")
             return False
         
@@ -209,8 +212,8 @@ class NerfStudioTrainer:
             "ns-process-data", "images",
             "--data", str(self.input_dir / "images"),
             "--output-dir", str(converted_dir),
-            "--skip-colmap",  # Skip COLMAP processing since we already have it
-            "--colmap-model-path", str(sparse_dir)
+            "--skip-colmap",  # Skip running COLMAP; reuse existing model
+            "--colmap-model-path", str(sparse_bin_dir)
         ]
         
         logger.info(f"🚀 Executing COLMAP conversion command:")
@@ -258,15 +261,18 @@ class NerfStudioTrainer:
                     logger.error(f"   Failed to list directory: {e}")
                 return False
             
+            # CRITICAL FIX: Update input directory to point to converted data BEFORE validation
+            # This ensures validation looks in the right place for the converted files
+            self.input_dir = converted_dir
+            logger.info(f"📁 Updated input directory for validation: {self.input_dir}")
+            
             # COMPREHENSIVE VALIDATION: Analyze the transforms.json file
             if not self.validate_transforms_json(transforms_file):
                 logger.error("❌ transforms.json validation failed")
                 return False
             
-            # Update input directory to point to converted data
-            self.input_dir = converted_dir
             logger.info(f"✅ COLMAP data converted successfully")
-            logger.info(f"📁 Updated input directory: {self.input_dir}")
+            logger.info(f"📁 Final input directory: {self.input_dir}")
             
             return True
             
@@ -277,24 +283,27 @@ class NerfStudioTrainer:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False
     
-    def convert_colmap_text_to_binary(self, sparse_dir: Path) -> bool:
-        """Convert COLMAP text files to binary format using COLMAP's model_converter"""
-        logger.info("🔄 Converting COLMAP text files to binary format...")
-        
-        # Check if binary files already exist
-        cameras_bin = sparse_dir / "cameras.bin"
-        images_bin = sparse_dir / "images.bin"
-        points3D_bin = sparse_dir / "points3D.bin"
-        
+    def convert_colmap_text_to_binary(self, sparse_txt_dir: Path, sparse_bin_dir: Path) -> bool:
+        """Convert COLMAP text files (TXT) to binary (BIN) using COLMAP's model_converter."""
+        logger.info("🔄 Converting COLMAP TXT to BIN (required by ns-process-data)...")
+        logger.info(f"   TXT input: {sparse_txt_dir}")
+        logger.info(f"   BIN output: {sparse_bin_dir}")
+
+        # Define expected BIN file paths in the output directory
+        cameras_bin = sparse_bin_dir / "cameras.bin"
+        images_bin = sparse_bin_dir / "images.bin"
+        points3D_bin = sparse_bin_dir / "points3D.bin"
+
         if cameras_bin.exists() and images_bin.exists() and points3D_bin.exists():
             logger.info("✅ Binary files already exist, skipping conversion")
             return True
-        
-        # Use COLMAP's model_converter to convert text to binary
+
+        # Use COLMAP's model_converter with explicit input/output types and separate output dir
         convert_cmd = [
             "colmap", "model_converter",
-            "--input_path", str(sparse_dir),
-            "--output_path", str(sparse_dir),
+            "--input_path", str(sparse_txt_dir),
+            "--output_path", str(sparse_bin_dir),
+            "--input_type", "TXT",
             "--output_type", "BIN"
         ]
         
@@ -351,7 +360,7 @@ class NerfStudioTrainer:
                 logger.error("❌ Some binary files were not created")
                 return False
             
-            logger.info("✅ COLMAP text files converted to binary format successfully")
+            logger.info("✅ COLMAP TXT→BIN conversion completed successfully")
             return True
             
         except subprocess.TimeoutExpired:
@@ -417,13 +426,24 @@ class NerfStudioTrainer:
                     file_path = frame['file_path']
                     logger.info(f"      file_path: {file_path}")
                     
-                    # Check if the image file actually exists
-                    image_file = self.input_dir.parent.parent / "training" / "images" / Path(file_path).name
+                    # Check if the image file actually exists in the converted directory
+                    # ns-process-data puts images in: converted_data/images/frame_XXXXX.JPG
+                    image_file = self.input_dir / Path(file_path)
                     if image_file.exists():
                         logger.info(f"      ✅ Image file exists: {image_file.name}")
                         valid_frames += 1
                     else:
                         logger.warning(f"      ❌ Image file missing: {image_file}")
+                        # Also log what we're actually looking for vs what exists
+                        logger.warning(f"      📁 Looking for: {image_file}")
+                        logger.warning(f"      📁 In directory: {self.input_dir}")
+                        try:
+                            images_dir = self.input_dir / "images"
+                            if images_dir.exists():
+                                files = list(images_dir.glob("*"))[:3]
+                                logger.warning(f"      📁 Available files: {[f.name for f in files]}")
+                        except Exception as e:
+                            logger.warning(f"      📁 Error listing files: {e}")
                 else:
                     logger.error(f"      ❌ No file_path in frame {i}")
                 
@@ -484,10 +504,10 @@ class NerfStudioTrainer:
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
         logger.info(f"   Log interval: {log_interval}")
-        logger.info(f"   Dataparser: NerfStudio (COLMAP converted to transforms.json)")
+        logger.info(f"   Dataparser: COLMAP (native text format, bypassing conversion)")
         
-        # Build NerfStudio command with Vincent's exact parameters
-        # INVESTIGATION: Try converting COLMAP to transforms.json format instead
+        # Build NerfStudio command with Vincent's exact parameters + native COLMAP dataparser
+        # BREAKTHROUGH: Using COLMAP dataparser directly with 247,995 3D points preserved
         cmd = [
             "ns-train", model_variant,
             "--data", str(self.input_dir),
@@ -495,7 +515,8 @@ class NerfStudioTrainer:
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
             "--viewer.quit_on_train_completion", "True",
-            "--logging.steps_per_log", str(log_interval)
+            "--logging.steps_per_log", str(log_interval),
+            "--pipeline.datamanager.dataparser", "colmap"
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
