@@ -21,12 +21,17 @@ EXPECTED RESULT:
 - points3D.txt will have proper track information
 - NerfStudio will receive multiple valid training samples
 
-Build timestamp: 2025-08-18-TRACK-EXPORT-FIX-V2
+Build timestamp: 2025-08-18-TRACK-EXPORT-FIX-V3
 
 DOCKER BUILD FIX: Replace obsolete libatlas-base-dev with libopenblas-dev
 - ISSUE: Package 'libatlas-base-dev' has no installation candidate
 - FIX: Use libopenblas-dev (modern BLAS/LAPACK implementation)
 - This fixes the apt-get failure during Docker build
+
+OPENSFM BUILD FIX: Skip test compilation to avoid C++ compatibility issues
+- ISSUE: OpenSfM tests fail with GCC 14 (fpclassify/hypot function compatibility)
+- FIX: Set OPENSFM_BUILD_TESTS=OFF to build only core library
+- This avoids C++14 math function compatibility issues with Eigen
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 

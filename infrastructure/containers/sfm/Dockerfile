@@ -51,11 +51,13 @@ RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
 # Stage 3: OpenSfM build
 FROM python-deps AS opensfm-build
 
-# Clone and build OpenSfM with proper submodule initialization
+# Clone and build OpenSfM with proper submodule initialization (skip tests to avoid C++ compatibility issues)
 RUN cd /opt && \
     git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
     cd OpenSfM && \
     git submodule update --init --recursive && \
+    export CMAKE_BUILD_TYPE=Release && \
+    export OPENSFM_BUILD_TESTS=OFF && \
     python3 setup.py build && \
     python3 setup.py install && \
     rm -rf /opt/OpenSfM/.git
