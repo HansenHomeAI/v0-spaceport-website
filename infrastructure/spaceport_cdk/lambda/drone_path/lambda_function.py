@@ -172,7 +172,7 @@ class SpiralDesigner:
             response = requests.get(url, timeout=10)
             
             # Small delay to respect Google API rate limits and prevent progressive slowdown
-            time.sleep(0.1)  # 100ms delay between elevation API calls
+            time.sleep(0.01)  # 10ms delay between elevation API calls
             
             if response.status_code != 200:
                 raise ValueError(f"Elevation HTTP error {response.status_code}")
