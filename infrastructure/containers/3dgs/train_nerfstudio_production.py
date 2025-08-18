@@ -187,8 +187,9 @@ class NerfStudioTrainer:
             logger.error(f"❌ Missing image files: {image_file_count} < {image_count * 0.8}")
             return False
         
-        logger.info("✅ COLMAP data validation passed - converting to NerfStudio format")
-        return self.convert_colmap_to_nerfstudio()
+        logger.info("✅ COLMAP data validation passed - ready for direct NerfStudio training")
+        logger.info("🎯 Using native COLMAP dataparser (bypassing problematic ns-process-data conversion)")
+        return True
     
     def convert_colmap_to_nerfstudio(self) -> bool:
         """Convert COLMAP data to NerfStudio transforms.json format"""
@@ -498,10 +499,10 @@ class NerfStudioTrainer:
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
         logger.info(f"   Log interval: {log_interval}")
-        logger.info(f"   Dataparser: NerfStudio (COLMAP converted to transforms.json)")
+        logger.info(f"   Dataparser: COLMAP (native text format, bypassing conversion)")
         
-        # Build NerfStudio command with Vincent's exact parameters
-        # INVESTIGATION: Try converting COLMAP to transforms.json format instead
+        # Build NerfStudio command with Vincent's exact parameters + native COLMAP dataparser
+        # BREAKTHROUGH: Using COLMAP dataparser directly with 247,995 3D points preserved
         cmd = [
             "ns-train", model_variant,
             "--data", str(self.input_dir),
@@ -509,7 +510,8 @@ class NerfStudioTrainer:
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
             "--viewer.quit_on_train_completion", "True",
-            "--logging.steps_per_log", str(log_interval)
+            "--logging.steps_per_log", str(log_interval),
+            "--pipeline.datamanager.dataparser", "colmap"
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
