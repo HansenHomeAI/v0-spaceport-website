@@ -55,6 +55,31 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const [optimizedParams, setOptimizedParams] = useState<OptimizedParams | null>(null);
   const optimizedParamsRef = useRef<OptimizedParams | null>(null);
+
+  // 🔍 DEBUGGING: Wrapper function to track all optimizedParams changes
+  const setOptimizedParamsWithLogging = useCallback((newParams: OptimizedParams | null, reason: string) => {
+    const timestamp = new Date().toISOString();
+    const stackTrace = new Error().stack?.split('\n').slice(2, 5).join('\n') || 'No stack trace';
+    
+    console.log(`🔍 [${timestamp}] OPTIMIZATION CACHE ${newParams ? 'SET' : 'CLEARED'}:`);
+    console.log(`   Reason: ${reason}`);
+    console.log(`   Previous: ${optimizedParamsRef.current ? 'EXISTS' : 'NULL'}`);
+    console.log(`   New: ${newParams ? 'EXISTS' : 'NULL'}`);
+    console.log(`   Stack trace:`, stackTrace);
+    
+    if (newParams) {
+      console.log(`   Params:`, {
+        slices: newParams.slices,
+        N: newParams.N,
+        center: newParams.center,
+        minHeight: newParams.minHeight,
+        maxHeight: newParams.maxHeight
+      });
+    }
+    
+    setOptimizedParams(newParams);
+    optimizedParamsRef.current = newParams;
+  }, []);
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
   const [processingMessage, setProcessingMessage] = useState<string>('');
@@ -107,8 +132,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadLoading(false);
     setMlLoading(false);
     setUploadStage('');
-    setOptimizedParams(null);
-    optimizedParamsRef.current = null;
+    setOptimizedParamsWithLogging(null, 'Modal opened/reset');
     setBatteryDownloading(null);
     setSetupOpen(true);
     setUploadOpen(false);
@@ -117,6 +141,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     
     // If editing, hydrate fields from project
     if (project) {
+      console.log(`🔍 Loading project data:`, {
+        title: project.title,
+        params: project.params,
+        savedBatteryMinutes: project.params?.batteryMinutes,
+        savedBatteries: project.params?.batteries,
+        savedMinHeight: project.params?.minHeight,
+        savedMaxHeight: project.params?.maxHeight,
+        hasCoordinates: !!(project.params?.latitude && project.params?.longitude)
+      });
+      
       setProjectTitle(project.title || 'Untitled');
       const params = project.params || {};
       // Don't set address search yet if we have coordinates - restoreSavedLocation will handle it
@@ -145,6 +179,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           const coords = selectedCoordsRef.current;
           const minutes = parseInt(params.batteryMinutes || '');
           const batteries = parseInt(params.batteries || '');
+          
+          console.log(`🔍 Auto-restore timeout firing:`, {
+            coords: coords ? 'EXISTS' : 'NULL',
+            savedMinutes: params.batteryMinutes,
+            parsedMinutes: minutes,
+            savedBatteries: params.batteries,
+            parsedBatteries: batteries,
+            currentOptimizedParams: optimizedParamsRef.current ? 'EXISTS' : 'NULL'
+          });
           
           if (coords && minutes && batteries) {
             try {
@@ -181,8 +224,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 maxHeight: maxH,
                 elevationFeet,
               };
-              setOptimizedParams(optimizedParams);
-              optimizedParamsRef.current = optimizedParams;
+              setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
             } catch (e) {
               console.warn('Failed to auto-restore optimization params:', e);
             } finally {
@@ -259,8 +301,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           // Fill address input with coordinates formatted
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
-          setOptimizedParams(null);
-          optimizedParamsRef.current = null;
+          setOptimizedParamsWithLogging(null, 'Map coordinates changed');
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
@@ -328,8 +369,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       .addTo(mapRef.current);
     
     // Invalidate previous optimization since coordinates changed
-    setOptimizedParams(null);
-    optimizedParamsRef.current = null;
+    setOptimizedParamsWithLogging(null, 'Address search coordinates changed');
     
     // Hide instructions
     const inst = document.getElementById('map-instructions');
@@ -500,8 +540,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         maxHeight: maxH,
         elevationFeet,
       };
-      setOptimizedParams(params);
-      optimizedParamsRef.current = params;
+      setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
       console.error('Optimization failed:', e);
@@ -516,12 +555,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     // Use ref to get current optimized params (not stale closure)
     const currentOptimizedParams = optimizedParamsRef.current;
+    
+    console.log(`🔍 downloadBatteryCsv called for battery ${batteryIndex1}:`, {
+      currentOptimizedParams: currentOptimizedParams ? 'EXISTS' : 'NULL',
+      optimizedParamsState: optimizedParams ? 'EXISTS' : 'NULL'
+    });
+    
     if (!currentOptimizedParams) {
+      console.log(`🔍 No optimized params found - showing error`);
       showSystemNotification('error', 'Please optimize first');
       return;
     }
     setBatteryDownloading(batteryIndex1);
     try {
+      console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, currentOptimizedParams);
+      
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -656,6 +704,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       initialRenderRef.current = false;
       return;
     }
+    
+    console.log(`🔍 Autosave useEffect triggered:`, {
+      projectTitle,
+      addressSearch,
+      batteryMinutes,
+      numBatteries,
+      minHeightFeet,
+      maxHeightFeet,
+      status,
+      selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
+      optimizedParams: optimizedParams ? 'EXISTS' : 'NULL'
+    });
     
     // Don't trigger save immediately, use timeout to avoid render-phase updates
     const timer = setTimeout(() => {
@@ -988,9 +1048,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={batteryMinutes ? `${batteryMinutes} min/battery` : ''}
                       onChange={(e) => { 
                         const value = e.target.value.replace(/[^0-9]/g, '');
+                        console.log(`🔍 Battery minutes changing from "${batteryMinutes}" to "${value}"`);
                         setBatteryMinutes(value); 
-                        setOptimizedParams(null); 
-                        optimizedParamsRef.current = null; 
+                        setOptimizedParamsWithLogging(null, `Battery minutes changed to: ${value}`); 
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1010,9 +1070,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={numBatteries ? `${numBatteries} ${parseInt(numBatteries) === 1 ? 'battery' : 'batteries'}` : ''}
                       onChange={(e) => { 
                         const value = e.target.value.replace(/[^0-9]/g, '');
+                        console.log(`🔍 Number of batteries changing from "${numBatteries}" to "${value}"`);
                         setNumBatteries(value); 
-                        setOptimizedParams(null); 
-                        optimizedParamsRef.current = null; 
+                        setOptimizedParamsWithLogging(null, `Number of batteries changed to: ${value}`); 
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1041,9 +1101,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={minHeightFeet ? `${minHeightFeet} ft AGL` : ''}
                       onChange={(e) => { 
                         const value = e.target.value.replace(/[^0-9]/g, '');
+                        console.log(`🔍 Min height changing from "${minHeightFeet}" to "${value}"`);
                         setMinHeightFeet(value); 
-                        setOptimizedParams(null); 
-                        optimizedParamsRef.current = null; 
+                        setOptimizedParamsWithLogging(null, `Min height changed to: ${value}`); 
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1063,9 +1123,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       value={maxHeightFeet ? `${maxHeightFeet} ft AGL` : ''}
                       onChange={(e) => { 
                         const value = e.target.value.replace(/[^0-9]/g, '');
+                        console.log(`🔍 Max height changing from "${maxHeightFeet}" to "${value}"`);
                         setMaxHeightFeet(value); 
-                        setOptimizedParams(null); 
-                        optimizedParamsRef.current = null; 
+                        setOptimizedParamsWithLogging(null, `Max height changed to: ${value}`); 
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1092,6 +1152,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     key={idx}
                     className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
                     onClick={async () => {
+                      console.log(`🔍 Battery ${idx + 1} clicked:`, {
+                        optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
+                        optimizedParamsRef: optimizedParamsRef.current ? 'EXISTS' : 'NULL',
+                        canOptimize,
+                        batteryMinutes,
+                        numBatteries,
+                        selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
+                      });
+                      
                       // Auto-run optimization on first click if needed
                       if (!optimizedParams) {
                         if (!canOptimize) {
