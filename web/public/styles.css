@@ -2230,22 +2230,22 @@ footer {
 /* PRICING Optimized Color Effect */
 #pricing-header::before {
   content: "";
-  position: absolute;
-  top: -300px;
+  position: fixed;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 800px;
-  height: 600px;
+  width: 100vw;
+  height: 300px;
   pointer-events: none;
   z-index: -2;
   background: radial-gradient(
-    ellipse 600px 400px at 50% 50%,
-    rgba(255, 79, 0, 0.3) 0%,
-    rgba(75, 0, 109, 0.2) 35%,
-    rgba(205, 112, 228, 0.15) 65%,
-    transparent 85%
+    ellipse 1000px 250px at 50% 0%,
+    rgba(255, 79, 0, 0.35) 0%,
+    rgba(75, 0, 109, 0.25) 30%,
+    rgba(205, 112, 228, 0.2) 60%,
+    transparent 100%
   );
-  opacity: 0.6;
+  opacity: 0.9;
   filter: blur(40px);
   will-change: transform;
 }
@@ -2253,46 +2253,46 @@ footer {
 /* ABOUT Optimized Color Effect */
 #about::before {
   content: "";
-  position: absolute;
-  top: -350px;
+  position: fixed;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 900px;
-  height: 700px;
+  width: 100vw;
+  height: 280px;
   pointer-events: none;
   z-index: -2;
   background: radial-gradient(
-    ellipse 700px 500px at 50% 50%,
-    rgba(205, 112, 228, 0.25) 0%,
-    rgba(75, 0, 109, 0.2) 40%,
+    ellipse 1100px 220px at 50% 10%,
+    rgba(205, 112, 228, 0.3) 0%,
+    rgba(75, 0, 109, 0.22) 40%,
     rgba(255, 79, 0, 0.15) 70%,
-    transparent 90%
+    transparent 100%
   );
-  opacity: 0.5;
-  filter: blur(50px);
+  opacity: 0.8;
+  filter: blur(45px);
   will-change: transform;
 }
 
 /* CREATE Optimized Color Effect */
 #create::before {
   content: "";
-  position: absolute;
-  top: -400px;
+  position: fixed;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 1000px;
-  height: 800px;
+  width: 100vw;
+  height: 320px;
   pointer-events: none;
   z-index: -2;
   background: radial-gradient(
-    ellipse 800px 600px at 50% 50%,
-    rgba(255, 79, 0, 0.3) 0%,
-    rgba(75, 0, 109, 0.25) 30%,
-    rgba(205, 112, 228, 0.2) 60%,
-    transparent 85%
+    ellipse 1200px 280px at 50% 5%,
+    rgba(255, 79, 0, 0.4) 0%,
+    rgba(75, 0, 109, 0.3) 25%,
+    rgba(205, 112, 228, 0.25) 50%,
+    transparent 100%
   );
-  opacity: 0.7;
-  filter: blur(60px);
+  opacity: 1.0;
+  filter: blur(50px);
   will-change: transform;
 }
 
