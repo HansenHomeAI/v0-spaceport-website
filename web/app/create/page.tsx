@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
-import AccountModal from '../../components/AccountModal';
 import AuthGate from '../auth/AuthGate';
 import { Auth } from 'aws-amplify';
 
@@ -10,11 +9,12 @@ export default function Create(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   const fetchProjects = async () => {
     try {
-      setIsLoadingProjects(true);
+      setLoading(true);
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
@@ -27,37 +27,76 @@ export default function Create(): JSX.Element {
     } catch {
       // ignore
     } finally {
-      setIsLoadingProjects(false);
+      setLoading(false);
     }
   };
 
-  useEffect(() => { fetchProjects(); }, []);
+  const fetchUser = async () => {
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      setUser(currentUser);
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => { 
+    fetchProjects(); 
+    fetchUser();
+  }, []);
+
+  const signOut = async () => {
+    try {
+      await Auth.signOut();
+      window.location.reload();
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <>
-      {/* Auth-gated creation experience */}
+      {/* Always-visible header matching pricing/about spacing and swirl */}
+      <section className="section" id="create">
+        <div id="development-content">
+          <h1>Dashboard</h1>
+        </div>
+      </section>
+
+      {/* Auth-gated creation experience below the header */}
       <AuthGate>
         <section className="section" id="create-dashboard">
-          <h1>Dashboard</h1>
-          
-          {/* Account Settings Modal */}
-          <AccountModal />
-          
           <div className="project-cards">
+            {/* Account Settings Card */}
+            <div className="project-box account-card">
+              <div className="account-info">
+                <div className="account-details">
+                  <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
+                  <p className="account-subscription">Free Plan</p>
+                </div>
+                <button className="sign-out-btn" onClick={signOut}>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+            
+            {/* New Project Button */}
             <div className="project-box new-project-card" onClick={() => setModalOpen(true)}>
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
             </div>
             
-            {/* Loading state for projects */}
-            {isLoadingProjects && (
-              <div className="projects-loading">
-                <div className="spinner"></div>
-                <span>Loading projects...</span>
+            {/* Loading Spinner */}
+            {loading && (
+              <div className="project-box loading-card">
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Loading projects...</p>
+                </div>
               </div>
             )}
             
-            {/* Existing projects */}
-            {!isLoadingProjects && projects.map((p) => (
+            {/* Projects */}
+            {!loading && projects.map((p) => (
               <div key={p.projectId} className="project-box">
                 <button className="project-controls-btn" aria-label="Edit project" onClick={() => { setEditing(p); setModalOpen(true); }}>
                   <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
