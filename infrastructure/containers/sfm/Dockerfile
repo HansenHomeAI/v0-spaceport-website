@@ -65,7 +65,11 @@ RUN cd /opt && \
     make && \
     cd .. && \
     cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
-    cp bin/opensfm /usr/local/bin/ && \
+    echo '#!/usr/bin/env python3' > /usr/local/bin/opensfm && \
+    echo 'import sys' >> /usr/local/bin/opensfm && \
+    echo 'from opensfm import commands' >> /usr/local/bin/opensfm && \
+    echo 'commands.opensfm_main()' >> /usr/local/bin/opensfm && \
+    chmod +x /usr/local/bin/opensfm && \
     rm -rf /opt/OpenSfM/.git
 
 # Stage 4: Application code

@@ -1,34 +1,36 @@
-FINAL FIX: Skip setup.py install entirely - Manual Python package copy
-=====================================================================
+RUNTIME FIX: OpenSfM CLI Binary Missing in Production
+===================================================
 
-ROOT CAUSE FOUND: Dual CMake problem in OpenSfM
-- ✅ Manual cmake works (422s build time confirms compilation succeeded)
-- ❌ setup.py install runs its own broken CMake without our glog parameters
+ISSUE IDENTIFIED: Container builds successfully but SfM runtime fails!
 
-EVIDENCE FROM BUILD #3:
-- Manual CMake took 422 seconds (vs 4s failures) = SUCCESS
-- Then setup.py install failed with same old glog error = FAILURE
+ERROR FROM SAGEMAKER LOGS (Build #4 runtime):
+```
+python3: can't open file '/usr/local/bin/opensfm_main.py': [Errno 2] No such file or directory
+```
 
-FINAL SOLUTION: Skip setup.py install completely
-1. Manual cmake with explicit glog paths (WORKS)
-2. make (WORKS) 
-3. Direct copy to site-packages: `cp -r opensfm /usr/local/lib/python3.9/site-packages/`
-4. Skip the problematic setup.py install step entirely
+ROOT CAUSE: OpenSfM CLI wrapper script not properly created
+- ✅ Container builds successfully (17 min completion)
+- ✅ Python module installed in site-packages correctly
+- ❌ CLI command 'opensfm' not available at runtime
 
-ADVANTAGES:
-- Uses successfully compiled OpenSfM C++ extensions
-- Bypasses broken setup.py install completely  
-- Direct Python package installation
+ANALYSIS:
+- Our code calls: subprocess.run(["opensfm", cmd, str(dir)])
+- Expected: Proper CLI wrapper to call opensfm.commands.opensfm_main()  
+- Reality: Missing executable script
+
+SOLUTION: Create proper Python CLI wrapper script
+```python
+#!/usr/bin/env python3
+import sys
+from opensfm import commands  
+commands.opensfm_main()
+```
 
 EXPECTED RESULT:
-- CMake compilation succeeds (proven in build #3)
-- No secondary CMake failure from setup.py
-- OpenSfM available for tracks export to 3DGS
+- SfM processing completes successfully
+- Tracks exported for 3DGS training
+- No more 'n_samples=1' errors
 
-Build timestamp: 2025-08-18-SKIP-SETUP-PY-FIX
-
-LESSON: Sometimes you need to bypass broken Python packaging entirely.
-Container: spaceport/sfm:latest
-Priority: CRITICAL - fixes core pipeline issue
+Build timestamp: 2025-08-19-CLI-WRAPPER-FIX
 
 ** TRIGGER AUTOMATED BUILD **
