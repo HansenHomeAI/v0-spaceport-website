@@ -2223,76 +2223,99 @@ footer {
 #about,
 #create {
   position: relative;
-  overflow: hidden; /* Prevent pseudo-element overflow */
+  overflow: visible; /* Allow pseudo-element to extend beyond boundaries */
   isolation: isolate; /* Create new stacking context */
 }
 
 /* PRICING Optimized Color Effect */
 #pricing-header::before {
   content: "";
-  position: fixed;
-  top: 0;
+  position: absolute;
+  top: -12rem; /* Extend well above the header to reach viewport top */
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
-  height: 300px;
+  height: 400px;
   pointer-events: none;
   z-index: -2;
-  background: radial-gradient(
-    ellipse 1000px 250px at 50% 0%,
-    rgba(255, 79, 0, 0.35) 0%,
-    rgba(75, 0, 109, 0.25) 30%,
-    rgba(205, 112, 228, 0.2) 60%,
-    transparent 100%
-  );
-  opacity: 0.9;
-  filter: blur(40px);
+  background: 
+    radial-gradient(
+      ellipse 800px 300px at 25% 20%,
+      rgba(255, 79, 0, 0.4) 0%,
+      rgba(255, 79, 0, 0.2) 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 700px 250px at 75% 30%,
+      rgba(75, 0, 109, 0.3) 0%,
+      rgba(205, 112, 228, 0.25) 50%,
+      transparent 85%
+    );
+  opacity: 0.8;
+  filter: blur(45px);
   will-change: transform;
 }
 
 /* ABOUT Optimized Color Effect */
 #about::before {
   content: "";
-  position: fixed;
-  top: 0;
+  position: absolute;
+  top: -12rem; /* Extend well above the header to reach viewport top */
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
-  height: 280px;
+  height: 400px;
   pointer-events: none;
   z-index: -2;
-  background: radial-gradient(
-    ellipse 1100px 220px at 50% 10%,
-    rgba(205, 112, 228, 0.3) 0%,
-    rgba(75, 0, 109, 0.22) 40%,
-    rgba(255, 79, 0, 0.15) 70%,
-    transparent 100%
-  );
-  opacity: 0.8;
-  filter: blur(45px);
+  background: 
+    radial-gradient(
+      ellipse 600px 280px at 70% 15%,
+      rgba(205, 112, 228, 0.35) 0%,
+      rgba(205, 112, 228, 0.18) 45%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 750px 320px at 20% 25%,
+      rgba(75, 0, 109, 0.28) 0%,
+      rgba(255, 79, 0, 0.15) 60%,
+      transparent 90%
+    );
+  opacity: 0.7;
+  filter: blur(50px);
   will-change: transform;
 }
 
 /* CREATE Optimized Color Effect */
 #create::before {
   content: "";
-  position: fixed;
-  top: 0;
+  position: absolute;
+  top: -12rem; /* Extend well above the header to reach viewport top */
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
-  height: 320px;
+  height: 400px;
   pointer-events: none;
   z-index: -2;
-  background: radial-gradient(
-    ellipse 1200px 280px at 50% 5%,
-    rgba(255, 79, 0, 0.4) 0%,
-    rgba(75, 0, 109, 0.3) 25%,
-    rgba(205, 112, 228, 0.25) 50%,
-    transparent 100%
-  );
-  opacity: 1.0;
-  filter: blur(50px);
+  background: 
+    radial-gradient(
+      ellipse 900px 350px at 80% 10%,
+      rgba(255, 79, 0, 0.45) 0%,
+      rgba(255, 79, 0, 0.25) 35%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 650px 280px at 15% 35%,
+      rgba(75, 0, 109, 0.35) 0%,
+      rgba(205, 112, 228, 0.3) 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 500px 200px at 60% 40%,
+      rgba(205, 112, 228, 0.2) 0%,
+      transparent 60%
+    );
+  opacity: 0.9;
+  filter: blur(55px);
   will-change: transform;
 }
 
