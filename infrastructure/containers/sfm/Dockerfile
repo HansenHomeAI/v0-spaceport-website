@@ -67,8 +67,7 @@ RUN cd /opt && \
     cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
     echo '#!/usr/bin/env python3' > /usr/local/bin/opensfm && \
     echo 'import sys' >> /usr/local/bin/opensfm && \
-    echo 'from opensfm import commands' >> /usr/local/bin/opensfm && \
-    echo 'commands.opensfm_main()' >> /usr/local/bin/opensfm && \
+    echo 'import opensfm.__main__' >> /usr/local/bin/opensfm && \
     chmod +x /usr/local/bin/opensfm && \
     rm -rf /opt/OpenSfM/.git
 
