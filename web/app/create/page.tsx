@@ -9,9 +9,27 @@ export default function Create(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [subscriptionPopupOpen, setSubscriptionPopupOpen] = useState(false);
+
+  // Lock body scroll when popup is open
+  useEffect(() => {
+    if (subscriptionPopupOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [subscriptionPopupOpen]);
 
   const fetchProjects = async () => {
     try {
+      setLoading(true);
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
@@ -23,30 +41,85 @@ export default function Create(): JSX.Element {
       }
     } catch {
       // ignore
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => { fetchProjects(); }, []);
+  const fetchUser = async () => {
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      setUser(currentUser);
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => { 
+    fetchProjects(); 
+    fetchUser();
+  }, []);
+
+  const signOut = async () => {
+    try {
+      await Auth.signOut();
+      window.location.reload();
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <>
       {/* Always-visible header matching pricing/about spacing and swirl */}
       <section className="section" id="create">
         <div id="development-content">
-          <h1>Create your space.</h1>
-          <p><span className="inline-white">Transform your listings with ease. This streamlined workflow guides you from drone-captured imagery to a fully immersive 3D model.</span></p>
+          <h1>Dashboard</h1>
         </div>
       </section>
 
       {/* Auth-gated creation experience below the header */}
       <AuthGate>
         <section className="section" id="create-dashboard">
-          <h2>Dashboard</h2>
           <div className="project-cards">
+            {/* Account Settings Card */}
+            <div className="project-box account-card">
+              <div className="account-info">
+                <div className="account-details">
+                  <div className="account-header">
+                    <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
+                    <button 
+                      className="subscription-pill clickable" 
+                      onClick={() => setSubscriptionPopupOpen(true)}
+                    >
+                      Free Plan
+                    </button>
+                  </div>
+                </div>
+                <button className="sign-out-btn" onClick={signOut}>
+                  <span className="sign-out-icon"></span>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+            
+            {/* New Project Button */}
             <div className="project-box new-project-card" onClick={() => setModalOpen(true)}>
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
             </div>
-            {projects.map((p) => (
+            
+            {/* Loading Spinner */}
+            {loading && (
+              <div className="project-box loading-card">
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Loading projects...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Projects */}
+            {!loading && projects.map((p) => (
               <div key={p.projectId} className="project-box">
                 <button className="project-controls-btn" aria-label="Edit project" onClick={() => { setEditing(p); setModalOpen(true); }}>
                   <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
@@ -69,6 +142,64 @@ export default function Create(): JSX.Element {
           project={editing || undefined}
           onSaved={fetchProjects}
         />
+
+        {/* Subscription Popup */}
+        {subscriptionPopupOpen && (
+          <div className="subscription-popup-overlay" onClick={() => setSubscriptionPopupOpen(false)}>
+            <div className="subscription-popup" onClick={(e) => e.stopPropagation()}>
+              <div className="subscription-popup-header">
+                <h2>Choose Your Plan</h2>
+                <button className="popup-close" onClick={() => setSubscriptionPopupOpen(false)} />
+              </div>
+              <div className="subscription-plans">
+                <div className="plan-card current">
+                  <div className="plan-header">
+                    <h3>Free Plan</h3>
+                    <span className="current-badge">Current</span>
+                  </div>
+                  <div className="plan-price">$0</div>
+                  <div className="plan-features">
+                    <div className="feature">• 3 projects per month</div>
+                    <div className="feature">• Basic 3D models</div>
+                    <div className="feature">• Email delivery</div>
+                  </div>
+                </div>
+                
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Pro Plan</h3>
+                  </div>
+                  <div className="plan-price">$29<span className="plan-period">/month</span></div>
+                  <div className="plan-features">
+                    <div className="feature">• Unlimited projects</div>
+                    <div className="feature">• High-quality 3D models</div>
+                    <div className="feature">• Priority processing</div>
+                    <div className="feature">• Advanced compression</div>
+                  </div>
+                  <button className="plan-upgrade-btn">
+                    Upgrade to Pro
+                  </button>
+                </div>
+                
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Enterprise</h3>
+                  </div>
+                  <div className="plan-price">Custom</div>
+                  <div className="plan-features">
+                    <div className="feature">• Everything in Pro</div>
+                    <div className="feature">• Custom integrations</div>
+                    <div className="feature">• Dedicated support</div>
+                    <div className="feature">• Team management</div>
+                  </div>
+                  <button className="plan-contact-btn">
+                    Contact Sales
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </AuthGate>
     </>
   );
