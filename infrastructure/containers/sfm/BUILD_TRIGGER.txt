@@ -1,37 +1,38 @@
-DIRECT CMAKE CONFIGURATION FIX: OpenSfM Glog Detection
-======================================================
+RUNTIME FIX: OpenSfM CLI Binary Missing in Production
+===================================================
 
-ROOT CAUSE IDENTIFIED: OpenSfM setup.py ignores environment variables
+ISSUE IDENTIFIED: Container builds successfully but SfM runtime fails!
 
-FAILED ATTEMPT: Environment variables didn't work
-- ENV GLOG_INCLUDE_DIR=/usr/include  
-- ENV GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
-- OpenSfM's CMake still fails to find glog despite these variables
+ERROR FROM SAGEMAKER LOGS (Build #4 runtime):
+```
+python3: can't open file '/usr/local/bin/opensfm_main.py': [Errno 2] No such file or directory
+```
 
-NEW APPROACH: Bypass setup.py and configure CMake directly
-1. Manual cmake configuration with explicit glog paths:
-   ```
-   cmake ../opensfm/src \
-       -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
-       -DGLOG_INCLUDE_DIR=/usr/include \
-       -DGLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
-   ```
+ROOT CAUSE: OpenSfM CLI wrapper script not properly created
+- ✅ Container builds successfully (17 min completion)
+- ✅ Python module installed in site-packages correctly
+- ❌ CLI command 'opensfm' not available at runtime
 
-2. Build using make instead of setup.py build
-3. Then run setup.py install to complete Python package installation
+ANALYSIS:
+- Our code calls: subprocess.run(["opensfm", cmd, str(dir)])
+- Expected: Proper CLI wrapper to call opensfm.commands.opensfm_main()  
+- Reality: Missing executable script
 
-ADVANTAGE: Direct CMake control bypasses OpenSfM's problematic configuration
+SOLUTION: Use OpenSfM's ACTUAL bin/opensfm script instead of guessing
+```bash
+# Copy the real OpenSfM CLI script from source
+cp bin/opensfm /usr/local/bin/opensfm
+chmod +x /usr/local/bin/opensfm
+```
+
+INSIGHT: We were creating fake CLI wrappers instead of using OpenSfM's real one!
+OpenSfM provides its own bin/opensfm script - we just need to copy it.
 
 EXPECTED RESULT:
-- CMake will explicitly find glog at specified paths
-- OpenSfM C++ extensions will compile successfully  
-- Python installation will complete properly
-- SfM container will build and export tracks for 3DGS
+- SfM processing completes successfully
+- Tracks exported for 3DGS training
+- No more 'n_samples=1' errors
 
-Build timestamp: 2025-08-18-DIRECT-CMAKE-FIX
-
-LESSON: When setup.py fails, sometimes direct CMake configuration works better.
-Container: spaceport/sfm:latest
-Priority: CRITICAL - fixes core pipeline issue
+Build timestamp: 2025-08-19-CLI-WRAPPER-FIX
 
 ** TRIGGER AUTOMATED BUILD **
