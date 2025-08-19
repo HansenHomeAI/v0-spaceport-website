@@ -18,15 +18,16 @@ ANALYSIS:
 - Expected: Proper CLI wrapper to call opensfm.commands.opensfm_main()  
 - Reality: Missing executable script
 
-SOLUTION: Use OpenSfM's ACTUAL bin/opensfm script instead of guessing
+SOLUTION: Complete OpenSfM installation - copy ALL bin files
 ```bash
-# Copy the real OpenSfM CLI script from source
-cp bin/opensfm /usr/local/bin/opensfm
-chmod +x /usr/local/bin/opensfm
+# Copy ALL OpenSfM binary files, not just one script
+cp -r bin /usr/local/
+chmod +x /usr/local/bin/*
 ```
 
-INSIGHT: We were creating fake CLI wrappers instead of using OpenSfM's real one!
-OpenSfM provides its own bin/opensfm script - we just need to copy it.
+INSIGHT: OpenSfM's bin/opensfm script depends on OTHER scripts in bin/
+We need the COMPLETE bin directory, not just one file.
+Real error: bin/opensfm calls opensfm_main.py which we didn't copy!
 
 EXPECTED RESULT:
 - SfM processing completes successfully

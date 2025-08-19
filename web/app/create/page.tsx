@@ -75,6 +75,14 @@ export default function Create(): JSX.Element {
       <section className="section" id="create">
         <div id="development-content">
           <h1>Dashboard</h1>
+          <a 
+            href="https://www.loom.com/share/e5b2d593df724c279742d9d4dcdbb5cf" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="tutorial-button"
+          >
+            Watch Tutorial
+          </a>
         </div>
       </section>
 
