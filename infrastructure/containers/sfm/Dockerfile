@@ -65,8 +65,8 @@ RUN cd /opt && \
     make && \
     cd .. && \
     cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
-    cp bin/opensfm /usr/local/bin/opensfm && \
-    chmod +x /usr/local/bin/opensfm && \
+    cp -r bin /usr/local/ && \
+    chmod +x /usr/local/bin/* && \
     rm -rf /opt/OpenSfM/.git
 
 # Stage 4: Application code
