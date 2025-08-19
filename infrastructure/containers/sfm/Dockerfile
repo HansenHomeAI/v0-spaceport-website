@@ -64,7 +64,7 @@ RUN cd /opt && \
         -DGLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so && \
     make && \
     cd .. && \
-    python3 setup.py install && \
+    cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
     rm -rf /opt/OpenSfM/.git
 
 # Stage 4: Application code
