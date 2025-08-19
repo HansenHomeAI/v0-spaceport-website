@@ -65,6 +65,7 @@ RUN cd /opt && \
     make && \
     cd .. && \
     cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
+    cp bin/opensfm /usr/local/bin/ && \
     rm -rf /opt/OpenSfM/.git
 
 # Stage 4: Application code
@@ -92,9 +93,8 @@ RUN useradd --create-home --shell /bin/bash sagemaker \
 # Set working directory
 WORKDIR /opt/ml/code
 
-# Add OpenSfM to PATH and PYTHONPATH
-ENV PATH="/opt/OpenSfM/bin:${PATH}"
-ENV PYTHONPATH="/opt/OpenSfM"
+# OpenSfM is now installed in site-packages, no need for custom PYTHONPATH
+# The opensfm module will be importable directly via Python's standard import mechanism
 
 # Pre-create the output directory structure with proper permissions
 RUN mkdir -p /opt/ml/processing/output/sparse /opt/ml/processing/output/dense \
