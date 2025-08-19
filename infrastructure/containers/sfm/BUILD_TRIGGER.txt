@@ -1,35 +1,38 @@
-CRITICAL FIX: OpenSfM Track Export Issue
-=========================================
+EXACT GLOG DETECTION FIX: CodeBuild OpenSfM CMake Issue
+========================================================
 
-ROOT CAUSE IDENTIFIED: Missing 'export_colmap' command in OpenSfM pipeline
+ROOT CAUSE IDENTIFIED: OpenSfM CMake can't find glog headers despite installation
 
-PROBLEM:
-- OpenSfM creates tracks successfully (✅ Create tracks completed)
-- But never exports tracks to COLMAP format (❌ No tracks.json or features.json)
-- COLMAP converter finds 0 correspondences (⚠️ No tracks available)
-- Result: "mean observations per image: 0.0" → n_samples=1 error
+ERROR FROM CODEBUILD LOGS:
+```
+CMake Error at cmake/FindGlog.cmake:79 (MESSAGE):
+  Failed to find glog - Could not find glog include directory, set
+  GLOG_INCLUDE_DIR to directory containing glog/logging.h
+```
 
-SOLUTION IMPLEMENTED:
-1. Added 'export_colmap' command to OpenSfM pipeline after 'reconstruct'
-2. Modified convert_to_colmap() to prioritize exported COLMAP files with tracks
-3. Added comprehensive track validation for exported files
-4. Fallback to custom converter if export_colmap fails
+ANALYSIS:
+- ✅ libgoogle-glog-dev installed correctly in Debian Bullseye
+- ✅ Python dependencies (numpy, opencv, etc.) install successfully  
+- ❌ OpenSfM CMake configuration fails to detect glog headers
+- ❌ Build fails at 4m 124ms into OpenSfM setup.py build stage
+
+EXACT SOLUTION IMPLEMENTED:
+1. Added explicit environment variables before OpenSfM build:
+   - ENV GLOG_INCLUDE_DIR=/usr/include
+   - ENV GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
+2. These variables guide CMake's FindGlog.cmake to correct locations
+3. No changes to base image (python:3.9-slim-bullseye remains)
 
 EXPECTED RESULT:
-- OpenSfM exports native COLMAP files with proper 2D-3D correspondences
-- images.txt will have non-zero observations per image
-- points3D.txt will have proper track information
-- NerfStudio will receive multiple valid training samples
+- OpenSfM CMake configuration will find glog headers successfully
+- OpenSfM build will complete and install properly
+- SfM container build will succeed in CodeBuild
+- OpenSfM will export tracks for 3DGS training
 
-Build timestamp: 2025-08-18-MINIMAL-BULLSEYE-FIX
+Build timestamp: 2025-08-18-GLOG-ENV-FIX
 
-MINIMAL CHANGE: Pin to stable base image that worked in July 2025
-- ONLY CHANGE: python:3.9-slim → python:3.9-slim-bullseye  
-- REASON: Rolling tag updated from GCC 11 → GCC 14 between July-August
-- EVIDENCE: SfM built successfully in July with same Dockerfile
-- NO OTHER CHANGES: Keep simple OpenSfM build, no glog hacks
-
-LESSON: Pin production Docker tags to avoid environment drift
+TECHNICAL NOTE: This is a common issue with OpenSfM builds where CMake's
+FindGlog.cmake module needs explicit guidance to locate system headers.
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 

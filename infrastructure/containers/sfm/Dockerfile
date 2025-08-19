@@ -51,6 +51,10 @@ RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
 # Stage 3: OpenSfM build
 FROM python-deps AS opensfm-build
 
+# Set glog environment variables to fix CMake detection
+ENV GLOG_INCLUDE_DIR=/usr/include
+ENV GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
+
 # Clone and build OpenSfM with proper submodule initialization
 RUN cd /opt && \
     git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
