@@ -11,6 +11,7 @@ export default function Create(): JSX.Element {
   const [editing, setEditing] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [subscriptionPopupOpen, setSubscriptionPopupOpen] = useState(false);
 
   const fetchProjects = async () => {
     try {
@@ -73,10 +74,16 @@ export default function Create(): JSX.Element {
                 <div className="account-details">
                   <div className="account-header">
                     <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                    <span className="subscription-pill">Free Plan</span>
+                    <button 
+                      className="subscription-pill clickable" 
+                      onClick={() => setSubscriptionPopupOpen(true)}
+                    >
+                      Free Plan
+                    </button>
                   </div>
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
+                  <span className="sign-out-icon"></span>
                   Sign Out
                 </button>
               </div>
@@ -121,6 +128,64 @@ export default function Create(): JSX.Element {
           project={editing || undefined}
           onSaved={fetchProjects}
         />
+
+        {/* Subscription Popup */}
+        {subscriptionPopupOpen && (
+          <div className="subscription-popup-overlay" onClick={() => setSubscriptionPopupOpen(false)}>
+            <div className="subscription-popup" onClick={(e) => e.stopPropagation()}>
+              <div className="subscription-popup-header">
+                <h2>Choose Your Plan</h2>
+                <button className="popup-close" onClick={() => setSubscriptionPopupOpen(false)} />
+              </div>
+              <div className="subscription-plans">
+                <div className="plan-card current">
+                  <div className="plan-header">
+                    <h3>Free Plan</h3>
+                    <span className="current-badge">Current</span>
+                  </div>
+                  <div className="plan-price">$0</div>
+                  <div className="plan-features">
+                    <div className="feature">• 3 projects per month</div>
+                    <div className="feature">• Basic 3D models</div>
+                    <div className="feature">• Email delivery</div>
+                  </div>
+                </div>
+                
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Pro Plan</h3>
+                  </div>
+                  <div className="plan-price">$29<span className="plan-period">/month</span></div>
+                  <div className="plan-features">
+                    <div className="feature">• Unlimited projects</div>
+                    <div className="feature">• High-quality 3D models</div>
+                    <div className="feature">• Priority processing</div>
+                    <div className="feature">• Advanced compression</div>
+                  </div>
+                  <button className="plan-upgrade-btn">
+                    Upgrade to Pro
+                  </button>
+                </div>
+                
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Enterprise</h3>
+                  </div>
+                  <div className="plan-price">Custom</div>
+                  <div className="plan-features">
+                    <div className="feature">• Everything in Pro</div>
+                    <div className="feature">• Custom integrations</div>
+                    <div className="feature">• Dedicated support</div>
+                    <div className="feature">• Team management</div>
+                  </div>
+                  <button className="plan-contact-btn">
+                    Contact Sales
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </AuthGate>
     </>
   );
