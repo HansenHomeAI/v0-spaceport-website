@@ -1,38 +1,36 @@
-EXACT GLOG DETECTION FIX: CodeBuild OpenSfM CMake Issue
-========================================================
+DIRECT CMAKE CONFIGURATION FIX: OpenSfM Glog Detection
+======================================================
 
-ROOT CAUSE IDENTIFIED: OpenSfM CMake can't find glog headers despite installation
+ROOT CAUSE IDENTIFIED: OpenSfM setup.py ignores environment variables
 
-ERROR FROM CODEBUILD LOGS:
-```
-CMake Error at cmake/FindGlog.cmake:79 (MESSAGE):
-  Failed to find glog - Could not find glog include directory, set
-  GLOG_INCLUDE_DIR to directory containing glog/logging.h
-```
+FAILED ATTEMPT: Environment variables didn't work
+- ENV GLOG_INCLUDE_DIR=/usr/include  
+- ENV GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
+- OpenSfM's CMake still fails to find glog despite these variables
 
-ANALYSIS:
-- ✅ libgoogle-glog-dev installed correctly in Debian Bullseye
-- ✅ Python dependencies (numpy, opencv, etc.) install successfully  
-- ❌ OpenSfM CMake configuration fails to detect glog headers
-- ❌ Build fails at 4m 124ms into OpenSfM setup.py build stage
+NEW APPROACH: Bypass setup.py and configure CMake directly
+1. Manual cmake configuration with explicit glog paths:
+   ```
+   cmake ../opensfm/src \
+       -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
+       -DGLOG_INCLUDE_DIR=/usr/include \
+       -DGLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
+   ```
 
-EXACT SOLUTION IMPLEMENTED:
-1. Added explicit environment variables before OpenSfM build:
-   - ENV GLOG_INCLUDE_DIR=/usr/include
-   - ENV GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
-2. These variables guide CMake's FindGlog.cmake to correct locations
-3. No changes to base image (python:3.9-slim-bullseye remains)
+2. Build using make instead of setup.py build
+3. Then run setup.py install to complete Python package installation
+
+ADVANTAGE: Direct CMake control bypasses OpenSfM's problematic configuration
 
 EXPECTED RESULT:
-- OpenSfM CMake configuration will find glog headers successfully
-- OpenSfM build will complete and install properly
-- SfM container build will succeed in CodeBuild
-- OpenSfM will export tracks for 3DGS training
+- CMake will explicitly find glog at specified paths
+- OpenSfM C++ extensions will compile successfully  
+- Python installation will complete properly
+- SfM container will build and export tracks for 3DGS
 
-Build timestamp: 2025-08-18-GLOG-ENV-FIX
+Build timestamp: 2025-08-18-DIRECT-CMAKE-FIX
 
-TECHNICAL NOTE: This is a common issue with OpenSfM builds where CMake's
-FindGlog.cmake module needs explicit guidance to locate system headers.
+LESSON: When setup.py fails, sometimes direct CMake configuration works better.
 Container: spaceport/sfm:latest
 Priority: CRITICAL - fixes core pipeline issue
 
