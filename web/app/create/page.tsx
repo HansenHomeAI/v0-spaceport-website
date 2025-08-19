@@ -13,6 +13,20 @@ export default function Create(): JSX.Element {
   const [user, setUser] = useState<any>(null);
   const [subscriptionPopupOpen, setSubscriptionPopupOpen] = useState(false);
 
+  // Lock body scroll when popup is open
+  useEffect(() => {
+    if (subscriptionPopupOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [subscriptionPopupOpen]);
+
   const fetchProjects = async () => {
     try {
       setLoading(true);
