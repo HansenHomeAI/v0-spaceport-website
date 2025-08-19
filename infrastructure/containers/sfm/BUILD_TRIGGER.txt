@@ -18,10 +18,13 @@ ANALYSIS:
 - Expected: Proper CLI wrapper to call opensfm.commands.opensfm_main()  
 - Reality: Missing executable script
 
-SOLUTION: Create bash wrapper calling Python module directly
-```bash
-#!/bin/bash
-python3 -m opensfm "$@"
+SOLUTION: Create Python wrapper calling opensfm.main.main() directly
+```python
+#!/usr/bin/env python3
+import sys
+from opensfm import main
+if __name__ == "__main__":
+    main.main()
 ```
 
 EXPECTED RESULT:
