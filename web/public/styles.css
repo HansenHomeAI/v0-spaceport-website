@@ -5057,5 +5057,473 @@ input.text-fade-right,
   padding-right: 80px; /* Make room for units */
 }
 
+/* Account Card Styles */
+.account-card {
+  background: rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  cursor: default !important;
+  border-radius: 25px !important; /* Match header border radius */
+  height: 50px !important; /* Match header height */
+}
+
+@media (min-width: 640px) {
+  .account-card {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.account-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%; /* Ensure full height alignment */
+}
+
+.account-details {
+  flex: 1;
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.account-handle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  font-family: inherit;
+}
+
+.subscription-pill {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.5); /* Pure white at 50% opacity */
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.subscription-pill.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.subscription-pill.clickable:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sign-out-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 6px 12px; /* Match header nav link padding */
+  border-radius: 999px; /* Match header hover effect radius */
+  font-size: 1.2rem; /* Match header nav link font size */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Match header transition timing */
+  font-family: inherit;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sign-out-btn::before {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.15); /* Match header hover background */
+  border-radius: 999px;
+  inset: 0;
+  transform: scale(0.7);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease; /* Match header timing */
+  z-index: -1;
+}
+
+.sign-out-btn:hover::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.sign-out-icon {
+  width: 16px;
+  height: 16px;
+  background: url('/assets/SpaceportIcons/Upload.svg') no-repeat center;
+  background-size: contain;
+  filter: brightness(0) invert(1); /* Make it white */
+  transform: rotate(270deg); /* Rotate 270 degrees for sign-out direction */
+  flex-shrink: 0;
+}
+
+/* Loading Card Styles */
+.loading-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 2.5px solid rgba(255, 255, 255, 0.05);
+  cursor: default !important;
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+}
+
+.loading-spinner .spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  font-family: inherit;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.005);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsive Styles for Account Card */
+@media (max-width: 640px) {
+  .account-card {
+    height: auto !important; /* Allow natural height on mobile */
+    padding: 16px 20px !important; /* Better padding for mobile */
+  }
+  
+  .account-info {
+    flex-direction: row; /* Keep horizontal layout on mobile */
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+  }
+  
+  .account-details {
+    flex: 1;
+    min-width: 0; /* Allow text to wrap if needed */
+  }
+  
+  .account-header {
+    flex-direction: column; /* Stack username and pill vertically on mobile */
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .account-handle {
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+  
+  .subscription-pill {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  
+  .sign-out-btn {
+    flex-shrink: 0; /* Prevent button from shrinking */
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  
+  .sign-out-icon {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .loading-spinner {
+    padding: 16px;
+  }
+  
+  .loading-spinner .spinner {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .loading-spinner p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Subscription Popup Styles */
+.subscription-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto; /* Allow scrolling in the overlay */
+}
+
+.subscription-popup {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  max-width: 900px;
+  width: 100%;
+  min-height: fit-content; /* Let content determine height */
+  position: relative;
+  margin: auto; /* Center vertically when content is tall */
+}
+
+.subscription-popup::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, 0) 57%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.82px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.subscription-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.subscription-popup-header h2 {
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin: 0;
+  font-family: inherit;
+}
+
+.subscription-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.plan-card {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 24px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.plan-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.plan-card.current {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.plan-header h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  font-family: inherit;
+}
+
+.current-badge {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.plan-price {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  font-family: inherit;
+}
+
+.plan-period {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5); /* Pure white at 50% opacity */
+}
+
+.plan-features {
+  margin-bottom: 24px;
+}
+
+.feature {
+  color: rgba(255, 255, 255, 0.5); /* Pure white at 50% opacity */
+  font-size: 1rem;
+  margin-bottom: 8px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.plan-upgrade-btn,
+.plan-contact-btn {
+  background: #fff;
+  border: none;
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  width: 100%;
+}
+
+.plan-upgrade-btn:hover,
+.plan-contact-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.plan-contact-btn {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.plan-contact-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Mobile styles for subscription popup */
+@media (max-width: 768px) {
+  .subscription-popup {
+    padding: 24px 20px;
+    margin: 10px;
+    border-radius: 20px;
+  }
+  
+  .subscription-popup-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .subscription-plans {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .plan-card {
+    padding: 20px;
+  }
+  
+  .plan-price {
+    font-size: 1.8rem;
+  }
+}
+
+/* Ensure consistent card height and alignment */
+.account-card {
+  /* Perfect concentricity with header */
+  display: flex;
+  align-items: center;
+  padding: 0 20px !important; /* Remove vertical padding since height is fixed */
+}
+
+.loading-card {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.account-card h1,
+.loading-card h1 {
+  margin: 0;
+}
+
+/* Enhanced mobile layout for project cards */
+@media (max-width: 640px) {
+  .project-cards {
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .loading-card {
+    min-height: 90px;
+  }
+}
+
 
 
