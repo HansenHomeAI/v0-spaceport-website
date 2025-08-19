@@ -4,6 +4,7 @@ import csv
 import io
 import os
 import requests
+import time
 from typing import List, Dict, Tuple, Optional
 
 class SpiralDesigner:
