@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
-import TutorialVideo from '../../components/TutorialVideo';
 import AuthGate from '../auth/AuthGate';
 import { Auth } from 'aws-amplify';
 
@@ -76,11 +75,14 @@ export default function Create(): JSX.Element {
       <section className="section" id="create">
         <div id="development-content">
           <h1>Dashboard</h1>
-          <TutorialVideo 
-            videoId="e5b2d593df724c279742d9d4dcdbb5cf"
-            title="How to Use Spaceport - Tutorial"
-            description="Watch this quick tutorial to learn how to create stunning 3D models with Spaceport"
-          />
+          <a 
+            href="https://www.loom.com/share/e5b2d593df724c279742d9d4dcdbb5cf" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="tutorial-button"
+          >
+            Watch Tutorial
+          </a>
         </div>
       </section>
 
