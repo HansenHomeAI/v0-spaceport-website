@@ -81,7 +81,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     optimizedParamsRef.current = newParams;
   }, []);
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
-  const [batteryDownloading, setBatteryDownloading] = useState<number | null>(null);
+  const [downloadingBatteries, setDownloadingBatteries] = useState<Set<number>>(new Set());
   const [processingMessage, setProcessingMessage] = useState<string>('');
 
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +133,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setMlLoading(false);
     setUploadStage('');
     setOptimizedParamsWithLogging(null, 'Modal opened/reset');
-    setBatteryDownloading(null);
+    setDownloadingBatteries(new Set());
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
@@ -552,7 +552,22 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
 
+  // Processing messages for battery downloads
+  const batteryProcessingMessages = [
+    "Running binary search optimization",
+    "Forming to the terrain",
+    "Calculating altitude adjustments", 
+    "Optimizing flight coverage",
+    "Generating waypoint data",
+    "Finalizing flight path"
+  ];
+
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
+    // Check if already downloading this battery
+    if (downloadingBatteries.has(batteryIndex1)) {
+      return;
+    }
+    
     // Use ref to get current optimized params (not stale closure)
     const currentOptimizedParams = optimizedParamsRef.current;
     
@@ -566,7 +581,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       showSystemNotification('error', 'Please optimize first');
       return;
     }
-    setBatteryDownloading(batteryIndex1);
+    
+    // Add to downloading set
+    setDownloadingBatteries(prev => new Set([...prev, batteryIndex1]));
+    
+    // Start processing messages only if this is the first download
+    let messageInterval: NodeJS.Timeout | null = null;
+    if (downloadingBatteries.size === 0) {
+      let messageIndex = 0;
+      setProcessingMessage(batteryProcessingMessages[0]);
+      messageInterval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % batteryProcessingMessages.length;
+        setProcessingMessage(batteryProcessingMessages[messageIndex]);
+      }, 2000);
+    }
+    
     try {
       console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, currentOptimizedParams);
       
@@ -598,9 +627,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } catch (e: any) {
       showSystemNotification('error', e?.message || 'CSV download failed');
     } finally {
-      setBatteryDownloading(null);
+      if (messageInterval) {
+        clearInterval(messageInterval);
+      }
+      setDownloadingBatteries(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(batteryIndex1);
+        // Only clear processing message if this was the last battery downloading
+        if (newSet.size === 0) {
+          setProcessingMessage('');
+        }
+        return newSet;
+      });
     }
-  }, [API_ENHANCED_BASE, projectTitle]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1144,13 +1184,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             <div className="category-outline">
               <div className="popup-section">
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
-                  {optimizationLoading ? processingMessage : "Individual Battery Segments:"}
+                  {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
                 </h4>
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <button
                     key={idx}
-                    className={`flight-path-download-btn${batteryDownloading === idx + 1 ? ' loading' : ''}`}
+                    className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
                     onClick={async () => {
                       console.log(`🔍 Battery ${idx + 1} clicked:`, {
                         optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
@@ -1174,15 +1214,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           }
                           return;
                         }
-                        setBatteryDownloading(idx + 1);
                         
-                        // Small delay to avoid any race conditions with auto-save
-                        await new Promise(r => setTimeout(r, 100));
-                        
+                        // Run optimization first
                         try {
                           await handleOptimize();
                           // Poll optimizedParams until set (max ~30s) with improved checking
-                          const start = Date.now();
                           let checkCount = 0;
                           const maxChecks = 60; // 30 seconds with 500ms intervals
                           
@@ -1207,20 +1243,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           const finalOptimizedParams = optimizedParamsRef.current;
                           if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
                             showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
-                            setBatteryDownloading(null);
                             return;
                           }
                         } catch (e: any) {
                           showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                          setBatteryDownloading(null);
                           return;
                         }
                       }
-                      await downloadBatteryCsv(idx + 1);
+                      
+                      // Add to download queue
+                      downloadBatteryCsv(idx + 1);
                     }}
-                    disabled={batteryDownloading !== null}
                   >
-                    <span className={`download-icon${batteryDownloading === idx + 1 ? ' loading' : ''}`}></span>
+                    <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
                     Battery {idx + 1}
                   </button>
                 ))}

@@ -1,31 +1,37 @@
-COLMAP Format Fix Applied - Build Required
-==========================================
+DIRECT CMAKE CONFIGURATION FIX: OpenSfM Glog Detection
+======================================================
 
-Changes made to fix COLMAP format compatibility:
+ROOT CAUSE IDENTIFIED: OpenSfM setup.py ignores environment variables
 
-1. COLMAP Converter fixes:
-   - Fixed OpenSfM camera ID conversion (string "v2" -> numeric ID 1)
-   - Added camera_id_mapping to convert between OpenSfM and COLMAP formats
-   - Updated both main and split reconstruction methods
-   - Fixed train/test split to use proper numeric camera IDs
+FAILED ATTEMPT: Environment variables didn't work
+- ENV GLOG_INCLUDE_DIR=/usr/include  
+- ENV GLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
+- OpenSfM's CMake still fails to find glog despite these variables
 
-2. This addresses the ValueError: invalid literal for int() with base 10: 'v2'
-   that was causing 3DGS training to fail immediately
+NEW APPROACH: Bypass setup.py and configure CMake directly
+1. Manual cmake configuration with explicit glog paths:
+   ```
+   cmake ../opensfm/src \
+       -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
+       -DGLOG_INCLUDE_DIR=/usr/include \
+       -DGLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so
+   ```
 
-3. The SfM container now properly outputs COLMAP-compatible format:
-   - cameras.txt with numeric camera IDs (1, 2, 3...)
-   - images.txt with matching numeric camera references
-   - points3D.txt with proper format
-   - train/ and test/ directories with correct splits
+2. Build using make instead of setup.py build
+3. Then run setup.py install to complete Python package installation
 
-Date: 2025-07-10
-Build required: YES
-Priority: HIGH - fixes pipeline compatibility issue
+ADVANTAGE: Direct CMake control bypasses OpenSfM's problematic configuration
 
-REBUILD: DEFINITIVE FIX for 3DGS directory structure mismatch
-- FIXED directory structure: Create subdirectories (train/0/, test/0/) that 3DGS expects
-- 3DGS looks for directories INSIDE training/validation channels, not files in root
-- Now creates proper COLMAP sparse/0 structure: train/0/cameras.txt, train/0/images.txt, etc.
-- Images are copied to the correct subdirectories where 3DGS can find them
-- This fixes "No COLMAP reconstruction directory found in training channel" error
-Build timestamp: 2025-01-10-19:30:00
+EXPECTED RESULT:
+- CMake will explicitly find glog at specified paths
+- OpenSfM C++ extensions will compile successfully  
+- Python installation will complete properly
+- SfM container will build and export tracks for 3DGS
+
+Build timestamp: 2025-08-18-DIRECT-CMAKE-FIX
+
+LESSON: When setup.py fails, sometimes direct CMake configuration works better.
+Container: spaceport/sfm:latest
+Priority: CRITICAL - fixes core pipeline issue
+
+** TRIGGER AUTOMATED BUILD **

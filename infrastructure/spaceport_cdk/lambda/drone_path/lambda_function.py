@@ -4,6 +4,7 @@ import csv
 import io
 import os
 import requests
+import time
 from typing import List, Dict, Tuple, Optional
 
 class SpiralDesigner:
@@ -91,6 +92,11 @@ class SpiralDesigner:
         
         # Priority: Environment variable > Development key
         self.api_key = os.environ.get("GOOGLE_MAPS_API_KEY", dev_api_key)
+        
+        # Log which API key is being used (mask for security)
+        key_source = "PRODUCTION" if "GOOGLE_MAPS_API_KEY" in os.environ else "DEV (RATE LIMITED)"
+        masked_key = self.api_key[:10] + "..." + self.api_key[-4:] if self.api_key else "None"
+        print(f"🔑 Using {key_source} API key: {masked_key}")
     
     def haversine_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         """
