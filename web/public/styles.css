@@ -736,6 +736,8 @@ footer {
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-left: auto; /* Ensure centered when used standalone */
   margin-right: auto;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .waitlist-card::before {
@@ -2225,86 +2227,73 @@ footer {
   isolation: isolate; /* Create new stacking context */
 }
 
-/* PRICING Circle Swirl */
+/* PRICING Optimized Color Effect */
 #pricing-header::before {
   content: "";
   position: absolute;
-  top: -1200px;
+  top: -300px;
   left: 50%;
-  transform: translateX(-50%) rotate(160deg) scale(0.8);
-  width: 1600px;         /* Larger bounding box so the swirl is bigger */
-  height: 1600px;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
   pointer-events: none;
   z-index: -2;
-  /* Use pure CSS conic-gradient to avoid Safari foreignObject issues */
-  background: conic-gradient(
-    from 100deg,
-    #FF4F00 0%,
-    #FF4F00 20%,
-    #4B006D 45%,
-    #CD70E4 80%,
-    #FF4F00 100%
+  background: radial-gradient(
+    ellipse 600px 400px at 50% 50%,
+    rgba(255, 79, 0, 0.3) 0%,
+    rgba(75, 0, 109, 0.2) 35%,
+    rgba(205, 112, 228, 0.15) 65%,
+    transparent 85%
   );
-  border-radius: 50%;
-  /* Soft edge for better blending */
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  opacity: 0.4;
-  filter: blur(80px);
+  opacity: 0.6;
+  filter: blur(40px);
+  will-change: transform;
 }
 
-/* ABOUT Circle Swirl */
+/* ABOUT Optimized Color Effect */
 #about::before {
   content: "";
   position: absolute;
-  top: -1200px;
+  top: -350px;
   left: 50%;
-  transform: translateX(-50%) rotate(180deg) scale(0.8);
-  width: 1600px;         /* Larger bounding box so the swirl is bigger */
-  height: 1600px;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 700px;
   pointer-events: none;
   z-index: -2;
-  background: conic-gradient(
-    from 100deg,
-    #FF4F00 0%,
-    #FF4F00 20%,
-    #4B006D 45%,
-    #CD70E4 80%,
-    #FF4F00 100%
+  background: radial-gradient(
+    ellipse 700px 500px at 50% 50%,
+    rgba(205, 112, 228, 0.25) 0%,
+    rgba(75, 0, 109, 0.2) 40%,
+    rgba(255, 79, 0, 0.15) 70%,
+    transparent 90%
   );
-  border-radius: 50%;
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  opacity: 0.4;
-  filter: blur(80px);
+  opacity: 0.5;
+  filter: blur(50px);
+  will-change: transform;
 }
 
-/* CREATE Circle Swirl */
+/* CREATE Optimized Color Effect */
 #create::before {
   content: "";
   position: absolute;
-  top: -1200px;
+  top: -400px;
   left: 50%;
-  transform: translateX(-50%) rotate(200deg) scale(0.8);
-  width: 1600px;         /* Larger bounding box so the swirl is bigger */
-  height: 1600px;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 800px;
   pointer-events: none;
   z-index: -2;
-  background: conic-gradient(
-    from 100deg,
-    #FF4F00 0%,
-    #FF4F00 20%,
-    #4B006D 45%,
-    #CD70E4 80%,
-    #FF4F00 100%
+  background: radial-gradient(
+    ellipse 800px 600px at 50% 50%,
+    rgba(255, 79, 0, 0.3) 0%,
+    rgba(75, 0, 109, 0.25) 30%,
+    rgba(205, 112, 228, 0.2) 60%,
+    transparent 85%
   );
-  border-radius: 50%;
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  opacity: 0.4;
-  filter: blur(80px);
-  will-change: transform; /* Optimize for animations */
-  backface-visibility: hidden; /* Improve rendering performance */
+  opacity: 0.7;
+  filter: blur(60px);
+  will-change: transform;
 }
 
 /* Breathing room below the create header before dashboard */
@@ -2365,6 +2354,12 @@ footer {
   flex-direction: column;
   align-items: center;
   gap: 32px;
+}
+
+.signin-block {
+  overflow-x: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .signin-block h2 {
