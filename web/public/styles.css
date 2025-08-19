@@ -5059,9 +5059,9 @@ input.text-fade-right,
 
 /* Account Card Styles */
 .account-card {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(50px);
-  -webkit-backdrop-filter: blur(50px);
+  background: rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   border: 2.5px solid rgba(255, 255, 255, 0.1);
   cursor: default !important;
 }
@@ -5085,26 +5085,37 @@ input.text-fade-right,
   flex: 1;
 }
 
+.account-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .account-handle {
   font-size: 1.3rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 4px 0;
+  margin: 0;
   font-family: inherit;
 }
 
-.account-subscription {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
+.subscription-pill {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
   font-family: inherit;
-  font-weight: 400;
+  white-space: nowrap;
 }
 
 .sign-out-btn {
-  background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  color: rgba(255, 255, 255, 0.7);
+  background: #fff;
+  border: none;
+  color: #000;
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 0.9rem;
@@ -5115,9 +5126,8 @@ input.text-fade-right,
 }
 
 .sign-out-btn:hover {
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
 }
 
 /* Loading Card Styles */
@@ -5178,8 +5188,17 @@ input.text-fade-right,
     gap: 12px;
   }
   
+  .account-header {
+    gap: 8px;
+  }
+  
   .account-handle {
     font-size: 1.2rem;
+  }
+  
+  .subscription-pill {
+    font-size: 0.7rem;
+    padding: 3px 8px;
   }
   
   .sign-out-btn {
@@ -5203,7 +5222,13 @@ input.text-fade-right,
 }
 
 /* Ensure consistent card height and alignment */
-.account-card,
+.account-card {
+  /* Remove min-height to let it size naturally like new-project-card */
+  display: flex;
+  align-items: center;
+  padding: 12px 20px !important; /* Match new-project-card padding */
+}
+
 .loading-card {
   min-height: 100px;
   display: flex;
@@ -5222,7 +5247,6 @@ input.text-fade-right,
     margin-top: 30px;
   }
   
-  .account-card,
   .loading-card {
     min-height: 90px;
   }

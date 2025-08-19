@@ -71,8 +71,10 @@ export default function Create(): JSX.Element {
             <div className="project-box account-card">
               <div className="account-info">
                 <div className="account-details">
-                  <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                  <p className="account-subscription">Free Plan</p>
+                  <div className="account-header">
+                    <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
+                    <span className="subscription-pill">Free Plan</span>
+                  </div>
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
                   Sign Out
