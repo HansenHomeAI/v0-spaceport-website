@@ -18,14 +18,15 @@ ANALYSIS:
 - Expected: Proper CLI wrapper to call opensfm.commands.opensfm_main()  
 - Reality: Missing executable script
 
-SOLUTION: Create Python wrapper calling opensfm.main.main() directly
-```python
-#!/usr/bin/env python3
-import sys
-from opensfm import main
-if __name__ == "__main__":
-    main.main()
+SOLUTION: Use OpenSfM's ACTUAL bin/opensfm script instead of guessing
+```bash
+# Copy the real OpenSfM CLI script from source
+cp bin/opensfm /usr/local/bin/opensfm
+chmod +x /usr/local/bin/opensfm
 ```
+
+INSIGHT: We were creating fake CLI wrappers instead of using OpenSfM's real one!
+OpenSfM provides its own bin/opensfm script - we just need to copy it.
 
 EXPECTED RESULT:
 - SfM processing completes successfully

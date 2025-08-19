@@ -65,11 +65,7 @@ RUN cd /opt && \
     make && \
     cd .. && \
     cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
-    echo '#!/usr/bin/env python3' > /usr/local/bin/opensfm && \
-    echo 'import sys' >> /usr/local/bin/opensfm && \
-    echo 'from opensfm import main' >> /usr/local/bin/opensfm && \
-    echo 'if __name__ == "__main__":' >> /usr/local/bin/opensfm && \
-    echo '    main.main()' >> /usr/local/bin/opensfm && \
+    cp bin/opensfm /usr/local/bin/opensfm && \
     chmod +x /usr/local/bin/opensfm && \
     rm -rf /opt/OpenSfM/.git
 
