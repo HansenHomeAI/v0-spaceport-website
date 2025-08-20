@@ -59,11 +59,20 @@ jobs:
         echo "Waiting for CDKToolkit stack deletion to complete..."
         aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2 2>/dev/null || true
         
-        # Clear CDK assets S3 bucket
-        BUCKET_NAME="cdk-hnb659fds-assets-$ACCOUNT-us-west-2"
-        echo "Clearing CDK assets bucket: $BUCKET_NAME"
-        aws s3 rm s3://$BUCKET_NAME --recursive 2>/dev/null || true
-        aws s3 rb s3://$BUCKET_NAME --force 2>/dev/null || true
+        # Clear ALL CDK assets S3 buckets (more robust cleanup)
+        echo "Clearing all CDK assets buckets..."
+        for bucket in $(aws s3 ls | grep "cdk-.*assets.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+          echo "Clearing bucket: $bucket"
+          aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+          aws s3 rb s3://$bucket --force 2>/dev/null || true
+        done
+        
+        # Also check for any other CDK-related buckets
+        for bucket in $(aws s3 ls | grep "cdk-.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+          echo "Clearing CDK bucket: $bucket"
+          aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+          aws s3 rb s3://$bucket --force 2>/dev/null || true
+        done
         
         # Force complete re-bootstrap
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
