@@ -45,15 +45,23 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
 
-    - name: CDK Bootstrap
+    - name: Ensure CDK Bootstrap (idempotent)
       if: github.event_name == 'push'
       env:
         CDK_NEW_BOOTSTRAP: "1"
       run: |
-        npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2 \
-          --qualifier spcdk001 \
-          --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
-          --force
+        set -e
+        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        echo "Ensuring CDK bootstrap in account $ACCOUNT..."
+        if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
+          echo "CDKToolkit already bootstrapped. Skipping."
+        else
+          echo "CDKToolkit not found. Bootstrapping..."
+          npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
+            --qualifier spcdk001 \
+            --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+            --force
+        fi
 
     - name: Deploy CDK Stack
       if: github.event_name == 'push'
