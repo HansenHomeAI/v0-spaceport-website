@@ -47,7 +47,13 @@ jobs:
 
     - name: CDK Bootstrap
       if: github.event_name == 'push'
-      run: npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2
+      env:
+        CDK_NEW_BOOTSTRAP: "1"
+      run: |
+        npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2 \
+          --qualifier spcdk001 \
+          --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+          --force
 
     - name: Deploy CDK Stack
       if: github.event_name == 'push'
