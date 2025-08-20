@@ -52,7 +52,14 @@ jobs:
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-        echo "Bootstrapping CDK in account $ACCOUNT..."
+        echo "Clearing existing bootstrap state and re-bootstrapping CDK in account $ACCOUNT..."
+        
+        # Clear any existing bootstrap state
+        aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2 2>/dev/null || true
+        echo "Waiting for CDKToolkit stack deletion to complete..."
+        aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2 2>/dev/null || true
+        
+        # Force complete re-bootstrap
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
           --force
