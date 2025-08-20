@@ -59,6 +59,11 @@ jobs:
         echo "Waiting for CDKToolkit stack deletion to complete..."
         aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2 2>/dev/null || true
         
+        # Clear SSM parameters related to CDK bootstrap
+        echo "Clearing CDK bootstrap SSM parameters..."
+        aws ssm delete-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 2>/dev/null || true
+        aws ssm delete-parameter --name "/cdk-bootstrap/spcdk001/version" --region us-west-2 2>/dev/null || true
+        
         # Clear ALL CDK assets S3 buckets (more robust cleanup)
         echo "Clearing all CDK assets buckets..."
         for bucket in $(aws s3 ls | grep "cdk-.*assets.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
