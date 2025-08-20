@@ -93,6 +93,7 @@ jobs:
         # Force complete re-bootstrap
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+          --new-bootstrap \
           --force
 
     - name: Deploy CDK Stack
