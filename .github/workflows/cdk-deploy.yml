@@ -74,6 +74,17 @@ jobs:
           aws s3 rb s3://$bucket --force 2>/dev/null || true
         done
         
+        # Final cleanup check - wait a moment and check again
+        echo "Waiting for cleanup to settle..."
+        sleep 10
+        
+        # One more cleanup pass to catch any buckets created during cleanup
+        for bucket in $(aws s3 ls | grep "cdk-.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+          echo "Final cleanup of CDK bucket: $bucket"
+          aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+          aws s3 rb s3://$bucket --force 2>/dev/null || true
+        done
+        
         # Force complete re-bootstrap
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
