@@ -3,7 +3,6 @@ version: 0.2
 env:
   variables:
     AWS_REGION: "us-west-2"
-    AWS_ACCOUNT_ID: "975050048887"
     CONTAINERS_TO_BUILD: "all"
     # Enable Docker BuildKit for better caching
     DOCKER_BUILDKIT: "1"
@@ -25,6 +24,8 @@ phases:
 
   pre_build:
     commands:
+      - echo "Resolving AWS account dynamically via STS..."
+      - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
       - echo "Logging in to Docker Hub..."
