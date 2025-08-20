@@ -49,6 +49,7 @@ jobs:
       if: github.event_name == 'push'
       env:
         CDK_NEW_BOOTSTRAP: "1"
+        CDK_QUALIFIER: "spcdkprod1"
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
@@ -63,6 +64,7 @@ jobs:
         echo "Clearing CDK bootstrap SSM parameters..."
         aws ssm delete-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 2>/dev/null || true
         aws ssm delete-parameter --name "/cdk-bootstrap/spcdk001/version" --region us-west-2 2>/dev/null || true
+        aws ssm delete-parameter --name "/cdk-bootstrap/$CDK_QUALIFIER/version" --region us-west-2 2>/dev/null || true
         
         # Clear ALL CDK assets S3 buckets (more robust cleanup)
         echo "Clearing all CDK assets buckets..."
@@ -90,9 +92,10 @@ jobs:
           aws s3 rb s3://$bucket --force 2>/dev/null || true
         done
         
-        # Force complete re-bootstrap
+        # Force complete re-bootstrap with fixed qualifier to avoid global bucket name conflicts
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+          --qualifier $CDK_QUALIFIER \
           --new-bootstrap \
           --force
 
