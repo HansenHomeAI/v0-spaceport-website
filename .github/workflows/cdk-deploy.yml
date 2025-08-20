@@ -54,7 +54,6 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Bootstrapping CDK in account $ACCOUNT..."
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
-          --qualifier spcdk001 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
           --force
 
