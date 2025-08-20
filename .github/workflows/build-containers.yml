@@ -67,7 +67,7 @@ jobs:
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ github.ref_name == 'main' && (secrets.AWS_ROLE_TO_ASSUME_PROD || secrets.AWS_ROLE_TO_ASSUME) || (secrets.AWS_ROLE_TO_ASSUME_STAGING || secrets.AWS_ROLE_TO_ASSUME) }}
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
 
     - name: Create ECR repositories if they don't exist
@@ -77,6 +77,82 @@ jobs:
           aws ecr describe-repositories --region us-west-2 --repository-names $repo || \
           aws ecr create-repository --region us-west-2 --repository-name $repo --image-scanning-configuration scanOnPush=true
         done
+
+    - name: Ensure CodeBuild role and project exist (prod/staging)
+      run: |
+        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        echo "Using account: $ACCOUNT"
+
+        # Ensure CodeBuild service role
+        set +e
+        aws iam get-role --role-name CodeBuildServiceRole >/dev/null 2>&1
+        MISSING_ROLE=$?
+        set -e
+        if [ "$MISSING_ROLE" -ne 0 ]; then
+          echo "Creating CodeBuildServiceRole..."
+          cat > trust.json << 'EOF'
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {"Service": "codebuild.amazonaws.com"},
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          }
+EOF
+          aws iam create-role --role-name CodeBuildServiceRole --assume-role-policy-document file://trust.json
+          aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess
+          aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+          aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+        else
+          echo "CodeBuildServiceRole already exists."
+        fi
+
+        ROLE_ARN=$(aws iam get-role --role-name CodeBuildServiceRole --query 'Role.Arn' --output text)
+        echo "Service role: $ROLE_ARN"
+
+        # Ensure CodeBuild project
+        set +e
+        aws codebuild batch-get-projects --names spaceport-ml-containers --query 'projects[0].name' --output text | grep -q spaceport-ml-containers
+        MISSING_PROJ=$?
+        set -e
+        if [ "$MISSING_PROJ" -ne 0 ]; then
+          echo "Creating CodeBuild project spaceport-ml-containers..."
+          cat > project.json << 'EOF'
+          {
+            "name": "spaceport-ml-containers",
+            "description": "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA",
+            "source": {
+              "type": "GITHUB",
+              "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+              "buildspec": "buildspec.yml",
+              "gitCloneDepth": 1,
+              "reportBuildStatus": true
+            },
+            "artifacts": { "type": "NO_ARTIFACTS" },
+            "environment": {
+              "type": "LINUX_CONTAINER",
+              "image": "aws/codebuild/standard:7.0",
+              "computeType": "BUILD_GENERAL1_LARGE",
+              "privilegedMode": true
+            },
+            "serviceRole": "REPLACE_ME",
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "tags": [
+              { "key": "Project", "value": "Spaceport" },
+              { "key": "Purpose", "value": "ML-Container-Build" }
+            ]
+          }
+EOF
+          sed -i.bak "s|REPLACE_ME|$ROLE_ARN|" project.json
+          aws codebuild create-project --cli-input-json file://project.json >/dev/null
+          echo "Created CodeBuild project."
+        else
+          echo "CodeBuild project already exists."
+        fi
 
     - name: Trigger CodeBuild for container builds
       run: |
@@ -118,6 +194,5 @@ jobs:
       run: |
         echo "✅ ML Containers built and pushed via CodeBuild:"
         echo "Built containers: ${{ steps.changes.outputs.containers }}"
-        echo "SfM: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest"
-        echo "3DGS: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest"
-        echo "Compressor: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest" 
+        echo "Account: $(aws sts get-caller-identity --query Account --output text)"
+        echo "Region: us-west-2"
