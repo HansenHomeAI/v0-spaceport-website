@@ -16,7 +16,8 @@ export default function DesignSystemSandbox(): JSX.Element {
     'body-text with highlights': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life with incredible detail and realism.',
     'header-logo': 'Spaceport',
     'nav-link': '3D Reconstruction',
-    'toggle-icon': '≡'
+    'toggle-icon': '≡',
+    'pill-button': 'Pill Button'
   });
 
   const updateEditableText = (key: string, value: string) => {
@@ -228,6 +229,16 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               {editableTexts['toggle-icon']}
             </div>
+            <div 
+              className="pill-button"
+              data-component="pill-button"
+              onMouseEnter={(e) => handleComponentHover('pill-button', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('pill-button')}
+              onDoubleClick={(e) => handleDoubleClick('pill-button', e)}
+            >
+              {editableTexts['pill-button']}
+            </div>
           </div>
         </div>
 
@@ -241,8 +252,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('header-preview mobile')}
             >
-              <div className="header-logo-preview">{editableTexts['header-logo']}</div>
-              <div className="toggle-icon-preview">
+              <div className="h4 pill-button">{editableTexts['header-logo']}</div>
+              <div className="h4 pill-button">
                 <span></span>
                 <span></span>
               </div>
@@ -255,11 +266,11 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('header-preview desktop')}
             >
-              <div className="header-logo-preview">{editableTexts['header-logo']}</div>
+              <div className="h4 pill-button">{editableTexts['header-logo']}</div>
               <div className="nav-links-preview">
-                <span className="nav-link-preview">Pricing</span>
-                <span className="nav-link-preview">About</span>
-                <span className="nav-link-preview">Create</span>
+                <span className="h4 pill-button">Pricing</span>
+                <span className="h4 pill-button">About</span>
+                <span className="h4 pill-button">Create</span>
               </div>
             </div>
           </div>
@@ -302,6 +313,16 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               Upload Images
             </button>
+            <div 
+              className="pill-button"
+              data-component="pill-button"
+              onMouseEnter={(e) => handleComponentHover('pill-button', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('pill-button')}
+              onDoubleClick={(e) => handleDoubleClick('pill-button', e)}
+            >
+              {editableTexts['pill-button']}
+            </div>
           </div>
         </div>
 

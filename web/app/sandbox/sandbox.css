@@ -263,8 +263,8 @@
   border-radius: inherit;
   background: rgba(255, 255, 255, 0.15);
   z-index: -1;
-  opacity: 1;
-  transform: scale(1);
+  opacity: 0;
+  transform: scale(0.7);
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
@@ -401,10 +401,16 @@
   color: rgba(255, 255, 255, 1);
   padding: 8px 16px;
   line-height: 1.2;
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   border-radius: 999px;
   position: relative;
   z-index: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.component-showcase .header-logo-preview:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .component-showcase .nav-links-preview {
@@ -421,14 +427,14 @@
   color: rgba(255, 255, 255, 1);
   padding: 6px 12px;
   line-height: 1.2;
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .component-showcase .nav-link-preview:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .component-showcase .toggle-icon-preview {
@@ -437,7 +443,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   border-radius: 50%;
   position: relative;
   z-index: 1;
@@ -446,7 +452,46 @@
 }
 
 .component-showcase .toggle-icon-preview:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Pill Background Button Class - Same hover effect as header components */
+.component-showcase .pill-button {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 6px 12px;
+  line-height: 1.2;
+  background: transparent;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+
+.component-showcase .pill-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.component-showcase .pill-button:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.component-showcase .pill-button:active::before {
+  transform: scale(0.95);
 }
 
 .component-showcase .toggle-icon-preview::before {
@@ -712,4 +757,40 @@
     padding: 5px 10px;
     min-width: 70px;
   }
+}
+
+/* Header Preview Components - Now using pill-button class for consistent hover effects */
+.component-showcase .header-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  min-width: 400px;
+  position: relative;
+}
+
+.component-showcase .header-preview.mobile {
+  min-width: 300px;
+}
+
+.component-showcase .header-preview.desktop {
+  min-width: 500px;
+}
+
+.component-showcase .nav-links-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Header Preview Elements - Simple h4 with pill-button hover effect */
+.component-showcase .header-preview .pill-button {
+  margin-bottom: 0;
+  max-width: none;
 }
