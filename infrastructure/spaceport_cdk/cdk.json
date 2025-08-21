@@ -1,6 +1,7 @@
 {
   "app": "python3 app.py",
   "context": {
-    "aws-cdk:enableDiffNoFail": "true"
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:bootstrapQualifier": "spcdkprod2"
   }
 } 
