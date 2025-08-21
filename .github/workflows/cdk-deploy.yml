@@ -136,27 +136,7 @@ jobs:
         aws iam get-role --role-name cdk-$CDK_QUALIFIER-file-publishing-role-$ACCOUNT-us-west-2 || true
         aws iam get-role --role-name cdk-$CDK_QUALIFIER-cfn-exec-role-$ACCOUNT-us-west-2 || true
 
-    - name: Purge legacy stacks using default qualifier role (hnb659fds)
-      if: github.event_name == 'push'
-      env:
-        CDK_QUALIFIER: "spcdkprod2"
-      run: |
-        set -e
-        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-        REGION=us-west-2
-        NEW_ROLE_ARN=arn:aws:iam::$ACCOUNT:role/cdk-$CDK_QUALIFIER-cfn-exec-role-$ACCOUNT-$REGION
-        for STACK in SpaceportMLPipelineStack SpaceportStack SpaceportAuthStack; do
-          echo "Ensuring stack is absent before deploy: $STACK"
-          if aws cloudformation describe-stacks --stack-name "$STACK" --region $REGION >/dev/null 2>&1; then
-            STATUS=$(aws cloudformation describe-stacks --stack-name "$STACK" --region $REGION --query 'Stacks[0].StackStatus' --output text || echo "UNKNOWN")
-            ROLE_ARN=$(aws cloudformation describe-stacks --stack-name "$STACK" --region $REGION --query 'Stacks[0].RoleARN' --output text || echo "none")
-            echo "Current Status: $STATUS | RoleARN: $ROLE_ARN"
-            echo "Deleting stack $STACK with new role to break any old qualifier dependency..."
-            aws cloudformation delete-stack --stack-name "$STACK" --role-arn "$NEW_ROLE_ARN" --region $REGION || true
-            echo "Waiting for $STACK deletion..."
-            aws cloudformation wait stack-delete-complete --stack-name "$STACK" --region $REGION || true
-          fi
-        done
+    # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
     - name: Deploy CDK Stack
       if: github.event_name == 'push'

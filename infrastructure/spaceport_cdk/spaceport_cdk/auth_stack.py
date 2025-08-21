@@ -2,7 +2,7 @@ from aws_cdk import (
     Stack,
     Duration,
     RemovalPolicy,
-    BundlingOptions,
+    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -72,46 +72,18 @@ class AuthStack(Stack):
         CfnOutput(self, "CognitoUserPoolIdV2", value=user_pool_v2.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientIdV2", value=user_pool_client_v2.user_pool_client_id)
 
-        # Invite Lambda & API scoped to v2 only
-        lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
+        # Import existing Lambda functions to avoid conflicts
 
-        invite_lambda_v2 = lambda_.Function(
+        # Import existing invite Lambda function v2 to avoid conflicts
+        invite_lambda_v2 = lambda_.Function.from_function_name(
             self,
             "Spaceport-InviteUserFunctionV2",
-            function_name="Spaceport-InviteUserFunctionV2",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "invite_user")),
-            handler="lambda_function.lambda_handler",
-            environment={
-                "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
-                # Ensure users are added to the v2 group name
-                "INVITE_GROUP": "beta-testers-v2",
-            },
-            timeout=Duration.seconds(30),
+            "Spaceport-InviteUserFunctionV2"
         )
 
-        invite_lambda_v2.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "cognito-idp:AdminCreateUser",
-                    "cognito-idp:AdminAddUserToGroup",
-                ],
-                resources=[
-                    f"arn:aws:cognito-idp:{Stack.of(self).region}:{Stack.of(self).account}:userpool/*"
-                ],
-            )
-        )
-
-        # Allow invite lambda to send custom SES emails when suppressing Cognito's default email
-        invite_lambda_v2.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail",
-                ],
-                resources=["*"],
-            )
-        )
+        # Note: Cannot modify IAM policies of imported Lambda functions
+        # The required IAM permissions should be set manually in the Lambda console
+        # or through a separate deployment process
 
         invite_api_v2 = apigw.RestApi(
             self,
@@ -185,41 +157,16 @@ class AuthStack(Stack):
         CfnOutput(self, "CognitoUserPoolIdV3", value=user_pool_v3.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientIdV3", value=user_pool_client_v3.user_pool_client_id)
 
-        invite_lambda_v3 = lambda_.Function(
+        # Import existing invite Lambda function v3 to avoid conflicts
+        invite_lambda_v3 = lambda_.Function.from_function_name(
             self,
             "Spaceport-InviteUserFunctionV3",
-            function_name="Spaceport-InviteUserFunctionV3",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "invite_user")),
-            handler="lambda_function.lambda_handler",
-            environment={
-                "COGNITO_USER_POOL_ID": user_pool_v3.user_pool_id,
-                "INVITE_GROUP": "beta-testers-v3",
-            },
-            timeout=Duration.seconds(30),
+            "Spaceport-InviteUserFunctionV3"
         )
 
-        invite_lambda_v3.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "cognito-idp:AdminCreateUser",
-                    "cognito-idp:AdminAddUserToGroup",
-                ],
-                resources=[
-                    f"arn:aws:cognito-idp:{Stack.of(self).region}:{Stack.of(self).account}:userpool/*"
-                ],
-            )
-        )
-
-        invite_lambda_v3.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail",
-                ],
-                resources=["*"],
-            )
-        )
+        # Note: Cannot modify IAM policies of imported Lambda functions
+        # The required IAM permissions should be set manually in the Lambda console
+        # or through a separate deployment process
 
         invite_api_v3 = apigw.RestApi(
             self,
@@ -240,38 +187,18 @@ class AuthStack(Stack):
         # -------------------------------------
         # Per-user Projects storage and REST API
         # -------------------------------------
-        projects_table = dynamodb.Table(
+        # Import existing projects table to avoid conflicts
+        projects_table = dynamodb.Table.from_table_name(
             self,
             "Spaceport-ProjectsTable",
-            table_name="Spaceport-Projects",
-            partition_key=dynamodb.Attribute(name="userSub", type=dynamodb.AttributeType.STRING),
-            sort_key=dynamodb.Attribute(name="projectId", type=dynamodb.AttributeType.STRING),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN,
-            point_in_time_recovery=True,
+            "Spaceport-Projects"
         )
 
-        lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
-        projects_lambda = lambda_.Function(
+        # Import existing projects Lambda function to avoid conflicts
+        projects_lambda = lambda_.Function.from_function_name(
             self,
             "Spaceport-ProjectsFunction",
-            function_name="Spaceport-ProjectsFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(
-                os.path.join(lambda_dir, "projects"),
-                bundling=BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
-                    ]
-                )
-            ),
-            handler="lambda_function.lambda_handler",
-            environment={
-                "PROJECTS_TABLE_NAME": projects_table.table_name,
-            },
-            timeout=Duration.seconds(30),
+            "Spaceport-ProjectsFunction"
         )
         projects_table.grant_read_write_data(projects_lambda)
 
