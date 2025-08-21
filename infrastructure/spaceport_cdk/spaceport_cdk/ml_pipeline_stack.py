@@ -25,10 +25,12 @@ class MLPipelineStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # ========== S3 BUCKETS ==========
+        ml_bucket_name = f"spaceport-ml-processing-{self.account}-{self.region}"
+        upload_bucket_name = f"spaceport-uploads-{self.account}-{self.region}"
         # Create ML processing bucket with organized prefixes
         ml_bucket = s3.Bucket(
             self, "SpaceportMLBucket",
-            bucket_name="spaceport-ml-processing",
+            bucket_name=ml_bucket_name,
             removal_policy=RemovalPolicy.RETAIN,
             versioned=True,
             lifecycle_rules=[
@@ -43,7 +45,7 @@ class MLPipelineStack(Stack):
         # Import existing upload bucket
         upload_bucket = s3.Bucket.from_bucket_name(
             self, "ImportedUploadBucket",
-            "spaceport-uploads"
+            upload_bucket_name
         )
 
         # ========== ECR REPOSITORIES ==========
