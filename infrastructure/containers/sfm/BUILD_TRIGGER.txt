@@ -40,4 +40,4 @@ Build timestamp: 2025-08-19-CLI-WRAPPER-FIX
 
 # Trigger rebuild - 2025-01-27
 # Workflow fixed - trigger rebuild again# Test build trigger - Thu Aug 21 16:37:29 MDT 2025
-# Test build trigger fix - Thu Aug 21 16:52:52 MDT 2025
+# Test workflow fix - Thu Aug 21 16:54:26 MDT 2025
