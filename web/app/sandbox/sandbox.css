@@ -1,0 +1,310 @@
+/* Design System Sandbox - Hyper Minimalist */
+
+/* Sandbox Container */
+.sandbox-container {
+  background: #000;
+  color: #fff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  padding: 120px 20px 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Sandbox Sections */
+.sandbox-section {
+  margin-bottom: 80px;
+  padding: 40px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sandbox-section:last-child {
+  border-bottom: none;
+}
+
+/* Sandbox Header */
+.sandbox-title {
+  font-size: 2.5rem;
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.sandbox-subtitle {
+  font-size: 1.2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 40px;
+  color: #fff;
+  text-align: center;
+}
+
+/* Component Groups */
+.component-group {
+  margin-bottom: 50px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.component-title {
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 25px;
+  color: #fff;
+}
+
+/* Component Showcase */
+.component-showcase {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* Component Selector Tool - No Hover Effects */
+.component-showcase > * {
+  cursor: pointer;
+  position: relative;
+}
+
+/* Component Name Pill - Appears above hovered element */
+.component-name-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 10000;
+  text-align: center;
+  min-width: 100px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* Smooth transitions */
+  opacity: 0;
+  transform: translateY(10px);
+  animation: pillFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes pillFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typography Showcase */
+.component-showcase .section.h1 {
+  font-size: clamp(2.9rem, 8vw, 3.9rem);
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.component-showcase .section.h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.component-showcase .component-title {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.component-showcase .popup-section.h4 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.component-showcase .section.p {
+  max-width: 400px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.component-showcase .waitlist-header.p {
+  max-width: 400px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.component-showcase .stats-source {
+  max-width: 400px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+/* Button Showcase */
+.component-showcase .cta-button,
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed,
+.component-showcase .dpu-btn,
+.component-showcase .stop-button,
+.component-showcase .add-path-button,
+.component-showcase .info-pill-icon {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Form Elements Showcase */
+.component-showcase .input-wrapper,
+.component-showcase .popup-input-wrapper {
+  min-width: 250px;
+  flex-shrink: 0;
+}
+
+.component-showcase .step-selector {
+  min-width: 250px;
+  flex-shrink: 0;
+}
+
+.component-showcase .ios-toggle-container {
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+/* Cards Showcase */
+.component-showcase .project-box,
+.component-showcase .new-project-card,
+.component-showcase .waitlist-card {
+  min-width: 280px;
+  flex-shrink: 0;
+}
+
+/* Map Showcase */
+.component-showcase .map-wrapper {
+  min-width: 400px;
+  flex-shrink: 0;
+}
+
+/* Modal Showcase */
+.component-showcase .popup-overlay {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  flex-shrink: 0;
+}
+
+/* Progress Showcase */
+.component-showcase .apple-progress-tracker {
+  min-width: 400px;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sandbox-container {
+    padding: 100px 16px 40px 16px;
+  }
+  
+  .sandbox-title {
+    font-size: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .component-showcase {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .component-showcase .cta-button,
+  .component-showcase .cta-button2,
+  .component-showcase .cta-button2-fixed,
+  .component-showcase .dpu-btn,
+  .component-showcase .stop-button,
+  .component-showcase .add-path-button,
+  .component-showcase .info-pill-icon {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .component-showcase .input-wrapper,
+  .component-showcase .popup-input-wrapper,
+  .component-showcase .step-selector,
+  .component-showcase .ios-toggle-container {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .component-showcase .project-box,
+  .component-showcase .new-project-card,
+  .component-showcase .waitlist-card {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .component-showcase .map-wrapper {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .component-showcase .popup-overlay {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .component-showcase .apple-progress-tracker {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .component-name-pill {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sandbox-container {
+    padding: 80px 12px 40px 12px;
+  }
+  
+  .sandbox-title {
+    font-size: 1.8rem;
+  }
+  
+  .section-title {
+    font-size: 1.6rem;
+  }
+  
+  .component-group {
+    padding: 20px;
+  }
+  
+  .component-title {
+    font-size: 1.1rem;
+  }
+  
+  .component-name-pill {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    min-width: 70px;
+  }
+}
