@@ -7,7 +7,7 @@ from spaceport_cdk.ml_pipeline_stack import MLPipelineStack
 app = App()
 
 # Use a fixed qualifier so deployments target the correct bootstrap resources
-stack_synthesizer = DefaultStackSynthesizer(qualifier="spcdkprod1")
+stack_synthesizer = DefaultStackSynthesizer(qualifier="spcdkprod2")
 
 # Deploy the existing Spaceport stack
 spaceport_stack = SpaceportStack(

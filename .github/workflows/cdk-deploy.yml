@@ -45,11 +45,14 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
 
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
+
     - name: CDK Bootstrap
       if: github.event_name == 'push'
       env:
         CDK_NEW_BOOTSTRAP: "1"
-        CDK_QUALIFIER: "spcdkprod1"
+        CDK_QUALIFIER: "spcdkprod2"
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
@@ -66,20 +69,36 @@ jobs:
         aws ssm delete-parameter --name "/cdk-bootstrap/spcdk001/version" --region us-west-2 2>/dev/null || true
         aws ssm delete-parameter --name "/cdk-bootstrap/$CDK_QUALIFIER/version" --region us-west-2 2>/dev/null || true
         
-        # Clear ALL CDK assets S3 buckets (more robust cleanup)
-        echo "Clearing all CDK assets buckets..."
-        for bucket in $(aws s3 ls | grep "cdk-.*assets.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
-          echo "Clearing bucket: $bucket"
-          aws s3 rm s3://$bucket --recursive 2>/dev/null || true
-          aws s3 rb s3://$bucket --force 2>/dev/null || true
-        done
-        
-        # Also check for any other CDK-related buckets
-        for bucket in $(aws s3 ls | grep "cdk-.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
-          echo "Clearing CDK bucket: $bucket"
-          aws s3 rm s3://$bucket --recursive 2>/dev/null || true
-          aws s3 rb s3://$bucket --force 2>/dev/null || true
-        done
+                 # Clear ALL CDK assets S3 buckets (more robust cleanup)
+         echo "Clearing all CDK assets buckets..."
+         for bucket in $(aws s3 ls | grep "cdk-.*assets.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+           echo "Clearing bucket: $bucket"
+           # Remove all versions and delete markers first
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           # Now remove all objects and delete bucket
+           aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+           aws s3 rb s3://$bucket --force 2>/dev/null || true
+         done
+         
+         # Also check for any other CDK-related buckets
+         for bucket in $(aws s3 ls | grep "cdk-.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+           echo "Clearing CDK bucket: $bucket"
+           # Remove all versions and delete markers first
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           # Now remove all objects and delete bucket
+           aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+           aws s3 rb s3://$bucket --force 2>/dev/null || true
+         done
         
         # Final cleanup check - wait a moment and check again
         echo "Waiting for cleanup to settle..."
@@ -102,7 +121,7 @@ jobs:
     - name: Deploy CDK Stack
       if: github.event_name == 'push'
       env:
-        CDK_QUALIFIER: "spcdkprod1"
+        CDK_QUALIFIER: "spcdkprod2"
       run: |
         # Deploy SpaceportStack with GoogleMapsApiKey parameter
         npx cdk deploy SpaceportStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }} --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
