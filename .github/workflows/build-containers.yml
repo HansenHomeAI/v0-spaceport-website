@@ -99,18 +99,17 @@ jobs:
         set -e
         if [ "$MISSING_ROLE" -ne 0 ]; then
           echo "Creating CodeBuildServiceRole..."
-          cat > trust.json <<- 'EOF'
-          {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {"Service": "codebuild.amazonaws.com"},
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          }
-	EOF
+          # Write trust.json without heredoc to avoid delimiter parsing issues
+          echo '{'            > trust.json
+          echo '  "Version": "2012-10-17",' >> trust.json
+          echo '  "Statement": ['            >> trust.json
+          echo '    {'                         >> trust.json
+          echo '      "Effect": "Allow",'   >> trust.json
+          echo '      "Principal": {"Service": "codebuild.amazonaws.com"},' >> trust.json
+          echo '      "Action": "sts:AssumeRole"' >> trust.json
+          echo '    }'                         >> trust.json
+          echo '  ]'                           >> trust.json
+          echo '}'                             >> trust.json
           aws iam create-role --role-name CodeBuildServiceRole --assume-role-policy-document file://trust.json
           aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess
           aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
@@ -129,33 +128,32 @@ jobs:
         set -e
         if [ "$MISSING_PROJ" -ne 0 ]; then
           echo "Creating CodeBuild project spaceport-ml-containers..."
-          cat > project.json <<- 'EOF'
-          {
-            "name": "spaceport-ml-containers",
-            "description": "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA",
-            "source": {
-              "type": "GITHUB",
-              "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
-              "buildspec": "buildspec.yml",
-              "gitCloneDepth": 1,
-              "reportBuildStatus": true
-            },
-            "artifacts": { "type": "NO_ARTIFACTS" },
-            "environment": {
-              "type": "LINUX_CONTAINER",
-              "image": "aws/codebuild/standard:7.0",
-              "computeType": "BUILD_GENERAL1_LARGE",
-              "privilegedMode": true
-            },
-            "serviceRole": "REPLACE_ME",
-            "timeoutInMinutes": 120,
-            "queuedTimeoutInMinutes": 30,
-            "tags": [
-              { "key": "Project", "value": "Spaceport" },
-              { "key": "Purpose", "value": "ML-Container-Build" }
-            ]
-          }
-	EOF
+          # Write project.json without heredoc to avoid delimiter parsing issues
+          echo '{'                                         >  project.json
+          echo '  "name": "spaceport-ml-containers",'   >> project.json
+          echo '  "description": "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA",' >> project.json
+          echo '  "source": {'                            >> project.json
+          echo '    "type": "GITHUB",'                  >> project.json
+          echo '    "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",' >> project.json
+          echo '    "buildspec": "buildspec.yml",'      >> project.json
+          echo '    "gitCloneDepth": 1,'                  >> project.json
+          echo '    "reportBuildStatus": true'            >> project.json
+          echo '  },'                                       >> project.json
+          echo '  "artifacts": { "type": "NO_ARTIFACTS" },' >> project.json
+          echo '  "environment": {'                        >> project.json
+          echo '    "type": "LINUX_CONTAINER",'          >> project.json
+          echo '    "image": "aws/codebuild/standard:7.0",' >> project.json
+          echo '    "computeType": "BUILD_GENERAL1_LARGE",' >> project.json
+          echo '    "privilegedMode": true'                >> project.json
+          echo '  },'                                        >> project.json
+          echo '  "serviceRole": "REPLACE_ME",'          >> project.json
+          echo '  "timeoutInMinutes": 120,'                >> project.json
+          echo '  "queuedTimeoutInMinutes": 30,'           >> project.json
+          echo '  "tags": ['                               >> project.json
+          echo '    { "key": "Project", "value": "Spaceport" },' >> project.json
+          echo '    { "key": "Purpose", "value": "ML-Container-Build" }' >> project.json
+          echo '  ]'                                         >> project.json
+          echo '}'                                           >> project.json
           sed -i.bak "s|REPLACE_ME|$ROLE_ARN|" project.json
           aws codebuild create-project --cli-input-json file://project.json >/dev/null
           echo "Created CodeBuild project."
