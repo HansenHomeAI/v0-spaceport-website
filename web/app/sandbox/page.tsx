@@ -9,14 +9,14 @@ export default function DesignSystemSandbox(): JSX.Element {
   
   // Editable text state for live preview
   const [editableTexts, setEditableTexts] = useState({
-    'section h1': 'Heading 1',
-    'section h2': 'Heading 2', 
-    'component-title': 'Heading 3',
-    'popup-section h4': 'Heading 4',
-    'section p': 'Primary paragraph text',
-    'waitlist-header p': 'Secondary text',
-    'stats-source': 'Tertiary text',
-    'section p with highlight': 'Text with highlighted words for emphasis'
+    'section h1': 'Create Your Space Today',
+    'section h2': 'AI-Powered 3D Reconstruction', 
+    'component-title': 'Advanced Features',
+    'popup-section h4': 'Processing Options',
+    'section p': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
+    'waitlist-header p': 'Join thousands of professionals already using Spaceport AI to revolutionize their visual content.',
+    'stats-source': 'Processing time: 2-3 hours • Output: Web-optimized 3D models',
+    'section p with highlight': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life.'
   });
 
   const updateEditableText = (key: string, value: string) => {
@@ -187,7 +187,7 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               {editableTexts['stats-source']}
             </p>
-            <p 
+            <div 
               className="section p"
               data-component="section p with highlight"
               onMouseEnter={(e) => handleComponentHover('section p with highlight', e)}
@@ -195,8 +195,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('section p with highlight')}
               onDoubleClick={(e) => handleDoubleClick('section p with highlight', e)}
             >
-              {editableTexts['section p with highlight']}
-            </p>
+              Transform your <span className="text-highlight">real estate photography</span> into immersive 3D experiences. Our AI-powered pipeline creates stunning <span className="text-highlight">Gaussian splat models</span> that bring properties to life.
+            </div>
           </div>
         </div>
       </section>
@@ -216,7 +216,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('cta-button')}
             >
-              Primary CTA
+              Start 3D Reconstruction
             </a>
             <a 
               href="#"
@@ -226,7 +226,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('cta-button2-fixed')}
             >
-              Secondary CTA
+              View Demo Gallery
             </a>
             <button 
               className="dpu-btn"
@@ -235,7 +235,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('dpu-btn')}
             >
-              Submit
+              Upload Images
             </button>
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('stop-button')}
             >
-              Stop
+              Cancel Processing
             </button>
             <button 
               className="add-path-button"
@@ -259,7 +259,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('add-path-button')}
             >
-              Add Path
+              Add Flight Path
             </button>
             <button 
               className="info-pill-icon"
@@ -268,7 +268,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('info-pill-icon')}
             >
-              Info
+              Learn More
             </button>
           </div>
         </div>
