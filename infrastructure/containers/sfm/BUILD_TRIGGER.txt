@@ -1,3 +1,7 @@
+# Build trigger file - updated at 2025-08-21 23:35:00 UTC
+# This file triggers the ML container build workflow when modified
+# Last modified: 2025-08-21 23:35:00 UTC
+
 RUNTIME FIX: OpenSfM CLI Binary Missing in Production
 ===================================================
 
