@@ -116,6 +116,7 @@ jobs:
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
           --qualifier $CDK_QUALIFIER \
+          --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
           --new-bootstrap \
           --force
 
@@ -140,11 +141,11 @@ jobs:
         CDK_QUALIFIER: "spcdkprod2"
       run: |
         # Deploy SpaceportStack with GoogleMapsApiKey parameter
-        npx cdk deploy SpaceportStack --verbose --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }} --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
+        npx cdk deploy SpaceportStack --verbose --require-approval never --no-previous-parameters --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }} --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
         # Deploy SpaceportMLPipelineStack without parameters
-        npx cdk deploy SpaceportMLPipelineStack --verbose --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
+        npx cdk deploy SpaceportMLPipelineStack --verbose --require-approval never --no-previous-parameters --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
         # Deploy new dedicated Auth stack (v2)
-        npx cdk deploy SpaceportAuthStack --verbose --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
+        npx cdk deploy SpaceportAuthStack --verbose --require-approval never --no-previous-parameters --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
