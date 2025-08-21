@@ -193,37 +193,18 @@ class MLPipelineStack(Stack):
         )
 
         # ========== LAMBDA FUNCTIONS ==========
-        # Get the lambda directory path
-        lambda_dir = os.path.join(os.path.dirname(__file__), "..", "lambda")
+        # Import existing Lambda functions to avoid conflicts
 
-        # API Lambda for starting ML jobs
-        start_job_lambda = lambda_.Function(
+        # Import existing Lambda for starting ML jobs
+        start_job_lambda = lambda_.Function.from_function_name(
             self, "StartMLJobFunction",
-            function_name="Spaceport-StartMLJob",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "start_ml_job")),
-            handler="lambda_function.lambda_handler",
-            environment={
-                "STATE_MACHINE_ARN": "",  # Will be set after Step Function creation
-                "UPLOAD_BUCKET": upload_bucket.bucket_name,
-                "ML_BUCKET": ml_bucket.bucket_name
-            },
-            role=lambda_role,
-            timeout=Duration.seconds(30)
+            "Spaceport-StartMLJob"
         )
 
-        # Notification Lambda
-        notification_lambda = lambda_.Function(
+        # Import existing Notification Lambda
+        notification_lambda = lambda_.Function.from_function_name(
             self, "NotificationFunction",
-            function_name="Spaceport-MLNotification",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(lambda_dir, "ml_notification")),
-            handler="lambda_function.lambda_handler",
-            environment={
-                "ML_BUCKET": ml_bucket.bucket_name
-            },
-            role=notification_lambda_role,
-            timeout=Duration.seconds(30)
+            "Spaceport-MLNotification"
         )
 
         # ========== STEP FUNCTIONS DEFINITION ==========
@@ -585,18 +566,14 @@ class MLPipelineStack(Stack):
             timeout=Duration.hours(8)
         )
 
-        # Update Lambda environment with Step Function ARN
-        start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
+        # Note: Cannot update environment variables of imported Lambda functions
+        # The STATE_MACHINE_ARN environment variable should be set manually in the Lambda console
+        # or through a separate deployment process
 
-        # Create Lambda function for stopping jobs
-        stop_job_lambda = lambda_.Function(
+        # Import existing Lambda function for stopping jobs
+        stop_job_lambda = lambda_.Function.from_function_name(
             self, "StopJobFunction",
-            function_name="Spaceport-StopJobFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset("../lambda/stop_job"),
-            handler="stop_job.lambda_handler",
-            role=lambda_role,
-            timeout=Duration.seconds(30)
+            "Spaceport-StopJobFunction"
         )
 
         # ========== API GATEWAY ==========
