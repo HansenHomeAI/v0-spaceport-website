@@ -363,47 +363,66 @@ class OpenSfMGPSPipeline:
         """Convert OpenSfM output to COLMAP format"""
         try:
             # Check if OpenSfM exported COLMAP files directly
-            exported_colmap_dir = self.opensfm_dir / "colmap"
+            exported_colmap_dir = self.opensfm_dir / "colmap_export"
+            logger.info(f"🔍 Checking for OpenSfM export in: {exported_colmap_dir}")
+            
             if exported_colmap_dir.exists():
-                logger.info("🔄 Using OpenSfM exported COLMAP files (with tracks)")
+                logger.info("✅ Found OpenSfM exported COLMAP directory!")
                 
-                # Copy exported COLMAP files to output
-                sparse_output = self.output_dir / "sparse" / "0"
-                sparse_output.mkdir(parents=True, exist_ok=True)
-                
-                # Copy COLMAP files if they exist
+                # List what's in the directory
                 colmap_files = ["cameras.txt", "images.txt", "points3D.txt"]
+                found_files = []
                 for file_name in colmap_files:
                     src_file = exported_colmap_dir / file_name
                     if src_file.exists():
+                        found_files.append(file_name)
+                        logger.info(f"   ✅ Found: {file_name}")
+                    else:
+                        logger.warning(f"   ⚠️ Missing: {file_name}")
+                
+                if len(found_files) == 3:
+                    logger.info("🔄 Using OpenSfM exported COLMAP files (with tracks)")
+                    
+                    # Copy exported COLMAP files to output
+                    sparse_output = self.output_dir / "sparse" / "0"
+                    sparse_output.mkdir(parents=True, exist_ok=True)
+                    
+                    # Copy COLMAP files
+                    for file_name in found_files:
+                        src_file = exported_colmap_dir / file_name
                         dst_file = sparse_output / file_name
                         shutil.copy2(src_file, dst_file)
                         logger.info(f"✅ Copied {file_name} with track data")
-                
-                # Validate the exported files
-                validation_results = self.validate_exported_colmap()
-                logger.info(f"📊 Exported COLMAP Validation:")
-                logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
-                logger.info(f"   Images: {validation_results.get('image_count', 0)}")
-                logger.info(f"   Points: {validation_results.get('point_count', 0)}")
-                logger.info(f"   Track Quality: {'✅ WITH TRACKS' if validation_results.get('has_tracks', False) else '❌ NO TRACKS'}")
-                
-                return validation_results.get('quality_check_passed', False)
-            
+                    
+                    # Validate the exported files
+                    validation_results = self.validate_exported_colmap()
+                    logger.info(f"📊 Exported COLMAP Validation:")
+                    logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
+                    logger.info(f"   Images: {validation_results.get('image_count', 0)}")
+                    logger.info(f"   Points: {validation_results.get('point_count', 0)}")
+                    logger.info(f"   Track Quality: {'✅ WITH TRACKS' if validation_results.get('has_tracks', False) else '❌ NO TRACKS'}")
+                    
+                    return validation_results.get('quality_check_passed', False)
+                else:
+                    logger.warning(f"⚠️ OpenSfM export incomplete - found {len(found_files)}/3 files")
+                    logger.warning("   Falling back to custom converter")
             else:
-                # Fallback to custom converter
-                logger.info("🔄 Using custom OpenSfM to COLMAP converter")
-                converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
-                validation_results = converter.convert()
-                
-                # Log conversion results
-                logger.info(f"📊 COLMAP Conversion Results:")
-                logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
-                logger.info(f"   Images: {validation_results.get('image_count', 0)}")
-                logger.info(f"   Points: {validation_results.get('point_count', 0)}")
-                logger.info(f"   Quality Check: {'✅ PASSED' if validation_results.get('quality_check_passed', False) else '❌ FAILED'}")
-                
-                return validation_results.get('quality_check_passed', False)
+                logger.warning(f"⚠️ OpenSfM export directory not found: {exported_colmap_dir}")
+                logger.warning("   Falling back to custom converter")
+            
+            # Fallback to custom converter
+            logger.info("🔄 Using custom OpenSfM to COLMAP converter")
+            converter = OpenSfMToCOLMAPConverter(self.opensfm_dir, self.output_dir)
+            validation_results = converter.convert()
+            
+            # Log conversion results
+            logger.info(f"📊 COLMAP Conversion Results:")
+            logger.info(f"   Cameras: {validation_results.get('camera_count', 0)}")
+            logger.info(f"   Images: {validation_results.get('image_count', 0)}")
+            logger.info(f"   Points: {validation_results.get('point_count', 0)}")
+            logger.info(f"   Quality Check: {'✅ PASSED' if validation_results.get('quality_check_passed', False) else '❌ FAILED'}")
+            
+            return validation_results.get('quality_check_passed', False)
                 
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
@@ -663,4 +682,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main() # Trigger rebuild

@@ -14,11 +14,20 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+html {
+  /* overflow-x and max-width now handled globally above */
+}
 html, body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #000;
   color: #fff;
-  overflow-x: hidden;
+  /* overflow-x and max-width now handled globally above */
   position: relative;
   min-height: 100vh;
 }
@@ -368,6 +377,42 @@ html, body {
   color: #fff;
 }
 
+/* Tutorial Button */
+.tutorial-button {
+  display: inline-block;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.tutorial-button::after {
+  content: '';
+  opacity: 0;
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-45deg);
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  transition: opacity 0.3s ease;
+}
+.tutorial-button:hover {
+  padding-right: 40px;
+}
+.tutorial-button:hover::after {
+  opacity: 1;
+}
+
 /* Sections */
 .section {
   width: 100%;
@@ -379,8 +424,8 @@ html, body {
 #landing.section {
   max-width: 100% !important;
   margin: 0 !important;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: 100%; /* Changed from 100vw to 100% */
+  /* Removed margin-left: calc(50% - 50vw); */
   position: relative;
   height: 100vh;
   overflow: hidden;
@@ -731,6 +776,8 @@ footer {
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-left: auto; /* Ensure centered when used standalone */
   margin-right: auto;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .waitlist-card::before {
@@ -1310,6 +1357,8 @@ footer {
   max-width: 92%;
   margin-left: auto;
   margin-right: auto;
+  box-sizing: border-box; /* Ensure padding/borders don't overflow */
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 @media (min-width: 640px) {
   .project-cards {
@@ -1337,6 +1386,8 @@ footer {
   -webkit-backdrop-filter: blur(50px);
   border: 2.5px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
+  overflow: hidden; /* Prevent content from overflowing */
+  word-wrap: break-word; /* Break long words */
 }
 @media (min-width: 640px) {
   .project-box {
@@ -1525,6 +1576,7 @@ footer {
   position: relative;
   margin: 20px auto;
   max-width: 1200px;
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* We replaced .container with .dfpg-container-inner */
@@ -2212,89 +2264,104 @@ footer {
 #about,
 #create {
   position: relative;
-  overflow: visible;
+  overflow: visible; /* Allow pseudo-element to extend beyond boundaries */
   isolation: isolate; /* Create new stacking context */
 }
 
-/* PRICING Circle Swirl */
+/* PRICING Optimized Color Effect */
 #pricing-header::before {
   content: "";
   position: absolute;
-  top: -1200px;
-  left: 50%;
-  transform: translateX(-50%) rotate(160deg) scale(0.8);
-  width: 1600px;         /* Larger bounding box so the swirl is bigger */
-  height: 1600px;
+  top: -12rem; /* Extend well above the header to reach viewport top */
+  left: 0;
+  right: 0;
+  width: 100%; /* Changed from 100vw to 100% */
+  height: 400px;
   pointer-events: none;
   z-index: -2;
-  /* Use pure CSS conic-gradient to avoid Safari foreignObject issues */
-  background: conic-gradient(
-    from 100deg,
-    #FF4F00 0%,
-    #FF4F00 20%,
-    #4B006D 45%,
-    #CD70E4 80%,
-    #FF4F00 100%
-  );
-  border-radius: 50%;
-  /* Soft edge for better blending */
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  opacity: 0.4;
-  filter: blur(80px);
+  background: 
+    radial-gradient(
+      ellipse 800px 300px at 25% 20%,
+      rgba(255, 79, 0, 0.4) 0%,
+      rgba(255, 79, 0, 0.2) 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 700px 250px at 75% 30%,
+      rgba(75, 0, 109, 0.3) 0%,
+      rgba(205, 112, 228, 0.25) 50%,
+      transparent 85%
+    );
+  opacity: 0.8;
+  filter: blur(45px);
+  will-change: transform;
 }
 
-/* ABOUT Circle Swirl */
+/* ABOUT Optimized Color Effect */
 #about::before {
   content: "";
   position: absolute;
-  top: -1200px;
-  left: 50%;
-  transform: translateX(-50%) rotate(180deg) scale(0.8);
-  width: 1600px;         /* Larger bounding box so the swirl is bigger */
-  height: 1600px;
+  top: -12rem; /* Extend well above the header to reach viewport top */
+  left: 0;
+  right: 0;
+  width: 100%; /* Changed from 100vw to 100% */
+  height: 400px;
   pointer-events: none;
   z-index: -2;
-  background: conic-gradient(
-    from 100deg,
-    #FF4F00 0%,
-    #FF4F00 20%,
-    #4B006D 45%,
-    #CD70E4 80%,
-    #FF4F00 100%
-  );
-  border-radius: 50%;
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  opacity: 0.4;
-  filter: blur(80px);
+  background: 
+    radial-gradient(
+      ellipse 600px 280px at 70% 20%,
+      rgba(205, 112, 228, 0.35) 0%,
+      rgba(205, 112, 228, 0.18) 45%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 750px 320px at 80% 25%,
+      rgba(75, 0, 109, 0.28) 0%,
+      rgba(255, 79, 0, 0.15) 60%,
+      transparent 90%
+    );
+  opacity: 0.7;
+  filter: blur(50px);
+  will-change: transform;
 }
 
-/* CREATE Circle Swirl */
+/* CREATE Optimized Color Effect */
 #create::before {
   content: "";
   position: absolute;
-  top: -1200px;
-  left: 50%;
-  transform: translateX(-50%) rotate(200deg) scale(0.8);
-  width: 1600px;         /* Larger bounding box so the swirl is bigger */
-  height: 1600px;
+  top: -12rem; /* Extend well above the header to reach viewport top */
+  left: 0;
+  right: 0;
+  width: 100%; /* Changed from 100vw to 100% */
+  height: 400px;
   pointer-events: none;
   z-index: -2;
-  background: conic-gradient(
-    from 100deg,
-    #FF4F00 0%,
-    #FF4F00 20%,
-    #4B006D 45%,
-    #CD70E4 80%,
-    #FF4F00 100%
-  );
-  border-radius: 50%;
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
-  opacity: 0.4;
-  filter: blur(80px);
+  background: 
+    radial-gradient(
+      ellipse 900px 350px at 20% 10%,
+      rgba(255, 79, 0, 0.45) 0%,
+      rgba(255, 79, 0, 0.25) 35%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 650px 280px at 85% 35%,
+      rgba(75, 0, 109, 0.35) 0%,
+      rgba(205, 112, 228, 0.3) 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 500px 200px at 40% 40%,
+      rgba(205, 112, 228, 0.2) 0%,
+      transparent 60%
+    );
+  opacity: 0.9;
+  filter: blur(55px);
+  will-change: transform;
 }
+
+/* Keep create background effects, but constrain signup background to prevent overlap */
+/* This allows the create page to maintain its intended visual design */
 
 /* Breathing room below the create header before dashboard */
 #create-dashboard {
@@ -2312,10 +2379,11 @@ footer {
 #signup::before {
   content: "";
   position: absolute;
-  top: -1200px;
+  top: 0; /* Changed from -1200px to 0 to prevent overlap with create section */
   left: 50%;
   transform: translateX(-50%) rotate(180deg) scale(0.8);
-  width: 1600px;
+  width: 100%; /* Changed from 1600px to 100% */
+  max-width: 1600px; /* Added max-width to prevent overflow */
   height: 1600px;
   pointer-events: none;
   z-index: -2;
@@ -2337,10 +2405,11 @@ footer {
 #signup::after {
   content: "";
   position: absolute;
-  top: -1600px;
+  top: 0; /* Changed from -1600px to 0 to prevent overlap with create section */
   left: 50%;
   transform: translateX(-50%);
-  width: 1800px;
+  width: 100%; /* Changed from 1800px to 100% */
+  max-width: 1800px; /* Added max-width to prevent overflow */
   height: 1800px;
   pointer-events: none;
   z-index: -1;
@@ -2356,6 +2425,12 @@ footer {
   gap: 32px;
 }
 
+.signin-block {
+  overflow-x: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .signin-block h2 {
   font-weight: 500;
 }
@@ -2369,7 +2444,8 @@ footer {
   top: -1600px;
   left: 50%;
   transform: translateX(-50%) rotate(0deg);
-  width: 1800px;
+  width: 100%; /* Changed from 1800px to 100% */
+  max-width: 1800px; /* Added max-width to prevent overflow */
   height: 1800px;
   pointer-events: none;
   z-index: -1;
@@ -2722,7 +2798,7 @@ body::before {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #000;
   color: #fff;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Already present - good */
 }
 
 /* The main container that matches dpu-container-inner */
@@ -5066,6 +5142,8 @@ input.text-fade-right,
   cursor: default !important;
   border-radius: 25px !important; /* Match header border radius */
   height: 50px !important; /* Match header height */
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden; /* Prevent content overflow */
 }
 
 @media (min-width: 640px) {
@@ -5086,6 +5164,8 @@ input.text-fade-right,
 
 .account-details {
   flex: 1;
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden; /* Prevent text overflow */
 }
 
 .account-header {
@@ -5093,6 +5173,8 @@ input.text-fade-right,
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden; /* Prevent overflow */
 }
 
 .account-handle {
@@ -5101,6 +5183,9 @@ input.text-fade-right,
   color: #fff;
   margin: 0;
   font-family: inherit;
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis for long text */
 }
 
 .subscription-pill {
@@ -5288,18 +5373,19 @@ input.text-fade-right,
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw; /* Ensure full viewport width */
+  height: 100vh; /* Ensure full viewport height */
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   z-index: 1000;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Start from top for mobile */
   justify-content: center;
   padding: 20px;
   box-sizing: border-box;
-  overflow-y: auto; /* Allow scrolling in the overlay */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto; /* Allow vertical scrolling */
 }
 
 .subscription-popup {
@@ -5309,10 +5395,12 @@ input.text-fade-right,
   border-radius: 25px;
   padding: 32px;
   max-width: 900px;
-  width: 100%;
-  min-height: fit-content; /* Let content determine height */
+  width: calc(100% - 40px); /* Account for padding */
+  min-height: fit-content;
   position: relative;
-  margin: auto; /* Center vertically when content is tall */
+  margin-top: auto; /* Center vertically on desktop */
+  margin-bottom: auto;
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .subscription-popup::before {
@@ -5470,28 +5558,63 @@ input.text-fade-right,
 
 /* Mobile styles for subscription popup */
 @media (max-width: 768px) {
+  .subscription-popup-overlay {
+    align-items: flex-start; /* Always start from top on mobile */
+    padding: 10px; /* Reduce padding for mobile */
+  }
+  
   .subscription-popup {
-    padding: 24px 20px;
-    margin: 10px;
+    padding: 20px 16px; /* Reduce padding */
+    margin: 0; /* Remove margin */
     border-radius: 20px;
+    width: calc(100% - 20px); /* Account for reduced padding */
+    margin-top: 10px; /* Small top margin for close button visibility */
+    margin-bottom: 10px;
+    max-height: calc(100vh - 40px); /* Ensure popup fits in viewport */
+    overflow-y: auto; /* Allow scrolling within popup if needed */
+  }
+  
+  .subscription-popup-header {
+    margin-bottom: 24px; /* Reduce spacing */
+    position: sticky; /* Keep header visible when scrolling */
+    top: 0;
+    background: rgba(0, 0, 0, 0.1); /* Match popup background */
+    padding: 8px 0; /* Add padding for sticky header */
+    margin: -8px -16px 16px -16px; /* Extend to edges */
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 20px 20px 0 0; /* Round top corners only */
   }
   
   .subscription-popup-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    margin-left: 16px; /* Add margin for sticky header */
+  }
+  
+  .popup-close {
+    margin-right: 16px; /* Add margin for sticky header */
   }
   
   .subscription-plans {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px; /* Reduce gap */
   }
   
   .plan-card {
-    padding: 20px;
+    padding: 16px; /* Reduce padding */
   }
   
   .plan-price {
-    font-size: 1.8rem;
+    font-size: 1.6rem; /* Smaller on mobile */
   }
+}
+
+/* Prevent horizontal overflow on create page */
+#create-dashboard {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Ensure consistent card height and alignment */

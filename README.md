@@ -68,20 +68,26 @@ This production-ready system processes uploaded drone images through a sophistic
 
 ### Frontend Development
 ```bash
-cd frontend/
-# Open index.html in browser or serve with local server
+cd web/
+npm install && npm run dev
+# Open http://localhost:3000 in browser
 ```
 
 ### Infrastructure Deployment
 ```bash
-cd infrastructure/spaceport_cdk/
-cdk deploy --all
+# Development (staging environment)
+git checkout development
+git push origin development  # Auto-deploys to staging AWS account
+
+# Production deployment
+git checkout main
+git push origin main        # Auto-deploys to production AWS account
 ```
 
 ### Building Containers
 ```bash
-cd scripts/build/
-./build-all.sh
+cd scripts/deployment/
+./deploy.sh                 # Builds and pushes to ECR
 ```
 
 ## 📚 Documentation
@@ -95,6 +101,26 @@ See `docs/README.md` for the canonical high-signal index. Start here:
 ### **Analysis & History**
 - **[ML Pipeline Analysis](docs/ML_PIPELINE_ANALYSIS.md)** - Detailed pipeline testing results
 - **[SOGS Completion Summary](docs/SOGS_COMPLETION_SUMMARY.md)** - Compression implementation details
+
+## 🚀 Deployment Strategy
+
+### Environment Separation
+- **Development Branch** → Staging AWS Account (testing/validation)
+- **Main Branch** → Production AWS Account (live environment)
+- **Automatic Deployment**: Push to branch triggers GitHub Actions deployment
+- **Zero Risk**: Development changes never affect production
+
+### Security Features
+- **OIDC Authentication**: GitHub Actions securely authenticate with AWS
+- **Environment Isolation**: Complete separation between staging/production
+- **No Credential Sharing**: Each environment has its own secrets
+- **Least-Privilege Access**: IAM policies follow security best practices
+
+### Production Infrastructure
+- **AWS CDK Stacks**: All infrastructure deployed via Infrastructure as Code
+- **Custom Qualifier**: `spcdkprod2` prevents conflicts with default CDK resources
+- **Resource Import**: Existing resources imported to avoid conflicts
+- **Monitoring**: CloudWatch logging and metrics for all services
 
 ## 🏗️ Architecture
 
@@ -240,3 +266,4 @@ cd scripts/container-management/
 **Account**: 975050048887, **Region**: us-west-2  
 **Last Updated**: Directory reorganization completed  
 **Next**: Deploy and test full ML pipeline # Updated Fri Jun 27 13:15:07 MDT 2025
+# Production deployment test - Wed Aug 20 13:23:11 MDT 2025

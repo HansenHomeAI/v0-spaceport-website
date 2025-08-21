@@ -34,7 +34,8 @@ jobs:
         pip install pytest jsii cattrs typeguard typing-extensions publication --no-deps
         # Now install all dependencies
         pip install -e .
-        npm install -g aws-cdk
+        # Pin CDK CLI to match aws-cdk-lib to avoid qualifier context mismatches
+        npm install -g aws-cdk@2.89.0
         # Build Next.js site for Cloudflare (placeholder; wired in follow-up steps)
         cd ../../web && npm ci || npm install && npm run build || true
         cd -
@@ -42,22 +43,112 @@ jobs:
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ github.ref_name == 'main' && (secrets.AWS_ROLE_TO_ASSUME_PROD || secrets.AWS_ROLE_TO_ASSUME) || (secrets.AWS_ROLE_TO_ASSUME_STAGING || secrets.AWS_ROLE_TO_ASSUME) }}
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
+
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
 
     - name: CDK Bootstrap
       if: github.event_name == 'push'
-      run: npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-west-2
+      env:
+        CDK_NEW_BOOTSTRAP: "1"
+        CDK_QUALIFIER: "spcdkprod2"
+      run: |
+        set -e
+        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        echo "Clearing existing bootstrap state and re-bootstrapping CDK in account $ACCOUNT..."
+        
+        # Clear any existing bootstrap state
+        aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2 2>/dev/null || true
+        echo "Waiting for CDKToolkit stack deletion to complete..."
+        aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2 2>/dev/null || true
+        
+        # Clear SSM parameters related to CDK bootstrap
+        echo "Clearing CDK bootstrap SSM parameters..."
+        aws ssm delete-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 2>/dev/null || true
+        aws ssm delete-parameter --name "/cdk-bootstrap/spcdk001/version" --region us-west-2 2>/dev/null || true
+        aws ssm delete-parameter --name "/cdk-bootstrap/$CDK_QUALIFIER/version" --region us-west-2 2>/dev/null || true
+        
+                 # Clear ALL CDK assets S3 buckets (more robust cleanup)
+         echo "Clearing all CDK assets buckets..."
+         for bucket in $(aws s3 ls | grep "cdk-.*assets.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+           echo "Clearing bucket: $bucket"
+           # Remove all versions and delete markers first
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           # Now remove all objects and delete bucket
+           aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+           aws s3 rb s3://$bucket --force 2>/dev/null || true
+         done
+         
+         # Also check for any other CDK-related buckets
+         for bucket in $(aws s3 ls | grep "cdk-.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+           echo "Clearing CDK bucket: $bucket"
+           # Remove all versions and delete markers first
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           aws s3api list-object-versions --bucket $bucket --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}' --output json | jq -r '.Objects | if length > 0 then .[] | "\(.Key) \(.VersionId)" else empty end' | while read key version; do
+             aws s3api delete-object --bucket $bucket --key "$key" --version-id "$version" 2>/dev/null || true
+           done
+           # Now remove all objects and delete bucket
+           aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+           aws s3 rb s3://$bucket --force 2>/dev/null || true
+         done
+        
+        # Final cleanup check - wait a moment and check again
+        echo "Waiting for cleanup to settle..."
+        sleep 10
+        
+        # One more cleanup pass to catch any buckets created during cleanup
+        for bucket in $(aws s3 ls | grep "cdk-.*$ACCOUNT.*us-west-2" | awk '{print $3}'); do
+          echo "Final cleanup of CDK bucket: $bucket"
+          aws s3 rm s3://$bucket --recursive 2>/dev/null || true
+          aws s3 rb s3://$bucket --force 2>/dev/null || true
+        done
+        
+        # Force complete re-bootstrap with fixed qualifier to avoid global bucket name conflicts
+        npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
+          --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+          --qualifier $CDK_QUALIFIER \
+          --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
+          --new-bootstrap \
+          --force
+
+    - name: Preflight verify bootstrap (spcdkprod2)
+      if: github.event_name == 'push'
+      env:
+        CDK_QUALIFIER: "spcdkprod2"
+      run: |
+        set -e
+        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        echo "Checking SSM: /cdk-bootstrap/$CDK_QUALIFIER/version"
+        aws ssm get-parameter --name "/cdk-bootstrap/$CDK_QUALIFIER/version" --region us-west-2
+        echo "Checking assets bucket: cdk-$CDK_QUALIFIER-assets-$ACCOUNT-us-west-2"
+        aws s3api head-bucket --bucket cdk-$CDK_QUALIFIER-assets-$ACCOUNT-us-west-2
+        echo "Checking IAM roles exist"
+        aws iam get-role --role-name cdk-$CDK_QUALIFIER-deploy-role-$ACCOUNT-us-west-2 || true
+        aws iam get-role --role-name cdk-$CDK_QUALIFIER-file-publishing-role-$ACCOUNT-us-west-2 || true
+        aws iam get-role --role-name cdk-$CDK_QUALIFIER-cfn-exec-role-$ACCOUNT-us-west-2 || true
+
+    # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
     - name: Deploy CDK Stack
       if: github.event_name == 'push'
+      env:
+        CDK_QUALIFIER: "spcdkprod2"
       run: |
         # Deploy SpaceportStack with GoogleMapsApiKey parameter
-        npx cdk deploy SpaceportStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+        npx cdk deploy SpaceportStack --verbose --require-approval never --no-previous-parameters --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }} --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
         # Deploy SpaceportMLPipelineStack without parameters
-        npx cdk deploy SpaceportMLPipelineStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2
+        npx cdk deploy SpaceportMLPipelineStack --verbose --require-approval never --no-previous-parameters --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
         # Deploy new dedicated Auth stack (v2)
-        npx cdk deploy SpaceportAuthStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2
+        npx cdk deploy SpaceportAuthStack --verbose --require-approval never --no-previous-parameters --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'

@@ -75,6 +75,14 @@ export default function Create(): JSX.Element {
       <section className="section" id="create">
         <div id="development-content">
           <h1>Dashboard</h1>
+          <a 
+            href="https://www.loom.com/share/e5b2d593df724c279742d9d4dcdbb5cf" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="tutorial-button"
+          >
+            Watch Tutorial
+          </a>
         </div>
       </section>
 
@@ -88,12 +96,12 @@ export default function Create(): JSX.Element {
                 <div className="account-details">
                   <div className="account-header">
                     <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                    <button 
-                      className="subscription-pill clickable" 
-                      onClick={() => setSubscriptionPopupOpen(true)}
-                    >
-                      Free Plan
-                    </button>
+                                                <button
+                              className="subscription-pill clickable"
+                              onClick={() => setSubscriptionPopupOpen(true)}
+                            >
+                              Beta Plan
+                            </button>
                   </div>
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
@@ -151,52 +159,84 @@ export default function Create(): JSX.Element {
                 <h2>Choose Your Plan</h2>
                 <button className="popup-close" onClick={() => setSubscriptionPopupOpen(false)} />
               </div>
-              <div className="subscription-plans">
-                <div className="plan-card current">
-                  <div className="plan-header">
-                    <h3>Free Plan</h3>
-                    <span className="current-badge">Current</span>
-                  </div>
-                  <div className="plan-price">$0</div>
-                  <div className="plan-features">
-                    <div className="feature">• 3 projects per month</div>
-                    <div className="feature">• Basic 3D models</div>
-                    <div className="feature">• Email delivery</div>
-                  </div>
-                </div>
-                
-                <div className="plan-card">
-                  <div className="plan-header">
-                    <h3>Pro Plan</h3>
-                  </div>
-                  <div className="plan-price">$29<span className="plan-period">/month</span></div>
-                  <div className="plan-features">
-                    <div className="feature">• Unlimited projects</div>
-                    <div className="feature">• High-quality 3D models</div>
-                    <div className="feature">• Priority processing</div>
-                    <div className="feature">• Advanced compression</div>
-                  </div>
-                  <button className="plan-upgrade-btn">
-                    Upgrade to Pro
-                  </button>
-                </div>
-                
-                <div className="plan-card">
-                  <div className="plan-header">
-                    <h3>Enterprise</h3>
-                  </div>
-                  <div className="plan-price">Custom</div>
-                  <div className="plan-features">
-                    <div className="feature">• Everything in Pro</div>
-                    <div className="feature">• Custom integrations</div>
-                    <div className="feature">• Dedicated support</div>
-                    <div className="feature">• Team management</div>
-                  </div>
-                  <button className="plan-contact-btn">
-                    Contact Sales
-                  </button>
-                </div>
-              </div>
+                                    <div className="subscription-plans">
+                        <div className="plan-card current">
+                          <div className="plan-header">
+                            <h3>Beta Plan</h3>
+                            <span className="current-badge">Current</span>
+                          </div>
+                          <div className="plan-price">Free</div>
+                          <div className="plan-features">
+                            <div className="feature">• Limited beta access</div>
+                            <div className="feature">• Community support</div>
+                            <div className="feature">• Basic 3D models</div>
+                          </div>
+                        </div>
+
+                        <div className="plan-card">
+                          <div className="plan-header">
+                            <h3>Single Model</h3>
+                          </div>
+                          <div className="plan-price">$29<span className="plan-period">/mo</span></div>
+                          <div className="plan-features">
+                            <div className="feature">• One active model</div>
+                            <div className="feature">• 1-month free trial</div>
+                            <div className="feature">• Perfect for trying Spaceport</div>
+                          </div>
+                          <button className="plan-upgrade-btn">
+                            Get Started
+                          </button>
+                        </div>
+
+                        <div className="plan-card">
+                          <div className="plan-header">
+                            <h3>Starter</h3>
+                          </div>
+                          <div className="plan-price">$99<span className="plan-period">/mo</span></div>
+                          <div className="plan-features">
+                            <div className="feature">• Up to 5 active models</div>
+                            <div className="feature">• Additional models $29/mo each</div>
+                            <div className="feature">• 1-month free trial included</div>
+                          </div>
+                          <button className="plan-upgrade-btn">
+                            Start Starter
+                          </button>
+                        </div>
+
+                        <div className="plan-card">
+                          <div className="plan-header">
+                            <h3>Growth</h3>
+                          </div>
+                          <div className="plan-price">$299<span className="plan-period">/mo</span></div>
+                          <div className="plan-features">
+                            <div className="feature">• Up to 20 active models</div>
+                            <div className="feature">• Additional models $29/mo each</div>
+                            <div className="feature">• 1-month free trial included</div>
+                          </div>
+                          <button className="plan-upgrade-btn">
+                            Start Growth
+                          </button>
+                        </div>
+
+                        <div className="plan-card">
+                          <div className="plan-header">
+                            <h3>Enterprise</h3>
+                          </div>
+                          <div className="plan-price">Custom</div>
+                          <div className="plan-features">
+                            <div className="feature">• High-volume projects</div>
+                            <div className="feature">• Custom integrations</div>
+                            <div className="feature">• Dedicated support</div>
+                            <div className="feature">• Team management</div>
+                          </div>
+                          <button className="plan-contact-btn">
+                            Contact Sales
+                          </button>
+                        </div>
+                      </div>
+                      <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.9rem', opacity: '0.7' }}>
+                        All plans support additional active models at <span style={{ color: '#fff', opacity: '1' }}>$29/mo</span> per model beyond your plan.
+                      </p>
             </div>
           </div>
         )}
