@@ -9,6 +9,7 @@
   padding: 120px 20px 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
 }
 
 /* Sandbox Sections */
@@ -73,6 +74,44 @@
   gap: 20px;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+/* Component Selector Tool - No Hover Effects */
+.component-showcase > * {
+  cursor: pointer;
+  position: relative;
+}
+
+/* Component Name Pill - Appears above hovered element */
+.component-name-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 10000;
+  text-align: center;
+  min-width: 100px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* Smooth transitions */
+  opacity: 0;
+  transform: translateY(10px);
+  animation: pillFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes pillFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Typography Showcase */
@@ -234,6 +273,12 @@
     width: 100%;
     min-width: unset;
   }
+  
+  .component-name-pill {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    min-width: 80px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -255,5 +300,11 @@
   
   .component-title {
     font-size: 1.1rem;
+  }
+  
+  .component-name-pill {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    min-width: 70px;
   }
 }
