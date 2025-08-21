@@ -40,10 +40,19 @@ jobs:
         cd ../../web && npm ci || npm install && npm run build || true
         cd -
 
-    - name: Configure AWS credentials (OIDC)
+    - name: Configure AWS credentials (production via OIDC)
+      if: github.ref_name == 'main'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        aws-region: us-west-2
+
+    - name: Configure AWS credentials (staging via access keys)
+      if: github.ref_name != 'main'
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
 
     - name: Install jq
@@ -112,11 +121,18 @@ jobs:
           aws s3 rb s3://$bucket --force 2>/dev/null || true
         done
         
+        # Determine bootstrap trust dynamically: only trust prod role on main
+        if [ "${GITHUB_REF_NAME}" = "main" ]; then
+          TRUST_ARG="--trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole"
+        else
+          TRUST_ARG=""
+        fi
+        
         # Force complete re-bootstrap with fixed qualifier to avoid global bucket name conflicts
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
           --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
           --qualifier $CDK_QUALIFIER \
-          --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
+          $TRUST_ARG \
           --new-bootstrap \
           --force
 
