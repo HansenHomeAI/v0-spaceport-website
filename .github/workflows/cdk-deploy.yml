@@ -34,7 +34,8 @@ jobs:
         pip install pytest jsii cattrs typeguard typing-extensions publication --no-deps
         # Now install all dependencies
         pip install -e .
-        npm install -g aws-cdk
+        # Pin CDK CLI to match aws-cdk-lib to avoid qualifier context mismatches
+        npm install -g aws-cdk@2.89.0
         # Build Next.js site for Cloudflare (placeholder; wired in follow-up steps)
         cd ../../web && npm ci || npm install && npm run build || true
         cd -
@@ -118,17 +119,32 @@ jobs:
           --new-bootstrap \
           --force
 
+    - name: Preflight verify bootstrap (spcdkprod2)
+      if: github.event_name == 'push'
+      env:
+        CDK_QUALIFIER: "spcdkprod2"
+      run: |
+        set -e
+        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        echo "Checking SSM: /cdk-bootstrap/$CDK_QUALIFIER/version"
+        aws ssm get-parameter --name "/cdk-bootstrap/$CDK_QUALIFIER/version" --region us-west-2
+        echo "Checking assets bucket: cdk-$CDK_QUALIFIER-assets-$ACCOUNT-us-west-2"
+        aws s3api head-bucket --bucket cdk-$CDK_QUALIFIER-assets-$ACCOUNT-us-west-2
+        echo "Checking IAM roles exist"
+        aws iam get-role --role-name cdk-$CDK_QUALIFIER-deploy-role-$ACCOUNT-us-west-2 || true
+        aws iam get-role --role-name cdk-$CDK_QUALIFIER-file-publishing-role-$ACCOUNT-us-west-2 || true
+
     - name: Deploy CDK Stack
       if: github.event_name == 'push'
       env:
         CDK_QUALIFIER: "spcdkprod2"
       run: |
         # Deploy SpaceportStack with GoogleMapsApiKey parameter
-        npx cdk deploy SpaceportStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }} --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
+        npx cdk deploy SpaceportStack --verbose --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }} --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
         # Deploy SpaceportMLPipelineStack without parameters
-        npx cdk deploy SpaceportMLPipelineStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
+        npx cdk deploy SpaceportMLPipelineStack --verbose --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
         # Deploy new dedicated Auth stack (v2)
-        npx cdk deploy SpaceportAuthStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
+        npx cdk deploy SpaceportAuthStack --verbose --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --context @aws-cdk/core:bootstrapQualifier=$CDK_QUALIFIER
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
