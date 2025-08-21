@@ -38,44 +38,20 @@ class MLPipelineStack(Stack):
         )
 
         # ========== ECR REPOSITORIES ==========
-        # ECR repositories for ML containers
-        sfm_repo = ecr.Repository(
+        # Import existing ECR repositories to avoid conflicts
+        sfm_repo = ecr.Repository.from_repository_name(
             self, "SfMRepository",
-            repository_name="spaceport/sfm",
-            removal_policy=RemovalPolicy.RETAIN,
-            lifecycle_rules=[
-                ecr.LifecycleRule(
-                    max_image_count=10,
-                    rule_priority=1,
-                    description="Keep only 10 most recent images"
-                )
-            ]
+            "spaceport/sfm"
         )
 
-        gaussian_repo = ecr.Repository(
+        gaussian_repo = ecr.Repository.from_repository_name(
             self, "GaussianRepository", 
-            repository_name="spaceport/3dgs",
-            removal_policy=RemovalPolicy.RETAIN,
-            lifecycle_rules=[
-                ecr.LifecycleRule(
-                    max_image_count=10,
-                    rule_priority=1,
-                    description="Keep only 10 most recent images"
-                )
-            ]
+            "spaceport/3dgs"
         )
 
-        compressor_repo = ecr.Repository(
+        compressor_repo = ecr.Repository.from_repository_name(
             self, "CompressorRepository",
-            repository_name="spaceport/compressor", 
-            removal_policy=RemovalPolicy.RETAIN,
-            lifecycle_rules=[
-                ecr.LifecycleRule(
-                    max_image_count=10,
-                    rule_priority=1,
-                    description="Keep only 10 most recent images"
-                )
-            ]
+            "spaceport/compressor"
         )
 
         # ========== IAM ROLES ==========
