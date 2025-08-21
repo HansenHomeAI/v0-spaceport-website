@@ -2360,6 +2360,9 @@ footer {
   will-change: transform;
 }
 
+/* Keep create background effects, but constrain signup background to prevent overlap */
+/* This allows the create page to maintain its intended visual design */
+
 /* Breathing room below the create header before dashboard */
 #create-dashboard {
   margin-top: 3.5rem;
@@ -2376,7 +2379,7 @@ footer {
 #signup::before {
   content: "";
   position: absolute;
-  top: -1200px;
+  top: 0; /* Changed from -1200px to 0 to prevent overlap with create section */
   left: 50%;
   transform: translateX(-50%) rotate(180deg) scale(0.8);
   width: 100%; /* Changed from 1600px to 100% */
@@ -2402,7 +2405,7 @@ footer {
 #signup::after {
   content: "";
   position: absolute;
-  top: -1600px;
+  top: 0; /* Changed from -1600px to 0 to prevent overlap with create section */
   left: 50%;
   transform: translateX(-50%);
   width: 100%; /* Changed from 1800px to 100% */
