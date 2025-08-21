@@ -25,19 +25,10 @@ class MLPipelineStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # ========== S3 BUCKETS ==========
-        # Create ML processing bucket with organized prefixes
-        ml_bucket = s3.Bucket(
+        # Import existing S3 buckets to avoid conflicts
+        ml_bucket = s3.Bucket.from_bucket_name(
             self, "SpaceportMLBucket",
-            bucket_name="spaceport-ml-processing",
-            removal_policy=RemovalPolicy.RETAIN,
-            versioned=True,
-            lifecycle_rules=[
-                s3.LifecycleRule(
-                    id="DeleteIncompleteMultipartUploads",
-                    abort_incomplete_multipart_upload_after=Duration.days(1),
-                    enabled=True
-                )
-            ]
+            "spaceport-ml-processing"
         )
 
         # Import existing upload bucket

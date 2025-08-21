@@ -36,7 +36,7 @@ class CodeBuildStack(Stack):
         # Enhanced S3 bucket for build artifacts and caching
         build_artifacts_bucket = s3.Bucket(
             self, "SOGSBuildArtifacts",
-            bucket_name=f"spaceport-sogs-build-artifacts-{self.account}",
+            bucket_name=f"spaceport-sogs-build-artifacts-{self.account}-{self.region}",
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
             versioned=True,

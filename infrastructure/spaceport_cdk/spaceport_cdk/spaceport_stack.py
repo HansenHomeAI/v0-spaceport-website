@@ -40,39 +40,31 @@ class SpaceportStack(Stack):
             no_echo=True  # This will mask the value in CloudFormation
         )
 
-        # Import existing S3 bucket for file uploads
+        # Import existing S3 bucket to avoid conflicts
         upload_bucket = s3.Bucket.from_bucket_name(
-            self, 
+            self,
             "Spaceport-UploadBucket",
             "spaceport-uploads"
         )
         
-        # Import existing DynamoDB table for file metadata
+        # Import existing DynamoDB tables to avoid conflicts
         file_metadata_table = dynamodb.Table.from_table_name(
             self,
-            "ImportedFileMetadataTable",
+            "FileMetadataTable",
             "Spaceport-FileMetadata"
         )
-        
-        # Import existing DynamoDB table for drone flight paths
+
         drone_path_table = dynamodb.Table.from_table_name(
             self,
-            "ImportedDroneFlightPathsTable",
+            "DroneFlightPathsTable",
             "Spaceport-DroneFlightPaths"
         )
         
-        # Create DynamoDB table for waitlist entries
-        waitlist_table = dynamodb.Table(
+        # Import existing waitlist table
+        waitlist_table = dynamodb.Table.from_table_name(
             self,
-            "Spaceport-WaitlistTable",
-            table_name="Spaceport-Waitlist",
-            partition_key=dynamodb.Attribute(
-                name="email",
-                type=dynamodb.AttributeType.STRING
-            ),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN,
-            point_in_time_recovery=True
+            "WaitlistTable",
+            "Spaceport-Waitlist"
         )
         
         # Create Lambda execution role with permissions to S3 and DynamoDB
@@ -189,7 +181,7 @@ class SpaceportStack(Stack):
             code=lambda_.Code.from_asset(os.path.join(lambda_dir, "csv_upload_url")),
             handler="lambda_function.lambda_handler",
             environment={
-                "ML_BUCKET": "spaceport-ml-processing"  # Will be updated when ML stack is deployed
+                "ML_BUCKET": "spaceport-ml-processing"
             },
             role=lambda_role,
             timeout=Duration.seconds(30)
