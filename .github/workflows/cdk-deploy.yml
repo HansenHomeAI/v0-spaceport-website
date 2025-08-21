@@ -101,6 +101,8 @@ jobs:
 
     - name: Deploy CDK Stack
       if: github.event_name == 'push'
+      env:
+        CDK_QUALIFIER: "spcdkprod1"
       run: |
         # Deploy SpaceportStack with GoogleMapsApiKey parameter
         npx cdk deploy SpaceportStack --require-approval never --context account=$(aws sts get-caller-identity --query Account --output text) --context region=us-west-2 --parameters GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
