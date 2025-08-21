@@ -11,12 +11,12 @@ export default function DesignSystemSandbox(): JSX.Element {
   const [editableTexts, setEditableTexts] = useState({
     'section h1': 'Create Your Space Today',
     'section h2': 'AI-Powered 3D Reconstruction', 
-    'component-title': 'Advanced Features',
-    'popup-section h4': 'Processing Options',
-    'section p': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
-    'waitlist-header p': 'Join thousands of professionals already using Spaceport AI to revolutionize their visual content.',
-    'stats-source': 'Processing time: 2-3 hours • Output: Web-optimized 3D models',
-    'section p with highlight': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life.'
+    'h4': 'Processing Options',
+    'body-text': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
+    'body-text with highlights': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life with incredible detail and realism.',
+    'header-logo': 'Spaceport',
+    'nav-link': '3D Reconstruction',
+    'toggle-icon': '≡'
   });
 
   const updateEditableText = (key: string, value: string) => {
@@ -141,15 +141,25 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               {editableTexts['component-title']}
             </h3>
-            <h4 
-              className="popup-section h4"
-              data-component="popup-section h4"
-              onMouseEnter={(e) => handleComponentHover('popup-section h4', e)}
+            <h3 
+              className="h4"
+              data-component="h4"
+              onMouseEnter={(e) => handleComponentHover('h4', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('popup-section h4')}
-              onDoubleClick={(e) => handleDoubleClick('popup-section h4', e)}
+              onClick={() => handleComponentClick('h4')}
+              onDoubleClick={(e) => handleDoubleClick('h4', e)}
             >
-              {editableTexts['popup-section h4']}
+              {editableTexts['h4']}
+            </h3>
+            <h4 
+              className="h4"
+              data-component="h4"
+              onMouseEnter={(e) => handleComponentHover('h4', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('h4')}
+              onDoubleClick={(e) => handleDoubleClick('h4', e)}
+            >
+              {editableTexts['h4']}
             </h4>
           </div>
         </div>
@@ -157,45 +167,100 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="component-title">Body Text</h3>
           <div className="component-showcase">
-            <p 
-              className="section p"
-              data-component="section p"
-              onMouseEnter={(e) => handleComponentHover('section p', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('section p')}
-              onDoubleClick={(e) => handleDoubleClick('section p', e)}
-            >
-              {editableTexts['section p']}
-            </p>
-            <p 
-              className="waitlist-header p"
-              data-component="waitlist-header p"
-              onMouseEnter={(e) => handleComponentHover('waitlist-header p', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('waitlist-header p')}
-              onDoubleClick={(e) => handleDoubleClick('waitlist-header p', e)}
-            >
-              {editableTexts['waitlist-header p']}
-            </p>
-            <p 
-              className="stats-source"
-              data-component="stats-source"
-              onMouseEnter={(e) => handleComponentHover('stats-source', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('stats-source')}
-              onDoubleClick={(e) => handleDoubleClick('stats-source', e)}
-            >
-              {editableTexts['stats-source']}
-            </p>
             <div 
-              className="section p"
-              data-component="section p with highlight"
-              onMouseEnter={(e) => handleComponentHover('section p with highlight', e)}
+              className="body-text"
+              data-component="body-text"
+              onMouseEnter={(e) => handleComponentHover('body-text', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('section p with highlight')}
-              onDoubleClick={(e) => handleDoubleClick('section p with highlight', e)}
+              onClick={() => handleComponentClick('body-text')}
+              onDoubleClick={(e) => handleDoubleClick('body-text', e)}
             >
-              Transform your <span className="text-highlight">real estate photography</span> into immersive 3D experiences. Our AI-powered pipeline creates stunning <span className="text-highlight">Gaussian splat models</span> that bring properties to life.
+              {editableTexts['body-text']}
+            </div>
+            <div 
+              className="body-text"
+              data-component="body-text with highlights"
+              onMouseEnter={(e) => handleComponentHover('body-text with highlights', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('body-text with highlights')}
+              onDoubleClick={(e) => handleDoubleClick('body-text with highlights', e)}
+            >
+              Transform your <span className="text-highlight">real estate photography</span> into immersive 3D experiences. Our AI-powered pipeline creates stunning <span className="text-highlight">Gaussian splat models</span> that bring properties to life with incredible detail and realism.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Header Typography */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Header Typography</h2>
+        
+        <div className="component-group">
+          <h3 className="component-title">Navigation Elements</h3>
+          <div className="component-showcase">
+            <div 
+              className="header-logo"
+              data-component="header-logo"
+              onMouseEnter={(e) => handleComponentHover('header-logo', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('header-logo')}
+              onDoubleClick={(e) => handleDoubleClick('header-logo', e)}
+            >
+              {editableTexts['header-logo']}
+            </div>
+            <div 
+              className="nav-link"
+              data-component="nav-link"
+              onMouseEnter={(e) => handleComponentHover('nav-link', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('nav-link')}
+              onDoubleClick={(e) => handleDoubleClick('nav-link', e)}
+            >
+              {editableTexts['nav-link']}
+            </div>
+            <div 
+              className="toggle-icon"
+              data-component="toggle-icon"
+              onMouseEnter={(e) => handleComponentHover('toggle-icon', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('toggle-icon')}
+              onDoubleClick={(e) => handleDoubleClick('toggle-icon', e)}
+            >
+              {editableTexts['toggle-icon']}
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Header Layout Preview</h3>
+          <div className="component-showcase">
+            <div 
+              className="header-preview mobile"
+              data-component="header-preview mobile"
+              onMouseEnter={(e) => handleComponentHover('header-preview mobile', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('header-preview mobile')}
+            >
+              <div className="header-logo-preview">{editableTexts['header-logo']}</div>
+              <div className="toggle-icon-preview">
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            
+            <div 
+              className="header-preview desktop"
+              data-component="header-preview desktop"
+              onMouseEnter={(e) => handleComponentHover('header-preview desktop', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('header-preview desktop')}
+            >
+              <div className="header-logo-preview">{editableTexts['header-logo']}</div>
+              <div className="nav-links-preview">
+                <span className="nav-link-preview">Pricing</span>
+                <span className="nav-link-preview">About</span>
+                <span className="nav-link-preview">Create</span>
+              </div>
             </div>
           </div>
         </div>

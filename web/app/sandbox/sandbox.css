@@ -42,10 +42,12 @@
 /* Sandbox Header */
 .sandbox-title {
   font-size: 2.5rem;
-  font-weight: 400;
+  font-weight: 500;
   text-align: center;
   margin-bottom: 20px;
   color: #fff;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 .sandbox-subtitle {
@@ -54,17 +56,20 @@
   color: rgba(255, 255, 255, 0.7);
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
-  font-weight: 400;
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: 0em;
 }
 
 /* Section Titles */
 .section-title {
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: 500;
   margin-bottom: 40px;
   color: #fff;
   text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 /* Component Groups */
@@ -95,9 +100,11 @@
 
 .component-title {
   font-size: 1.2rem;
-  font-weight: 400;
+  font-weight: 500;
   margin-bottom: 25px;
   color: rgba(255, 255, 255, 1);
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 /* Component Showcase */
@@ -176,6 +183,8 @@
   color: rgba(255, 255, 255, 1);
   text-align: center;
   max-width: 600px;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 .component-showcase .section.h2 {
@@ -185,69 +194,301 @@
   color: rgba(255, 255, 255, 1);
   text-align: center;
   max-width: 500px;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
-.component-showcase .component-title {
+.component-showcase .h4 {
   font-size: 1.2rem;
   margin-bottom: 20px;
   font-weight: 400;
   color: rgba(255, 255, 255, 1);
   text-align: center;
   max-width: 300px;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
-/* Note: popup-section h4 looks identical to component-title currently
-   but they serve different semantic purposes in the actual website.
-   component-title is for section headers, popup-section h4 is for modal content. */
-.component-showcase .popup-section.h4 {
+/* Universal Body Text Class */
+.component-showcase .body-text {
+  max-width: 400px;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  line-height: 1.6;
   font-size: 1.2rem;
-  margin-bottom: 20px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  max-width: 300px;
+  letter-spacing: 0em;
 }
 
-.component-showcase .section.p {
-  max-width: 400px;
-  margin-bottom: 20px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  line-height: 1.6;
-}
-
-.component-showcase .waitlist-header.p {
-  max-width: 400px;
-  margin-bottom: 20px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  line-height: 1.6;
-}
-
-.component-showcase .stats-source {
-  max-width: 400px;
-  margin-bottom: 20px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  line-height: 1.6;
-}
-
-.component-showcase .section.p[data-component="section p with highlight"] {
+.component-showcase .body-text-highlight {
   max-width: 500px;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 1);
   text-align: center;
   line-height: 1.6;
+  font-size: 1.2rem;
+  letter-spacing: 0em;
 }
 
 /* Text Highlight Class - For emphasizing words/phrases */
 .component-showcase .text-highlight {
   color: rgba(255, 255, 255, 1);
   font-weight: 400;
+}
+
+/* Header Typography Components */
+.component-showcase .header-logo {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 8px 16px;
+  line-height: 1.2;
+  letter-spacing: 0em;
+  max-width: 200px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.component-showcase .header-logo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  opacity: 1;
+  transform: scale(1);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.component-showcase .header-logo:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.component-showcase .nav-link {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 6px 12px;
+  line-height: 1.2;
+  letter-spacing: 0em;
+  max-width: 200px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.component-showcase .nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.component-showcase .nav-link:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.component-showcase .toggle-icon {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 8px;
+  line-height: 0;
+  letter-spacing: 0em;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.component-showcase .toggle-icon::before {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: -1;
+}
+
+.component-showcase .toggle-icon:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Header Layout Preview */
+.component-showcase .header-preview {
+  width: 100%;
+  max-width: 640px;
+  height: 50px;
+  border-radius: 25px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  padding: 7px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.component-showcase .header-preview::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.component-showcase .header-preview.mobile {
+  max-width: 400px;
+}
+
+.component-showcase .header-preview.desktop {
+  max-width: 640px;
+}
+
+.component-showcase .header-logo-preview {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  padding: 8px 16px;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  position: relative;
+  z-index: 1;
+}
+
+.component-showcase .nav-links-preview {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.component-showcase .nav-link-preview {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  padding: 6px 12px;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.component-showcase .nav-link-preview:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.component-showcase .toggle-icon-preview {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.component-showcase .toggle-icon-preview:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.component-showcase .toggle-icon-preview::before {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: -1;
+}
+
+.component-showcase .toggle-icon-preview:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* The plus lines */
+.component-showcase .toggle-icon-preview span {
+  position: absolute;
+  display: block;
+  width: 16px;
+  height: 2.5px;
+  background: #fff;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
+}
+
+.component-showcase .toggle-icon-preview span:first-child {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.component-showcase .toggle-icon-preview span:last-child {
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 
 /* Button Showcase */
@@ -331,14 +572,15 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+  letter-spacing: 0em;
 }
 
 .default-card p {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 1rem;
-  line-height: 1.25;
+  font-size: 1.2rem;
+  line-height: 1.6;
   font-weight: 400;
-  margin: 0;
+  margin: 0 0 1.5rem 0;
   position: relative;
   z-index: 1;
   word-wrap: break-word;
@@ -347,6 +589,7 @@
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
+  letter-spacing: 0em;
 }
 
 .component-showcase .project-box,
