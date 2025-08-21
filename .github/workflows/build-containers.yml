@@ -64,10 +64,19 @@ jobs:
         echo "containers=$CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
         echo "Will build: $CONTAINERS_TO_BUILD"
 
-    - name: Configure AWS credentials (OIDC)
+    - name: Configure AWS credentials (production via OIDC)
+      if: github.ref_name == 'main'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        aws-region: us-west-2
+
+    - name: Configure AWS credentials (staging via access keys)
+      if: github.ref_name != 'main'
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
 
     - name: Create ECR repositories if they don't exist
