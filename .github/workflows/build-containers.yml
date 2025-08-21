@@ -99,7 +99,7 @@ jobs:
         set -e
         if [ "$MISSING_ROLE" -ne 0 ]; then
           echo "Creating CodeBuildServiceRole..."
-          cat > trust.json << 'EOF'
+          cat > trust.json <<- 'EOF'
           {
             "Version": "2012-10-17",
             "Statement": [
@@ -110,7 +110,7 @@ jobs:
               }
             ]
           }
-          EOF
+	EOF
           aws iam create-role --role-name CodeBuildServiceRole --assume-role-policy-document file://trust.json
           aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess
           aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
@@ -129,7 +129,7 @@ jobs:
         set -e
         if [ "$MISSING_PROJ" -ne 0 ]; then
           echo "Creating CodeBuild project spaceport-ml-containers..."
-          cat > project.json << 'EOF'
+          cat > project.json <<- 'EOF'
           {
             "name": "spaceport-ml-containers",
             "description": "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA",
@@ -155,7 +155,7 @@ jobs:
               { "key": "Purpose", "value": "ML-Container-Build" }
             ]
           }
-          EOF
+	EOF
           sed -i.bak "s|REPLACE_ME|$ROLE_ARN|" project.json
           aws codebuild create-project --cli-input-json file://project.json >/dev/null
           echo "Created CodeBuild project."
