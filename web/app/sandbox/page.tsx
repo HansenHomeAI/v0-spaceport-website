@@ -26,6 +26,45 @@ export default function DesignSystemSandbox(): JSX.Element {
     }));
   };
 
+  const handleDoubleClick = (key: string, event: React.MouseEvent<HTMLElement>) => {
+    const element = event.currentTarget;
+    element.contentEditable = 'true';
+    element.focus();
+    
+    // Select all text for easy editing
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    
+    // Handle save on blur
+    const handleBlur = () => {
+      element.contentEditable = 'false';
+      updateEditableText(key, element.textContent || editableTexts[key]);
+      element.removeEventListener('blur', handleBlur);
+    };
+    
+    element.addEventListener('blur', handleBlur);
+    
+    // Handle save on Enter key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        element.blur();
+      }
+    };
+    
+    element.addEventListener('keydown', handleKeyDown);
+    
+    // Clean up event listeners when editing is done
+    const cleanup = () => {
+      element.removeEventListener('keydown', handleKeyDown);
+    };
+    
+    element.addEventListener('blur', cleanup, { once: true });
+  };
+
   const copyComponentName = async (componentName: string) => {
     try {
       await navigator.clipboard.writeText(componentName);
@@ -64,8 +103,8 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="component-title">Instructions</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic' }}>
-            💡 Click on any text below to edit it and see how different content looks in each typography style. 
-            Press Enter to save changes or click outside to cancel.
+            💡 Double-click on any text below to edit it and see how different content looks in each typography style. 
+            Press Enter to save changes or click outside to cancel. Single-click to copy component names.
           </p>
         </div>
         
@@ -78,15 +117,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('section h1', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('section h1')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('section h1', e.currentTarget.textContent || 'Heading 1')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('section h1', e)}
             >
               {editableTexts['section h1']}
             </h1>
@@ -96,15 +127,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('section h2', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('section h2')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('section h2', e.currentTarget.textContent || 'Heading 2')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('section h2', e)}
             >
               {editableTexts['section h2']}
             </h2>
@@ -114,15 +137,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('component-title', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('component-title')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('component-title', e.currentTarget.textContent || 'Heading 3')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('component-title', e)}
             >
               {editableTexts['component-title']}
             </h3>
@@ -132,15 +147,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('popup-section h4', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('popup-section h4')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('popup-section h4', e.currentTarget.textContent || 'Heading 4')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('popup-section h4', e)}
             >
               {editableTexts['popup-section h4']}
             </h4>
@@ -156,15 +163,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('section p', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('section p')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('section p', e.currentTarget.textContent || 'Primary paragraph text')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('section p', e)}
             >
               {editableTexts['section p']}
             </p>
@@ -174,15 +173,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('waitlist-header p', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('waitlist-header p')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('waitlist-header p', e.currentTarget.textContent || 'Secondary text')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('waitlist-header p', e)}
             >
               {editableTexts['waitlist-header p']}
             </p>
@@ -192,15 +183,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('stats-source', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('stats-source')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('stats-source', e.currentTarget.textContent || 'Tertiary text')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('stats-source', e)}
             >
               {editableTexts['stats-source']}
             </p>
@@ -210,15 +193,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('section p with highlight', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('section p with highlight')}
-              contentEditable
-              suppressContentEditableWarning
-              onBlur={(e) => updateEditableText('section p with highlight', e.currentTarget.textContent || 'Text with highlighted words for emphasis')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
+              onDoubleClick={(e) => handleDoubleClick('section p with highlight', e)}
             >
               {editableTexts['section p with highlight']}
             </p>
@@ -834,9 +809,9 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div 
           className="component-name-pill"
           style={{
-            position: 'absolute',
-            top: hoveredElement.offsetTop - 40,
-            left: hoveredElement.offsetLeft + (hoveredElement.offsetWidth / 2) - 50,
+            position: 'fixed',
+            top: hoveredElement.getBoundingClientRect().top - 40,
+            left: hoveredElement.getBoundingClientRect().left + (hoveredElement.getBoundingClientRect().width / 2) - 50,
             zIndex: 10000
           }}
         >
