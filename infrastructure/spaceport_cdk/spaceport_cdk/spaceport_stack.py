@@ -40,50 +40,31 @@ class SpaceportStack(Stack):
             no_echo=True  # This will mask the value in CloudFormation
         )
 
-        # Create S3 bucket for file uploads (unique per account/region)
-        upload_bucket = s3.Bucket(
+        # Import existing S3 bucket to avoid conflicts
+        upload_bucket = s3.Bucket.from_bucket_name(
             self,
             "Spaceport-UploadBucket",
-            bucket_name=f"spaceport-uploads-{self.account}-{self.region}",
-            versioned=True,
-            removal_policy=RemovalPolicy.RETAIN,
-            encryption=s3.BucketEncryption.S3_MANAGED,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            "spaceport-uploads"
         )
         
-        # Create DynamoDB tables (managed by CDK)
-        file_metadata_table = dynamodb.Table(
+        # Import existing DynamoDB tables to avoid conflicts
+        file_metadata_table = dynamodb.Table.from_table_name(
             self,
             "FileMetadataTable",
-            table_name="Spaceport-FileMetadata",
-            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN,
-            point_in_time_recovery=True,
+            "Spaceport-FileMetadata"
         )
 
-        drone_path_table = dynamodb.Table(
+        drone_path_table = dynamodb.Table.from_table_name(
             self,
             "DroneFlightPathsTable",
-            table_name="Spaceport-DroneFlightPaths",
-            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN,
-            point_in_time_recovery=True,
+            "Spaceport-DroneFlightPaths"
         )
         
-        # Create DynamoDB table for waitlist entries
-        waitlist_table = dynamodb.Table(
+        # Import existing waitlist table
+        waitlist_table = dynamodb.Table.from_table_name(
             self,
-            "Spaceport-WaitlistTable",
-            table_name="Spaceport-Waitlist",
-            partition_key=dynamodb.Attribute(
-                name="email",
-                type=dynamodb.AttributeType.STRING
-            ),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            removal_policy=RemovalPolicy.RETAIN,
-            point_in_time_recovery=True
+            "WaitlistTable",
+            "Spaceport-Waitlist"
         )
         
         # Create Lambda execution role with permissions to S3 and DynamoDB
@@ -116,7 +97,6 @@ class SpaceportStack(Stack):
         )
         
         # Add permissions for ML bucket (CSV uploads)
-        ml_bucket_name = f"spaceport-ml-processing-{self.account}-{self.region}"
         lambda_role.add_to_policy(
             iam.PolicyStatement(
                 actions=[
@@ -126,8 +106,8 @@ class SpaceportStack(Stack):
                     "s3:DeleteObject"
                 ],
                 resources=[
-                    f"arn:aws:s3:::{ml_bucket_name}",
-                    f"arn:aws:s3:::{ml_bucket_name}/*"
+                    "arn:aws:s3:::spaceport-ml-processing",
+                    "arn:aws:s3:::spaceport-ml-processing/*"
                 ]
             )
         )
@@ -201,7 +181,7 @@ class SpaceportStack(Stack):
             code=lambda_.Code.from_asset(os.path.join(lambda_dir, "csv_upload_url")),
             handler="lambda_function.lambda_handler",
             environment={
-                "ML_BUCKET": ml_bucket_name
+                "ML_BUCKET": "spaceport-ml-processing"
             },
             role=lambda_role,
             timeout=Duration.seconds(30)
