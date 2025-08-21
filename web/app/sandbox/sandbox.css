@@ -1,5 +1,20 @@
 /* Design System Sandbox - Hyper Minimalist */
 
+/* 8pt Grid System - Subtle dots every 16px */
+.sandbox-container::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle 1px, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 16px 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+
 /* Sandbox Container */
 .sandbox-container {
   background: #000;
@@ -10,6 +25,7 @@
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
+  z-index: 2;
 }
 
 /* Sandbox Sections */
@@ -58,13 +74,30 @@
   background: rgba(255, 255, 255, 0.02);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+/* 8pt Grid Indicator for Component Groups */
+.component-group::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle 0.5px, rgba(255, 255, 255, 0.05) 0.5px, transparent 0.5px);
+  background-size: 16px 16px;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 0;
 }
 
 .component-title {
   font-size: 1.2rem;
   font-weight: 400;
   margin-bottom: 25px;
-  color: #fff;
+  color: rgba(255, 255, 255, 1);
 }
 
 /* Component Showcase */
@@ -80,6 +113,26 @@
 .component-showcase > * {
   cursor: pointer;
   position: relative;
+}
+
+/* Editable Text Fields */
+.component-showcase [contenteditable="true"] {
+  outline: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.component-showcase [contenteditable="true"]:hover {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.component-showcase [contenteditable="true"]:focus {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 4px;
+  margin: -2px -4px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 /* Component Name Pill - Appears above hovered element */
@@ -118,42 +171,58 @@
 .component-showcase .section.h1 {
   font-size: clamp(2.9rem, 8vw, 3.9rem);
   margin-bottom: 20px;
-  font-weight: 400;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
 }
 
 .component-showcase .section.h2 {
   font-size: 2rem;
   margin-bottom: 20px;
-  font-weight: 400;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
 }
 
 .component-showcase .component-title {
   font-size: 1.2rem;
   margin-bottom: 20px;
   font-weight: 400;
+  color: rgba(255, 255, 255, 1);
 }
 
+/* Note: popup-section h4 looks identical to component-title currently
+   but they serve different semantic purposes in the actual website.
+   component-title is for section headers, popup-section h4 is for modal content. */
 .component-showcase .popup-section.h4 {
   font-size: 1.2rem;
   margin-bottom: 20px;
   font-weight: 400;
+  color: rgba(255, 255, 255, 1);
 }
 
 .component-showcase .section.p {
   max-width: 400px;
   margin-bottom: 20px;
   font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .component-showcase .waitlist-header.p {
   max-width: 400px;
   margin-bottom: 20px;
   font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .component-showcase .stats-source {
   max-width: 400px;
   margin-bottom: 20px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Text Highlight Class - For emphasizing words/phrases */
+.component-showcase .text-highlight {
+  color: rgba(255, 255, 255, 1);
   font-weight: 400;
 }
 
@@ -243,7 +312,7 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 1rem;
   line-height: 1.25;
-  font-weight: 500;
+  font-weight: 400;
   margin: 0;
   position: relative;
   z-index: 1;
