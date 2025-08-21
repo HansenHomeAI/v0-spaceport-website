@@ -14,18 +14,22 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
 html {
-  overflow-x: hidden; /* Prevent horizontal scroll at root level */
-  max-width: 100vw; /* Ensure html doesn't exceed viewport */
+  /* overflow-x and max-width now handled globally above */
 }
 html, body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #000;
   color: #fff;
-  overflow-x: hidden;
+  /* overflow-x and max-width now handled globally above */
   position: relative;
   min-height: 100vh;
-  max-width: 100%; /* Prevent body from exceeding viewport */
 }
 .hidden { display: none; }
 
@@ -420,8 +424,8 @@ html, body {
 #landing.section {
   max-width: 100% !important;
   margin: 0 !important;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: 100%; /* Changed from 100vw to 100% */
+  /* Removed margin-left: calc(50% - 50vw); */
   position: relative;
   height: 100vh;
   overflow: hidden;
@@ -1572,6 +1576,7 @@ footer {
   position: relative;
   margin: 20px auto;
   max-width: 1200px;
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* We replaced .container with .dfpg-container-inner */
@@ -2268,9 +2273,9 @@ footer {
   content: "";
   position: absolute;
   top: -12rem; /* Extend well above the header to reach viewport top */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
+  left: 0;
+  right: 0;
+  width: 100%; /* Changed from 100vw to 100% */
   height: 400px;
   pointer-events: none;
   z-index: -2;
@@ -2297,21 +2302,21 @@ footer {
   content: "";
   position: absolute;
   top: -12rem; /* Extend well above the header to reach viewport top */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
+  left: 0;
+  right: 0;
+  width: 100%; /* Changed from 100vw to 100% */
   height: 400px;
   pointer-events: none;
   z-index: -2;
   background: 
     radial-gradient(
-      ellipse 600px 280px at 70% 15%,
+      ellipse 600px 280px at 70% 20%,
       rgba(205, 112, 228, 0.35) 0%,
       rgba(205, 112, 228, 0.18) 45%,
       transparent 75%
     ),
     radial-gradient(
-      ellipse 750px 320px at 20% 25%,
+      ellipse 750px 320px at 80% 25%,
       rgba(75, 0, 109, 0.28) 0%,
       rgba(255, 79, 0, 0.15) 60%,
       transparent 90%
@@ -2326,27 +2331,27 @@ footer {
   content: "";
   position: absolute;
   top: -12rem; /* Extend well above the header to reach viewport top */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
+  left: 0;
+  right: 0;
+  width: 100%; /* Changed from 100vw to 100% */
   height: 400px;
   pointer-events: none;
   z-index: -2;
   background: 
     radial-gradient(
-      ellipse 900px 350px at 80% 10%,
+      ellipse 900px 350px at 20% 10%,
       rgba(255, 79, 0, 0.45) 0%,
       rgba(255, 79, 0, 0.25) 35%,
       transparent 70%
     ),
     radial-gradient(
-      ellipse 650px 280px at 15% 35%,
+      ellipse 650px 280px at 85% 35%,
       rgba(75, 0, 109, 0.35) 0%,
       rgba(205, 112, 228, 0.3) 40%,
       transparent 80%
     ),
     radial-gradient(
-      ellipse 500px 200px at 60% 40%,
+      ellipse 500px 200px at 40% 40%,
       rgba(205, 112, 228, 0.2) 0%,
       transparent 60%
     );
@@ -2354,6 +2359,9 @@ footer {
   filter: blur(55px);
   will-change: transform;
 }
+
+/* Keep create background effects, but constrain signup background to prevent overlap */
+/* This allows the create page to maintain its intended visual design */
 
 /* Breathing room below the create header before dashboard */
 #create-dashboard {
@@ -2371,10 +2379,11 @@ footer {
 #signup::before {
   content: "";
   position: absolute;
-  top: -1200px;
+  top: 0; /* Changed from -1200px to 0 to prevent overlap with create section */
   left: 50%;
   transform: translateX(-50%) rotate(180deg) scale(0.8);
-  width: 1600px;
+  width: 100%; /* Changed from 1600px to 100% */
+  max-width: 1600px; /* Added max-width to prevent overflow */
   height: 1600px;
   pointer-events: none;
   z-index: -2;
@@ -2396,10 +2405,11 @@ footer {
 #signup::after {
   content: "";
   position: absolute;
-  top: -1600px;
+  top: 0; /* Changed from -1600px to 0 to prevent overlap with create section */
   left: 50%;
   transform: translateX(-50%);
-  width: 1800px;
+  width: 100%; /* Changed from 1800px to 100% */
+  max-width: 1800px; /* Added max-width to prevent overflow */
   height: 1800px;
   pointer-events: none;
   z-index: -1;
@@ -2434,7 +2444,8 @@ footer {
   top: -1600px;
   left: 50%;
   transform: translateX(-50%) rotate(0deg);
-  width: 1800px;
+  width: 100%; /* Changed from 1800px to 100% */
+  max-width: 1800px; /* Added max-width to prevent overflow */
   height: 1800px;
   pointer-events: none;
   z-index: -1;
@@ -2787,7 +2798,7 @@ body::before {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #000;
   color: #fff;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Already present - good */
 }
 
 /* The main container that matches dpu-container-inner */
