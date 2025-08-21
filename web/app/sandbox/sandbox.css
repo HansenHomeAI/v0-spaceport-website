@@ -187,6 +187,74 @@
 }
 
 /* Cards Showcase */
+.component-showcase .default-card {
+  min-width: 320px;
+  max-width: 400px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Glasmorphic Edge Border - Style Guide Spec */
+.default-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, 0) 57%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 3px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.default-card h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.default-card p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 500;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .component-showcase .project-box,
 .component-showcase .new-project-card,
 .component-showcase .waitlist-card {

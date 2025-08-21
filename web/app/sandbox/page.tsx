@@ -298,6 +298,22 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Cards</h2>
         
         <div className="component-group">
+          <h3 className="component-title">Default Card</h3>
+          <div className="component-showcase">
+            <div 
+              className="default-card"
+              data-component="default-card"
+              onMouseEnter={(e) => handleComponentHover('default-card', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('default-card')}
+            >
+              <h3>Default Card</h3>
+              <p>This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
           <h3 className="component-title">Project Cards</h3>
           <div className="component-showcase">
             <div 
