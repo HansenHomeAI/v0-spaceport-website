@@ -110,7 +110,7 @@ jobs:
               }
             ]
           }
-EOF
+          EOF
           aws iam create-role --role-name CodeBuildServiceRole --assume-role-policy-document file://trust.json
           aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess
           aws iam attach-role-policy --role-name CodeBuildServiceRole --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
@@ -155,7 +155,7 @@ EOF
               { "key": "Purpose", "value": "ML-Container-Build" }
             ]
           }
-EOF
+          EOF
           sed -i.bak "s|REPLACE_ME|$ROLE_ARN|" project.json
           aws codebuild create-project --cli-input-json file://project.json >/dev/null
           echo "Created CodeBuild project."
