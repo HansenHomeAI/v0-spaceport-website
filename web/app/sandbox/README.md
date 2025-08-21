@@ -12,15 +12,15 @@ Navigate to `/sandbox` in your browser to view the create page components.
 ### What You'll See
 The sandbox is organized into focused sections:
 
-1. **Typography** - Text styles and headings
-2. **Buttons** - Primary and secondary actions
-3. **Form Elements** - Inputs, selects, toggles
-4. **Cards** - Project cards and waitlist
-5. **Upload** - Upload zones, progress, status
-6. **Modal** - Modal overlays and accordions
-7. **Map** - Map containers and search
-8. **Progress** - Progress bars and actions
-9. **Feedback** - Status messages and errors
+1.  **Typography** - Text styles and headings
+2.  **Buttons** - Primary and secondary actions
+3.  **Form Elements** - Inputs, selects, toggles
+4.  **Cards** - Project cards and waitlist
+5.  **Upload** - Upload zones, progress, status
+6.  **Modal** - Modal overlays and accordions
+7.  **Map** - Map containers and search
+8.  **Progress** - Progress bars and actions
+9.  **Feedback** - Status messages and errors
 
 ## 🎨 Design Principles
 
@@ -42,87 +42,256 @@ The sandbox is organized into focused sections:
 - Accessible design patterns
 - Responsive behavior
 
-## 🔧 Component Usage
+## 🔧 Component Selector Tool
+
+### How It Works
+The sandbox includes a **Component Selector Tool** that makes rapid iteration incredibly smooth:
+
+1. **Hover over any component** → A white pill appears above it showing the exact class name
+2. **Click any component** → Copies the class name to your clipboard (silently, no notifications)
+3. **Move to next component** → Pill smoothly transitions to show the new component name
+
+### Example Workflow
+```
+1. Hover over "Primary CTA" button → See "cta-button" pill above it
+2. Click the button → "cta-button" copied to clipboard
+3. In new chat: "Make the cta-button have rounded corners"
+4. Hover over "Secondary CTA" → See "cta-button2-fixed" pill
+5. Click it → "cta-button2-fixed" copied to clipboard
+6. In chat: "Change cta-button2-fixed to use a different color"
+```
+
+### No Layout Shifts
+- **Stable layout** - no jarring screen movements
+- **Silent copy** - no notifications that push content around
+- **Smooth transitions** - pill appears/disappears smoothly
+- **Pure functionality** - just hover, see name, click to copy
+
+## 📋 Component Reference
 
 ### Typography
 ```tsx
 // Main headings
-<h1 className="section h1">Your Title</h1>
-<h2 className="section h2">Section Title</h2>
-<h3 className="component-title">Component Title</h3>
-<h4 className="popup-section h4">Subsection</h4>
+<h1 className="section h1">Your Title</h1>          // Hover shows: "section h1"
+<h2 className="section h2">Section Title</h2>       // Hover shows: "section h2"
+<h3 className="component-title">Component Title</h3> // Hover shows: "component-title"
+<h4 className="popup-section h4">Subsection</h4>    // Hover shows: "popup-section h4"
 
 // Body text
-<p className="section p">Primary text</p>
-<p className="waitlist-header p">Secondary text</p>
-<p className="stats-source">Tertiary text</p>
+<p className="section p">Primary text</p>            // Hover shows: "section p"
+<p className="waitlist-header p">Secondary text</p>  // Hover shows: "waitlist-header p"
+<p className="stats-source">Tertiary text</p>        // Hover shows: "stats-source"
 ```
 
 ### Buttons
 ```tsx
 // Primary actions
-<a href="#" className="cta-button">Primary CTA</a>
-<a href="#" className="cta-button2-fixed">Secondary CTA</a>
-<button className="dpu-btn">Submit</button>
+<a href="#" className="cta-button">Primary CTA</a>           // Hover shows: "cta-button"
+<a href="#" className="cta-button2-fixed">Secondary CTA</a> // Hover shows: "cta-button2-fixed"
+<button className="dpu-btn">Submit</button>                  // Hover shows: "dpu-btn"
 
 // Secondary actions
-<button className="stop-button">Stop</button>
-<button className="add-path-button">Add Path</button>
-<button className="info-pill-icon">Info</button>
+<button className="stop-button">Stop</button>                // Hover shows: "stop-button"
+<button className="add-path-button">Add Path</button>        // Hover shows: "add-path-button"
+<button className="info-pill-icon">Info</button>             // Hover shows: "info-pill-icon"
 ```
 
 ### Form Elements
 ```tsx
 // Standard input
-<div className="input-wrapper">
+<div className="input-wrapper">                              // Hover shows: "input-wrapper"
   <input type="text" placeholder="Enter text" />
 </div>
 
 // Input with icon
-<div className="popup-input-wrapper">
+<div className="popup-input-wrapper">                        // Hover shows: "popup-input-wrapper"
   <img src="/assets/SpaceportIcons/Pin.svg" className="input-icon pin" alt="" />
   <input type="text" placeholder="Address" />
 </div>
 
 // Input with suffix
-<div className="popup-input-wrapper has-suffix" data-suffix="acres">
+<div className="popup-input-wrapper has-suffix" data-suffix="acres"> // Hover shows: "popup-input-wrapper has-suffix"
   <img src="/assets/SpaceportIcons/Number.svg" className="input-icon number" alt="" />
   <input type="number" placeholder="Size" />
 </div>
 
 // Textarea
-<div className="popup-input-wrapper listing-description-wrapper">
+<div className="popup-input-wrapper listing-description-wrapper"> // Hover shows: "popup-input-wrapper listing-description-wrapper"
   <img src="/assets/SpaceportIcons/Paragraph.svg" className="input-icon paragraph" alt="" />
   <textarea placeholder="Description"></textarea>
+</div>
+
+// Select
+<label className="step-selector-label">Pipeline Step</label> // Hover shows: "step-selector-label"
+<select className="step-selector">                           // Hover shows: "step-selector"
+  <option value="sfm">SfM Processing</option>
+</select>
+
+// Toggle
+<div className="ios-toggle-container">                       // Hover shows: "ios-toggle-container"
+  <span>Enable Feature</span>
+  <div className="toggle-switch">...</div>
 </div>
 ```
 
 ### Cards
 ```tsx
 // Project card
-<div className="project-box">
+<div className="project-box">                               // Hover shows: "project-box"
   <h1>Project Name</h1>
   <p>Project description</p>
 </div>
 
 // New project card
-<div className="new-project-card">
+<div className="new-project-card">                          // Hover shows: "new-project-card"
   <h1>+ New Project</h1>
-  <div className="plus-icon">
-    <span></span>
-    <span></span>
-  </div>
+  <div className="plus-icon">...</div>
 </div>
 
 // Waitlist card
-<div className="waitlist-card">
-  <div className="waitlist-header">
-    <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="waitlist-logo" />
-    <h1>Join the Waitlist</h1>
-    <p>Description text</p>
+<div className="waitlist-card">                             // Hover shows: "waitlist-card"
+  <div className="waitlist-header">...</div>
+</div>
+```
+
+### Upload & Progress
+```tsx
+// Upload zone
+<div className="upload-zone">                               // Hover shows: "upload-zone"
+  <div className="upload-icon"></div>
+  <p>Drag & drop files here</p>
+</div>
+
+// Progress bar
+<div className="progress-bar">                              // Hover shows: "progress-bar"
+  <div className="progress-bar-fill" style={{ width: '65%' }}></div>
+</div>
+
+// Spinner
+<div className="spinner"></div>                             // Hover shows: "spinner"
+
+// Status indicators
+<div className="status-indicator">                          // Hover shows: "status-indicator"
+  <div className="status-dot pending"></div>
+  <span>Pending</span>
+</div>
+```
+
+### Modal & Accordion
+```tsx
+// Modal overlay
+<div className="popup-overlay">                             // Hover shows: "popup-overlay"
+  <div className="popup-content-scroll">
+    <div className="popup-header">                          // Hover shows: "popup-header"
+      <div className="popup-title-section">
+        <input className="popup-title-input" placeholder="Project Title" /> // Hover shows: "popup-title-input"
+      </div>
+      <button className="popup-close"></button>              // Hover shows: "popup-close"
+    </div>
+    
+    <div className="accordion-section active">               // Hover shows: "accordion-section"
+      <div className="accordion-header">                     // Hover shows: "accordion-header"
+        <div className="accordion-title">...</div>
+      </div>
+      <div className="accordion-content">
+        <p className="section-description">...</p>            // Hover shows: "section-description"
+        <div className="category-outline">                   // Hover shows: "category-outline"
+          <div className="popup-section">                    // Hover shows: "popup-section"
+            <div className="input-row-popup">                // Hover shows: "input-row-popup"
+              <div className="popup-input-wrapper">...</div> // Hover shows: "popup-input-wrapper"
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 ```
+
+### Map Components
+```tsx
+// Map wrapper
+<div className="map-wrapper">                               // Hover shows: "map-wrapper"
+  <div className="map-container">                           // Hover shows: "map-container"
+    <div className="map-blur-background"></div>
+    <div className="map-instructions-center">               // Hover shows: "map-instructions-center"
+      <div className="instruction-content">                 // Hover shows: "instruction-content"
+        <div className="instruction-pin"></div>
+        <h3>Click to place property marker</h3>
+      </div>
+    </div>
+  </div>
+  
+  <div className="address-search-overlay">                  // Hover shows: "address-search-overlay"
+    <div className="address-search-wrapper">                // Hover shows: "address-search-wrapper"
+      <input type="text" placeholder="Search address..." />
+    </div>
+  </div>
+  
+  <button className="expand-button">                       // Hover shows: "expand-button"
+    <div className="expand-icon"></div>
+  </button>
+</div>
+```
+
+### Progress Tracking
+```tsx
+// Progress tracker
+<div className="apple-progress-tracker">                    // Hover shows: "apple-progress-tracker"
+  <div className="progress-container">                      // Hover shows: "progress-container"
+    <div className="pill-progress-bar">                     // Hover shows: "pill-progress-bar"
+      <div className="pill-progress-fill" style={{ width: '75%' }}></div>
+    </div>
+    <p className="status-text">Processing 3D model...</p>   // Hover shows: "status-text"
+  </div>
+  
+  <div className="action-buttons">                         // Hover shows: "action-buttons"
+    <button className="stop-button">Stop</button>           // Hover shows: "stop-button"
+  </div>
+</div>
+```
+
+### Feedback Messages
+```tsx
+// Success message
+<div className="job-status">                               // Hover shows: "job-status"
+  <h3>Processing Complete</h3>
+  <p>Your 3D model has been successfully generated.</p>
+</div>
+
+// Error message
+<div className="error-message">                            // Hover shows: "error-message"
+  <h3>Processing Error</h3>
+  <p>There was an issue processing your request.</p>
+</div>
+```
+
+## 🚀 Rapid Iteration Workflow
+
+### For New Chats
+1. **Open the sandbox** at `/sandbox`
+2. **Hover over components** to see their exact class names
+3. **Click to copy** class names to clipboard
+4. **Paste in new chat** with your desired changes
+
+### Example Chat Starters
+```
+"Make the cta-button have rounded corners and a subtle shadow"
+
+"Change the popup-input-wrapper to use a different border color"
+
+"Update the project-box to have more padding and a different background"
+
+"Modify the upload-zone to show a different icon and text"
+
+"Adjust the status-indicator to use different colors for each state"
+```
+
+### Benefits
+- **Instant component identification** - no hunting through code
+- **Exact class names** - no guessing or typos
+- **Rapid iteration** - copy, paste, describe changes
+- **Stable workflow** - no layout shifts or distractions
 
 ## 📱 Responsive Design
 
@@ -146,6 +315,7 @@ The sandbox is organized into focused sections:
 - [x] Create focused component showcase
 - [x] Document create page components
 - [x] Remove unnecessary elements
+- [x] Implement component selector tool
 
 ### Phase 2: Style Standardization
 - [ ] Standardize typography scales
@@ -184,13 +354,13 @@ The sandbox is organized into focused sections:
 - [ ] Components render correctly
 - [ ] Responsive behavior works
 - [ ] Consistent appearance
-- [ ] No unnecessary animations
+- [ ] No layout shifts or jarring effects
 
 ### Functionality Testing
-- [ ] Components work as intended
-- [ ] Form elements function properly
-- [ ] Interactive elements respond correctly
-- [ ] Accessibility features work
+- [ ] Component selector tool works smoothly
+- [ ] Hover shows correct class names
+- [ ] Click copies to clipboard
+- [ ] No visual distractions or animations
 
 ## 📚 Resources
 
@@ -222,7 +392,8 @@ The sandbox is organized into focused sections:
 
 ---
 
-**Last Updated**: Design System v1.0
+**Last Updated**: Design System v1.1
 **Focus**: Create page components only
-**Style**: Hyper-minimalist, no animations
+**Style**: Hyper-minimalist, no animations, smooth transitions
+**Tool**: Component Selector with hover-to-see, click-to-copy
 **Maintained By**: Spaceport Development Team
