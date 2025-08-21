@@ -146,16 +146,15 @@ jobs:
         REGION=us-west-2
         NEW_ROLE_ARN=arn:aws:iam::$ACCOUNT:role/cdk-$CDK_QUALIFIER-cfn-exec-role-$ACCOUNT-$REGION
         for STACK in SpaceportMLPipelineStack SpaceportStack SpaceportAuthStack; do
-          echo "Checking legacy role usage for stack: $STACK"
+          echo "Ensuring stack is absent before deploy: $STACK"
           if aws cloudformation describe-stacks --stack-name "$STACK" --region $REGION >/dev/null 2>&1; then
+            STATUS=$(aws cloudformation describe-stacks --stack-name "$STACK" --region $REGION --query 'Stacks[0].StackStatus' --output text || echo "UNKNOWN")
             ROLE_ARN=$(aws cloudformation describe-stacks --stack-name "$STACK" --region $REGION --query 'Stacks[0].RoleARN' --output text || echo "none")
-            echo "Current RoleARN: $ROLE_ARN"
-            if echo "$ROLE_ARN" | grep -q "cdk-hnb659fds-cfn-exec-role"; then
-              echo "Deleting stack $STACK with new role to break old qualifier dependency..."
-              aws cloudformation delete-stack --stack-name "$STACK" --role-arn "$NEW_ROLE_ARN" --region $REGION || true
-              echo "Waiting for $STACK deletion..."
-              aws cloudformation wait stack-delete-complete --stack-name "$STACK" --region $REGION || true
-            fi
+            echo "Current Status: $STATUS | RoleARN: $ROLE_ARN"
+            echo "Deleting stack $STACK with new role to break any old qualifier dependency..."
+            aws cloudformation delete-stack --stack-name "$STACK" --role-arn "$NEW_ROLE_ARN" --region $REGION || true
+            echo "Waiting for $STACK deletion..."
+            aws cloudformation wait stack-delete-complete --stack-name "$STACK" --region $REGION || true
           fi
         done
 
