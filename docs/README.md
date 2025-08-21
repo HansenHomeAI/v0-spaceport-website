@@ -3,7 +3,7 @@
 Canonical, concise docs for AI agents and developers. Prefer these over legacy files.
 
 - Development: see `DEVELOPMENT_GUIDELINES.md`
-- Deployment (Cloudflare Pages + Next.js): see `DEPLOYMENT.md`
+- Deployment (AWS CDK + Cloudflare Pages): see `DEPLOYMENT.md`
 - Branching and CI summary: see `BRANCHING_STRATEGY.md`
 
 Legacy/Deep-dive docs remain in this folder (SOGS, 3DGS, COLMAP, etc.). Treat them as reference. If they disagree with the three canonical docs above, the canonical docs win.
@@ -12,7 +12,9 @@ Quick facts
 - App: Next.js (App Router) under `web/`, SSR/ISR via Edge.
 - Build: `next build` then `@cloudflare/next-on-pages` → produces `.vercel/output/static/_worker.js`.
 - Deploy: CI uploads `.vercel/output/static` to Cloudflare Pages so the worker mounts.
-- Branches: `development` → staging deploy; `main` → production deploy.
+- **Branches**: `development` → staging deploy; `main` → production deploy (AWS CDK + Cloudflare).
+- **Infrastructure**: AWS CDK deploys backend infrastructure to separate staging/production accounts.
+
 # 📖 Documentation Overview
 
 This directory contains the essential documentation for the Spaceport ML Pipeline project.
@@ -35,9 +37,10 @@ This directory contains the essential documentation for the Spaceport ML Pipelin
 - Performance metrics and targets
 - Next phase priorities
 
-### 🚀 [Deployment Guide](../DEPLOYMENT.md)
+### 🚀 [Deployment Guide](DEPLOYMENT.md)
 **How to deploy** - Complete deployment and troubleshooting guide  
 - Step-by-step deployment instructions
+- AWS CDK infrastructure deployment
 - Container build and push procedures
 - Testing and validation steps
 - Troubleshooting common issues
@@ -56,13 +59,16 @@ This directory contains the essential documentation for the Spaceport ML Pipelin
 |------|----------|---------|
 | **Project Overview** | [Main README](../README.md) | Project Overview |
 | **Current Status** | [Project Status](PROJECT_STATUS.md) | Executive Summary |
-| **Deploy System** | [Deployment Guide](../DEPLOYMENT.md) | Infrastructure Deployment |
+| **Deploy System** | [Deployment Guide](DEPLOYMENT.md) | Infrastructure Deployment |
 | **Use API** | [API Reference](api.md) | ML Pipeline API |
-| **Troubleshoot Issues** | [Deployment Guide](../DEPLOYMENT.md) | Troubleshooting Guide |
+| **Troubleshoot Issues** | [Deployment Guide](DEPLOYMENT.md) | Troubleshooting Guide |
 | **Check Progress** | [Project Status](PROJECT_STATUS.md) | Success Metrics |
 
 ## 📈 Recent Updates
 
+- ✅ **Production Infrastructure Deployed**: All AWS CDK stacks successfully deployed to production account
+- ✅ **Environment Separation**: Clean staging/production separation with OIDC authentication
+- ✅ **Deployment Strategy**: Branch-based deployment with automatic environment targeting
 - ✅ **Documentation Consolidated**: Streamlined from 10+ scattered files to 4 key documents
 - ✅ **Pipeline Fixed**: Compression step issues resolved and validated  
 - ✅ **Status Updated**: Current production-ready status documented
@@ -70,5 +76,5 @@ This directory contains the essential documentation for the Spaceport ML Pipelin
 
 ---
 
-**Status**: All documentation current as of December 2024  
-**Next Review**: Update when production algorithms are integrated 
+**Status**: All documentation current as of August 2025  
+**Next Review**: Update when production ML pipeline testing begins 
