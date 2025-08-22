@@ -3,19 +3,19 @@
 
 export const API_CONFIG = {
   // Projects API - User project management
-  PROJECTS_API_URL: process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects',
+  PROJECTS_API_URL: process.env.NEXT_PUBLIC_PROJECTS_API_URL!,
   
   // Drone Path API - Flight path optimization and CSV generation
-  DRONE_PATH_API_URL: process.env.NEXT_PUBLIC_DRONE_PATH_API_URL || 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod',
+  DRONE_PATH_API_URL: process.env.NEXT_PUBLIC_DRONE_PATH_API_URL!,
   
   // File Upload API - File upload operations
-  FILE_UPLOAD_API_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL || 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod',
+  FILE_UPLOAD_API_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL!,
   
   // Waitlist API - User waitlist submissions
-  WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL || 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist',
+  WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL!,
   
   // ML Pipeline API - ML processing operations
-  ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL || 'https://2vulsewyl5.execute-api.us-west-2.amazonaws.com/prod',
+  ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
 } as const;
 
 // Individual API endpoint builders

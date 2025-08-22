@@ -1191,16 +1191,16 @@ window.displayDetectedParams = displayDetectedParams;
 
 // API Endpoints
 const API_ENDPOINTS = {
-    DRONE_PATH: "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
-    START_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
-    GET_PRESIGNED_URL: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
-    COMPLETE_UPLOAD: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
-    SAVE_SUBMISSION: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission",
-    WAITLIST: "https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist"
+    DRONE_PATH: process.env.NEXT_PUBLIC_DRONE_PATH_API_URL ? `${process.env.NEXT_PUBLIC_DRONE_PATH_API_URL}/DronePathREST` : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
+    START_UPLOAD: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL ? `${process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL}/start-multipart-upload` : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload",
+    GET_PRESIGNED_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL ? `${process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL}/get-presigned-url` : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url",
+    COMPLETE_UPLOAD: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL ? `${process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL}/complete-multipart-upload` : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload",
+    SAVE_SUBMISSION: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL ? `${process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL}/save-submission` : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/save-submission",
+    WAITLIST: process.env.NEXT_PUBLIC_WAITLIST_API_URL ? process.env.NEXT_PUBLIC_WAITLIST_API_URL : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/waitlist"
 };
 
 // Enhanced Drone Path Generator API Configuration
-const ENHANCED_API_BASE = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod";
+const ENHANCED_API_BASE = process.env.NEXT_PUBLIC_DRONE_PATH_API_URL ? process.env.NEXT_PUBLIC_DRONE_PATH_API_URL : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod";
 
 // Enhanced Drone Path Generator Class
 class EnhancedDronePathGenerator {
@@ -2861,7 +2861,7 @@ class ProjectPopupFlightPath {
   constructor() {
     this.optimizedParams = null;
     this.isOptimizing = false;
-    this.API_BASE = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod";
+    this.API_BASE = process.env.NEXT_PUBLIC_DRONE_PATH_API_URL ? process.env.NEXT_PUBLIC_DRONE_PATH_API_URL : "https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod";
     this.initializeEventListeners();
   }
 
