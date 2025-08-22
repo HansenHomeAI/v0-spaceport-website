@@ -59,7 +59,7 @@
 
 /* Component Groups */
 .component-group {
-  margin-bottom: 60px;
+  margin-bottom: 50px;
   padding: 30px;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 16px;
@@ -86,7 +86,7 @@
 .h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  margin-bottom: 2rem;
+  margin-bottom: 25px;
   color: rgba(255, 255, 255, 1);
   letter-spacing: 0em;
   line-height: 1.05;
@@ -188,7 +188,7 @@
 /* Universal Body Text Class */
 .component-showcase .body-text {
   max-width: 400px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.5);
   text-align: center;
@@ -199,7 +199,7 @@
 
 .component-showcase .body-text-highlight {
   max-width: 500px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 1);
   text-align: center;
@@ -822,8 +822,11 @@
 
 .component-showcase .spaceport-prism .prism-content {
   text-align: center;
+  background: rgba(0, 0, 0, 0.3);
   padding: 16px 24px;
   border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   position: relative;
   z-index: 2;
 }
