@@ -40,6 +40,25 @@ jobs:
       - name: Install deps (tolerant to peer conflicts in CI)
         run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
+      - name: Inject build-time env (.env) for NEXT_PUBLIC_* per branch
+        run: |
+          set -euo pipefail
+          BRANCH="${{ github.ref_name }}"
+          echo "Preparing .env for branch $BRANCH"
+          : > .env
+          if [ "$BRANCH" = "main" ]; then
+            echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PROD }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PROD }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
+          else
+            echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
+          fi
+          echo "Wrote $(wc -l < .env) vars to .env"
+
       - name: Build Next for Cloudflare (SSR)
         run: |
           npm run build
