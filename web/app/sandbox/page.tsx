@@ -103,10 +103,9 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="h3">Instructions</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
-            💡 Double-click on any text below to edit it and see how different content looks in each typography style. 
-            Press Enter to save changes or click outside to cancel. Single-click to copy component names.
-          </p>
+          <div className="body-text">
+            Double-click on any text below to edit it and see how different content looks in each typography style. Press Enter to save changes or click outside to cancel. Single-click to copy component names.
+          </div>
         </div>
         
         <div className="component-group">
@@ -197,9 +196,9 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Opacity Stops - Against Dark Background</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
-            💡 These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
-          </p>
+          <div className="body-text">
+            These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
+          </div>
           <div className="component-showcase">
             <div className="color-swatch-container">
               <div 
@@ -244,9 +243,9 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Opacity Stops - Against Light Background</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
-            💡 Same opacity levels, but against a light background to show contrast.
-          </p>
+          <div className="body-text">
+            Same opacity levels, but against a light background to show contrast.
+          </div>
           <div className="component-showcase">
             <div className="light-background-container">
               <div 
@@ -291,9 +290,9 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Spaceport Prism Pattern</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
-            💡 This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
-          </p>
+          <div className="body-text">
+            This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
+          </div>
           <div className="component-showcase">
             <div 
               className="spaceport-prism"
@@ -303,8 +302,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('spaceport-prism')}
             >
               <div className="prism-content">
-                <div style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Spaceport Prism</div>
-                <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+                <div className="h3">Spaceport Prism</div>
+                <div className="body-text">
                   #DC9ED8 • #CD70E4 • #D869B3<br />
                   #E4617C • #EB5C5A • #E47991
                 </div>
@@ -320,9 +319,9 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="h3">Standard Border</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
-            💡 Our default border style - 3px solid with subtle transparency. Used for most components.
-          </p>
+          <div className="body-text">
+            Our default border style - 3px solid with subtle transparency. Used for most components.
+          </div>
           <div className="component-showcase">
             <div 
               className="standard-border-demo"
@@ -331,17 +330,17 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('standard-border-demo')}
             >
-              <h3>Standard Border</h3>
-              <p>This component uses our default 3px solid border with rgba(255, 255, 255, 0.1).</p>
+              <h3 className="h3">Standard Border</h3>
+              <div className="body-text">This component uses our default 3px solid border with rgba(255, 255, 255, 0.1).</div>
             </div>
           </div>
         </div>
 
         <div className="component-group">
           <h3 className="h3">Gradient Border</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
-            💡 Our premium border style - diagonal gradient edge that highlights important elements.
-          </p>
+          <div className="body-text">
+            Our premium border style - diagonal gradient edge that highlights important elements.
+          </div>
           <div className="component-showcase">
             <div 
               className="gradient-border-demo"
@@ -350,8 +349,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('gradient-border-demo')}
             >
-              <h3>Gradient Border</h3>
-              <p>This component uses our premium diagonal gradient border for highlighting important elements.</p>
+              <h3 className="h3">Gradient Border</h3>
+              <div className="body-text">This component uses our premium diagonal gradient border for highlighting important elements.</div>
             </div>
           </div>
         </div>
@@ -497,8 +496,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('default-card')}
             >
-              <h3>Default Card</h3>
-              <p>This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</p>
+              <h3 className="h3">Default Card</h3>
+              <div className="body-text">This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</div>
             </div>
           </div>
         </div>
@@ -513,8 +512,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('project-box')}
             >
-              <h1>Sample Project</h1>
-              <p>Project description</p>
+              <h1 className="section h1">Sample Project</h1>
+              <div className="body-text">Project description</div>
             </div>
             <div 
               className="new-project-card"
@@ -523,7 +522,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('new-project-card')}
             >
-              <h1>+ New Project</h1>
+              <h1 className="section h1">+ New Project</h1>
               <div className="plus-icon">
                 <span></span>
                 <span></span>
@@ -544,8 +543,8 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               <div className="waitlist-header">
                 <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="waitlist-logo" />
-                <h1>Join the Waitlist</h1>
-                <p>Be among the first to experience the future of 3D visualization.</p>
+                <h1 className="section h1">Join the Waitlist</h1>
+                <div className="body-text">Be among the first to experience the future of 3D visualization.</div>
               </div>
             </div>
           </div>
