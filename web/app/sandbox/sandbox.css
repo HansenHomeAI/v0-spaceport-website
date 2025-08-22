@@ -732,3 +732,211 @@
   margin-bottom: 0;
   max-width: none;
 }
+
+/* Colors Section */
+.component-showcase .color-swatch-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 25px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  min-width: 400px;
+  box-sizing: border-box;
+}
+
+.component-showcase .color-swatch {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.875rem;
+  text-align: center;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.component-showcase .color-swatch.pure-white {
+  background: rgba(255, 255, 255, 1);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Opacity Stops against Dark Background (default sandbox background is dark) */
+.component-showcase .opacity-stop-10 { background: rgba(255, 255, 255, 0.1); }
+.component-showcase .opacity-stop-20 { background: rgba(255, 255, 255, 0.2); }
+.component-showcase .opacity-stop-50 { background: rgba(255, 255, 255, 0.5); }
+.component-showcase .opacity-stop-100 { background: rgba(255, 255, 255, 1); color: rgba(0, 0, 0, 0.8); }
+
+/* Opacity Stops against Light Background */
+.component-showcase .light-background-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 25px;
+  margin-bottom: 20px;
+  min-width: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.component-showcase .light-background-container .color-swatch {
+  color: rgba(0, 0, 0, 0.8);
+  border: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.component-showcase .light-background-container .opacity-stop-10-dark { background: rgba(0, 0, 0, 0.1); }
+.component-showcase .light-background-container .opacity-stop-20-dark { background: rgba(0, 0, 0, 0.2); }
+.component-showcase .light-background-container .opacity-stop-50-dark { background: rgba(0, 0, 0, 0.5); }
+.component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: rgba(255, 255, 255, 0.8); }
+
+/* Spaceport Prism - Actual conic gradient with six hex codes from gradient editor */
+.component-showcase .spaceport-prism {
+  width: 300px;
+  height: 200px;
+  background: conic-gradient(
+    from 0deg,
+    #DC9ED8 0deg,
+    #CD70E4 144deg,
+    #D869B3 180deg,
+    #E4617C 208.8deg,
+    #EB5C5A 259.2deg,
+    #E47991 334.8deg,
+    #DC9ED8 360deg
+  );
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 1);
+  font-weight: 600;
+  margin-bottom: 20px;
+  position: relative;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.component-showcase .spaceport-prism::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.component-showcase .spaceport-prism .prism-content {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 16px 24px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 2;
+}
+
+/* Border Demo Components */
+.component-showcase .standard-border-demo {
+  min-width: 320px;
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+.component-showcase .standard-border-demo h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.05;
+}
+
+.component-showcase .standard-border-demo p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
+}
+
+.component-showcase .gradient-border-demo {
+  min-width: 320px;
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.component-showcase .gradient-border-demo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, 0) 57%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.component-showcase .gradient-border-demo h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+}
+
+.component-showcase .gradient-border-demo p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}

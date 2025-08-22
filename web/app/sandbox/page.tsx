@@ -182,6 +182,187 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
       </section>
 
+      {/* Colors */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Colors</h2>
+        
+        <div className="component-group">
+          <h3 className="component-title">Primary Colors</h3>
+          <div className="component-showcase">
+            <div 
+              className="color-swatch pure-white"
+              data-component="pure-white"
+              onMouseEnter={(e) => handleComponentHover('pure-white', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('pure-white')}
+            >
+              Pure White
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Opacity Stops - Against Dark Background</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
+          </p>
+          <div className="component-showcase">
+            <div className="color-swatch-container">
+              <div 
+                className="color-swatch opacity-stop-10"
+                data-component="opacity-stop-10"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-10', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-10')}
+              >
+                10%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-20"
+                data-component="opacity-stop-20"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-20', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-20')}
+              >
+                20%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-50"
+                data-component="opacity-stop-50"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-50', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-50')}
+              >
+                50%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-100"
+                data-component="opacity-stop-100"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-100', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-100')}
+              >
+                100%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Opacity Stops - Against Light Background</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Same opacity levels, but against a light background to show contrast.
+          </p>
+          <div className="component-showcase">
+            <div className="light-background-container">
+              <div 
+                className="color-swatch opacity-stop-10-dark"
+                data-component="opacity-stop-10-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-10-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-10-dark')}
+              >
+                10%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-20-dark"
+                data-component="opacity-stop-20-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-20-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-20-dark')}
+              >
+                20%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-50-dark"
+                data-component="opacity-stop-50-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-50-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-50-dark')}
+              >
+                50%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-100-dark"
+                data-component="opacity-stop-100-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-100-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-100-dark')}
+              >
+                100%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Spaceport Prism Pattern</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
+          </p>
+          <div className="component-showcase">
+            <div 
+              className="spaceport-prism"
+              data-component="spaceport-prism"
+              onMouseEnter={(e) => handleComponentHover('spaceport-prism', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('spaceport-prism')}
+            >
+              <div className="prism-content">
+                <div style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Spaceport Prism</div>
+                <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+                  #DC9ED8 • #CD70E4 • #D869B3<br />
+                  #E4617C • #EB5C5A • #E47991
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Borders */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Borders</h2>
+        
+        <div className="component-group">
+          <h3 className="component-title">Standard Border</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Our default border style - 3px solid with subtle transparency. Used for most components.
+          </p>
+          <div className="component-showcase">
+            <div 
+              className="standard-border-demo"
+              data-component="standard-border-demo"
+              onMouseEnter={(e) => handleComponentHover('standard-border-demo', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('standard-border-demo')}
+            >
+              <h3>Standard Border</h3>
+              <p>This component uses our default 3px solid border with rgba(255, 255, 255, 0.1).</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Gradient Border</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Our premium border style - diagonal gradient edge that highlights important elements.
+          </p>
+          <div className="component-showcase">
+            <div 
+              className="gradient-border-demo"
+              data-component="gradient-border-demo"
+              onMouseEnter={(e) => handleComponentHover('gradient-border-demo', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('gradient-border-demo')}
+            >
+              <h3>Gradient Border</h3>
+              <p>This component uses our premium diagonal gradient border for highlighting important elements.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Header Typography */}
       <section className="sandbox-section">
         <h2 className="section-title">Header Typography</h2>
