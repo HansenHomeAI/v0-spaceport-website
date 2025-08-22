@@ -46,6 +46,14 @@ This directory contains the essential documentation for the Spaceport ML Pipelin
 - Troubleshooting common issues
 - Maintenance and update procedures
 
+### 🔧 [Production Deployment Troubleshooting](PRODUCTION_DEPLOYMENT_TROUBLESHOOTING.md)
+**Production issues resolved** - Complete guide to fixing production deployment problems
+- Production site authentication vs API issues
+- Missing Lambda functions and wrong API endpoints
+- Environment variable injection problems
+- Step-by-step resolution process
+- Prevention strategies and best practices
+
 ### 🔌 [API Reference](api.md)
 **API usage** - API endpoints and usage examples
 - ML pipeline API endpoints
@@ -60,12 +68,17 @@ This directory contains the essential documentation for the Spaceport ML Pipelin
 | **Project Overview** | [Main README](../README.md) | Project Overview |
 | **Current Status** | [Project Status](PROJECT_STATUS.md) | Executive Summary |
 | **Deploy System** | [Deployment Guide](DEPLOYMENT.md) | Infrastructure Deployment |
+| **Fix Production Issues** | [Production Troubleshooting](PRODUCTION_DEPLOYMENT_TROUBLESHOOTING.md) | Root Causes & Solutions |
 | **Use API** | [API Reference](api.md) | ML Pipeline API |
 | **Troubleshoot Issues** | [Deployment Guide](DEPLOYMENT.md) | Troubleshooting Guide |
 | **Check Progress** | [Project Status](PROJECT_STATUS.md) | Success Metrics |
 
 ## 📈 Recent Updates
 
+- ✅ **Production Site Fully Functional**: Projects API working, authentication working, all features operational
+- ✅ **Production Deployment Issues Resolved**: Complete troubleshooting guide created for future reference
+- ✅ **Environment Variable Injection Fixed**: GitHub Actions now properly injects build-time environment variables
+- ✅ **Infrastructure Deployment Completed**: SpaceportAuthStack successfully deployed with Lambda function
 - ✅ **Production Infrastructure Deployed**: All AWS CDK stacks successfully deployed to production account
 - ✅ **Environment Separation**: Clean staging/production separation with OIDC authentication
 - ✅ **Deployment Strategy**: Branch-based deployment with automatic environment targeting

@@ -10,6 +10,7 @@
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
+  z-index: 2;
 }
 
 /* Sandbox Sections */
@@ -26,10 +27,12 @@
 /* Sandbox Header */
 .sandbox-title {
   font-size: 2.5rem;
-  font-weight: 400;
+  font-weight: 500;
   text-align: center;
   margin-bottom: 20px;
   color: #fff;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 .sandbox-subtitle {
@@ -38,17 +41,20 @@
   color: rgba(255, 255, 255, 0.7);
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
-  font-weight: 400;
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: 0em;
 }
 
 /* Section Titles */
 .section-title {
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: 500;
   margin-bottom: 40px;
   color: #fff;
   text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 /* Component Groups */
@@ -58,13 +64,32 @@
   background: rgba(255, 255, 255, 0.02);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+/* 8pt Grid Indicator for Component Groups */
+.component-group::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle 0.5px, rgba(255, 255, 255, 0.05) 0.5px, transparent 0.5px);
+  background-size: 16px 16px;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 0;
 }
 
 .component-title {
   font-size: 1.2rem;
-  font-weight: 400;
+  font-weight: 500;
   margin-bottom: 25px;
-  color: #fff;
+  color: rgba(255, 255, 255, 1);
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 /* Component Showcase */
@@ -73,13 +98,34 @@
   flex-wrap: wrap;
   gap: 20px;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
+  text-align: center;
 }
 
 /* Component Selector Tool - No Hover Effects */
 .component-showcase > * {
   cursor: pointer;
   position: relative;
+}
+
+/* Editable Text Fields */
+.component-showcase [contenteditable="true"] {
+  outline: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.component-showcase [contenteditable="true"]:hover {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.component-showcase [contenteditable="true"]:focus {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 4px;
+  margin: -2px -4px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 /* Component Name Pill - Appears above hovered element */
@@ -118,73 +164,373 @@
 .component-showcase .section.h1 {
   font-size: clamp(2.9rem, 8vw, 3.9rem);
   margin-bottom: 20px;
-  font-weight: 400;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  max-width: 600px;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
 .component-showcase .section.h2 {
   font-size: 2rem;
   margin-bottom: 20px;
-  font-weight: 400;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  max-width: 500px;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
-.component-showcase .component-title {
+.component-showcase .h4 {
   font-size: 1.2rem;
   margin-bottom: 20px;
   font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  max-width: 300px;
+  letter-spacing: 0em;
+  line-height: 1.05;
 }
 
-.component-showcase .popup-section.h4 {
+/* Universal Body Text Class */
+.component-showcase .body-text {
+  max-width: 400px;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  line-height: 1.6;
   font-size: 1.2rem;
-  margin-bottom: 20px;
+  letter-spacing: 0em;
+}
+
+.component-showcase .body-text-highlight {
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  line-height: 1.6;
+  font-size: 1.2rem;
+  letter-spacing: 0em;
+}
+
+/* Text Highlight Class - For emphasizing words/phrases */
+.component-showcase .text-highlight {
+  color: rgba(255, 255, 255, 1);
   font-weight: 400;
 }
 
-.component-showcase .section.p {
-  max-width: 400px;
+/* Header Typography Components */
+.component-showcase .header-logo {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 6px 12px;
+  line-height: 1.2;
+  letter-spacing: 0em;
+  max-width: 200px;
   margin-bottom: 20px;
-  font-weight: 400;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
 }
 
-.component-showcase .waitlist-header.p {
-  max-width: 400px;
-  margin-bottom: 20px;
-  font-weight: 400;
+.component-showcase .header-logo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.component-showcase .stats-source {
-  max-width: 400px;
+.component-showcase .header-logo:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.component-showcase .nav-link {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 6px 12px;
+  line-height: 1.2;
+  letter-spacing: 0em;
+  max-width: 200px;
   margin-bottom: 20px;
-  font-weight: 400;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.component-showcase .nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.component-showcase .nav-link:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.component-showcase .toggle-icon {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 8px;
+  line-height: 0;
+  letter-spacing: 0em;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.component-showcase .toggle-icon::before {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: -1;
+}
+
+.component-showcase .toggle-icon:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Header Layout Preview */
+.component-showcase .header-preview {
+  width: 100%;
+  max-width: 640px;
+  height: 50px;
+  border-radius: 25px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  padding: 7px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.component-showcase .header-preview::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.component-showcase .header-preview.mobile {
+  max-width: 400px;
+}
+
+.component-showcase .header-preview.desktop {
+  max-width: 640px;
+}
+
+.component-showcase .header-logo-preview {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  padding: 8px 16px;
+  line-height: 1.2;
+  background: transparent;
+  border-radius: 999px;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.component-showcase .header-logo-preview:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.component-showcase .nav-links-preview {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.component-showcase .nav-link-preview {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  padding: 6px 12px;
+  line-height: 1.2;
+  background: transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.component-showcase .nav-link-preview:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.component-showcase .toggle-icon-preview {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.component-showcase .toggle-icon-preview:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Pill Background Button Class - Same hover effect as header components */
+.component-showcase .pill-button {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 6px 12px;
+  line-height: 1.2;
+  background: transparent;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+
+.component-showcase .pill-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.component-showcase .pill-button:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.component-showcase .pill-button:active::before {
+  transform: scale(0.95);
+}
+
+.component-showcase .toggle-icon-preview::before {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: -1;
+}
+
+.component-showcase .toggle-icon-preview:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* The plus lines */
+.component-showcase .toggle-icon-preview span {
+  position: absolute;
+  display: block;
+  width: 16px;
+  height: 2.5px;
+  background: #fff;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
+}
+
+.component-showcase .toggle-icon-preview span:first-child {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.component-showcase .toggle-icon-preview span:last-child {
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 
 /* Button Showcase */
 .component-showcase .cta-button,
 .component-showcase .cta-button2,
-.component-showcase .cta-button2-fixed,
-.component-showcase .dpu-btn,
-.component-showcase .stop-button,
-.component-showcase .add-path-button,
-.component-showcase .info-pill-icon {
-  margin: 0;
+.component-showcase .cta-button2-fixed {
+  margin: 0 10px 20px 10px;
   flex-shrink: 0;
-}
-
-/* Form Elements Showcase */
-.component-showcase .input-wrapper,
-.component-showcase .popup-input-wrapper {
-  min-width: 250px;
-  flex-shrink: 0;
-}
-
-.component-showcase .step-selector {
-  min-width: 250px;
-  flex-shrink: 0;
-}
-
-.component-showcase .ios-toggle-container {
   min-width: 200px;
-  flex-shrink: 0;
 }
+
+
 
 /* Cards Showcase */
 .component-showcase .default-card {
@@ -237,14 +583,15 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+  letter-spacing: 0em;
 }
 
 .default-card p {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 1rem;
-  line-height: 1.25;
-  font-weight: 500;
-  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0 0 1.5rem 0;
   position: relative;
   z-index: 1;
   word-wrap: break-word;
@@ -253,6 +600,7 @@
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
+  letter-spacing: 0em;
 }
 
 .component-showcase .project-box,
@@ -303,22 +651,12 @@
   
   .component-showcase .cta-button,
   .component-showcase .cta-button2,
-  .component-showcase .cta-button2-fixed,
-  .component-showcase .dpu-btn,
-  .component-showcase .stop-button,
-  .component-showcase .add-path-button,
-  .component-showcase .info-pill-icon {
+  .component-showcase .cta-button2-fixed {
     width: 100%;
     text-align: center;
   }
   
-  .component-showcase .input-wrapper,
-  .component-showcase .popup-input-wrapper,
-  .component-showcase .step-selector,
-  .component-showcase .ios-toggle-container {
-    width: 100%;
-    min-width: unset;
-  }
+
   
   .component-showcase .project-box,
   .component-showcase .new-project-card,
@@ -337,10 +675,7 @@
     max-width: none;
   }
   
-  .component-showcase .apple-progress-tracker {
-    width: 100%;
-    min-width: unset;
-  }
+
   
   .component-name-pill {
     font-size: 0.75rem;
@@ -375,4 +710,218 @@
     padding: 5px 10px;
     min-width: 70px;
   }
+}
+
+/* Header Preview Elements - Simple h4 with pill-button hover effect */
+.component-showcase .header-preview .pill-button {
+  margin-bottom: 0;
+  max-width: none;
+}
+
+/* Colors Section */
+.component-showcase .color-swatch-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 25px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  min-width: 400px;
+  box-sizing: border-box;
+}
+
+.component-showcase .color-swatch {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.875rem;
+  text-align: center;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.component-showcase .color-swatch.pure-white {
+  background: rgba(255, 255, 255, 1);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Opacity Stops against Dark Background (default sandbox background is dark) */
+.component-showcase .opacity-stop-10 { background: rgba(255, 255, 255, 0.1); }
+.component-showcase .opacity-stop-20 { background: rgba(255, 255, 255, 0.2); }
+.component-showcase .opacity-stop-50 { background: rgba(255, 255, 255, 0.5); }
+.component-showcase .opacity-stop-100 { background: rgba(255, 255, 255, 1); color: rgba(0, 0, 0, 0.8); }
+
+/* Opacity Stops against Light Background */
+.component-showcase .light-background-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 25px;
+  margin-bottom: 20px;
+  min-width: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.component-showcase .light-background-container .color-swatch {
+  color: rgba(0, 0, 0, 0.8);
+  border: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.component-showcase .light-background-container .opacity-stop-10-dark { background: rgba(0, 0, 0, 0.1); }
+.component-showcase .light-background-container .opacity-stop-20-dark { background: rgba(0, 0, 0, 0.2); }
+.component-showcase .light-background-container .opacity-stop-50-dark { background: rgba(0, 0, 0, 0.5); }
+.component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: rgba(255, 255, 255, 0.8); }
+
+/* Spaceport Prism - Actual conic gradient with six hex codes from gradient editor */
+.component-showcase .spaceport-prism {
+  width: 300px;
+  height: 200px;
+  background: conic-gradient(
+    from 0deg,
+    #DC9ED8 0deg,
+    #CD70E4 144deg,
+    #D869B3 180deg,
+    #E4617C 208.8deg,
+    #EB5C5A 259.2deg,
+    #E47991 334.8deg,
+    #DC9ED8 360deg
+  );
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 1);
+  font-weight: 600;
+  margin-bottom: 20px;
+  position: relative;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.component-showcase .spaceport-prism::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.component-showcase .spaceport-prism .prism-content {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 16px 24px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 2;
+}
+
+/* Border Demo Components */
+.component-showcase .standard-border-demo {
+  min-width: 320px;
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+.component-showcase .standard-border-demo h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.05;
+}
+
+.component-showcase .standard-border-demo p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
+}
+
+.component-showcase .gradient-border-demo {
+  min-width: 320px;
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.component-showcase .gradient-border-demo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, 0) 57%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.component-showcase .gradient-border-demo h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+}
+
+.component-showcase .gradient-border-demo p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }

@@ -6,6 +6,65 @@ import './sandbox.css';
 export default function DesignSystemSandbox(): JSX.Element {
   const [hoveredComponent, setHoveredComponent] = useState<string | null>(null);
   const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(null);
+  
+  // Editable text state for live preview
+  const [editableTexts, setEditableTexts] = useState({
+    'section h1': 'Create Your Space Today',
+    'section h2': 'AI-Powered 3D Reconstruction', 
+    'h4': 'Processing Options',
+    'body-text': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
+    'body-text with highlights': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life with incredible detail and realism.',
+    'header-logo': 'Spaceport',
+    'nav-link': '3D Reconstruction',
+    'toggle-icon': '≡',
+    'pill-button': 'Pill Button'
+  });
+
+  const updateEditableText = (key: string, value: string) => {
+    setEditableTexts(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleDoubleClick = (key: string, event: React.MouseEvent<HTMLElement>) => {
+    const element = event.currentTarget;
+    element.contentEditable = 'true';
+    element.focus();
+    
+    // Select all text for easy editing
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    
+    // Handle save on blur
+    const handleBlur = () => {
+      element.contentEditable = 'false';
+      updateEditableText(key, element.textContent || editableTexts[key]);
+      element.removeEventListener('blur', handleBlur);
+    };
+    
+    element.addEventListener('blur', handleBlur);
+    
+    // Handle save on Enter key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        element.blur();
+      }
+    };
+    
+    element.addEventListener('keydown', handleKeyDown);
+    
+    // Clean up event listeners when editing is done
+    const cleanup = () => {
+      element.removeEventListener('keydown', handleKeyDown);
+    };
+    
+    element.addEventListener('blur', cleanup, { once: true });
+  };
 
   const copyComponentName = async (componentName: string) => {
     try {
@@ -43,7 +102,15 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Typography</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Headings</h3>
+          <h3 className="component-title">Instructions</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Double-click on any text below to edit it and see how different content looks in each typography style. 
+            Press Enter to save changes or click outside to cancel. Single-click to copy component names.
+          </p>
+        </div>
+        
+        <div className="component-group">
+          <h3 className="component-title">Heading Hierarchy</h3>
           <div className="component-showcase">
             <h1 
               className="section h1"
@@ -51,8 +118,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('section h1', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('section h1')}
+              onDoubleClick={(e) => handleDoubleClick('section h1', e)}
             >
-              Heading 1
+              section h1
             </h1>
             <h2 
               className="section h2"
@@ -60,8 +128,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('section h2', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('section h2')}
+              onDoubleClick={(e) => handleDoubleClick('section h2', e)}
             >
-              Heading 2
+              section h2
             </h2>
             <h3 
               className="component-title"
@@ -69,17 +138,19 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('component-title', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('component-title')}
+              onDoubleClick={(e) => handleDoubleClick('component-title', e)}
             >
-              Heading 3
+              component-title
             </h3>
             <h4 
-              className="popup-section h4"
-              data-component="popup-section h4"
-              onMouseEnter={(e) => handleComponentHover('popup-section h4', e)}
+              className="h4"
+              data-component="h4"
+              onMouseEnter={(e) => handleComponentHover('h4', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('popup-section h4')}
+              onClick={() => handleComponentClick('h4')}
+              onDoubleClick={(e) => handleDoubleClick('h4', e)}
             >
-              Heading 4
+              h4
             </h4>
           </div>
         </div>
@@ -87,40 +158,315 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="component-title">Body Text</h3>
           <div className="component-showcase">
-            <p 
-              className="section p"
-              data-component="section p"
-              onMouseEnter={(e) => handleComponentHover('section p', e)}
+            <div 
+              className="body-text"
+              data-component="body-text"
+              onMouseEnter={(e) => handleComponentHover('body-text', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('section p')}
+              onClick={() => handleComponentClick('body-text')}
+              onDoubleClick={(e) => handleDoubleClick('body-text', e)}
             >
-              Primary paragraph text
-            </p>
-            <p 
-              className="waitlist-header p"
-              data-component="waitlist-header p"
-              onMouseEnter={(e) => handleComponentHover('waitlist-header p', e)}
+              body-text
+            </div>
+            <div 
+              className="body-text-highlight"
+              data-component="body-text-highlight"
+              onMouseEnter={(e) => handleComponentHover('body-text-highlight', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('waitlist-header p')}
+              onClick={() => handleComponentClick('body-text-highlight')}
+              onDoubleClick={(e) => handleDoubleClick('body-text-highlight', e)}
             >
-              Secondary text
-            </p>
-            <p 
-              className="stats-source"
-              data-component="stats-source"
-              onMouseEnter={(e) => handleComponentHover('stats-source', e)}
+              body-text-highlight
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Text with Highlights Example</h3>
+          <div className="component-showcase">
+            <div 
+              className="body-text"
+              data-component="body-text with highlights"
+              onMouseEnter={(e) => handleComponentHover('body-text with highlights', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('stats-source')}
+              onClick={() => handleComponentClick('body-text with highlights')}
+              onDoubleClick={(e) => handleDoubleClick('body-text with highlights', e)}
             >
-              Tertiary text
-            </p>
+              Transform your real estate photography into immersive 3D experiences. Our <span className="text-highlight">AI-powered pipeline</span> creates stunning <span className="text-highlight">Gaussian splat models</span> that bring properties to life with incredible detail and realism.
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Buttons */}
+      {/* Colors */}
       <section className="sandbox-section">
-        <h2 className="section-title">Buttons</h2>
+        <h2 className="section-title">Colors</h2>
+        
+        <div className="component-group">
+          <h3 className="component-title">Primary Colors</h3>
+          <div className="component-showcase">
+            <div 
+              className="color-swatch pure-white"
+              data-component="pure-white"
+              onMouseEnter={(e) => handleComponentHover('pure-white', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('pure-white')}
+            >
+              Pure White
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Opacity Stops - Against Dark Background</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
+          </p>
+          <div className="component-showcase">
+            <div className="color-swatch-container">
+              <div 
+                className="color-swatch opacity-stop-10"
+                data-component="opacity-stop-10"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-10', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-10')}
+              >
+                10%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-20"
+                data-component="opacity-stop-20"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-20', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-20')}
+              >
+                20%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-50"
+                data-component="opacity-stop-50"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-50', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-50')}
+              >
+                50%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-100"
+                data-component="opacity-stop-100"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-100', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-100')}
+              >
+                100%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Opacity Stops - Against Light Background</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Same opacity levels, but against a light background to show contrast.
+          </p>
+          <div className="component-showcase">
+            <div className="light-background-container">
+              <div 
+                className="color-swatch opacity-stop-10-dark"
+                data-component="opacity-stop-10-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-10-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-10-dark')}
+              >
+                10%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-20-dark"
+                data-component="opacity-stop-20-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-20-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-20-dark')}
+              >
+                20%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-50-dark"
+                data-component="opacity-stop-50-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-50-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-50-dark')}
+              >
+                50%
+              </div>
+              <div 
+                className="color-swatch opacity-stop-100-dark"
+                data-component="opacity-stop-100-dark"
+                onMouseEnter={(e) => handleComponentHover('opacity-stop-100-dark', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('opacity-stop-100-dark')}
+              >
+                100%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Spaceport Prism Pattern</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
+          </p>
+          <div className="component-showcase">
+            <div 
+              className="spaceport-prism"
+              data-component="spaceport-prism"
+              onMouseEnter={(e) => handleComponentHover('spaceport-prism', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('spaceport-prism')}
+            >
+              <div className="prism-content">
+                <div style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Spaceport Prism</div>
+                <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+                  #DC9ED8 • #CD70E4 • #D869B3<br />
+                  #E4617C • #EB5C5A • #E47991
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Borders */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Borders</h2>
+        
+        <div className="component-group">
+          <h3 className="component-title">Standard Border</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Our default border style - 3px solid with subtle transparency. Used for most components.
+          </p>
+          <div className="component-showcase">
+            <div 
+              className="standard-border-demo"
+              data-component="standard-border-demo"
+              onMouseEnter={(e) => handleComponentHover('standard-border-demo', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('standard-border-demo')}
+            >
+              <h3>Standard Border</h3>
+              <p>This component uses our default 3px solid border with rgba(255, 255, 255, 0.1).</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Gradient Border</h3>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
+            💡 Our premium border style - diagonal gradient edge that highlights important elements.
+          </p>
+          <div className="component-showcase">
+            <div 
+              className="gradient-border-demo"
+              data-component="gradient-border-demo"
+              onMouseEnter={(e) => handleComponentHover('gradient-border-demo', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('gradient-border-demo')}
+            >
+              <h3>Gradient Border</h3>
+              <p>This component uses our premium diagonal gradient border for highlighting important elements.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Header Typography */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Header Typography</h2>
+        
+        <div className="component-group">
+          <h3 className="component-title">Navigation Elements</h3>
+          <div className="component-showcase">
+            <div 
+              className="header-logo"
+              data-component="header-logo"
+              onMouseEnter={(e) => handleComponentHover('header-logo', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('header-logo')}
+              onDoubleClick={(e) => handleDoubleClick('header-logo', e)}
+            >
+              {editableTexts['header-logo']}
+            </div>
+            <div 
+              className="nav-link"
+              data-component="nav-link"
+              onMouseEnter={(e) => handleComponentHover('nav-link', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('nav-link')}
+              onDoubleClick={(e) => handleDoubleClick('nav-link', e)}
+            >
+              {editableTexts['nav-link']}
+            </div>
+            <div 
+              className="toggle-icon"
+              data-component="toggle-icon"
+              onMouseEnter={(e) => handleComponentHover('toggle-icon', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('toggle-icon')}
+              onDoubleClick={(e) => handleDoubleClick('toggle-icon', e)}
+            >
+              {editableTexts['toggle-icon']}
+            </div>
+            <div 
+              className="pill-button"
+              data-component="pill-button"
+              onMouseEnter={(e) => handleComponentHover('pill-button', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('pill-button')}
+              onDoubleClick={(e) => handleDoubleClick('pill-button', e)}
+            >
+              {editableTexts['pill-button']}
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Header Layout Preview</h3>
+          <div className="component-showcase">
+            <div 
+              className="header-preview mobile"
+              data-component="header-preview mobile"
+              onMouseEnter={(e) => handleComponentHover('header-preview mobile', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('header-preview mobile')}
+            >
+              <div className="h4 pill-button">{editableTexts['header-logo']}</div>
+              <div className="h4 pill-button">
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            
+            <div 
+              className="header-preview desktop"
+              data-component="header-preview desktop"
+              onMouseEnter={(e) => handleComponentHover('header-preview desktop', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('header-preview desktop')}
+            >
+              <div className="h4 pill-button">{editableTexts['header-logo']}</div>
+              <div className="nav-links-preview">
+                <span className="h4 pill-button">Pricing</span>
+                <span className="h4 pill-button">About</span>
+                <span className="h4 pill-button">Create</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Primary Actions */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Primary Actions</h2>
         
         <div className="component-group">
           <h3 className="component-title">Primary Actions</h3>
@@ -133,7 +479,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('cta-button')}
             >
-              Primary CTA
+              Start 3D Reconstruction
             </a>
             <a 
               href="#"
@@ -143,151 +489,17 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('cta-button2-fixed')}
             >
-              Secondary CTA
+              View Demo Gallery
             </a>
-            <button 
-              className="dpu-btn"
-              data-component="dpu-btn"
-              onMouseEnter={(e) => handleComponentHover('dpu-btn', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('dpu-btn')}
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Secondary Actions</h3>
-          <div className="component-showcase">
-            <button 
-              className="stop-button"
-              data-component="stop-button"
-              onMouseEnter={(e) => handleComponentHover('stop-button', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('stop-button')}
-            >
-              Stop
-            </button>
-            <button 
-              className="add-path-button"
-              data-component="add-path-button"
-              onMouseEnter={(e) => handleComponentHover('add-path-button', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('add-path-button')}
-            >
-              Add Path
-            </button>
-            <button 
-              className="info-pill-icon"
-              data-component="info-pill-icon"
-              onMouseEnter={(e) => handleComponentHover('info-pill-icon', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('info-pill-icon')}
-            >
-              Info
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Form Elements */}
-      <section className="sandbox-section">
-        <h2 className="section-title">Form Elements</h2>
-        
-        <div className="component-group">
-          <h3 className="component-title">Inputs</h3>
-          <div className="component-showcase">
             <div 
-              className="input-wrapper"
-              data-component="input-wrapper"
-              onMouseEnter={(e) => handleComponentHover('input-wrapper', e)}
+              className="pill-button"
+              data-component="pill-button"
+              onMouseEnter={(e) => handleComponentHover('pill-button', e)}
               onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('input-wrapper')}
+              onClick={() => handleComponentClick('pill-button')}
+              onDoubleClick={(e) => handleDoubleClick('pill-button', e)}
             >
-              <input type="text" placeholder="Standard input" />
-            </div>
-            <div 
-              className="popup-input-wrapper"
-              data-component="popup-input-wrapper"
-              onMouseEnter={(e) => handleComponentHover('popup-input-wrapper', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('popup-input-wrapper')}
-            >
-              <img src="/assets/SpaceportIcons/Pin.svg" className="input-icon pin" alt="" />
-              <input type="text" placeholder="Input with icon" />
-            </div>
-            <div 
-              className="popup-input-wrapper has-suffix"
-              data-component="popup-input-wrapper has-suffix"
-              data-suffix="acres"
-              onMouseEnter={(e) => handleComponentHover('popup-input-wrapper has-suffix', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('popup-input-wrapper has-suffix')}
-            >
-              <img src="/assets/SpaceportIcons/Number.svg" className="input-icon number" alt="" />
-              <input type="number" placeholder="Input with suffix" />
-            </div>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Textarea</h3>
-          <div className="component-showcase">
-            <div 
-              className="popup-input-wrapper listing-description-wrapper"
-              data-component="popup-input-wrapper listing-description-wrapper"
-              onMouseEnter={(e) => handleComponentHover('popup-input-wrapper listing-description-wrapper', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('popup-input-wrapper listing-description-wrapper')}
-            >
-              <img src="/assets/SpaceportIcons/Paragraph.svg" className="input-icon paragraph" alt="" />
-              <textarea placeholder="Multi-line input"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Select</h3>
-          <div className="component-showcase">
-            <label 
-              className="step-selector-label"
-              data-component="step-selector-label"
-              onMouseEnter={(e) => handleComponentHover('step-selector-label', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('step-selector-label')}
-            >
-              Pipeline Step
-            </label>
-            <select 
-              className="step-selector"
-              data-component="step-selector"
-              onMouseEnter={(e) => handleComponentHover('step-selector', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('step-selector')}
-            >
-              <option value="sfm">SfM Processing</option>
-              <option value="3dgs">3D Gaussian Splatting</option>
-              <option value="compression">Compression</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Toggle</h3>
-          <div className="component-showcase">
-            <div 
-              className="ios-toggle-container"
-              data-component="ios-toggle-container"
-              onMouseEnter={(e) => handleComponentHover('ios-toggle-container', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('ios-toggle-container')}
-            >
-              <span>Enable Feature</span>
-              <div className="toggle-switch">
-                <input type="checkbox" id="toggle1" />
-                <label htmlFor="toggle1" className="slider"></label>
-              </div>
+              {editableTexts['pill-button']}
             </div>
           </div>
         </div>
@@ -362,373 +574,14 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
       </section>
 
-      {/* Upload */}
-      <section className="sandbox-section">
-        <h2 className="section-title">Upload</h2>
-        
-        <div className="component-group">
-          <h3 className="component-title">Upload Zone</h3>
-          <div className="component-showcase">
-            <div 
-              className="upload-zone"
-              data-component="upload-zone"
-              onMouseEnter={(e) => handleComponentHover('upload-zone', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('upload-zone')}
-            >
-              <div className="upload-icon"></div>
-              <p>Drag & drop files here</p>
-              <p className="upload-hint">or click to browse</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Progress</h3>
-          <div className="component-showcase">
-            <div 
-              className="progress-bar"
-              data-component="progress-bar"
-              onMouseEnter={(e) => handleComponentHover('progress-bar', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('progress-bar')}
-            >
-              <div className="progress-bar-fill" style={{ width: '65%' }}></div>
-            </div>
-            <div 
-              className="spinner"
-              data-component="spinner"
-              onMouseEnter={(e) => handleComponentHover('spinner', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('spinner')}
-            ></div>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Status</h3>
-          <div className="component-showcase">
-            <div 
-              className="status-indicator"
-              data-component="status-indicator"
-              onMouseEnter={(e) => handleComponentHover('status-indicator', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('status-indicator')}
-            >
-              <div className="status-dot pending"></div>
-              <span>Pending</span>
-            </div>
-            <div 
-              className="status-indicator"
-              data-component="status-indicator"
-              onMouseEnter={(e) => handleComponentHover('status-indicator', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('status-indicator')}
-            >
-              <div className="status-dot processing"></div>
-              <span>Processing</span>
-            </div>
-            <div 
-              className="status-indicator"
-              data-component="status-indicator"
-              onMouseEnter={(e) => handleComponentHover('status-indicator', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('status-indicator')}
-            >
-              <div className="status-dot complete"></div>
-              <span>Complete</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Modal */}
-      <section className="sandbox-section">
-        <h2 className="section-title">Modal</h2>
-        
-        <div className="component-group">
-          <h3 className="component-title">Modal Overlay</h3>
-          <div className="component-showcase">
-            <div 
-              className="popup-overlay"
-              data-component="popup-overlay"
-              style={{ position: 'relative', height: '300px' }}
-              onMouseEnter={(e) => handleComponentHover('popup-overlay', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('popup-overlay')}
-            >
-              <div className="popup-content-scroll">
-                <div 
-                  className="popup-header"
-                  data-component="popup-header"
-                  onMouseEnter={(e) => handleComponentHover('popup-header', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('popup-header')}
-                >
-                  <div className="popup-title-section">
-                    <input 
-                      className="popup-title-input" 
-                      placeholder="Project Title"
-                      data-component="popup-title-input"
-                      onMouseEnter={(e) => handleComponentHover('popup-title-input', e)}
-                      onMouseLeave={handleComponentLeave}
-                      onClick={() => handleComponentClick('popup-title-input')}
-                    />
-                  </div>
-                  <button 
-                    className="popup-close"
-                    data-component="popup-close"
-                    onMouseEnter={(e) => handleComponentHover('popup-close', e)}
-                    onMouseLeave={handleComponentLeave}
-                    onClick={() => handleComponentClick('popup-close')}
-                  ></button>
-                </div>
-                <div 
-                  className="accordion-section active"
-                  data-component="accordion-section"
-                  onMouseEnter={(e) => handleComponentHover('accordion-section', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('accordion-section')}
-                >
-                  <div 
-                    className="accordion-header"
-                    data-component="accordion-header"
-                    onMouseEnter={(e) => handleComponentHover('accordion-header', e)}
-                    onMouseLeave={handleComponentLeave}
-                    onClick={() => handleComponentClick('accordion-header')}
-                  >
-                    <div className="accordion-title">
-                      <h3>Property Details</h3>
-                    </div>
-                    <div className="accordion-chevron"></div>
-                  </div>
-                  <div className="accordion-content">
-                    <p 
-                      className="section-description"
-                      data-component="section-description"
-                      onMouseEnter={(e) => handleComponentHover('section-description', e)}
-                      onMouseLeave={handleComponentLeave}
-                      onClick={() => handleComponentClick('section-description')}
-                    >
-                      Enter the basic details about your property.
-                    </p>
-                    <div 
-                      className="category-outline"
-                      data-component="category-outline"
-                      onMouseEnter={(e) => handleComponentHover('category-outline', e)}
-                      onMouseLeave={handleComponentLeave}
-                      onClick={() => handleComponentClick('category-outline')}
-                    >
-                      <h4>Basic Information</h4>
-                      <div 
-                        className="popup-section"
-                        data-component="popup-section"
-                        onMouseEnter={(e) => handleComponentHover('popup-section', e)}
-                        onMouseLeave={handleComponentLeave}
-                        onClick={() => handleComponentClick('popup-section')}
-                      >
-                        <div 
-                          className="input-row-popup"
-                          data-component="input-row-popup"
-                          onMouseEnter={(e) => handleComponentHover('input-row-popup', e)}
-                          onMouseLeave={handleComponentLeave}
-                          onClick={() => handleComponentClick('input-row-popup')}
-                        >
-                          <div 
-                            className="popup-input-wrapper"
-                            data-component="popup-input-wrapper"
-                            onMouseEnter={(e) => handleComponentHover('popup-input-wrapper', e)}
-                            onMouseLeave={handleComponentLeave}
-                            onClick={() => handleComponentClick('popup-input-wrapper')}
-                          >
-                            <img src="/assets/SpaceportIcons/Pin.svg" className="input-icon pin" alt="" />
-                            <input type="text" placeholder="Address" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Map */}
-      <section className="sandbox-section">
-        <h2 className="section-title">Map</h2>
-        
-        <div className="component-group">
-          <h3 className="component-title">Map Container</h3>
-          <div className="component-showcase">
-            <div 
-              className="map-wrapper"
-              data-component="map-wrapper"
-              onMouseEnter={(e) => handleComponentHover('map-wrapper', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('map-wrapper')}
-            >
-              <div 
-                className="map-container"
-                data-component="map-container"
-                onMouseEnter={(e) => handleComponentHover('map-container', e)}
-                onMouseLeave={handleComponentLeave}
-                onClick={() => handleComponentClick('map-container')}
-              >
-                <div className="map-blur-background"></div>
-                <div 
-                  className="map-instructions-center"
-                  data-component="map-instructions-center"
-                  onMouseEnter={(e) => handleComponentHover('map-instructions-center', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('map-instructions-center')}
-                >
-                  <div 
-                    className="instruction-content"
-                    data-component="instruction-content"
-                    onMouseEnter={(e) => handleComponentHover('instruction-content', e)}
-                    onMouseLeave={handleComponentLeave}
-                    onClick={() => handleComponentClick('instruction-content')}
-                  >
-                    <div className="instruction-pin"></div>
-                    <h3>Click to place property marker</h3>
-                  </div>
-                </div>
-              </div>
-              <div 
-                className="address-search-overlay"
-                data-component="address-search-overlay"
-                onMouseEnter={(e) => handleComponentHover('address-search-overlay', e)}
-                onMouseLeave={handleComponentLeave}
-                onClick={() => handleComponentClick('address-search-overlay')}
-              >
-                <div 
-                  className="address-search-wrapper"
-                  data-component="address-search-wrapper"
-                  onMouseEnter={(e) => handleComponentHover('address-search-wrapper', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('address-search-wrapper')}
-                >
-                  <input type="text" placeholder="Search address..." />
-                </div>
-              </div>
-              <button 
-                className="expand-button"
-                data-component="expand-button"
-                onMouseEnter={(e) => handleComponentHover('expand-button', e)}
-                onMouseLeave={handleComponentLeave}
-                onClick={() => handleComponentClick('expand-button')}
-              >
-                <div className="expand-icon"></div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Progress Tracking */}
-      <section className="sandbox-section">
-        <h2 className="section-title">Progress</h2>
-        
-        <div className="component-group">
-          <h3 className="component-title">Progress Bar</h3>
-          <div className="component-showcase">
-            <div 
-              className="apple-progress-tracker"
-              data-component="apple-progress-tracker"
-              onMouseEnter={(e) => handleComponentHover('apple-progress-tracker', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('apple-progress-tracker')}
-            >
-              <div 
-                className="progress-container"
-                data-component="progress-container"
-                onMouseEnter={(e) => handleComponentHover('progress-container', e)}
-                onMouseLeave={handleComponentLeave}
-                onClick={() => handleComponentClick('progress-container')}
-              >
-                <div 
-                  className="pill-progress-bar"
-                  data-component="pill-progress-bar"
-                  onMouseEnter={(e) => handleComponentHover('pill-progress-bar', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('pill-progress-bar')}
-                >
-                  <div className="pill-progress-fill" style={{ width: '75%' }}></div>
-                </div>
-                <p 
-                  className="status-text"
-                  data-component="status-text"
-                  onMouseEnter={(e) => handleComponentHover('status-text', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('status-text')}
-                >
-                  Processing 3D model... 75% complete
-                </p>
-              </div>
-              <div 
-                className="action-buttons"
-                data-component="action-buttons"
-                onMouseEnter={(e) => handleComponentHover('action-buttons', e)}
-                onMouseLeave={handleComponentLeave}
-                onClick={() => handleComponentClick('action-buttons')}
-              >
-                <button 
-                  className="stop-button"
-                  data-component="stop-button"
-                  onMouseEnter={(e) => handleComponentHover('stop-button', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('stop-button')}
-                >
-                  <span className="stop-icon">⏹</span>
-                  Stop
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Feedback */}
-      <section className="sandbox-section">
-        <h2 className="section-title">Feedback</h2>
-        
-        <div className="component-group">
-          <h3 className="component-title">Status Messages</h3>
-          <div className="component-showcase">
-            <div 
-              className="job-status"
-              data-component="job-status"
-              onMouseEnter={(e) => handleComponentHover('job-status', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('job-status')}
-            >
-              <h3>Processing Complete</h3>
-              <p>Your 3D model has been successfully generated.</p>
-            </div>
-            <div 
-              className="error-message"
-              data-component="error-message"
-              onMouseEnter={(e) => handleComponentHover('error-message', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('error-message')}
-            >
-              <h3>Processing Error</h3>
-              <p>There was an issue processing your request.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Component Name Pill - Positioned above hovered element */}
       {hoveredComponent && hoveredElement && (
         <div 
           className="component-name-pill"
           style={{
-            position: 'absolute',
-            top: hoveredElement.offsetTop - 40,
-            left: hoveredElement.offsetLeft + (hoveredElement.offsetWidth / 2) - 50,
+            position: 'fixed',
+            top: hoveredElement.getBoundingClientRect().top - 40,
+            left: hoveredElement.getBoundingClientRect().left + (hoveredElement.getBoundingClientRect().width / 2) - 50,
             zIndex: 10000
           }}
         >
