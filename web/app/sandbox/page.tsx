@@ -11,7 +11,7 @@ export default function DesignSystemSandbox(): JSX.Element {
   const [editableTexts, setEditableTexts] = useState({
     'section h1': 'Create Your Space Today',
     'section h2': 'AI-Powered 3D Reconstruction', 
-    'h4': 'Processing Options',
+    'h3': 'h3',
     'body-text': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
     'body-text with highlights': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life with incredible detail and realism.',
     'header-logo': 'Spaceport',
@@ -102,7 +102,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Typography</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Instructions</h3>
+          <h3 className="h3">Instructions</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 Double-click on any text below to edit it and see how different content looks in each typography style. 
             Press Enter to save changes or click outside to cancel. Single-click to copy component names.
@@ -110,89 +110,67 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
         
         <div className="component-group">
-          <h3 className="component-title">Heading Hierarchy</h3>
+          <h3 className="h3">Headings - Largest to Smallest</h3>
           <div className="component-showcase">
-            <h1 
-              className="section h1"
-              data-component="section h1"
-              onMouseEnter={(e) => handleComponentHover('section h1', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('section h1')}
-              onDoubleClick={(e) => handleDoubleClick('section h1', e)}
-            >
-              section h1
-            </h1>
-            <h2 
-              className="section h2"
-              data-component="section h2"
-              onMouseEnter={(e) => handleComponentHover('section h2', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('section h2')}
-              onDoubleClick={(e) => handleDoubleClick('section h2', e)}
-            >
-              section h2
-            </h2>
-            <h3 
-              className="component-title"
-              data-component="component-title"
-              onMouseEnter={(e) => handleComponentHover('component-title', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('component-title')}
-              onDoubleClick={(e) => handleDoubleClick('component-title', e)}
-            >
-              component-title
-            </h3>
-            <h4 
-              className="h4"
-              data-component="h4"
-              onMouseEnter={(e) => handleComponentHover('h4', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('h4')}
-              onDoubleClick={(e) => handleDoubleClick('h4', e)}
-            >
-              h4
-            </h4>
-          </div>
-        </div>
-
-        <div className="component-group">
-          <h3 className="component-title">Body Text</h3>
-          <div className="component-showcase">
-            <div 
-              className="body-text"
-              data-component="body-text"
-              onMouseEnter={(e) => handleComponentHover('body-text', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('body-text')}
-              onDoubleClick={(e) => handleDoubleClick('body-text', e)}
-            >
-              body-text
-            </div>
-            <div 
-              className="body-text-highlight"
-              data-component="body-text-highlight"
-              onMouseEnter={(e) => handleComponentHover('body-text-highlight', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('body-text-highlight')}
-              onDoubleClick={(e) => handleDoubleClick('body-text-highlight', e)}
-            >
-              body-text-highlight
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
+              <h1 
+                className="section h1"
+                data-component="section h1"
+                onMouseEnter={(e) => handleComponentHover('section h1', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('section h1')}
+                onDoubleClick={(e) => handleDoubleClick('section h1', e)}
+              >
+                section h1
+              </h1>
+              <h2 
+                className="section h2"
+                data-component="section h2"
+                onMouseEnter={(e) => handleComponentHover('section h2', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('section h2')}
+                onDoubleClick={(e) => handleDoubleClick('section h2', e)}
+              >
+                section h2
+              </h2>
+              <h3 
+                className="h3"
+                data-component="h3"
+                onMouseEnter={(e) => handleComponentHover('h3', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('h3')}
+                onDoubleClick={(e) => handleDoubleClick('h3', e)}
+              >
+                h3
+              </h3>
             </div>
           </div>
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Text with Highlights Example</h3>
+          <h3 className="h3">Body Text Examples</h3>
           <div className="component-showcase">
-            <div 
-              className="body-text"
-              data-component="body-text with highlights"
-              onMouseEnter={(e) => handleComponentHover('body-text with highlights', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('body-text with highlights')}
-              onDoubleClick={(e) => handleDoubleClick('body-text with highlights', e)}
-            >
-              Transform your real estate photography into immersive 3D experiences. Our <span className="text-highlight">AI-powered pipeline</span> creates stunning <span className="text-highlight">Gaussian splat models</span> that bring properties to life with incredible detail and realism.
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '600px' }}>
+              <div 
+                className="body-text"
+                data-component="body-text"
+                onMouseEnter={(e) => handleComponentHover('body-text', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('body-text')}
+                onDoubleClick={(e) => handleDoubleClick('body-text', e)}
+              >
+                This is an example of our standard body-text class. It demonstrates how regular paragraph text appears in our design system. The text is sized appropriately for comfortable reading and uses our established opacity and spacing guidelines to ensure excellent readability across all devices.
+              </div>
+              <div 
+                className="body-text"
+                data-component="body-text with highlights"
+                onMouseEnter={(e) => handleComponentHover('body-text with highlights', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('body-text with highlights')}
+                onDoubleClick={(e) => handleDoubleClick('body-text with highlights', e)}
+              >
+                This paragraph shows how <span className="text-highlight">text-highlight</span> works within our body-text class. You can emphasize <span className="text-highlight">key phrases</span> or <span className="text-highlight">important terms</span> to draw attention to specific content. The highlight maintains the same font weight but increases opacity to 100% for better visibility while keeping the text cohesive.
+              </div>
             </div>
           </div>
         </div>
@@ -203,7 +181,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Colors</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Primary Colors</h3>
+          <h3 className="h3">Primary Colors</h3>
           <div className="component-showcase">
             <div 
               className="color-swatch pure-white"
@@ -218,7 +196,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Opacity Stops - Against Dark Background</h3>
+          <h3 className="h3">Opacity Stops - Against Dark Background</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
           </p>
@@ -265,7 +243,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Opacity Stops - Against Light Background</h3>
+          <h3 className="h3">Opacity Stops - Against Light Background</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 Same opacity levels, but against a light background to show contrast.
           </p>
@@ -312,7 +290,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Spaceport Prism Pattern</h3>
+          <h3 className="h3">Spaceport Prism Pattern</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
           </p>
@@ -341,7 +319,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Borders</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Standard Border</h3>
+          <h3 className="h3">Standard Border</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 Our default border style - 3px solid with subtle transparency. Used for most components.
           </p>
@@ -360,7 +338,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Gradient Border</h3>
+          <h3 className="h3">Gradient Border</h3>
           <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 Our premium border style - diagonal gradient edge that highlights important elements.
           </p>
@@ -384,7 +362,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Header Typography</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Navigation Elements</h3>
+          <h3 className="h3">Navigation Elements</h3>
           <div className="component-showcase">
             <div 
               className="header-logo"
@@ -430,7 +408,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Header Layout Preview</h3>
+          <h3 className="h3">Header Layout Preview</h3>
           <div className="component-showcase">
             <div 
               className="header-preview mobile"
@@ -469,7 +447,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Primary Actions</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Primary Actions</h3>
+          <h3 className="h3">Primary Actions</h3>
           <div className="component-showcase">
             <a 
               href="#"
@@ -510,7 +488,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <h2 className="section-title">Cards</h2>
         
         <div className="component-group">
-          <h3 className="component-title">Default Card</h3>
+          <h3 className="h3">Default Card</h3>
           <div className="component-showcase">
             <div 
               className="default-card"
@@ -526,7 +504,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Project Cards</h3>
+          <h3 className="h3">Project Cards</h3>
           <div className="component-showcase">
             <div 
               className="project-box"
@@ -555,7 +533,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
 
         <div className="component-group">
-          <h3 className="component-title">Waitlist Card</h3>
+          <h3 className="h3">Waitlist Card</h3>
           <div className="component-showcase">
             <div 
               className="waitlist-card"
