@@ -17,7 +17,14 @@ export default function DesignSystemSandbox(): JSX.Element {
     'header-logo': 'Spaceport',
     'nav-link': '3D Reconstruction',
     'toggle-icon': '≡',
-    'pill-button': 'Pill Button'
+    'pill-button': 'Pill Button',
+    'pure-white': 'Pure White',
+    'hex-dc9ed8': '#DC9ED8',
+    'hex-cd70e4': '#CD70E4',
+    'hex-d869b3': '#D869B3',
+    'hex-e4617c': '#E4617C',
+    'hex-eb5c5a': '#EB5C5A',
+    'hex-e47991': '#E47991'
   });
 
   const updateEditableText = (key: string, value: string) => {
@@ -103,9 +110,10 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="h3">Instructions</h3>
-          <div className="body-text">
-            Double-click on any text below to edit it and see how different content looks in each typography style. Press Enter to save changes or click outside to cancel. Single-click to copy component names.
-          </div>
+          <p className="body-text" style={{ textAlign: 'center' }}>
+            Double-click on any text below to edit it and see how different content looks in each typography style. 
+            Press Enter to save changes or click outside to cancel. Single-click to copy component names.
+          </p>
         </div>
         
         <div className="component-group">
@@ -182,23 +190,79 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="h3">Primary Colors</h3>
           <div className="component-showcase">
-            <div 
-              className="color-swatch pure-white"
-              data-component="pure-white"
-              onMouseEnter={(e) => handleComponentHover('pure-white', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('pure-white')}
-            >
-              Pure White
+            <div className="color-swatch-container">
+              <div 
+                className="color-swatch pure-white"
+                data-component="pure-white"
+                onMouseEnter={(e) => handleComponentHover('pure-white', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('pure-white')}
+              >
+                Pure White
+              </div>
+              <div 
+                className="color-swatch hex-dc9ed8"
+                data-component="hex-dc9ed8"
+                onMouseEnter={(e) => handleComponentHover('hex-dc9ed8', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-dc9ed8')}
+              >
+                #DC9ED8
+              </div>
+              <div 
+                className="color-swatch hex-cd70e4"
+                data-component="hex-cd70e4"
+                onMouseEnter={(e) => handleComponentHover('hex-cd70e4', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-cd70e4')}
+              >
+                #CD70E4
+              </div>
+              <div 
+                className="color-swatch hex-d869b3"
+                data-component="hex-d869b3"
+                onMouseEnter={(e) => handleComponentHover('hex-d869b3', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-d869b3')}
+              >
+                #D869B3
+              </div>
+              <div 
+                className="color-swatch hex-e4617c"
+                data-component="hex-e4617c"
+                onMouseEnter={(e) => handleComponentHover('hex-e4617c', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-e4617c')}
+              >
+                #E4617C
+              </div>
+              <div 
+                className="color-swatch hex-eb5c5a"
+                data-component="hex-eb5c5a"
+                onMouseEnter={(e) => handleComponentHover('hex-eb5c5a', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-eb5c5a')}
+              >
+                #EB5C5A
+              </div>
+              <div 
+                className="color-swatch hex-e47991"
+                data-component="hex-e47991"
+                onMouseEnter={(e) => handleComponentHover('hex-e47991', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-e47991')}
+              >
+                #E47991
+              </div>
             </div>
           </div>
         </div>
 
         <div className="component-group">
           <h3 className="h3">Opacity Stops - Against Dark Background</h3>
-          <div className="body-text">
+          <p className="body-text" style={{ textAlign: 'center' }}>
             These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
-          </div>
+          </p>
           <div className="component-showcase">
             <div className="color-swatch-container">
               <div 
@@ -243,9 +307,9 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Opacity Stops - Against Light Background</h3>
-          <div className="body-text">
+          <p className="body-text" style={{ textAlign: 'center' }}>
             Same opacity levels, but against a light background to show contrast.
-          </div>
+          </p>
           <div className="component-showcase">
             <div className="light-background-container">
               <div 
@@ -290,23 +354,64 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Spaceport Prism Pattern</h3>
-          <div className="body-text">
+          <p className="body-text" style={{ textAlign: 'center' }}>
             This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
-          </div>
+          </p>
           <div className="component-showcase">
-            <div 
-              className="spaceport-prism"
-              data-component="spaceport-prism"
-              onMouseEnter={(e) => handleComponentHover('spaceport-prism', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('spaceport-prism')}
-            >
-              <div className="prism-content">
-                <div className="h3">Spaceport Prism</div>
-                <div className="body-text">
-                  #DC9ED8 • #CD70E4 • #D869B3<br />
-                  #E4617C • #EB5C5A • #E47991
-                </div>
+            <div className="color-swatch-container">
+              <div 
+                className="color-swatch hex-dc9ed8"
+                data-component="hex-dc9ed8"
+                onMouseEnter={(e) => handleComponentHover('hex-dc9ed8', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-dc9ed8')}
+              >
+                #DC9ED8
+              </div>
+              <div 
+                className="color-swatch hex-cd70e4"
+                data-component="hex-cd70e4"
+                onMouseEnter={(e) => handleComponentHover('hex-cd70e4', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-cd70e4')}
+              >
+                #CD70E4
+              </div>
+              <div 
+                className="color-swatch hex-d869b3"
+                data-component="hex-d869b3"
+                onMouseEnter={(e) => handleComponentHover('hex-d869b3', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-d869b3')}
+              >
+                #D869B3
+              </div>
+              <div 
+                className="color-swatch hex-e4617c"
+                data-component="hex-e4617c"
+                onMouseEnter={(e) => handleComponentHover('hex-e4617c', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-e4617c')}
+              >
+                #E4617C
+              </div>
+              <div 
+                className="color-swatch hex-eb5c5a"
+                data-component="hex-eb5c5a"
+                onMouseEnter={(e) => handleComponentHover('hex-eb5c5a', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-eb5c5a')}
+              >
+                #EB5C5A
+              </div>
+              <div 
+                className="color-swatch hex-e47991"
+                data-component="hex-e47991"
+                onMouseEnter={(e) => handleComponentHover('hex-e47991', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('hex-e47991')}
+              >
+                #E47991
               </div>
             </div>
           </div>
@@ -319,9 +424,9 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="h3">Standard Border</h3>
-          <div className="body-text">
+          <p className="body-text" style={{ textAlign: 'center' }}>
             Our default border style - 3px solid with subtle transparency. Used for most components.
-          </div>
+          </p>
           <div className="component-showcase">
             <div 
               className="standard-border-demo"
@@ -330,17 +435,17 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('standard-border-demo')}
             >
-              <h3 className="h3">Standard Border</h3>
-              <div className="body-text">This component uses our default 3px solid border with rgba(255, 255, 255, 0.1).</div>
+                             <h3 className="h3">Standard Border</h3>
+               <p className="body-text">This component uses our default 3px solid border with rgba(255, 255, 255, 0.1).</p>
             </div>
           </div>
         </div>
 
         <div className="component-group">
           <h3 className="h3">Gradient Border</h3>
-          <div className="body-text">
+          <p className="body-text" style={{ textAlign: 'center' }}>
             Our premium border style - diagonal gradient edge that highlights important elements.
-          </div>
+          </p>
           <div className="component-showcase">
             <div 
               className="gradient-border-demo"
@@ -349,8 +454,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('gradient-border-demo')}
             >
-              <h3 className="h3">Gradient Border</h3>
-              <div className="body-text">This component uses our premium diagonal gradient border for highlighting important elements.</div>
+                             <h3 className="h3">Gradient Border</h3>
+               <p className="body-text">This component uses our premium diagonal gradient border for highlighting important elements.</p>
             </div>
           </div>
         </div>
@@ -496,8 +601,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('default-card')}
             >
-              <h3 className="h3">Default Card</h3>
-              <div className="body-text">This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</div>
+                             <h3 className="h3">Default Card</h3>
+               <p className="body-text">This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</p>
             </div>
           </div>
         </div>
@@ -512,8 +617,8 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('project-box')}
             >
-              <h1 className="section h1">Sample Project</h1>
-              <div className="body-text">Project description</div>
+                             <h1 className="section h1">Sample Project</h1>
+               <p className="body-text">Project description</p>
             </div>
             <div 
               className="new-project-card"
@@ -522,7 +627,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('new-project-card')}
             >
-              <h1 className="section h1">+ New Project</h1>
+                             <h1 className="section h1">+ New Project</h1>
               <div className="plus-icon">
                 <span></span>
                 <span></span>
@@ -543,8 +648,8 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               <div className="waitlist-header">
                 <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="waitlist-logo" />
-                <h1 className="section h1">Join the Waitlist</h1>
-                <div className="body-text">Be among the first to experience the future of 3D visualization.</div>
+                                 <h1 className="section h1">Join the Waitlist</h1>
+                 <p className="body-text">Be among the future of 3D visualization.</p>
               </div>
             </div>
           </div>
