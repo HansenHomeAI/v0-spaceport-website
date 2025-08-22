@@ -103,14 +103,14 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="component-title">Instructions</h3>
-          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic' }}>
+          <p className="section p" style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '20px' }}>
             💡 Double-click on any text below to edit it and see how different content looks in each typography style. 
             Press Enter to save changes or click outside to cancel. Single-click to copy component names.
           </p>
         </div>
         
         <div className="component-group">
-          <h3 className="component-title">Headings</h3>
+          <h3 className="component-title">Heading Hierarchy</h3>
           <div className="component-showcase">
             <h1 
               className="section h1"
@@ -120,7 +120,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('section h1')}
               onDoubleClick={(e) => handleDoubleClick('section h1', e)}
             >
-              {editableTexts['section h1']}
+              section h1
             </h1>
             <h2 
               className="section h2"
@@ -130,7 +130,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('section h2')}
               onDoubleClick={(e) => handleDoubleClick('section h2', e)}
             >
-              {editableTexts['section h2']}
+              section h2
             </h2>
             <h3 
               className="component-title"
@@ -140,7 +140,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('component-title')}
               onDoubleClick={(e) => handleDoubleClick('component-title', e)}
             >
-              {editableTexts['component-title']}
+              component-title
             </h3>
             <h4 
               className="h4"
@@ -150,7 +150,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('h4')}
               onDoubleClick={(e) => handleDoubleClick('h4', e)}
             >
-              {editableTexts['h4']}
+              h4
             </h4>
           </div>
         </div>
@@ -166,8 +166,24 @@ export default function DesignSystemSandbox(): JSX.Element {
               onClick={() => handleComponentClick('body-text')}
               onDoubleClick={(e) => handleDoubleClick('body-text', e)}
             >
-              {editableTexts['body-text']}
+              body-text
             </div>
+            <div 
+              className="body-text-highlight"
+              data-component="body-text-highlight"
+              onMouseEnter={(e) => handleComponentHover('body-text-highlight', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('body-text-highlight')}
+              onDoubleClick={(e) => handleDoubleClick('body-text-highlight', e)}
+            >
+              body-text-highlight
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="component-title">Text with Highlights Example</h3>
+          <div className="component-showcase">
             <div 
               className="body-text"
               data-component="body-text with highlights"
