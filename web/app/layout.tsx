@@ -31,3 +31,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+// Trigger rebuild with correct Cognito credentials
