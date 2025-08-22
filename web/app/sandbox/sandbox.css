@@ -539,32 +539,13 @@
 /* Button Showcase */
 .component-showcase .cta-button,
 .component-showcase .cta-button2,
-.component-showcase .cta-button2-fixed,
-.component-showcase .dpu-btn,
-.component-showcase .stop-button,
-.component-showcase .add-path-button,
-.component-showcase .info-pill-icon {
+.component-showcase .cta-button2-fixed {
   margin: 0 10px 20px 10px;
   flex-shrink: 0;
   min-width: 200px;
 }
 
-/* Form Elements Showcase */
-.component-showcase .input-wrapper,
-.component-showcase .popup-input-wrapper {
-  min-width: 250px;
-  flex-shrink: 0;
-}
 
-.component-showcase .step-selector {
-  min-width: 250px;
-  flex-shrink: 0;
-}
-
-.component-showcase .ios-toggle-container {
-  min-width: 200px;
-  flex-shrink: 0;
-}
 
 /* Cards Showcase */
 .component-showcase .default-card {
@@ -685,22 +666,12 @@
   
   .component-showcase .cta-button,
   .component-showcase .cta-button2,
-  .component-showcase .cta-button2-fixed,
-  .component-showcase .dpu-btn,
-  .component-showcase .stop-button,
-  .component-showcase .add-path-button,
-  .component-showcase .info-pill-icon {
+  .component-showcase .cta-button2-fixed {
     width: 100%;
     text-align: center;
   }
   
-  .component-showcase .input-wrapper,
-  .component-showcase .popup-input-wrapper,
-  .component-showcase .step-selector,
-  .component-showcase .ios-toggle-container {
-    width: 100%;
-    min-width: unset;
-  }
+
   
   .component-showcase .project-box,
   .component-showcase .new-project-card,
@@ -719,10 +690,7 @@
     max-width: none;
   }
   
-  .component-showcase .apple-progress-tracker {
-    width: 100%;
-    min-width: unset;
-  }
+
   
   .component-name-pill {
     font-size: 0.75rem;
