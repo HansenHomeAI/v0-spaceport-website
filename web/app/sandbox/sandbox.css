@@ -194,6 +194,7 @@
   text-align: center;
   letter-spacing: 0em;
   line-height: 1.05;
+  margin: 0 0 2rem 0;  /* Top: 0, Right: 0, Bottom: 2rem, Left: 0 */
 }
 
 .section h2 {
@@ -203,12 +204,13 @@
   text-align: center;
   letter-spacing: 0em;
   line-height: 1.05;
+  margin: 0 0 1.5rem 0;  /* Top: 0, Right: 0, Bottom: 1.5rem, Left: 0 */
 }
 
 .h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  margin-bottom: 25px;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
   color: rgba(255, 255, 255, 1);
   letter-spacing: 0em;
   line-height: 1.05;
@@ -222,6 +224,7 @@
   line-height: 1.6;
   font-size: 1.2rem;
   letter-spacing: 0em;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
 }
 
 .body-text-highlight {
@@ -231,6 +234,7 @@
   line-height: 1.6;
   font-size: 1.2rem;
   letter-spacing: 0em;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
 }
 
 .component-showcase .body-text {
@@ -259,6 +263,8 @@
 .text-highlight {
   color: rgba(255, 255, 255, 1);
   font-weight: 400;
+  margin: 0;  /* No additional spacing for inline elements */
+  padding: 0;  /* No additional padding for inline elements */
 }
 
 .component-showcase .text-highlight {
@@ -903,7 +909,7 @@
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
