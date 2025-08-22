@@ -6,8 +6,6 @@ from typing import Any, Dict, Optional
 from decimal import Decimal
 
 import boto3
-from jose import jwk, jwt
-from jose.utils import base64url_decode
 
 
 # Helper function to convert Decimal to int/float for JSON serialization
@@ -60,34 +58,19 @@ def _load_json_url(url: str) -> Dict[str, Any]:
         return json.loads(r.read().decode('utf-8'))
 
 
-def _verify_cognito_jwt(auth_header: Optional[str]) -> Dict[str, Any]:
-    if not auth_header or not auth_header.lower().startswith('bearer '):
-        raise AuthError('Missing or invalid Authorization header')
-    token = auth_header.split(' ', 1)[1]
+def _get_cognito_claims_from_apig(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract Cognito JWT claims injected by API Gateway authorizer.
 
-    # Decode unverified to obtain issuer and kid
-    unverified = jwt.get_unverified_claims(token)
-    header = jwt.get_unverified_header(token)
-    kid = header.get('kid')
-    iss = unverified.get('iss')
-    if not iss or not kid:
-        raise AuthError('Invalid token')
-
-    # Fetch JWKS for this issuer
-    jwks_url = f"{iss}/.well-known/jwks.json"
-    keys = _load_json_url(jwks_url).get('keys', [])
-    key = next((k for k in keys if k.get('kid') == kid), None)
-    if not key:
-        raise AuthError('Signing key not found')
-
-    public_key = jwk.construct(key)
-    message, encoded_sig = str(token).rsplit('.', 1)
-    decoded_sig = base64url_decode(encoded_sig.encode('utf-8'))
-    if not public_key.verify(message.encode('utf-8'), decoded_sig):
-        raise AuthError('Invalid signature')
-
-    # Validate standard claims (issuer, exp). Skip audience to support multiple clients
-    claims = jwt.decode(token, public_key.to_pem().decode('utf-8'), options={'verify_aud': False}, issuer=iss)
+    API Gateway REST API with Cognito User Pools authorizer places claims under
+    event['requestContext']['authorizer']['claims'].
+    """
+    rc = event.get('requestContext') or {}
+    auth = rc.get('authorizer') or {}
+    # Common shape: { claims: {...}, principalId: 'cognitoUserPool:<sub>' }
+    claims = auth.get('claims') or {}
+    if not claims:
+        # Some deployments may nest JWT differently; fall back to empty dict
+        return {}
     return claims
 
 
@@ -95,11 +78,10 @@ def lambda_handler(event, context):
     if event.get('httpMethod') == 'OPTIONS':
         return _response(200, {'ok': True})
 
-    try:
-        claims = _verify_cognito_jwt((event.get('headers') or {}).get('Authorization'))
-    except AuthError as e:
-        return _response(401, {'error': str(e)})
-    except Exception:
+    # Authorization is enforced by API Gateway (Cognito User Pool authorizer).
+    # We only read the already-verified claims exposed by API Gateway.
+    claims = _get_cognito_claims_from_apig(event)
+    if not claims:
         return _response(401, {'error': 'Unauthorized'})
 
     user_sub = claims.get('sub') or ''

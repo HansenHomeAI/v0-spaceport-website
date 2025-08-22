@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_lambda as lambda_,
     aws_iam as iam,
     aws_dynamodb as dynamodb,
+    aws_logs as logs,
 )
 from constructs import Construct
 import os
@@ -194,13 +195,32 @@ class AuthStack(Stack):
             "Spaceport-Projects"
         )
 
-        # Import existing projects Lambda function to avoid conflicts
-        projects_lambda = lambda_.Function.from_function_name(
+        # Define Projects Lambda function from source (replaces import-by-name)
+        projects_lambda = lambda_.Function(
             self,
             "Spaceport-ProjectsFunction",
-            "Spaceport-ProjectsFunction"
+            function_name="Spaceport-ProjectsFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "projects")
+            ),
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
+            },
         )
+        # Allow the Lambda to read/write from the Projects table
         projects_table.grant_read_write_data(projects_lambda)
+
+        # Enable API Gateway access logs and INFO logging level
+        access_log_group = logs.LogGroup(
+            self,
+            "ProjectsApiAccessLogs",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.RETAIN,
+        )
 
         projects_api = apigw.RestApi(
             self,
@@ -225,6 +245,24 @@ class AuthStack(Stack):
                     self,
                     "ProjectsAuthorizer",
                     cognito_user_pools=[user_pool_v2],
+                ),
+            ),
+            deploy_options=apigw.StageOptions(
+                stage_name="prod",
+                logging_level=apigw.MethodLoggingLevel.INFO,
+                data_trace_enabled=True,
+                metrics_enabled=True,
+                access_log_destination=apigw.LogGroupLogDestination(access_log_group),
+                access_log_format=apigw.AccessLogFormat.json_with_standard_fields(
+                    caller=True,
+                    http_method=True,
+                    ip=True,
+                    protocol=True,
+                    request_time=True,
+                    resource_path=True,
+                    response_length=True,
+                    status=True,
+                    user=True,
                 ),
             ),
         )

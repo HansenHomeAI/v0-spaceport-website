@@ -32,7 +32,9 @@ export default function Create(): JSX.Element {
       setLoading(true);
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
+      const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
+      if (!api) throw new Error('Projects API URL is not configured');
+      const res = await fetch(api, {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       if (res.ok) {

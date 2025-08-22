@@ -654,7 +654,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      const apiEnv = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
+      if (!apiEnv) throw new Error('Projects API URL is not configured');
+      const apiBase = apiEnv.replace(/\/$/, '');
       const progress = STATUS_TO_PROGRESS[status] ?? 0;
       
       const body = {
@@ -774,7 +776,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects').replace(/\/$/, '');
+      const apiEnv2 = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
+      if (!apiEnv2) throw new Error('Projects API URL is not configured');
+      const apiBase = apiEnv2.replace(/\/$/, '');
       
       const res = await fetch(`${apiBase}/${encodeURIComponent(currentProjectId)}`, {
         method: 'DELETE',
@@ -953,7 +957,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const { Auth } = await import('aws-amplify');
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects';
+        const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
+        if (!api) throw new Error('Projects API URL is not configured');
         await fetch(api, {
           method: 'POST',
           headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
