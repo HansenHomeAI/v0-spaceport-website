@@ -1,5 +1,5 @@
 # Build trigger file for SfM container
-# Last modified: 2025-08-22 09:25 PST - Testing FIXED CodeBuild workflow
+# Last modified: 2025-08-22 09:50 PST - Testing FIXED CodeBuild with Docker Hub credentials
 
 RUNTIME FIX: OpenSfM CLI Binary Missing in Production
 ===================================================
