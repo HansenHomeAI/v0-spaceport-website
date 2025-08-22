@@ -19,7 +19,8 @@ type OptimizedParams = {
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
-  const API_ENHANCED_BASE = 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod';
+  // Use environment variable for API base URL instead of hardcoded value
+  const API_ENHANCED_BASE = process.env.NEXT_PUBLIC_DRONE_PATH_API_URL || 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod';
   const API_UPLOAD = {
     START_UPLOAD: 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload',
     GET_PRESIGNED_URL: 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url',
