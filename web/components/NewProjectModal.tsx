@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { buildApiUrl } from '../app/api-config';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -19,13 +20,13 @@ type OptimizedParams = {
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
-  // Use environment variable for API base URL instead of hardcoded value
-  const API_ENHANCED_BASE = process.env.NEXT_PUBLIC_DRONE_PATH_API_URL || 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod';
+  // Use centralized API configuration instead of hardcoded values
+  const API_ENHANCED_BASE = buildApiUrl.dronePath.optimizeSpiral().replace('/api/optimize-spiral', '');
   const API_UPLOAD = {
-    START_UPLOAD: 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/start-multipart-upload',
-    GET_PRESIGNED_URL: 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/get-presigned-url',
-    COMPLETE_UPLOAD: 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/complete-multipart-upload',
-    SAVE_SUBMISSION: 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/save-submission',
+    START_UPLOAD: buildApiUrl.fileUpload.startUpload(),
+    GET_PRESIGNED_URL: buildApiUrl.fileUpload.getPresignedUrl(),
+    COMPLETE_UPLOAD: buildApiUrl.fileUpload.completeUpload(),
+    SAVE_SUBMISSION: buildApiUrl.fileUpload.saveSubmission(),
     START_ML_PROCESSING: 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod/start-job',
   } as const;
 
