@@ -101,7 +101,7 @@ class SubscriptionStack(Stack):
             function_name="Spaceport-SubscriptionManager",
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("/Users/gabrielhansen/v0-spaceport-website/infrastructure/lambda/subscription_manager"),
+            code=lambda_.Code.from_asset("../lambda/subscription_manager"),
             role=subscription_lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
