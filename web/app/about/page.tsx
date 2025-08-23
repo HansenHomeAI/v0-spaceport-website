@@ -25,7 +25,7 @@ export default function About(): JSX.Element {
         <div className="two-col-content">
           <h2>Bringing AI to real estate.</h2>
           <div className="right-col">
-            <p>Noticing firsthand how listings fail to capture what buyers actually care about, 21-year-old founder Gabriel Hansen set out to fix it. Teaching himself computer science from the ground up, he built Spaceport—combining advances in neural networks with drone technology to create a whole new way to showcase location.</p>
+            <p>Noticing firsthand how listings fail to capture what buyers actually care about, avid engineer and founder Gabriel Hansen set out to fix it, building Spaceport to combine advances in neural networks with drone technology–creating a whole new way to showcase location.</p>
             <p>Our mission is simple: make the best tool for property marketing.</p>
           </div>
         </div>

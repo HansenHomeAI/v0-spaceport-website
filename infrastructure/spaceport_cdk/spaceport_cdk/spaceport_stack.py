@@ -157,22 +157,34 @@ class SpaceportStack(Stack):
             "Spaceport-WaitlistFunction"
         )
         
-        # TODO: Import existing API Gateway for drone path generation
-        # For now, we'll skip API Gateway creation to test Lambda imports first
-        # drone_path_api = apigw.RestApi.from_rest_api_id(
-        #     self, 
-        #     "Spaceport-DronePathApi",
-        #     "PLACEHOLDER_API_ID"
-        # )
+        # ========== API GATEWAY CONFIGURATION ==========
+        # Import existing API Gateway for drone path generation
+        drone_path_api = apigw.RestApi.from_rest_api_id(
+            self,
+            "Spaceport-DronePathApi",
+            "0r3y4bx7lc"  # Use the existing production API Gateway ID
+        )
         
-        # TODO: API Gateway resource creation temporarily disabled
-        # drone_path_resource = drone_path_api.root.add_resource("DronePathREST")
-        # ... (API Gateway methods will be re-enabled after Lambda imports are working)
+        # Import existing API Gateway for file upload operations
+        file_upload_api = apigw.RestApi.from_rest_api_id(
+            self,
+            "Spaceport-FileUploadApi",
+            "rf3fnnejg2"  # Use the existing production API Gateway ID
+        )
         
-        # TODO: All API Gateway creation temporarily disabled to test Lambda imports
-        # Will re-enable after confirming Lambda imports work properly
+        # ========== OUTPUTS ==========
+        CfnOutput(
+            self,
+            "DronePathApiUrl",
+            value=f"https://0r3y4bx7lc.execute-api.us-west-2.amazonaws.com/prod",
+            description="Drone Path API Gateway URL"
+        )
         
-        # API Gateway and all related resources commented out for now
-        # ... (extensive API Gateway code will be restored later) 
+        CfnOutput(
+            self,
+            "FileUploadApiUrl",
+            value=f"https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod",
+            description="File Upload API Gateway URL"
+        )
 
         # Authentication removed from this stack. It will be managed by a dedicated AuthStack.
