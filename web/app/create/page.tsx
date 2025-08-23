@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
 import AuthGate from '../auth/AuthGate';
+import { useSubscription } from '../hooks/useSubscription';
 import { Auth } from 'aws-amplify';
 
 export default function Create(): JSX.Element {
@@ -12,6 +13,19 @@ export default function Create(): JSX.Element {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [subscriptionPopupOpen, setSubscriptionPopupOpen] = useState(false);
+  
+  // Subscription hook
+  const { 
+    subscription, 
+    loading: subscriptionLoading, 
+    error: subscriptionError,
+    redirectToCheckout,
+    cancelSubscription,
+    isSubscriptionActive,
+    isOnTrial,
+    getTrialDaysRemaining,
+    canCreateModel
+  } = useSubscription();
 
   // Lock body scroll when popup is open
   useEffect(() => {
@@ -32,9 +46,7 @@ export default function Create(): JSX.Element {
       setLoading(true);
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      const api = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
-      if (!api) throw new Error('Projects API URL is not configured');
-      const res = await fetch(api, {
+      const res = await fetch(process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects', {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       if (res.ok) {
@@ -71,6 +83,47 @@ export default function Create(): JSX.Element {
     }
   };
 
+  const handleUpgrade = async (planType: string) => {
+    await redirectToCheckout(planType as any);
+  };
+
+  const handleCancelSubscription = async () => {
+    if (confirm('Are you sure you want to cancel your subscription? You\'ll lose access to premium features at the end of your current billing period.')) {
+      await cancelSubscription();
+    }
+  };
+
+  const getSubscriptionStatusDisplay = () => {
+    if (subscriptionLoading) return 'Loading...';
+    if (subscriptionError) return 'Error loading subscription';
+    
+    if (!subscription) return 'No active subscription';
+    
+    if (isOnTrial()) {
+      const daysLeft = getTrialDaysRemaining();
+      return `Trial - ${daysLeft} days left`;
+    }
+    
+    return subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
+  };
+
+  const getSubscriptionBadgeClass = () => {
+    if (!subscription) return 'subscription-status';
+    
+    switch (subscription.status) {
+      case 'active':
+        return 'subscription-status active';
+      case 'trialing':
+        return 'subscription-status trialing';
+      case 'past_due':
+        return 'subscription-status past_due';
+      case 'canceled':
+        return 'subscription-status canceled';
+      default:
+        return 'subscription-status';
+    }
+  };
+
   return (
     <>
       {/* Always-visible header matching pricing/about spacing and swirl */}
@@ -98,13 +151,40 @@ export default function Create(): JSX.Element {
                 <div className="account-details">
                   <div className="account-header">
                     <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                                                <button
-                              className="subscription-pill clickable"
-                              onClick={() => setSubscriptionPopupOpen(true)}
-                            >
-                              Beta Plan
-                            </button>
+                    <div className="subscription-info">
+                      <span className={getSubscriptionBadgeClass()}>
+                        {getSubscriptionStatusDisplay()}
+                      </span>
+                      <button
+                        className="subscription-pill clickable"
+                        onClick={() => setSubscriptionPopupOpen(true)}
+                      >
+                        {subscription ? subscription.planType : 'Beta Plan'}
+                      </button>
+                    </div>
                   </div>
+                  
+                  {/* Subscription Details */}
+                  {subscription && (
+                    <div className="subscription-details">
+                      <p className="subscription-plan">
+                        {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
+                      </p>
+                      <p className="subscription-status">
+                        Status: {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
+                      </p>
+                      {subscription.referredBy && (
+                        <p className="referral-info">
+                          Referred by: {subscription.referredBy}
+                        </p>
+                      )}
+                      {subscription.referralEarnings && subscription.referralEarnings > 0 && (
+                        <p className="earnings-info">
+                          Referral earnings: ${subscription.referralEarnings.toFixed(2)}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
                   <span className="sign-out-icon"></span>
@@ -114,8 +194,16 @@ export default function Create(): JSX.Element {
             </div>
             
             {/* New Project Button */}
-            <div className="project-box new-project-card" onClick={() => setModalOpen(true)}>
+            <div 
+              className={`project-box new-project-card ${!canCreateModel() ? 'disabled' : ''}`} 
+              onClick={canCreateModel() ? () => setModalOpen(true) : undefined}
+            >
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
+              {!canCreateModel() && (
+                <p className="upgrade-prompt">
+                  Upgrade your plan to create more models
+                </p>
+              )}
             </div>
             
             {/* Loading Spinner */}
@@ -161,84 +249,119 @@ export default function Create(): JSX.Element {
                 <h2>Choose Your Plan</h2>
                 <button className="popup-close" onClick={() => setSubscriptionPopupOpen(false)} />
               </div>
-                                    <div className="subscription-plans">
-                        <div className="plan-card current">
-                          <div className="plan-header">
-                            <h3>Beta Plan</h3>
-                            <span className="current-badge">Current</span>
-                          </div>
-                          <div className="plan-price">Free</div>
-                          <div className="plan-features">
-                            <div className="feature">• Limited beta access</div>
-                            <div className="feature">• Community support</div>
-                            <div className="feature">• Basic 3D models</div>
-                          </div>
-                        </div>
+              
+              <div className="subscription-plans">
+                {/* Current Plan Display */}
+                {subscription && (
+                  <div className="plan-card current">
+                    <div className="plan-header">
+                      <h3>{subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan</h3>
+                      <span className="current-badge">Current</span>
+                    </div>
+                    <div className="plan-price">
+                      {subscription.status === 'trialing' ? 'Free Trial' : 'Active'}
+                    </div>
+                    <div className="plan-features">
+                      <div className="feature">• {subscription.planFeatures.maxModels === -1 ? 'Unlimited' : `Up to ${subscription.planFeatures.maxModels}`} active models</div>
+                      <div className="feature">• {subscription.planFeatures.support} support</div>
+                      <div className="feature">• {subscription.planFeatures.trialDays > 0 ? `${subscription.planFeatures.trialDays}-day trial` : 'No trial'}</div>
+                    </div>
+                    {subscription.status !== 'canceled' && (
+                      <button 
+                        className="plan-cancel-btn"
+                        onClick={handleCancelSubscription}
+                      >
+                        Cancel Subscription
+                      </button>
+                    )}
+                  </div>
+                )}
 
-                        <div className="plan-card">
-                          <div className="plan-header">
-                            <h3>Single Model</h3>
-                          </div>
-                          <div className="plan-price">$29<span className="plan-period">/mo</span></div>
-                          <div className="plan-features">
-                            <div className="feature">• One active model</div>
-                            <div className="feature">• 1-month free trial</div>
-                            <div className="feature">• Perfect for trying Spaceport</div>
-                          </div>
-                          <button className="plan-upgrade-btn">
-                            Get Started
-                          </button>
-                        </div>
+                {/* Available Plans */}
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Single Model</h3>
+                  </div>
+                  <div className="plan-price">$29<span className="plan-period">/mo</span></div>
+                  <div className="plan-features">
+                    <div className="feature">• One active model</div>
+                    <div className="feature">• 1-month free trial</div>
+                    <div className="feature">• Perfect for trying Spaceport</div>
+                  </div>
+                  <button 
+                    className="plan-upgrade-btn"
+                    onClick={() => handleUpgrade('single')}
+                    disabled={subscription?.planType === 'single'}
+                  >
+                    {subscription?.planType === 'single' ? 'Current Plan' : 'Get Started'}
+                  </button>
+                </div>
 
-                        <div className="plan-card">
-                          <div className="plan-header">
-                            <h3>Starter</h3>
-                          </div>
-                          <div className="plan-price">$99<span className="plan-period">/mo</span></div>
-                          <div className="plan-features">
-                            <div className="feature">• Up to 5 active models</div>
-                            <div className="feature">• Additional models $29/mo each</div>
-                            <div className="feature">• 1-month free trial included</div>
-                          </div>
-                          <button className="plan-upgrade-btn">
-                            Start Starter
-                          </button>
-                        </div>
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Starter</h3>
+                  </div>
+                  <div className="plan-price">$99<span className="plan-period">/mo</span></div>
+                  <div className="plan-features">
+                    <div className="feature">• Up to 5 active models</div>
+                    <div className="feature">• Additional models $29/mo each</div>
+                    <div className="feature">• 1-month free trial included</div>
+                  </div>
+                  <button 
+                    className="plan-upgrade-btn"
+                    onClick={() => handleUpgrade('starter')}
+                    disabled={subscription?.planType === 'starter'}
+                  >
+                    {subscription?.planType === 'starter' ? 'Current Plan' : 'Start Starter'}
+                  </button>
+                </div>
 
-                        <div className="plan-card">
-                          <div className="plan-header">
-                            <h3>Growth</h3>
-                          </div>
-                          <div className="plan-price">$299<span className="plan-period">/mo</span></div>
-                          <div className="plan-features">
-                            <div className="feature">• Up to 20 active models</div>
-                            <div className="feature">• Additional models $29/mo each</div>
-                            <div className="feature">• 1-month free trial included</div>
-                          </div>
-                          <button className="plan-upgrade-btn">
-                            Start Growth
-                          </button>
-                        </div>
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Growth</h3>
+                  </div>
+                  <div className="plan-price">$299<span className="plan-period">/mo</span></div>
+                  <div className="plan-features">
+                    <div className="feature">• Up to 20 active models</div>
+                    <div className="feature">• Additional models $29/mo each</div>
+                    <div className="feature">• 1-month free trial included</div>
+                  </div>
+                  <button 
+                    className="plan-upgrade-btn"
+                    onClick={() => handleUpgrade('growth')}
+                    disabled={subscription?.planType === 'growth'}
+                  >
+                    {subscription?.planType === 'growth' ? 'Current Plan' : 'Start Growth'}
+                  </button>
+                </div>
 
-                        <div className="plan-card">
-                          <div className="plan-header">
-                            <h3>Enterprise</h3>
-                          </div>
-                          <div className="plan-price">Custom</div>
-                          <div className="plan-features">
-                            <div className="feature">• High-volume projects</div>
-                            <div className="feature">• Custom integrations</div>
-                            <div className="feature">• Dedicated support</div>
-                            <div className="feature">• Team management</div>
-                          </div>
-                          <button className="plan-contact-btn">
-                            Contact Sales
-                          </button>
-                        </div>
-                      </div>
-                      <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.9rem', opacity: '0.7' }}>
-                        All plans support additional active models at <span style={{ color: '#fff', opacity: '1' }}>$29/mo</span> per model beyond your plan.
-                      </p>
+                <div className="plan-card">
+                  <div className="plan-header">
+                    <h3>Enterprise</h3>
+                  </div>
+                  <div className="plan-price">Custom</div>
+                  <div className="plan-features">
+                    <div className="feature">• High-volume projects</div>
+                    <div className="feature">• Custom integrations</div>
+                    <div className="feature">• Dedicated support</div>
+                    <div className="feature">• Team management</div>
+                  </div>
+                  <button className="plan-contact-btn">
+                    Contact Sales
+                  </button>
+                </div>
+              </div>
+              
+              <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.9rem', opacity: '0.7' }}>
+                All plans support additional active models at <span style={{ color: '#fff', opacity: '1' }}>$29/mo</span> per model beyond your plan.
+              </p>
+              
+              {/* Referral Program Info */}
+              <div className="referral-program-info">
+                <h3>Referral Program</h3>
+                <p>Share your unique handle with others. When they subscribe using your code, you'll receive 10% of their subscription for 6 months!</p>
+                <p><strong>Your handle:</strong> {user?.attributes?.preferred_username || 'Not set'}</p>
+              </div>
             </div>
           </div>
         )}
