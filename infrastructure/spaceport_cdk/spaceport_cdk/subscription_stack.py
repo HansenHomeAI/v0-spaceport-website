@@ -185,3 +185,4 @@ class SubscriptionStack(Stack):
 
         # Add CloudWatch alarms for monitoring
         # TODO: Add CloudWatch alarms for error rates, duration, etc.
+# Force CDK deployment
