@@ -19,7 +19,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [name, setName] = useState('');
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const WAITLIST_API = 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist';
+  const WAITLIST_API = process.env.NEXT_PUBLIC_WAITLIST_API_URL;
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
   const [pendingUser, setPendingUser] = useState<any>(null);
   const [newPassword, setNewPassword] = useState('');
