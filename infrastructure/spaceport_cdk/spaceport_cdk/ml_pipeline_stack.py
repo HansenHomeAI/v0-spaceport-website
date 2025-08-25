@@ -228,7 +228,7 @@ class MLPipelineStack(Stack):
             code=lambda_.Code.from_asset("lambda/ml_notification"),
             function_name="Spaceport-MLNotification",
             role=iam.Role.from_role_arn(
-                self, "NotificationLambdaRole",
+                self, "NotificationLambdaRoleUnique",
                 f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
             ),
             environment={
