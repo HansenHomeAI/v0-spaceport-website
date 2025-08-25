@@ -120,18 +120,23 @@ jobs:
           aws s3 rb s3://$bucket --force 2>/dev/null || true
         done
         
-        # Determine bootstrap trust dynamically: only trust prod role on main
+        # Determine bootstrap mode dynamically based on branch
         if [ "${GITHUB_REF_NAME}" = "main" ]; then
-          TRUST_ARG="--trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole"
+          # Production: Use new bootstrap mode with OIDC role trust
+          echo "Using new bootstrap mode for production (OIDC roles)"
+          npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
+            --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+            --qualifier $CDK_QUALIFIER \
+            --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
+            --new-bootstrap \
+            --force
         else
-          TRUST_ARG=""
+          # Development: Use legacy bootstrap mode for root credentials
+          echo "Using legacy bootstrap mode for development (root credentials)"
+          npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
+            --qualifier $CDK_QUALIFIER \
+            --force
         fi
-        
-        # Force complete re-bootstrap with fixed qualifier to avoid global bucket name conflicts
-        # Use legacy bootstrap mode for root credentials compatibility
-        npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
-          --qualifier $CDK_QUALIFIER \
-          --force
 
     - name: Preflight verify bootstrap (spcdkprod2)
       if: github.event_name == 'push'
