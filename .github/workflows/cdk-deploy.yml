@@ -61,7 +61,6 @@ jobs:
     - name: CDK Bootstrap
       if: github.event_name == 'push'
       env:
-        CDK_NEW_BOOTSTRAP: "1"
         CDK_QUALIFIER: "spcdkprod2"
       run: |
         set -e
@@ -129,11 +128,9 @@ jobs:
         fi
         
         # Force complete re-bootstrap with fixed qualifier to avoid global bucket name conflicts
+        # Use legacy bootstrap mode for root credentials compatibility
         npx cdk bootstrap aws://$ACCOUNT/us-west-2 \
-          --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
           --qualifier $CDK_QUALIFIER \
-          $TRUST_ARG \
-          --new-bootstrap \
           --force
 
     - name: Preflight verify bootstrap (spcdkprod2)
