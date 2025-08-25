@@ -277,4 +277,142 @@ class AuthStack(Stack):
 
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
 
+        # -------------------------------------
+        # Subscription Management (integrated into AuthStack)
+        # -------------------------------------
+        
+        # Create subscription manager Lambda function
+        subscription_lambda = lambda_.Function(
+            self,
+            "Spaceport-SubscriptionManager",
+            function_name="Spaceport-SubscriptionManager",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "/Users/gabrielhansen/v0-spaceport-website/infrastructure/lambda/subscription_manager"
+            ),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            environment={
+                "USERS_TABLE": "Spaceport-Users",  # Reference to existing users table
+                "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
+                "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", ""),
+                "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
+                "STRIPE_PRICE_SINGLE": os.environ.get("STRIPE_PRICE_SINGLE", ""),
+                "STRIPE_PRICE_STARTER": os.environ.get("STRIPE_PRICE_STARTER", ""),
+                "STRIPE_PRICE_GROWTH": os.environ.get("STRIPE_PRICE_GROWTH", ""),
+                "REFERRAL_KICKBACK_PERCENTAGE": os.environ.get("REFERRAL_KICKBACK_PERCENTAGE", "10"),
+                "EMPLOYEE_KICKBACK_PERCENTAGE": os.environ.get("EMPLOYEE_KICKBACK_PERCENTAGE", "30"),
+                "COMPANY_KICKBACK_PERCENTAGE": os.environ.get("COMPANY_KICKBACK_PERCENTAGE", "70"),
+                "REFERRAL_DURATION_MONTHS": os.environ.get("REFERRAL_DURATION_MONTHS", "6"),
+                "EMPLOYEE_USER_ID": os.environ.get("EMPLOYEE_USER_ID", ""),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spaceport.ai"),
+            },
+            log_retention=logs.RetentionDays.ONE_MONTH,
+        )
+
+        # Grant DynamoDB permissions to subscription Lambda
+        # Import the existing users table to grant permissions
+        users_table = dynamodb.Table.from_table_name(
+            self,
+            "Spaceport-UsersTable",
+            "Spaceport-Users"
+        )
+        users_table.grant_read_write_data(subscription_lambda)
+
+        # Add Cognito permissions for updating user attributes
+        subscription_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "cognito-idp:AdminUpdateUserAttributes",
+                    "cognito-idp:AdminGetUser",
+                ],
+                resources=[user_pool_v2.user_pool_arn]
+            )
+        )
+
+        # Add SES permissions for email notifications (optional)
+        subscription_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ses:SendEmail",
+                    "ses:SendRawEmail"
+                ],
+                resources=["*"]
+            )
+        )
+
+        # Create subscription API Gateway
+        subscription_api = apigw.RestApi(
+            self,
+            "Spaceport-SubscriptionApi",
+            rest_api_name="Spaceport-SubscriptionApi",
+            description="Subscription management API for Spaceport",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                    "X-Api-Key",
+                ],
+            ),
+        )
+
+        # Add subscription endpoints
+        subscription_resource = subscription_api.root.add_resource("subscription")
+        
+        # Create checkout session endpoint (requires auth)
+        create_checkout_resource = subscription_resource.add_resource("create-checkout-session")
+        create_checkout_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "SubscriptionCreateAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Webhook endpoint (no auth required for Stripe)
+        webhook_resource = subscription_resource.add_resource("webhook")
+        webhook_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.NONE,
+        )
+
+        # Subscription status endpoint (requires auth)
+        status_resource = subscription_resource.add_resource("subscription-status")
+        status_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "SubscriptionStatusAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Cancel subscription endpoint (requires auth)
+        cancel_resource = subscription_resource.add_resource("cancel-subscription")
+        cancel_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "SubscriptionCancelAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Outputs
+        CfnOutput(self, "SubscriptionApiUrl", value=subscription_api.url)
+        CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
+
 

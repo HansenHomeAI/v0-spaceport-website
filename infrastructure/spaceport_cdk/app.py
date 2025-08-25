@@ -3,7 +3,7 @@ from aws_cdk import App, DefaultStackSynthesizer
 from spaceport_cdk.spaceport_stack import SpaceportStack
 from spaceport_cdk.auth_stack import AuthStack
 from spaceport_cdk.ml_pipeline_stack import MLPipelineStack
-from spaceport_cdk.subscription_stack import SubscriptionStack
+# Subscription functionality will be integrated into AuthStack
 
 app = App()
 
@@ -43,15 +43,6 @@ auth_stack = AuthStack(
     synthesizer=stack_synthesizer,
 )
 
-# Deploy subscription management stack
-subscription_stack = SubscriptionStack(
-    app,
-    "SpaceportSubscriptionStack",
-    env={
-        'account': app.node.try_get_context('account') or None,
-        'region': app.node.try_get_context('region') or 'us-west-2'
-    },
-    synthesizer=stack_synthesizer,
-)
+# Subscription functionality integrated into AuthStack
 
 app.synth() 

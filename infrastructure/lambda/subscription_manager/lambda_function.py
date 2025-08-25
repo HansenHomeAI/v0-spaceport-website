@@ -17,8 +17,7 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 dynamodb = boto3.resource('dynamodb')
 cognito_idp = boto3.client('cognito-idp')
 
-# Table names
-SUBSCRIPTIONS_TABLE = os.environ.get('SUBSCRIPTIONS_TABLE', 'Spaceport-Subscriptions')
+# Table names - using existing users table
 USERS_TABLE = os.environ.get('USERS_TABLE', 'Spaceport-Users')
 
 # Referral configuration - UPDATED FOR NEW STRUCTURE
@@ -299,9 +298,9 @@ def update_user_subscription(user_id: str, subscription_id: str, plan_type: str,
     Update user subscription in DynamoDB with new structure
     """
     try:
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        table = dynamodb.Table(USERS_TABLE)
         
-        # Get current subscription data
+        # Get current user data
         response = table.get_item(Key={'userId': user_id})
         current_data = response.get('Item', {})
         
@@ -403,16 +402,19 @@ def store_referral_tracking(user_id: str, referral_code: str, plan_type: str) ->
     Store referral tracking information
     """
     try:
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        table = dynamodb.Table(USERS_TABLE)
         
-        # Store referral data
-        table.put_item(Item={
-            'userId': user_id,
-            'referralCode': referral_code,
-            'planType': plan_type,
-            'referralStatus': 'pending',
-            'createdAt': datetime.utcnow().isoformat()
-        })
+        # Store referral data in user record
+        table.update_item(
+            Key={'userId': user_id},
+            UpdateExpression='SET referralCode = :code, planType = :plan, referralStatus = :status, createdAt = :created',
+            ExpressionAttributeValues={
+                ':code': referral_code,
+                ':plan': plan_type,
+                ':status': 'pending',
+                ':created': datetime.utcnow().isoformat()
+            }
+        )
         
     except Exception as e:
         logger.error(f"Error storing referral tracking: {str(e)}")
@@ -428,8 +430,8 @@ def process_referral(user_id: str, referral_code: str, plan_type: str) -> None:
             logger.warning(f"Referral code {referral_code} not found")
             return
         
-        # Update referral tracking
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        # Update referral tracking in user record
+        table = dynamodb.Table(USERS_TABLE)
         table.update_item(
             Key={'userId': user_id},
             UpdateExpression='SET referredBy = :referred_by, referralStatus = :status',
@@ -487,52 +489,27 @@ def setup_referral_payouts_new_structure(referred_by_user: str, new_user: str, p
         employee_kickback = (total_referee_kickback * EMPLOYEE_KICKBACK_PERCENTAGE) / 100
         company_kickback = (total_referee_kickback * COMPANY_KICKBACK_PERCENTAGE) / 100
         
-        # Store payout tracking
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        # Store payout tracking in user record
+        table = dynamodb.Table(USERS_TABLE)
         
-        # User referral payout (total amount)
-        table.put_item(Item={
-            'userId': referred_by_user,
-            'referralPayoutId': f"{new_user}_{plan_type}",
-            'referredUser': new_user,
-            'planType': plan_type,
-            'monthlyKickback': total_referee_kickback,
-            'employeeKickback': employee_kickback,
-            'companyKickback': company_kickback,
-            'totalKickback': 0,
-            'monthsRemaining': REFERRAL_DURATION_MONTHS,
-            'status': 'active',
-            'createdAt': datetime.utcnow().isoformat()
-        })
+        # Update user's referral earnings
+        table.update_item(
+            Key={'userId': referred_by_user},
+            UpdateExpression='SET referralEarnings = :earnings, lastReferralUpdate = :updated',
+            ExpressionAttributeValues={
+                ':earnings': {
+                    'totalUsd': total_referee_kickback,
+                    'employeeUsdAccrued': employee_kickback,
+                    'companyUsdAccrued': company_kickback,
+                    'monthsRemaining': REFERRAL_DURATION_MONTHS,
+                    'lastUpdated': datetime.utcnow().isoformat()
+                },
+                ':updated': datetime.utcnow().isoformat()
+            }
+                )
         
-        # Employee payout tracking (if configured)
-        if EMPLOYEE_USER_ID:
-            table.put_item(Item={
-                'userId': EMPLOYEE_USER_ID,
-                'referralPayoutId': f"employee_{new_user}_{plan_type}",
-                'referredUser': new_user,
-                'planType': plan_type,
-                'monthlyKickback': employee_kickback,
-                'totalKickback': 0,
-                'monthsRemaining': REFERRAL_DURATION_MONTHS,
-                'status': 'active',
-                'source': 'referral_split',
-                'createdAt': datetime.utcnow().isoformat()
-            })
-            
-        # Company payout tracking
-        table.put_item(Item={
-            'userId': 'COMPANY',  # Special identifier for company
-            'referralPayoutId': f"company_{new_user}_{plan_type}",
-            'referredUser': new_user,
-            'planType': plan_type,
-            'monthlyKickback': company_kickback,
-            'totalKickback': 0,
-            'monthsRemaining': REFERRAL_DURATION_MONTHS,
-            'status': 'active',
-            'source': 'referral_split',
-            'createdAt': datetime.utcnow().isoformat()
-        })
+        # Note: Employee and company payouts are tracked in the user's referralEarnings
+        # Manual payouts will be handled based on these accruals
             
     except Exception as e:
         logger.error(f"Error setting up referral payouts: {str(e)}")
@@ -543,7 +520,7 @@ def process_referral_payouts_new_structure(subscription_id: str, amount_paid: in
     """
     try:
         # Find referral payouts for this subscription
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        table = dynamodb.Table(USERS_TABLE)
         response = table.scan(
             FilterExpression='referredUser = :subscription_id AND #status = :status',
             ExpressionAttributeNames={'#status': 'status'},
@@ -598,7 +575,7 @@ def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
             }
         
         # Get subscription from DynamoDB
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        table = dynamodb.Table(USERS_TABLE)
         response = table.get_item(Key={'userId': user_id})
         
         if 'Item' in response:
@@ -637,7 +614,7 @@ def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
             }
         
         # Get subscription ID
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        table = dynamodb.Table(USERS_TABLE)
         response = table.get_item(Key={'userId': user_id})
         
         if 'Item' not in response:
@@ -698,7 +675,7 @@ def update_subscription_status(subscription_id: str, status: str) -> None:
     Update subscription status in DynamoDB
     """
     try:
-        table = dynamodb.Table(SUBSCRIPTIONS_TABLE)
+        table = dynamodb.Table(USERS_TABLE)
         
         # Find subscription by subscription ID
         response = table.scan(
@@ -711,8 +688,7 @@ def update_subscription_status(subscription_id: str, status: str) -> None:
             user_id = items[0]['userId']
             table.update_item(
                 Key={'userId': user_id},
-                UpdateExpression='SET #status = :status, updatedAt = :updated_at',
-                ExpressionAttributeNames={'#status': 'status'},
+                UpdateExpression='SET subscription.status = :status, subscription.updatedAt = :updated_at',
                 ExpressionAttributeValues={
                     ':status': status,
                     ':updated_at': datetime.utcnow().isoformat()
