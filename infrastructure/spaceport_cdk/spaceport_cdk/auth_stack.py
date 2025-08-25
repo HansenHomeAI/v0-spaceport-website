@@ -16,14 +16,19 @@ import os
 
 
 class AuthStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
+        # Environment configuration
+        self.env_config = env_config
+        suffix = env_config['resourceSuffix']
+        region = env_config['region']
 
-        # Dedicated v2 Cognito resources – no overlap with legacy pool
+        # Environment-specific Cognito resources
         user_pool_v2 = cognito.UserPool(
             self,
             "SpaceportUserPoolV2",
-            user_pool_name="Spaceport-Users-v2",
+            user_pool_name=f"Spaceport-Users-{suffix}",
             self_sign_up_enabled=False,  # invite-only
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             sign_in_aliases=cognito.SignInAliases(email=True),
@@ -109,7 +114,7 @@ class AuthStack(Stack):
         user_pool_v3 = cognito.UserPool(
             self,
             "SpaceportUserPoolV3",
-            user_pool_name="Spaceport-Users-v3",
+            user_pool_name=f"Spaceport-Users-v3-{suffix}",
             self_sign_up_enabled=False,
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             sign_in_aliases=cognito.SignInAliases(email=True),
@@ -188,18 +193,24 @@ class AuthStack(Stack):
         # -------------------------------------
         # Per-user Projects storage and REST API
         # -------------------------------------
-        # Import existing projects table to avoid conflicts
-        projects_table = dynamodb.Table.from_table_name(
+        # Create projects table with environment-specific naming
+        projects_table = dynamodb.Table(
             self,
             "Spaceport-ProjectsTable",
-            "Spaceport-Projects"
+            table_name=f"Spaceport-Projects-{suffix}",
+            partition_key=dynamodb.Attribute(
+                name="id",
+                type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=RemovalPolicy.RETAIN,
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
 
-        # Define Projects Lambda function from source (replaces import-by-name)
+        # Define Projects Lambda function with environment-specific naming
         projects_lambda = lambda_.Function(
             self,
             "Spaceport-ProjectsFunction",
-            function_name="Spaceport-ProjectsFunction",
+            function_name=f"Spaceport-ProjectsFunction-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -225,7 +236,7 @@ class AuthStack(Stack):
         projects_api = apigw.RestApi(
             self,
             "Spaceport-ProjectsApi",
-            rest_api_name="Spaceport-ProjectsApi",
+            rest_api_name=f"Spaceport-ProjectsApi-{suffix}",
             description="CRUD for user projects (requires Cognito JWT)",
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
@@ -281,11 +292,24 @@ class AuthStack(Stack):
         # Subscription Management (integrated into AuthStack)
         # -------------------------------------
         
+        # Create users table with environment-specific naming
+        users_table = dynamodb.Table(
+            self,
+            "Spaceport-UsersTable",
+            table_name=f"Spaceport-Users-{suffix}",
+            partition_key=dynamodb.Attribute(
+                name="id",
+                type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=RemovalPolicy.RETAIN,
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        )
+        
         # Create subscription manager Lambda function
         subscription_lambda = lambda_.Function(
             self,
             "SubscriptionManagerLambda",  # Unique construct ID
-            function_name="Spaceport-SubscriptionManager",
+            function_name=f"Spaceport-SubscriptionManager-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -294,7 +318,7 @@ class AuthStack(Stack):
             timeout=Duration.seconds(30),
             memory_size=512,
             environment={
-                "USERS_TABLE": "Spaceport-Users",  # Reference to existing users table
+                "USERS_TABLE": users_table.table_name,
                 "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
                 "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", ""),
                 "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
@@ -309,14 +333,6 @@ class AuthStack(Stack):
                 "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spaceport.ai"),
             },
             log_retention=logs.RetentionDays.ONE_MONTH,
-        )
-
-        # Grant DynamoDB permissions to subscription Lambda
-        # Import the existing users table to grant permissions
-        users_table = dynamodb.Table.from_table_name(
-            self,
-            "Spaceport-UsersTable",
-            "Spaceport-Users"
         )
         users_table.grant_read_write_data(subscription_lambda)
 

@@ -21,37 +21,68 @@ import json
 
 
 class MLPipelineStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
+        # Environment configuration
+        self.env_config = env_config
+        suffix = env_config['resourceSuffix']
+        region = env_config['region']
 
         # ========== S3 BUCKETS ==========
-        # Import existing S3 buckets to avoid conflicts
-        ml_bucket = s3.Bucket.from_bucket_name(
+        # Create ML bucket with environment-specific naming
+        ml_bucket = s3.Bucket(
             self, "SpaceportMLBucket",
-            "spaceport-ml-processing"
+            bucket_name=f"spaceport-ml-processing-{suffix}",
+            removal_policy=RemovalPolicy.RETAIN,
+            auto_delete_objects=False,
+            versioned=True,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
-        # Import existing upload bucket
+        # Reference upload bucket from SpaceportStack
         upload_bucket = s3.Bucket.from_bucket_name(
             self, "ImportedUploadBucket",
-            "spaceport-uploads"
+            f"spaceport-uploads-{suffix}"
         )
 
         # ========== ECR REPOSITORIES ==========
-        # Import existing ECR repositories to avoid conflicts
-        sfm_repo = ecr.Repository.from_repository_name(
+        # Create ECR repositories with environment-specific naming
+        sfm_repo = ecr.Repository(
             self, "SfMRepository",
-            "spaceport/sfm"
+            repository_name=f"spaceport/sfm-{suffix}",
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    tag_status=ecr.TagStatus.ANY
+                )
+            ]
         )
 
-        gaussian_repo = ecr.Repository.from_repository_name(
+        gaussian_repo = ecr.Repository(
             self, "GaussianRepository", 
-            "spaceport/3dgs"
+            repository_name=f"spaceport/3dgs-{suffix}",
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    tag_status=ecr.TagStatus.ANY
+                )
+            ]
         )
 
-        compressor_repo = ecr.Repository.from_repository_name(
+        compressor_repo = ecr.Repository(
             self, "CompressorRepository",
-            "spaceport/compressor"
+            repository_name=f"spaceport/compressor-{suffix}",
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    tag_status=ecr.TagStatus.ANY
+                )
+            ]
         )
 
         # ========== IAM ROLES ==========
@@ -193,18 +224,34 @@ class MLPipelineStack(Stack):
         )
 
         # ========== LAMBDA FUNCTIONS ==========
-        # Import existing Lambda functions to avoid conflicts
+        # Create Lambda functions with environment-specific naming
 
-        # Import existing Lambda for starting ML jobs
-        start_job_lambda = lambda_.Function.from_function_name(
+        # Create Lambda for starting ML jobs (will update environment after Step Function creation)
+        start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
-            "Spaceport-StartMLJob"
+            function_name=f"Spaceport-StartMLJob-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/start_ml_job"),
+            timeout=Duration.seconds(60),
+            memory_size=512,
+            environment={
+                "ML_BUCKET": ml_bucket.bucket_name,
+            }
         )
 
-        # Import existing Notification Lambda
-        notification_lambda = lambda_.Function.from_function_name(
+        # Create Notification Lambda
+        notification_lambda = lambda_.Function(
             self, "NotificationFunction",
-            "Spaceport-MLNotification"
+            function_name=f"Spaceport-MLNotification-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/ml_notification"),
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "ML_BUCKET": ml_bucket.bucket_name,
+            }
         )
 
         # ========== STEP FUNCTIONS DEFINITION ==========
@@ -555,7 +602,7 @@ class MLPipelineStack(Stack):
         # Create the Step Function
         ml_pipeline = sfn.StateMachine(
             self, "MLPipelineStateMachine",
-            state_machine_name="SpaceportMLPipeline",
+            state_machine_name=f"SpaceportMLPipeline-{suffix}",
             definition=definition,
             role=step_functions_role,
             logs=sfn.LogOptions(
@@ -566,21 +613,28 @@ class MLPipelineStack(Stack):
             timeout=Duration.hours(8)
         )
 
-        # Note: Cannot update environment variables of imported Lambda functions
-        # The STATE_MACHINE_ARN environment variable should be set manually in the Lambda console
-        # or through a separate deployment process
+        # Update start job lambda with Step Function ARN
+        start_job_lambda.add_environment("STEP_FUNCTION_ARN", ml_pipeline.state_machine_arn)
 
-        # Import existing Lambda function for stopping jobs
-        stop_job_lambda = lambda_.Function.from_function_name(
+        # Create Lambda function for stopping jobs
+        stop_job_lambda = lambda_.Function(
             self, "StopJobFunction",
-            "Spaceport-StopJobFunction"
+            function_name=f"Spaceport-StopJobFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="stop_job.lambda_handler",
+            code=lambda_.Code.from_asset("../lambda/stop_job"),
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "STEP_FUNCTION_ARN": ml_pipeline.state_machine_arn,
+            }
         )
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
         ml_api = apigw.RestApi(
             self, "SpaceportMLApi",
-            rest_api_name="Spaceport-ML-API",
+            rest_api_name=f"Spaceport-ML-API-{suffix}",
             description="API for ML processing pipeline",
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
