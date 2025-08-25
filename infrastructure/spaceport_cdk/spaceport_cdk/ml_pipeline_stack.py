@@ -667,7 +667,7 @@ class MLPipelineStack(Stack):
         # Alarm for Step Function failures
         step_function_failure_alarm = cloudwatch.Alarm(
             self, "StepFunctionFailureAlarm",
-            alarm_name="SpaceportMLPipeline-Failures",
+            alarm_name=f"SpaceportMLPipeline-Failures-{suffix}",
             alarm_description="Alarm when ML pipeline fails",
             metric=ml_pipeline.metric_failed(),
             threshold=1,
