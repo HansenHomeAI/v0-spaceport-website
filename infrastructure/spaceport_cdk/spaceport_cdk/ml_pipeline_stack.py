@@ -583,8 +583,10 @@ class MLPipelineStack(Stack):
         )
 
         # Update Lambda function environment variables with actual state machine ARN
+        # Note: Can only update environment for created functions, not imported ones
         start_job_lambda.add_environment("STATE_MACHINE_ARN_ACTUAL", ml_pipeline.state_machine_arn)
-        stop_job_lambda.add_environment("STATE_MACHINE_ARN_ACTUAL", ml_pipeline.state_machine_arn)
+        # stop_job_lambda is imported, so we can't modify its environment
+        # The STATE_MACHINE_ARN should be set manually in the Lambda console if needed
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
