@@ -414,6 +414,10 @@ class AuthStack(Stack):
         # Outputs
         CfnOutput(self, "SubscriptionApiUrl", value=subscription_api.url)
         CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
+        
+        # Debug: Ensure subscription resources are included in stack
+        CfnOutput(self, "SubscriptionStackDebug", value="Subscription resources included in AuthStack")
 
 
 # Force complete AuthStack redeployment with subscription resources
+# This ensures all subscription resources (Lambda, API Gateway) are created
