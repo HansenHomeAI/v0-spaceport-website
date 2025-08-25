@@ -33,7 +33,6 @@ class MLPipelineStack(Stack):
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
         self.ecr_client = boto3.client('ecr', region_name=region)
-        self.logs_client = boto3.client('logs', region_name=region)
 
         # ========== S3 BUCKETS ==========
         # Dynamic ML bucket - import if exists, create if not
@@ -71,9 +70,10 @@ class MLPipelineStack(Stack):
         )
 
         # ========== IAM ROLES ==========
-        # SageMaker execution role
+        # SageMaker execution role with environment-specific naming
         sagemaker_role = iam.Role(
             self, "SageMakerExecutionRole",
+            role_name=f"Spaceport-SageMaker-Role-{suffix}",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
@@ -83,9 +83,10 @@ class MLPipelineStack(Stack):
             ]
         )
 
-        # Step Functions execution role
+        # Step Functions execution role with environment-specific naming
         step_functions_role = iam.Role(
             self, "StepFunctionsExecutionRole",
+            role_name=f"Spaceport-StepFunctions-Role-{suffix}",
             assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
             inline_policies={
                 "SageMakerPolicy": iam.PolicyDocument(
@@ -126,9 +127,10 @@ class MLPipelineStack(Stack):
             }
         )
 
-        # Lambda execution role for API
+        # Lambda execution role for API with environment-specific naming
         lambda_role = iam.Role(
             self, "MLLambdaExecutionRole",
+            role_name=f"Spaceport-ML-Lambda-Role-{suffix}",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -156,9 +158,10 @@ class MLPipelineStack(Stack):
             }
         )
 
-        # Notification Lambda role
+        # Notification Lambda role with environment-specific naming
         notification_lambda_role = iam.Role(
             self, "NotificationLambdaRole",
+            role_name=f"Spaceport-Notification-Lambda-Role-{suffix}",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -179,29 +182,33 @@ class MLPipelineStack(Stack):
         )
 
         # ========== CLOUDWATCH LOG GROUPS ==========
-        # Dynamic log groups - import if exist, create if not
-        sfm_log_group = self._get_or_create_log_group(
-            construct_id="SfMLogGroup",
-            log_group_name="/aws/sagemaker/processing-jobs/sfm",
-            retention=logs.RetentionDays.ONE_WEEK
+        # Log groups for each component with environment-specific naming
+        sfm_log_group = logs.LogGroup(
+            self, "SfMLogGroup",
+            log_group_name=f"/aws/sagemaker/processing-jobs/sfm-{suffix}",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
         )
 
-        gaussian_log_group = self._get_or_create_log_group(
-            construct_id="GaussianLogGroup",
-            log_group_name="/aws/sagemaker/training-jobs/3dgs", 
-            retention=logs.RetentionDays.ONE_WEEK
+        gaussian_log_group = logs.LogGroup(
+            self, "GaussianLogGroup", 
+            log_group_name=f"/aws/sagemaker/training-jobs/3dgs-{suffix}",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
         )
 
-        compressor_log_group = self._get_or_create_log_group(
-            construct_id="CompressorLogGroup",
-            log_group_name="/aws/sagemaker/processing-jobs/compressor",
-            retention=logs.RetentionDays.ONE_WEEK
+        compressor_log_group = logs.LogGroup(
+            self, "CompressorLogGroup",
+            log_group_name=f"/aws/sagemaker/processing-jobs/compressor-{suffix}", 
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
         )
 
-        step_functions_log_group = self._get_or_create_log_group(
-            construct_id="StepFunctionsLogGroup",
-            log_group_name="/aws/stepfunctions/ml-pipeline",
-            retention=logs.RetentionDays.ONE_WEEK
+        step_functions_log_group = logs.LogGroup(
+            self, "StepFunctionsLogGroup",
+            log_group_name=f"/aws/stepfunctions/ml-pipeline-{suffix}",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY
         )
 
         # ========== LAMBDA FUNCTIONS ==========
@@ -757,28 +764,4 @@ class MLPipelineStack(Stack):
                     tag_status=ecr.TagStatus.ANY
                 )
             ]
-        )
-
-    def _log_group_exists(self, log_group_name: str) -> bool:
-        """Check if a CloudWatch log group exists"""
-        try:
-            self.logs_client.describe_log_groups(logGroupNamePrefix=log_group_name)
-            return True
-        except Exception:
-            return False
-
-    def _get_or_create_log_group(self, construct_id: str, log_group_name: str, retention: logs.RetentionDays) -> logs.ILogGroup:
-        """Get existing CloudWatch log group or create new one"""
-        # Check if log group exists
-        if self._log_group_exists(log_group_name):
-            print(f"Importing existing CloudWatch log group: {log_group_name}")
-            return logs.LogGroup.from_log_group_name(self, construct_id, log_group_name)
-        
-        # Create new log group
-        print(f"Creating new CloudWatch log group: {log_group_name}")
-        return logs.LogGroup(
-            self, construct_id,
-            log_group_name=log_group_name,
-            retention=retention,
-            removal_policy=RemovalPolicy.DESTROY
         ) 

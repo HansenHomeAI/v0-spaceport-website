@@ -84,10 +84,11 @@ class SpaceportStack(Stack):
             partition_key_type=dynamodb.AttributeType.STRING
         )
         
-        # Create Lambda execution role with permissions
+        # Create Lambda execution role with permissions and environment-specific naming
         self.lambda_role = iam.Role(
             self, 
             "SpaceportLambdaRole",
+            role_name=f"Spaceport-Lambda-Role-{suffix}",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
