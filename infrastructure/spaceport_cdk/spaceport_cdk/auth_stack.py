@@ -416,3 +416,4 @@ class AuthStack(Stack):
         CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
 
 
+# Force complete AuthStack redeployment with subscription resources
