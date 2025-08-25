@@ -193,49 +193,24 @@ class MLPipelineStack(Stack):
         )
 
         # ========== LAMBDA FUNCTIONS ==========
-        # HYBRID STRATEGY: Import existing, create missing
+        # FULL IMPORT STRATEGY: All resources now exist in AWS
         
-        # Import existing StopJobFunction (it exists in AWS)
+        # Import existing StopJobFunction
         stop_job_lambda = lambda_.Function.from_function_name(
             self, "StopJobFunction",
             "Spaceport-StopJobFunction"
         )
         
-        # Create StartMLJob (it's missing)
-        start_job_lambda = lambda_.Function(
+        # Import existing StartMLJob
+        start_job_lambda = lambda_.Function.from_function_name(
             self, "StartMLJobFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/start_ml_job"),
-            function_name="Spaceport-StartMLJob",
-            role=iam.Role.from_role_arn(
-                self, "StartJobLambdaRole",
-                f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
-            ),
-            environment={
-                "STATE_MACHINE_ARN": "PLACEHOLDER_WILL_BE_UPDATED",  # Will be updated after state machine creation
-                "ML_BUCKET": ml_bucket.bucket_name
-            },
-            timeout=Duration.seconds(300),
-            memory_size=512
+            "Spaceport-StartMLJob"
         )
         
-        # Create MLNotification (it's missing)
-        notification_lambda = lambda_.Function(
-            self, "NotificationFunction", 
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/ml_notification"),
-            function_name="Spaceport-MLNotification",
-            role=iam.Role.from_role_arn(
-                self, "NotificationLambdaRoleUnique",
-                f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
-            ),
-            environment={
-                "SES_REGION": self.region
-            },
-            timeout=Duration.seconds(300),
-            memory_size=512
+        # Import existing MLNotification
+        notification_lambda = lambda_.Function.from_function_name(
+            self, "NotificationFunction",
+            "Spaceport-MLNotification"
         )
         
         # ========== STEP FUNCTIONS WORKFLOW DEFINITION ==========
@@ -582,11 +557,9 @@ class MLPipelineStack(Stack):
             timeout=Duration.hours(8)
         )
 
-        # Update Lambda function environment variables with actual state machine ARN
-        # Note: Can only update environment for created functions, not imported ones
-        start_job_lambda.add_environment("STATE_MACHINE_ARN_ACTUAL", ml_pipeline.state_machine_arn)
-        # stop_job_lambda is imported, so we can't modify its environment
-        # The STATE_MACHINE_ARN should be set manually in the Lambda console if needed
+        # Note: All Lambda functions are now imported, so environment variables cannot be updated
+        # The STATE_MACHINE_ARN and other environment variables should be set manually in the Lambda console
+        # or through a separate deployment process if needed
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
