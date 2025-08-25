@@ -86,8 +86,30 @@ jobs:
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Verifying CDK bootstrap for account $ACCOUNT"
-        aws ssm get-parameter --name "/cdk-bootstrap/$ACCOUNT/version" --region us-west-2
-        echo "CDK bootstrap verified successfully"
+        
+        # Add retry logic with exponential backoff for SSM parameter propagation
+        MAX_ATTEMPTS=5
+        ATTEMPT=1
+        DELAY=2
+        
+        while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+          echo "Attempt $ATTEMPT of $MAX_ATTEMPTS to verify bootstrap..."
+          
+          if aws ssm get-parameter --name "/cdk-bootstrap/$ACCOUNT/version" --region us-west-2 >/dev/null 2>&1; then
+            echo "CDK bootstrap verified successfully on attempt $ATTEMPT"
+            break
+          fi
+          
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "Failed to verify bootstrap after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
+          
+          echo "Bootstrap not ready yet, waiting $DELAY seconds..."
+          sleep $DELAY
+          ATTEMPT=$((ATTEMPT + 1))
+          DELAY=$((DELAY * 2))
+        done
 
     # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
