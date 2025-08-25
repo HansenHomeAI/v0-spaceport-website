@@ -284,7 +284,7 @@ class AuthStack(Stack):
         # Create subscription manager Lambda function
         subscription_lambda = lambda_.Function(
             self,
-            "Spaceport-SubscriptionManager",
+            "SubscriptionManagerLambda",  # Unique construct ID
             function_name="Spaceport-SubscriptionManager",
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
@@ -345,7 +345,7 @@ class AuthStack(Stack):
         # Create subscription API Gateway
         subscription_api = apigw.RestApi(
             self,
-            "Spaceport-SubscriptionApi",
+            "SubscriptionApiGateway",  # Unique construct ID
             rest_api_name="Spaceport-SubscriptionApi",
             description="Subscription management API for Spaceport",
             default_cors_preflight_options=apigw.CorsOptions(
@@ -417,6 +417,10 @@ class AuthStack(Stack):
         
         # Debug: Ensure subscription resources are included in stack
         CfnOutput(self, "SubscriptionStackDebug", value="Subscription resources included in AuthStack")
+        
+        # Force resource inclusion by referencing them
+        self.subscription_lambda = subscription_lambda
+        self.subscription_api = subscription_api
 
 
 # Force complete AuthStack redeployment with subscription resources
