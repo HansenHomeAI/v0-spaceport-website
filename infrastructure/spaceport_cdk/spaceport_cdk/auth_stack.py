@@ -13,6 +13,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 import os
+import boto3
 
 
 class AuthStack(Stack):
@@ -23,6 +24,9 @@ class AuthStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        
+        # Initialize AWS clients for resource checking
+        self.dynamodb_client = boto3.client('dynamodb', region_name=region)
 
         # Environment-specific Cognito resources
         user_pool_v2 = cognito.UserPool(
@@ -193,17 +197,13 @@ class AuthStack(Stack):
         # -------------------------------------
         # Per-user Projects storage and REST API
         # -------------------------------------
-        # Create projects table with environment-specific naming
-        projects_table = dynamodb.Table(
-            self,
-            "Spaceport-ProjectsTable",
-            table_name=f"Spaceport-Projects-{suffix}",
-            partition_key=dynamodb.Attribute(
-                name="id",
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.RETAIN,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        # Dynamic projects table - import if exists, create if not
+        projects_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-ProjectsTable",
+            preferred_name=f"Spaceport-Projects-{suffix}",
+            fallback_name="Spaceport-Projects",
+            partition_key_name="id",
+            partition_key_type=dynamodb.AttributeType.STRING
         )
 
         # Define Projects Lambda function with environment-specific naming
@@ -292,17 +292,13 @@ class AuthStack(Stack):
         # Subscription Management (integrated into AuthStack)
         # -------------------------------------
         
-        # Create users table with environment-specific naming
-        users_table = dynamodb.Table(
-            self,
-            "Spaceport-UsersTable",
-            table_name=f"Spaceport-Users-{suffix}",
-            partition_key=dynamodb.Attribute(
-                name="id",
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.RETAIN,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        # Dynamic users table - import if exists, create if not  
+        users_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-UsersTable",
+            preferred_name=f"Spaceport-Users-{suffix}",
+            fallback_name="Spaceport-Users",
+            partition_key_name="id",
+            partition_key_type=dynamodb.AttributeType.STRING
         )
         
         # Create subscription manager Lambda function
@@ -437,6 +433,40 @@ class AuthStack(Stack):
         # Force resource inclusion by referencing them
         self.subscription_lambda = subscription_lambda
         self.subscription_api = subscription_api
+
+    def _dynamodb_table_exists(self, table_name: str) -> bool:
+        """Check if a DynamoDB table exists"""
+        try:
+            self.dynamodb_client.describe_table(TableName=table_name)
+            return True
+        except Exception:
+            return False
+
+    def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
+                                     partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:
+        """Get existing DynamoDB table or create new one"""
+        # First try preferred name (with environment suffix)
+        if self._dynamodb_table_exists(preferred_name):
+            print(f"Importing existing DynamoDB table: {preferred_name}")
+            return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
+        
+        # Then try fallback name (without suffix)
+        if self._dynamodb_table_exists(fallback_name):
+            print(f"Importing existing DynamoDB table: {fallback_name}")
+            return dynamodb.Table.from_table_name(self, construct_id, fallback_name)
+        
+        # Create new table with preferred name
+        print(f"Creating new DynamoDB table: {preferred_name}")
+        return dynamodb.Table(
+            self, construct_id,
+            table_name=preferred_name,
+            partition_key=dynamodb.Attribute(
+                name=partition_key_name,
+                type=partition_key_type
+            ),
+            removal_policy=RemovalPolicy.RETAIN,
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        )
 
 
 # Force complete AuthStack redeployment with subscription resources

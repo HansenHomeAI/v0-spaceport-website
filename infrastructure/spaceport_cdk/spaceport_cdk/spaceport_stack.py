@@ -27,6 +27,7 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import aws_cdk as cdk
+import boto3
 
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
@@ -37,6 +38,10 @@ class SpaceportStack(Stack):
         suffix = env_config['resourceSuffix']
         region = env_config['region']
         # Account will be dynamically resolved from deployment context
+        
+        # Initialize AWS clients for resource checking
+        self.s3_client = boto3.client('s3', region_name=region)
+        self.dynamodb_client = boto3.client('dynamodb', region_name=region)
 
         # Create a CloudFormation parameter for the API key
         api_key_param = CfnParameter(
@@ -46,54 +51,37 @@ class SpaceportStack(Stack):
             no_echo=True  # This will mask the value in CloudFormation
         )
 
-        # Create S3 bucket with environment-specific naming
-        self.upload_bucket = s3.Bucket(
-            self,
-            "SpaceportUploadBucket",
-            bucket_name=f"spaceport-uploads-{suffix}",
-            removal_policy=RemovalPolicy.RETAIN,
-            auto_delete_objects=False,
-            versioned=True,
-            encryption=s3.BucketEncryption.S3_MANAGED,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+        # Dynamic S3 bucket - import if exists, create if not
+        self.upload_bucket = self._get_or_create_s3_bucket(
+            construct_id="SpaceportUploadBucket",
+            preferred_name=f"spaceport-uploads-{suffix}",
+            fallback_name="spaceport-uploads"
         )
         
-        # Create DynamoDB tables with environment-specific naming
-        self.file_metadata_table = dynamodb.Table(
-            self,
-            "FileMetadataTable",
-            table_name=f"Spaceport-FileMetadata-{suffix}",
-            partition_key=dynamodb.Attribute(
-                name="id",
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.RETAIN,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        # Dynamic DynamoDB tables - import if exist, create if not
+        self.file_metadata_table = self._get_or_create_dynamodb_table(
+            construct_id="FileMetadataTable",
+            preferred_name=f"Spaceport-FileMetadata-{suffix}",
+            fallback_name="Spaceport-FileMetadata",
+            partition_key_name="id",
+            partition_key_type=dynamodb.AttributeType.STRING
         )
 
-        self.drone_path_table = dynamodb.Table(
-            self,
-            "DroneFlightPathsTable",
-            table_name=f"Spaceport-DroneFlightPaths-{suffix}",
-            partition_key=dynamodb.Attribute(
-                name="id",
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.RETAIN,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        self.drone_path_table = self._get_or_create_dynamodb_table(
+            construct_id="DroneFlightPathsTable",
+            preferred_name=f"Spaceport-DroneFlightPaths-{suffix}",
+            fallback_name="Spaceport-DroneFlightPaths",
+            partition_key_name="id",
+            partition_key_type=dynamodb.AttributeType.STRING
         )
         
-        # Create waitlist table with environment-specific naming
-        self.waitlist_table = dynamodb.Table(
-            self,
-            "WaitlistTable",
-            table_name=f"Spaceport-Waitlist-{suffix}",
-            partition_key=dynamodb.Attribute(
-                name="email",
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.RETAIN,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        # Dynamic waitlist table
+        self.waitlist_table = self._get_or_create_dynamodb_table(
+            construct_id="WaitlistTable",
+            preferred_name=f"Spaceport-Waitlist-{suffix}",
+            fallback_name="Spaceport-Waitlist",
+            partition_key_name="email",
+            partition_key_type=dynamodb.AttributeType.STRING
         )
         
         # Create Lambda execution role with permissions
@@ -323,3 +311,69 @@ class SpaceportStack(Stack):
         # Save submission
         save_resource = self.file_upload_api.root.add_resource("save-submission")
         save_resource.add_method("POST", apigw.LambdaIntegration(self.file_upload_lambda))
+
+    def _bucket_exists(self, bucket_name: str) -> bool:
+        """Check if an S3 bucket exists"""
+        try:
+            self.s3_client.head_bucket(Bucket=bucket_name)
+            return True
+        except Exception:
+            return False
+
+    def _dynamodb_table_exists(self, table_name: str) -> bool:
+        """Check if a DynamoDB table exists"""
+        try:
+            self.dynamodb_client.describe_table(TableName=table_name)
+            return True
+        except Exception:
+            return False
+
+    def _get_or_create_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
+        """Get existing S3 bucket or create new one"""
+        # First try preferred name (with environment suffix)
+        if self._bucket_exists(preferred_name):
+            print(f"Importing existing S3 bucket: {preferred_name}")
+            return s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+        
+        # Then try fallback name (without suffix)
+        if self._bucket_exists(fallback_name):
+            print(f"Importing existing S3 bucket: {fallback_name}")
+            return s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+        
+        # Create new bucket with preferred name
+        print(f"Creating new S3 bucket: {preferred_name}")
+        return s3.Bucket(
+            self, construct_id,
+            bucket_name=preferred_name,
+            removal_policy=RemovalPolicy.RETAIN,
+            auto_delete_objects=False,
+            versioned=True,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+        )
+
+    def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
+                                     partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:
+        """Get existing DynamoDB table or create new one"""
+        # First try preferred name (with environment suffix)
+        if self._dynamodb_table_exists(preferred_name):
+            print(f"Importing existing DynamoDB table: {preferred_name}")
+            return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
+        
+        # Then try fallback name (without suffix)
+        if self._dynamodb_table_exists(fallback_name):
+            print(f"Importing existing DynamoDB table: {fallback_name}")
+            return dynamodb.Table.from_table_name(self, construct_id, fallback_name)
+        
+        # Create new table with preferred name
+        print(f"Creating new DynamoDB table: {preferred_name}")
+        return dynamodb.Table(
+            self, construct_id,
+            table_name=preferred_name,
+            partition_key=dynamodb.Attribute(
+                name=partition_key_name,
+                type=partition_key_type
+            ),
+            removal_policy=RemovalPolicy.RETAIN,
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        )

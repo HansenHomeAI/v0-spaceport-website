@@ -18,6 +18,7 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import json
+import boto3
 
 
 class MLPipelineStack(Stack):
@@ -28,61 +29,44 @@ class MLPipelineStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        
+        # Initialize AWS clients for resource checking
+        self.s3_client = boto3.client('s3', region_name=region)
+        self.ecr_client = boto3.client('ecr', region_name=region)
 
         # ========== S3 BUCKETS ==========
-        # Create ML bucket with environment-specific naming
-        ml_bucket = s3.Bucket(
-            self, "SpaceportMLBucket",
-            bucket_name=f"spaceport-ml-processing-{suffix}",
-            removal_policy=RemovalPolicy.RETAIN,
-            auto_delete_objects=False,
-            versioned=True,
-            encryption=s3.BucketEncryption.S3_MANAGED,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+        # Dynamic ML bucket - import if exists, create if not
+        ml_bucket = self._get_or_create_s3_bucket(
+            construct_id="SpaceportMLBucket",
+            preferred_name=f"spaceport-ml-processing-{suffix}",
+            fallback_name="spaceport-ml-processing"
         )
 
-        # Reference upload bucket from SpaceportStack
-        upload_bucket = s3.Bucket.from_bucket_name(
-            self, "ImportedUploadBucket",
-            f"spaceport-uploads-{suffix}"
+        # Dynamic upload bucket reference - fallback to existing bucket without suffix
+        upload_bucket = self._get_or_create_s3_bucket(
+            construct_id="ImportedUploadBucket",
+            preferred_name=f"spaceport-uploads-{suffix}",
+            fallback_name="spaceport-uploads"
         )
 
         # ========== ECR REPOSITORIES ==========
-        # Create ECR repositories with environment-specific naming
-        sfm_repo = ecr.Repository(
-            self, "SfMRepository",
-            repository_name=f"spaceport/sfm-{suffix}",
-            removal_policy=RemovalPolicy.RETAIN,
-            lifecycle_rules=[
-                ecr.LifecycleRule(
-                    max_image_count=10,
-                    tag_status=ecr.TagStatus.ANY
-                )
-            ]
+        # Dynamic ECR repositories - import if exist, create if not
+        sfm_repo = self._get_or_create_ecr_repo(
+            construct_id="SfMRepository",
+            preferred_name=f"spaceport/sfm-{suffix}",
+            fallback_name="spaceport/sfm"
         )
 
-        gaussian_repo = ecr.Repository(
-            self, "GaussianRepository", 
-            repository_name=f"spaceport/3dgs-{suffix}",
-            removal_policy=RemovalPolicy.RETAIN,
-            lifecycle_rules=[
-                ecr.LifecycleRule(
-                    max_image_count=10,
-                    tag_status=ecr.TagStatus.ANY
-                )
-            ]
+        gaussian_repo = self._get_or_create_ecr_repo(
+            construct_id="GaussianRepository",
+            preferred_name=f"spaceport/3dgs-{suffix}",
+            fallback_name="spaceport/3dgs"
         )
 
-        compressor_repo = ecr.Repository(
-            self, "CompressorRepository",
-            repository_name=f"spaceport/compressor-{suffix}",
-            removal_policy=RemovalPolicy.RETAIN,
-            lifecycle_rules=[
-                ecr.LifecycleRule(
-                    max_image_count=10,
-                    tag_status=ecr.TagStatus.ANY
-                )
-            ]
+        compressor_repo = self._get_or_create_ecr_repo(
+            construct_id="CompressorRepository",
+            preferred_name=f"spaceport/compressor-{suffix}",
+            fallback_name="spaceport/compressor"
         )
 
         # ========== IAM ROLES ==========
@@ -197,28 +181,28 @@ class MLPipelineStack(Stack):
         # Log groups for each component
         sfm_log_group = logs.LogGroup(
             self, "SfMLogGroup",
-            log_group_name=f"/aws/sagemaker/processing-jobs/sfm-{suffix}",
+            log_group_name="/aws/sagemaker/processing-jobs/sfm",
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
 
         gaussian_log_group = logs.LogGroup(
             self, "GaussianLogGroup", 
-            log_group_name=f"/aws/sagemaker/training-jobs/3dgs-{suffix}",
+            log_group_name="/aws/sagemaker/training-jobs/3dgs",
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
 
         compressor_log_group = logs.LogGroup(
             self, "CompressorLogGroup",
-            log_group_name=f"/aws/sagemaker/processing-jobs/compressor-{suffix}", 
+            log_group_name="/aws/sagemaker/processing-jobs/compressor", 
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
 
         step_functions_log_group = logs.LogGroup(
             self, "StepFunctionsLogGroup",
-            log_group_name=f"/aws/stepfunctions/ml-pipeline-{suffix}",
+            log_group_name="/aws/stepfunctions/ml-pipeline",
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
@@ -667,7 +651,7 @@ class MLPipelineStack(Stack):
         # Alarm for Step Function failures
         step_function_failure_alarm = cloudwatch.Alarm(
             self, "StepFunctionFailureAlarm",
-            alarm_name=f"SpaceportMLPipeline-Failures-{suffix}",
+            alarm_name="SpaceportMLPipeline-Failures",
             alarm_description="Alarm when ML pipeline fails",
             metric=ml_pipeline.metric_failed(),
             threshold=1,
@@ -710,4 +694,70 @@ class MLPipelineStack(Stack):
             self, "CompressorRepositoryUri",
             value=compressor_repo.repository_uri,
             description="Compressor ECR Repository URI"
+        )
+
+    def _bucket_exists(self, bucket_name: str) -> bool:
+        """Check if an S3 bucket exists"""
+        try:
+            self.s3_client.head_bucket(Bucket=bucket_name)
+            return True
+        except Exception:
+            return False
+
+    def _ecr_repo_exists(self, repo_name: str) -> bool:
+        """Check if an ECR repository exists"""
+        try:
+            self.ecr_client.describe_repositories(repositoryNames=[repo_name])
+            return True
+        except Exception:
+            return False
+
+    def _get_or_create_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
+        """Get existing S3 bucket or create new one"""
+        # First try preferred name (with environment suffix)
+        if self._bucket_exists(preferred_name):
+            print(f"Importing existing S3 bucket: {preferred_name}")
+            return s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+        
+        # Then try fallback name (without suffix)
+        if self._bucket_exists(fallback_name):
+            print(f"Importing existing S3 bucket: {fallback_name}")
+            return s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+        
+        # Create new bucket with preferred name
+        print(f"Creating new S3 bucket: {preferred_name}")
+        return s3.Bucket(
+            self, construct_id,
+            bucket_name=preferred_name,
+            removal_policy=RemovalPolicy.RETAIN,
+            auto_delete_objects=False,
+            versioned=True,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+        )
+
+    def _get_or_create_ecr_repo(self, construct_id: str, preferred_name: str, fallback_name: str) -> ecr.IRepository:
+        """Get existing ECR repository or create new one"""
+        # First try preferred name (with environment suffix)
+        if self._ecr_repo_exists(preferred_name):
+            print(f"Importing existing ECR repository: {preferred_name}")
+            return ecr.Repository.from_repository_name(self, construct_id, preferred_name)
+        
+        # Then try fallback name (without suffix)
+        if self._ecr_repo_exists(fallback_name):
+            print(f"Importing existing ECR repository: {fallback_name}")
+            return ecr.Repository.from_repository_name(self, construct_id, fallback_name)
+        
+        # Create new repository with preferred name
+        print(f"Creating new ECR repository: {preferred_name}")
+        return ecr.Repository(
+            self, construct_id,
+            repository_name=preferred_name,
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                ecr.LifecycleRule(
+                    max_image_count=10,
+                    tag_status=ecr.TagStatus.ANY
+                )
+            ]
         ) 
