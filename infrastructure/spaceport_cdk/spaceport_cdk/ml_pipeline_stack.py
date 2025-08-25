@@ -193,9 +193,15 @@ class MLPipelineStack(Stack):
         )
 
         # ========== LAMBDA FUNCTIONS ==========
-        # TEMPORARILY CREATE Lambda functions so they become "managed" resources
-        # After this deployment, we'll switch back to import strategy
+        # HYBRID STRATEGY: Import existing, create missing
         
+        # Import existing StopJobFunction (it exists in AWS)
+        stop_job_lambda = lambda_.Function.from_function_name(
+            self, "StopJobFunction",
+            "Spaceport-StopJobFunction"
+        )
+        
+        # Create StartMLJob (it's missing)
         start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
             runtime=lambda_.Runtime.PYTHON_3_9,
@@ -214,6 +220,7 @@ class MLPipelineStack(Stack):
             memory_size=512
         )
         
+        # Create MLNotification (it's missing)
         notification_lambda = lambda_.Function(
             self, "NotificationFunction", 
             runtime=lambda_.Runtime.PYTHON_3_9,
@@ -221,7 +228,7 @@ class MLPipelineStack(Stack):
             code=lambda_.Code.from_asset("lambda/ml_notification"),
             function_name="Spaceport-MLNotification",
             role=iam.Role.from_role_arn(
-                self, "NotificationLambdaRoleUnique",
+                self, "NotificationLambdaRole",
                 f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
             ),
             environment={
@@ -231,23 +238,6 @@ class MLPipelineStack(Stack):
             memory_size=512
         )
         
-        stop_job_lambda = lambda_.Function(
-            self, "StopJobFunction",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            handler="stop_job.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/stop_job"),
-            function_name="Spaceport-StopJobFunction",
-            role=iam.Role.from_role_arn(
-                self, "StopJobLambdaRoleUnique",
-                f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
-            ),
-            environment={
-                "STATE_MACHINE_ARN": "PLACEHOLDER_WILL_BE_UPDATED"  # Will be updated after state machine creation
-            },
-            timeout=Duration.seconds(300),
-            memory_size=512
-        )
-
         # ========== STEP FUNCTIONS WORKFLOW DEFINITION ==========
         # Now that Lambda functions are defined, we can create the workflow that uses them
         
