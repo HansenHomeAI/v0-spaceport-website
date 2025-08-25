@@ -86,30 +86,39 @@ jobs:
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Verifying CDK bootstrap for account $ACCOUNT"
-        
-        # Add retry logic with exponential backoff for SSM parameter propagation
-        MAX_ATTEMPTS=5
-        ATTEMPT=1
-        DELAY=2
-        
-        while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-          echo "Attempt $ATTEMPT of $MAX_ATTEMPTS to verify bootstrap..."
-          
-          if aws ssm get-parameter --name "/cdk-bootstrap/$ACCOUNT/version" --region us-west-2 >/dev/null 2>&1; then
-            echo "CDK bootstrap verified successfully on attempt $ATTEMPT"
+
+        # Prefer SSM parameter check for default qualifier, else fall back to CFN stack state
+        # Default CDK v2 qualifier is 'hnb659fds'
+        PARAM_NAME="/cdk-bootstrap/hnb659fds/version"
+
+        # Exponential backoff attempts
+        for ATTEMPT in 1 2 3 4 5; do
+          echo "Attempt $ATTEMPT of 5 to verify bootstrap..."
+          if aws ssm get-parameter --name "$PARAM_NAME" --region us-west-2 >/dev/null 2>&1; then
+            echo "Found SSM bootstrap parameter: $PARAM_NAME"
+            FOUND=1
             break
           fi
-          
-          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-            echo "Failed to verify bootstrap after $MAX_ATTEMPTS attempts"
-            exit 1
+
+          # Fall back to checking CloudFormation stack status
+          STATUS=$(aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 --query "Stacks[0].StackStatus" --output text 2>/dev/null || echo "NOT_FOUND")
+          if [ "$STATUS" = "CREATE_COMPLETE" ] || [ "$STATUS" = "UPDATE_COMPLETE" ]; then
+            echo "CDKToolkit stack status is $STATUS"
+            FOUND=1
+            break
           fi
-          
-          echo "Bootstrap not ready yet, waiting $DELAY seconds..."
-          sleep $DELAY
-          ATTEMPT=$((ATTEMPT + 1))
-          DELAY=$((DELAY * 2))
+
+          SLEEP=$((2 ** (ATTEMPT - 1)))
+          echo "Bootstrap not ready yet (status=$STATUS). Waiting ${SLEEP}s..."
+          sleep $SLEEP
         done
+
+        if [ "${FOUND:-0}" != "1" ]; then
+          echo "Failed to verify bootstrap after retries"
+          echo "Hint: Ensure 'cdk bootstrap' ran successfully and the default qualifier 'hnb659fds' is used."
+          exit 1
+        fi
+        echo "CDK bootstrap verified successfully"
 
     # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
