@@ -193,22 +193,63 @@ class MLPipelineStack(Stack):
         )
 
         # ========== LAMBDA FUNCTIONS ==========
-        # Import existing Lambda functions to avoid conflicts
-
-        # Import existing Lambda for starting ML jobs
-        start_job_lambda = lambda_.Function.from_function_name(
+        # TEMPORARILY CREATE Lambda functions so they become "managed" resources
+        # After this deployment, we'll switch back to import strategy
+        
+        start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
-            "Spaceport-StartMLJob"
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/start_ml_job"),
+            function_name="Spaceport-StartMLJob",
+            role=iam.Role.from_role_arn(
+                self, "StartJobLambdaRole",
+                f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
+            ),
+            environment={
+                "STATE_MACHINE_ARN": "PLACEHOLDER_WILL_BE_UPDATED",  # Will be updated after state machine creation
+                "ML_BUCKET": ml_bucket.bucket_name
+            },
+            timeout=Duration.seconds(300),
+            memory_size=512
+        )
+        
+        notification_lambda = lambda_.Function(
+            self, "NotificationFunction", 
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/ml_notification"),
+            function_name="Spaceport-MLNotification",
+            role=iam.Role.from_role_arn(
+                self, "NotificationLambdaRole",
+                f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
+            ),
+            environment={
+                "SES_REGION": self.region
+            },
+            timeout=Duration.seconds(300),
+            memory_size=512
+        )
+        
+        stop_job_lambda = lambda_.Function(
+            self, "StopJobFunction",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="stop_job.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/stop_job"),
+            function_name="Spaceport-StopJobFunction",
+            role=iam.Role.from_role_arn(
+                self, "StopJobLambdaRole",
+                f"arn:aws:iam::{self.account}:role/Spaceport-ML-Lambda-Role"
+            ),
+            environment={
+                "STATE_MACHINE_ARN": "PLACEHOLDER_WILL_BE_UPDATED"  # Will be updated after state machine creation
+            },
+            timeout=Duration.seconds(300),
+            memory_size=512
         )
 
-        # Import existing Notification Lambda
-        notification_lambda = lambda_.Function.from_function_name(
-            self, "NotificationFunction",
-            "Spaceport-MLNotification"
-        )
-
-        # ========== STEP FUNCTIONS DEFINITION ==========
-        # Define the Step Functions workflow
+        # ========== STEP FUNCTIONS WORKFLOW DEFINITION ==========
+        # Now that Lambda functions are defined, we can create the workflow that uses them
         
         # SfM Processing Job - Using CallAwsService since SageMakerCreateProcessingJob doesn't exist in CDK v2
         sfm_job = sfn_tasks.CallAwsService(
@@ -271,7 +312,7 @@ class MLPipelineStack(Stack):
             time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
         )
 
-        # NerfStudio 3DGS Training Job - Vincent Woo's Sutro Tower Methodology
+        # 3DGS Training Job
         gaussian_job = sfn_tasks.CallAwsService(
             self, "GaussianTrainingJob",
             service="sagemaker",
@@ -282,6 +323,7 @@ class MLPipelineStack(Stack):
                     "TrainingImage": sfn.JsonPath.string_at("$.gaussianImageUri"),
                     "TrainingInputMode": "File"
                 },
+                "RoleArn": sagemaker_role.role_arn,
                 "InputDataConfig": [{
                     "ChannelName": "training",
                     "DataSource": {
@@ -290,41 +332,33 @@ class MLPipelineStack(Stack):
                             "S3Uri": sfn.JsonPath.string_at("$.colmapOutputS3Uri"),
                             "S3DataDistributionType": "FullyReplicated"
                         }
-                    }
+                    },
+                    "ContentType": "application/octet-stream"
                 }],
                 "OutputDataConfig": {
                     "S3OutputPath": sfn.JsonPath.string_at("$.gaussianOutputS3Uri")
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g5.xlarge",  # A10G GPU - supports gsplat labeled_partition
+                    "InstanceType": "ml.g5.xlarge",  # A10G GPU - optimized for 3DGS
                     "VolumeSizeInGB": 100
                 },
-                "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 7200  # 2 hours for real training
+                "HyperParameters": {
+                    "MAX_ITERATIONS": sfn.JsonPath.string_at("$.MAX_ITERATIONS"),
+                    "TARGET_PSNR": sfn.JsonPath.string_at("$.TARGET_PSNR"),
+                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),
+                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),
+                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),
+                    "LOG_INTERVAL": sfn.JsonPath.string_at("$.LOG_INTERVAL"),
+                    "FRAMEWORK": sfn.JsonPath.string_at("$.FRAMEWORK"),
+                    "METHODOLOGY": sfn.JsonPath.string_at("$.METHODOLOGY"),
+                    "OUTPUT_FORMAT": sfn.JsonPath.string_at("$.OUTPUT_FORMAT"),
+                    "SOGS_COMPATIBLE": sfn.JsonPath.string_at("$.SOGS_COMPATIBLE"),
+                    "MAX_NUM_GAUSSIANS": sfn.JsonPath.string_at("$.MAX_NUM_GAUSSIANS"),
+                    "MEMORY_OPTIMIZATION": sfn.JsonPath.string_at("$.MEMORY_OPTIMIZATION")
                 },
-                "RoleArn": sagemaker_role.role_arn,
-                "Environment": {
-                    # Vincent Woo's NerfStudio Methodology - Core Parameters
-                    # Note: All values must be strings for SageMaker environment variables
-                    "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MAX_ITERATIONS")),
-                    "TARGET_PSNR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.TARGET_PSNR")),
-                    "LOG_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.LOG_INTERVAL")),
-                    
-                    # Vincent Woo's Key Features
-                    "MODEL_VARIANT": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MODEL_VARIANT")),  # splatfacto vs splatfacto-big
-                    "SH_DEGREE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.SH_DEGREE")),          # Industry standard: 3
-                    "BILATERAL_PROCESSING": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.BILATERAL_PROCESSING")),  # Vincent's innovation
-                    
-                    # NerfStudio Framework Configuration
-                    "FRAMEWORK": "nerfstudio",
-                    "METHODOLOGY": "vincent_woo_sutro_tower",
-                    "LICENSE": "apache_2_0",
-                    
-                    # Quality and Performance Settings
-                    "OUTPUT_FORMAT": "ply",
-                    "SOGS_COMPATIBLE": "true",
-                    "COMMERCIAL_LICENSE": "true"
+                "StoppingCondition": {
+                    "MaxRuntimeInSeconds": 7200  # 2 hours max
                 }
             },
             iam_resources=[
@@ -333,7 +367,7 @@ class MLPipelineStack(Stack):
             result_path="$.gaussianResult"
         )
 
-        # Wait for Gaussian training job to complete
+        # Wait for 3DGS training job to complete
         wait_for_gaussian = sfn_tasks.CallAwsService(
             self, "WaitForGaussianCompletion",
             service="sagemaker",
@@ -347,13 +381,13 @@ class MLPipelineStack(Stack):
             result_path="$.gaussianStatus"
         )
 
-        # Check if Gaussian job is complete
+        # Check if 3DGS job is complete
         gaussian_choice = sfn.Choice(self, "IsGaussianComplete")
         
         # Wait state for polling
         gaussian_wait = sfn.Wait(
             self, "WaitForGaussian",
-            time=sfn.WaitTime.duration(Duration.seconds(120))  # Wait 2 minutes between polls for longer training jobs
+            time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
         )
 
         # Compression Job - Using CallAwsService since SageMakerCreateProcessingJob doesn't exist in CDK v2
@@ -425,7 +459,7 @@ class MLPipelineStack(Stack):
             self, "WaitForCompression",
             time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
         )
-
+        
         # Notification step
         notify_user = sfn_tasks.LambdaInvoke(
             self, "NotifyUser",
@@ -525,21 +559,13 @@ class MLPipelineStack(Stack):
             compression_wait.next(wait_for_compression_with_catch)
         )
 
-        # Connect the polling loops to the choices
-        wait_for_sfm_with_catch.next(sfm_polling_loop)
-        wait_for_gaussian_with_catch.next(gaussian_polling_loop)
-        wait_for_compression_with_catch.next(compression_polling_loop)
+        # Build the main workflow definition
+        sfm_workflow = sfm_job_with_catch.next(wait_for_sfm_with_catch).next(sfm_polling_loop)
+        gaussian_workflow = gaussian_job_with_catch.next(wait_for_gaussian_with_catch).next(gaussian_polling_loop)
+        compression_workflow = compression_job_with_catch.next(wait_for_compression_with_catch).next(compression_polling_loop)
 
-        # Create pipeline step selector choice
-        pipeline_step_choice = sfn.Choice(self, "PipelineStepChoice")
-        
-        # Define workflows for each starting point
-        sfm_workflow = sfm_job_with_catch.next(wait_for_sfm_with_catch)
-        gaussian_workflow = gaussian_job_with_catch.next(wait_for_gaussian_with_catch)
-        compression_workflow = compression_job_with_catch.next(wait_for_compression_with_catch)
-        
-        # Pipeline step conditional logic
-        definition = pipeline_step_choice.when(
+        # Create the main workflow definition with conditional execution
+        definition = sfn.Choice(self, "PipelineStepChoice").when(
             sfn.Condition.string_equals("$.pipelineStep", "sfm"),
             sfm_workflow
         ).when(
@@ -566,15 +592,9 @@ class MLPipelineStack(Stack):
             timeout=Duration.hours(8)
         )
 
-        # Note: Cannot update environment variables of imported Lambda functions
-        # The STATE_MACHINE_ARN environment variable should be set manually in the Lambda console
-        # or through a separate deployment process
-
-        # Import existing Lambda function for stopping jobs
-        stop_job_lambda = lambda_.Function.from_function_name(
-            self, "StopJobFunction",
-            "Spaceport-StopJobFunction"
-        )
+        # Update Lambda function environment variables with actual state machine ARN
+        start_job_lambda.add_environment("STATE_MACHINE_ARN_ACTUAL", ml_pipeline.state_machine_arn)
+        stop_job_lambda.add_environment("STATE_MACHINE_ARN_ACTUAL", ml_pipeline.state_machine_arn)
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
