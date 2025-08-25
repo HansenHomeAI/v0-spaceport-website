@@ -197,28 +197,28 @@ class MLPipelineStack(Stack):
         # Log groups for each component
         sfm_log_group = logs.LogGroup(
             self, "SfMLogGroup",
-            log_group_name="/aws/sagemaker/processing-jobs/sfm",
+            log_group_name=f"/aws/sagemaker/processing-jobs/sfm-{suffix}",
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
 
         gaussian_log_group = logs.LogGroup(
             self, "GaussianLogGroup", 
-            log_group_name="/aws/sagemaker/training-jobs/3dgs",
+            log_group_name=f"/aws/sagemaker/training-jobs/3dgs-{suffix}",
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
 
         compressor_log_group = logs.LogGroup(
             self, "CompressorLogGroup",
-            log_group_name="/aws/sagemaker/processing-jobs/compressor", 
+            log_group_name=f"/aws/sagemaker/processing-jobs/compressor-{suffix}", 
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
 
         step_functions_log_group = logs.LogGroup(
             self, "StepFunctionsLogGroup",
-            log_group_name="/aws/stepfunctions/ml-pipeline",
+            log_group_name=f"/aws/stepfunctions/ml-pipeline-{suffix}",
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY
         )
