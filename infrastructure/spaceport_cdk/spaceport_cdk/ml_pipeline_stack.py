@@ -33,6 +33,7 @@ class MLPipelineStack(Stack):
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
         self.ecr_client = boto3.client('ecr', region_name=region)
+        self.logs_client = boto3.client('logs', region_name=region)
 
         # ========== S3 BUCKETS ==========
         # Dynamic ML bucket - import if exists, create if not
@@ -178,33 +179,29 @@ class MLPipelineStack(Stack):
         )
 
         # ========== CLOUDWATCH LOG GROUPS ==========
-        # Log groups for each component
-        sfm_log_group = logs.LogGroup(
-            self, "SfMLogGroup",
+        # Dynamic log groups - import if exist, create if not
+        sfm_log_group = self._get_or_create_log_group(
+            construct_id="SfMLogGroup",
             log_group_name="/aws/sagemaker/processing-jobs/sfm",
-            retention=logs.RetentionDays.ONE_WEEK,
-            removal_policy=RemovalPolicy.DESTROY
+            retention=logs.RetentionDays.ONE_WEEK
         )
 
-        gaussian_log_group = logs.LogGroup(
-            self, "GaussianLogGroup", 
-            log_group_name="/aws/sagemaker/training-jobs/3dgs",
-            retention=logs.RetentionDays.ONE_WEEK,
-            removal_policy=RemovalPolicy.DESTROY
+        gaussian_log_group = self._get_or_create_log_group(
+            construct_id="GaussianLogGroup",
+            log_group_name="/aws/sagemaker/training-jobs/3dgs", 
+            retention=logs.RetentionDays.ONE_WEEK
         )
 
-        compressor_log_group = logs.LogGroup(
-            self, "CompressorLogGroup",
-            log_group_name="/aws/sagemaker/processing-jobs/compressor", 
-            retention=logs.RetentionDays.ONE_WEEK,
-            removal_policy=RemovalPolicy.DESTROY
+        compressor_log_group = self._get_or_create_log_group(
+            construct_id="CompressorLogGroup",
+            log_group_name="/aws/sagemaker/processing-jobs/compressor",
+            retention=logs.RetentionDays.ONE_WEEK
         )
 
-        step_functions_log_group = logs.LogGroup(
-            self, "StepFunctionsLogGroup",
+        step_functions_log_group = self._get_or_create_log_group(
+            construct_id="StepFunctionsLogGroup",
             log_group_name="/aws/stepfunctions/ml-pipeline",
-            retention=logs.RetentionDays.ONE_WEEK,
-            removal_policy=RemovalPolicy.DESTROY
+            retention=logs.RetentionDays.ONE_WEEK
         )
 
         # ========== LAMBDA FUNCTIONS ==========
@@ -760,4 +757,28 @@ class MLPipelineStack(Stack):
                     tag_status=ecr.TagStatus.ANY
                 )
             ]
+        )
+
+    def _log_group_exists(self, log_group_name: str) -> bool:
+        """Check if a CloudWatch log group exists"""
+        try:
+            self.logs_client.describe_log_groups(logGroupNamePrefix=log_group_name)
+            return True
+        except Exception:
+            return False
+
+    def _get_or_create_log_group(self, construct_id: str, log_group_name: str, retention: logs.RetentionDays) -> logs.ILogGroup:
+        """Get existing CloudWatch log group or create new one"""
+        # Check if log group exists
+        if self._log_group_exists(log_group_name):
+            print(f"Importing existing CloudWatch log group: {log_group_name}")
+            return logs.LogGroup.from_log_group_name(self, construct_id, log_group_name)
+        
+        # Create new log group
+        print(f"Creating new CloudWatch log group: {log_group_name}")
+        return logs.LogGroup(
+            self, construct_id,
+            log_group_name=log_group_name,
+            retention=retention,
+            removal_policy=RemovalPolicy.DESTROY
         ) 
