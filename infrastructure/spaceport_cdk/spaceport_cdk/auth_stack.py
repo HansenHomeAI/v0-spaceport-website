@@ -289,7 +289,7 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                "/Users/gabrielhansen/v0-spaceport-website/infrastructure/lambda/subscription_manager"
+                "../lambda/subscription_manager"
             ),
             timeout=Duration.seconds(30),
             memory_size=512,
