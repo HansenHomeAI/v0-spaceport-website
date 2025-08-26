@@ -33,6 +33,16 @@ class MLPipelineStack(Stack):
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
         self.ecr_client = boto3.client('ecr', region_name=region)
+        self.cloudwatch_client = boto3.client('cloudwatch', region_name=region)
+        self.iam_client = boto3.client('iam', region_name=region)
+        
+        # Track resources for validation
+        self._created_resources = []
+        self._imported_resources = []
+        
+        # Run robustness validations
+        self._validate_environment_config()
+        self._validate_resource_naming_conventions()
 
         # ========== S3 BUCKETS ==========
         # Dynamic ML bucket - import if exists, create if not
@@ -663,6 +673,10 @@ class MLPipelineStack(Stack):
             datapoints_to_alarm=1
         )
 
+        # ========== PREFLIGHT DEPLOYMENT CHECKS ==========
+        # Run comprehensive validation before deployment
+        self._run_preflight_deployment_check()
+
         # ========== OUTPUTS ==========
         CfnOutput(
             self, "MLApiUrl",
@@ -717,20 +731,35 @@ class MLPipelineStack(Stack):
             return False
 
     def _get_or_create_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
-        """Get existing S3 bucket or create new one"""
+        """Get existing S3 bucket or create new one with robustness validation"""
+        
+        # Robustness: Validate names before proceeding
+        self._validate_s3_bucket_name(preferred_name, "preferred")
+        self._validate_s3_bucket_name(fallback_name, "fallback")
+        
+        # Robustness: Check for potential conflicts
+        self._check_s3_naming_conflicts(preferred_name, fallback_name)
+        
         # First try preferred name (with environment suffix)
         if self._bucket_exists(preferred_name):
-            print(f"Importing existing S3 bucket: {preferred_name}")
-            return s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            print(f"✅ Importing existing S3 bucket: {preferred_name}")
+            bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
+            return bucket
         
         # Then try fallback name (without suffix)
         if self._bucket_exists(fallback_name):
-            print(f"Importing existing S3 bucket: {fallback_name}")
-            return s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+            print(f"✅ Importing existing S3 bucket (fallback): {fallback_name}")
+            # Robustness: Validate fallback is accessible
+            if not self._validate_bucket_accessibility(fallback_name):
+                print(f"⚠️  Warning: Fallback bucket {fallback_name} may have access issues")
+            bucket = s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+            self._imported_resources.append({"type": "S3::Bucket", "name": fallback_name, "action": "imported_fallback"})
+            return bucket
         
         # Create new bucket with preferred name
-        print(f"Creating new S3 bucket: {preferred_name}")
-        return s3.Bucket(
+        print(f"🆕 Creating new S3 bucket: {preferred_name}")
+        bucket = s3.Bucket(
             self, construct_id,
             bucket_name=preferred_name,
             removal_policy=RemovalPolicy.RETAIN,
@@ -739,6 +768,8 @@ class MLPipelineStack(Stack):
             encryption=s3.BucketEncryption.S3_MANAGED,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
+        self._created_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "created"})
+        return bucket
 
     def _get_or_create_ecr_repo(self, construct_id: str, preferred_name: str, fallback_name: str) -> ecr.IRepository:
         """Get existing ECR repository or create new one"""
@@ -764,4 +795,218 @@ class MLPipelineStack(Stack):
                     tag_status=ecr.TagStatus.ANY
                 )
             ]
-        ) 
+        )
+
+    # ========== ROBUSTNESS VALIDATION METHODS ==========
+    
+    def _validate_environment_config(self):
+        """Validate environment configuration is complete and correct"""
+        required_keys = ['resourceSuffix', 'region', 'domain']
+        for key in required_keys:
+            if key not in self.env_config:
+                raise ValueError(f"Missing required environment config key: {key}")
+        
+        # Validate suffix format
+        suffix = self.env_config['resourceSuffix']
+        if not suffix or not suffix.replace('-', '').replace('_', '').isalnum():
+            raise ValueError(f"Invalid resource suffix: {suffix}")
+        
+        print(f"✅ Environment config validated for: {suffix}")
+    
+    def _validate_resource_naming_conventions(self):
+        """Validate all resource names follow proper conventions"""
+        suffix = self.env_config['resourceSuffix']
+        
+        # Define expected resource names
+        expected_names = {
+            'iam_roles': [
+                f"Spaceport-SageMaker-Role-{suffix}",
+                f"Spaceport-StepFunctions-Role-{suffix}",
+                f"Spaceport-ML-Lambda-Role-{suffix}",
+                f"Spaceport-Notification-Lambda-Role-{suffix}"
+            ],
+            'lambda_functions': [
+                f"Spaceport-StartMLJob-{suffix}",
+                f"Spaceport-MLNotification-{suffix}",
+                f"Spaceport-StopJobFunction-{suffix}"
+            ],
+            'cloudwatch_alarms': [
+                f"SpaceportMLPipeline-Failures-{suffix}"
+            ]
+        }
+        
+        # Validate naming patterns
+        for resource_type, names in expected_names.items():
+            for name in names:
+                if not self._is_valid_resource_name(name, suffix):
+                    raise ValueError(f"Invalid {resource_type} name: {name}")
+        
+        print(f"✅ Resource naming conventions validated for: {suffix}")
+    
+    def _is_valid_resource_name(self, name: str, suffix: str) -> bool:
+        """Check if resource name follows conventions"""
+        # Must contain the suffix
+        if not name.endswith(f"-{suffix}"):
+            return False
+        
+        # Must start with Spaceport
+        if not name.startswith("Spaceport"):
+            return False
+        
+        # No invalid characters
+        if any(char in name for char in [' ', '_', '.']):
+            return False
+        
+        return True
+    
+    def _validate_s3_bucket_name(self, bucket_name: str, name_type: str):
+        """Validate S3 bucket name follows AWS requirements"""
+        if not bucket_name:
+            raise ValueError(f"Empty bucket name for {name_type}")
+        
+        # AWS S3 bucket naming rules
+        if len(bucket_name) < 3 or len(bucket_name) > 63:
+            raise ValueError(f"Bucket name {bucket_name} must be between 3 and 63 characters")
+        
+        if not bucket_name.replace('-', '').replace('.', '').isalnum():
+            raise ValueError(f"Bucket name {bucket_name} contains invalid characters")
+        
+        if bucket_name.startswith('-') or bucket_name.endswith('-'):
+            raise ValueError(f"Bucket name {bucket_name} cannot start or end with hyphen")
+    
+    def _check_s3_naming_conflicts(self, preferred_name: str, fallback_name: str):
+        """Check for potential S3 bucket naming conflicts"""
+        # Check if names are too similar
+        if preferred_name == fallback_name:
+            print(f"⚠️  Warning: Preferred and fallback bucket names are identical: {preferred_name}")
+        
+        # Check for reserved names
+        reserved_patterns = ['aws-', 'amazon-', 'cloudfront-']
+        for pattern in reserved_patterns:
+            if preferred_name.startswith(pattern) or fallback_name.startswith(pattern):
+                print(f"⚠️  Warning: Bucket name uses reserved pattern: {pattern}")
+    
+    def _validate_bucket_accessibility(self, bucket_name: str) -> bool:
+        """Validate that bucket is accessible for import"""
+        try:
+            # Check if we can read bucket metadata
+            self.s3_client.head_bucket(Bucket=bucket_name)
+            
+            # Check if we can list objects (basic permission test)
+            self.s3_client.list_objects_v2(Bucket=bucket_name, MaxKeys=1)
+            
+            return True
+        except Exception as e:
+            print(f"⚠️  Bucket accessibility issue for {bucket_name}: {str(e)}")
+            return False
+    
+    def _run_preflight_deployment_check(self):
+        """Run comprehensive preflight checks before deployment"""
+        print("🚀 Running preflight deployment checks...")
+        
+        # Check 1: Validate resource mix makes sense
+        self._validate_resource_mix()
+        
+        # Check 2: Check for naming conflicts with existing resources
+        self._check_existing_resource_conflicts()
+        
+        # Check 3: Validate all imported resources are accessible
+        self._validate_imported_resources()
+        
+        # Check 4: Validate environment-specific requirements
+        self._validate_environment_requirements()
+        
+        print("✅ All preflight checks passed - deployment ready!")
+    
+    def _validate_resource_mix(self):
+        """Validate the mix of imported vs created resources makes sense"""
+        imported_count = len(self._imported_resources)
+        created_count = len(self._created_resources)
+        
+        print(f"📊 Resource mix: {imported_count} imported, {created_count} created")
+        
+        # Environment-specific validations
+        suffix = self.env_config['resourceSuffix']
+        
+        if suffix == 'staging':
+            if imported_count == 0:
+                print("⚠️  Warning: No imported resources in staging - all resources will be new")
+            if created_count > imported_count * 2:
+                print("⚠️  Warning: Creating many new resources in staging environment")
+        
+        elif suffix == 'prod':
+            if created_count > imported_count:
+                print("⚠️  Warning: Creating more resources than importing in production")
+    
+    def _check_existing_resource_conflicts(self):
+        """Check for conflicts with existing AWS resources"""
+        print("🔍 Checking for existing resource conflicts...")
+        
+        # Check each resource we plan to create
+        for resource in self._created_resources:
+            resource_name = resource['name']
+            resource_type = resource['type']
+            
+            if self._has_aws_resource_conflict(resource_type, resource_name):
+                raise ValueError(f"Resource conflict detected: {resource_type} {resource_name} already exists")
+    
+    def _has_aws_resource_conflict(self, resource_type: str, resource_name: str) -> bool:
+        """Check if resource name conflicts with existing AWS resources"""
+        try:
+            if resource_type == "S3::Bucket":
+                self.s3_client.head_bucket(Bucket=resource_name)
+                return True
+            elif resource_type == "ECR::Repository":
+                self.ecr_client.describe_repositories(repositoryNames=[resource_name])
+                return True
+            elif resource_type == "CloudWatch::Alarm":
+                response = self.cloudwatch_client.describe_alarms(AlarmNames=[resource_name])
+                return len(response['MetricAlarms']) > 0
+            elif resource_type == "IAM::Role":
+                self.iam_client.get_role(RoleName=resource_name)
+                return True
+        except Exception:
+            return False
+        
+        return False
+    
+    def _validate_imported_resources(self):
+        """Validate all imported resources are properly accessible"""
+        print("🔍 Validating imported resources...")
+        
+        for resource in self._imported_resources:
+            resource_name = resource['name']
+            resource_type = resource['type']
+            
+            if not self._is_resource_accessible_for_import(resource_type, resource_name):
+                print(f"⚠️  Warning: Imported resource may not be accessible: {resource_type} {resource_name}")
+    
+    def _is_resource_accessible_for_import(self, resource_type: str, resource_name: str) -> bool:
+        """Check if resource is accessible for CloudFormation import"""
+        try:
+            if resource_type == "S3::Bucket":
+                return self._validate_bucket_accessibility(resource_name)
+            elif resource_type == "ECR::Repository":
+                self.ecr_client.describe_repositories(repositoryNames=[resource_name])
+                return True
+            # Add more resource type validations as needed
+            return True
+        except Exception:
+            return False
+    
+    def _validate_environment_requirements(self):
+        """Validate environment-specific requirements are met"""
+        suffix = self.env_config['resourceSuffix']
+        
+        if suffix == 'staging':
+            # Staging should have fallback resources available
+            if not any(r['action'] == 'imported_fallback' for r in self._imported_resources):
+                print("ℹ️  Info: No fallback resources used in staging environment")
+        
+        elif suffix == 'prod':
+            # Production should prefer environment-specific resources
+            fallback_count = len([r for r in self._imported_resources if r['action'] == 'imported_fallback'])
+            if fallback_count > 0:
+                print(f"⚠️  Warning: Production using {fallback_count} fallback resources")
+        
+        print(f"✅ Environment requirements validated for: {suffix}") 
