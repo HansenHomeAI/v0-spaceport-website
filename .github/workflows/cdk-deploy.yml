@@ -64,20 +64,38 @@ jobs:
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         
-        # Only bootstrap if not already bootstrapped
-        if ! aws ssm get-parameter --name "/cdk-bootstrap/$ACCOUNT/version" --region us-west-2 2>/dev/null; then
-          echo "Bootstrapping CDK for account $ACCOUNT..."
+        # Check for CDK bootstrap using the correct SSM parameter path
+        # CDK v2 uses the default qualifier 'hnb659fds'
+        BOOTSTRAP_SSM_PATH="/cdk-bootstrap/hnb659fds/version"
+        
+        echo "Checking for existing CDK bootstrap..."
+        if ! aws ssm get-parameter --name "$BOOTSTRAP_SSM_PATH" --region us-west-2 2>/dev/null; then
+          echo "CDK not bootstrapped. Bootstrapping for account $ACCOUNT..."
+          
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "Production bootstrap with OIDC role trust"
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
               --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
-              --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole
+              --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
+              --verbose
           else
             echo "Development bootstrap"
-            cdk bootstrap aws://$ACCOUNT/us-west-2
+            cdk bootstrap aws://$ACCOUNT/us-west-2 \
+              --verbose
           fi
+          
+          # Verify bootstrap completed successfully
+          echo "Verifying bootstrap completion..."
+          for i in {1..10}; do
+            if aws ssm get-parameter --name "$BOOTSTRAP_SSM_PATH" --region us-west-2 2>/dev/null; then
+              echo "✅ CDK bootstrap verified successfully"
+              break
+            fi
+            echo "Waiting for bootstrap to complete... (attempt $i/10)"
+            sleep 5
+          done
         else
-          echo "CDK already bootstrapped for account $ACCOUNT"
+          echo "✅ CDK already bootstrapped for account $ACCOUNT"
         fi
 
     - name: Verify Bootstrap
