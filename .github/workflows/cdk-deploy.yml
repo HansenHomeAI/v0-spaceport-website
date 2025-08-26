@@ -69,31 +69,48 @@ jobs:
         BOOTSTRAP_SSM_PATH="/cdk-bootstrap/hnb659fds/version"
         
         echo "Checking for existing CDK bootstrap..."
+        echo "Current AWS identity: $(aws sts get-caller-identity --query 'Arn' --output text)"
+        
         if ! aws ssm get-parameter --name "$BOOTSTRAP_SSM_PATH" --region us-west-2 2>/dev/null; then
           echo "CDK not bootstrapped. Bootstrapping for account $ACCOUNT..."
+          echo "Environment: ${GITHUB_REF_NAME} ($([ "${GITHUB_REF_NAME}" = "main" ] && echo "production" || echo "development"))"
           
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "Production bootstrap with OIDC role trust"
+            # Bootstrap with trust for the OIDC role that GitHub Actions uses
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
               --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
               --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
-              --verbose
+              --verbose \
+              --force
           else
-            echo "Development bootstrap"
+            echo "Development bootstrap (using current credentials)"
+            # For development, bootstrap with current credentials (root/access keys)
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
-              --verbose
+              --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+              --verbose \
+              --force
           fi
           
           # Verify bootstrap completed successfully
           echo "Verifying bootstrap completion..."
+          BOOTSTRAP_SUCCESS=false
           for i in {1..10}; do
             if aws ssm get-parameter --name "$BOOTSTRAP_SSM_PATH" --region us-west-2 2>/dev/null; then
               echo "✅ CDK bootstrap verified successfully"
+              BOOTSTRAP_SUCCESS=true
               break
             fi
             echo "Waiting for bootstrap to complete... (attempt $i/10)"
             sleep 5
           done
+          
+          if [ "$BOOTSTRAP_SUCCESS" = "false" ]; then
+            echo "❌ Bootstrap verification failed after 10 attempts"
+            echo "Checking CloudFormation stack status..."
+            aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 || echo "CDKToolkit stack not found"
+            exit 1
+          fi
         else
           echo "✅ CDK already bootstrapped for account $ACCOUNT"
         fi
