@@ -63,56 +63,25 @@ jobs:
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        # Detect qualifier from existing CDKToolkit or default to hnb659fds
+        QUALIFIER=$(aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 --query "Stacks[0].Parameters[?ParameterKey=='Qualifier'].ParameterValue" --output text 2>/dev/null || echo "hnb659fds")
+        echo "Detected CDK qualifier: $QUALIFIER"
         
-        # Check for CDK bootstrap using the correct SSM parameter path
-        # CDK v2 uses the default qualifier 'hnb659fds'
-        BOOTSTRAP_SSM_PATH="/cdk-bootstrap/hnb659fds/version"
-        
-        echo "Checking for existing CDK bootstrap..."
-        echo "Current AWS identity: $(aws sts get-caller-identity --query 'Arn' --output text)"
-        
-        if ! aws ssm get-parameter --name "$BOOTSTRAP_SSM_PATH" --region us-west-2 2>/dev/null; then
-          echo "CDK not bootstrapped. Bootstrapping for account $ACCOUNT..."
-          echo "Environment: ${GITHUB_REF_NAME} ($([ "${GITHUB_REF_NAME}" = "main" ] && echo "production" || echo "development"))"
-          
+        # Only bootstrap if not already bootstrapped
+        if ! aws ssm get-parameter --name "/cdk-bootstrap/$QUALIFIER/version" --region us-west-2 2>/dev/null; then
+          echo "Bootstrapping CDK for account $ACCOUNT..."
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "Production bootstrap with OIDC role trust"
-            # Bootstrap with trust for the OIDC role that GitHub Actions uses
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
               --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
               --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole \
-              --verbose \
-              --force
+              --qualifier $QUALIFIER
           else
-            echo "Development bootstrap (using current credentials)"
-            # For development, bootstrap with current credentials (root/access keys)
-            cdk bootstrap aws://$ACCOUNT/us-west-2 \
-              --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
-              --verbose \
-              --force
-          fi
-          
-          # Verify bootstrap completed successfully
-          echo "Verifying bootstrap completion..."
-          BOOTSTRAP_SUCCESS=false
-          for i in {1..10}; do
-            if aws ssm get-parameter --name "$BOOTSTRAP_SSM_PATH" --region us-west-2 2>/dev/null; then
-              echo "✅ CDK bootstrap verified successfully"
-              BOOTSTRAP_SUCCESS=true
-              break
-            fi
-            echo "Waiting for bootstrap to complete... (attempt $i/10)"
-            sleep 5
-          done
-          
-          if [ "$BOOTSTRAP_SUCCESS" = "false" ]; then
-            echo "❌ Bootstrap verification failed after 10 attempts"
-            echo "Checking CloudFormation stack status..."
-            aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 || echo "CDKToolkit stack not found"
-            exit 1
+            echo "Development bootstrap"
+            cdk bootstrap aws://$ACCOUNT/us-west-2 --qualifier $QUALIFIER
           fi
         else
-          echo "✅ CDK already bootstrapped for account $ACCOUNT"
+          echo "CDK already bootstrapped for account $ACCOUNT"
         fi
 
     - name: Verify Bootstrap
@@ -120,11 +89,12 @@ jobs:
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-        echo "Verifying CDK bootstrap for account $ACCOUNT"
+        # Detect qualifier from existing CDKToolkit or default to hnb659fds
+        QUALIFIER=$(aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 --query "Stacks[0].Parameters[?ParameterKey=='Qualifier'].ParameterValue" --output text 2>/dev/null || echo "hnb659fds")
+        echo "Verifying CDK bootstrap for account $ACCOUNT with qualifier $QUALIFIER"
 
         # Prefer SSM parameter check for default qualifier, else fall back to CFN stack state
-        # Default CDK v2 qualifier is 'hnb659fds'
-        PARAM_NAME="/cdk-bootstrap/hnb659fds/version"
+        PARAM_NAME="/cdk-bootstrap/$QUALIFIER/version"
 
         # Exponential backoff attempts
         for ATTEMPT in 1 2 3 4 5; do
@@ -162,6 +132,8 @@ jobs:
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        # Detect qualifier from existing CDKToolkit or default to hnb659fds
+        QUALIFIER=$(aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 --query "Stacks[0].Parameters[?ParameterKey=='Qualifier'].ParameterValue" --output text 2>/dev/null || echo "hnb659fds")
         
         # Determine environment based on branch
         if [ "${GITHUB_REF_NAME}" = "main" ]; then
@@ -176,6 +148,7 @@ jobs:
         cdk deploy --all \
           --require-approval never \
           --no-fail-on-empty-changeset \
+          --qualifier $QUALIFIER \
           --context environment=$ENVIRONMENT \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
