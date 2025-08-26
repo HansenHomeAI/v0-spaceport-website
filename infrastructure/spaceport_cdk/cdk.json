@@ -2,6 +2,19 @@
   "app": "python3 app.py",
   "context": {
     "aws-cdk:enableDiffNoFail": "true",
-    "@aws-cdk/core:bootstrapQualifier": "spcdkprod2"
+    "environments": {
+      "production": {
+        "region": "us-west-2",
+        "resourceSuffix": "prod",
+        "domain": "spcprt.com",
+        "useOIDC": true
+      },
+      "staging": {
+        "region": "us-west-2",
+        "resourceSuffix": "staging",
+        "domain": "staging.spcprt.com",
+        "useOIDC": false
+      }
+    }
   }
 } 

@@ -13,17 +13,26 @@ from aws_cdk import (
 )
 from constructs import Construct
 import os
+import boto3
 
 
 class AuthStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
+        # Environment configuration
+        self.env_config = env_config
+        suffix = env_config['resourceSuffix']
+        region = env_config['region']
+        
+        # Initialize AWS clients for resource checking
+        self.dynamodb_client = boto3.client('dynamodb', region_name=region)
 
-        # Dedicated v2 Cognito resources – no overlap with legacy pool
+        # Environment-specific Cognito resources
         user_pool_v2 = cognito.UserPool(
             self,
             "SpaceportUserPoolV2",
-            user_pool_name="Spaceport-Users-v2",
+            user_pool_name=f"Spaceport-Users-{suffix}",
             self_sign_up_enabled=False,  # invite-only
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             sign_in_aliases=cognito.SignInAliases(email=True),
@@ -109,7 +118,7 @@ class AuthStack(Stack):
         user_pool_v3 = cognito.UserPool(
             self,
             "SpaceportUserPoolV3",
-            user_pool_name="Spaceport-Users-v3",
+            user_pool_name=f"Spaceport-Users-v3-{suffix}",
             self_sign_up_enabled=False,
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
             sign_in_aliases=cognito.SignInAliases(email=True),
@@ -188,18 +197,20 @@ class AuthStack(Stack):
         # -------------------------------------
         # Per-user Projects storage and REST API
         # -------------------------------------
-        # Import existing projects table to avoid conflicts
-        projects_table = dynamodb.Table.from_table_name(
-            self,
-            "Spaceport-ProjectsTable",
-            "Spaceport-Projects"
+        # Dynamic projects table - import if exists, create if not
+        projects_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-ProjectsTable",
+            preferred_name=f"Spaceport-Projects-{suffix}",
+            fallback_name="Spaceport-Projects",
+            partition_key_name="id",
+            partition_key_type=dynamodb.AttributeType.STRING
         )
 
-        # Define Projects Lambda function from source (replaces import-by-name)
+        # Define Projects Lambda function with environment-specific naming
         projects_lambda = lambda_.Function(
             self,
             "Spaceport-ProjectsFunction",
-            function_name="Spaceport-ProjectsFunction",
+            function_name=f"Spaceport-ProjectsFunction-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -225,7 +236,7 @@ class AuthStack(Stack):
         projects_api = apigw.RestApi(
             self,
             "Spaceport-ProjectsApi",
-            rest_api_name="Spaceport-ProjectsApi",
+            rest_api_name=f"Spaceport-ProjectsApi-{suffix}",
             description="CRUD for user projects (requires Cognito JWT)",
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
@@ -277,4 +288,186 @@ class AuthStack(Stack):
 
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
 
+        # -------------------------------------
+        # Subscription Management (integrated into AuthStack)
+        # -------------------------------------
+        
+        # Dynamic users table - import if exists, create if not  
+        users_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-UsersTable",
+            preferred_name=f"Spaceport-Users-{suffix}",
+            fallback_name="Spaceport-Users",
+            partition_key_name="id",
+            partition_key_type=dynamodb.AttributeType.STRING
+        )
+        
+        # Create subscription manager Lambda function
+        subscription_lambda = lambda_.Function(
+            self,
+            "SubscriptionManagerLambda",  # Unique construct ID
+            function_name=f"Spaceport-SubscriptionManager-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "../lambda/subscription_manager"
+            ),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            environment={
+                "USERS_TABLE": users_table.table_name,
+                "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
+                "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", ""),
+                "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
+                "STRIPE_PRICE_SINGLE": os.environ.get("STRIPE_PRICE_SINGLE", ""),
+                "STRIPE_PRICE_STARTER": os.environ.get("STRIPE_PRICE_STARTER", ""),
+                "STRIPE_PRICE_GROWTH": os.environ.get("STRIPE_PRICE_GROWTH", ""),
+                "REFERRAL_KICKBACK_PERCENTAGE": os.environ.get("REFERRAL_KICKBACK_PERCENTAGE", "10"),
+                "EMPLOYEE_KICKBACK_PERCENTAGE": os.environ.get("EMPLOYEE_KICKBACK_PERCENTAGE", "30"),
+                "COMPANY_KICKBACK_PERCENTAGE": os.environ.get("COMPANY_KICKBACK_PERCENTAGE", "70"),
+                "REFERRAL_DURATION_MONTHS": os.environ.get("REFERRAL_DURATION_MONTHS", "6"),
+                "EMPLOYEE_USER_ID": os.environ.get("EMPLOYEE_USER_ID", ""),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spaceport.ai"),
+            },
+            log_retention=logs.RetentionDays.ONE_MONTH,
+        )
+        users_table.grant_read_write_data(subscription_lambda)
 
+        # Add Cognito permissions for updating user attributes
+        subscription_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "cognito-idp:AdminUpdateUserAttributes",
+                    "cognito-idp:AdminGetUser",
+                ],
+                resources=[user_pool_v2.user_pool_arn]
+            )
+        )
+
+        # Add SES permissions for email notifications (optional)
+        subscription_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ses:SendEmail",
+                    "ses:SendRawEmail"
+                ],
+                resources=["*"]
+            )
+        )
+
+        # Create subscription API Gateway
+        subscription_api = apigw.RestApi(
+            self,
+            "SubscriptionApiGateway",  # Unique construct ID
+            rest_api_name="Spaceport-SubscriptionApi",
+            description="Subscription management API for Spaceport",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                    "X-Api-Key",
+                ],
+            ),
+        )
+
+        # Add subscription endpoints
+        subscription_resource = subscription_api.root.add_resource("subscription")
+        
+        # Create checkout session endpoint (requires auth)
+        create_checkout_resource = subscription_resource.add_resource("create-checkout-session")
+        create_checkout_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "SubscriptionCreateAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Webhook endpoint (no auth required for Stripe)
+        webhook_resource = subscription_resource.add_resource("webhook")
+        webhook_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.NONE,
+        )
+
+        # Subscription status endpoint (requires auth)
+        status_resource = subscription_resource.add_resource("subscription-status")
+        status_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "SubscriptionStatusAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Cancel subscription endpoint (requires auth)
+        cancel_resource = subscription_resource.add_resource("cancel-subscription")
+        cancel_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(subscription_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "SubscriptionCancelAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Outputs
+        CfnOutput(self, "SubscriptionApiUrl", value=subscription_api.url)
+        CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
+        
+        # Debug: Ensure subscription resources are included in stack
+        CfnOutput(self, "SubscriptionStackDebug", value="Subscription resources included in AuthStack")
+        
+        # Force resource inclusion by referencing them
+        self.subscription_lambda = subscription_lambda
+        self.subscription_api = subscription_api
+
+    def _dynamodb_table_exists(self, table_name: str) -> bool:
+        """Check if a DynamoDB table exists"""
+        try:
+            self.dynamodb_client.describe_table(TableName=table_name)
+            return True
+        except Exception:
+            return False
+
+    def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
+                                     partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:
+        """Get existing DynamoDB table or create new one"""
+        # First try preferred name (with environment suffix)
+        if self._dynamodb_table_exists(preferred_name):
+            print(f"Importing existing DynamoDB table: {preferred_name}")
+            return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
+        
+        # Then try fallback name (without suffix)
+        if self._dynamodb_table_exists(fallback_name):
+            print(f"Importing existing DynamoDB table: {fallback_name}")
+            return dynamodb.Table.from_table_name(self, construct_id, fallback_name)
+        
+        # Create new table with preferred name
+        print(f"Creating new DynamoDB table: {preferred_name}")
+        return dynamodb.Table(
+            self, construct_id,
+            table_name=preferred_name,
+            partition_key=dynamodb.Attribute(
+                name=partition_key_name,
+                type=partition_key_type
+            ),
+            removal_policy=RemovalPolicy.RETAIN,
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+        )
+
+
+# Force complete AuthStack redeployment with subscription resources
+# This ensures all subscription resources (Lambda, API Gateway) are created
