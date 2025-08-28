@@ -91,6 +91,9 @@ class Advanced3DPathProcessor:
         logger.info(f"🚁 Initializing Advanced 3D Path Processor")
         logger.info(f"📂 CSV: {csv_path}")
         logger.info(f"📷 Images: {images_dir}")
+        
+        # Internal cache for EXIF GPS
+        self._photo_exif_cache: Dict[str, Dict] = {}
     
     def parse_flight_csv(self) -> pd.DataFrame:
         """Parse the drone flight path CSV file with comprehensive parameter extraction"""
@@ -510,6 +513,228 @@ class Advanced3DPathProcessor:
             logger.debug(f"Could not extract timestamp from {photo_path.name}: {e}")
         
         return None
+
+    # --- New: Robust DJI EXIF GPS extraction and fusion ---
+    def _dms_to_decimal(self, dms, ref: str) -> Optional[float]:
+        """Convert EXIF DMS to decimal degrees. Supports tuples/iterables or string format."""
+        try:
+            # exifread returns list of Ratio objects typically
+            if isinstance(dms, (list, tuple)) and len(dms) == 3:
+                def _to_float(x):
+                    try:
+                        return float(x.num) / float(x.den)
+                    except AttributeError:
+                        return float(x)
+                degrees = _to_float(dms[0])
+                minutes = _to_float(dms[1])
+                seconds = _to_float(dms[2])
+            else:
+                # Attempt to parse common string formats like 47° 51' 0.198" N
+                s = str(dms)
+                s = s.replace("\u00b0", "°")
+                import re
+                m = re.match(r"\s*(\d+)°\s*(\d+)'\s*([\d\.]+)\"?\s*([NSEW])?", s)
+                if not m:
+                    return None
+                degrees = float(m.group(1))
+                minutes = float(m.group(2))
+                seconds = float(m.group(3))
+                if m.group(4):
+                    ref = m.group(4)
+            decimal = degrees + minutes / 60.0 + seconds / 3600.0
+            if ref in ['S', 'W']:
+                decimal = -decimal
+            return decimal
+        except Exception:
+            return None
+
+    def extract_dji_gps_from_exif(self, photo_path: Path) -> Optional[Dict]:
+        """Extract GPS lat/lon from DJI EXIF; returns {latitude, longitude, timestamp} or None."""
+        try:
+            with open(photo_path, 'rb') as f:
+                tags = exifread.process_file(f, details=False)
+            lat = lon = None
+            # Prefer numeric DMS arrays
+            if 'GPS GPSLatitude' in tags and 'GPS GPSLatitudeRef' in tags:
+                lat = self._dms_to_decimal(tags['GPS GPSLatitude'].values, str(tags.get('GPS GPSLatitudeRef', 'N')))
+            if 'GPS GPSLongitude' in tags and 'GPS GPSLongitudeRef' in tags:
+                lon = self._dms_to_decimal(tags['GPS GPSLongitude'].values, str(tags.get('GPS GPSLongitudeRef', 'E')))
+            # Fallback to string formatted values if needed
+            if lat is None and 'GPS GPSLatitude' in tags:
+                lat = self._dms_to_decimal(str(tags['GPS GPSLatitude']), str(tags.get('GPS GPSLatitudeRef', 'N')))
+            if lon is None and 'GPS GPSLongitude' in tags:
+                lon = self._dms_to_decimal(str(tags['GPS GPSLongitude']), str(tags.get('GPS GPSLongitudeRef', 'E')))
+
+            # Timestamp (optional)
+            timestamp = None
+            for tkey in ['EXIF DateTimeOriginal', 'EXIF DateTimeDigitized', 'Image DateTime']:
+                if tkey in tags:
+                    try:
+                        timestamp = datetime.strptime(str(tags[tkey]), '%Y:%m:%d %H:%M:%S')
+                        break
+                    except Exception:
+                        continue
+
+            if lat is None or lon is None:
+                return None
+
+            return {
+                'latitude': float(lat),
+                'longitude': float(lon),
+                'timestamp': timestamp
+            }
+        except Exception as e:
+            logger.debug(f"Could not extract EXIF GPS from {photo_path.name}: {e}")
+            return None
+
+    def find_closest_trajectory_point(self, exif_xy: np.ndarray) -> Dict:
+        """Find closest point on existing 3D trajectory spline to EXIF (x,y)."""
+        if not self.flight_segments:
+            self.build_3d_flight_path()
+        closest_distance = float('inf')
+        best = None
+        cumulative_distance_before = 0.0
+        for seg_index, segment in enumerate(self.flight_segments):
+            # Sample along the segment
+            # Use denser sampling for curved segments
+            num_samples = 100 if segment.control_points else 50
+            for j, t in enumerate(np.linspace(0.0, 1.0, num_samples)):
+                pt = segment.interpolate_point(t)
+                dist = float(np.linalg.norm(exif_xy - pt[:2]))
+                if dist < closest_distance:
+                    path_distance_here = cumulative_distance_before + t * max(segment.distance, 1e-6)
+                    best = {
+                        'altitude': float(pt[2] + self.local_origin[2]),  # back to absolute altitude
+                        'local_point': pt,
+                        'segment_index': seg_index,
+                        'parameter_t': float(t),
+                        'path_distance': float(path_distance_here),
+                        'projection_distance_m': float(dist),
+                        'confidence': float(max(0.0, 1.0 - min(dist / 50.0, 1.0)))
+                    }
+                    closest_distance = dist
+            cumulative_distance_before += segment.distance
+        return best if best is not None else {
+            'altitude': self.local_origin[2],
+            'local_point': np.zeros(3),
+            'segment_index': 0,
+            'parameter_t': 0.0,
+            'path_distance': 0.0,
+            'projection_distance_m': float('inf'),
+            'confidence': 0.0
+        }
+
+    def project_exif_gps_to_trajectory(self, photo_exif_gps: Dict) -> Dict:
+        """
+        Project EXIF GPS lat/lon to trajectory to obtain precise altitude and context.
+        Returns fused dict with altitude from trajectory and metadata.
+        """
+        # Convert EXIF to local XY; altitude set to 0 for XY only
+        exif_local = self.convert_to_local_3d(photo_exif_gps['latitude'], photo_exif_gps['longitude'], 0.0)
+        nearest = self.find_closest_trajectory_point(exif_local[:2])
+        return {
+            'latitude': float(photo_exif_gps['latitude']),
+            'longitude': float(photo_exif_gps['longitude']),
+            'altitude': float(nearest['altitude']),
+            'path_distance': float(nearest['path_distance']),
+            'trajectory_confidence': float(nearest['confidence']),
+            '_trajectory_metadata': {
+                'source': 'exif_gps_trajectory_projection',
+                'trajectory_confidence': float(nearest['confidence']),
+                'projection_distance_m': float(nearest['projection_distance_m']),
+                'flight_segment_id': int(nearest['segment_index']),
+                'segment_t': float(nearest['parameter_t'])
+            },
+            # For consistency in priors (local coordinates for OpenSfM gps_priors)
+            'position_3d_local': nearest['local_point'].tolist()
+        }
+
+    def map_photos_using_exif_trajectory(self, photos: List[Tuple[Path, int, Optional[datetime]]]) -> bool:
+        """Attempt to map photos using EXIF GPS + trajectory altitude projection. Returns True on success."""
+        has_any_exif = False
+        ordered_names = []
+        for photo_path, order_idx, timestamp in photos:
+            exif = self.extract_dji_gps_from_exif(photo_path)
+            if exif is None:
+                continue
+            has_any_exif = True
+            fused = self.project_exif_gps_to_trajectory(exif)
+            # Build fused local position from fused lat/lon/alt to keep consistency
+            local = self.convert_to_local_3d(fused['latitude'], fused['longitude'], fused['altitude'])
+            # Determine segment info from metadata
+            seg_idx = fused['_trajectory_metadata']['flight_segment_id']
+            seg_t = fused['_trajectory_metadata']['segment_t']
+            heading = self.flight_segments[seg_idx].heading if 0 <= seg_idx < len(self.flight_segments) else 0.0
+            self.photo_positions[photo_path.name] = {
+                'position_3d': local.tolist(),
+                'path_distance': fused.get('path_distance', 0.0),
+                'mapping_method': 'exif_trajectory_projection',
+                'order_index': order_idx,
+                'timestamp': (exif.get('timestamp') or timestamp).isoformat() if (exif.get('timestamp') or timestamp) else None,
+                'segment_index': seg_idx,
+                'segment_t': seg_t,
+                'heading': heading,
+                'confidence': fused['trajectory_confidence'],
+                # GPS world coordinates
+                'latitude': fused['latitude'],
+                'longitude': fused['longitude'],
+                'altitude': fused['altitude'],
+                'gps_accuracy': 2.0,  # improved DOP due to fusion
+                'coordinate_system': f'UTM_{self.utm_zone}{self.utm_zone_letter}',
+                '_trajectory_metadata': fused['_trajectory_metadata']
+            }
+            ordered_names.append((order_idx, photo_path.name))
+        # Neighbor-aware smoothing for ambiguous cases
+        if has_any_exif and ordered_names:
+            ordered_names.sort(key=lambda x: x[0])
+            for i, (_, name) in enumerate(ordered_names):
+                data = self.photo_positions.get(name)
+                if not data:
+                    continue
+                if data.get('confidence', 0.0) >= 0.7:
+                    continue
+                # Determine neighbor-based target distance
+                prev_pd = None
+                next_pd = None
+                if i - 1 >= 0:
+                    prev_name = ordered_names[i - 1][1]
+                    prev_pd = self.photo_positions.get(prev_name, {}).get('path_distance')
+                if i + 1 < len(ordered_names):
+                    next_name = ordered_names[i + 1][1]
+                    next_pd = self.photo_positions.get(next_name, {}).get('path_distance')
+                target_pd = data.get('path_distance')
+                if prev_pd is not None and next_pd is not None:
+                    target_pd = max(min((prev_pd + next_pd) / 2.0, next_pd), prev_pd)
+                elif prev_pd is not None:
+                    target_pd = prev_pd + max(0.1, self.total_path_length / max(1000.0, len(ordered_names)))
+                elif next_pd is not None:
+                    target_pd = max(0.0, next_pd - max(0.1, self.total_path_length / max(1000.0, len(ordered_names))))
+                else:
+                    continue
+                # Update position based on target path distance
+                new_local = self._get_position_at_distance(target_pd)
+                seg_idx2, seg_t2 = self._get_segment_at_distance(target_pd)
+                heading2 = self.flight_segments[seg_idx2].heading if 0 <= seg_idx2 < len(self.flight_segments) else data.get('heading', 0.0)
+                new_alt = float(new_local[2] + self.local_origin[2])
+                # Preserve lat/lon from EXIF; recalc altitude only
+                data.update({
+                    'position_3d': new_local.tolist(),
+                    'path_distance': float(target_pd),
+                    'segment_index': int(seg_idx2),
+                    'segment_t': float(seg_t2),
+                    'heading': float(heading2),
+                    'altitude': new_alt,
+                    'confidence': max(data.get('confidence', 0.0), 0.75),
+                })
+                meta = data.get('_trajectory_metadata', {})
+                meta.update({
+                    'source': 'exif_gps_trajectory_projection+neighbor_smoothing',
+                    'trajectory_confidence': data['confidence'],
+                    'flight_segment_id': int(seg_idx2),
+                    'segment_t': float(seg_t2)
+                })
+                data['_trajectory_metadata'] = meta
+        return has_any_exif
     
     def _extract_photo_number(self, photo_path: Path) -> Tuple[str, int]:
         """Extract number from filename for sorting"""
@@ -540,6 +765,18 @@ class Advanced3DPathProcessor:
         """
         if not self.flight_segments:
             self.build_3d_flight_path()
+
+        # Try EXIF + trajectory projection first
+        try:
+            if self.map_photos_using_exif_trajectory(photos):
+                logger.info("✅ Used EXIF GPS + 3D trajectory projection for mapping")
+                self._enhance_photo_positions()  # ensure all metadata completeness
+                logger.info(f"✅ Mapped {len(self.photo_positions)} photos to 3D positions")
+                return
+            else:
+                logger.info("ℹ️ EXIF GPS not found for photos, falling back to CSV-based mapping")
+        except Exception as e:
+            logger.warning(f"⚠️ EXIF+trajectory mapping failed: {e}. Falling back to CSV-based mapping.")
         
         num_photos = len(photos)
         if num_photos == 0:
@@ -741,16 +978,20 @@ class Advanced3DPathProcessor:
         # 1. Generate exif_overrides.json
         exif_overrides = {}
         for photo_name, data in self.photo_positions.items():
-            exif_overrides[photo_name] = {
+            entry = {
                 'gps': {
                     'latitude': data['latitude'],
                     'longitude': data['longitude'],
                     'altitude': data['altitude'],
-                    'dop': data['gps_accuracy']
+                    'dop': data.get('gps_accuracy', self.DEFAULT_GPS_ACCURACY_M)
                 },
-                'orientation': 1,  # Standard EXIF orientation (1=normal, OpenSfM expects int 1-8)
-                'heading_deg': data['heading'] if 'heading' in data else 0  # Preserve heading as custom field
+                'orientation': 1,
+                'heading_deg': data.get('heading', 0)
             }
+            # Optional debug/validation metadata
+            if '_trajectory_metadata' in data:
+                entry['_trajectory_metadata'] = data['_trajectory_metadata']
+            exif_overrides[photo_name] = entry
         
         with open(output_dir / 'exif_overrides.json', 'w') as f:
             json.dump(exif_overrides, f, indent=2)
@@ -778,9 +1019,9 @@ class Advanced3DPathProcessor:
         for photo_name, data in self.photo_positions.items():
             gps_priors['cameras'][photo_name] = {
                 'position': data['position_3d'],
-                'position_std': [data['gps_accuracy']] * 3,
-                'orientation': [0, 0, data['heading'] if 'heading' in data else 0],
-                'orientation_std': [180, 180, 10]  # Allow pitch/roll freedom, constrain yaw
+                'position_std': [data.get('gps_accuracy', self.DEFAULT_GPS_ACCURACY_M)] * 3,
+                'orientation': [0, 0, data.get('heading', 0)],
+                'orientation_std': [180, 180, 10]
             }
         
         with open(output_dir / 'gps_priors.json', 'w') as f:
