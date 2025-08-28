@@ -64,20 +64,32 @@ jobs:
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         
-        # Only bootstrap if not already bootstrapped
-        if ! aws ssm get-parameter --name "/cdk-bootstrap/$ACCOUNT/version" --region us-west-2 2>/dev/null; then
-          echo "Bootstrapping CDK for account $ACCOUNT..."
+        # Check if CDK is bootstrapped with default qualifier
+        if ! aws ssm get-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 2>/dev/null; then
+          echo "CDK not bootstrapped with default qualifier. Bootstrapping for account $ACCOUNT..."
+          
+          # Clean up any existing non-standard bootstrap first
+          echo "Checking for existing CDK bootstrap stack..."
+          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 2>/dev/null; then
+            echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
+            aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2
+            echo "Waiting for stack deletion to complete..."
+            aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2
+            echo "Existing CDK bootstrap stack deleted successfully"
+          fi
+          
+          # Bootstrap with default qualifier for consistency between dev and prod
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
-            echo "Production bootstrap with OIDC role trust"
+            echo "Production bootstrap with OIDC role trust and default qualifier"
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
               --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
               --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole
           else
-            echo "Development bootstrap"
+            echo "Development bootstrap with default qualifier"
             cdk bootstrap aws://$ACCOUNT/us-west-2
           fi
         else
-          echo "CDK already bootstrapped for account $ACCOUNT"
+          echo "CDK already bootstrapped with default qualifier for account $ACCOUNT"
         fi
 
     - name: Verify Bootstrap
@@ -87,38 +99,15 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Verifying CDK bootstrap for account $ACCOUNT"
 
-        # Prefer SSM parameter check for default qualifier, else fall back to CFN stack state
-        # Default CDK v2 qualifier is 'hnb659fds'
-        PARAM_NAME="/cdk-bootstrap/hnb659fds/version"
-
-        # Exponential backoff attempts
-        for ATTEMPT in 1 2 3 4 5; do
-          echo "Attempt $ATTEMPT of 5 to verify bootstrap..."
-          if aws ssm get-parameter --name "$PARAM_NAME" --region us-west-2 >/dev/null 2>&1; then
-            echo "Found SSM bootstrap parameter: $PARAM_NAME"
-            FOUND=1
-            break
-          fi
-
-          # Fall back to checking CloudFormation stack status
-          STATUS=$(aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 --query "Stacks[0].StackStatus" --output text 2>/dev/null || echo "NOT_FOUND")
-          if [ "$STATUS" = "CREATE_COMPLETE" ] || [ "$STATUS" = "UPDATE_COMPLETE" ]; then
-            echo "CDKToolkit stack status is $STATUS"
-            FOUND=1
-            break
-          fi
-
-          SLEEP=$((2 ** (ATTEMPT - 1)))
-          echo "Bootstrap not ready yet (status=$STATUS). Waiting ${SLEEP}s..."
-          sleep $SLEEP
-        done
-
-        if [ "${FOUND:-0}" != "1" ]; then
-          echo "Failed to verify bootstrap after retries"
-          echo "Hint: Ensure 'cdk bootstrap' ran successfully and the default qualifier 'hnb659fds' is used."
+        # Simple verification - check for default qualifier SSM parameter
+        echo "Checking for default qualifier bootstrap parameter..."
+        if aws ssm get-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 >/dev/null 2>&1; then
+          echo "✅ CDK bootstrap verified successfully with default qualifier"
+        else
+          echo "❌ CDK bootstrap verification failed - default qualifier not found"
+          echo "This should not happen after the bootstrap step above"
           exit 1
         fi
-        echo "CDK bootstrap verified successfully"
 
     # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
