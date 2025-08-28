@@ -63,8 +63,12 @@
   padding: 30px;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
+}
+
+/* Apply standard border to component groups */
+.component-group {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 8pt Grid Indicator for Component Groups */
@@ -183,8 +187,6 @@
   letter-spacing: 0em;
   line-height: 1.05;
 }
-
-
 
 /* Universal Typography Classes */
 .section h1 {
@@ -400,6 +402,7 @@
   margin-bottom: 20px;
 }
 
+/* Apply gradient border to header previews */
 .component-showcase .header-preview::before {
   content: "";
   position: absolute;
@@ -579,8 +582,6 @@
   min-width: 200px;
 }
 
-
-
 /* Cards Showcase */
 .component-showcase .default-card {
   min-width: 320px;
@@ -596,8 +597,8 @@
   box-sizing: border-box;
 }
 
-/* Glasmorphic Edge Border - Style Guide Spec */
-.default-card::before {
+/* Apply gradient border to default cards */
+.component-showcase .default-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -621,7 +622,7 @@
   z-index: 0;
 }
 
-.default-card h3 {
+.component-showcase .default-card h3 {
   font-size: 1.5rem;
   font-weight: 500;
   margin: 0 0 16px 0;
@@ -635,7 +636,7 @@
   letter-spacing: 0em;
 }
 
-.default-card p {
+.component-showcase .default-card p {
   color: rgba(255, 255, 255, 0.5);
   font-size: 1.2rem;
   line-height: 1.6;
@@ -657,6 +658,53 @@
 .component-showcase .waitlist-card {
   min-width: 280px;
   flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Apply gradient border to project cards */
+.component-showcase .project-box::before,
+.component-showcase .new-project-card::before,
+.component-showcase .waitlist-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, 0) 57%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 3px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure card content is above the border */
+.component-showcase .project-box h1,
+.component-showcase .project-box p,
+.component-showcase .new-project-card h1,
+.component-showcase .new-project-card .plus-icon,
+.component-showcase .waitlist-card .waitlist-header,
+.component-showcase .waitlist-card h1,
+.component-showcase .waitlist-card p {
+  position: relative;
+  z-index: 1;
 }
 
 /* Map Showcase */
@@ -705,8 +753,6 @@
     text-align: center;
   }
   
-
-  
   .component-showcase .project-box,
   .component-showcase .new-project-card,
   .component-showcase .waitlist-card {
@@ -723,8 +769,6 @@
     width: 100%;
     max-width: none;
   }
-  
-
   
   .component-name-pill {
     font-size: 0.75rem;
@@ -780,9 +824,13 @@
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  border: 3px solid rgba(255, 255, 255, 0.1);
   min-width: 400px;
   box-sizing: border-box;
+}
+
+/* Apply standard border to color swatch container */
+.component-showcase .color-swatch-container {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .color-swatch {
@@ -794,11 +842,15 @@
   justify-content: center;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(255, 255, 255, 0.1);
   font-size: 0.875rem;
   text-align: center;
   line-height: 1.2;
   box-sizing: border-box;
+}
+
+/* Apply standard border to color swatches */
+.component-showcase .color-swatch {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .color-swatch.pure-white {
@@ -832,12 +884,20 @@
   gap: 16px;
   justify-content: center;
   align-items: center;
-  border: 3px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+
+/* Apply standard border to light background container */
+.component-showcase .light-background-container {
+  border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
 .component-showcase .light-background-container .color-swatch {
   color: rgba(0, 0, 0, 0.8);
+}
+
+/* Apply standard border to light background color swatches */
+.component-showcase .light-background-container .color-swatch {
   border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -845,8 +905,6 @@
 .component-showcase .light-background-container .opacity-stop-20-dark { background: rgba(0, 0, 0, 0.2); }
 .component-showcase .light-background-container .opacity-stop-50-dark { background: rgba(0, 0, 0, 0.5); }
 .component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: rgba(255, 255, 255, 0.8); }
-
-
 
 /* Border Demo Components */
 .component-showcase .standard-border-demo {
@@ -857,8 +915,12 @@
   -webkit-backdrop-filter: blur(40px);
   border-radius: 25px;
   padding: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
+}
+
+/* Apply standard border to standard border demo */
+.component-showcase .standard-border-demo {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .standard-border-demo h3 {
@@ -890,6 +952,7 @@
   box-sizing: border-box;
 }
 
+/* Apply gradient border to gradient border demo */
 .component-showcase .gradient-border-demo::before {
   content: "";
   position: absolute;
@@ -903,7 +966,7 @@
     rgba(255, 255, 255, 0.4) 0%,
     rgba(255, 255, 255, 0) 41%,
     rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255, 255, 255, 0) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
