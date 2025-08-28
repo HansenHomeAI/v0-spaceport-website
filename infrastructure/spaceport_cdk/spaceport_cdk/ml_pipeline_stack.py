@@ -45,19 +45,22 @@ class MLPipelineStack(Stack):
         self._validate_resource_naming_conventions()
 
         # ========== S3 BUCKETS ==========
-        # Dynamic ML bucket - import if exists, create if not
+        # ML bucket - this stack owns this bucket
         ml_bucket = self._get_or_create_s3_bucket(
             construct_id="SpaceportMLBucket",
             preferred_name=f"spaceport-ml-processing-{suffix}",
             fallback_name="spaceport-ml-processing"
         )
+        print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
 
-        # Dynamic upload bucket reference - fallback to existing bucket without suffix
-        upload_bucket = self._get_or_create_s3_bucket(
-            construct_id="ImportedUploadBucket",
-            preferred_name=f"spaceport-uploads-{suffix}",
-            fallback_name="spaceport-uploads"
+        # Import upload bucket from main Spaceport stack - DO NOT CREATE
+        # This bucket is owned by the main Spaceport stack, we just reference it
+        upload_bucket = s3.Bucket.from_bucket_name(
+            self, "ImportedUploadBucket",
+            f"spaceport-uploads-{suffix}"
         )
+        print(f"✅ Importing upload bucket from main stack: spaceport-uploads-{suffix}")
+        self._imported_resources.append({"type": "S3::Bucket", "name": f"spaceport-uploads-{suffix}", "action": "imported_from_main_stack"})
 
         # ========== ECR REPOSITORIES ==========
         # Dynamic ECR repositories - import if exist, create if not

@@ -51,12 +51,13 @@ class SpaceportStack(Stack):
             no_echo=True  # This will mask the value in CloudFormation
         )
 
-        # Dynamic S3 bucket - import if exists, create if not
+        # Upload bucket - this stack owns this bucket (ML Pipeline stack imports it)
         self.upload_bucket = self._get_or_create_s3_bucket(
             construct_id="SpaceportUploadBucket",
             preferred_name=f"spaceport-uploads-{suffix}",
             fallback_name="spaceport-uploads"
         )
+        print(f"🆕 Main Spaceport stack owns upload bucket: {self.upload_bucket.bucket_name}")
         
         # Dynamic DynamoDB tables - import if exist, create if not
         self.file_metadata_table = self._get_or_create_dynamodb_table(
