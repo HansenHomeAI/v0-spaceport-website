@@ -506,9 +506,11 @@ class Advanced3DPathProcessor:
             'segment_t': float(closest['parameter_t']),
             'path_distance': float(path_distance),
             'trajectory_metadata': {
+                'exif_source': 'exif_gps',
                 'source': 'exif_gps_trajectory_projection',
                 'trajectory_confidence': float(closest['confidence']),
                 'projection_distance_m': float(closest['distance_m']),
+                'distance_from_path_m': float(closest['distance_m']),
                 'flight_segment_id': int(closest['segment_index'])
             }
         }
