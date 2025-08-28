@@ -123,6 +123,12 @@ class OpenSfMGPSPipeline:
             
             # Map photos to 3D positions
             processor.map_photos_to_3d_positions(photos)
+            # Refine using EXIF+trajectory projection for sub-meter altitude
+            try:
+                processor.apply_exif_trajectory_projection(photos)
+                logger.info("✅ Applied EXIF+trajectory projection refinement")
+            except Exception as refine_err:
+                logger.warning(f"⚠️ EXIF+trajectory projection skipped due to error: {refine_err}")
             
             # Generate OpenSfM files
             processor.generate_opensfm_files(self.opensfm_dir)
