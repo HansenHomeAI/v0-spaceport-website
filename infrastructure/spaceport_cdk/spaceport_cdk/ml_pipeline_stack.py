@@ -288,6 +288,19 @@ class MLPipelineStack(Stack):
                         }
                     }]
                 },
+                # Enable comprehensive CloudWatch logging
+                "ExperimentConfig": {
+                    "ExperimentName": "spaceport-ml-pipeline"
+                },
+                "Environment": {
+                    "AWS_DEFAULT_REGION": self.region,
+                    "PYTHONUNBUFFERED": "1"
+                },
+                "Tags": [
+                    {"Key": "Project", "Value": "Spaceport"},
+                    {"Key": "Component", "Value": "SfM"},
+                    {"Key": "Environment", "Value": suffix}
+                ],
                 "RoleArn": sagemaker_role.role_arn
             },
             iam_resources=[
@@ -352,7 +365,21 @@ class MLPipelineStack(Stack):
                     "MaxRuntimeInSeconds": 7200  # 2 hours for real training
                 },
                 "RoleArn": sagemaker_role.role_arn,
+                # Enable comprehensive CloudWatch logging for training
+                "ExperimentConfig": {
+                    "ExperimentName": "spaceport-ml-pipeline"
+                },
+                "Tags": [
+                    {"Key": "Project", "Value": "Spaceport"},
+                    {"Key": "Component", "Value": "3DGS"},
+                    {"Key": "Environment", "Value": suffix}
+                ],
                 "Environment": {
+                    # Enable detailed logging
+                    "AWS_DEFAULT_REGION": self.region,
+                    "PYTHONUNBUFFERED": "1",
+                    "SAGEMAKER_PROGRAM": "train.py",
+                    
                     # Vincent Woo's NerfStudio Methodology - Core Parameters
                     # Note: All values must be strings for SageMaker environment variables
                     "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MAX_ITERATIONS")),
@@ -443,6 +470,19 @@ class MLPipelineStack(Stack):
                         }
                     }]
                 },
+                # Enable comprehensive CloudWatch logging
+                "ExperimentConfig": {
+                    "ExperimentName": "spaceport-ml-pipeline"
+                },
+                "Environment": {
+                    "AWS_DEFAULT_REGION": self.region,
+                    "PYTHONUNBUFFERED": "1"
+                },
+                "Tags": [
+                    {"Key": "Project", "Value": "Spaceport"},
+                    {"Key": "Component", "Value": "Compression"},
+                    {"Key": "Environment", "Value": suffix}
+                ],
                 "RoleArn": sagemaker_role.role_arn
             },
             iam_resources=[
