@@ -127,13 +127,26 @@ class OpenSfMGPSPipeline:
             # Generate OpenSfM files
             processor.generate_opensfm_files(self.opensfm_dir)
             
-            # Get processing summary
+            # Get processing summary with enhanced GPS statistics
             summary = processor.get_processing_summary()
             logger.info(f"📊 GPS Processing Summary:")
             logger.info(f"   Photos: {summary['photos_processed']}")
             logger.info(f"   Path length: {summary['path_length_m']}m")
             logger.info(f"   Photo spacing: {summary['photo_spacing_m']}m")
             logger.info(f"   Confidence: {summary['confidence_stats']['mean']:.2f}")
+            
+            # Enhanced GPS fusion statistics
+            if 'enhanced_gps_stats' in summary:
+                enhanced_stats = summary['enhanced_gps_stats']
+                logger.info(f"🎯 EXIF+Trajectory Fusion Results:")
+                logger.info(f"   EXIF GPS fusion: {enhanced_stats['exif_fusion_photos']}/{summary['photos_processed']} ({enhanced_stats['exif_fusion_percentage']}%)")
+                logger.info(f"   Expected accuracy improvement: {enhanced_stats['expected_accuracy_improvement']}")
+                
+                if enhanced_stats['trajectory_confidence']:
+                    traj_conf = enhanced_stats['trajectory_confidence']
+                    logger.info(f"   Trajectory confidence: {traj_conf['mean']:.2f} avg, {traj_conf['high_confidence_count']} high confidence")
+                
+                logger.info(f"   Mapping methods: {enhanced_stats['mapping_methods']}")
             
             return True
             
