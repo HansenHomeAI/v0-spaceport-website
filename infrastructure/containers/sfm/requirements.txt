@@ -43,5 +43,9 @@ tqdm>=4.60.0
 imageio>=2.9.0
 rawpy>=0.17.0
 
+# Enhanced EXIF processing (for DJI GPS extraction)
+# Note: exifread already included above, PIL/Pillow already included
+# Additional regex support already in Python stdlib
+
 # PDF Generation (for OpenSfM reports)
 fpdf2>=2.5.0 
