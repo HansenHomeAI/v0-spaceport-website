@@ -9,6 +9,8 @@ import boto3
 import json
 import time
 import logging
+from pathlib import Path
+import importlib.util
 from textwrap import dedent
 
 # Configure logging
@@ -132,6 +134,11 @@ def wait_for_completion(execution_arn: str) -> str:
 
 def test_full_pipeline_with_gps():
     """Pytest entrypoint."""
+    # Quick import check of gps_processor_3d (syntax/imports sanity)
+    module_path = Path(__file__).parents[2] / 'infrastructure' / 'containers' / 'sfm' / 'gps_processor_3d.py'
+    spec = importlib.util.spec_from_file_location("gps_processor_3d", str(module_path))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
     execution_arn = start_pipeline()
     final_status = wait_for_completion(execution_arn)
     assert final_status == "SUCCEEDED", f"Pipeline failed with status {final_status} – see Step Functions execution for details"

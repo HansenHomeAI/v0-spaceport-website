@@ -121,7 +121,7 @@ class OpenSfMGPSPipeline:
                 logger.error("❌ No photos found to process")
                 return False
             
-            # Map photos to 3D positions
+            # Map photos to 3D positions (EXIF+trajectory fusion first; fallback inside the method)
             processor.map_photos_to_3d_positions(photos)
             
             # Generate OpenSfM files
