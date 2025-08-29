@@ -4,6 +4,7 @@ export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
 import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
+import BetaAccessInvite from '../../components/BetaAccessInvite';
 import { Auth } from 'aws-amplify';
 
 export default function Create(): JSX.Element {
@@ -185,6 +186,9 @@ export default function Create(): JSX.Element {
                       )}
                     </div>
                   )}
+                  
+                  {/* Beta Access Management - Only shown to authorized employees */}
+                  <BetaAccessInvite />
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
                   <span className="sign-out-icon"></span>
