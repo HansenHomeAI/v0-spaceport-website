@@ -71,8 +71,8 @@
   border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 8pt Grid Indicator for Component Groups */
-.component-group::before {
+/* 8pt Grid Indicator for Component Groups - REMOVED */
+/* .component-group::before {
   content: "";
   position: absolute;
   top: 0;
@@ -85,7 +85,7 @@
   pointer-events: none;
   border-radius: inherit;
   z-index: 0;
-}
+} */
 
 .h3 {
   font-size: 1.2rem;
@@ -601,23 +601,20 @@
 .component-showcase .default-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 3px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
@@ -674,23 +671,20 @@
 .component-showcase .waitlist-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 3px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
@@ -956,17 +950,14 @@
 .component-showcase .gradient-border-demo::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
