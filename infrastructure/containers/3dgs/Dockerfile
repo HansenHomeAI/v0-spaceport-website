@@ -71,7 +71,11 @@ RUN pip install --no-cache-dir nerfstudio[all]>=1.0.0
 
 # Verify NerfStudio installation includes required components
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
-RUN python -c "import gsplat; print('✅ gsplat backend available')"
+\
+# Force gsplat to use precompiled wheels for PyTorch 2.0 + CUDA 11.8 to avoid JIT builds
+# Reference: https://docs.gsplat.studio/whl/pt20cu118/gsplat/
+RUN pip install --no-cache-dir --upgrade --index-url https://docs.gsplat.studio/whl/pt20cu118/gsplat/ gsplat && \
+    python -c "import gsplat; print('✅ gsplat precompiled wheel installed')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 
 # ----------------------------------------------------------------------------
