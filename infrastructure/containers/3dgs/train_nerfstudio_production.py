@@ -24,8 +24,22 @@ import logging
 import argparse
 import subprocess
 
-# Import torch for any version checks if needed
+# Import torch and disable compilation backends for SageMaker compatibility
 import torch
+import os
+
+# CRITICAL: Disable PyTorch compilation backends that require CUDA development headers
+# PyTorch 2.0+ tries to use Triton/Inductor backends which need cuda.h at runtime
+# SageMaker containers don't have CUDA development environment, only runtime
+try:
+    torch._dynamo.config.suppress_errors = True
+    print("✅ PyTorch dynamo error suppression enabled")
+except AttributeError:
+    print("✅ PyTorch version doesn't have dynamo module")
+
+# Also disable torch.compile entirely 
+os.environ['TORCH_COMPILE_DISABLE'] = '1'
+print("✅ TORCH_COMPILE_DISABLE=1 set")
 from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil
