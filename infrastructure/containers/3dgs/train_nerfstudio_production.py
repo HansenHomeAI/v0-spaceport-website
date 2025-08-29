@@ -24,16 +24,8 @@ import logging
 import argparse
 import subprocess
 
-# Fix PyTorch Triton compilation issues in SageMaker environment
-# Disable PyTorch's new compilation backends and use eager execution (if available)
+# Import torch for any version checks if needed
 import torch
-try:
-    torch._dynamo.config.suppress_errors = True
-    os.environ['TORCH_COMPILE_DISABLE'] = '1'
-    print("✅ PyTorch compilation backends disabled")
-except AttributeError:
-    # Older PyTorch versions don't have _dynamo module - no action needed
-    print("✅ PyTorch version doesn't have compilation backends - using eager execution by default")
 from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil
