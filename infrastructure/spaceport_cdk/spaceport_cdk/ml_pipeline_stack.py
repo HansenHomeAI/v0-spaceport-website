@@ -111,7 +111,8 @@ class MLPipelineStack(Stack):
                                 "sagemaker:DescribeProcessingJob",
                                 "sagemaker:DescribeTrainingJob",
                                 "sagemaker:StopProcessingJob",
-                                "sagemaker:StopTrainingJob"
+                                "sagemaker:StopTrainingJob",
+                                "sagemaker:AddTags"
                             ],
                             resources=["*"]
                         ),
