@@ -25,9 +25,9 @@ if [ "${1:-}" = "--revoke" ]; then REVOKE=true; fi
 
 # Fetch Auth stack outputs
 echo "Fetching Auth stack configuration..."
-OUT=$(aws cloudformation describe-stacks --stack-name SpaceportAuthStack --query "Stacks[0].Outputs" --output json)
+OUT=$(aws cloudformation describe-stacks --stack-name SpaceportAuthStagingStack --query "Stacks[0].Outputs" --output json)
 USER_POOL_ID=$(echo "$OUT" | jq -r '.[] | select(.OutputKey=="CognitoUserPoolIdV2") | .OutputValue')
-PERMISSIONS_TABLE=$(aws cloudformation describe-stacks --stack-name SpaceportAuthStack --query "Stacks[0].Outputs[?starts_with(OutputKey, 'BetaAccess')].OutputValue" --output text | head -1)
+PERMISSIONS_TABLE="Spaceport-BetaAccessPermissions-staging"
 
 # If we can't find the table name from stack outputs, try common names
 if [ -z "$PERMISSIONS_TABLE" ] || [ "$PERMISSIONS_TABLE" = "None" ]; then
