@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
+import BetaInviteCard from '../../components/BetaInviteCard';
 import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
 import { Auth } from 'aws-amplify';
@@ -192,6 +193,9 @@ export default function Create(): JSX.Element {
                 </button>
               </div>
             </div>
+            
+            {/* Beta Invite Card - Only shows if user has permission */}
+            <BetaInviteCard user={user} />
             
             {/* New Project Button */}
             <div 

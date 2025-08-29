@@ -40,6 +40,12 @@ class AuthStack(Stack):
                 email=cognito.StandardAttribute(required=True, mutable=True),
                 preferred_username=cognito.StandardAttribute(required=True, mutable=False),
             ),
+            custom_attributes={
+                "subscription_plan": cognito.StringAttribute(mutable=True),
+                "subscription_status": cognito.StringAttribute(mutable=True),
+                "subscription_updated": cognito.StringAttribute(mutable=True),
+                "can_invite_beta": cognito.StringAttribute(mutable=True),
+            },
             password_policy=cognito.PasswordPolicy(
                 min_length=8,
                 require_lowercase=True,
@@ -427,12 +433,100 @@ class AuthStack(Stack):
         CfnOutput(self, "SubscriptionApiUrl", value=subscription_api.url)
         CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
         
+        # -------------------------------------
+        # Beta Invitation Management
+        # -------------------------------------
+        
+        # Create beta invitation manager Lambda function
+        beta_invite_lambda = lambda_.Function(
+            self,
+            "BetaInviteManagerLambda",
+            function_name=f"Spaceport-BetaInviteManager-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_invite_manager")
+            ),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
+                "INVITE_API_URL": f"{invite_api_v2.url}invite",
+                "INVITE_API_KEY": os.environ.get("INVITE_API_KEY", ""),
+            },
+            log_retention=logs.RetentionDays.ONE_MONTH,
+        )
+
+        # Add Cognito permissions for checking user attributes
+        beta_invite_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "cognito-idp:AdminGetUser",
+                ],
+                resources=[user_pool_v2.user_pool_arn]
+            )
+        )
+
+        # Create beta invitation API Gateway
+        beta_invite_api = apigw.RestApi(
+            self,
+            "BetaInviteApiGateway",
+            rest_api_name=f"Spaceport-BetaInviteApi-{suffix}",
+            description="Beta invitation management API for Spaceport employees",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                    "X-Api-Key",
+                ],
+            ),
+        )
+
+        # Add beta invitation endpoints
+        beta_invite_resource = beta_invite_api.root.add_resource("beta-invite")
+        
+        # Check permission endpoint (requires auth)
+        check_permission_resource = beta_invite_resource.add_resource("check-permission")
+        check_permission_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(beta_invite_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "BetaInviteCheckAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Send invitation endpoint (requires auth)
+        send_invitation_resource = beta_invite_resource.add_resource("send-invitation")
+        send_invitation_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(beta_invite_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "BetaInviteSendAuthorizer",
+                cognito_user_pools=[user_pool_v2],
+            ),
+        )
+
+        # Outputs
+        CfnOutput(self, "BetaInviteApiUrl", value=beta_invite_api.url)
+        CfnOutput(self, "BetaInviteLambdaArn", value=beta_invite_lambda.function_arn)
+        
         # Debug: Ensure subscription resources are included in stack
         CfnOutput(self, "SubscriptionStackDebug", value="Subscription resources included in AuthStack")
         
         # Force resource inclusion by referencing them
         self.subscription_lambda = subscription_lambda
         self.subscription_api = subscription_api
+        self.beta_invite_lambda = beta_invite_lambda
+        self.beta_invite_api = beta_invite_api
 
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
