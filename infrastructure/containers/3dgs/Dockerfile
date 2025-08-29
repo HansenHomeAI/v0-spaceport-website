@@ -2,7 +2,7 @@
 # Implements Vincent Woo's Sutro Tower methodology for production use
 # Based on Spaceport ML Pipeline requirements
 
-FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu117-ubuntu20.04-sagemaker
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
 # Set environment variables for CUDA (optimized for A10G GPU)
 ENV CUDA_HOME=/usr/local/cuda
