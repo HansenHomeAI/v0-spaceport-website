@@ -290,9 +290,7 @@ class MLPipelineStack(Stack):
                     }]
                 },
                 # Enable comprehensive CloudWatch logging
-                "ExperimentConfig": {
-                    "ExperimentName": "spaceport-ml-pipeline"
-                },
+                # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
                 "Environment": {
                     "AWS_DEFAULT_REGION": self.region,
                     "PYTHONUNBUFFERED": "1"
@@ -367,9 +365,7 @@ class MLPipelineStack(Stack):
                 },
                 "RoleArn": sagemaker_role.role_arn,
                 # Enable comprehensive CloudWatch logging for training
-                "ExperimentConfig": {
-                    "ExperimentName": "spaceport-ml-pipeline"
-                },
+                # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
                 "Tags": [
                     {"Key": "Project", "Value": "Spaceport"},
                     {"Key": "Component", "Value": "3DGS"},
@@ -472,9 +468,7 @@ class MLPipelineStack(Stack):
                     }]
                 },
                 # Enable comprehensive CloudWatch logging
-                "ExperimentConfig": {
-                    "ExperimentName": "spaceport-ml-pipeline"
-                },
+                # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
                 "Environment": {
                     "AWS_DEFAULT_REGION": self.region,
                     "PYTHONUNBUFFERED": "1"
