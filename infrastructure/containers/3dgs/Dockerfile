@@ -88,8 +88,8 @@ RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')
 # CRITICAL: Force gsplat SOURCE COMPILATION with A10G architecture support
 # This is the proven approach that works with our A10G setup (July 2025 commits)
 # Precompiled wheels failed - source compilation with nvcc is required
-RUN TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6" pip install gsplat --no-cache-dir --force-reinstall && \
-    python -c "import gsplat; print('✅ gsplat compiled from source with A10G support')"
+RUN TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6" pip install git+https://github.com/nerfstudio-project/gsplat.git@v1.4.0 --no-cache-dir --force-reinstall && \
+    python -c "import gsplat; print('✅ gsplat 1.4.0 compiled from source with A10G support')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 
 # ----------------------------------------------------------------------------
