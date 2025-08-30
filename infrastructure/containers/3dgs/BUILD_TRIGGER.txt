@@ -11,8 +11,8 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-29-v1.0.30
-Build ID: nerfstudio-vincent-woo-v1.0.30-PYTORCH-VERSION-LOCK-FIX
+Container Build Timestamp: 2025-01-08-v3.0.0
+Build ID: vincent-woo-jit-compilation-v3.0.0-SIMPLIFIED
 
 INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → transforms.json → ns-train
 - FIXED: Remove unsupported --input_type flag from colmap model_converter (auto-detects format)
