@@ -87,14 +87,30 @@ RUN pip install --no-cache-dir torchaudio==2.0.2+cu118 --index-url https://downl
 ENV TORCHMETRICS_AUDIO_AVAILABLE=0
 
 # ----------------------------------------------------------------------------
-# 4. Install NerfStudio with Vincent Woo's Exact Configuration
+# 6. Install NerfStudio with Vincent Woo's Exact Configuration  
 # ----------------------------------------------------------------------------
-# Install NerfStudio (includes gsplat as dependency)
-RUN pip install --no-cache-dir nerfstudio[all]>=1.0.0
+# CRITICAL: Pin PyTorch version to prevent NerfStudio from upgrading it
+# NerfStudio tries to install PyTorch 2.8.0 which breaks TorchAudio 2.0.2 compatibility
+RUN pip install --no-cache-dir torch==2.0.1+cu118 --index-url https://download.pytorch.org/whl/cu118 && \
+    pip install --no-cache-dir nerfstudio[all]>=1.0.0 --no-deps && \
+    pip install --no-cache-dir \
+        tyro \
+        rich \
+        tensorboard \
+        opencv-python \
+        matplotlib \
+        plotly \
+        open3d \
+        trimesh \
+        pymeshlab \
+        xatlas \
+        nuscenes-devkit \
+        appdirs && \
+    python -c "import torch; print(f'✅ PyTorch version locked at: {torch.__version__}')"
 
 # Verify NerfStudio installation includes required components
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
-\
+
 # CRITICAL: Force gsplat SOURCE COMPILATION with A10G architecture support
 # This is the proven approach that works with our A10G setup (July 2025 commits)
 # Precompiled wheels failed - source compilation with nvcc is required
