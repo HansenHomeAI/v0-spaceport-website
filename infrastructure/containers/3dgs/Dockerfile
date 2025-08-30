@@ -13,7 +13,16 @@ LABEL description="3D Gaussian Splatting training with gsplat JIT compilation fo
 WORKDIR /opt/ml/code
 
 # ---------------------------------------------------------------
-# 1. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
+# 1. Install System Dependencies
+# ---------------------------------------------------------------
+
+# Install COLMAP for model conversion (required by training script)
+RUN apt-get update && apt-get install -y \
+    colmap \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------
+# 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
 # ---------------------------------------------------------------
 
 # Install NerfStudio - this automatically includes gsplat as a dependency
