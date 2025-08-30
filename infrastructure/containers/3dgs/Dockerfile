@@ -89,7 +89,9 @@ RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')
 # This is the proven approach that works with our A10G setup (July 2025 commits)
 # Precompiled wheels failed - source compilation with nvcc is required
 RUN TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6" MAX_JOBS=2 pip install git+https://github.com/nerfstudio-project/gsplat.git@v1.4.0 --no-cache-dir --force-reinstall && \
-    python -c "import gsplat; print('✅ gsplat 1.4.0 compiled from source with A10G support (MAX_JOBS=2)')"
+    pip install --no-cache-dir "numpy<2.0" --force-reinstall && \
+    python -c "import gsplat; print('✅ gsplat 1.4.0 compiled from source with A10G support (MAX_JOBS=2)')" && \
+    python -c "import numpy; print(f'✅ NumPy version: {numpy.__version__}')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 
 # ----------------------------------------------------------------------------
