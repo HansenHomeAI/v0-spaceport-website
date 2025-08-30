@@ -77,6 +77,16 @@ RUN pip install --no-cache-dir "numpy<2.0" && \
         tensorboard
 
 # ----------------------------------------------------------------------------
+# 5. Install TorchAudio compatible with PyTorch 2.0.1 BEFORE NerfStudio
+# ----------------------------------------------------------------------------
+# This prevents NerfStudio/torchmetrics from installing incompatible TorchAudio version
+RUN pip install --no-cache-dir torchaudio==2.0.2+cu118 --index-url https://download.pytorch.org/whl/cu118 && \
+    python -c "import torch; import torchaudio; print(f'✅ PyTorch {torch.__version__} + TorchAudio {torchaudio.__version__} compatibility verified')"
+
+# Disable TorchMetrics audio functionality to prevent import issues
+ENV TORCHMETRICS_AUDIO_AVAILABLE=0
+
+# ----------------------------------------------------------------------------
 # 4. Install NerfStudio with Vincent Woo's Exact Configuration
 # ----------------------------------------------------------------------------
 # Install NerfStudio (includes gsplat as dependency)
