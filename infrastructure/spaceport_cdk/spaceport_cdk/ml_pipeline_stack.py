@@ -357,7 +357,7 @@ class MLPipelineStack(Stack):
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g5.xlarge",  # A10G GPU - supports gsplat labeled_partition
+                    "InstanceType": "ml.g5.2xlarge",  # A10G GPU with 32GB RAM - supports Vincent Woo's full methodology
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
