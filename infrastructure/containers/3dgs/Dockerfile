@@ -54,6 +54,11 @@ COPY utils/ /opt/ml/code/utils/
 # Set Python path
 ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 
+# CRITICAL: Disable PyTorch Triton compilation to prevent CUDA development header errors
+# PyTorch 2.0+ tries to use Triton/Inductor backends which need cuda.h at runtime
+# SageMaker containers only have CUDA runtime, not development environment
+ENV TORCH_COMPILE_DISABLE=1
+
 # Create necessary directories
 RUN mkdir -p /opt/ml/model /opt/ml/input /opt/ml/output
 
