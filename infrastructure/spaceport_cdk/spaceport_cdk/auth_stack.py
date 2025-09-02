@@ -824,7 +824,7 @@ class AuthStack(Stack):
             print(f"✅ Importing existing Cognito user pool: {preferred_name} ({preferred_pool_id})")
             imported_pool = cognito.UserPool.from_user_pool_id(self, construct_id, preferred_pool_id)
             
-            # Get existing client for this pool
+            # Get existing client for this pool or create new one
             try:
                 response = self.cognito_client.list_user_pool_clients(UserPoolId=preferred_pool_id)
                 if response.get('UserPoolClients'):
@@ -834,12 +834,14 @@ class AuthStack(Stack):
                     )
                     print(f"✅ Imported existing client: {client_id}")
                 else:
-                    # Create new client for existing pool
+                    # No existing client, create new one for imported pool
+                    print(f"🆕 No existing client found, creating new client for imported pool")
                     imported_client = imported_pool.add_client(client_construct_id, **client_config)
-                    print(f"🆕 Created new client for existing pool")
+                    print(f"✅ Created new client: {imported_client.user_pool_client_id}")
             except Exception as e:
-                print(f"⚠️  Error getting client, creating new one: {e}")
+                print(f"⚠️  Error handling client, creating new one: {e}")
                 imported_client = imported_pool.add_client(client_construct_id, **client_config)
+                print(f"✅ Created fallback client: {imported_client.user_pool_client_id}")
             
             # After importing, check if it's empty and migrate from fallback patterns
             if not self._cognito_user_pool_has_users(preferred_pool_id):
@@ -911,6 +913,7 @@ class AuthStack(Stack):
         
         # Create client
         new_client = new_pool.add_client(client_construct_id, **client_config)
+        print(f"✅ Created new client: {new_client.user_pool_client_id}")
         
         # Create group if specified (only if it doesn't exist)
         if group_name:
