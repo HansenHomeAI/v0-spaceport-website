@@ -29,75 +29,59 @@ class AuthStack(Stack):
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
         self.cognito_client = boto3.client('cognito-idp', region_name=region)
 
-        # Environment-specific Cognito resources
-        user_pool_v2 = cognito.UserPool(
-            self,
-            "SpaceportUserPoolV2",
-            user_pool_name=f"Spaceport-Users-{suffix}",
-            self_sign_up_enabled=False,  # invite-only
-            auto_verify=cognito.AutoVerifiedAttrs(email=True),
-            sign_in_aliases=cognito.SignInAliases(email=True),
-            standard_attributes=cognito.StandardAttributes(
-                email=cognito.StandardAttribute(required=True, mutable=True),
-                preferred_username=cognito.StandardAttribute(required=True, mutable=False),
-            ),
-            password_policy=cognito.PasswordPolicy(
-                min_length=8,
-                require_lowercase=True,
-                require_uppercase=True,
-                require_digits=True,
-                require_symbols=False,
-                temp_password_validity=Duration.days(7),
-            ),
-            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-            removal_policy=RemovalPolicy.RETAIN,
-        )
-
-        # Distinct group name to avoid collision with legacy pool
-        cognito.CfnUserPoolGroup(
-            self,
-            "SpaceportBetaTestersGroupV2",
-            user_pool_id=user_pool_v2.user_pool_id,
+        # Environment-specific Cognito resources with enhanced multi-pattern fallback
+        user_pool_v2, user_pool_v2_client = self._get_or_create_user_pool_with_client(
+            construct_id="SpaceportUserPoolV2",
+            client_construct_id="SpaceportUserPoolClientV2",
+            preferred_name=f"Spaceport-Users-{suffix}",
+            fallback_patterns=[
+                "Spaceport-Users",  # Legacy no-suffix
+                "Spaceport-Users-v2",  # Legacy v2
+                "Spaceport-Users-v3",  # Legacy v3
+            ],
+            pool_config={
+                "self_sign_up_enabled": False,
+                "auto_verify": cognito.AutoVerifiedAttrs(email=True),
+                "sign_in_aliases": cognito.SignInAliases(email=True),
+                "standard_attributes": cognito.StandardAttributes(
+                    email=cognito.StandardAttribute(required=True, mutable=True),
+                    preferred_username=cognito.StandardAttribute(required=True, mutable=False),
+                ),
+                "password_policy": cognito.PasswordPolicy(
+                    min_length=8,
+                    require_lowercase=True,
+                    require_uppercase=True,
+                    require_digits=True,
+                    require_symbols=False,
+                    temp_password_validity=Duration.days(7),
+                ),
+                "account_recovery": cognito.AccountRecovery.EMAIL_ONLY,
+                "removal_policy": RemovalPolicy.RETAIN,
+            },
+            client_config={
+                "user_pool_client_name": "Spaceport-Web-Client-v2",
+                "auth_flows": cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
+                "o_auth": cognito.OAuthSettings(
+                    flows=cognito.OAuthFlows(authorization_code_grant=True),
+                    callback_urls=[
+                        "http://localhost:3000/",
+                        "https://spaceport.ai/",
+                    ],
+                    logout_urls=[
+                        "http://localhost:3000/",
+                        "https://spaceport.ai/",
+                    ],
+                ),
+                "prevent_user_existence_errors": True,
+            },
             group_name="beta-testers-v2",
-            description="Approved beta testers allowed to sign in (v2)",
+            group_description="Approved beta testers allowed to sign in (v2)"
         )
 
-        user_pool_client_v2 = user_pool_v2.add_client(
-            "SpaceportUserPoolClientV2",
-            user_pool_client_name="Spaceport-Web-Client-v2",
-            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
-            o_auth=cognito.OAuthSettings(
-                flows=cognito.OAuthFlows(authorization_code_grant=True),
-                callback_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-                logout_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-            ),
-            prevent_user_existence_errors=True,
-        )
+        # user_pool_v2 and user_pool_v2_client are now created by _get_or_create_user_pool_with_client
 
         CfnOutput(self, "CognitoUserPoolIdV2", value=user_pool_v2.user_pool_id)
-        CfnOutput(self, "CognitoUserPoolClientIdV2", value=user_pool_client_v2.user_pool_client_id)
-
-        # Enhanced fallback logic: Find user pool with users for frontend configuration
-        best_pool_id = self._find_user_pool_with_users(
-            preferred_pool_id=user_pool_v2.user_pool_id,
-            fallback_pool_names=[
-                "Spaceport-Users",  # Legacy without suffix
-                "Spaceport-Users-v2",  # Legacy V2
-                "Spaceport-Users-v3",  # Legacy V3
-                f"Spaceport-Users-v2-{suffix}",  # V2 with suffix
-                f"Spaceport-Users-v3-{suffix}",  # V3 with suffix
-            ]
-        )
-        
-        # Output the best user pool for GitHub secrets
-        CfnOutput(self, "RecommendedUserPoolId", value=best_pool_id)
-        CfnOutput(self, "RecommendedUserPoolClientId", value=user_pool_client_v2.user_pool_client_id)
+        CfnOutput(self, "CognitoUserPoolClientIdV2", value=user_pool_v2_client.user_pool_client_id)
 
         # Import existing Lambda functions to avoid conflicts
 
@@ -132,57 +116,58 @@ class AuthStack(Stack):
         # Alternate v3 pool to allow user-chosen handle at first sign-in
         # preferred_username is optional and mutable
         # -------------------------------------
-        user_pool_v3 = cognito.UserPool(
-            self,
-            "SpaceportUserPoolV3",
-            user_pool_name=f"Spaceport-Users-v3-{suffix}",
-            self_sign_up_enabled=False,
-            auto_verify=cognito.AutoVerifiedAttrs(email=True),
-            sign_in_aliases=cognito.SignInAliases(email=True),
-            standard_attributes=cognito.StandardAttributes(
-                email=cognito.StandardAttribute(required=True, mutable=True),
-                preferred_username=cognito.StandardAttribute(required=False, mutable=True),
-            ),
-            password_policy=cognito.PasswordPolicy(
-                min_length=8,
-                require_lowercase=True,
-                require_uppercase=True,
-                require_digits=True,
-                require_symbols=False,
-                temp_password_validity=Duration.days(7),
-            ),
-            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-            removal_policy=RemovalPolicy.RETAIN,
-        )
-
-        cognito.CfnUserPoolGroup(
-            self,
-            "SpaceportBetaTestersGroupV3",
-            user_pool_id=user_pool_v3.user_pool_id,
+        user_pool_v3, user_pool_v3_client = self._get_or_create_user_pool_with_client(
+            construct_id="SpaceportUserPoolV3",
+            client_construct_id="SpaceportUserPoolClientV3",
+            preferred_name=f"Spaceport-Users-v3-{suffix}",
+            fallback_patterns=[
+                "Spaceport-Users-v3",  # Legacy v3 no-suffix
+                "Spaceport-Users",  # Legacy no-suffix
+                "Spaceport-Users-v2",  # Legacy v2
+            ],
+            pool_config={
+                "self_sign_up_enabled": False,
+                "auto_verify": cognito.AutoVerifiedAttrs(email=True),
+                "sign_in_aliases": cognito.SignInAliases(email=True),
+                "standard_attributes": cognito.StandardAttributes(
+                    email=cognito.StandardAttribute(required=True, mutable=True),
+                    preferred_username=cognito.StandardAttribute(required=False, mutable=True),
+                ),
+                "password_policy": cognito.PasswordPolicy(
+                    min_length=8,
+                    require_lowercase=True,
+                    require_uppercase=True,
+                    require_digits=True,
+                    require_symbols=False,
+                    temp_password_validity=Duration.days(7),
+                ),
+                "account_recovery": cognito.AccountRecovery.EMAIL_ONLY,
+                "removal_policy": RemovalPolicy.RETAIN,
+            },
+            client_config={
+                "user_pool_client_name": "Spaceport-Web-Client-v3",
+                "auth_flows": cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
+                "o_auth": cognito.OAuthSettings(
+                    flows=cognito.OAuthFlows(authorization_code_grant=True),
+                    callback_urls=[
+                        "http://localhost:3000/",
+                        "https://spaceport.ai/",
+                    ],
+                    logout_urls=[
+                        "http://localhost:3000/",
+                        "https://spaceport.ai/",
+                    ],
+                ),
+                "prevent_user_existence_errors": True,
+            },
             group_name="beta-testers-v3",
-            description="Approved beta testers allowed to sign in (v3)",
+            group_description="Approved beta testers allowed to sign in (v3)"
         )
 
-        user_pool_client_v3 = user_pool_v3.add_client(
-            "SpaceportUserPoolClientV3",
-            user_pool_client_name="Spaceport-Web-Client-v3",
-            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
-            o_auth=cognito.OAuthSettings(
-                flows=cognito.OAuthFlows(authorization_code_grant=True),
-                callback_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-                logout_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-            ),
-            prevent_user_existence_errors=True,
-        )
+        # user_pool_v3 and user_pool_v3_client are now created by _get_or_create_user_pool_with_client
 
         CfnOutput(self, "CognitoUserPoolIdV3", value=user_pool_v3.user_pool_id)
-        CfnOutput(self, "CognitoUserPoolClientIdV3", value=user_pool_client_v3.user_pool_client_id)
+        CfnOutput(self, "CognitoUserPoolClientIdV3", value=user_pool_v3_client.user_pool_client_id)
 
         # Import existing invite Lambda function v3 to avoid conflicts
         invite_lambda_v3 = lambda_.Function.from_function_name(
@@ -710,54 +695,219 @@ class AuthStack(Stack):
         
         return dynamodb.Table(self, construct_id, **table_props)
 
-    def _cognito_user_pool_exists(self, user_pool_id: str) -> bool:
-        """Check if a Cognito user pool exists"""
+    def _cognito_user_pool_exists(self, pool_name: str) -> str:
+        """Check if a Cognito user pool exists and return its ID, or None if not found"""
         try:
-            self.cognito_client.describe_user_pool(UserPoolId=user_pool_id)
-            return True
-        except Exception:
-            return False
+            response = self.cognito_client.list_user_pools(MaxResults=60)
+            for pool in response.get('UserPools', []):
+                if pool['Name'] == pool_name:
+                    return pool['Id']
+            return None
+        except Exception as e:
+            print(f"⚠️  Error checking user pool {pool_name}: {e}")
+            return None
 
-    def _cognito_user_pool_has_users(self, user_pool_id: str) -> bool:
+    def _cognito_user_pool_has_users(self, pool_id: str) -> bool:
         """Check if Cognito user pool contains any users"""
         try:
             response = self.cognito_client.list_users(
-                UserPoolId=user_pool_id,
+                UserPoolId=pool_id,
                 Limit=1
             )
             return len(response.get('Users', [])) > 0
         except Exception as e:
-            print(f"⚠️  Error checking user pool users for {user_pool_id}: {e}")
+            print(f"⚠️  Error checking user pool users for {pool_id}: {e}")
             return False
 
-    def _find_user_pool_with_users(self, preferred_pool_id: str, fallback_pool_names: list) -> str:
-        """Find a user pool with users, checking preferred first, then fallbacks"""
-        # Check preferred pool first
-        if self._cognito_user_pool_exists(preferred_pool_id):
-            if self._cognito_user_pool_has_users(preferred_pool_id):
-                print(f"✅ Preferred user pool has users: {preferred_pool_id}")
-                return preferred_pool_id
-            else:
-                print(f"ℹ️  Preferred user pool exists but is empty: {preferred_pool_id}")
+    def _migrate_cognito_users(self, source_pool_id: str, target_pool_id: str, target_group_name: str) -> bool:
+        """Migrate users from source Cognito pool to target pool"""
+        try:
+            print(f"🔄 Starting user migration: {source_pool_id} → {target_pool_id}")
+            
+            # List all users from source pool
+            paginator = self.cognito_client.get_paginator('list_users')
+            users_migrated = 0
+            
+            for page in paginator.paginate(UserPoolId=source_pool_id):
+                for user in page.get('Users', []):
+                    try:
+                        username = user['Username']
+                        attributes = user.get('Attributes', [])
+                        
+                        # Extract user attributes
+                        user_attrs = {}
+                        for attr in attributes:
+                            user_attrs[attr['Name']] = attr['Value']
+                        
+                        # Create user in target pool
+                        create_params = {
+                            'UserPoolId': target_pool_id,
+                            'Username': username,
+                            'UserAttributes': [
+                                {'Name': name, 'Value': value} 
+                                for name, value in user_attrs.items()
+                            ],
+                            'MessageAction': 'SUPPRESS',  # Don't send welcome email
+                            'TemporaryPassword': 'TempPass123!',  # Will be overridden
+                        }
+                        
+                        # Only create if user doesn't already exist
+                        try:
+                            self.cognito_client.admin_get_user(
+                                UserPoolId=target_pool_id,
+                                Username=username
+                            )
+                            print(f"ℹ️  User {username} already exists in target pool")
+                            continue
+                        except self.cognito_client.exceptions.UserNotFoundException:
+                            # User doesn't exist, proceed with creation
+                            pass
+                        
+                        self.cognito_client.admin_create_user(**create_params)
+                        
+                        # Set user status to match source
+                        if user['UserStatus'] == 'CONFIRMED':
+                            self.cognito_client.admin_confirm_sign_up(
+                                UserPoolId=target_pool_id,
+                                Username=username
+                            )
+                        
+                        # Add to beta testers group if specified
+                        if target_group_name:
+                            try:
+                                self.cognito_client.admin_add_user_to_group(
+                                    UserPoolId=target_pool_id,
+                                    Username=username,
+                                    GroupName=target_group_name
+                                )
+                            except Exception as group_error:
+                                print(f"⚠️  Could not add user {username} to group {target_group_name}: {group_error}")
+                        
+                        users_migrated += 1
+                        print(f"✅ Migrated user {username} ({users_migrated} total)")
+                        
+                    except Exception as user_error:
+                        print(f"❌ Failed to migrate user {user.get('Username', 'unknown')}: {user_error}")
+                        continue
+            
+            print(f"✅ User migration completed: {users_migrated} users migrated")
+            return users_migrated > 0
+            
+        except Exception as e:
+            print(f"❌ User migration failed: {e}")
+            return False
+
+    def _get_or_create_user_pool_with_client(self, construct_id: str, client_construct_id: str,
+                                           preferred_name: str, fallback_patterns: list,
+                                           pool_config: dict, client_config: dict,
+                                           group_name: str = None, group_description: str = None):
+        """Get existing Cognito user pool with enhanced multi-pattern fallback or create new one"""
         
-        # Check fallback pools by name pattern
-        for pool_name in fallback_pool_names:
+        # Check if preferred pool exists - always import if it exists
+        preferred_pool_id = self._cognito_user_pool_exists(preferred_name)
+        if preferred_pool_id:
+            print(f"✅ Importing existing Cognito user pool: {preferred_name} ({preferred_pool_id})")
+            imported_pool = cognito.UserPool.from_user_pool_id(self, construct_id, preferred_pool_id)
+            
+            # Get existing client for this pool
             try:
-                # List all pools and find matching name
-                response = self.cognito_client.list_user_pools(MaxResults=60)
-                for pool in response.get('UserPools', []):
-                    if pool['Name'] == pool_name:
-                        pool_id = pool['Id']
-                        if self._cognito_user_pool_has_users(pool_id):
-                            print(f"✅ Found fallback user pool with users: {pool_name} ({pool_id})")
-                            return pool_id
-                        else:
-                            print(f"ℹ️  Fallback user pool exists but is empty: {pool_name} ({pool_id})")
+                response = self.cognito_client.list_user_pool_clients(UserPoolId=preferred_pool_id)
+                if response.get('UserPoolClients'):
+                    client_id = response['UserPoolClients'][0]['ClientId']
+                    imported_client = cognito.UserPoolClient.from_user_pool_client_id(
+                        self, client_construct_id, client_id
+                    )
+                    print(f"✅ Imported existing client: {client_id}")
+                else:
+                    # Create new client for existing pool
+                    imported_client = imported_pool.add_client(client_construct_id, **client_config)
+                    print(f"🆕 Created new client for existing pool")
             except Exception as e:
-                print(f"⚠️  Error checking fallback pool {pool_name}: {e}")
+                print(f"⚠️  Error getting client, creating new one: {e}")
+                imported_client = imported_pool.add_client(client_construct_id, **client_config)
+            
+            # After importing, check if it's empty and migrate from fallback patterns
+            if not self._cognito_user_pool_has_users(preferred_pool_id):
+                print(f"ℹ️  Imported pool is empty, checking fallback patterns for data")
+                
+                # Check each fallback pattern for users
+                for fallback_name in fallback_patterns:
+                    fallback_pool_id = self._cognito_user_pool_exists(fallback_name)
+                    if fallback_pool_id and self._cognito_user_pool_has_users(fallback_pool_id):
+                        print(f"🔄 Found users in fallback pool: {fallback_name} ({fallback_pool_id})")
+                        print(f"🔄 Migrating users: {fallback_name} → {preferred_name}")
+                        
+                        if self._migrate_cognito_users(fallback_pool_id, preferred_pool_id, group_name):
+                            print(f"✅ Successfully migrated users from {fallback_name}")
+                            break  # Stop after first successful migration
+                        else:
+                            print(f"⚠️  User migration failed from {fallback_name}, trying next fallback")
+                            continue
+                else:
+                    print(f"ℹ️  No fallback pools with users found")
+            else:
+                print(f"ℹ️  Imported pool already has users")
+            
+            # Create group if specified
+            if group_name:
+                try:
+                    cognito.CfnUserPoolGroup(
+                        self,
+                        f"{construct_id}Group",
+                        user_pool_id=imported_pool.user_pool_id,
+                        group_name=group_name,
+                        description=group_description or f"Group for {preferred_name}",
+                    )
+                except Exception as e:
+                    print(f"⚠️  Could not create group {group_name}: {e}")
+            
+            return imported_pool, imported_client
         
-        print(f"ℹ️  No user pools found with users, using preferred: {preferred_pool_id}")
-        return preferred_pool_id
+        # Preferred doesn't exist, check fallback patterns
+        source_pool_id = None
+        source_pool_name = None
+        
+        for fallback_name in fallback_patterns:
+            fallback_pool_id = self._cognito_user_pool_exists(fallback_name)
+            if fallback_pool_id and self._cognito_user_pool_has_users(fallback_pool_id):
+                print(f"🔄 Found users in fallback pool: {fallback_name} ({fallback_pool_id})")
+                source_pool_id = fallback_pool_id
+                source_pool_name = fallback_name
+                break
+        
+        # Create new pool with preferred name
+        print(f"🆕 Creating new Cognito user pool: {preferred_name}")
+        new_pool = cognito.UserPool(
+            self,
+            construct_id,
+            user_pool_name=preferred_name,
+            **pool_config
+        )
+        
+        # Create client
+        new_client = new_pool.add_client(client_construct_id, **client_config)
+        
+        # Create group if specified
+        if group_name:
+            cognito.CfnUserPoolGroup(
+                self,
+                f"{construct_id}Group",
+                user_pool_id=new_pool.user_pool_id,
+                group_name=group_name,
+                description=group_description or f"Group for {preferred_name}",
+            )
+        
+        # Migrate users if we found a source pool
+        if source_pool_id:
+            print(f"🔄 Migrating users from {source_pool_name} to new pool {preferred_name}")
+            if self._migrate_cognito_users(source_pool_id, new_pool.user_pool_id, group_name):
+                print(f"✅ Successfully migrated users to {preferred_name}")
+            else:
+                print(f"⚠️  User migration failed, but pool {preferred_name} was created")
+        else:
+            print(f"ℹ️  No fallback pools with users found, created empty pool")
+        
+        return new_pool, new_client
 
 
 # Force complete AuthStack redeployment with subscription resources
