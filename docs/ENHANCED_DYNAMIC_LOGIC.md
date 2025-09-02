@@ -4,6 +4,10 @@
 
 The enhanced dynamic logic builds upon the existing robust resource creation/import system by adding **data-aware decision making**. This ensures that valuable data is preserved during environment transitions and resource migrations.
 
+### 🆕 **NEW: Multi-Pattern Cognito Fallback Logic**
+
+Cognito user pools now support enhanced multi-pattern fallback with **automatic user migration** from legacy pools. This solves authentication issues when users exist in legacy pools but new environment pools are empty.
+
 ## Enhanced Logic Flow
 
 ### **Updated Decision Matrix:**
@@ -61,6 +65,11 @@ def _migrate_s3_data(self, source_bucket: str, target_bucket: str) -> bool:
     """Migrate data from source S3 bucket to target bucket"""
     # Uses pagination to handle large buckets
     # Copies objects with progress tracking
+
+def _migrate_cognito_users(self, source_pool_id: str, target_pool_id: str, target_group_name: str) -> bool:
+    """Migrate users from source Cognito pool to target pool"""
+    # Migrates user accounts, attributes, and status
+    # Adds users to specified groups automatically
 ```
 
 ## Usage Examples
@@ -94,6 +103,18 @@ def _migrate_s3_data(self, source_bucket: str, target_bucket: str) -> bool:
 ```
 ✅ Importing existing S3 bucket: spaceport-ml-processing-staging
 ℹ️  Imported bucket is empty, no fallback data available
+```
+
+### **Scenario 5: Cognito User Migration (NEW)**
+```
+✅ Importing existing Cognito user pool: Spaceport-Users-staging (us-west-2_4gwqYU7GC)
+ℹ️  Imported pool is empty, checking fallback patterns for data
+🔄 Found users in fallback pool: Spaceport-Users-v2 (us-west-2_a2jf3ldGV)
+🔄 Migrating users: Spaceport-Users-v2 → Spaceport-Users-staging
+✅ Migrated user 28a15320-d0f1-708a-e1f9-30ce691acb99 (1 total)
+✅ Migrated user 3821a3b0-10d1-7096-66e4-7345099fbec0 (2 total)
+✅ User migration completed: 6 users migrated
+✅ Successfully migrated users from Spaceport-Users-v2
 ```
 
 ## Benefits
