@@ -1,4 +1,4 @@
-1755020919
-Trigger deployment for Lambda fix - Sat Aug 16 21:20:12 MDT 2025
-# Trigger new deployment
-FORCE SUBSCRIPTION DEPLOYMENT - Mon Aug 25 12:45:27 MDT 2025
+CDK Deployment Trigger
+Updated: 2025-01-27 12:15:00 UTC
+Reason: Testing CDK bootstrap fix after orphaned bucket cleanup
+Status: Ready for deployment
