@@ -689,6 +689,53 @@
   z-index: 0;
 }
 
+/* Dashboard project cards should use standard border, not gradient */
+.component-showcase .project-cards .project-box,
+.component-showcase .account-card,
+.component-showcase .loading-card {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.component-showcase .project-cards .project-box::before,
+.component-showcase .account-card::before,
+.component-showcase .loading-card::before {
+  display: none;
+}
+
+/* New project card should have no border */
+.component-showcase .new-project-card {
+  border: none !important;
+}
+
+.component-showcase .new-project-card::before {
+  display: none;
+}
+
+/* Popup components should use standard border */
+.component-showcase .popup-overlay,
+.component-showcase .accordion-section,
+.component-showcase .category-outline,
+.component-showcase .popup-input-wrapper,
+.component-showcase .flight-path-download-btn,
+.component-showcase .upload-zone,
+.component-showcase .address-search-wrapper,
+.component-showcase .expand-button,
+.component-showcase .modal-popup-overlay {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.component-showcase .popup-overlay::before,
+.component-showcase .accordion-section::before,
+.component-showcase .category-outline::before,
+.component-showcase .popup-input-wrapper::before,
+.component-showcase .flight-path-download-btn::before,
+.component-showcase .upload-zone::before,
+.component-showcase .address-search-wrapper::before,
+.component-showcase .expand-button::before,
+.component-showcase .modal-popup-overlay::before {
+  display: none;
+}
+
 /* Ensure card content is above the border */
 .component-showcase .project-box h1,
 .component-showcase .project-box p,

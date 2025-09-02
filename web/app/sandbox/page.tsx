@@ -1102,6 +1102,299 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
       </section>
 
+      {/* Dashboard Project Cards */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Dashboard Project Cards</h2>
+        
+        <div className="component-group">
+          <h3 className="h3">Project Cards Container</h3>
+          <div className="component-showcase">
+            <div 
+              className="project-cards"
+              data-component="project-cards"
+              onMouseEnter={(e) => handleComponentHover('project-cards', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('project-cards')}
+              style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}
+            >
+              <div 
+                className="project-box"
+                data-component="project-box"
+                onMouseEnter={(e) => handleComponentHover('project-box', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('project-box')}
+                style={{ flex: '0 0 calc(50% - 10px)', width: 'calc(50% - 10px)' }}
+              >
+                <button 
+                  className="project-controls-btn"
+                  data-component="project-controls-btn"
+                  onMouseEnter={(e) => handleComponentHover('project-controls-btn', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('project-controls-btn')}
+                >
+                  <img 
+                    src="/assets/SpaceportIcons/Controls.svg" 
+                    className="project-controls-icon" 
+                    alt="Edit controls"
+                    data-component="project-controls-icon"
+                    onMouseEnter={(e) => handleComponentHover('project-controls-icon', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('project-controls-icon')}
+                  />
+                </button>
+                <h1>Downtown Property</h1>
+                <p>Processing - Neural network training in progress.</p>
+                <div style={{marginTop:12}}>
+                  <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
+                    <div style={{height:6, borderRadius:3, width:'75%', background:'#fff'}}></div>
+                  </div>
+                </div>
+              </div>
+              <div 
+                className="project-box"
+                data-component="project-box"
+                onMouseEnter={(e) => handleComponentHover('project-box', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('project-box')}
+                style={{ flex: '0 0 calc(50% - 10px)', width: 'calc(50% - 10px)' }}
+              >
+                <button 
+                  className="project-controls-btn"
+                  data-component="project-controls-btn"
+                  onMouseEnter={(e) => handleComponentHover('project-controls-btn', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('project-controls-btn')}
+                >
+                  <img 
+                    src="/assets/SpaceportIcons/Controls.svg" 
+                    className="project-controls-icon" 
+                    alt="Edit controls"
+                    data-component="project-controls-icon"
+                    onMouseEnter={(e) => handleComponentHover('project-controls-icon', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('project-controls-icon')}
+                  />
+                </button>
+                <h1>Lakeside Home</h1>
+                <p>Complete - Ready for deployment.</p>
+                <div style={{marginTop:12}}>
+                  <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
+                    <div style={{height:6, borderRadius:3, width:'100%', background:'#fff'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Account Card</h3>
+          <div className="component-showcase">
+            <div 
+              className="project-box account-card"
+              data-component="account-card"
+              onMouseEnter={(e) => handleComponentHover('account-card', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('account-card')}
+              style={{ height: '50px', width: '100%' }}
+            >
+              <div 
+                className="account-info"
+                data-component="account-info"
+                onMouseEnter={(e) => handleComponentHover('account-info', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('account-info')}
+              >
+                <div 
+                  className="account-details"
+                  data-component="account-details"
+                  onMouseEnter={(e) => handleComponentHover('account-details', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('account-details')}
+                >
+                  <div 
+                    className="account-header"
+                    data-component="account-header"
+                    onMouseEnter={(e) => handleComponentHover('account-header', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('account-header')}
+                  >
+                    <h3 
+                      className="account-handle"
+                      data-component="account-handle"
+                      onMouseEnter={(e) => handleComponentHover('account-handle', e)}
+                      onMouseLeave={handleComponentLeave}
+                      onClick={() => handleComponentClick('account-handle')}
+                    >
+                      SampleUser
+                    </h3>
+                    <button 
+                      className="subscription-pill clickable"
+                      data-component="subscription-pill"
+                      onMouseEnter={(e) => handleComponentHover('subscription-pill', e)}
+                      onMouseLeave={handleComponentLeave}
+                      onClick={() => handleComponentClick('subscription-pill')}
+                    >
+                      Beta Plan
+                    </button>
+                  </div>
+                </div>
+                <button 
+                  className="sign-out-btn"
+                  data-component="sign-out-btn"
+                  onMouseEnter={(e) => handleComponentHover('sign-out-btn', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('sign-out-btn')}
+                >
+                  <span 
+                    className="sign-out-icon"
+                    data-component="sign-out-icon"
+                    onMouseEnter={(e) => handleComponentHover('sign-out-icon', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('sign-out-icon')}
+                  />
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">New Project Card</h3>
+          <div className="component-showcase">
+            <div 
+              className="project-box new-project-card"
+              data-component="new-project-card"
+              onMouseEnter={(e) => handleComponentHover('new-project-card', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('new-project-card')}
+              style={{ width: '100%' }}
+            >
+              <h1>
+                New Project
+                <span 
+                  className="plus-icon"
+                  data-component="plus-icon"
+                  onMouseEnter={(e) => handleComponentHover('plus-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('plus-icon')}
+                >
+                  <span></span>
+                  <span></span>
+                </span>
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Loading Card</h3>
+          <div className="component-showcase">
+            <div 
+              className="project-box loading-card"
+              data-component="loading-card"
+              onMouseEnter={(e) => handleComponentHover('loading-card', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('loading-card')}
+            >
+              <div 
+                className="loading-spinner"
+                data-component="loading-spinner"
+                onMouseEnter={(e) => handleComponentHover('loading-spinner', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('loading-spinner')}
+              >
+                <div 
+                  className="spinner"
+                  data-component="spinner"
+                  onMouseEnter={(e) => handleComponentHover('spinner', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('spinner')}
+                />
+                <p>Loading projects...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Project Card with Progress</h3>
+          <div className="component-showcase">
+            <div 
+              className="project-box"
+              data-component="project-box"
+              onMouseEnter={(e) => handleComponentHover('project-box', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('project-box')}
+            >
+              <button 
+                className="project-controls-btn"
+                data-component="project-controls-btn"
+                onMouseEnter={(e) => handleComponentHover('project-controls-btn', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('project-controls-btn')}
+              >
+                <img 
+                  src="/assets/SpaceportIcons/Controls.svg" 
+                  className="project-controls-icon" 
+                  alt="Edit controls"
+                  data-component="project-controls-icon"
+                  onMouseEnter={(e) => handleComponentHover('project-controls-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('project-controls-icon')}
+                />
+              </button>
+              <h1>Mountain View Estate</h1>
+              <p>Processing - Structure from Motion in progress.</p>
+              <div style={{marginTop:12}}>
+                <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
+                  <div style={{height:6, borderRadius:3, width:'45%', background:'#fff'}}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Completed Project Card</h3>
+          <div className="component-showcase">
+            <div 
+              className="project-box"
+              data-component="project-box"
+              onMouseEnter={(e) => handleComponentHover('project-box', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('project-box')}
+            >
+              <button 
+                className="project-controls-btn"
+                data-component="project-controls-btn"
+                onMouseEnter={(e) => handleComponentHover('project-controls-btn', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('project-controls-btn')}
+              >
+                <img 
+                  src="/assets/SpaceportIcons/Controls.svg" 
+                  className="project-controls-icon" 
+                  alt="Edit controls"
+                  data-component="project-controls-icon"
+                  onMouseEnter={(e) => handleComponentHover('project-controls-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('project-controls-icon')}
+                />
+              </button>
+              <h1>Historic Courthouse</h1>
+              <p>Complete - Hosting at spaceport.ai</p>
+              <div style={{marginTop:12}}>
+                <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
+                  <div style={{height:6, borderRadius:3, width:'100%', background:'#fff'}}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Component Name Pill - Positioned above hovered element */}
       {hoveredComponent && hoveredElement && (
         <div 
