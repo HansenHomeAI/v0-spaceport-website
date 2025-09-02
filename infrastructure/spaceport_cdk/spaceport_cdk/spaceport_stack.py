@@ -360,6 +360,15 @@ class SpaceportStack(Stack):
         try:
             print(f"🔄 Starting data migration: {source_table} → {target_table}")
             
+            # Wait for target table to be active
+            print(f"⏳ Waiting for target table to be active: {target_table}")
+            waiter = self.dynamodb_client.get_waiter('table_exists')
+            waiter.wait(
+                TableName=target_table,
+                WaiterConfig={'Delay': 5, 'MaxAttempts': 12}  # Wait up to 1 minute
+            )
+            print(f"✅ Target table is active: {target_table}")
+            
             # Scan all items from source table
             response = self.dynamodb_client.scan(TableName=source_table)
             items = response.get('Items', [])
