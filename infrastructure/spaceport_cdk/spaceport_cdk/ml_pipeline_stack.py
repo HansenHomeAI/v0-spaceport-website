@@ -788,16 +788,25 @@ class MLPipelineStack(Stack):
         # Robustness: Check for potential conflicts
         self._check_s3_naming_conflicts(preferred_name, fallback_name)
         
-        # Check if preferred name exists and has data
+        # Check if preferred name exists - always import if it exists
         if self._bucket_exists(preferred_name):
-            if self._bucket_has_data(preferred_name):
-                print(f"✅ Importing existing S3 bucket with data: {preferred_name}")
-                bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
-                self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
-                return bucket
-            else:
-                print(f"ℹ️  Preferred bucket exists but is empty: {preferred_name}")
-                # Continue to check fallback
+            print(f"✅ Importing existing S3 bucket: {preferred_name}")
+            bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
+            
+            # After importing, check if it's empty and if fallback has data
+            if not self._bucket_has_data(preferred_name):
+                if self._bucket_exists(fallback_name) and self._bucket_has_data(fallback_name):
+                    print(f"🔄 Imported bucket is empty, migrating data from fallback: {fallback_name} → {preferred_name}")
+                    if self._migrate_s3_data(fallback_name, preferred_name):
+                        print(f"✅ Successfully migrated data into {preferred_name}")
+                        self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported_with_migration"})
+                    else:
+                        print(f"⚠️  Data migration failed, but bucket {preferred_name} was imported")
+                else:
+                    print(f"ℹ️  Imported bucket is empty, no fallback data available")
+            
+            return bucket
         
         # Check if fallback name exists and has data
         if self._bucket_exists(fallback_name):

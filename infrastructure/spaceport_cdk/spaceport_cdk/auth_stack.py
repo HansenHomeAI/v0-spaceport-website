@@ -608,16 +608,25 @@ class AuthStack(Stack):
     def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
                                      partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:
         """Get existing DynamoDB table or create new one with enhanced data-aware logic"""
-        # Check if preferred name exists and has data
+        # Check if preferred name exists - always import if it exists
         if self._dynamodb_table_exists(preferred_name):
-            if self._dynamodb_table_has_data(preferred_name):
-                print(f"✅ Importing existing DynamoDB table with data: {preferred_name}")
-                return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
-            else:
-                print(f"ℹ️  Preferred table exists but is empty: {preferred_name}")
-                # Continue to check fallback
+            print(f"✅ Importing existing DynamoDB table: {preferred_name}")
+            imported_table = dynamodb.Table.from_table_name(self, construct_id, preferred_name)
+            
+            # After importing, check if it's empty and if fallback has data
+            if not self._dynamodb_table_has_data(preferred_name):
+                if self._dynamodb_table_exists(fallback_name) and self._dynamodb_table_has_data(fallback_name):
+                    print(f"🔄 Imported table is empty, migrating data from fallback: {fallback_name} → {preferred_name}")
+                    if self._migrate_dynamodb_data(fallback_name, preferred_name):
+                        print(f"✅ Successfully migrated data into {preferred_name}")
+                    else:
+                        print(f"⚠️  Data migration failed, but table {preferred_name} was imported")
+                else:
+                    print(f"ℹ️  Imported table is empty, no fallback data available")
+            
+            return imported_table
         
-        # Check if fallback name exists and has data
+        # Preferred doesn't exist, check fallback
         if self._dynamodb_table_exists(fallback_name):
             if self._dynamodb_table_has_data(fallback_name):
                 print(f"🔄 Fallback table has data, creating preferred and migrating: {fallback_name} → {preferred_name}")

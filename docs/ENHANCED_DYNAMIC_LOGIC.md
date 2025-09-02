@@ -8,10 +8,10 @@ The enhanced dynamic logic builds upon the existing robust resource creation/imp
 
 ### **Updated Decision Matrix:**
 
-1. **Preferred name exists + has data** → **Import it** ✅
-2. **Preferred name exists + empty** → **Check fallback name**
-3. **Fallback name exists + has data** → **Create preferred, migrate data, then import preferred** 🔄
-4. **Fallback name exists + empty** → **Create preferred name**
+1. **Preferred name exists** → **Import it first** ✅
+2. **After import, if preferred is empty + fallback has data** → **Migrate fallback data INTO preferred** 🔄
+3. **Preferred doesn't exist + fallback has data** → **Create preferred, migrate data** 🔄
+4. **Preferred doesn't exist + fallback empty** → **Create preferred name**
 5. **Neither exists** → **Create preferred name** 🆕
 
 ### **Key Enhancements:**
@@ -82,11 +82,18 @@ def _migrate_s3_data(self, source_bucket: str, target_bucket: str) -> bool:
 ✅ Successfully migrated data to Spaceport-Waitlist-prod
 ```
 
-### **Scenario 3: Empty Resources**
+### **Scenario 3: Empty Preferred with Data Migration**
 ```
-ℹ️  Preferred bucket exists but is empty: spaceport-ml-processing-staging
-ℹ️  Fallback bucket exists but is empty: spaceport-ml-processing
-🆕 Creating new S3 bucket: spaceport-ml-processing-staging
+✅ Importing existing DynamoDB table: Spaceport-Waitlist-staging
+🔄 Imported table is empty, migrating data from fallback: Spaceport-Waitlist → Spaceport-Waitlist-staging
+📊 Found 78 items to migrate
+✅ Successfully migrated data into Spaceport-Waitlist-staging
+```
+
+### **Scenario 4: Empty Resources**
+```
+✅ Importing existing S3 bucket: spaceport-ml-processing-staging
+ℹ️  Imported bucket is empty, no fallback data available
 ```
 
 ## Benefits
