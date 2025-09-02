@@ -699,10 +699,25 @@ class AuthStack(Stack):
         """Check if a Cognito user pool exists and return its ID, or None if not found"""
         try:
             response = self.cognito_client.list_user_pools(MaxResults=60)
+            matching_pools = []
             for pool in response.get('UserPools', []):
                 if pool['Name'] == pool_name:
-                    return pool['Id']
-            return None
+                    matching_pools.append(pool['Id'])
+            
+            if not matching_pools:
+                return None
+            elif len(matching_pools) == 1:
+                return matching_pools[0]
+            else:
+                # Multiple pools with same name - find the one with users
+                print(f"⚠️  Found {len(matching_pools)} pools with name {pool_name}, checking for users")
+                for pool_id in matching_pools:
+                    if self._cognito_user_pool_has_users(pool_id):
+                        print(f"✅ Selected pool {pool_id} (has users)")
+                        return pool_id
+                # If none have users, return the first one
+                print(f"ℹ️  No pools with users found, using first: {matching_pools[0]}")
+                return matching_pools[0]
         except Exception as e:
             print(f"⚠️  Error checking user pool {pool_name}: {e}")
             return None
@@ -848,16 +863,26 @@ class AuthStack(Stack):
             else:
                 print(f"ℹ️  Imported pool already has users")
             
-            # Create group if specified
+            # Create group if specified (only if it doesn't exist)
             if group_name:
                 try:
-                    cognito.CfnUserPoolGroup(
-                        self,
-                        f"{construct_id}Group",
-                        user_pool_id=imported_pool.user_pool_id,
-                        group_name=group_name,
-                        description=group_description or f"Group for {preferred_name}",
-                    )
+                    # Check if group already exists
+                    try:
+                        self.cognito_client.get_group(
+                            GroupName=group_name,
+                            UserPoolId=imported_pool.user_pool_id
+                        )
+                        print(f"ℹ️  Group {group_name} already exists, skipping creation")
+                    except self.cognito_client.exceptions.ResourceNotFoundException:
+                        # Group doesn't exist, create it
+                        cognito.CfnUserPoolGroup(
+                            self,
+                            f"{construct_id}Group",
+                            user_pool_id=imported_pool.user_pool_id,
+                            group_name=group_name,
+                            description=group_description or f"Group for {preferred_name}",
+                        )
+                        print(f"✅ Created group {group_name}")
                 except Exception as e:
                     print(f"⚠️  Could not create group {group_name}: {e}")
             
@@ -887,15 +912,28 @@ class AuthStack(Stack):
         # Create client
         new_client = new_pool.add_client(client_construct_id, **client_config)
         
-        # Create group if specified
+        # Create group if specified (only if it doesn't exist)
         if group_name:
-            cognito.CfnUserPoolGroup(
-                self,
-                f"{construct_id}Group",
-                user_pool_id=new_pool.user_pool_id,
-                group_name=group_name,
-                description=group_description or f"Group for {preferred_name}",
-            )
+            try:
+                # Check if group already exists
+                try:
+                    self.cognito_client.get_group(
+                        GroupName=group_name,
+                        UserPoolId=new_pool.user_pool_id
+                    )
+                    print(f"ℹ️  Group {group_name} already exists, skipping creation")
+                except self.cognito_client.exceptions.ResourceNotFoundException:
+                    # Group doesn't exist, create it
+                    cognito.CfnUserPoolGroup(
+                        self,
+                        f"{construct_id}Group",
+                        user_pool_id=new_pool.user_pool_id,
+                        group_name=group_name,
+                        description=group_description or f"Group for {preferred_name}",
+                    )
+                    print(f"✅ Created group {group_name}")
+            except Exception as e:
+                print(f"⚠️  Could not create group {group_name}: {e}")
         
         # Migrate users if we found a source pool
         if source_pool_id:
