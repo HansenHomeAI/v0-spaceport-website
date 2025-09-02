@@ -484,7 +484,8 @@ class SpaceportStack(Stack):
         )
 
     def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
-                                     partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:
+                                     partition_key_name: str, partition_key_type: dynamodb.AttributeType,
+                                     sort_key_name: str = None, sort_key_type: dynamodb.AttributeType = None) -> dynamodb.ITable:
         """Get existing DynamoDB table or create new one with enhanced data-aware logic"""
         # Check if preferred name exists - always import if it exists
         if self._dynamodb_table_exists(preferred_name):
@@ -510,16 +511,23 @@ class SpaceportStack(Stack):
                 print(f"🔄 Fallback table has data, creating preferred and migrating: {fallback_name} → {preferred_name}")
                 
                 # Create the preferred table first
-                new_table = dynamodb.Table(
-                    self, construct_id,
-                    table_name=preferred_name,
-                    partition_key=dynamodb.Attribute(
+                table_props = {
+                    "table_name": preferred_name,
+                    "partition_key": dynamodb.Attribute(
                         name=partition_key_name,
                         type=partition_key_type
                     ),
-                    removal_policy=RemovalPolicy.RETAIN,
-                    billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
-                )
+                    "removal_policy": RemovalPolicy.RETAIN,
+                    "billing_mode": dynamodb.BillingMode.PAY_PER_REQUEST
+                }
+                
+                if sort_key_name and sort_key_type:
+                    table_props["sort_key"] = dynamodb.Attribute(
+                        name=sort_key_name,
+                        type=sort_key_type
+                    )
+                
+                new_table = dynamodb.Table(self, construct_id, **table_props)
                 
                 # Migrate data from fallback to preferred
                 if self._migrate_dynamodb_data(fallback_name, preferred_name):
@@ -534,13 +542,20 @@ class SpaceportStack(Stack):
         
         # Create new table with preferred name
         print(f"🆕 Creating new DynamoDB table: {preferred_name}")
-        return dynamodb.Table(
-            self, construct_id,
-            table_name=preferred_name,
-            partition_key=dynamodb.Attribute(
+        table_props = {
+            "table_name": preferred_name,
+            "partition_key": dynamodb.Attribute(
                 name=partition_key_name,
                 type=partition_key_type
             ),
-            removal_policy=RemovalPolicy.RETAIN,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
-        )
+            "removal_policy": RemovalPolicy.RETAIN,
+            "billing_mode": dynamodb.BillingMode.PAY_PER_REQUEST
+        }
+        
+        if sort_key_name and sort_key_type:
+            table_props["sort_key"] = dynamodb.Attribute(
+                name=sort_key_name,
+                type=sort_key_type
+            )
+        
+        return dynamodb.Table(self, construct_id, **table_props)
