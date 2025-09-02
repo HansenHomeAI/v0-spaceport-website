@@ -656,6 +656,452 @@ export default function DesignSystemSandbox(): JSX.Element {
         </div>
       </section>
 
+      {/* New Project Popup Components */}
+      <section className="sandbox-section">
+        <h2 className="section-title">New Project Popup Components</h2>
+        
+        <div className="component-group">
+          <h3 className="h3">Popup Overlay & Header</h3>
+          <div className="component-showcase">
+            <div 
+              className="popup-overlay"
+              data-component="popup-overlay"
+              onMouseEnter={(e) => handleComponentHover('popup-overlay', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('popup-overlay')}
+              style={{ position: 'relative', height: '200px', display: 'block' }}
+            >
+              <div 
+                className="popup-header"
+                data-component="popup-header"
+                onMouseEnter={(e) => handleComponentHover('popup-header', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('popup-header')}
+              >
+                <div 
+                  className="popup-title-section"
+                  data-component="popup-title-section"
+                  onMouseEnter={(e) => handleComponentHover('popup-title-section', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('popup-title-section')}
+                >
+                  <textarea
+                    className="popup-title-input"
+                    data-component="popup-title-input"
+                    onMouseEnter={(e) => handleComponentHover('popup-title-input', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('popup-title-input')}
+                    rows={1}
+                    placeholder="Untitled"
+                    defaultValue="Sample Project"
+                  />
+                  <span 
+                    className="edit-icon"
+                    data-component="edit-icon"
+                    onMouseEnter={(e) => handleComponentHover('edit-icon', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('edit-icon')}
+                  />
+                </div>
+                <button 
+                  className="popup-close"
+                  data-component="popup-close"
+                  onMouseEnter={(e) => handleComponentHover('popup-close', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('popup-close')}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Accordion Sections</h3>
+          <div className="component-showcase">
+            <div 
+              className="accordion-section active"
+              data-component="accordion-section"
+              onMouseEnter={(e) => handleComponentHover('accordion-section', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('accordion-section')}
+            >
+              <div 
+                className="accordion-header"
+                data-component="accordion-header"
+                onMouseEnter={(e) => handleComponentHover('accordion-header', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('accordion-header')}
+              >
+                <div 
+                  className="accordion-title"
+                  data-component="accordion-title"
+                  onMouseEnter={(e) => handleComponentHover('accordion-title', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('accordion-title')}
+                >
+                  <h3>Create Flight Plan</h3>
+                </div>
+                <span 
+                  className="accordion-chevron"
+                  data-component="accordion-chevron"
+                  onMouseEnter={(e) => handleComponentHover('accordion-chevron', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('accordion-chevron')}
+                />
+              </div>
+              <div 
+                className="accordion-content"
+                data-component="accordion-content"
+                onMouseEnter={(e) => handleComponentHover('accordion-content', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('accordion-content')}
+                style={{ maxHeight: '200px', opacity: 1 }}
+              >
+                <div 
+                  className="category-outline"
+                  data-component="category-outline"
+                  onMouseEnter={(e) => handleComponentHover('category-outline', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('category-outline')}
+                >
+                  <div 
+                    className="popup-section"
+                    data-component="popup-section"
+                    onMouseEnter={(e) => handleComponentHover('popup-section', e)}
+                    onMouseLeave={handleComponentLeave}
+                    onClick={() => handleComponentClick('popup-section')}
+                  >
+                    <h4>Batteries</h4>
+                    <div 
+                      className="input-row-popup"
+                      data-component="input-row-popup"
+                      onMouseEnter={(e) => handleComponentHover('input-row-popup', e)}
+                      onMouseLeave={handleComponentLeave}
+                      onClick={() => handleComponentClick('input-row-popup')}
+                    >
+                      <div 
+                        className="popup-input-wrapper"
+                        data-component="popup-input-wrapper"
+                        onMouseEnter={(e) => handleComponentHover('popup-input-wrapper', e)}
+                        onMouseLeave={handleComponentLeave}
+                        onClick={() => handleComponentClick('popup-input-wrapper')}
+                      >
+                        <span 
+                          className="input-icon time"
+                          data-component="input-icon"
+                          onMouseEnter={(e) => handleComponentHover('input-icon', e)}
+                          onMouseLeave={handleComponentLeave}
+                          onClick={() => handleComponentClick('input-icon')}
+                        />
+                        <input
+                          type="text"
+                          className="text-fade-right"
+                          placeholder="Duration"
+                          defaultValue="30 min/battery"
+                          data-component="popup-input"
+                          onMouseEnter={(e) => handleComponentHover('popup-input', e)}
+                          onMouseLeave={handleComponentLeave}
+                          onClick={() => handleComponentClick('popup-input')}
+                        />
+                      </div>
+                      <div 
+                        className="popup-input-wrapper"
+                        data-component="popup-input-wrapper"
+                        onMouseEnter={(e) => handleComponentHover('popup-input-wrapper', e)}
+                        onMouseLeave={handleComponentLeave}
+                        onClick={() => handleComponentClick('popup-input-wrapper')}
+                      >
+                        <span 
+                          className="input-icon number"
+                          data-component="input-icon"
+                          onMouseEnter={(e) => handleComponentHover('input-icon', e)}
+                          onMouseLeave={handleComponentLeave}
+                          onClick={() => handleComponentClick('input-icon')}
+                        />
+                        <input
+                          type="text"
+                          className="text-fade-right"
+                          placeholder="Quantity"
+                          defaultValue="2 batteries"
+                          data-component="popup-input"
+                          onMouseEnter={(e) => handleComponentHover('popup-input', e)}
+                          onMouseLeave={handleComponentLeave}
+                          onClick={() => handleComponentClick('popup-input')}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Flight Path Download Buttons</h3>
+          <div className="component-showcase">
+            <div 
+              className="flight-path-grid"
+              data-component="flight-path-grid"
+              onMouseEnter={(e) => handleComponentHover('flight-path-grid', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('flight-path-grid')}
+            >
+              <button
+                className="flight-path-download-btn"
+                data-component="flight-path-download-btn"
+                onMouseEnter={(e) => handleComponentHover('flight-path-download-btn', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('flight-path-download-btn')}
+                style={{ opacity: 1, transform: 'translateY(0) scale(1)' }}
+              >
+                <span 
+                  className="download-icon"
+                  data-component="download-icon"
+                  onMouseEnter={(e) => handleComponentHover('download-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('download-icon')}
+                />
+                Battery 1
+              </button>
+              <button
+                className="flight-path-download-btn"
+                data-component="flight-path-download-btn"
+                onMouseEnter={(e) => handleComponentHover('flight-path-download-btn', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('flight-path-download-btn')}
+                style={{ opacity: 1, transform: 'translateY(0) scale(1)' }}
+              >
+                <span 
+                  className="download-icon"
+                  data-component="download-icon"
+                  onMouseEnter={(e) => handleComponentHover('download-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('download-icon')}
+                />
+                Battery 2
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Upload Components</h3>
+          <div className="component-showcase">
+            <div 
+              className="upload-zone"
+              data-component="upload-zone"
+              onMouseEnter={(e) => handleComponentHover('upload-zone', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('upload-zone')}
+            >
+              <div 
+                className="upload-icon"
+                data-component="upload-icon"
+                onMouseEnter={(e) => handleComponentHover('upload-icon', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('upload-icon')}
+              />
+              <p>Upload .jpg photos as a .zip file</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Upload Buttons</h3>
+          <div className="component-showcase">
+            <div 
+              className="upload-button-container"
+              data-component="upload-button-container"
+              onMouseEnter={(e) => handleComponentHover('upload-button-container', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('upload-button-container')}
+              style={{ position: 'relative', height: '50px' }}
+            >
+              <button 
+                className="upload-btn-with-icon"
+                data-component="upload-btn-with-icon"
+                onMouseEnter={(e) => handleComponentHover('upload-btn-with-icon', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('upload-btn-with-icon')}
+                style={{ position: 'relative', top: 'auto', left: 'auto', transform: 'none' }}
+              >
+                <span 
+                  className="upload-btn-icon"
+                  data-component="upload-btn-icon"
+                  onMouseEnter={(e) => handleComponentHover('upload-btn-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('upload-btn-icon')}
+                />
+                Upload
+              </button>
+              <button 
+                className="cancel-btn-with-icon"
+                data-component="cancel-btn-with-icon"
+                onMouseEnter={(e) => handleComponentHover('cancel-btn-with-icon', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('cancel-btn-with-icon')}
+                style={{ position: 'relative', top: 'auto', left: 'auto', transform: 'none', opacity: 1, color: '#111' }}
+              >
+                <span 
+                  className="cancel-btn-icon"
+                  data-component="cancel-btn-icon"
+                  onMouseEnter={(e) => handleComponentHover('cancel-btn-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('cancel-btn-icon')}
+                />
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Address Search Overlay</h3>
+          <div className="component-showcase">
+            <div 
+              className="address-search-overlay"
+              data-component="address-search-overlay"
+              onMouseEnter={(e) => handleComponentHover('address-search-overlay', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('address-search-overlay')}
+              style={{ position: 'relative', bottom: 'auto', left: 'auto', right: 'auto' }}
+            >
+              <div 
+                className="address-search-wrapper"
+                data-component="address-search-wrapper"
+                onMouseEnter={(e) => handleComponentHover('address-search-wrapper', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('address-search-wrapper')}
+              >
+                <input
+                  type="text"
+                  className="text-fade-right"
+                  placeholder="Enter location"
+                  defaultValue="123 Main St, City, State"
+                  data-component="address-search-input"
+                  onMouseEnter={(e) => handleComponentHover('address-search-input', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('address-search-input')}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Map Controls</h3>
+          <div className="component-showcase">
+            <button 
+              className="expand-button"
+              data-component="expand-button"
+              onMouseEnter={(e) => handleComponentHover('expand-button', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('expand-button')}
+              style={{ position: 'relative', top: 'auto', right: 'auto' }}
+            >
+              <span 
+                className="expand-icon"
+                data-component="expand-icon"
+                onMouseEnter={(e) => handleComponentHover('expand-icon', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('expand-icon')}
+              />
+            </button>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Text Area Input</h3>
+          <div className="component-showcase">
+            <div 
+              className="popup-input-wrapper listing-description-wrapper"
+              data-component="popup-input-wrapper listing-description-wrapper"
+              onMouseEnter={(e) => handleComponentHover('popup-input-wrapper listing-description-wrapper', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('popup-input-wrapper listing-description-wrapper')}
+            >
+              <span 
+                className="input-icon paragraph"
+                data-component="input-icon paragraph"
+                onMouseEnter={(e) => handleComponentHover('input-icon paragraph', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('input-icon paragraph')}
+              />
+              <textarea
+                className="text-fade-right"
+                placeholder="Listing Description"
+                rows={3}
+                defaultValue="Beautiful property with stunning views..."
+                data-component="popup-textarea"
+                onMouseEnter={(e) => handleComponentHover('popup-textarea', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('popup-textarea')}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Modal Popup System</h3>
+          <div className="component-showcase">
+            <div 
+              className="modal-popup-overlay"
+              data-component="modal-popup-overlay"
+              onMouseEnter={(e) => handleComponentHover('modal-popup-overlay', e)}
+              onMouseLeave={handleComponentLeave}
+              onClick={() => handleComponentClick('modal-popup-overlay')}
+              style={{ position: 'relative', display: 'block' }}
+            >
+              <div 
+                className="modal-popup-content"
+                data-component="modal-popup-content"
+                onMouseEnter={(e) => handleComponentHover('modal-popup-content', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('modal-popup-content')}
+              >
+                <div 
+                  className="modal-popup-icon success"
+                  data-component="modal-popup-icon"
+                  onMouseEnter={(e) => handleComponentHover('modal-popup-icon', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('modal-popup-icon')}
+                >
+                  ✓
+                </div>
+                <h3 
+                  className="modal-popup-title"
+                  data-component="modal-popup-title"
+                  onMouseEnter={(e) => handleComponentHover('modal-popup-title', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('modal-popup-title')}
+                >
+                  Success
+                </h3>
+                <p 
+                  className="modal-popup-message"
+                  data-component="modal-popup-message"
+                  onMouseEnter={(e) => handleComponentHover('modal-popup-message', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('modal-popup-message')}
+                >
+                  Your project has been saved successfully.
+                </p>
+                <button 
+                  className="modal-popup-button"
+                  data-component="modal-popup-button"
+                  onMouseEnter={(e) => handleComponentHover('modal-popup-button', e)}
+                  onMouseLeave={handleComponentLeave}
+                  onClick={() => handleComponentClick('modal-popup-button')}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Component Name Pill - Positioned above hovered element */}
       {hoveredComponent && hoveredElement && (
         <div 
