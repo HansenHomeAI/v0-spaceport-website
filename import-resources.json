@@ -1,0 +1,23 @@
+[
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "SpaceportProjectsTableA21DADD9",
+    "ResourceIdentifier": {
+      "TableName": "Spaceport-Projects-staging"
+    }
+  },
+  {
+    "ResourceType": "AWS::DynamoDB::Table", 
+    "LogicalResourceId": "SpaceportUsersTable416707E8",
+    "ResourceIdentifier": {
+      "TableName": "Spaceport-Users-staging"
+    }
+  },
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "SpaceportBetaAccessPermissionsTableA8FFC125", 
+    "ResourceIdentifier": {
+      "TableName": "Spaceport-BetaAccessPermissions-staging"
+    }
+  }
+]

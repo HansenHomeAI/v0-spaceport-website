@@ -609,7 +609,7 @@ class AuthStack(Stack):
 
     def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
                                      partition_key_name: str, partition_key_type: dynamodb.AttributeType,
-                                     sort_key_name: str = None, sort_key_type: dynamodb.AttributeType = None) -> dynamodb.ITable:
+                                     sort_key_name: str = None, sort_key_type = None) -> dynamodb.ITable:
         """Get existing DynamoDB table or create new one with enhanced data-aware logic"""
         # Check if preferred name exists - always import if it exists
         if self._dynamodb_table_exists(preferred_name):
