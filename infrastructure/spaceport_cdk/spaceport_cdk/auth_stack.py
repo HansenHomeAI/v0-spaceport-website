@@ -27,6 +27,7 @@ class AuthStack(Stack):
         
         # Initialize AWS clients for resource checking
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
+        self.cognito_client = boto3.client('cognito-idp', region_name=region)
 
         # Environment-specific Cognito resources
         user_pool_v2 = cognito.UserPool(
@@ -81,6 +82,22 @@ class AuthStack(Stack):
 
         CfnOutput(self, "CognitoUserPoolIdV2", value=user_pool_v2.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientIdV2", value=user_pool_client_v2.user_pool_client_id)
+
+        # Enhanced fallback logic: Find user pool with users for frontend configuration
+        best_pool_id = self._find_user_pool_with_users(
+            preferred_pool_id=user_pool_v2.user_pool_id,
+            fallback_pool_names=[
+                "Spaceport-Users",  # Legacy without suffix
+                "Spaceport-Users-v2",  # Legacy V2
+                "Spaceport-Users-v3",  # Legacy V3
+                f"Spaceport-Users-v2-{suffix}",  # V2 with suffix
+                f"Spaceport-Users-v3-{suffix}",  # V3 with suffix
+            ]
+        )
+        
+        # Output the best user pool for GitHub secrets
+        CfnOutput(self, "RecommendedUserPoolId", value=best_pool_id)
+        CfnOutput(self, "RecommendedUserPoolClientId", value=user_pool_client_v2.user_pool_client_id)
 
         # Import existing Lambda functions to avoid conflicts
 
@@ -692,6 +709,55 @@ class AuthStack(Stack):
             )
         
         return dynamodb.Table(self, construct_id, **table_props)
+
+    def _cognito_user_pool_exists(self, user_pool_id: str) -> bool:
+        """Check if a Cognito user pool exists"""
+        try:
+            self.cognito_client.describe_user_pool(UserPoolId=user_pool_id)
+            return True
+        except Exception:
+            return False
+
+    def _cognito_user_pool_has_users(self, user_pool_id: str) -> bool:
+        """Check if Cognito user pool contains any users"""
+        try:
+            response = self.cognito_client.list_users(
+                UserPoolId=user_pool_id,
+                Limit=1
+            )
+            return len(response.get('Users', [])) > 0
+        except Exception as e:
+            print(f"⚠️  Error checking user pool users for {user_pool_id}: {e}")
+            return False
+
+    def _find_user_pool_with_users(self, preferred_pool_id: str, fallback_pool_names: list) -> str:
+        """Find a user pool with users, checking preferred first, then fallbacks"""
+        # Check preferred pool first
+        if self._cognito_user_pool_exists(preferred_pool_id):
+            if self._cognito_user_pool_has_users(preferred_pool_id):
+                print(f"✅ Preferred user pool has users: {preferred_pool_id}")
+                return preferred_pool_id
+            else:
+                print(f"ℹ️  Preferred user pool exists but is empty: {preferred_pool_id}")
+        
+        # Check fallback pools by name pattern
+        for pool_name in fallback_pool_names:
+            try:
+                # List all pools and find matching name
+                response = self.cognito_client.list_user_pools(MaxResults=60)
+                for pool in response.get('UserPools', []):
+                    if pool['Name'] == pool_name:
+                        pool_id = pool['Id']
+                        if self._cognito_user_pool_has_users(pool_id):
+                            print(f"✅ Found fallback user pool with users: {pool_name} ({pool_id})")
+                            return pool_id
+                        else:
+                            print(f"ℹ️  Fallback user pool exists but is empty: {pool_name} ({pool_id})")
+            except Exception as e:
+                print(f"⚠️  Error checking fallback pool {pool_name}: {e}")
+        
+        print(f"ℹ️  No user pools found with users, using preferred: {preferred_pool_id}")
+        return preferred_pool_id
 
 
 # Force complete AuthStack redeployment with subscription resources
