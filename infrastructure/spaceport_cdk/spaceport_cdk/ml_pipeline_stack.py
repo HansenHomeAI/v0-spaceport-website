@@ -725,6 +725,51 @@ class MLPipelineStack(Stack):
         except Exception:
             return False
 
+    def _bucket_has_data(self, bucket_name: str) -> bool:
+        """Check if S3 bucket contains any objects"""
+        try:
+            response = self.s3_client.list_objects_v2(Bucket=bucket_name, MaxKeys=1)
+            return 'Contents' in response and len(response['Contents']) > 0
+        except Exception as e:
+            print(f"⚠️  Error checking bucket data for {bucket_name}: {e}")
+            return False  # Conservative approach
+
+    def _migrate_s3_data(self, source_bucket: str, target_bucket: str) -> bool:
+        """Migrate data from source S3 bucket to target bucket"""
+        try:
+            print(f"🔄 Starting S3 data migration: {source_bucket} → {target_bucket}")
+            
+            # List all objects in source bucket
+            paginator = self.s3_client.get_paginator('list_objects_v2')
+            page_iterator = paginator.paginate(Bucket=source_bucket)
+            
+            migrated_count = 0
+            for page in page_iterator:
+                if 'Contents' not in page:
+                    continue
+                    
+                for obj in page['Contents']:
+                    key = obj['Key']
+                    
+                    # Copy object to target bucket
+                    copy_source = {'Bucket': source_bucket, 'Key': key}
+                    self.s3_client.copy_object(
+                        CopySource=copy_source,
+                        Bucket=target_bucket,
+                        Key=key
+                    )
+                    migrated_count += 1
+                    
+                    if migrated_count % 10 == 0:
+                        print(f"✅ Migrated {migrated_count} objects...")
+            
+            print(f"✅ S3 data migration completed: {migrated_count} objects migrated")
+            return True
+            
+        except Exception as e:
+            print(f"❌ S3 data migration failed: {e}")
+            return False
+
     def _ecr_repo_exists(self, repo_name: str) -> bool:
         """Check if an ECR repository exists"""
         try:
@@ -734,7 +779,7 @@ class MLPipelineStack(Stack):
             return False
 
     def _get_or_create_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
-        """Get existing S3 bucket or create new one with robustness validation"""
+        """Get existing S3 bucket or create new one with enhanced data-aware logic and robustness validation"""
         
         # Robustness: Validate names before proceeding
         self._validate_s3_bucket_name(preferred_name, "preferred")
@@ -743,22 +788,54 @@ class MLPipelineStack(Stack):
         # Robustness: Check for potential conflicts
         self._check_s3_naming_conflicts(preferred_name, fallback_name)
         
-        # First try preferred name (with environment suffix)
+        # Check if preferred name exists and has data
         if self._bucket_exists(preferred_name):
-            print(f"✅ Importing existing S3 bucket: {preferred_name}")
-            bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
-            self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
-            return bucket
+            if self._bucket_has_data(preferred_name):
+                print(f"✅ Importing existing S3 bucket with data: {preferred_name}")
+                bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+                self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
+                return bucket
+            else:
+                print(f"ℹ️  Preferred bucket exists but is empty: {preferred_name}")
+                # Continue to check fallback
         
-        # Then try fallback name (without suffix)
+        # Check if fallback name exists and has data
         if self._bucket_exists(fallback_name):
-            print(f"✅ Importing existing S3 bucket (fallback): {fallback_name}")
-            # Robustness: Validate fallback is accessible
-            if not self._validate_bucket_accessibility(fallback_name):
-                print(f"⚠️  Warning: Fallback bucket {fallback_name} may have access issues")
-            bucket = s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
-            self._imported_resources.append({"type": "S3::Bucket", "name": fallback_name, "action": "imported_fallback"})
-            return bucket
+            if self._bucket_has_data(fallback_name):
+                print(f"🔄 Fallback bucket has data, creating preferred and migrating: {fallback_name} → {preferred_name}")
+                
+                # Robustness: Validate fallback is accessible
+                if not self._validate_bucket_accessibility(fallback_name):
+                    print(f"⚠️  Warning: Fallback bucket {fallback_name} may have access issues")
+                
+                # Create the preferred bucket first
+                bucket = s3.Bucket(
+                    self, construct_id,
+                    bucket_name=preferred_name,
+                    removal_policy=RemovalPolicy.RETAIN,
+                    auto_delete_objects=False,
+                    versioned=True,
+                    encryption=s3.BucketEncryption.S3_MANAGED,
+                    block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+                )
+                
+                # Migrate data from fallback to preferred
+                if self._migrate_s3_data(fallback_name, preferred_name):
+                    print(f"✅ Successfully migrated data to {preferred_name}")
+                    self._created_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "created_with_migration"})
+                    return bucket
+                else:
+                    print(f"⚠️  Data migration failed, but bucket {preferred_name} was created")
+                    self._created_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "created_migration_failed"})
+                    return bucket
+            else:
+                print(f"ℹ️  Fallback bucket exists but is empty: {fallback_name}")
+                # Robustness: Validate fallback is accessible
+                if not self._validate_bucket_accessibility(fallback_name):
+                    print(f"⚠️  Warning: Fallback bucket {fallback_name} may have access issues")
+                bucket = s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+                self._imported_resources.append({"type": "S3::Bucket", "name": fallback_name, "action": "imported_fallback"})
+                return bucket
         
         # Create new bucket with preferred name
         print(f"🆕 Creating new S3 bucket: {preferred_name}")

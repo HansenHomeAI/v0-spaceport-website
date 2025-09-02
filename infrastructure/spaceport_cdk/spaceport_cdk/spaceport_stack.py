@@ -43,6 +43,9 @@ class SpaceportStack(Stack):
         self.s3_client = boto3.client('s3', region_name=region)
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
 
+        # Track enhanced dynamic logic behavior
+        self._enhanced_logic_actions = []
+
         # Create a CloudFormation parameter for the API key
         api_key_param = CfnParameter(
             self, "GoogleMapsApiKey",
@@ -322,6 +325,15 @@ class SpaceportStack(Stack):
         except Exception:
             return False
 
+    def _bucket_has_data(self, bucket_name: str) -> bool:
+        """Check if S3 bucket contains any objects"""
+        try:
+            response = self.s3_client.list_objects_v2(Bucket=bucket_name, MaxKeys=1)
+            return 'Contents' in response and len(response['Contents']) > 0
+        except Exception as e:
+            print(f"⚠️  Error checking bucket data for {bucket_name}: {e}")
+            return False  # Conservative approach
+
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
         try:
@@ -330,20 +342,128 @@ class SpaceportStack(Stack):
         except Exception:
             return False
 
+    def _dynamodb_table_has_data(self, table_name: str) -> bool:
+        """Check if DynamoDB table contains any data"""
+        try:
+            response = self.dynamodb_client.scan(
+                TableName=table_name,
+                Select='COUNT',
+                Limit=1
+            )
+            return response['Count'] > 0
+        except Exception as e:
+            print(f"⚠️  Error checking table data for {table_name}: {e}")
+            return False  # Conservative approach
+
+    def _migrate_dynamodb_data(self, source_table: str, target_table: str) -> bool:
+        """Migrate data from source DynamoDB table to target table"""
+        try:
+            print(f"🔄 Starting data migration: {source_table} → {target_table}")
+            
+            # Scan all items from source table
+            response = self.dynamodb_client.scan(TableName=source_table)
+            items = response.get('Items', [])
+            
+            if not items:
+                print(f"ℹ️  No data to migrate from {source_table}")
+                return True
+            
+            print(f"📊 Found {len(items)} items to migrate")
+            
+            # Write items to target table in batches
+            batch_size = 25  # DynamoDB batch write limit
+            for i in range(0, len(items), batch_size):
+                batch = items[i:i + batch_size]
+                write_requests = [{'PutRequest': {'Item': item}} for item in batch]
+                
+                self.dynamodb_client.batch_write_item(
+                    RequestItems={target_table: write_requests}
+                )
+                print(f"✅ Migrated batch {i//batch_size + 1}/{(len(items) + batch_size - 1)//batch_size}")
+            
+            print(f"✅ Data migration completed: {len(items)} items migrated")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Data migration failed: {e}")
+            return False
+
+    def _migrate_s3_data(self, source_bucket: str, target_bucket: str) -> bool:
+        """Migrate data from source S3 bucket to target bucket"""
+        try:
+            print(f"🔄 Starting S3 data migration: {source_bucket} → {target_bucket}")
+            
+            # List all objects in source bucket
+            paginator = self.s3_client.get_paginator('list_objects_v2')
+            page_iterator = paginator.paginate(Bucket=source_bucket)
+            
+            migrated_count = 0
+            for page in page_iterator:
+                if 'Contents' not in page:
+                    continue
+                    
+                for obj in page['Contents']:
+                    key = obj['Key']
+                    
+                    # Copy object to target bucket
+                    copy_source = {'Bucket': source_bucket, 'Key': key}
+                    self.s3_client.copy_object(
+                        CopySource=copy_source,
+                        Bucket=target_bucket,
+                        Key=key
+                    )
+                    migrated_count += 1
+                    
+                    if migrated_count % 10 == 0:
+                        print(f"✅ Migrated {migrated_count} objects...")
+            
+            print(f"✅ S3 data migration completed: {migrated_count} objects migrated")
+            return True
+            
+        except Exception as e:
+            print(f"❌ S3 data migration failed: {e}")
+            return False
+
     def _get_or_create_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
-        """Get existing S3 bucket or create new one"""
-        # First try preferred name (with environment suffix)
+        """Get existing S3 bucket or create new one with enhanced data-aware logic"""
+        # Check if preferred name exists and has data
         if self._bucket_exists(preferred_name):
-            print(f"Importing existing S3 bucket: {preferred_name}")
-            return s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            if self._bucket_has_data(preferred_name):
+                print(f"✅ Importing existing S3 bucket with data: {preferred_name}")
+                return s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            else:
+                print(f"ℹ️  Preferred bucket exists but is empty: {preferred_name}")
+                # Continue to check fallback
         
-        # Then try fallback name (without suffix)
+        # Check if fallback name exists and has data
         if self._bucket_exists(fallback_name):
-            print(f"Importing existing S3 bucket: {fallback_name}")
-            return s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+            if self._bucket_has_data(fallback_name):
+                print(f"🔄 Fallback bucket has data, creating preferred and migrating: {fallback_name} → {preferred_name}")
+                
+                # Create the preferred bucket first
+                new_bucket = s3.Bucket(
+                    self, construct_id,
+                    bucket_name=preferred_name,
+                    removal_policy=RemovalPolicy.RETAIN,
+                    auto_delete_objects=False,
+                    versioned=True,
+                    encryption=s3.BucketEncryption.S3_MANAGED,
+                    block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+                )
+                
+                # Migrate data from fallback to preferred
+                if self._migrate_s3_data(fallback_name, preferred_name):
+                    print(f"✅ Successfully migrated data to {preferred_name}")
+                    return new_bucket
+                else:
+                    print(f"⚠️  Data migration failed, but bucket {preferred_name} was created")
+                    return new_bucket
+            else:
+                print(f"ℹ️  Fallback bucket exists but is empty: {fallback_name}")
+                # Create preferred bucket (both are empty)
         
         # Create new bucket with preferred name
-        print(f"Creating new S3 bucket: {preferred_name}")
+        print(f"🆕 Creating new S3 bucket: {preferred_name}")
         return s3.Bucket(
             self, construct_id,
             bucket_name=preferred_name,
@@ -356,19 +476,46 @@ class SpaceportStack(Stack):
 
     def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
                                      partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:
-        """Get existing DynamoDB table or create new one"""
-        # First try preferred name (with environment suffix)
+        """Get existing DynamoDB table or create new one with enhanced data-aware logic"""
+        # Check if preferred name exists and has data
         if self._dynamodb_table_exists(preferred_name):
-            print(f"Importing existing DynamoDB table: {preferred_name}")
-            return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
+            if self._dynamodb_table_has_data(preferred_name):
+                print(f"✅ Importing existing DynamoDB table with data: {preferred_name}")
+                return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
+            else:
+                print(f"ℹ️  Preferred table exists but is empty: {preferred_name}")
+                # Continue to check fallback
         
-        # Then try fallback name (without suffix)
+        # Check if fallback name exists and has data
         if self._dynamodb_table_exists(fallback_name):
-            print(f"Importing existing DynamoDB table: {fallback_name}")
-            return dynamodb.Table.from_table_name(self, construct_id, fallback_name)
+            if self._dynamodb_table_has_data(fallback_name):
+                print(f"🔄 Fallback table has data, creating preferred and migrating: {fallback_name} → {preferred_name}")
+                
+                # Create the preferred table first
+                new_table = dynamodb.Table(
+                    self, construct_id,
+                    table_name=preferred_name,
+                    partition_key=dynamodb.Attribute(
+                        name=partition_key_name,
+                        type=partition_key_type
+                    ),
+                    removal_policy=RemovalPolicy.RETAIN,
+                    billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+                )
+                
+                # Migrate data from fallback to preferred
+                if self._migrate_dynamodb_data(fallback_name, preferred_name):
+                    print(f"✅ Successfully migrated data to {preferred_name}")
+                    return new_table
+                else:
+                    print(f"⚠️  Data migration failed, but table {preferred_name} was created")
+                    return new_table
+            else:
+                print(f"ℹ️  Fallback table exists but is empty: {fallback_name}")
+                # Create preferred table (both are empty)
         
         # Create new table with preferred name
-        print(f"Creating new DynamoDB table: {preferred_name}")
+        print(f"🆕 Creating new DynamoDB table: {preferred_name}")
         return dynamodb.Table(
             self, construct_id,
             table_name=preferred_name,
