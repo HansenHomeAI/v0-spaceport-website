@@ -34,7 +34,7 @@ class AuthStack(Stack):
         user_pool = self._get_or_create_user_pool(
             construct_id="SpaceportUserPool",
             preferred_name=f"Spaceport-Users-{suffix}",
-            fallback_name="Spaceport-Users",
+            fallback_name="Spaceport-Users-v2",
             pool_type="standard"
         )
         
