@@ -29,16 +29,11 @@ class AuthStack(Stack):
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
         self.cognito_client = boto3.client('cognito-idp', region_name=region)
 
-        # Environment-specific Cognito resources with enhanced multi-pattern fallback
-        user_pool_v2, user_pool_v2_client = self._get_or_create_user_pool_with_client(
+        # Environment-specific Cognito resources - always use existing pools
+        user_pool_v2, user_pool_v2_client = self._get_environment_user_pool(
             construct_id="SpaceportUserPoolV2",
             client_construct_id="SpaceportUserPoolClientV2",
-            preferred_name=f"Spaceport-Users-{suffix}",
-            fallback_patterns=[
-                "Spaceport-Users",  # Legacy no-suffix
-                "Spaceport-Users-v2",  # Legacy v2
-                "Spaceport-Users-v3",  # Legacy v3
-            ],
+            environment_suffix=suffix,
             pool_config={
                 "self_sign_up_enabled": False,
                 "auto_verify": cognito.AutoVerifiedAttrs(email=True),
@@ -116,15 +111,11 @@ class AuthStack(Stack):
         # Alternate v3 pool to allow user-chosen handle at first sign-in
         # preferred_username is optional and mutable
         # -------------------------------------
-        user_pool_v3, user_pool_v3_client = self._get_or_create_user_pool_with_client(
+        user_pool_v3, user_pool_v3_client = self._get_environment_user_pool(
             construct_id="SpaceportUserPoolV3",
             client_construct_id="SpaceportUserPoolClientV3",
-            preferred_name=f"Spaceport-Users-v3-{suffix}",
-            fallback_patterns=[
-                "Spaceport-Users-v3",  # Legacy v3 no-suffix
-                "Spaceport-Users",  # Legacy no-suffix
-                "Spaceport-Users-v2",  # Legacy v2
-            ],
+            environment_suffix=suffix,
+            pool_type="v3",
             pool_config={
                 "self_sign_up_enabled": False,
                 "auto_verify": cognito.AutoVerifiedAttrs(email=True),
@@ -946,6 +937,80 @@ class AuthStack(Stack):
             print(f"ℹ️  No fallback pools with users found, created empty pool")
         
         return new_pool, new_client
+
+    def _get_environment_user_pool(self, construct_id: str, client_construct_id: str,
+                                 environment_suffix: str, pool_config: dict, client_config: dict,
+                                 group_name: str = None, group_description: str = None,
+                                 pool_type: str = "v2"):
+        """Get environment-specific user pool - always use existing pools, never create new ones"""
+        
+        # Environment-specific pool mapping
+        if environment_suffix == "prod":
+            # Production environment - use production V2 pool
+            if pool_type == "v2":
+                pool_id = "us-west-2_vKey14Q4x"  # Production V2 pool
+            else:
+                pool_id = "us-west-2_vsNUylBC4"  # Production V3 pool
+        else:
+            # Development/Staging environment - use staging V2 pool
+            if pool_type == "v2":
+                pool_id = "us-west-2_a2jf3ldGV"  # Staging V2 pool (has users)
+            else:
+                pool_id = "us-west-2_OFfTa3OT9"  # Staging V3 pool
+        
+        print(f"🎯 Using {environment_suffix} {pool_type} pool: {pool_id}")
+        
+        # Always import existing pool - never create new ones
+        try:
+            imported_pool = cognito.UserPool.from_user_pool_id(self, construct_id, pool_id)
+            print(f"✅ Imported existing {environment_suffix} {pool_type} pool: {pool_id}")
+            
+            # Get existing client for this pool
+            try:
+                response = self.cognito_client.list_user_pool_clients(UserPoolId=pool_id)
+                if response.get('UserPoolClients'):
+                    client_id = response['UserPoolClients'][0]['ClientId']
+                    imported_client = cognito.UserPoolClient.from_user_pool_client_id(
+                        self, client_construct_id, client_id
+                    )
+                    print(f"✅ Imported existing client: {client_id}")
+                else:
+                    # Create new client for existing pool if none exists
+                    imported_client = imported_pool.add_client(client_construct_id, **client_config)
+                    print(f"🆕 Created new client for existing pool")
+            except Exception as e:
+                print(f"⚠️  Error getting client, creating new one: {e}")
+                imported_client = imported_pool.add_client(client_construct_id, **client_config)
+            
+            # Create group if specified (only if it doesn't exist)
+            if group_name:
+                try:
+                    # Check if group already exists
+                    try:
+                        self.cognito_client.get_group(
+                            GroupName=group_name,
+                            UserPoolId=imported_pool.user_pool_id
+                        )
+                        print(f"ℹ️  Group {group_name} already exists, skipping creation")
+                    except self.cognito_client.exceptions.ResourceNotFoundException:
+                        # Group doesn't exist, create it
+                        cognito.CfnUserPoolGroup(
+                            self,
+                            f"{construct_id}Group",
+                            user_pool_id=imported_pool.user_pool_id,
+                            group_name=group_name,
+                            description=group_description or f"Group for {pool_id}",
+                        )
+                        print(f"✅ Created group {group_name}")
+                except Exception as e:
+                    print(f"⚠️  Could not create group {group_name}: {e}")
+            
+            return imported_pool, imported_client
+            
+        except Exception as e:
+            print(f"❌ Failed to import {environment_suffix} {pool_type} pool {pool_id}: {e}")
+            print(f"⚠️  Pool may not exist in this environment - check AWS account configuration")
+            raise e
 
 
 # Force complete AuthStack redeployment with subscription resources
