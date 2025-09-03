@@ -356,9 +356,14 @@ class AuthStack(Stack):
     def _cognito_user_pool_exists(self, user_pool_name: str) -> bool:
         """Check if a Cognito User Pool exists"""
         try:
-            self.cognito_client.describe_user_pool(UserPoolName=user_pool_name)
-            return True
-        except self.cognito_client.exceptions.ResourceNotFoundException:
+            # List all user pools and check if one with the given name exists
+            response = self.cognito_client.list_user_pools(MaxResults=60)
+            for pool in response.get('UserPools', []):
+                if pool['Name'] == user_pool_name:
+                    return True
+            return False
+        except Exception as e:
+            print(f"Error checking if user pool exists: {e}")
             return False
 
     def _get_or_create_user_pool(self, construct_id: str, preferred_name: str, fallback_name: str, pool_type: str) -> cognito.UserPool:
