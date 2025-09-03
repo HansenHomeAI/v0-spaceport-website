@@ -162,7 +162,7 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     """
 
     ses.send_email(
-        Source='gabriel@spcprt.com',
+        Source='hello@spcprt.com',
         Destination={'ToAddresses': [email]},
         Message={
             'Subject': {'Data': subject},

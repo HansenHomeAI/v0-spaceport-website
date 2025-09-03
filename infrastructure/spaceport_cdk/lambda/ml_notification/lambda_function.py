@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     try:
         # Extract data from Step Functions payload
         job_id = event.get('jobId')
-        email = event.get('email', 'gabriel@spcprt.com')
+        email = event.get('email', 'hello@spcprt.com')
         s3_url = event.get('s3Url')
         status = event.get('status')  # 'completed' or 'failed'
         compressed_output_uri = event.get('compressedOutputS3Uri')
@@ -65,7 +65,7 @@ def lambda_handler(event, context):
         
         # Send email via SES
         response = ses.send_email(
-            Source='gabriel@spcprt.com',  # Using the verified email address
+            Source='hello@spcprt.com',  # Using the verified email address
             Destination={
                 'ToAddresses': [email]
             },
@@ -130,7 +130,7 @@ If you have any questions or need assistance, please don't hesitate to reach out
 
 Best regards,
 The Spaceport Team
-gabriel@spcprt.com
+hello@spcprt.com
 """
 
     body_html = f"""
@@ -179,7 +179,7 @@ gabriel@spcprt.com
             <div class="footer">
                 <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team.</p>
                 <p><strong>The Spaceport Team</strong><br>
-                <a href="mailto:gabriel@spcprt.com">gabriel@spcprt.com</a></p>
+                <a href="mailto:hello@spcprt.com">hello@spcprt.com</a></p>
             </div>
         </div>
     </div>
@@ -213,7 +213,7 @@ If you continue to experience issues, please contact our support team with your 
 
 Best regards,
 The Spaceport Team
-gabriel@spcprt.com
+hello@spcprt.com
 """
 
     body_html = f"""
@@ -267,12 +267,12 @@ gabriel@spcprt.com
             
             <p>Our team has been automatically notified of this issue. We'll investigate and reach out to you with next steps.</p>
             
-            <a href="mailto:gabriel@spcprt.com?subject=Processing%20Failed%20-%20Job%20{job_id}" class="contact-button">Contact Support</a>
+            <a href="mailto:hello@spcprt.com?subject=Processing%20Failed%20-%20Job%20{job_id}" class="contact-button">Contact Support</a>
             
             <div class="footer">
                 <p>If you continue to experience issues, please contact our support team with your Job ID.</p>
                 <p><strong>The Spaceport Team</strong><br>
-                <a href="mailto:gabriel@spcprt.com">gabriel@spcprt.com</a></p>
+                <a href="mailto:hello@spcprt.com">hello@spcprt.com</a></p>
             </div>
         </div>
     </div>
