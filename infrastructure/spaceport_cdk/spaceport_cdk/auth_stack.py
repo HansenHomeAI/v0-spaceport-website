@@ -366,6 +366,18 @@ class AuthStack(Stack):
             print(f"Error checking if user pool exists: {e}")
             return False
 
+    def _get_user_pool_id_by_name(self, user_pool_name: str) -> str:
+        """Get user pool ID by name"""
+        try:
+            response = self.cognito_client.list_user_pools(MaxResults=60)
+            for pool in response.get('UserPools', []):
+                if pool['Name'] == user_pool_name:
+                    return pool['Id']
+            return None
+        except Exception as e:
+            print(f"Error getting user pool ID: {e}")
+            return None
+
     def _get_or_create_user_pool(self, construct_id: str, preferred_name: str, fallback_name: str, pool_type: str) -> cognito.UserPool:
         """
         Import existing Cognito User Pool or create a new one if it doesn't exist.
@@ -373,12 +385,16 @@ class AuthStack(Stack):
         # First try preferred name (with environment suffix)
         if self._cognito_user_pool_exists(preferred_name):
             print(f"Importing existing Cognito User Pool: {preferred_name}")
-            return cognito.UserPool.from_user_pool_name(self, construct_id, preferred_name)
+            pool_id = self._get_user_pool_id_by_name(preferred_name)
+            if pool_id:
+                return cognito.UserPool.from_user_pool_id(self, construct_id, pool_id)
         
         # Then try fallback name (without suffix)
         if self._cognito_user_pool_exists(fallback_name):
             print(f"Importing existing Cognito User Pool: {fallback_name}")
-            return cognito.UserPool.from_user_pool_name(self, construct_id, fallback_name)
+            pool_id = self._get_user_pool_id_by_name(fallback_name)
+            if pool_id:
+                return cognito.UserPool.from_user_pool_id(self, construct_id, pool_id)
         
         # Create new user pool with preferred name
         print(f"Creating new Cognito User Pool: {preferred_name}")
