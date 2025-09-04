@@ -5176,8 +5176,9 @@ input.text-fade-right,
 
 .account-info-compact {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
   width: 100%;
 }
 
