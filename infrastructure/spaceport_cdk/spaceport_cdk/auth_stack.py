@@ -569,8 +569,9 @@ class AuthStack(Stack):
             print(f"⚠️  Error getting existing client: {e}")
         
         # Create new client if none exists
-        new_client = user_pool.add_client(
-            construct_id,
+        new_client = cognito.UserPoolClient(
+            self, construct_id,
+            user_pool=user_pool,
             user_pool_client_name=client_name,
             auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
             o_auth=cognito.OAuthSettings(
