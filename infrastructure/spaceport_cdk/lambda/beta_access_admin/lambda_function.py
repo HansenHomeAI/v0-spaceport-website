@@ -78,6 +78,7 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         user_attributes = [
             {'Name': 'email', 'Value': email},
             {'Name': 'email_verified', 'Value': 'true'},
+            {'Name': 'preferred_username', 'Value': email},  # Use email as preferred_username
         ]
         if name:
             user_attributes.append({'Name': 'name', 'Value': name.strip()})
