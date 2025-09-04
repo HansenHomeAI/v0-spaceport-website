@@ -35,6 +35,14 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
       
+      // Check if user is authenticated first
+      const currentUser = await Auth.currentAuthenticatedUser();
+      if (!currentUser) {
+        console.log('No authenticated user, skipping subscription fetch');
+        setLoading(false);
+        return;
+      }
+      
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       
@@ -53,7 +61,10 @@ export const useSubscription = () => {
       setSubscription(data.subscription);
     } catch (err) {
       console.error('Error fetching subscription:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch subscription');
+      // Don't set error for authentication issues - just use default beta
+      if (err instanceof Error && !err.message.includes('No current user')) {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }

@@ -71,8 +71,23 @@ export default function Create(): JSX.Element {
   };
 
   useEffect(() => { 
-    fetchProjects(); 
-    fetchUser();
+    // Wait for user to be authenticated before fetching data
+    const initializeData = async () => {
+      try {
+        // Wait for user to be available
+        const currentUser = await Auth.currentAuthenticatedUser();
+        setUser(currentUser);
+        
+        // Now fetch projects and subscription data
+        await fetchProjects();
+      } catch (error) {
+        console.log('User not authenticated yet, waiting...');
+        // Retry after a short delay
+        setTimeout(initializeData, 1000);
+      }
+    };
+    
+    initializeData();
   }, []);
 
   const signOut = async () => {
@@ -151,48 +166,21 @@ export default function Create(): JSX.Element {
               <div className="account-info">
                 <div className="account-details">
                   <div className="account-header">
-                    <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                    <div className="subscription-info">
-                      <span className={getSubscriptionBadgeClass()}>
-                        {getSubscriptionStatusDisplay()}
-                      </span>
-                      <button
-                        className="subscription-pill clickable"
-                        onClick={() => setSubscriptionPopupOpen(true)}
-                      >
-                        {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
-                      </button>
+                    <div className="account-info-compact">
+                      <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
+                      <div className="subscription-compact">
+                        <button
+                          className="subscription-pill clickable"
+                          onClick={() => setSubscriptionPopupOpen(true)}
+                        >
+                          {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
+                        </button>
+                        <span className="model-count">
+                          {projects.length}/5 active models
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Subscription Details */}
-                  {subscription ? (
-                    <div className="subscription-details">
-                      <p className="subscription-plan">
-                        {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
-                      </p>
-                      <p className="subscription-status">
-                        Status: {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
-                      </p>
-                      {subscription.referredBy && (
-                        <p className="referral-info">
-                          Referred by: {subscription.referredBy}
-                        </p>
-                      )}
-                      {subscription.referralEarnings && subscription.referralEarnings > 0 && (
-                        <p className="earnings-info">
-                          Referral earnings: ${subscription.referralEarnings.toFixed(2)}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="subscription-details">
-                      <p className="subscription-plan">Beta Plan</p>
-                      <p className="subscription-status">Status: Active</p>
-                      <p className="subscription-features">• {projects.length} of 5 active models used</p>
-                      <p className="subscription-features">• Email support</p>
-                    </div>
-                  )}
                   
                   {/* Beta Access Management - Only shown to authorized employees */}
                   <BetaAccessInvite />
