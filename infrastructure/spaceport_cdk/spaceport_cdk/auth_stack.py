@@ -320,6 +320,135 @@ class AuthStack(Stack):
         self.subscription_lambda = subscription_lambda
         self.subscription_api = subscription_api
 
+        # ========== BETA ACCESS ADMIN SYSTEM ==========
+        # Create DynamoDB table for beta access permissions
+        beta_access_permissions_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-BetaAccessPermissionsTable",
+            preferred_name=f"Spaceport-BetaAccessPermissions-{suffix}",
+            fallback_name="Spaceport-BetaAccessPermissions",
+            partition_key_name="user_id",
+            partition_key_type=dynamodb.AttributeType.STRING
+        )
+
+        # Create IAM role for beta access admin Lambda
+        beta_access_lambda_role = iam.Role(
+            self, "BetaAccessAdminLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "BetaAccessAdminPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "cognito-idp:AdminCreateUser",
+                                "cognito-idp:AdminAddUserToGroup",
+                                "cognito-idp:AdminGetUser",
+                                "cognito-idp:ListUsers",
+                                "cognito-idp:ListGroups"
+                            ],
+                            resources=[user_pool.user_pool_arn]
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "dynamodb:GetItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan"
+                            ],
+                            resources=[beta_access_permissions_table.table_arn]
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=["ses:SendEmail"],
+                            resources=["*"]
+                        )
+                    ]
+                )
+            }
+        )
+
+        # Create beta access admin Lambda function
+        beta_access_lambda = lambda_.Function(
+            self, "Spaceport-BetaAccessAdminFunction",
+            function_name=f"Spaceport-BetaAccessAdminFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin")
+            ),
+            role=beta_access_lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+            },
+        )
+
+        # Create API Gateway for beta access admin
+        beta_access_api = apigw.RestApi(
+            self, "Spaceport-BetaAccessAdminApi",
+            rest_api_name=f"Spaceport-BetaAccessAdminApi-{suffix}",
+            description="Beta access admin API for employee invitation management",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                ],
+            ),
+        )
+
+        # Add beta access admin endpoints
+        admin_resource = beta_access_api.root.add_resource("admin")
+        beta_access_resource = admin_resource.add_resource("beta-access")
+        
+        # Check permission endpoint
+        check_permission_resource = beta_access_resource.add_resource("check-permission")
+        check_permission_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(beta_access_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "BetaAccessCheckPermissionAuthorizer",
+                cognito_user_pools=[user_pool],
+            ),
+        )
+
+        # Send invitation endpoint
+        send_invitation_resource = beta_access_resource.add_resource("send-invitation")
+        send_invitation_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(beta_access_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "BetaAccessSendInvitationAuthorizer",
+                cognito_user_pools=[user_pool],
+            ),
+        )
+
+        # Outputs
+        CfnOutput(self, "BetaAccessAdminApiUrl", value=beta_access_api.url)
+        CfnOutput(self, "BetaAccessAdminLambdaArn", value=beta_access_lambda.function_arn)
+        CfnOutput(self, "BetaAccessPermissionsTableName", value=beta_access_permissions_table.table_name)
+        
+        # Force resource inclusion by referencing them
+        self.beta_access_lambda = beta_access_lambda
+        self.beta_access_api = beta_access_api
+        self.beta_access_permissions_table = beta_access_permissions_table
+
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
         try:
