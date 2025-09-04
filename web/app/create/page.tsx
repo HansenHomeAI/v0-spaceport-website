@@ -182,8 +182,6 @@ export default function Create(): JSX.Element {
                     </div>
                   </div>
                   
-                  {/* Beta Access Management - Only shown to authorized employees */}
-                  <BetaAccessInvite />
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
                   <span className="sign-out-icon"></span>
@@ -229,6 +227,9 @@ export default function Create(): JSX.Element {
                 </div>
               </div>
             ))}
+            
+            {/* Beta Access Management - Only shown to authorized employees */}
+            <BetaAccessInvite />
           </div>
         </section>
 

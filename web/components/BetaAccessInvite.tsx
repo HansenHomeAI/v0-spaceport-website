@@ -95,23 +95,23 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
       
       <style jsx>{`
         .beta-access-invite {
-          margin-top: 16px;
-          padding: 20px;
+          margin-top: 24px;
+          padding: 24px;
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 16px;
           backdrop-filter: blur(10px);
         }
         
         .beta-access-header h4 {
-          margin: 0 0 4px 0;
+          margin: 0 0 8px 0;
           color: #ffffff;
-          font-size: 1rem;
+          font-size: 1.125rem;
           font-weight: 600;
         }
         
         .beta-access-header p {
-          margin: 0 0 16px 0;
+          margin: 0 0 20px 0;
           color: rgba(255, 255, 255, 0.7);
           font-size: 0.875rem;
         }
@@ -119,21 +119,21 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
         .beta-access-form {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 16px;
         }
         
         .input-group {
           display: flex;
-          gap: 12px;
+          gap: 16px;
           align-items: center;
         }
         
         .beta-access-input {
           flex: 1;
-          padding: 12px 16px;
+          padding: 16px 20px;
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
+          border-radius: 50px;
           color: #ffffff;
           font-size: 0.875rem;
           transition: all 0.2s ease;
@@ -155,11 +155,11 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
         }
         
         .beta-access-button {
-          padding: 12px 20px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 16px 32px;
+          background: #ffffff;
           border: none;
-          border-radius: 8px;
-          color: #ffffff;
+          border-radius: 50px;
+          color: #000000;
           font-size: 0.875rem;
           font-weight: 600;
           cursor: pointer;
@@ -167,13 +167,13 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
           display: flex;
           align-items: center;
           gap: 8px;
-          min-width: 120px;
+          min-width: 140px;
           justify-content: center;
         }
         
         .beta-access-button:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
         }
         
         .beta-access-button:disabled {
@@ -189,8 +189,8 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
         .loading-spinner {
           width: 14px;
           height: 14px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top: 2px solid #ffffff;
+          border: 2px solid rgba(0, 0, 0, 0.3);
+          border-top: 2px solid #000000;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
@@ -201,10 +201,10 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
         }
         
         .beta-access-message {
-          padding: 10px 12px;
-          border-radius: 6px;
+          padding: 12px 16px;
+          border-radius: 50px;
           font-size: 0.875rem;
-          margin-top: 4px;
+          margin-top: 8px;
         }
         
         .beta-access-message.success {
