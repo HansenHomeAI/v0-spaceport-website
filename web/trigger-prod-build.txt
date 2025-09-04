@@ -1,2 +1,3 @@
 1754932038
 1754933194
+// Trigger Cloudflare rebuild with new Cognito client ID - Thu Sep  4 15:49:21 MDT 2025
