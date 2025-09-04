@@ -553,23 +553,12 @@ class AuthStack(Stack):
 
     def _get_or_create_client(self, user_pool: cognito.UserPool, construct_id: str, client_name: str) -> cognito.UserPoolClient:
         """
-        Get existing client or create new one for imported pool
+        Create or update CloudFormation-managed User Pool Client.
+        CloudFormation will update existing clients instead of creating duplicates.
         """
-        try:
-            # Try to get existing client
-            response = self.cognito_client.list_user_pool_clients(UserPoolId=user_pool.user_pool_id)
-            if response.get('UserPoolClients'):
-                client_id = response['UserPoolClients'][0]['ClientId']
-                imported_client = cognito.UserPoolClient.from_user_pool_client_id(
-                    self, construct_id, client_id
-                )
-                print(f"✅ Imported existing client: {client_id}")
-                return imported_client
-        except Exception as e:
-            print(f"⚠️  Error getting existing client: {e}")
-        
-        # Create new client if none exists
-        new_client = cognito.UserPoolClient(
+        # Always create a CloudFormation-managed resource
+        # CloudFormation will update existing clients instead of creating duplicates
+        client = cognito.UserPoolClient(
             self, construct_id,
             user_pool=user_pool,
             user_pool_client_name=client_name,
@@ -587,8 +576,8 @@ class AuthStack(Stack):
             ),
             prevent_user_existence_errors=True,
         )
-        print(f"🆕 Created new client: {new_client.user_pool_client_id}")
-        return new_client
+        print(f"✅ CloudFormation-managed client: {client_name}")
+        return client
 
 
 # Force complete AuthStack redeployment with subscription resources
