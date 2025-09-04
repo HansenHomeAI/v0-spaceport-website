@@ -13,19 +13,58 @@ from datetime import datetime
 import time
 
 class UserMigrationManager:
-    def __init__(self, source_pool_id: str, target_pool_id: str, region: str = 'us-west-2'):
+    def __init__(self, source_pool_id: str, target_pool_id: str, region: str = 'us-west-2', cross_account_role_arn: str = None):
         self.source_pool_id = source_pool_id
         self.target_pool_id = target_pool_id
         self.region = region
+        self.cross_account_role_arn = cross_account_role_arn
         
-        # Initialize AWS clients
+        # Initialize AWS clients for source (development account)
         self.cognito_client = boto3.client('cognito-idp', region_name=region)
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
+        
+        # Initialize AWS clients for target (production account via cross-account role)
+        if cross_account_role_arn:
+            self.target_credentials = self._assume_cross_account_role()
+            self.target_cognito_client = boto3.client(
+                'cognito-idp', 
+                region_name=region,
+                aws_access_key_id=self.target_credentials['AccessKeyId'],
+                aws_secret_access_key=self.target_credentials['SecretAccessKey'],
+                aws_session_token=self.target_credentials['SessionToken']
+            )
+            self.target_dynamodb_client = boto3.client(
+                'dynamodb', 
+                region_name=region,
+                aws_access_key_id=self.target_credentials['AccessKeyId'],
+                aws_secret_access_key=self.target_credentials['SecretAccessKey'],
+                aws_session_token=self.target_credentials['SessionToken']
+            )
+        else:
+            # Fallback to same account
+            self.target_cognito_client = self.cognito_client
+            self.target_dynamodb_client = self.dynamodb_client
         
         # Migration tracking
         self.migration_log = []
         self.successful_migrations = 0
         self.failed_migrations = 0
+        
+    def _assume_cross_account_role(self):
+        """Assume cross-account role for production access"""
+        sts_client = boto3.client('sts', region_name=self.region)
+        
+        try:
+            response = sts_client.assume_role(
+                RoleArn=self.cross_account_role_arn,
+                RoleSessionName='spaceport-migration-session',
+                ExternalId='spaceport-migration-2025'
+            )
+            print(f"✅ Successfully assumed cross-account role: {self.cross_account_role_arn}")
+            return response['Credentials']
+        except Exception as e:
+            print(f"❌ Failed to assume cross-account role: {e}")
+            raise e
         
     def log_migration(self, user_email: str, status: str, details: str = ""):
         """Log migration attempt"""
@@ -58,7 +97,7 @@ class UserMigrationManager:
     def user_exists_in_target(self, email: str) -> bool:
         """Check if user already exists in target pool"""
         try:
-            response = self.cognito_client.list_users(
+            response = self.target_cognito_client.list_users(
                 UserPoolId=self.target_pool_id,
                 Filter=f'email = "{email}"'
             )
@@ -94,7 +133,8 @@ class UserMigrationManager:
             # Prepare user attributes for creation
             user_attributes = [
                 {'Name': 'email', 'Value': email},
-                {'Name': 'email_verified', 'Value': 'true'}
+                {'Name': 'email_verified', 'Value': 'true'},
+                {'Name': 'preferred_username', 'Value': email}  # Use email as preferred_username
             ]
             
             # Add custom attributes if any
@@ -102,7 +142,7 @@ class UserMigrationManager:
                 user_attributes.append({'Name': attr_name, 'Value': attr_value})
             
             # Create user with temporary password
-            response = self.cognito_client.admin_create_user(
+            response = self.target_cognito_client.admin_create_user(
                 UserPoolId=self.target_pool_id,
                 Username=email,
                 UserAttributes=user_attributes,
@@ -137,7 +177,7 @@ class UserMigrationManager:
         try:
             # Get projects table name (adjust as needed)
             projects_table = 'Spaceport-Projects-staging'  # Source table
-            target_table = 'Spaceport-Projects-prod'      # Target table
+            target_table = 'Spaceport-Projects'            # Target table (production)
             
             # Scan for user's projects
             response = self.dynamodb_client.scan(
@@ -292,8 +332,9 @@ class UserMigrationManager:
 def main():
     """Main migration function"""
     # Configuration
-    SOURCE_POOL_ID = "us-west-2_a2jf3ldGV"  # Staging pool
-    TARGET_POOL_ID = "us-west-2_XXXXX"      # Production pool (update this)
+    SOURCE_POOL_ID = "us-west-2_a2jf3ldGV"  # Staging pool (development account)
+    TARGET_POOL_ID = "us-west-2_SnOJuAJXa"  # Production pool (production account)
+    CROSS_ACCOUNT_ROLE_ARN = "arn:aws:iam::356638455876:role/SpaceportMigrationRole"
     REGION = "us-west-2"
     
     # Check if this is a dry run
@@ -313,7 +354,8 @@ def main():
     migration_manager = UserMigrationManager(
         source_pool_id=SOURCE_POOL_ID,
         target_pool_id=TARGET_POOL_ID,
-        region=REGION
+        region=REGION,
+        cross_account_role_arn=CROSS_ACCOUNT_ROLE_ARN
     )
     
     # Run migration
