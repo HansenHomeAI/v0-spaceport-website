@@ -212,7 +212,7 @@ class AuthStack(Stack):
                 "COMPANY_KICKBACK_PERCENTAGE": os.environ.get("COMPANY_KICKBACK_PERCENTAGE", "70"),
                 "REFERRAL_DURATION_MONTHS": os.environ.get("REFERRAL_DURATION_MONTHS", "6"),
                 "EMPLOYEE_USER_ID": os.environ.get("EMPLOYEE_USER_ID", ""),
-                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spaceport.ai"),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
             },
             log_retention=logs.RetentionDays.ONE_MONTH,
         )
@@ -577,11 +577,11 @@ class AuthStack(Stack):
                 flows=cognito.OAuthFlows(authorization_code_grant=True),
                 callback_urls=[
                     "http://localhost:3000/",
-                    "https://spaceport.ai/",
+                    "https://spcprt.com/",
                 ],
                 logout_urls=[
                     "http://localhost:3000/",
-                    "https://spaceport.ai/",
+                    "https://spcprt.com/",
                 ],
             ),
             prevent_user_existence_errors=True,
