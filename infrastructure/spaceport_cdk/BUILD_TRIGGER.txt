@@ -4,3 +4,4 @@ Reason: Trigger Cloudflare Pages redeployment for production testing
 Status: Ready for deployment
 Cloudflare Pages: Triggering rebuild
 // Trigger CDK deployment to recreate Cognito client - Thu Sep  4 15:42:40 MDT 2025
+// Fix persistent Cognito client - always CloudFormation managed - Thu Sep  4 16:49:38 MDT 2025
