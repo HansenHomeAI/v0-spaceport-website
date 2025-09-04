@@ -178,11 +178,12 @@ class AuthStack(Stack):
         # -------------------------------------
         
         # Dynamic users table - import if exists, create if not  
+        # Updated schema: userSub (Cognito sub) as partition key + subscription fields
         users_table = self._get_or_create_dynamodb_table(
             construct_id="Spaceport-UsersTable",
             preferred_name=f"Spaceport-Users-{suffix}",
             fallback_name="Spaceport-Users",
-            partition_key_name="id",
+            partition_key_name="userSub",
             partition_key_type=dynamodb.AttributeType.STRING
         )
         

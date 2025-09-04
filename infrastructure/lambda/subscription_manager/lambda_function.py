@@ -293,15 +293,15 @@ def get_price_id(plan_type: str) -> Optional[str]:
     }
     return price_mapping.get(plan_type)
 
-def update_user_subscription(user_id: str, subscription_id: str, plan_type: str, status: str) -> None:
+def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str, status: str) -> None:
     """
-    Update user subscription in DynamoDB with new structure
+    Update user subscription in DynamoDB - UPDATED TO USE userSub
     """
     try:
         table = dynamodb.Table(USERS_TABLE)
         
-        # Get current user data
-        response = table.get_item(Key={'userId': user_id})
+        # Get current user data using userSub
+        response = table.get_item(Key={'userSub': user_sub})
         current_data = response.get('Item', {})
         
         # Get plan features from centralized config
@@ -309,13 +309,14 @@ def update_user_subscription(user_id: str, subscription_id: str, plan_type: str,
         
         # Update subscription data
         subscription_data = {
-            'userId': user_id,
+            'userSub': user_sub,
             'subscriptionId': subscription_id,
-            'planType': plan_type,
+            'SubType': plan_type,  # Main field for subscription tier
+            'planType': plan_type,  # Keep for backward compatibility
             'status': status,
             'updatedAt': datetime.utcnow().isoformat(),
             'planFeatures': plan_features,
-            'maxModels': plan_features.get('maxModels', 1),
+            'maxModels': plan_features.get('maxModels', 5),
             'support': plan_features.get('support', 'email')
         }
         
@@ -334,42 +335,50 @@ def update_user_subscription(user_id: str, subscription_id: str, plan_type: str,
         table.put_item(Item=subscription_data)
         
         # Update Cognito user attributes
-        update_cognito_subscription_attributes(user_id, plan_type, status)
+        update_cognito_subscription_attributes(user_sub, plan_type, status)
         
     except Exception as e:
         logger.error(f"Error updating user subscription: {str(e)}")
 
+# SUBSCRIPTION TIERS CONFIGURATION
+SUBSCRIPTION_TIERS = {
+    'beta': {
+        'maxModels': 5,
+        'support': 'email',
+        'price': 0,
+        'displayName': 'Beta Plan'
+    },
+    'single': {
+        'maxModels': 1,
+        'support': 'email',
+        'price': 29,
+        'displayName': 'Single Model'
+    },
+    'starter': {
+        'maxModels': 5,
+        'support': 'priority',
+        'price': 99,
+        'displayName': 'Starter'
+    },
+    'growth': {
+        'maxModels': 20,
+        'support': 'dedicated',
+        'price': 299,
+        'displayName': 'Growth'
+    },
+    'enterprise': {
+        'maxModels': -1,  # Unlimited
+        'support': 'dedicated',
+        'price': 0,  # Custom pricing
+        'displayName': 'Enterprise'
+    }
+}
+
 def get_plan_features_new_structure(plan_type: str) -> Dict[str, Any]:
     """
-    Get features for a specific plan - NEW STRUCTURE
+    Get features for a specific plan - UPDATED WITH BETA TIER
     """
-    features = {
-        'single': {
-            'maxModels': 1,
-            'support': 'email',
-            'trialDays': 0,
-            'price': 29
-        },
-        'starter': {
-            'maxModels': 5,
-            'support': 'priority',
-            'trialDays': 0,
-            'price': 99
-        },
-        'growth': {
-            'maxModels': 20,
-            'support': 'dedicated',
-            'trialDays': 0,
-            'price': 299
-        },
-        'enterprise': {
-            'maxModels': -1,  # Unlimited
-            'support': 'dedicated',
-            'trialDays': 0,
-            'price': 0  # Custom pricing
-        }
-    }
-    return features.get(plan_type, {})
+    return SUBSCRIPTION_TIERS.get(plan_type, SUBSCRIPTION_TIERS['beta'])
 
 def update_cognito_subscription_attributes(user_id: str, plan_type: str, status: str) -> None:
     """
@@ -563,12 +572,12 @@ def process_referral_payouts_new_structure(subscription_id: str, amount_paid: in
 
 def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Get user subscription status
+    Get user subscription status - UPDATED TO RETURN BETA BY DEFAULT
     """
     try:
-        # Extract user ID from JWT token
-        user_id = extract_user_id_from_jwt(event)
-        if not user_id:
+        # Extract userSub from JWT token
+        user_sub = extract_user_sub_from_jwt(event)
+        if not user_sub:
             return {
                 'statusCode': 401,
                 'body': json.dumps({'error': 'Unauthorized'})
@@ -576,23 +585,48 @@ def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
         
         # Get subscription from DynamoDB
         table = dynamodb.Table(USERS_TABLE)
-        response = table.get_item(Key={'userId': user_id})
+        response = table.get_item(Key={'userSub': user_sub})
         
         if 'Item' in response:
-            subscription = response['Item']
-            return {
-                'statusCode': 200,
-                'body': json.dumps({
-                    'subscription': subscription
-                })
+            user_data = response['Item']
+            sub_type = user_data.get('SubType', 'beta')
+            
+            # Build subscription response from user data
+            subscription = {
+                'status': user_data.get('status', 'active'),
+                'planType': sub_type,
+                'SubType': sub_type,
+                'planFeatures': get_plan_features_new_structure(sub_type),
+                'subscriptionId': user_data.get('subscriptionId'),
+                'referredBy': user_data.get('referredBy'),
+                'referralEarnings': user_data.get('referralEarnings', 0)
             }
         else:
-            return {
-                'statusCode': 200,
-                'body': json.dumps({
-                    'subscription': None
-                })
+            # Create default beta user profile
+            create_default_user_profile(user_sub)
+            
+            # Return default beta subscription
+            subscription = {
+                'status': 'active',
+                'planType': 'beta',
+                'SubType': 'beta',
+                'planFeatures': get_plan_features_new_structure('beta'),
+                'subscriptionId': None,
+                'referredBy': None,
+                'referralEarnings': 0
             }
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Access-Control-Allow-Methods': 'GET,OPTIONS'
+            },
+            'body': json.dumps({
+                'subscription': subscription
+            })
+        }
             
     except Exception as e:
         logger.error(f"Error getting subscription status: {str(e)}")
@@ -603,11 +637,11 @@ def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
 
 def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Cancel user subscription
+    Cancel user subscription - UPDATED TO USE userSub
     """
     try:
-        user_id = extract_user_id_from_jwt(event)
-        if not user_id:
+        user_sub = extract_user_sub_from_jwt(event)
+        if not user_sub:
             return {
                 'statusCode': 401,
                 'body': json.dumps({'error': 'Unauthorized'})
@@ -615,7 +649,7 @@ def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
         
         # Get subscription ID
         table = dynamodb.Table(USERS_TABLE)
-        response = table.get_item(Key={'userId': user_id})
+        response = table.get_item(Key={'userSub': user_sub})
         
         if 'Item' not in response:
             return {
@@ -637,7 +671,7 @@ def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
         )
         
         # Update local status
-        update_user_subscription(user_id, subscription_id, 
+        update_user_subscription(user_sub, subscription_id, 
                               response['Item'].get('planType'), 'canceled')
         
         return {
@@ -652,23 +686,66 @@ def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
             'body': json.dumps({'error': 'Failed to cancel subscription'})
         }
 
-def extract_user_id_from_jwt(event: Dict[str, Any]) -> Optional[str]:
+def extract_user_sub_from_jwt(event: Dict[str, Any]) -> Optional[str]:
     """
-    Extract user ID from JWT token in Authorization header
+    Extract userSub (Cognito sub) from JWT token - UPDATED
     """
     try:
-        auth_header = event.get('headers', {}).get('Authorization', '')
-        if not auth_header.startswith('Bearer '):
-            return None
+        # Get the requestContext from API Gateway
+        request_context = event.get('requestContext', {})
+        authorizer = request_context.get('authorizer', {})
         
-        # In a real implementation, you would verify the JWT token
-        # and extract the user ID from the claims
-        # For now, we'll assume it's passed in the headers
-        return event.get('headers', {}).get('X-User-ID')
+        # Extract 'sub' from Cognito JWT claims
+        user_sub = authorizer.get('claims', {}).get('sub')
+        
+        if user_sub:
+            return user_sub
+            
+        # Fallback: try to extract from headers (for testing)
+        auth_header = event.get('headers', {}).get('Authorization', '')
+        if auth_header.startswith('Bearer '):
+            # In production, we'd decode and verify the JWT
+            # For now, check if userSub is in headers for testing
+            return event.get('headers', {}).get('X-User-Sub')
+        
+        return None
         
     except Exception as e:
-        logger.error(f"Error extracting user ID from JWT: {str(e)}")
+        logger.error(f"Error extracting userSub from JWT: {str(e)}")
         return None
+
+def create_default_user_profile(user_sub: str) -> None:
+    """
+    Create default user profile with beta subscription
+    """
+    try:
+        table = dynamodb.Table(USERS_TABLE)
+        
+        # Create default user profile
+        user_profile = {
+            'userSub': user_sub,
+            'SubType': 'beta',  # Default to beta plan
+            'planType': 'beta',
+            'status': 'active',
+            'maxModels': 5,
+            'support': 'email',
+            'planFeatures': get_plan_features_new_structure('beta'),
+            'createdAt': datetime.utcnow().isoformat(),
+            'updatedAt': datetime.utcnow().isoformat()
+        }
+        
+        table.put_item(Item=user_profile)
+        logger.info(f"Created default beta profile for user: {user_sub}")
+        
+    except Exception as e:
+        logger.error(f"Error creating default user profile: {str(e)}")
+
+# Keep legacy function for backward compatibility
+def extract_user_id_from_jwt(event: Dict[str, Any]) -> Optional[str]:
+    """
+    Legacy function - redirects to extract_user_sub_from_jwt
+    """
+    return extract_user_sub_from_jwt(event)
 
 def update_subscription_status(subscription_id: str, status: str) -> None:
     """

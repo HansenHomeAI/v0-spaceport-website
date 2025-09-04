@@ -144,26 +144,30 @@ export const useSubscription = () => {
   }, [fetchSubscription]);
 
   // Check if user can create more models
-  const canCreateModel = useCallback(() => {
-    if (!subscription) return false;
+  const canCreateModel = useCallback((currentModelCount: number = 0) => {
+    if (!subscription) return true; // Default to allowing creation (beta access)
     
     const { planFeatures } = subscription;
     if (planFeatures.maxModels === -1) return true; // Unlimited
-    
-    // TODO: Get actual model count from user's projects
-    const currentModelCount = 0; // This should come from your projects API
     
     return currentModelCount < planFeatures.maxModels;
   }, [subscription]);
 
   // Get plan features
   const getPlanFeatures = useCallback(() => {
-    if (!subscription) return null;
+    if (!subscription) {
+      // Default beta plan features
+      return {
+        maxModels: 5,
+        support: 'email'
+      };
+    }
     return subscription.planFeatures;
   }, [subscription]);
 
   // Check if subscription is active
   const isSubscriptionActive = useCallback(() => {
+    if (!subscription) return true; // Beta access is considered active
     return subscription?.status === 'active' || subscription?.status === 'trialing';
   }, [subscription]);
 

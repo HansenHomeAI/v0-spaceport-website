@@ -96,9 +96,9 @@ export default function Create(): JSX.Element {
 
   const getSubscriptionStatusDisplay = () => {
     if (subscriptionLoading) return 'Loading...';
-    if (subscriptionError) return 'Error loading subscription';
+    if (subscriptionError) return 'Beta Plan'; // Show Beta Plan instead of error
     
-    if (!subscription) return 'No active subscription';
+    if (!subscription) return 'Beta Plan'; // Default to Beta Plan
     
     if (isOnTrial()) {
       const daysLeft = getTrialDaysRemaining();
@@ -109,7 +109,7 @@ export default function Create(): JSX.Element {
   };
 
   const getSubscriptionBadgeClass = () => {
-    if (!subscription) return 'subscription-status';
+    if (!subscription) return 'subscription-status active'; // Beta plan is active
     
     switch (subscription.status) {
       case 'active':
@@ -121,7 +121,7 @@ export default function Create(): JSX.Element {
       case 'canceled':
         return 'subscription-status canceled';
       default:
-        return 'subscription-status';
+        return 'subscription-status active'; // Default to active for beta
     }
   };
 
@@ -160,13 +160,13 @@ export default function Create(): JSX.Element {
                         className="subscription-pill clickable"
                         onClick={() => setSubscriptionPopupOpen(true)}
                       >
-                        {subscription ? subscription.planType : 'Beta Plan'}
+                        {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
                       </button>
                     </div>
                   </div>
                   
                   {/* Subscription Details */}
-                  {subscription && (
+                  {subscription ? (
                     <div className="subscription-details">
                       <p className="subscription-plan">
                         {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
@@ -185,6 +185,13 @@ export default function Create(): JSX.Element {
                         </p>
                       )}
                     </div>
+                  ) : (
+                    <div className="subscription-details">
+                      <p className="subscription-plan">Beta Plan</p>
+                      <p className="subscription-status">Status: Active</p>
+                      <p className="subscription-features">• {projects.length} of 5 active models used</p>
+                      <p className="subscription-features">• Email support</p>
+                    </div>
                   )}
                   
                   {/* Beta Access Management - Only shown to authorized employees */}
@@ -199,11 +206,11 @@ export default function Create(): JSX.Element {
             
             {/* New Project Button */}
             <div 
-              className={`project-box new-project-card ${!canCreateModel() ? 'disabled' : ''}`} 
-              onClick={canCreateModel() ? () => setModalOpen(true) : undefined}
+              className={`project-box new-project-card ${!canCreateModel(projects.length) ? 'disabled' : ''}`} 
+              onClick={canCreateModel(projects.length) ? () => setModalOpen(true) : undefined}
             >
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
-              {!canCreateModel() && (
+              {!canCreateModel(projects.length) && (
                 <p className="upgrade-prompt">
                   Upgrade your plan to create more models
                 </p>
@@ -256,7 +263,7 @@ export default function Create(): JSX.Element {
               
               <div className="subscription-plans">
                 {/* Current Plan Display */}
-                {subscription && (
+                {subscription ? (
                   <div className="plan-card current">
                     <div className="plan-header">
                       <h3>{subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan</h3>
@@ -278,6 +285,19 @@ export default function Create(): JSX.Element {
                         Cancel Subscription
                       </button>
                     )}
+                  </div>
+                ) : (
+                  <div className="plan-card current">
+                    <div className="plan-header">
+                      <h3>Beta Plan</h3>
+                      <span className="current-badge">Current</span>
+                    </div>
+                    <div className="plan-price">Free</div>
+                    <div className="plan-features">
+                      <div className="feature">• {projects.length} of 5 active models used</div>
+                      <div className="feature">• Email support</div>
+                      <div className="feature">• Perfect for getting started</div>
+                    </div>
                   </div>
                 )}
 
