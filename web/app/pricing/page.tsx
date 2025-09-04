@@ -13,7 +13,7 @@ export default function Pricing(): JSX.Element {
   const handleSubscribe = async (planType: SubscriptionPlanType) => {
     if (planType === 'enterprise') {
       // Handle enterprise contact
-      window.location.href = 'mailto:gabriel@spcprt.com?subject=Enterprise%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20enterprise%20pricing%20at%20Spaceport.';
+      window.location.href = 'mailto:hello@spcprt.com?subject=Enterprise%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20enterprise%20pricing%20at%20Spaceport.';
       return;
     }
 

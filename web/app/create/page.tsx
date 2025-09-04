@@ -4,6 +4,7 @@ export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
 import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
+import BetaAccessInvite from '../../components/BetaAccessInvite';
 import { Auth } from 'aws-amplify';
 
 export default function Create(): JSX.Element {
@@ -70,8 +71,23 @@ export default function Create(): JSX.Element {
   };
 
   useEffect(() => { 
-    fetchProjects(); 
-    fetchUser();
+    // Wait for user to be authenticated before fetching data
+    const initializeData = async () => {
+      try {
+        // Wait for user to be available
+        const currentUser = await Auth.currentAuthenticatedUser();
+        setUser(currentUser);
+        
+        // Now fetch projects and subscription data
+        await fetchProjects();
+      } catch (error) {
+        console.log('User not authenticated yet, waiting...');
+        // Retry after a short delay
+        setTimeout(initializeData, 1000);
+      }
+    };
+    
+    initializeData();
   }, []);
 
   const signOut = async () => {
@@ -95,9 +111,9 @@ export default function Create(): JSX.Element {
 
   const getSubscriptionStatusDisplay = () => {
     if (subscriptionLoading) return 'Loading...';
-    if (subscriptionError) return 'Error loading subscription';
+    if (subscriptionError) return 'Beta Plan'; // Show Beta Plan instead of error
     
-    if (!subscription) return 'No active subscription';
+    if (!subscription) return 'Beta Plan'; // Default to Beta Plan
     
     if (isOnTrial()) {
       const daysLeft = getTrialDaysRemaining();
@@ -108,7 +124,7 @@ export default function Create(): JSX.Element {
   };
 
   const getSubscriptionBadgeClass = () => {
-    if (!subscription) return 'subscription-status';
+    if (!subscription) return 'subscription-status active'; // Beta plan is active
     
     switch (subscription.status) {
       case 'active':
@@ -120,7 +136,7 @@ export default function Create(): JSX.Element {
       case 'canceled':
         return 'subscription-status canceled';
       default:
-        return 'subscription-status';
+        return 'subscription-status active'; // Default to active for beta
     }
   };
 
@@ -150,41 +166,22 @@ export default function Create(): JSX.Element {
               <div className="account-info">
                 <div className="account-details">
                   <div className="account-header">
-                    <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                    <div className="subscription-info">
-                      <span className={getSubscriptionBadgeClass()}>
-                        {getSubscriptionStatusDisplay()}
-                      </span>
-                      <button
-                        className="subscription-pill clickable"
-                        onClick={() => setSubscriptionPopupOpen(true)}
-                      >
-                        {subscription ? subscription.planType : 'Beta Plan'}
-                      </button>
+                    <div className="account-info-compact">
+                      <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
+                      <div className="subscription-compact">
+                        <button
+                          className="subscription-pill clickable"
+                          onClick={() => setSubscriptionPopupOpen(true)}
+                        >
+                          {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
+                        </button>
+                        <span className="model-count">
+                          {projects.length}/5 active models
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
-                  {/* Subscription Details */}
-                  {subscription && (
-                    <div className="subscription-details">
-                      <p className="subscription-plan">
-                        {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
-                      </p>
-                      <p className="subscription-status">
-                        Status: {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
-                      </p>
-                      {subscription.referredBy && (
-                        <p className="referral-info">
-                          Referred by: {subscription.referredBy}
-                        </p>
-                      )}
-                      {subscription.referralEarnings && subscription.referralEarnings > 0 && (
-                        <p className="earnings-info">
-                          Referral earnings: ${subscription.referralEarnings.toFixed(2)}
-                        </p>
-                      )}
-                    </div>
-                  )}
                 </div>
                 <button className="sign-out-btn" onClick={signOut}>
                   <span className="sign-out-icon"></span>
@@ -195,11 +192,11 @@ export default function Create(): JSX.Element {
             
             {/* New Project Button */}
             <div 
-              className={`project-box new-project-card ${!canCreateModel() ? 'disabled' : ''}`} 
-              onClick={canCreateModel() ? () => setModalOpen(true) : undefined}
+              className={`project-box new-project-card ${!canCreateModel(projects.length) ? 'disabled' : ''}`} 
+              onClick={canCreateModel(projects.length) ? () => setModalOpen(true) : undefined}
             >
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
-              {!canCreateModel() && (
+              {!canCreateModel(projects.length) && (
                 <p className="upgrade-prompt">
                   Upgrade your plan to create more models
                 </p>
@@ -230,6 +227,9 @@ export default function Create(): JSX.Element {
                 </div>
               </div>
             ))}
+            
+            {/* Beta Access Management - Only shown to authorized employees */}
+            <BetaAccessInvite />
           </div>
         </section>
 
@@ -252,7 +252,7 @@ export default function Create(): JSX.Element {
               
               <div className="subscription-plans">
                 {/* Current Plan Display */}
-                {subscription && (
+                {subscription ? (
                   <div className="plan-card current">
                     <div className="plan-header">
                       <h3>{subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan</h3>
@@ -274,6 +274,19 @@ export default function Create(): JSX.Element {
                         Cancel Subscription
                       </button>
                     )}
+                  </div>
+                ) : (
+                  <div className="plan-card current">
+                    <div className="plan-header">
+                      <h3>Beta Plan</h3>
+                      <span className="current-badge">Current</span>
+                    </div>
+                    <div className="plan-price">Free</div>
+                    <div className="plan-features">
+                      <div className="feature">• {projects.length} of 5 active models used</div>
+                      <div className="feature">• Email support</div>
+                      <div className="feature">• Perfect for getting started</div>
+                    </div>
                   </div>
                 )}
 
@@ -370,3 +383,5 @@ export default function Create(): JSX.Element {
   );
 }
 
+// Beta access admin system deployed - Thu Sep  4 00:26:19 MDT 2025
+// Beta access API URL secret added - Thu Sep  4 00:29:32 MDT 2025

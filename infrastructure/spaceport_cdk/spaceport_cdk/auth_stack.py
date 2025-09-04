@@ -27,172 +27,57 @@ class AuthStack(Stack):
         
         # Initialize AWS clients for resource checking
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
+        self.cognito_client = boto3.client('cognito-idp', region_name=region)
 
-        # Environment-specific Cognito resources
-        user_pool_v2 = cognito.UserPool(
-            self,
-            "SpaceportUserPoolV2",
-            user_pool_name=f"Spaceport-Users-{suffix}",
-            self_sign_up_enabled=False,  # invite-only
-            auto_verify=cognito.AutoVerifiedAttrs(email=True),
-            sign_in_aliases=cognito.SignInAliases(email=True),
-            standard_attributes=cognito.StandardAttributes(
-                email=cognito.StandardAttribute(required=True, mutable=True),
-                preferred_username=cognito.StandardAttribute(required=True, mutable=False),
-            ),
-            password_policy=cognito.PasswordPolicy(
-                min_length=8,
-                require_lowercase=True,
-                require_uppercase=True,
-                require_digits=True,
-                require_symbols=False,
-                temp_password_validity=Duration.days(7),
-            ),
-            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-            removal_policy=RemovalPolicy.RETAIN,
+        # ROBUST USER POOL LOGIC - Import existing or create new only when needed
+        # Follows same pattern as DynamoDB: preferred → fallback → create new
+        user_pool = self._get_or_create_user_pool(
+            construct_id="SpaceportUserPool",
+            preferred_name=f"Spaceport-Users-{suffix}",
+            fallback_name="Spaceport-Users-v2",
+            pool_type="standard"
+        )
+        
+        # Get existing client for this pool
+        user_pool_client = self._get_or_create_client(
+            user_pool, 
+            "SpaceportUserPoolClient",
+            "Spaceport-Web-Client"
         )
 
-        # Distinct group name to avoid collision with legacy pool
-        cognito.CfnUserPoolGroup(
-            self,
-            "SpaceportBetaTestersGroupV2",
-            user_pool_id=user_pool_v2.user_pool_id,
-            group_name="beta-testers-v2",
-            description="Approved beta testers allowed to sign in (v2)",
-        )
-
-        user_pool_client_v2 = user_pool_v2.add_client(
-            "SpaceportUserPoolClientV2",
-            user_pool_client_name="Spaceport-Web-Client-v2",
-            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
-            o_auth=cognito.OAuthSettings(
-                flows=cognito.OAuthFlows(authorization_code_grant=True),
-                callback_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-                logout_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-            ),
-            prevent_user_existence_errors=True,
-        )
-
-        CfnOutput(self, "CognitoUserPoolIdV2", value=user_pool_v2.user_pool_id)
-        CfnOutput(self, "CognitoUserPoolClientIdV2", value=user_pool_client_v2.user_pool_client_id)
+        CfnOutput(self, "CognitoUserPoolId", value=user_pool.user_pool_id)
+        CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
 
         # Import existing Lambda functions to avoid conflicts
 
-        # Import existing invite Lambda function v2 to avoid conflicts
-        invite_lambda_v2 = lambda_.Function.from_function_name(
+        # Import existing invite Lambda function
+        invite_lambda = lambda_.Function.from_function_name(
             self,
-            "Spaceport-InviteUserFunctionV2",
-            "Spaceport-InviteUserFunctionV2"
+            "Spaceport-InviteUserFunction",
+            "Spaceport-InviteUserFunction"
         )
 
         # Note: Cannot modify IAM policies of imported Lambda functions
         # The required IAM permissions should be set manually in the Lambda console
         # or through a separate deployment process
 
-        invite_api_v2 = apigw.RestApi(
+        invite_api = apigw.RestApi(
             self,
-            "Spaceport-InviteApiV2",
-            rest_api_name="Spaceport-InviteApiV2",
-            description="Invite approved users to Spaceport (v2)",
+            "Spaceport-InviteApi",
+            rest_api_name="Spaceport-InviteApi",
+            description="Invite approved users to Spaceport",
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
             ),
         )
 
-        invite_res_v2 = invite_api_v2.root.add_resource("invite")
-        invite_res_v2.add_method("POST", apigw.LambdaIntegration(invite_lambda_v2, proxy=True))
+        invite_res = invite_api.root.add_resource("invite")
+        invite_res.add_method("POST", apigw.LambdaIntegration(invite_lambda, proxy=True))
 
-        CfnOutput(self, "InviteApiUrlV2", value=f"{invite_api_v2.url}invite")
+        CfnOutput(self, "InviteApiUrl", value=f"{invite_api.url}invite")
 
-        # -------------------------------------
-        # Alternate v3 pool to allow user-chosen handle at first sign-in
-        # preferred_username is optional and mutable
-        # -------------------------------------
-        user_pool_v3 = cognito.UserPool(
-            self,
-            "SpaceportUserPoolV3",
-            user_pool_name=f"Spaceport-Users-v3-{suffix}",
-            self_sign_up_enabled=False,
-            auto_verify=cognito.AutoVerifiedAttrs(email=True),
-            sign_in_aliases=cognito.SignInAliases(email=True),
-            standard_attributes=cognito.StandardAttributes(
-                email=cognito.StandardAttribute(required=True, mutable=True),
-                preferred_username=cognito.StandardAttribute(required=False, mutable=True),
-            ),
-            password_policy=cognito.PasswordPolicy(
-                min_length=8,
-                require_lowercase=True,
-                require_uppercase=True,
-                require_digits=True,
-                require_symbols=False,
-                temp_password_validity=Duration.days(7),
-            ),
-            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-            removal_policy=RemovalPolicy.RETAIN,
-        )
 
-        cognito.CfnUserPoolGroup(
-            self,
-            "SpaceportBetaTestersGroupV3",
-            user_pool_id=user_pool_v3.user_pool_id,
-            group_name="beta-testers-v3",
-            description="Approved beta testers allowed to sign in (v3)",
-        )
-
-        user_pool_client_v3 = user_pool_v3.add_client(
-            "SpaceportUserPoolClientV3",
-            user_pool_client_name="Spaceport-Web-Client-v3",
-            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
-            o_auth=cognito.OAuthSettings(
-                flows=cognito.OAuthFlows(authorization_code_grant=True),
-                callback_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-                logout_urls=[
-                    "http://localhost:3000/",
-                    "https://spaceport.ai/",
-                ],
-            ),
-            prevent_user_existence_errors=True,
-        )
-
-        CfnOutput(self, "CognitoUserPoolIdV3", value=user_pool_v3.user_pool_id)
-        CfnOutput(self, "CognitoUserPoolClientIdV3", value=user_pool_client_v3.user_pool_client_id)
-
-        # Import existing invite Lambda function v3 to avoid conflicts
-        invite_lambda_v3 = lambda_.Function.from_function_name(
-            self,
-            "Spaceport-InviteUserFunctionV3",
-            "Spaceport-InviteUserFunctionV3"
-        )
-
-        # Note: Cannot modify IAM policies of imported Lambda functions
-        # The required IAM permissions should be set manually in the Lambda console
-        # or through a separate deployment process
-
-        invite_api_v3 = apigw.RestApi(
-            self,
-            "Spaceport-InviteApiV3",
-            rest_api_name="Spaceport-InviteApiV3",
-            description="Invite approved users to Spaceport (v3)",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,
-                allow_methods=apigw.Cors.ALL_METHODS,
-            ),
-        )
-
-        invite_res_v3 = invite_api_v3.root.add_resource("invite")
-        invite_res_v3.add_method("POST", apigw.LambdaIntegration(invite_lambda_v3, proxy=True))
-
-        CfnOutput(self, "InviteApiUrlV3", value=f"{invite_api_v3.url}invite")
 
         # -------------------------------------
         # Per-user Projects storage and REST API
@@ -255,7 +140,7 @@ class AuthStack(Stack):
                 authorizer=apigw.CognitoUserPoolsAuthorizer(
                     self,
                     "ProjectsAuthorizer",
-                    cognito_user_pools=[user_pool_v2],
+                    cognito_user_pools=[user_pool],
                 ),
             ),
             deploy_options=apigw.StageOptions(
@@ -293,11 +178,12 @@ class AuthStack(Stack):
         # -------------------------------------
         
         # Dynamic users table - import if exists, create if not  
+        # Updated schema: userSub (Cognito sub) as partition key + subscription fields
         users_table = self._get_or_create_dynamodb_table(
             construct_id="Spaceport-UsersTable",
             preferred_name=f"Spaceport-Users-{suffix}",
             fallback_name="Spaceport-Users",
-            partition_key_name="id",
+            partition_key_name="userSub",
             partition_key_type=dynamodb.AttributeType.STRING
         )
         
@@ -315,18 +201,18 @@ class AuthStack(Stack):
             memory_size=512,
             environment={
                 "USERS_TABLE": users_table.table_name,
-                "COGNITO_USER_POOL_ID": user_pool_v2.user_pool_id,
-                "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", ""),
-                "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
-                "STRIPE_PRICE_SINGLE": os.environ.get("STRIPE_PRICE_SINGLE", ""),
-                "STRIPE_PRICE_STARTER": os.environ.get("STRIPE_PRICE_STARTER", ""),
-                "STRIPE_PRICE_GROWTH": os.environ.get("STRIPE_PRICE_GROWTH", ""),
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", "sk_test_placeholder"),
+                "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", "whsec_placeholder"),
+                "STRIPE_PRICE_SINGLE": os.environ.get("STRIPE_PRICE_SINGLE", "price_placeholder"),
+                "STRIPE_PRICE_STARTER": os.environ.get("STRIPE_PRICE_STARTER", "price_placeholder"),
+                "STRIPE_PRICE_GROWTH": os.environ.get("STRIPE_PRICE_GROWTH", "price_placeholder"),
                 "REFERRAL_KICKBACK_PERCENTAGE": os.environ.get("REFERRAL_KICKBACK_PERCENTAGE", "10"),
                 "EMPLOYEE_KICKBACK_PERCENTAGE": os.environ.get("EMPLOYEE_KICKBACK_PERCENTAGE", "30"),
                 "COMPANY_KICKBACK_PERCENTAGE": os.environ.get("COMPANY_KICKBACK_PERCENTAGE", "70"),
                 "REFERRAL_DURATION_MONTHS": os.environ.get("REFERRAL_DURATION_MONTHS", "6"),
                 "EMPLOYEE_USER_ID": os.environ.get("EMPLOYEE_USER_ID", ""),
-                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spaceport.ai"),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
             },
             log_retention=logs.RetentionDays.ONE_MONTH,
         )
@@ -339,7 +225,7 @@ class AuthStack(Stack):
                     "cognito-idp:AdminUpdateUserAttributes",
                     "cognito-idp:AdminGetUser",
                 ],
-                resources=[user_pool_v2.user_pool_arn]
+                resources=[user_pool.user_pool_arn]
             )
         )
 
@@ -385,7 +271,7 @@ class AuthStack(Stack):
             authorizer=apigw.CognitoUserPoolsAuthorizer(
                 self,
                 "SubscriptionCreateAuthorizer",
-                cognito_user_pools=[user_pool_v2],
+                cognito_user_pools=[user_pool],
             ),
         )
 
@@ -406,7 +292,7 @@ class AuthStack(Stack):
             authorizer=apigw.CognitoUserPoolsAuthorizer(
                 self,
                 "SubscriptionStatusAuthorizer",
-                cognito_user_pools=[user_pool_v2],
+                cognito_user_pools=[user_pool],
             ),
         )
 
@@ -419,7 +305,7 @@ class AuthStack(Stack):
             authorizer=apigw.CognitoUserPoolsAuthorizer(
                 self,
                 "SubscriptionCancelAuthorizer",
-                cognito_user_pools=[user_pool_v2],
+                cognito_user_pools=[user_pool],
             ),
         )
 
@@ -433,6 +319,135 @@ class AuthStack(Stack):
         # Force resource inclusion by referencing them
         self.subscription_lambda = subscription_lambda
         self.subscription_api = subscription_api
+
+        # ========== BETA ACCESS ADMIN SYSTEM ==========
+        # Create DynamoDB table for beta access permissions
+        beta_access_permissions_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-BetaAccessPermissionsTable",
+            preferred_name=f"Spaceport-BetaAccessPermissions-{suffix}",
+            fallback_name="Spaceport-BetaAccessPermissions",
+            partition_key_name="user_id",
+            partition_key_type=dynamodb.AttributeType.STRING
+        )
+
+        # Create IAM role for beta access admin Lambda
+        beta_access_lambda_role = iam.Role(
+            self, "BetaAccessAdminLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "BetaAccessAdminPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "cognito-idp:AdminCreateUser",
+                                "cognito-idp:AdminAddUserToGroup",
+                                "cognito-idp:AdminGetUser",
+                                "cognito-idp:ListUsers",
+                                "cognito-idp:ListGroups"
+                            ],
+                            resources=[user_pool.user_pool_arn]
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "dynamodb:GetItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan"
+                            ],
+                            resources=[beta_access_permissions_table.table_arn]
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=["ses:SendEmail"],
+                            resources=["*"]
+                        )
+                    ]
+                )
+            }
+        )
+
+        # Create beta access admin Lambda function
+        beta_access_lambda = lambda_.Function(
+            self, "Spaceport-BetaAccessAdminFunction",
+            function_name=f"Spaceport-BetaAccessAdminFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin")
+            ),
+            role=beta_access_lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+            },
+        )
+
+        # Create API Gateway for beta access admin
+        beta_access_api = apigw.RestApi(
+            self, "Spaceport-BetaAccessAdminApi",
+            rest_api_name=f"Spaceport-BetaAccessAdminApi-{suffix}",
+            description="Beta access admin API for employee invitation management",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                ],
+            ),
+        )
+
+        # Add beta access admin endpoints
+        admin_resource = beta_access_api.root.add_resource("admin")
+        beta_access_resource = admin_resource.add_resource("beta-access")
+        
+        # Check permission endpoint
+        check_permission_resource = beta_access_resource.add_resource("check-permission")
+        check_permission_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(beta_access_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "BetaAccessCheckPermissionAuthorizer",
+                cognito_user_pools=[user_pool],
+            ),
+        )
+
+        # Send invitation endpoint
+        send_invitation_resource = beta_access_resource.add_resource("send-invitation")
+        send_invitation_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(beta_access_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=apigw.CognitoUserPoolsAuthorizer(
+                self,
+                "BetaAccessSendInvitationAuthorizer",
+                cognito_user_pools=[user_pool],
+            ),
+        )
+
+        # Outputs
+        CfnOutput(self, "BetaAccessAdminApiUrl", value=beta_access_api.url)
+        CfnOutput(self, "BetaAccessAdminLambdaArn", value=beta_access_lambda.function_arn)
+        CfnOutput(self, "BetaAccessPermissionsTableName", value=beta_access_permissions_table.table_name)
+        
+        # Force resource inclusion by referencing them
+        self.beta_access_lambda = beta_access_lambda
+        self.beta_access_api = beta_access_api
+        self.beta_access_permissions_table = beta_access_permissions_table
 
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
@@ -467,6 +482,112 @@ class AuthStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
+
+    def _cognito_user_pool_exists(self, user_pool_name: str) -> bool:
+        """Check if a Cognito User Pool exists"""
+        try:
+            # List all user pools and check if one with the given name exists
+            response = self.cognito_client.list_user_pools(MaxResults=60)
+            for pool in response.get('UserPools', []):
+                if pool['Name'] == user_pool_name:
+                    return True
+            return False
+        except Exception as e:
+            print(f"Error checking if user pool exists: {e}")
+            return False
+
+    def _get_user_pool_id_by_name(self, user_pool_name: str) -> str:
+        """Get user pool ID by name"""
+        try:
+            response = self.cognito_client.list_user_pools(MaxResults=60)
+            for pool in response.get('UserPools', []):
+                if pool['Name'] == user_pool_name:
+                    return pool['Id']
+            return None
+        except Exception as e:
+            print(f"Error getting user pool ID: {e}")
+            return None
+
+    def _get_or_create_user_pool(self, construct_id: str, preferred_name: str, fallback_name: str, pool_type: str) -> cognito.UserPool:
+        """
+        Import existing Cognito User Pool or create a new one if it doesn't exist.
+        """
+        # First try preferred name (with environment suffix)
+        if self._cognito_user_pool_exists(preferred_name):
+            print(f"Importing existing Cognito User Pool: {preferred_name}")
+            pool_id = self._get_user_pool_id_by_name(preferred_name)
+            if pool_id:
+                return cognito.UserPool.from_user_pool_id(self, construct_id, pool_id)
+        
+        # Then try fallback name (without suffix)
+        if self._cognito_user_pool_exists(fallback_name):
+            print(f"Importing existing Cognito User Pool: {fallback_name}")
+            pool_id = self._get_user_pool_id_by_name(fallback_name)
+            if pool_id:
+                return cognito.UserPool.from_user_pool_id(self, construct_id, pool_id)
+        
+        # Create new user pool with preferred name
+        print(f"Creating new Cognito User Pool: {preferred_name}")
+        return cognito.UserPool(
+            self,
+            construct_id,
+            user_pool_name=preferred_name,
+            self_sign_up_enabled=False,  # invite-only
+            auto_verify=cognito.AutoVerifiedAttrs(email=True),
+            sign_in_aliases=cognito.SignInAliases(email=True),
+            standard_attributes=cognito.StandardAttributes(
+                email=cognito.StandardAttribute(required=True, mutable=True),
+                preferred_username=cognito.StandardAttribute(required=True, mutable=False),
+            ),
+            password_policy=cognito.PasswordPolicy(
+                min_length=8,
+                require_lowercase=True,
+                require_uppercase=True,
+                require_digits=True,
+                require_symbols=False,
+                temp_password_validity=Duration.days(7),
+            ),
+            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
+            removal_policy=RemovalPolicy.RETAIN,
+        )
+
+    def _get_or_create_client(self, user_pool: cognito.UserPool, construct_id: str, client_name: str) -> cognito.UserPoolClient:
+        """
+        Get existing client or create new one for imported pool
+        """
+        try:
+            # Try to get existing client
+            response = self.cognito_client.list_user_pool_clients(UserPoolId=user_pool.user_pool_id)
+            if response.get('UserPoolClients'):
+                client_id = response['UserPoolClients'][0]['ClientId']
+                imported_client = cognito.UserPoolClient.from_user_pool_client_id(
+                    self, construct_id, client_id
+                )
+                print(f"✅ Imported existing client: {client_id}")
+                return imported_client
+        except Exception as e:
+            print(f"⚠️  Error getting existing client: {e}")
+        
+        # Create new client if none exists
+        new_client = user_pool.add_client(
+            construct_id,
+            user_pool_client_name=client_name,
+            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True, admin_user_password=True),
+            o_auth=cognito.OAuthSettings(
+                flows=cognito.OAuthFlows(authorization_code_grant=True),
+                callback_urls=[
+                    "http://localhost:3000/",
+                    "https://spcprt.com/",
+                ],
+                logout_urls=[
+                    "http://localhost:3000/",
+                    "https://spcprt.com/",
+                ],
+            ),
+            prevent_user_existence_errors=True,
+        )
+        print(f"🆕 Created new client: {new_client.user_pool_client_id}")
+        return new_client
 
 
 # Force complete AuthStack redeployment with subscription resources

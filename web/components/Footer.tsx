@@ -14,7 +14,7 @@ export default function Footer(): JSX.Element {
     // Create mailto link
     const subject = encodeURIComponent('Spaceport AI Feedback');
     const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:gabriel@spcprt.com?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:hello@spcprt.com?subject=${subject}&body=${body}`;
     
     // Open email client
     window.location.href = mailtoLink;

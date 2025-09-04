@@ -7,7 +7,7 @@ type AuthGateProps = {
   children: React.ReactNode;
 };
 
-type View = 'signin' | 'new_password';
+type View = 'signin' | 'new_password' | 'forgot_password' | 'reset_password';
 
 export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [ready, setReady] = useState(false);
@@ -25,6 +25,14 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [newPassword, setNewPassword] = useState('');
   const [handle, setHandle] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
+  
+  // Forgot password states
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [resetPassword, setResetPassword] = useState('');
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const EyeIcon = ({ hidden = false }: { hidden?: boolean }) => (
     <svg
@@ -76,6 +84,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
     try {
       if (!isAuthAvailable()) throw new Error('Sign-in temporarily disabled');
       const res = await Auth.signIn(signInEmail, password);
@@ -88,7 +97,54 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
       setUser(current);
     } catch (err: any) {
       setError(err?.message || 'Sign in failed');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+    try {
+      if (!isAuthAvailable()) throw new Error('Password reset temporarily disabled');
+      await Auth.forgotPassword(forgotEmail);
+      setSuccessMessage('Password reset code sent to your email');
+      setView('reset_password');
+    } catch (err: any) {
+      setError(err?.message || 'Failed to send reset code');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+    try {
+      if (!isAuthAvailable()) throw new Error('Password reset temporarily disabled');
+      await Auth.forgotPasswordSubmit(forgotEmail, resetCode, resetPassword);
+      setSuccessMessage('Password reset successfully! You can now sign in.');
+      setView('signin');
+      // Clear form data
+      setForgotEmail('');
+      setResetCode('');
+      setResetPassword('');
+    } catch (err: any) {
+      setError(err?.message || 'Failed to reset password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setError(null);
+    setSuccessMessage(null);
+    setForgotEmail('');
+    setResetCode('');
+    setResetPassword('');
+    setView('signin');
   };
 
   // Sign-up and confirm flows are disabled (invite-only)
@@ -140,13 +196,29 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
             <div className="waitlist-header">
               <h2>Sign in to create your model</h2>
             </div>
+            
+            {/* Sign In View */}
             {view === 'signin' && (
               <form onSubmit={signIn} className="waitlist-form">
                 <div className="input-group">
-                  <input value={signInEmail} onChange={(e) => setSignInEmail(e.target.value)} type="email" className="waitlist-input" placeholder="Email" required />
+                  <input 
+                    value={signInEmail} 
+                    onChange={(e) => setSignInEmail(e.target.value)} 
+                    type="email" 
+                    className="waitlist-input" 
+                    placeholder="Email" 
+                    required 
+                  />
                 </div>
                 <div className="input-group" style={{ position: 'relative' }}>
-                  <input value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} className="waitlist-input" placeholder="Password" required />
+                  <input 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    type={showPassword ? 'text' : 'password'} 
+                    className="waitlist-input" 
+                    placeholder="Password" 
+                    required 
+                  />
                   <button
                     type="button"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -156,19 +228,139 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                     <EyeIcon hidden={showPassword} />
                   </button>
                 </div>
-                {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-                <button className="waitlist-submit-btn" type="submit">
-                  <span>Sign in</span>
+                {error && <p style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '8px' }}>{error}</p>}
+                {successMessage && <p style={{ color: '#4CAF50', fontSize: '14px', marginTop: '8px' }}>{successMessage}</p>}
+                <button className="waitlist-submit-btn" type="submit" disabled={isLoading}>
+                  <span>{isLoading ? 'Signing in...' : 'Sign in'}</span>
+                  {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
                 </button>
+                <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setView('forgot_password')}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#4CAF50',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Forgot Password View */}
+            {view === 'forgot_password' && (
+              <form onSubmit={handleForgotPassword} className="waitlist-form">
+                <p style={{ marginBottom: '16px', fontSize: '14px', color: '#666' }}>
+                  Enter your email address and we'll send you a code to reset your password.
+                </p>
+                <div className="input-group">
+                  <input 
+                    value={forgotEmail} 
+                    onChange={(e) => setForgotEmail(e.target.value)} 
+                    type="email" 
+                    className="waitlist-input" 
+                    placeholder="Email address" 
+                    required 
+                  />
+                </div>
+                {error && <p style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '8px' }}>{error}</p>}
+                <button className="waitlist-submit-btn" type="submit" disabled={isLoading}>
+                  <span>{isLoading ? 'Sending...' : 'Send reset code'}</span>
+                  {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
+                </button>
+                <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#4CAF50',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Back to sign in
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Reset Password View */}
+            {view === 'reset_password' && (
+              <form onSubmit={handleResetPassword} className="waitlist-form">
+                <p style={{ marginBottom: '16px', fontSize: '14px', color: '#666' }}>
+                  Enter the code from your email and choose a new password.
+                </p>
+                <div className="input-group">
+                  <input 
+                    value={resetCode} 
+                    onChange={(e) => setResetCode(e.target.value)} 
+                    type="text" 
+                    className="waitlist-input" 
+                    placeholder="Reset code" 
+                    required 
+                    maxLength={6}
+                  />
+                </div>
+                <div className="input-group" style={{ position: 'relative' }}>
+                  <input 
+                    value={resetPassword} 
+                    onChange={(e) => setResetPassword(e.target.value)} 
+                    type={showResetPassword ? 'text' : 'password'} 
+                    className="waitlist-input" 
+                    placeholder="New password" 
+                    required 
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    aria-label={showResetPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowResetPassword((v) => !v)}
+                    style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
+                  >
+                    <EyeIcon hidden={showResetPassword} />
+                  </button>
+                </div>
+                {error && <p style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '8px' }}>{error}</p>}
+                <button className="waitlist-submit-btn" type="submit" disabled={isLoading}>
+                  <span>{isLoading ? 'Resetting...' : 'Reset password'}</span>
+                  {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
+                </button>
+                <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setView('forgot_password')}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#4CAF50',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Resend code
+                  </button>
+                </div>
               </form>
             )}
           </div>
 
+          {/* New Password Required View */}
           {view === 'new_password' && (
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
                 setError(null);
+                setIsLoading(true);
                 try {
                   if (!pendingUser) throw new Error('Session expired');
                   // First attempt: set password and preferred_username if provided (v3 pool supports this)
@@ -202,6 +394,8 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                   } else {
                     setError(err?.message || 'Failed to set password/handle');
                   }
+                } finally {
+                  setIsLoading(false);
                 }
               }}
               className="waitlist-form"
@@ -222,8 +416,9 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                 <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="Handle (e.g. johndoe)" />
               </div>
               {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-              <button className="waitlist-submit-btn" type="submit">
-                <span>Save and sign in</span>
+              <button className="waitlist-submit-btn" type="submit" disabled={isLoading}>
+                <span>{isLoading ? 'Saving...' : 'Save and sign in'}</span>
+                {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
               </button>
             </form>
           )}

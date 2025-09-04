@@ -35,6 +35,14 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
       
+      // Check if user is authenticated first
+      const currentUser = await Auth.currentAuthenticatedUser();
+      if (!currentUser) {
+        console.log('No authenticated user, skipping subscription fetch');
+        setLoading(false);
+        return;
+      }
+      
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       
@@ -53,7 +61,10 @@ export const useSubscription = () => {
       setSubscription(data.subscription);
     } catch (err) {
       console.error('Error fetching subscription:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch subscription');
+      // Don't set error for authentication issues - just use default beta
+      if (err instanceof Error && !err.message.includes('No current user')) {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -144,26 +155,30 @@ export const useSubscription = () => {
   }, [fetchSubscription]);
 
   // Check if user can create more models
-  const canCreateModel = useCallback(() => {
-    if (!subscription) return false;
+  const canCreateModel = useCallback((currentModelCount: number = 0) => {
+    if (!subscription) return true; // Default to allowing creation (beta access)
     
     const { planFeatures } = subscription;
     if (planFeatures.maxModels === -1) return true; // Unlimited
-    
-    // TODO: Get actual model count from user's projects
-    const currentModelCount = 0; // This should come from your projects API
     
     return currentModelCount < planFeatures.maxModels;
   }, [subscription]);
 
   // Get plan features
   const getPlanFeatures = useCallback(() => {
-    if (!subscription) return null;
+    if (!subscription) {
+      // Default beta plan features
+      return {
+        maxModels: 5,
+        support: 'email'
+      };
+    }
     return subscription.planFeatures;
   }, [subscription]);
 
   // Check if subscription is active
   const isSubscriptionActive = useCallback(() => {
+    if (!subscription) return true; // Beta access is considered active
     return subscription?.status === 'active' || subscription?.status === 'trialing';
   }, [subscription]);
 

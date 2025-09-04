@@ -5172,9 +5172,27 @@ input.text-fade-right,
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.account-info-compact {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.subscription-compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
-  min-width: 0; /* Allow shrinking */
-  overflow: hidden; /* Prevent overflow */
+}
+
+.model-count {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 400;
 }
 
 .account-handle {

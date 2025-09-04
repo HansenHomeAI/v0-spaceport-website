@@ -16,6 +16,9 @@ export const API_CONFIG = {
   
   // ML Pipeline API - ML processing operations
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
+  
+  // Beta Access Admin API - Employee beta access management
+  BETA_ACCESS_API_URL: process.env.NEXT_PUBLIC_BETA_ACCESS_API_URL || '',
 } as const;
 
 // Individual API endpoint builders
@@ -47,6 +50,12 @@ export const buildApiUrl = {
   mlPipeline: {
     startJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/start-job`,
     stopJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/stop-job`,
+  },
+  
+  // Beta Access Admin API endpoints
+  betaAccess: {
+    checkPermission: () => `${API_CONFIG.BETA_ACCESS_API_URL}/admin/beta-access/check-permission`,
+    sendInvitation: () => `${API_CONFIG.BETA_ACCESS_API_URL}/admin/beta-access/send-invitation`,
   },
 } as const;
 
