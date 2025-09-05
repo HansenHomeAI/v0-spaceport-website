@@ -3,6 +3,7 @@ import os
 import boto3
 from typing import Optional, Dict, Any
 import logging
+import requests
 
 # Configure logging
 logger = logging.getLogger()
@@ -14,6 +15,7 @@ dynamodb = boto3.resource('dynamodb')
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_HXjveWkF_62sQ8xAshcq4Vrwxp9a1dfCb')
 
 # Initialize permissions table
 permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
@@ -134,8 +136,7 @@ def _generate_temp_password() -> str:
 
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
-    """Send custom invitation email via SES"""
-    ses = boto3.client('ses')
+    """Send custom invitation email via Resend"""
     
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
@@ -162,17 +163,31 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     </body></html>
     """
 
-    ses.send_email(
-        Source='hello@spcprt.com',
-        Destination={'ToAddresses': [email]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {
-                'Text': {'Data': body_text},
-                'Html': {'Data': body_html},
-            },
-        },
+    # Send via Resend API
+    headers = {
+        'Authorization': f'Bearer {RESEND_API_KEY}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'from': 'Spaceport AI <hello@spcprt.com>',
+        'to': [email],
+        'subject': subject,
+        'text': body_text,
+        'html': body_html
+    }
+    
+    response = requests.post(
+        'https://api.resend.com/emails',
+        headers=headers,
+        json=payload
     )
+    
+    if response.status_code != 200:
+        logger.error(f"Failed to send email via Resend: {response.status_code} - {response.text}")
+        raise Exception(f"Resend API error: {response.status_code}")
+    
+    logger.info(f"Email sent successfully via Resend to {email}")
 
 
 def lambda_handler(event, context):

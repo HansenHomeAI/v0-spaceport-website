@@ -1,14 +1,15 @@
 import json
 import os
 import boto3
+import requests
 from typing import Optional
 
 cognito = boto3.client('cognito-idp')
-ses = boto3.client('ses')
 
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 INVITE_GROUP = os.environ.get('INVITE_GROUP', 'beta-testers')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_HXjveWkF_62sQ8xAshcq4Vrwxp9a1dfCb')
 
 
 def _response(status, body):
@@ -136,15 +137,29 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
     </body></html>
     """
 
-    ses.send_email(
-        Source='hello@spcprt.com',
-        Destination={'ToAddresses': [email]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {
-                'Text': {'Data': body_text},
-                'Html': {'Data': body_html},
-            },
-        },
+    # Send via Resend API
+    headers = {
+        'Authorization': f'Bearer {RESEND_API_KEY}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'from': 'Spaceport AI <hello@spcprt.com>',
+        'to': [email],
+        'subject': subject,
+        'text': body_text,
+        'html': body_html
+    }
+    
+    response = requests.post(
+        'https://api.resend.com/emails',
+        headers=headers,
+        json=payload
     )
+    
+    if response.status_code != 200:
+        print(f"Failed to send email via Resend: {response.status_code} - {response.text}")
+        raise Exception(f"Resend API error: {response.status_code}")
+    
+    print(f"Email sent successfully via Resend to {email}")
 

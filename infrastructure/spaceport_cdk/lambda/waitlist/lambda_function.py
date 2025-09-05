@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+import requests
 from datetime import datetime
 from botocore.exceptions import ClientError
 
@@ -8,6 +9,9 @@ from botocore.exceptions import ClientError
 dynamodb = boto3.resource('dynamodb')
 table_name = os.environ['WAITLIST_TABLE_NAME']
 table = dynamodb.Table(table_name)
+
+# Resend API key
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_HXjveWkF_62sQ8xAshcq4Vrwxp9a1dfCb')
 
 def lambda_handler(event, context):
     """
@@ -154,8 +158,6 @@ def send_confirmation_email(name, email):
     """
     Send confirmation email to new waitlist signup
     """
-    ses = boto3.client('ses')
-    
     subject = 'Welcome to Spaceport AI - You\'re on the Waitlist!'
     
     body_text = f"""Hi {name},
@@ -249,28 +251,33 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
 </body>
 </html>"""
 
+    # Send via Resend API
+    headers = {
+        'Authorization': f'Bearer {RESEND_API_KEY}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'from': 'Gabriel Hansen <gabriel@spcprt.com>',
+        'to': [email],
+        'subject': subject,
+        'text': body_text,
+        'html': body_html
+    }
+    
     try:
-        response = ses.send_email(
-            Source='gabriel@spcprt.com',
-            Destination={
-                'ToAddresses': [email]
-            },
-            Message={
-                'Subject': {
-                    'Data': subject
-                },
-                'Body': {
-                    'Text': {
-                        'Data': body_text
-                    },
-                    'Html': {
-                        'Data': body_html
-                    }
-                }
-            }
+        response = requests.post(
+            'https://api.resend.com/emails',
+            headers=headers,
+            json=payload
         )
-        print(f"Confirmation email sent to {email}: {response['MessageId']}")
-    except ClientError as e:
+        
+        if response.status_code == 200:
+            print(f"Confirmation email sent to {email} via Resend")
+        else:
+            print(f"Failed to send confirmation email to {email}: {response.status_code} - {response.text}")
+            raise Exception(f"Resend API error: {response.status_code}")
+    except Exception as e:
         print(f"Failed to send confirmation email to {email}: {e}")
         raise
 
@@ -278,8 +285,6 @@ def send_admin_notification(name, email):
     """
     Send notification email to admin about new waitlist signup
     """
-    ses = boto3.client('ses')
-    
     subject = 'New Waitlist Signup - Spaceport AI'
     body_text = f"""New waitlist signup:
     
@@ -300,27 +305,32 @@ This person will be notified when Spaceport AI launches."""
 </body>
 </html>"""
 
+    # Send via Resend API
+    headers = {
+        'Authorization': f'Bearer {RESEND_API_KEY}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'from': 'Spaceport AI <gabriel@spcprt.com>',
+        'to': ['gabriel@spcprt.com', 'ethan@spcprt.com'],
+        'subject': subject,
+        'text': body_text,
+        'html': body_html
+    }
+    
     try:
-        response = ses.send_email(
-            Source='gabriel@spcprt.com',  # Your preferred email address
-            Destination={
-                'ToAddresses': ['gabriel@spcprt.com', 'ethan@spcprt.com']
-            },
-            Message={
-                'Subject': {
-                    'Data': subject
-                },
-                'Body': {
-                    'Text': {
-                        'Data': body_text
-                    },
-                    'Html': {
-                        'Data': body_html
-                    }
-                }
-            }
+        response = requests.post(
+            'https://api.resend.com/emails',
+            headers=headers,
+            json=payload
         )
-        print(f"Admin notification sent: {response['MessageId']}")
-    except ClientError as e:
+        
+        if response.status_code == 200:
+            print(f"Admin notification sent via Resend")
+        else:
+            print(f"Failed to send admin notification: {response.status_code} - {response.text}")
+            raise Exception(f"Resend API error: {response.status_code}")
+    except Exception as e:
         print(f"Failed to send admin notification: {e}")
         raise 
