@@ -8,9 +8,8 @@ export default function Landing(): JSX.Element {
         <div id="iframe-overlay" />
         <div className="landing-content">
           <h1>Location. Visualized in 3D.</h1>
-          <a href="https://10716eforestcreekrd.hansentour.com" className="cta-button with-symbol">
-            <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
-            View example
+          <a href="/create" className="cta-button">
+            Join waitlist
           </a>
         </div>
       </section>
