@@ -1,7 +1,7 @@
 import json
 import boto3
 import os
-import requests
+import resend
 from datetime import datetime
 
 # Resend API key
@@ -69,39 +69,27 @@ def lambda_handler(event, context):
             print("ERROR: RESEND_API_KEY environment variable not set")
             raise Exception("Email service not configured")
         
-        headers = {
-            'Authorization': f'Bearer {RESEND_API_KEY}',
-            'Content-Type': 'application/json'
+        # Set the API key as shown in Resend documentation
+        resend.api_key = RESEND_API_KEY
+        
+        # Use Resend SDK exactly as documented
+        params: resend.Emails.SendParams = {
+            "from": "Spaceport AI <hello@spcprt.com>",
+            "to": [email],
+            "subject": subject,
+            "html": body_html
         }
         
-        payload = {
-            'from': 'Spaceport AI <hello@spcprt.com>',
-            'to': [email],
-            'subject': subject,
-            'text': body_text,
-            'html': body_html
+        email_result = resend.Emails.send(params)
+        print(f"Email sent successfully via Resend. MessageId: {email_result.get('id')}")
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'message': 'Notification sent successfully',
+                'messageId': email_result.get('id')
+            })
         }
-        
-        response = requests.post(
-            'https://api.resend.com/emails',
-            headers=headers,
-            json=payload
-        )
-        
-        if response.status_code == 200:
-            response_data = response.json()
-            print(f"Email sent successfully via Resend. MessageId: {response_data.get('id')}")
-            
-            return {
-                'statusCode': 200,
-                'body': json.dumps({
-                    'message': 'Notification sent successfully',
-                    'messageId': response_data.get('id')
-                })
-            }
-        else:
-            print(f"Failed to send email via Resend: {response.status_code} - {response.text}")
-            raise Exception(f"Resend API error: {response.status_code}")
         
     except Exception as e:
         print(f"Error sending notification: {str(e)}")

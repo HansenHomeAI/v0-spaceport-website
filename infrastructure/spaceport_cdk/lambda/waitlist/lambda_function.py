@@ -255,32 +255,20 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
 </body>
 </html>"""
 
-    # Send via Resend API
-    headers = {
-        'Authorization': f'Bearer {RESEND_API_KEY}',
-        'Content-Type': 'application/json'
-    }
+    # Set the API key as shown in Resend documentation
+    resend.api_key = RESEND_API_KEY
     
-    payload = {
-        'from': 'Gabriel Hansen <gabriel@spcprt.com>',
-        'to': [email],
-        'subject': subject,
-        'text': body_text,
-        'html': body_html
-    }
-    
+    # Use Resend SDK exactly as documented
     try:
-        response = requests.post(
-            'https://api.resend.com/emails',
-            headers=headers,
-            json=payload
-        )
+        params: resend.Emails.SendParams = {
+            "from": "Gabriel Hansen <gabriel@spcprt.com>",
+            "to": [email],
+            "subject": subject,
+            "html": body_html
+        }
         
-        if response.status_code == 200:
-            print(f"Confirmation email sent to {email} via Resend")
-        else:
-            print(f"Failed to send confirmation email to {email}: {response.status_code} - {response.text}")
-            raise Exception(f"Resend API error: {response.status_code}")
+        email_result = resend.Emails.send(params)
+        print(f"Confirmation email sent to {email} via Resend")
     except Exception as e:
         print(f"Failed to send confirmation email to {email}: {e}")
         raise
@@ -313,32 +301,20 @@ This person will be notified when Spaceport AI launches."""
 </body>
 </html>"""
 
-    # Send via Resend API
-    headers = {
-        'Authorization': f'Bearer {RESEND_API_KEY}',
-        'Content-Type': 'application/json'
-    }
+    # Set the API key as shown in Resend documentation
+    resend.api_key = RESEND_API_KEY
     
-    payload = {
-        'from': 'Spaceport AI <hello@spcprt.com>',
-        'to': ['gabriel@spcprt.com', 'ethan@spcprt.com'],
-        'subject': subject,
-        'text': body_text,
-        'html': body_html
-    }
-    
+    # Use Resend SDK exactly as documented
     try:
-        response = requests.post(
-            'https://api.resend.com/emails',
-            headers=headers,
-            json=payload
-        )
+        params: resend.Emails.SendParams = {
+            "from": "Spaceport AI <hello@spcprt.com>",
+            "to": ['gabriel@spcprt.com', 'ethan@spcprt.com'],
+            "subject": subject,
+            "html": body_html
+        }
         
-        if response.status_code == 200:
-            print(f"Admin notification sent via Resend")
-        else:
-            print(f"Failed to send admin notification: {response.status_code} - {response.text}")
-            raise Exception(f"Resend API error: {response.status_code}")
+        email_result = resend.Emails.send(params)
+        print(f"Admin notification sent via Resend")
     except Exception as e:
         print(f"Failed to send admin notification: {e}")
         raise 

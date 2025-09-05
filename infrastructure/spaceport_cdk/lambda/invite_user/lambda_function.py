@@ -1,7 +1,7 @@
 import json
 import os
 import boto3
-import requests
+import resend
 from typing import Optional
 
 cognito = boto3.client('cognito-idp')
@@ -141,29 +141,17 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
     </body></html>
     """
 
-    # Send via Resend API
-    headers = {
-        'Authorization': f'Bearer {RESEND_API_KEY}',
-        'Content-Type': 'application/json'
+    # Set the API key as shown in Resend documentation
+    resend.api_key = RESEND_API_KEY
+    
+    # Use Resend SDK exactly as documented
+    params: resend.Emails.SendParams = {
+        "from": "Spaceport AI <hello@spcprt.com>",
+        "to": [email],
+        "subject": subject,
+        "html": body_html
     }
     
-    payload = {
-        'from': 'Spaceport AI <hello@spcprt.com>',
-        'to': [email],
-        'subject': subject,
-        'text': body_text,
-        'html': body_html
-    }
-    
-    response = requests.post(
-        'https://api.resend.com/emails',
-        headers=headers,
-        json=payload
-    )
-    
-    if response.status_code != 200:
-        print(f"Failed to send email via Resend: {response.status_code} - {response.text}")
-        raise Exception(f"Resend API error: {response.status_code}")
-    
+    email_result = resend.Emails.send(params)
     print(f"Email sent successfully via Resend to {email}")
 

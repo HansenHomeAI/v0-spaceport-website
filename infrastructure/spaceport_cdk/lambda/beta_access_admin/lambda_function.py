@@ -171,13 +171,14 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     resend.api_key = RESEND_API_KEY
     
     # Use Resend SDK exactly as documented
-    r = resend.Emails.send({
+    params: resend.Emails.SendParams = {
         "from": "Spaceport AI <hello@spcprt.com>",
         "to": [email],
         "subject": subject,
-        "text": body_text,
         "html": body_html
-    })
+    }
+    
+    email = resend.Emails.send(params)
     
     logger.info(f"Email sent successfully via Resend to {email}")
 
