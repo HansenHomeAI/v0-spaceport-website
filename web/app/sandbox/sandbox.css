@@ -38,11 +38,11 @@
 .sandbox-subtitle {
   font-size: 1.2rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.5);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.05;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0em;
 }
 
@@ -62,13 +62,17 @@
   margin-bottom: 50px;
   padding: 30px;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
   position: relative;
 }
 
-/* 8pt Grid Indicator for Component Groups */
-.component-group::before {
+/* Apply standard border to component groups */
+.component-group {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 8pt Grid Indicator for Component Groups - REMOVED */
+/* .component-group::before {
   content: "";
   position: absolute;
   top: 0;
@@ -81,7 +85,7 @@
   pointer-events: none;
   border-radius: inherit;
   z-index: 0;
-}
+} */
 
 .h3 {
   font-size: 1.2rem;
@@ -90,6 +94,7 @@
   color: rgba(255, 255, 255, 1);
   letter-spacing: 0em;
   line-height: 1.05;
+  text-align: center;
 }
 
 /* Component Showcase */
@@ -111,7 +116,7 @@
 /* Editable Text Fields */
 .component-showcase [contenteditable="true"] {
   outline: none;
-  border-radius: 4px;
+  border-radius: 25px;
   transition: all 0.2s ease;
 }
 
@@ -133,7 +138,7 @@
   background: rgba(255, 255, 255, 0.95);
   color: #000;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 25px;
   font-size: 0.8rem;
   font-weight: 500;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -183,9 +188,57 @@
   line-height: 1.05;
 }
 
+/* Universal Typography Classes */
+.section h1 {
+  font-size: clamp(2.9rem, 8vw, 3.9rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 2rem 0;  /* Top: 0, Right: 0, Bottom: 2rem, Left: 0 */
+}
 
+.section h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 1.5rem 0;  /* Top: 0, Right: 0, Bottom: 1.5rem, Left: 0 */
+}
 
-/* Universal Body Text Class */
+.h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+  color: rgba(255, 255, 255, 1);
+  letter-spacing: 0em;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.body-text {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  line-height: 1.6;
+  font-size: 1.2rem;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+}
+
+.body-text-highlight {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  line-height: 1.6;
+  font-size: 1.2rem;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+}
+
 .component-showcase .body-text {
   max-width: 400px;
   margin-bottom: 1.5rem;
@@ -209,6 +262,13 @@
 }
 
 /* Text Highlight Class - For emphasizing words/phrases */
+.text-highlight {
+  color: rgba(255, 255, 255, 1);
+  font-weight: 400;
+  margin: 0;  /* No additional spacing for inline elements */
+  padding: 0;  /* No additional padding for inline elements */
+}
+
 .component-showcase .text-highlight {
   color: rgba(255, 255, 255, 1);
   font-weight: 400;
@@ -342,6 +402,7 @@
   margin-bottom: 20px;
 }
 
+/* Apply gradient border to header previews */
 .component-showcase .header-preview::before {
   content: "";
   position: absolute;
@@ -521,8 +582,6 @@
   min-width: 200px;
 }
 
-
-
 /* Cards Showcase */
 .component-showcase .default-card {
   min-width: 320px;
@@ -538,32 +597,29 @@
   box-sizing: border-box;
 }
 
-/* Glasmorphic Edge Border - Style Guide Spec */
-.default-card::before {
+/* Apply gradient border to default cards */
+.component-showcase .default-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 3px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
 
-.default-card h3 {
+.component-showcase .default-card h3 {
   font-size: 1.5rem;
   font-weight: 500;
   margin: 0 0 16px 0;
@@ -577,7 +633,7 @@
   letter-spacing: 0em;
 }
 
-.default-card p {
+.component-showcase .default-card p {
   color: rgba(255, 255, 255, 0.5);
   font-size: 1.2rem;
   line-height: 1.6;
@@ -599,6 +655,148 @@
 .component-showcase .waitlist-card {
   min-width: 280px;
   flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Apply gradient border to project cards */
+.component-showcase .project-box::before,
+.component-showcase .new-project-card::before,
+.component-showcase .waitlist-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dashboard project cards should use standard border, not gradient */
+.component-showcase .project-cards .project-box,
+.component-showcase .account-card,
+.component-showcase .loading-card {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.component-showcase .project-cards .project-box::before,
+.component-showcase .account-card::before,
+.component-showcase .loading-card::before {
+  display: none;
+}
+
+/* New project card should have no border */
+.component-showcase .new-project-card {
+  border: none !important;
+}
+
+.component-showcase .new-project-card::before {
+  display: none;
+}
+
+/* Popup components should use standard border */
+.component-showcase .popup-overlay,
+.component-showcase .accordion-section,
+.component-showcase .category-outline,
+.component-showcase .popup-input-wrapper,
+.component-showcase .flight-path-download-btn,
+.component-showcase .upload-zone,
+.component-showcase .address-search-wrapper,
+.component-showcase .expand-button,
+.component-showcase .modal-popup-overlay {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.component-showcase .popup-overlay::before,
+.component-showcase .accordion-section::before,
+.component-showcase .category-outline::before,
+.component-showcase .popup-input-wrapper::before,
+.component-showcase .flight-path-download-btn::before,
+.component-showcase .upload-zone::before,
+.component-showcase .address-search-wrapper::before,
+.component-showcase .expand-button::before,
+.component-showcase .modal-popup-overlay::before {
+  display: none;
+}
+
+/* Expand button and address search should have gradient borders only */
+.component-showcase .expand-button,
+.component-showcase .address-search-wrapper {
+  border: none;
+}
+
+.component-showcase .expand-button::before,
+.component-showcase .address-search-wrapper::before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Modal popup content and accordion sections need proper border radius */
+.component-showcase .modal-popup-content,
+.component-showcase .accordion-section,
+.component-showcase .popup-overlay {
+  border-radius: 25px;
+}
+
+/* Popup section should match the clean design from actual new project popup */
+.component-showcase .popup-section {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.component-showcase .popup-section::before {
+  display: none;
+}
+
+/* Ensure card content is above the border */
+.component-showcase .project-box h1,
+.component-showcase .project-box p,
+.component-showcase .new-project-card h1,
+.component-showcase .new-project-card .plus-icon,
+.component-showcase .waitlist-card .waitlist-header,
+.component-showcase .waitlist-card h1,
+.component-showcase .waitlist-card p {
+  position: relative;
+  z-index: 1;
 }
 
 /* Map Showcase */
@@ -647,8 +845,6 @@
     text-align: center;
   }
   
-
-  
   .component-showcase .project-box,
   .component-showcase .new-project-card,
   .component-showcase .waitlist-card {
@@ -665,8 +861,6 @@
     width: 100%;
     max-width: none;
   }
-  
-
   
   .component-name-pill {
     font-size: 0.75rem;
@@ -718,29 +912,37 @@
   align-items: center;
   margin-bottom: 20px;
   padding: 20px;
-  border-radius: 25px;
+  border-radius: 40px;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  border: 3px solid rgba(255, 255, 255, 0.1);
   min-width: 400px;
   box-sizing: border-box;
+}
+
+/* Apply standard border to color swatch container */
+.component-showcase .color-swatch-container {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .color-swatch {
   width: 80px;
   height: 80px;
-  border-radius: 12px;
+  border-radius: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(255, 255, 255, 0.1);
   font-size: 0.875rem;
   text-align: center;
   line-height: 1.2;
   box-sizing: border-box;
+}
+
+/* Apply standard border to color swatches */
+.component-showcase .color-swatch {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .color-swatch.pure-white {
@@ -754,11 +956,19 @@
 .component-showcase .opacity-stop-50 { background: rgba(255, 255, 255, 0.5); }
 .component-showcase .opacity-stop-100 { background: rgba(255, 255, 255, 1); color: rgba(0, 0, 0, 0.8); }
 
+/* Hex Color Swatches */
+.component-showcase .hex-dc9ed8 { background: #DC9ED8; }
+.component-showcase .hex-cd70e4 { background: #CD70E4; }
+.component-showcase .hex-d869b3 { background: #D869B3; }
+.component-showcase .hex-e4617c { background: #E4617C; }
+.component-showcase .hex-eb5c5a { background: #EB5C5A; }
+.component-showcase .hex-e47991 { background: #E47991; }
+
 /* Opacity Stops against Light Background */
 .component-showcase .light-background-container {
   background: rgba(255, 255, 255, 0.9);
   padding: 20px;
-  border-radius: 25px;
+  border-radius: 40px;
   margin-bottom: 20px;
   min-width: 400px;
   display: flex;
@@ -766,12 +976,20 @@
   gap: 16px;
   justify-content: center;
   align-items: center;
-  border: 3px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+
+/* Apply standard border to light background container */
+.component-showcase .light-background-container {
+  border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
 .component-showcase .light-background-container .color-swatch {
   color: rgba(0, 0, 0, 0.8);
+}
+
+/* Apply standard border to light background color swatches */
+.component-showcase .light-background-container .color-swatch {
   border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -779,57 +997,6 @@
 .component-showcase .light-background-container .opacity-stop-20-dark { background: rgba(0, 0, 0, 0.2); }
 .component-showcase .light-background-container .opacity-stop-50-dark { background: rgba(0, 0, 0, 0.5); }
 .component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: rgba(255, 255, 255, 0.8); }
-
-/* Spaceport Prism - Actual conic gradient with six hex codes from gradient editor */
-.component-showcase .spaceport-prism {
-  width: 300px;
-  height: 200px;
-  background: conic-gradient(
-    from 0deg,
-    #DC9ED8 0deg,
-    #CD70E4 144deg,
-    #D869B3 180deg,
-    #E4617C 208.8deg,
-    #EB5C5A 259.2deg,
-    #E47991 334.8deg,
-    #DC9ED8 360deg
-  );
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 1);
-  font-weight: 600;
-  margin-bottom: 20px;
-  position: relative;
-  box-sizing: border-box;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.component-showcase .spaceport-prism::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  box-sizing: border-box;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.component-showcase .spaceport-prism .prism-content {
-  text-align: center;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 16px 24px;
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  position: relative;
-  z-index: 2;
-}
 
 /* Border Demo Components */
 .component-showcase .standard-border-demo {
@@ -840,8 +1007,12 @@
   -webkit-backdrop-filter: blur(40px);
   border-radius: 25px;
   padding: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
+}
+
+/* Apply standard border to standard border demo */
+.component-showcase .standard-border-demo {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .standard-border-demo h3 {
@@ -873,26 +1044,24 @@
   box-sizing: border-box;
 }
 
+/* Apply gradient border to gradient border demo */
 .component-showcase .gradient-border-demo::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
