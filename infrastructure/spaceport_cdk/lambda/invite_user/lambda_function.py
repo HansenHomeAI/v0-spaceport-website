@@ -1,10 +1,13 @@
 import json
 import os
 import boto3
+import resend
 from typing import Optional
 
+# Initialize Resend
+resend.api_key = os.environ.get('RESEND_API_KEY')
+
 cognito = boto3.client('cognito-idp')
-ses = boto3.client('ses')
 
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 INVITE_GROUP = os.environ.get('INVITE_GROUP', 'beta-testers')
@@ -136,15 +139,15 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
     </body></html>
     """
 
-    ses.send_email(
-        Source='hello@spcprt.com',
-        Destination={'ToAddresses': [email]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {
-                'Text': {'Data': body_text},
-                'Html': {'Data': body_html},
-            },
-        },
-    )
+    # Send via Resend
+    params = {
+        "from": "Spaceport AI <hello@spcprt.com>",
+        "to": [email],
+        "subject": subject,
+        "html": body_html,
+        "text": body_text,
+    }
+    
+    email_response = resend.Emails.send(params)
+    print(f"Invite email sent via Resend: {email_response}")
 

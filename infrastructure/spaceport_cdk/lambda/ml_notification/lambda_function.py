@@ -1,10 +1,11 @@
 import json
 import boto3
 import os
+import resend
 from datetime import datetime
 
-# Initialize AWS clients
-ses = boto3.client('ses')
+# Initialize Resend
+resend.api_key = os.environ.get('RESEND_API_KEY')
 
 def lambda_handler(event, context):
     """
@@ -63,37 +64,23 @@ def lambda_handler(event, context):
         else:
             raise ValueError(f"Unknown status: {status}")
         
-        # Send email via SES
-        response = ses.send_email(
-            Source='hello@spcprt.com',  # Using the verified email address
-            Destination={
-                'ToAddresses': [email]
-            },
-            Message={
-                'Subject': {
-                    'Data': subject,
-                    'Charset': 'UTF-8'
-                },
-                'Body': {
-                    'Text': {
-                        'Data': body_text,
-                        'Charset': 'UTF-8'
-                    },
-                    'Html': {
-                        'Data': body_html,
-                        'Charset': 'UTF-8'
-                    }
-                }
-            }
-        )
+        # Send email via Resend
+        params = {
+            "from": "Spaceport AI <hello@spcprt.com>",
+            "to": [email],
+            "subject": subject,
+            "html": body_html,
+            "text": body_text,
+        }
         
-        print(f"Email sent successfully. MessageId: {response['MessageId']}")
+        response = resend.Emails.send(params)
+        print(f"Email sent successfully via Resend: {response}")
         
         return {
             'statusCode': 200,
             'body': json.dumps({
                 'message': 'Notification sent successfully',
-                'messageId': response['MessageId']
+                'messageId': response.get('id', 'unknown')
             })
         }
         

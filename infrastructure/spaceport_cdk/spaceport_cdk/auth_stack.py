@@ -203,6 +203,7 @@ class AuthStack(Stack):
                 "USERS_TABLE": users_table.table_name,
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", "sk_test_placeholder"),
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
                 "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", "whsec_placeholder"),
                 "STRIPE_PRICE_SINGLE": os.environ.get("STRIPE_PRICE_SINGLE", "price_placeholder"),
                 "STRIPE_PRICE_STARTER": os.environ.get("STRIPE_PRICE_STARTER", "price_placeholder"),
@@ -388,6 +389,7 @@ class AuthStack(Stack):
             environment={
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
             },
         )
 
