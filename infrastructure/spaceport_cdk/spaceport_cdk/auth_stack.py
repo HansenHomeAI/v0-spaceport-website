@@ -393,7 +393,7 @@ class AuthStack(Stack):
             environment={
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
-                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY"),
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
             },
         )
 

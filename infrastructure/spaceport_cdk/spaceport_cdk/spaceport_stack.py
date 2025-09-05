@@ -209,7 +209,7 @@ class SpaceportStack(Stack):
             memory_size=512,
             environment={
                 "WAITLIST_TABLE": self.waitlist_table.table_name,
-                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY")
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", "")
             }
         )
         

@@ -252,7 +252,7 @@ class MLPipelineStack(Stack):
             memory_size=256,
             environment={
                 "ML_BUCKET": ml_bucket.bucket_name,
-                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY")
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", "")
             }
         )
 
