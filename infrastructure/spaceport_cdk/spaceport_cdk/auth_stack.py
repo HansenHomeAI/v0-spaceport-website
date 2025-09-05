@@ -466,6 +466,15 @@ class AuthStack(Stack):
         self.beta_access_permissions_table = beta_access_permissions_table
 
         # ========== PASSWORD RESET SYSTEM ==========
+        # Create DynamoDB table for password reset codes
+        password_reset_codes_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-PasswordResetCodesTable",
+            preferred_name=f"Spaceport-PasswordResetCodes-{suffix}",
+            fallback_name="Spaceport-PasswordResetCodes",
+            partition_key_name="email",
+            partition_key_type=dynamodb.AttributeType.STRING
+        )
+
         # Create IAM role for password reset Lambda
         password_reset_lambda_role = iam.Role(
             self, "PasswordResetLambdaRole",
@@ -479,9 +488,8 @@ class AuthStack(Stack):
                         iam.PolicyStatement(
                             effect=iam.Effect.ALLOW,
                             actions=[
-                                "cognito-idp:ForgotPassword",
-                                "cognito-idp:ConfirmForgotPassword",
-                                "cognito-idp:AdminGetUser"
+                                "cognito-idp:AdminGetUser",
+                                "cognito-idp:AdminSetUserPassword"
                             ],
                             resources=[user_pool.user_pool_arn]
                         )
@@ -512,6 +520,7 @@ class AuthStack(Stack):
             environment={
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "COGNITO_USER_POOL_CLIENT_ID": user_pool_client.user_pool_client_id,
+                "RESET_CODES_TABLE": password_reset_codes_table.table_name,
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
             },
         )
@@ -542,6 +551,9 @@ class AuthStack(Stack):
             authorization_type=apigw.AuthorizationType.NONE,  # No auth required for password reset
         )
 
+        # Grant DynamoDB permissions to the Lambda function
+        password_reset_codes_table.grant_read_write_data(password_reset_lambda)
+
         # Outputs
         CfnOutput(self, "PasswordResetApiUrl", value=password_reset_api.url)
         CfnOutput(self, "PasswordResetLambdaArn", value=password_reset_lambda.function_arn)
@@ -549,6 +561,7 @@ class AuthStack(Stack):
         # Force resource inclusion by referencing them
         self.password_reset_lambda = password_reset_lambda
         self.password_reset_api = password_reset_api
+        self.password_reset_codes_table = password_reset_codes_table
 
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""

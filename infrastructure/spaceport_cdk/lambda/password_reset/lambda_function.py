@@ -2,14 +2,19 @@ import json
 import os
 import boto3
 import resend
+import random
+import string
+from datetime import datetime, timedelta
 from typing import Optional
 
 # Initialize Resend
 resend.api_key = os.environ.get('RESEND_API_KEY')
 
 cognito = boto3.client('cognito-idp')
+dynamodb = boto3.resource('dynamodb')
 
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
+RESET_CODES_TABLE = os.environ.get('RESET_CODES_TABLE', 'Spaceport-PasswordResetCodes-prod')
 
 
 def _response(status, body):
@@ -40,45 +45,60 @@ def lambda_handler(event, context):
         if not email:
             return _response(400, {'error': 'Email is required'})
         
-        # Initiate password reset using Cognito
+        # Check if user exists in Cognito
         try:
-            response = cognito.forgot_password(
-                ClientId=os.environ['COGNITO_USER_POOL_CLIENT_ID'],
+            cognito.admin_get_user(
+                UserPoolId=USER_POOL_ID,
                 Username=email
             )
-            
-            # Get the confirmation code from the response
-            # Note: In production, Cognito sends the code via email
-            # We'll send our own custom email with the code
-            code_delivery_details = response.get('CodeDeliveryDetails', {})
-            delivery_medium = code_delivery_details.get('DeliveryMedium', 'EMAIL')
-            
-            if delivery_medium == 'EMAIL':
-                # Send custom password reset email via Resend
-                send_password_reset_email(email)
-                
-                return _response(200, {
-                    'message': 'Password reset code sent to your email',
-                    'email': email
-                })
-            else:
-                return _response(400, {'error': 'Email delivery not available'})
-                
         except cognito.exceptions.UserNotFoundException:
             return _response(400, {'error': 'User not found'})
-        except cognito.exceptions.InvalidParameterException as e:
-            return _response(400, {'error': f'Invalid request: {str(e)}'})
         except Exception as e:
-            print(f"Error initiating password reset: {e}")
-            return _response(500, {'error': 'Failed to initiate password reset'})
+            print(f"Error checking user: {e}")
+            return _response(500, {'error': 'Failed to verify user'})
+        
+        # Generate 6-digit reset code
+        reset_code = generate_reset_code()
+        
+        # Store code in DynamoDB with 15-minute expiration
+        store_reset_code(email, reset_code)
+        
+        # Send password reset email with code
+        send_password_reset_email(email, reset_code)
+        
+        return _response(200, {
+            'message': 'Password reset code sent to your email',
+            'email': email
+        })
             
     except Exception as e:
         print(f"Unexpected error: {e}")
         return _response(500, {'error': 'Internal server error'})
 
 
-def send_password_reset_email(email: str) -> None:
-    """Send password reset email via Resend"""
+def generate_reset_code() -> str:
+    """Generate a 6-digit reset code"""
+    return ''.join(random.choices(string.digits, k=6))
+
+def store_reset_code(email: str, reset_code: str) -> None:
+    """Store reset code in DynamoDB with 15-minute expiration"""
+    table = dynamodb.Table(RESET_CODES_TABLE)
+    
+    # Calculate expiration time (15 minutes from now)
+    expires_at = datetime.utcnow() + timedelta(minutes=15)
+    
+    table.put_item(
+        Item={
+            'email': email,
+            'reset_code': reset_code,
+            'expires_at': expires_at.isoformat(),
+            'created_at': datetime.utcnow().isoformat(),
+            'used': False
+        }
+    )
+
+def send_password_reset_email(email: str, reset_code: str) -> None:
+    """Send password reset email with code via Resend"""
     subject = 'Reset your Spaceport AI password'
     
     body_text = f"""
@@ -86,7 +106,15 @@ Hi,
 
 You requested to reset your password for Spaceport AI.
 
-To reset your password, please go to https://spcprt.com/create and use the "Forgot Password" feature.
+Your password reset code is: {reset_code}
+
+This code will expire in 15 minutes.
+
+To reset your password:
+1. Go to https://spcprt.com/create
+2. Click "Forgot Password"
+3. Enter this code: {reset_code}
+4. Choose your new password
 
 If you didn't request this password reset, please ignore this email.
 
@@ -104,7 +132,20 @@ Spaceport AI Team
             
             <p>You requested to reset your password for Spaceport AI.</p>
             
-            <p>To reset your password, please go to <a href="https://spcprt.com/create" style="color: #2563eb;">spcprt.com/create</a> and use the "Forgot Password" feature.</p>
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                <h3 style="margin: 0; color: #2563eb; font-size: 24px; letter-spacing: 4px;">{reset_code}</h3>
+                <p style="margin: 10px 0 0 0; color: #666;">Your password reset code</p>
+            </div>
+            
+            <p><strong>This code will expire in 15 minutes.</strong></p>
+            
+            <p>To reset your password:</p>
+            <ol>
+                <li>Go to <a href="https://spcprt.com/create" style="color: #2563eb;">spcprt.com/create</a></li>
+                <li>Click "Forgot Password"</li>
+                <li>Enter this code: <strong>{reset_code}</strong></li>
+                <li>Choose your new password</li>
+            </ol>
             
             <p>If you didn't request this password reset, please ignore this email.</p>
             
@@ -124,4 +165,4 @@ Spaceport AI Team
     }
     
     email_response = resend.Emails.send(params)
-    print(f"Password reset email sent to {email}: {email_response}")
+    print(f"Password reset email sent to {email} with code {reset_code}: {email_response}")
