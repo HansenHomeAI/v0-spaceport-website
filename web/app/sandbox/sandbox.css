@@ -1,5 +1,95 @@
 /* Design System Sandbox - Hyper Minimalist */
 
+/* Formatting Section */
+.formatting-demo {
+  min-width: 400px;
+  max-width: 600px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.formatting-demo h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 20px 0;
+  color: #fff;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.math-formula {
+  margin: 16px 0;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.math-formula code {
+  display: block;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 4px 0;
+  padding: 2px 0;
+}
+
+.concentric-demo {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.concentric-outer {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 41px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.concentric-middle {
+  width: 184px;
+  height: 184px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 33px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.concentric-inner {
+  width: 168px;
+  height: 168px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.concentric-inner span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 /* Sandbox Container */
 .sandbox-container {
   background: #000;
@@ -105,6 +195,18 @@
   align-items: flex-start;
   justify-content: center;
   text-align: center;
+}
+
+/* Prevent buttons from stretching in flex containers */
+.component-showcase .cta-button,
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed {
+  flex-shrink: 0;
+  flex-grow: 0;
+  align-self: center;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Component Selector Tool - No Hover Effects */
@@ -274,115 +376,7 @@
   font-weight: 400;
 }
 
-/* Header Typography Components */
-.component-showcase .header-logo {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  padding: 6px 12px;
-  line-height: 1.2;
-  letter-spacing: 0em;
-  max-width: 200px;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(50px);
-  border-radius: 999px;
-  position: relative;
-  overflow: hidden;
-}
-
-.component-showcase .header-logo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: rgba(255, 255, 255, 0.15);
-  z-index: -1;
-  opacity: 0;
-  transform: scale(0.7);
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.component-showcase .header-logo:hover::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.component-showcase .nav-link {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  padding: 6px 12px;
-  line-height: 1.2;
-  letter-spacing: 0em;
-  max-width: 200px;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(50px);
-  border-radius: 999px;
-  position: relative;
-  overflow: hidden;
-}
-
-.component-showcase .nav-link::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: rgba(255, 255, 255, 0.15);
-  z-index: -1;
-  opacity: 0;
-  transform: scale(0.7);
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.component-showcase .nav-link:hover::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.component-showcase .toggle-icon {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  padding: 8px;
-  line-height: 0;
-  letter-spacing: 0em;
-  width: 50px;
-  height: 50px;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(50px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.component-showcase .toggle-icon::before {
-  content: "";
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: -1;
-}
-
-.component-showcase .toggle-icon:hover::before {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
+/* Header Typography Components - Removed header-logo, nav-link, toggle-icon */
 
 /* Header Layout Preview */
 .component-showcase .header-preview {
@@ -433,17 +427,25 @@
 }
 
 .component-showcase .header-logo-preview {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 16px;
-  line-height: 1.2;
   background: transparent;
   border-radius: 999px;
   position: relative;
   z-index: 1;
   cursor: pointer;
   transition: background 0.2s ease;
+  height: auto;
+  min-height: 40px;
+}
+
+.component-showcase .header-logo-preview img {
+  height: 24px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
 }
 
 .component-showcase .header-logo-preview:hover {
@@ -462,12 +464,16 @@
   font-size: 1.2rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 1);
-  padding: 6px 12px;
+  padding: 8px 16px;
   line-height: 1.2;
   background: transparent;
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .component-showcase .nav-link-preview:hover {
@@ -579,7 +585,115 @@
 .component-showcase .cta-button2-fixed {
   margin: 0 10px 20px 10px;
   flex-shrink: 0;
-  min-width: 200px;
+  min-width: 100px;
+}
+
+/* Override main styles for sandbox - White button theme */
+.component-showcase .cta-button {
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  padding: 12px 21.5px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+}
+
+/* CTA button arrow functionality - Clean SVG arrow only */
+.component-showcase .cta-button::after {
+  content: '' !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  right: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center !important;
+  background-size: contain !important;
+  filter: brightness(0) !important;
+  transition: opacity 0.3s ease !important;
+  border: none !important;
+}
+
+.component-showcase .cta-button:hover {
+  padding-right: 40px !important;
+}
+
+.component-showcase .cta-button:hover::after {
+  opacity: 1 !important;
+}
+
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed {
+  background: transparent !important;
+  color: #fff !important;
+  border: 2.5px solid #fff !important;
+  padding: 9.5px 21.5px !important;
+  box-sizing: border-box !important;
+}
+
+.component-showcase .cta-button2:hover,
+.component-showcase .cta-button2-fixed:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+/* Button with Icon Styles */
+.component-showcase .cta-button.with-symbol,
+.component-showcase .cta-button2-fixed.with-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.component-showcase .symbol-3d {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Icon styling for CTA button (white background, black text) */
+.component-showcase .cta-button.with-symbol .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) !important; /* Makes SVG black */
+}
+
+/* Icon styling for CTA2-fixed button (white border, white text) */
+.component-showcase .cta-button2-fixed.with-symbol .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) invert(1) !important; /* Makes SVG white */
+}
+
+/* Icon styling for CTA2-fixed button hover (white background, black text) */
+.component-showcase .cta-button2-fixed.with-symbol:hover .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) !important; /* Makes SVG black on hover */
+}
+
+/* Robust icon color system - works for any icon */
+.component-showcase .cta-button .symbol-3d {
+  filter: brightness(0) !important; /* Black icons on white background */
+}
+
+.component-showcase .cta-button2 .symbol-3d,
+.component-showcase .cta-button2-fixed .symbol-3d {
+  filter: brightness(0) invert(1) !important; /* White icons on transparent background */
+}
+
+.component-showcase .cta-button2:hover .symbol-3d,
+.component-showcase .cta-button2-fixed:hover .symbol-3d {
+  filter: brightness(0) !important; /* Black icons on white background on hover */
 }
 
 /* Cards Showcase */
@@ -650,8 +764,6 @@
   letter-spacing: 0em;
 }
 
-.component-showcase .project-box,
-.component-showcase .new-project-card,
 .component-showcase .waitlist-card {
   min-width: 280px;
   flex-shrink: 0;
@@ -665,9 +777,7 @@
   box-sizing: border-box;
 }
 
-/* Apply gradient border to project cards */
-.component-showcase .project-box::before,
-.component-showcase .new-project-card::before,
+/* Apply gradient border to waitlist card */
 .component-showcase .waitlist-card::before {
   content: "";
   position: absolute;
@@ -702,14 +812,7 @@
   display: none;
 }
 
-/* New project card should have no border */
-.component-showcase .new-project-card {
-  border: none !important;
-}
-
-.component-showcase .new-project-card::before {
-  display: none;
-}
+/* New project card styles removed */
 
 /* Popup components should use standard border */
 .component-showcase .popup-overlay,
@@ -788,10 +891,6 @@
 }
 
 /* Ensure card content is above the border */
-.component-showcase .project-box h1,
-.component-showcase .project-box p,
-.component-showcase .new-project-card h1,
-.component-showcase .new-project-card .plus-icon,
 .component-showcase .waitlist-card .waitlist-header,
 .component-showcase .waitlist-card h1,
 .component-showcase .waitlist-card p {
@@ -835,18 +934,21 @@
   
   .component-showcase {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
   }
   
   .component-showcase .cta-button,
   .component-showcase .cta-button2,
   .component-showcase .cta-button2-fixed {
-    width: 100%;
     text-align: center;
+    width: auto !important;
+    max-width: none !important;
+    flex: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block;
   }
   
-  .component-showcase .project-box,
-  .component-showcase .new-project-card,
   .component-showcase .waitlist-card {
     width: 100%;
     min-width: unset;
