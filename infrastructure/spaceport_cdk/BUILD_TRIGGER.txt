@@ -1,5 +1,5 @@
 CDK Deployment Trigger
-Updated: 2025-01-27 16:00:00 UTC
-Reason: Set RESEND_API_KEY environment variable in Lambda functions
+Updated: 2025-01-27 16:15:00 UTC
+Reason: Pass RESEND_API_KEY from GitHub secrets to CDK deployment
 Status: Ready for deployment
-Changes: Lambda functions updated to use Resend, need environment variable set
+Changes: Added RESEND_API_KEY environment variable to CDK deployment step
