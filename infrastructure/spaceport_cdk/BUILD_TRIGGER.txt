@@ -1,5 +1,1 @@
-CDK Deployment Trigger
-Updated: 2025-09-05 17:15:00 UTC
-Reason: Force update Lambda functions with Resend integration
-Status: Ready for deployment
-Cloudflare Pages: Triggering rebuild
+Trigger deployment to pick up RESEND_API_KEY secret
