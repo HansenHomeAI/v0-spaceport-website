@@ -197,6 +197,18 @@
   text-align: center;
 }
 
+/* Prevent buttons from stretching in flex containers */
+.component-showcase .cta-button,
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed {
+  flex-shrink: 0;
+  flex-grow: 0;
+  align-self: center;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Component Selector Tool - No Hover Effects */
 .component-showcase > * {
   cursor: pointer;
@@ -573,7 +585,115 @@
 .component-showcase .cta-button2-fixed {
   margin: 0 10px 20px 10px;
   flex-shrink: 0;
-  min-width: 200px;
+  min-width: 100px;
+}
+
+/* Override main styles for sandbox - White button theme */
+.component-showcase .cta-button {
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  padding: 12px 21.5px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+}
+
+/* CTA button arrow functionality - Clean SVG arrow only */
+.component-showcase .cta-button::after {
+  content: '' !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  right: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center !important;
+  background-size: contain !important;
+  filter: brightness(0) !important;
+  transition: opacity 0.3s ease !important;
+  border: none !important;
+}
+
+.component-showcase .cta-button:hover {
+  padding-right: 40px !important;
+}
+
+.component-showcase .cta-button:hover::after {
+  opacity: 1 !important;
+}
+
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed {
+  background: transparent !important;
+  color: #fff !important;
+  border: 2.5px solid #fff !important;
+  padding: 9.5px 21.5px !important;
+  box-sizing: border-box !important;
+}
+
+.component-showcase .cta-button2:hover,
+.component-showcase .cta-button2-fixed:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+/* Button with Icon Styles */
+.component-showcase .cta-button.with-symbol,
+.component-showcase .cta-button2-fixed.with-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.component-showcase .symbol-3d {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Icon styling for CTA button (white background, black text) */
+.component-showcase .cta-button.with-symbol .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) !important; /* Makes SVG black */
+}
+
+/* Icon styling for CTA2-fixed button (white border, white text) */
+.component-showcase .cta-button2-fixed.with-symbol .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) invert(1) !important; /* Makes SVG white */
+}
+
+/* Icon styling for CTA2-fixed button hover (white background, black text) */
+.component-showcase .cta-button2-fixed.with-symbol:hover .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) !important; /* Makes SVG black on hover */
+}
+
+/* Robust icon color system - works for any icon */
+.component-showcase .cta-button .symbol-3d {
+  filter: brightness(0) !important; /* Black icons on white background */
+}
+
+.component-showcase .cta-button2 .symbol-3d,
+.component-showcase .cta-button2-fixed .symbol-3d {
+  filter: brightness(0) invert(1) !important; /* White icons on transparent background */
+}
+
+.component-showcase .cta-button2:hover .symbol-3d,
+.component-showcase .cta-button2-fixed:hover .symbol-3d {
+  filter: brightness(0) !important; /* Black icons on white background on hover */
 }
 
 /* Cards Showcase */
@@ -814,14 +934,19 @@
   
   .component-showcase {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
   }
   
   .component-showcase .cta-button,
   .component-showcase .cta-button2,
   .component-showcase .cta-button2-fixed {
-    width: 100%;
     text-align: center;
+    width: auto !important;
+    max-width: none !important;
+    flex: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block;
   }
   
   .component-showcase .waitlist-card {
