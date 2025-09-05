@@ -325,16 +325,17 @@ html, body {
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
-  background: #FF4F00;
-  color: #fff;
+  background: #fff;
+  color: #000;
   text-decoration: none;
-  padding: 12px 24px;
+  padding: 12px 21.5px;
   border-radius: 999px;
   transition: all 0.3s ease;
   margin-top: 10px;
   position: relative;
   cursor: pointer;
   user-select: none;
+  box-sizing: border-box;
 }
 .cta-button::after {
   content: '';
@@ -342,11 +343,12 @@ html, body {
   position: absolute;
   right: 18px;
   top: 50%;
-  transform: translateY(-50%) rotate(-45deg);
-  width: 6px;
-  height: 6px;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center;
+  background-size: contain;
+  filter: brightness(0);
   transition: opacity 0.3s ease;
 }
 .cta-button:hover {
@@ -360,21 +362,22 @@ html, body {
 .cta-button2 {
   display: inline-block;
   text-decoration: none;
-  padding: 12px 24px;
+  padding: 9.5px 21.5px;
   border-radius: 999px;
   transition: background 0.3s ease;
   margin-left: 8px;
   position: relative;
   cursor: pointer;
   user-select: none;
-  border: 2.5px solid #FF4F00;
-  color: #FF4F00;
+  border: 2.5px solid #fff;
+  color: #fff;
   background: transparent;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 .cta-button2:hover {
-  background: #FF4F00;
-  color: #fff;
+  background: #fff;
+  color: #000;
 }
 
 /* Tutorial Button */
@@ -492,7 +495,11 @@ html, body {
 /* TWO-COLUMN STRATEGY FOR WIDER SCREENS */
 .two-col-section .two-col-content {
   display: block;
-  text-align: center;
+  text-align: left;
+}
+.two-col-section .two-col-content h1,
+.two-col-section .two-col-content h2 {
+  text-align: left !important;
 }
 .two-col-section .two-col-content .right-col {
   margin-top: 1.5rem;
@@ -508,6 +515,7 @@ html, body {
   .two-col-section .two-col-content h1,
   .two-col-section .two-col-content h2 {
     margin-bottom: 1rem;
+    text-align: left !important;
   }
   .two-col-section .two-col-content .right-col {
     margin-top: 0;
@@ -517,6 +525,17 @@ html, body {
   .two-col-section .two-col-content {
     margin-left: 6%;
     margin-right: 6%;
+  }
+}
+
+/* Mobile: Center align text on smaller screens */
+@media (max-width: 639px) {
+  .two-col-section .two-col-content {
+    text-align: center;
+  }
+  .two-col-section .two-col-content h1,
+  .two-col-section .two-col-content h2 {
+    text-align: center !important;
   }
 }
 
@@ -1233,21 +1252,22 @@ footer {
 .cta-button2-fixed {
   display: inline-block;
   text-decoration: none;
-  padding: 12px 24px;
+  padding: 9.5px 21.5px;
   border-radius: 999px;
   transition: background 0.3s ease;
   margin-left: 8px;
   position: relative;
   cursor: pointer;
   user-select: none;
-  border: 2.5px solid #FF4F00;
-  color: #FF4F00;
+  border: 2.5px solid #fff;
+  color: #fff;
   background: transparent;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 .cta-button2-fixed:hover {
-  background: #FF4F00;
-  color: #fff;
+  background: #fff;
+  color: #000;
 }
 
 /* STATS SECTION (Apple-like) */
@@ -1317,7 +1337,7 @@ footer {
 .stat-box h1 {
   display: block;       /* Ensure it's a block-level element */
   width: 100%;          /* Take up full width of the container */
-  text-align: left;     /* Force left alignment */
+  text-align: left !important;     /* Force left alignment */
   font-size: 4rem !important;
   margin-bottom: 5px;
   font-weight: 500;
@@ -1540,6 +1560,7 @@ footer {
   margin-bottom: 15px;
   font-weight: 500;
   color: #fff;
+  text-align: left !important;
 }
 .stat-box2 p {
   font-size: 1.1rem;
@@ -2501,9 +2522,6 @@ body::before {
   justify-content: center;
 }
 
-.cta-button.with-symbol .symbol-3d {
-  filter: invert(0%); /* Makes SVG white to match button text */
-}
 
 /* Style for CTA2 button symbol */
 .cta-button2-fixed.with-symbol {
@@ -2512,12 +2530,39 @@ body::before {
   justify-content: center;
 }
 
-.cta-button2-fixed.with-symbol .symbol-3d {
-  filter: invert(39%) sepia(62%) saturate(7483%) hue-rotate(4deg) brightness(112%) contrast(106%); /* Makes SVG #FF4F00 color */
+/* Icon support for all CTA buttons */
+.cta-button.with-symbol,
+.cta-button2.with-symbol,
+.cta-button2-fixed.with-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.cta-button2-fixed.with-symbol:hover .symbol-3d {
-  filter: invert(0%); /* Makes SVG white on hover */
+.cta-button.with-symbol .symbol-3d,
+.cta-button2.with-symbol .symbol-3d,
+.cta-button2-fixed.with-symbol .symbol-3d {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Icon color filters for CTA button (white background, black text) */
+.cta-button .symbol-3d {
+  filter: brightness(0); /* Black icons on white background */
+}
+
+/* Icon color filters for CTA2 buttons (white border, white text) */
+.cta-button2 .symbol-3d,
+.cta-button2-fixed .symbol-3d {
+  filter: brightness(0) invert(1); /* White icons on transparent background */
+}
+
+/* Icon color filters for CTA2 buttons hover (white background, black text) */
+.cta-button2:hover .symbol-3d,
+.cta-button2-fixed:hover .symbol-3d {
+  filter: brightness(0); /* Black icons on white background on hover */
 }
 
 /* 3D Viewer Button Styles */
@@ -6065,6 +6110,8 @@ input.text-fade-right,
     font-size: 0.75rem;
   }
 }
+
+
 
 
 
