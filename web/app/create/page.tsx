@@ -134,7 +134,7 @@ export default function Create(): JSX.Element {
             href="https://www.loom.com/share/e5b2d593df724c279742d9d4dcdbb5cf" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="tutorial-button"
+            className="cta-button"
           >
             Watch Tutorial
           </a>
