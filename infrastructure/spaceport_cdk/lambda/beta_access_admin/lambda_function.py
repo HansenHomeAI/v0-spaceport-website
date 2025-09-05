@@ -15,7 +15,7 @@ dynamodb = boto3.resource('dynamodb')
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_HXjveWkF_62sQ8xAshcq4Vrwxp9a1dfCb')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 # Initialize permissions table
 permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
@@ -137,6 +137,10 @@ def _generate_temp_password() -> str:
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
     """Send custom invitation email via Resend"""
+    
+    if not RESEND_API_KEY:
+        logger.error("RESEND_API_KEY environment variable not set")
+        raise Exception("Email service not configured")
     
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"

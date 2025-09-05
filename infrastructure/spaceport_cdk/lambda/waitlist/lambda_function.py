@@ -11,7 +11,7 @@ table_name = os.environ['WAITLIST_TABLE_NAME']
 table = dynamodb.Table(table_name)
 
 # Resend API key
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_HXjveWkF_62sQ8xAshcq4Vrwxp9a1dfCb')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 def lambda_handler(event, context):
     """
@@ -158,6 +158,10 @@ def send_confirmation_email(name, email):
     """
     Send confirmation email to new waitlist signup
     """
+    if not RESEND_API_KEY:
+        print("ERROR: RESEND_API_KEY environment variable not set")
+        raise Exception("Email service not configured")
+    
     subject = 'Welcome to Spaceport AI - You\'re on the Waitlist!'
     
     body_text = f"""Hi {name},
@@ -285,6 +289,10 @@ def send_admin_notification(name, email):
     """
     Send notification email to admin about new waitlist signup
     """
+    if not RESEND_API_KEY:
+        print("ERROR: RESEND_API_KEY environment variable not set")
+        raise Exception("Email service not configured")
+    
     subject = 'New Waitlist Signup - Spaceport AI'
     body_text = f"""New waitlist signup:
     
@@ -312,7 +320,7 @@ This person will be notified when Spaceport AI launches."""
     }
     
     payload = {
-        'from': 'Spaceport AI <gabriel@spcprt.com>',
+        'from': 'Spaceport AI <hello@spcprt.com>',
         'to': ['gabriel@spcprt.com', 'ethan@spcprt.com'],
         'subject': subject,
         'text': body_text,

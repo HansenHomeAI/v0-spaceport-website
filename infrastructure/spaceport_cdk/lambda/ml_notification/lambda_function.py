@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 
 # Resend API key
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_HXjveWkF_62sQ8xAshcq4Vrwxp9a1dfCb')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 def lambda_handler(event, context):
     """
@@ -65,6 +65,10 @@ def lambda_handler(event, context):
             raise ValueError(f"Unknown status: {status}")
         
         # Send email via Resend API
+        if not RESEND_API_KEY:
+            print("ERROR: RESEND_API_KEY environment variable not set")
+            raise Exception("Email service not configured")
+        
         headers = {
             'Authorization': f'Bearer {RESEND_API_KEY}',
             'Content-Type': 'application/json'
