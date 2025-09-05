@@ -2,7 +2,7 @@ from aws_cdk import (
     Stack,
     Duration,
     RemovalPolicy,
-    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
+    BundlingOptions,  # For installing Python dependencies
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -195,7 +195,14 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                "../lambda/subscription_manager"
+                "../lambda/subscription_manager",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_11.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
             ),
             timeout=Duration.seconds(30),
             memory_size=512,
@@ -381,7 +388,14 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin")
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
             ),
             role=beta_access_lambda_role,
             timeout=Duration.seconds(30),

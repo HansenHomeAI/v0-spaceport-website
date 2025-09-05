@@ -13,6 +13,7 @@ from aws_cdk import (
     RemovalPolicy,
     Duration,
     CfnOutput,
+    BundlingOptions,  # For installing Python dependencies
     aws_ec2 as ec2,
 )
 from constructs import Construct
@@ -247,7 +248,16 @@ class MLPipelineStack(Stack):
             function_name=f"Spaceport-MLNotification-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/ml_notification"),
+            code=lambda_.Code.from_asset(
+                "lambda/ml_notification",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             timeout=Duration.seconds(30),
             memory_size=256,
             environment={
