@@ -14,9 +14,6 @@ export default function DesignSystemSandbox(): JSX.Element {
     'h3': 'h3',
     'body-text': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
     'body-text with highlights': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life with incredible detail and realism.',
-    'header-logo': 'Spaceport',
-    'nav-link': '3D Reconstruction',
-    'toggle-icon': '≡',
     'pill-button': 'Pill Button',
     'pure-white': 'Pure White',
     'hex-dc9ed8': '#DC9ED8',
@@ -102,6 +99,42 @@ export default function DesignSystemSandbox(): JSX.Element {
       <section className="sandbox-section">
         <h1 className="sandbox-title">Design System</h1>
         <p className="sandbox-subtitle">Create page components</p>
+      </section>
+
+      {/* Formatting */}
+      <section className="sandbox-section">
+        <h2 className="section-title">Formatting</h2>
+        
+        <div className="component-group">
+          <h3 className="h3">Concentric Math Variables</h3>
+          <div className="component-showcase">
+            <div className="formatting-demo">
+              <h4>Concentric Container Math</h4>
+              <div className="math-formula">
+                <code>--base-unit: 8px (Apple 8pt Grid)</code>
+                <code>--container-padding: 32px (4 × base-unit)</code>
+                <code>--border-radius: 25px (minimum radius)</code>
+                <code>--border-width: 2.5px</code>
+                <code>--concentric-spacing: 8px (equal on all sides)</code>
+              </div>
+              <div className="math-formula">
+                <code>--inner-radius = 25px (base radius)</code>
+                <code>--middle-radius = --inner-radius + --concentric-spacing = 33px</code>
+                <code>--outer-radius = --middle-radius + --concentric-spacing = 41px</code>
+                <code>--content-area = 100% - (--container-padding × 2)</code>
+              </div>
+              <div className="concentric-demo">
+                <div className="concentric-outer">
+                  <div className="concentric-middle">
+                    <div className="concentric-inner">
+                      <span>Content</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Typography */}
@@ -469,36 +502,6 @@ export default function DesignSystemSandbox(): JSX.Element {
           <h3 className="h3">Navigation Elements</h3>
           <div className="component-showcase">
             <div 
-              className="header-logo"
-              data-component="header-logo"
-              onMouseEnter={(e) => handleComponentHover('header-logo', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('header-logo')}
-              onDoubleClick={(e) => handleDoubleClick('header-logo', e)}
-            >
-              {editableTexts['header-logo']}
-            </div>
-            <div 
-              className="nav-link"
-              data-component="nav-link"
-              onMouseEnter={(e) => handleComponentHover('nav-link', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('nav-link')}
-              onDoubleClick={(e) => handleDoubleClick('nav-link', e)}
-            >
-              {editableTexts['nav-link']}
-            </div>
-            <div 
-              className="toggle-icon"
-              data-component="toggle-icon"
-              onMouseEnter={(e) => handleComponentHover('toggle-icon', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('toggle-icon')}
-              onDoubleClick={(e) => handleDoubleClick('toggle-icon', e)}
-            >
-              {editableTexts['toggle-icon']}
-            </div>
-            <div 
               className="pill-button"
               data-component="pill-button"
               onMouseEnter={(e) => handleComponentHover('pill-button', e)}
@@ -521,7 +524,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('header-preview mobile')}
             >
-              <div className="h4 pill-button">{editableTexts['header-logo']}</div>
+              <div className="header-logo-preview">
+                <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" />
+              </div>
               <div className="h4 pill-button">
                 <span></span>
                 <span></span>
@@ -535,7 +540,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('header-preview desktop')}
             >
-              <div className="h4 pill-button">{editableTexts['header-logo']}</div>
+              <div className="header-logo-preview">
+                <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" />
+              </div>
               <div className="nav-links-preview">
                 <span className="h4 pill-button">Pricing</span>
                 <span className="h4 pill-button">About</span>
@@ -610,29 +617,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="h3">Project Cards</h3>
           <div className="component-showcase">
-            <div 
-              className="project-box"
-              data-component="project-box"
-              onMouseEnter={(e) => handleComponentHover('project-box', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('project-box')}
-            >
-                             <h1 className="section h1">Sample Project</h1>
-               <p className="body-text">Project description</p>
-            </div>
-            <div 
-              className="new-project-card"
-              data-component="new-project-card"
-              onMouseEnter={(e) => handleComponentHover('new-project-card', e)}
-              onMouseLeave={handleComponentLeave}
-              onClick={() => handleComponentClick('new-project-card')}
-            >
-                             <h1 className="section h1">+ New Project</h1>
-              <div className="plus-icon">
-                <span></span>
-                <span></span>
-              </div>
-            </div>
+            <p className="body-text">Project card components removed - see Dashboard Project Cards section below for active components.</p>
           </div>
         </div>
 
