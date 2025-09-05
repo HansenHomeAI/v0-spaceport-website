@@ -5648,5 +5648,423 @@ input.text-fade-right,
   }
 }
 
+/* ========================================
+   SUBSCRIPTION SYSTEM STYLES
+   ======================================== */
+
+/* Referral Section Styles */
+.referral-section {
+  margin: 30px 0;
+  text-align: center;
+}
+
+.referral-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.referral-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.referral-input-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.referral-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.referral-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.referral-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.referral-info {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+/* Error Message Styles */
+.error-message {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Enhanced Pricing Card Styles */
+.pricing-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.current-plan-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Plan Features List */
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.features-list li {
+  padding: 8px 0;
+  color: rgba(255, 255, 255, 0.9);
+  position: relative;
+  padding-left: 25px;
+}
+
+.features-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Button States */
+.cta-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.current-plan-button {
+  background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+  cursor: not-allowed;
+}
+
+.enterprise-button {
+  background: linear-gradient(135deg, #FF9800, #F57C00) !important;
+}
+
+.enterprise-button:hover {
+  background: linear-gradient(135deg, #F57C00, #E65100) !important;
+}
+
+/* Referral Program Info */
+.referral-program-info {
+  margin-top: 40px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.referral-program-info h3 {
+  color: #fff;
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+}
+
+.referral-program-info p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.referral-program-info strong {
+  color: #4CAF50;
+}
+
+/* Subscription Status Indicators */
+.subscription-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.subscription-status.active {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.subscription-status.trialing {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+  border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.subscription-status.past_due {
+  background: rgba(255, 152, 0, 0.2);
+  color: #FF9800;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.subscription-status.canceled {
+  background: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* Loading States */
+.subscription-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.subscription-loading::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness for Subscription */
+@media (max-width: 768px) {
+  .referral-section {
+    margin: 20px 0;
+  }
+  
+  .referral-input-container {
+    padding: 15px;
+    margin-top: 15px;
+  }
+  
+  .referral-input {
+    max-width: 100%;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .referral-program-info {
+    margin-top: 30px;
+    padding: 20px;
+  }
+  
+  .current-plan-badge {
+    top: 10px;
+    right: 10px;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+  
+  .features-list li {
+    padding: 6px 0;
+    padding-left: 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .referral-input {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .referral-input:focus {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .referral-program-info {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .current-plan-badge {
+    border: 2px solid #fff;
+  }
+  
+  .referral-input {
+    border-width: 2px;
+  }
+  
+  .error-message {
+    border-width: 2px;
+  }
+}
+
+/* ========================================
+   DASHBOARD SUBSCRIPTION STYLES
+   ======================================== */
+
+/* Subscription Info Container */
+.subscription-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* Subscription Details */
+.subscription-details {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subscription-details p {
+  margin: 4px 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.subscription-plan {
+  font-weight: 600;
+  color: #4CAF50 !important;
+}
+
+.trial-info {
+  color: #2196F3 !important;
+}
+
+.referral-info {
+  color: #FF9800 !important;
+}
+
+.earnings-info {
+  color: #4CAF50 !important;
+  font-weight: 600;
+}
+
+/* New Project Button States */
+.new-project-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.new-project-card.disabled:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.upgrade-prompt {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+/* Plan Cancel Button */
+.plan-cancel-btn {
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  color: #F44336;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+
+.plan-cancel-btn:hover {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: rgba(244, 67, 54, 0.5);
+}
+
+/* Enhanced Plan Cards */
+.plan-card.current {
+  border: 2px solid #4CAF50;
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.plan-card.current .plan-header {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+/* Mobile Responsiveness for Dashboard */
+@media (max-width: 768px) {
+  .subscription-info {
+    align-items: flex-start;
+    margin-top: 12px;
+  }
+  
+  .subscription-details {
+    margin-top: 8px;
+    padding: 8px;
+  }
+  
+  .subscription-details p {
+    font-size: 0.8rem;
+  }
+  
+  .upgrade-prompt {
+    font-size: 0.75rem;
+  }
+}
+
 
 
