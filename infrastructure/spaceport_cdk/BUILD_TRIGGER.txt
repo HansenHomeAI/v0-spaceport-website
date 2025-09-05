@@ -1,6 +1,5 @@
 CDK Deployment Trigger
-Updated: 2025-01-27 15:30:00 UTC
-Reason: Switch all Lambda functions from SES to Resend for email delivery
+Updated: 2025-01-27 16:00:00 UTC
+Reason: Set RESEND_API_KEY environment variable in Lambda functions
 Status: Ready for deployment
-Changes: Updated beta_access_admin, invite_user, ml_notification, waitlist Lambdas
-Email Service: Migrated from AWS SES to Resend API
+Changes: Lambda functions updated to use Resend, need environment variable set
