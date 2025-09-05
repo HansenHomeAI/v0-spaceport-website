@@ -1,13 +1,13 @@
 import json
 import boto3
 import os
-import requests
+import resend
 from datetime import datetime
 from botocore.exceptions import ClientError
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-table_name = os.environ['WAITLIST_TABLE_NAME']
+table_name = os.environ['WAITLIST_TABLE']
 table = dynamodb.Table(table_name)
 
 # Resend API key
