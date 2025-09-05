@@ -1,17 +1,13 @@
 import json
 import boto3
 import os
-import resend
 from datetime import datetime
 from botocore.exceptions import ClientError
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-table_name = os.environ['WAITLIST_TABLE']
+table_name = os.environ['WAITLIST_TABLE_NAME']
 table = dynamodb.Table(table_name)
-
-# Resend API key
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 def lambda_handler(event, context):
     """
@@ -158,9 +154,7 @@ def send_confirmation_email(name, email):
     """
     Send confirmation email to new waitlist signup
     """
-    if not RESEND_API_KEY:
-        print("ERROR: RESEND_API_KEY environment variable not set")
-        raise Exception("Email service not configured")
+    ses = boto3.client('ses')
     
     subject = 'Welcome to Spaceport AI - You\'re on the Waitlist!'
     
@@ -255,21 +249,28 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
 </body>
 </html>"""
 
-    # Set the API key as shown in Resend documentation
-    resend.api_key = RESEND_API_KEY
-    
-    # Use Resend SDK exactly as documented
     try:
-        params: resend.Emails.SendParams = {
-            "from": "Gabriel Hansen <gabriel@spcprt.com>",
-            "to": [email],
-            "subject": subject,
-            "html": body_html
-        }
-        
-        email_result = resend.Emails.send(params)
-        print(f"Confirmation email sent to {email} via Resend")
-    except Exception as e:
+        response = ses.send_email(
+            Source='gabriel@spcprt.com',
+            Destination={
+                'ToAddresses': [email]
+            },
+            Message={
+                'Subject': {
+                    'Data': subject
+                },
+                'Body': {
+                    'Text': {
+                        'Data': body_text
+                    },
+                    'Html': {
+                        'Data': body_html
+                    }
+                }
+            }
+        )
+        print(f"Confirmation email sent to {email}: {response['MessageId']}")
+    except ClientError as e:
         print(f"Failed to send confirmation email to {email}: {e}")
         raise
 
@@ -277,9 +278,7 @@ def send_admin_notification(name, email):
     """
     Send notification email to admin about new waitlist signup
     """
-    if not RESEND_API_KEY:
-        print("ERROR: RESEND_API_KEY environment variable not set")
-        raise Exception("Email service not configured")
+    ses = boto3.client('ses')
     
     subject = 'New Waitlist Signup - Spaceport AI'
     body_text = f"""New waitlist signup:
@@ -301,20 +300,27 @@ This person will be notified when Spaceport AI launches."""
 </body>
 </html>"""
 
-    # Set the API key as shown in Resend documentation
-    resend.api_key = RESEND_API_KEY
-    
-    # Use Resend SDK exactly as documented
     try:
-        params: resend.Emails.SendParams = {
-            "from": "Spaceport AI <hello@spcprt.com>",
-            "to": ['gabriel@spcprt.com', 'ethan@spcprt.com'],
-            "subject": subject,
-            "html": body_html
-        }
-        
-        email_result = resend.Emails.send(params)
-        print(f"Admin notification sent via Resend")
-    except Exception as e:
+        response = ses.send_email(
+            Source='gabriel@spcprt.com',  # Your preferred email address
+            Destination={
+                'ToAddresses': ['gabriel@spcprt.com', 'ethan@spcprt.com']
+            },
+            Message={
+                'Subject': {
+                    'Data': subject
+                },
+                'Body': {
+                    'Text': {
+                        'Data': body_text
+                    },
+                    'Html': {
+                        'Data': body_html
+                    }
+                }
+            }
+        )
+        print(f"Admin notification sent: {response['MessageId']}")
+    except ClientError as e:
         print(f"Failed to send admin notification: {e}")
         raise 

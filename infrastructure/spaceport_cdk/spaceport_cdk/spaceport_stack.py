@@ -10,7 +10,7 @@ from aws_cdk import (
     Duration,
     CfnOutput,
     CfnParameter,
-    BundlingOptions,
+    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
     aws_stepfunctions as sfn,
@@ -203,22 +203,12 @@ class SpaceportStack(Stack):
             function_name=f"Spaceport-WaitlistFunction-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset(
-                "lambda/waitlist",
-                bundling=BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
-                    ],
-                )
-            ),
+            code=lambda_.Code.from_asset("lambda/waitlist"),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
             environment={
-                "WAITLIST_TABLE": self.waitlist_table.table_name,
-                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY")
+                "WAITLIST_TABLE": self.waitlist_table.table_name
             }
         )
         

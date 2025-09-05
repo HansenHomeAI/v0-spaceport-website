@@ -1,15 +1,14 @@
 import json
 import os
 import boto3
-import resend
 from typing import Optional
 
 cognito = boto3.client('cognito-idp')
+ses = boto3.client('ses')
 
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 INVITE_GROUP = os.environ.get('INVITE_GROUP', 'beta-testers')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 
 def _response(status, body):
@@ -112,10 +111,6 @@ def generate_temp_password() -> str:
 
 
 def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
-    if not RESEND_API_KEY:
-        print("ERROR: RESEND_API_KEY environment variable not set")
-        raise Exception("Email service not configured")
-    
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
     body_text = (
@@ -141,17 +136,15 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
     </body></html>
     """
 
-    # Set the API key as shown in Resend documentation
-    resend.api_key = RESEND_API_KEY
-    
-    # Use Resend SDK exactly as documented
-    params: resend.Emails.SendParams = {
-        "from": "Spaceport AI <hello@spcprt.com>",
-        "to": [email],
-        "subject": subject,
-        "html": body_html
-    }
-    
-    email_result = resend.Emails.send(params)
-    print(f"Email sent successfully via Resend to {email}")
+    ses.send_email(
+        Source='hello@spcprt.com',
+        Destination={'ToAddresses': [email]},
+        Message={
+            'Subject': {'Data': subject},
+            'Body': {
+                'Text': {'Data': body_text},
+                'Html': {'Data': body_html},
+            },
+        },
+    )
 

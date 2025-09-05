@@ -9,6 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -112,8 +113,6 @@ jobs:
 
     - name: Deploy CDK Stacks
       if: github.event_name == 'push'
-      env:
-        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)

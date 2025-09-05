@@ -2,7 +2,7 @@ from aws_cdk import (
     Stack,
     Duration,
     RemovalPolicy,
-    BundlingOptions,
+    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -367,11 +367,6 @@ class AuthStack(Stack):
                             effect=iam.Effect.ALLOW,
                             actions=["ses:SendEmail"],
                             resources=["*"]
-                        ),
-                        iam.PolicyStatement(
-                            effect=iam.Effect.ALLOW,
-                            actions=["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
-                            resources=["*"]
                         )
                     ]
                 )
@@ -385,14 +380,7 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin"),
-                bundling=BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
-                    ],
-                )
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin")
             ),
             role=beta_access_lambda_role,
             timeout=Duration.seconds(30),
@@ -400,7 +388,6 @@ class AuthStack(Stack):
             environment={
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
-                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY"),
             },
         )
 

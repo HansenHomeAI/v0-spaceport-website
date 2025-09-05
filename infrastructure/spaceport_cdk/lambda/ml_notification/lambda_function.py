@@ -1,11 +1,10 @@
 import json
 import boto3
 import os
-import resend
 from datetime import datetime
 
-# Resend API key
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+# Initialize AWS clients
+ses = boto3.client('ses')
 
 def lambda_handler(event, context):
     """
@@ -64,30 +63,37 @@ def lambda_handler(event, context):
         else:
             raise ValueError(f"Unknown status: {status}")
         
-        # Send email via Resend API
-        if not RESEND_API_KEY:
-            print("ERROR: RESEND_API_KEY environment variable not set")
-            raise Exception("Email service not configured")
+        # Send email via SES
+        response = ses.send_email(
+            Source='hello@spcprt.com',  # Using the verified email address
+            Destination={
+                'ToAddresses': [email]
+            },
+            Message={
+                'Subject': {
+                    'Data': subject,
+                    'Charset': 'UTF-8'
+                },
+                'Body': {
+                    'Text': {
+                        'Data': body_text,
+                        'Charset': 'UTF-8'
+                    },
+                    'Html': {
+                        'Data': body_html,
+                        'Charset': 'UTF-8'
+                    }
+                }
+            }
+        )
         
-        # Set the API key as shown in Resend documentation
-        resend.api_key = RESEND_API_KEY
-        
-        # Use Resend SDK exactly as documented
-        params: resend.Emails.SendParams = {
-            "from": "Spaceport AI <hello@spcprt.com>",
-            "to": [email],
-            "subject": subject,
-            "html": body_html
-        }
-        
-        email_result = resend.Emails.send(params)
-        print(f"Email sent successfully via Resend. MessageId: {email_result.get('id')}")
+        print(f"Email sent successfully. MessageId: {response['MessageId']}")
         
         return {
             'statusCode': 200,
             'body': json.dumps({
                 'message': 'Notification sent successfully',
-                'messageId': email_result.get('id')
+                'messageId': response['MessageId']
             })
         }
         
