@@ -113,6 +113,8 @@ jobs:
 
     - name: Deploy CDK Stacks
       if: github.event_name == 'push'
+      env:
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
