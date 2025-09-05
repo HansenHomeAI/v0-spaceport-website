@@ -736,6 +736,57 @@
   display: none;
 }
 
+/* Expand button and address search should have gradient borders only */
+.component-showcase .expand-button,
+.component-showcase .address-search-wrapper {
+  border: none;
+}
+
+.component-showcase .expand-button::before,
+.component-showcase .address-search-wrapper::before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Modal popup content and accordion sections need proper border radius */
+.component-showcase .modal-popup-content,
+.component-showcase .accordion-section,
+.component-showcase .popup-overlay {
+  border-radius: 25px;
+}
+
+/* Popup section should match the clean design from actual new project popup */
+.component-showcase .popup-section {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.component-showcase .popup-section::before {
+  display: none;
+}
+
 /* Ensure card content is above the border */
 .component-showcase .project-box h1,
 .component-showcase .project-box p,
