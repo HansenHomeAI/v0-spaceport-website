@@ -11,3 +11,4 @@ CDK BundlingOptions Implementation - Fri Sep  5 13:36:11 MDT 2025
 Password Reset Lambda Implementation - Fri Sep  5 13:54:05 MDT 2025
 Custom Password Reset System with DynamoDB - Fri Sep  5 14:40:42 MDT 2025
 Force waitlist Lambda update with Resend - Fri Sep  5 14:47:58 MDT 2025
+Fix waitlist Lambda environment variable mismatch - Fri Sep  5 14:54:20 MDT 2025

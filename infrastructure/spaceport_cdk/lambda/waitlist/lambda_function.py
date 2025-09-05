@@ -10,7 +10,7 @@ resend.api_key = os.environ.get('RESEND_API_KEY')
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-table_name = os.environ['WAITLIST_TABLE']
+table_name = os.environ['WAITLIST_TABLE_NAME']
 table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
