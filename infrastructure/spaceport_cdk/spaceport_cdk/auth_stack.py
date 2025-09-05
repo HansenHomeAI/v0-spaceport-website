@@ -2,7 +2,7 @@ from aws_cdk import (
     Stack,
     Duration,
     RemovalPolicy,
-    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
+    BundlingOptions,
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -386,7 +386,7 @@ class AuthStack(Stack):
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin"),
-                bundling=lambda_.BundlingOptions(
+                bundling=BundlingOptions(
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
                     command=[
                         "bash", "-c",

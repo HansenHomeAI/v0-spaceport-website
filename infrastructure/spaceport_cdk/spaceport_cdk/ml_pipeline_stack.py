@@ -14,6 +14,7 @@ from aws_cdk import (
     Duration,
     CfnOutput,
     aws_ec2 as ec2,
+    BundlingOptions,
 )
 from constructs import Construct
 import os
@@ -249,7 +250,7 @@ class MLPipelineStack(Stack):
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
                 "lambda/ml_notification",
-                bundling=lambda_.BundlingOptions(
+                bundling=BundlingOptions(
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
                     command=[
                         "bash", "-c",
