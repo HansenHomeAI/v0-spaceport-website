@@ -3,7 +3,7 @@ import os
 import boto3
 from typing import Optional, Dict, Any
 import logging
-import requests
+import resend
 
 # Configure logging
 logger = logging.getLogger()
@@ -167,29 +167,17 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     </body></html>
     """
 
-    # Send via Resend API
-    headers = {
-        'Authorization': f'Bearer {RESEND_API_KEY}',
-        'Content-Type': 'application/json'
-    }
+    # Set the API key as shown in Resend documentation
+    resend.api_key = RESEND_API_KEY
     
-    payload = {
-        'from': 'Spaceport AI <hello@spcprt.com>',
-        'to': [email],
-        'subject': subject,
-        'text': body_text,
-        'html': body_html
-    }
-    
-    response = requests.post(
-        'https://api.resend.com/emails',
-        headers=headers,
-        json=payload
-    )
-    
-    if response.status_code != 200:
-        logger.error(f"Failed to send email via Resend: {response.status_code} - {response.text}")
-        raise Exception(f"Resend API error: {response.status_code}")
+    # Use Resend SDK exactly as documented
+    r = resend.Emails.send({
+        "from": "Spaceport AI <hello@spcprt.com>",
+        "to": [email],
+        "subject": subject,
+        "text": body_text,
+        "html": body_html
+    })
     
     logger.info(f"Email sent successfully via Resend to {email}")
 
