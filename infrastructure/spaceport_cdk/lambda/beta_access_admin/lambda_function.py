@@ -1,12 +1,16 @@
 import json
 import os
 import boto3
+import resend
 from typing import Optional, Dict, Any
 import logging
 
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# Initialize Resend
+resend.api_key = os.environ.get('RESEND_API_KEY')
 
 cognito = boto3.client('cognito-idp')
 dynamodb = boto3.resource('dynamodb')
@@ -134,8 +138,7 @@ def _generate_temp_password() -> str:
 
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
-    """Send custom invitation email via SES"""
-    ses = boto3.client('ses')
+    """Send custom invitation email via Resend"""
     
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
@@ -162,17 +165,17 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     </body></html>
     """
 
-    ses.send_email(
-        Source='hello@spcprt.com',
-        Destination={'ToAddresses': [email]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {
-                'Text': {'Data': body_text},
-                'Html': {'Data': body_html},
-            },
-        },
-    )
+    # Send via Resend
+    params = {
+        "from": "Spaceport AI <hello@spcprt.com>",
+        "to": [email],
+        "subject": subject,
+        "html": body_html,
+        "text": body_text,
+    }
+    
+    email_response = resend.Emails.send(params)
+    logger.info(f"Beta invitation email sent via Resend: {email_response}")
 
 
 def lambda_handler(event, context):

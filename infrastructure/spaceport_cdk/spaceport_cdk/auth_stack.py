@@ -2,7 +2,7 @@ from aws_cdk import (
     Stack,
     Duration,
     RemovalPolicy,
-    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
+    BundlingOptions,  # For installing Python dependencies
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -195,7 +195,14 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                "../lambda/subscription_manager"
+                "../lambda/subscription_manager",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_11.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
             ),
             timeout=Duration.seconds(30),
             memory_size=512,
@@ -203,6 +210,7 @@ class AuthStack(Stack):
                 "USERS_TABLE": users_table.table_name,
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "STRIPE_SECRET_KEY": os.environ.get("STRIPE_SECRET_KEY", "sk_test_placeholder"),
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
                 "STRIPE_WEBHOOK_SECRET": os.environ.get("STRIPE_WEBHOOK_SECRET", "whsec_placeholder"),
                 "STRIPE_PRICE_SINGLE": os.environ.get("STRIPE_PRICE_SINGLE", "price_placeholder"),
                 "STRIPE_PRICE_STARTER": os.environ.get("STRIPE_PRICE_STARTER", "price_placeholder"),
@@ -380,7 +388,14 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin")
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
             ),
             role=beta_access_lambda_role,
             timeout=Duration.seconds(30),
@@ -388,6 +403,7 @@ class AuthStack(Stack):
             environment={
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
             },
         )
 
@@ -448,6 +464,91 @@ class AuthStack(Stack):
         self.beta_access_lambda = beta_access_lambda
         self.beta_access_api = beta_access_api
         self.beta_access_permissions_table = beta_access_permissions_table
+
+        # ========== PASSWORD RESET SYSTEM ==========
+        # Create IAM role for password reset Lambda
+        password_reset_lambda_role = iam.Role(
+            self, "PasswordResetLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "PasswordResetPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "cognito-idp:ForgotPassword",
+                                "cognito-idp:ConfirmForgotPassword",
+                                "cognito-idp:AdminGetUser"
+                            ],
+                            resources=[user_pool.user_pool_arn]
+                        )
+                    ]
+                )
+            }
+        )
+
+        # Create password reset Lambda function
+        password_reset_lambda = lambda_.Function(
+            self, "Spaceport-PasswordResetFunction",
+            function_name=f"Spaceport-PasswordResetFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "password_reset"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            role=password_reset_lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                "COGNITO_USER_POOL_CLIENT_ID": user_pool_client.user_pool_client_id,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+            },
+        )
+
+        # Create API Gateway for password reset
+        password_reset_api = apigw.RestApi(
+            self, "Spaceport-PasswordResetApi",
+            rest_api_name=f"Spaceport-PasswordResetApi-{suffix}",
+            description="Password reset API for Spaceport users",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                ],
+            ),
+        )
+
+        # Add password reset endpoint
+        password_reset_resource = password_reset_api.root.add_resource("password-reset")
+        password_reset_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(password_reset_lambda),
+            authorization_type=apigw.AuthorizationType.NONE,  # No auth required for password reset
+        )
+
+        # Outputs
+        CfnOutput(self, "PasswordResetApiUrl", value=password_reset_api.url)
+        CfnOutput(self, "PasswordResetLambdaArn", value=password_reset_lambda.function_arn)
+        
+        # Force resource inclusion by referencing them
+        self.password_reset_lambda = password_reset_lambda
+        self.password_reset_api = password_reset_api
 
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
