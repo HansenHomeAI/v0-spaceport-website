@@ -1,0 +1,1 @@
+Fixed Cognito secrets - authentication should work now! Sat Sep  6 17:03:07 MDT 2025
