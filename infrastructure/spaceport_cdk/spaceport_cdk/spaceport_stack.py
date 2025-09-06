@@ -240,9 +240,23 @@ class SpaceportStack(Stack):
             )
         )
         
+        # Create Waitlist API Gateway
+        self.waitlist_api = apigw.RestApi(
+            self,
+            "SpaceportWaitlistApi",
+            rest_api_name=f"spaceport-waitlist-api-{suffix}",
+            description=f"Spaceport Waitlist API for {env_config['domain']}",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"]
+            )
+        )
+        
         # Create API Gateway resources and methods
         self._create_drone_path_endpoints()
         self._create_file_upload_endpoints()
+        self._create_waitlist_endpoints()
         
         # ========== OUTPUTS ==========
         CfnOutput(
@@ -257,6 +271,13 @@ class SpaceportStack(Stack):
             "FileUploadApiUrl",
             value=f"https://{self.file_upload_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
             description=f"File Upload API Gateway URL for {suffix}"
+        )
+        
+        CfnOutput(
+            self,
+            "WaitlistApiUrl",
+            value=f"https://{self.waitlist_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
+            description=f"Waitlist API Gateway URL for {suffix}"
         )
         
         CfnOutput(
@@ -315,6 +336,37 @@ class SpaceportStack(Stack):
         # Save submission
         save_resource = self.file_upload_api.root.add_resource("save-submission")
         save_resource.add_method("POST", apigw.LambdaIntegration(self.file_upload_lambda))
+
+    def _create_waitlist_endpoints(self):
+        """Create waitlist API endpoints"""
+        # Add waitlist endpoint
+        waitlist_resource = self.waitlist_api.root.add_resource("waitlist")
+        waitlist_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                self.waitlist_lambda,
+                proxy=True
+            )
+        )
+        
+        # Add CORS headers to all responses
+        self.waitlist_api.add_gateway_response(
+            "DEFAULT_4XX",
+            response_type=apigw.ResponseType.DEFAULT_4XX,
+            response_parameters={
+                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+                "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
+            }
+        )
+        
+        self.waitlist_api.add_gateway_response(
+            "DEFAULT_5XX",
+            response_type=apigw.ResponseType.DEFAULT_5XX,
+            response_parameters={
+                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+                "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
+            }
+        )
 
     def _bucket_exists(self, bucket_name: str) -> bool:
         """Check if an S3 bucket exists"""
