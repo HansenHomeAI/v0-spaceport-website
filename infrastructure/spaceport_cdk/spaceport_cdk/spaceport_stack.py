@@ -348,25 +348,6 @@ class SpaceportStack(Stack):
                 proxy=True
             )
         )
-        
-        # Add CORS headers to all responses
-        self.waitlist_api.add_gateway_response(
-            "DEFAULT_4XX",
-            apigw.ResponseType.DEFAULT_4_XX,
-            response_parameters={
-                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
-                "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
-            }
-        )
-        
-        self.waitlist_api.add_gateway_response(
-            "DEFAULT_5XX",
-            apigw.ResponseType.DEFAULT_5_XX,
-            response_parameters={
-                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
-                "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
-            }
-        )
 
     def _bucket_exists(self, bucket_name: str) -> bool:
         """Check if an S3 bucket exists"""

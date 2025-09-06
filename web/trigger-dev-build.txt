@@ -4,4 +4,4 @@
 1754707926
 1754708367
 
-Fixed add_gateway_response syntax - deploying waitlist API! Sep 6, 2025, 1:25pm
+Removed gateway responses - deploying basic waitlist API! Sep 6, 2025, 1:35pm
