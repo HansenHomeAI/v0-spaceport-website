@@ -7,7 +7,7 @@
     "@aws-sdk/client-s3": "^3.450.0",
     "@aws-sdk/client-dynamodb": "^3.450.0",
     "@aws-sdk/lib-dynamodb": "^3.450.0",
-    "@aws-sdk/client-ses": "^3.450.0",
-    "@aws-sdk/s3-request-presigner": "^3.450.0"
+    "@aws-sdk/s3-request-presigner": "^3.450.0",
+    "resend": "^3.2.0"
   }
 } 

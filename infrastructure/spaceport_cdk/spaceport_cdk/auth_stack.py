@@ -237,16 +237,7 @@ class AuthStack(Stack):
             )
         )
 
-        # Add SES permissions for email notifications (optional)
-        subscription_lambda.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail"
-                ],
-                resources=["*"]
-            )
-        )
+        # Note: SES permissions removed - now using Resend for all email functionality
 
         # Create subscription API Gateway
         subscription_api = apigw.RestApi(
@@ -371,11 +362,7 @@ class AuthStack(Stack):
                             ],
                             resources=[beta_access_permissions_table.table_arn]
                         ),
-                        iam.PolicyStatement(
-                            effect=iam.Effect.ALLOW,
-                            actions=["ses:SendEmail"],
-                            resources=["*"]
-                        )
+                        # Note: SES permissions removed - now using Resend for all email functionality
                     ]
                 )
             }

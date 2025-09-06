@@ -136,16 +136,7 @@ class SpaceportStack(Stack):
         self.drone_path_table.grant_read_write_data(self.lambda_role)
         self.waitlist_table.grant_read_write_data(self.lambda_role)
         
-        # Add SES permissions for sending emails
-        self.lambda_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail"
-                ],
-                resources=["*"]
-            )
-        )
+        # Note: SES permissions removed - now using Resend for all email functionality
         
         # Create Lambda functions with environment-specific naming
         self.drone_path_lambda = lambda_.Function(
@@ -178,7 +169,8 @@ class SpaceportStack(Stack):
             memory_size=512,
             environment={
                 "UPLOAD_BUCKET": self.upload_bucket.bucket_name,
-                "FILE_METADATA_TABLE": self.file_metadata_table.table_name
+                "FILE_METADATA_TABLE": self.file_metadata_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", "")
             }
         )
         
