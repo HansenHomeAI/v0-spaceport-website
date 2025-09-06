@@ -159,9 +159,11 @@ def lambda_handler(event, context):
         
         # Send confirmation email to the user
         try:
-            send_confirmation_email(name, email)
+            confirmation_email_id = send_confirmation_email(name, email)
+            print(f"USER_EMAIL_STATUS: Confirmation email queued with ID: {confirmation_email_id}")
         except Exception as e:
-            print(f"Failed to send confirmation email: {e}")
+            print(f"USER_EMAIL_ERROR: Failed to send confirmation email: {e}")
+            print(f"USER_EMAIL_ERROR_TYPE: {type(e).__name__}")
             # Don't fail the request if confirmation email fails
         
         # Optional: Send notification email to admin
@@ -308,10 +310,20 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
             "text": body_text,
         }
         
+        print(f"RESEND_REQUEST: Sending confirmation email to {email}")
+        print(f"RESEND_PARAMS: {json.dumps(params, indent=2)}")
+        
         response = resend.Emails.send(params)
-        print(f"Confirmation email sent to {email} via Resend: {response}")
+        print(f"RESEND_RESPONSE: Confirmation email response: {response}")
+        
+        # Extract email ID for tracking
+        email_id = response.get('id') if isinstance(response, dict) else None
+        print(f"RESEND_EMAIL_ID: {email_id}")
+        
+        return email_id
     except Exception as e:
-        print(f"Failed to send confirmation email to {email}: {e}")
+        print(f"RESEND_ERROR: Failed to send confirmation email to {email}: {e}")
+        print(f"RESEND_ERROR_TYPE: {type(e).__name__}")
         raise
 
 def send_admin_notification(name, email):
