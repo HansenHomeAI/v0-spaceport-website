@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MIGRATION_SCRIPT="$SCRIPT_DIR/migrate_users_to_production.py"
-AWS_PROFILE="spaceport-prod"  # Use production profile for migration
+AWS_PROFILE="spaceport-migration"  # Use migration user profile for cross-account access
 
 echo -e "${BLUE}🚀 Spaceport User Migration Tool${NC}"
 echo "=================================="

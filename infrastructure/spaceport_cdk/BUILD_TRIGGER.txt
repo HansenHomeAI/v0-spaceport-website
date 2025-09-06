@@ -3,6 +3,12 @@ Updated: 2025-01-27 16:15:00 UTC
 Reason: Pass RESEND_API_KEY from GitHub secrets to CDK deployment
 Status: Ready for deployment
 Changes: Added RESEND_API_KEY environment variable to CDK deployment step
+
+// Trigger CDK deployment to recreate Cognito client - Thu Sep  4 15:42:40 MDT 2025
+// Fix persistent Cognito client - always CloudFormation managed - Thu Sep  4 16:49:38 MDT 2025
+Cloudflare Pages: Triggering rebuild
 CDK BundlingOptions Implementation - Fri Sep  5 13:36:11 MDT 2025
 Password Reset Lambda Implementation - Fri Sep  5 13:54:05 MDT 2025
 Custom Password Reset System with DynamoDB - Fri Sep  5 14:40:42 MDT 2025
+Force waitlist Lambda update with Resend - Fri Sep  5 14:47:58 MDT 2025
+Fix waitlist Lambda environment variable mismatch - Fri Sep  5 14:54:20 MDT 2025
