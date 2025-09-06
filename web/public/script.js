@@ -3171,7 +3171,7 @@ class ProjectPopupPhotoUpload {
         GET_PRESIGNED_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/get-presigned-url",
         COMPLETE_UPLOAD: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/complete-multipart-upload",
         SAVE_SUBMISSION: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/save-submission",
-      START_ML_PROCESSING: "https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod/start-job"
+      START_ML_PROCESSING: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL + "/start-job"
     };
     
     this.CHUNK_SIZE = 24 * 1024 * 1024; // 24MB chunks
