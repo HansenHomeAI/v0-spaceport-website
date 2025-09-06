@@ -4,4 +4,4 @@
 1754707926
 1754708367
 
-Fixed CDK ResponseType enum values - deploying waitlist API! Sep 6, 2025, 1:15pm
+Fixed add_gateway_response syntax - deploying waitlist API! Sep 6, 2025, 1:25pm
