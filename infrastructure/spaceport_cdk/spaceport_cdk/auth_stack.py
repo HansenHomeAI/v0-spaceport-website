@@ -163,9 +163,25 @@ class AuthStack(Stack):
             ),
         )
         proj_res = projects_api.root.add_resource("projects")
+        
+        # Add OPTIONS method without authentication for CORS preflight
+        proj_res.add_method(
+            "OPTIONS", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.NONE
+        )
+        
         proj_res.add_method("GET", apigw.LambdaIntegration(projects_lambda))
         proj_res.add_method("POST", apigw.LambdaIntegration(projects_lambda))
         proj_id = proj_res.add_resource("{id}")
+        
+        # Add OPTIONS method for project ID resource too
+        proj_id.add_method(
+            "OPTIONS", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.NONE
+        )
+        
         proj_id.add_method("GET", apigw.LambdaIntegration(projects_lambda))
         proj_id.add_method("PUT", apigw.LambdaIntegration(projects_lambda))
         proj_id.add_method("PATCH", apigw.LambdaIntegration(projects_lambda))
