@@ -135,14 +135,6 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
-            default_method_options=apigw.MethodOptions(
-                authorization_type=apigw.AuthorizationType.COGNITO,
-                authorizer=apigw.CognitoUserPoolsAuthorizer(
-                    self,
-                    "ProjectsAuthorizer",
-                    cognito_user_pools=[user_pool],
-                ),
-            ),
             deploy_options=apigw.StageOptions(
                 stage_name="prod",
                 logging_level=apigw.MethodLoggingLevel.INFO,
@@ -162,30 +154,51 @@ class AuthStack(Stack):
                 ),
             ),
         )
+        # Create Cognito authorizer for projects API
+        projects_authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self,
+            "ProjectsAuthorizer",
+            cognito_user_pools=[user_pool],
+        )
+        
         proj_res = projects_api.root.add_resource("projects")
-        
-        # Add OPTIONS method without authentication for CORS preflight
         proj_res.add_method(
-            "OPTIONS", 
+            "GET", 
             apigw.LambdaIntegration(projects_lambda),
-            authorization_type=apigw.AuthorizationType.NONE
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
         )
-        
-        proj_res.add_method("GET", apigw.LambdaIntegration(projects_lambda))
-        proj_res.add_method("POST", apigw.LambdaIntegration(projects_lambda))
+        proj_res.add_method(
+            "POST", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
         proj_id = proj_res.add_resource("{id}")
-        
-        # Add OPTIONS method for project ID resource too
         proj_id.add_method(
-            "OPTIONS", 
+            "GET", 
             apigw.LambdaIntegration(projects_lambda),
-            authorization_type=apigw.AuthorizationType.NONE
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
         )
-        
-        proj_id.add_method("GET", apigw.LambdaIntegration(projects_lambda))
-        proj_id.add_method("PUT", apigw.LambdaIntegration(projects_lambda))
-        proj_id.add_method("PATCH", apigw.LambdaIntegration(projects_lambda))
-        proj_id.add_method("DELETE", apigw.LambdaIntegration(projects_lambda))
+        proj_id.add_method(
+            "PUT", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_id.add_method(
+            "PATCH", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_id.add_method(
+            "DELETE", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
 
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
 
