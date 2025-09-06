@@ -352,7 +352,7 @@ class SpaceportStack(Stack):
         # Add CORS headers to all responses
         self.waitlist_api.add_gateway_response(
             "DEFAULT_4XX",
-            response_type=apigw.ResponseType.DEFAULT_4XX,
+            response_type=apigw.ResponseType.DEFAULT_4_XX,
             response_parameters={
                 "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
                 "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
@@ -361,7 +361,7 @@ class SpaceportStack(Stack):
         
         self.waitlist_api.add_gateway_response(
             "DEFAULT_5XX",
-            response_type=apigw.ResponseType.DEFAULT_5XX,
+            response_type=apigw.ResponseType.DEFAULT_5_XX,
             response_parameters={
                 "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
                 "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
