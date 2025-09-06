@@ -1751,7 +1751,7 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 // ML PROCESSING FUNCTIONALITY
 (function() {
   // Configuration - Update this with your actual API Gateway URL after deployment
-  const ML_API_BASE_URL = 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod';
+  const ML_API_BASE_URL = process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL || 'https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod';
   
   const s3UrlInput = document.getElementById('s3UrlInput');
   const mlEmailField = document.getElementById('mlEmailField');

@@ -1188,7 +1188,7 @@ window.displayDetectedParams = displayDetectedParams;
 
 // API Endpoints
 const API_ENDPOINTS = {
-    DRONE_PATH: "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod/DronePathREST",
+    DRONE_PATH: process.env.NEXT_PUBLIC_DRONE_PATH_API_URL + "/DronePathREST",
             START_UPLOAD: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/start-multipart-upload",
         GET_PRESIGNED_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/get-presigned-url",
         COMPLETE_UPLOAD: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/complete-multipart-upload",
@@ -1197,7 +1197,7 @@ const API_ENDPOINTS = {
 };
 
 // Enhanced Drone Path Generator API Configuration
-const ENHANCED_API_BASE = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod";
+const ENHANCED_API_BASE = process.env.NEXT_PUBLIC_DRONE_PATH_API_URL;
 
 // Enhanced Drone Path Generator Class
 class EnhancedDronePathGenerator {
@@ -1748,7 +1748,7 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
 // ML PROCESSING FUNCTIONALITY
 (function() {
   // Configuration - Update this with your actual API Gateway URL after deployment
-  const ML_API_BASE_URL = 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod';
+  const ML_API_BASE_URL = process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL || 'https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod';
   
   const s3UrlInput = document.getElementById('s3UrlInput');
   const mlEmailField = document.getElementById('mlEmailField');
@@ -2858,7 +2858,7 @@ class ProjectPopupFlightPath {
   constructor() {
     this.optimizedParams = null;
     this.isOptimizing = false;
-    this.API_BASE = "https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod";
+    this.API_BASE = process.env.NEXT_PUBLIC_DRONE_PATH_API_URL;
     this.initializeEventListeners();
   }
 
@@ -3168,7 +3168,7 @@ class ProjectPopupPhotoUpload {
         GET_PRESIGNED_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/get-presigned-url",
         COMPLETE_UPLOAD: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/complete-multipart-upload",
         SAVE_SUBMISSION: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL + "/save-submission",
-      START_ML_PROCESSING: "https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod/start-job"
+      START_ML_PROCESSING: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL + "/start-job"
     };
     
     this.CHUNK_SIZE = 24 * 1024 * 1024; // 24MB chunks
