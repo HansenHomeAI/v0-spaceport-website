@@ -200,6 +200,25 @@ class AuthStack(Stack):
             authorizer=projects_authorizer
         )
 
+        # Add Gateway Responses to handle CORS for error responses
+        projects_api.add_gateway_response(
+            apigw.ResponseType.DEFAULT_4_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+            }
+        )
+        
+        projects_api.add_gateway_response(
+            apigw.ResponseType.DEFAULT_5_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+            }
+        )
+
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
 
         # -------------------------------------
