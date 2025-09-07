@@ -202,7 +202,8 @@ class AuthStack(Stack):
 
         # Add Gateway Responses to handle CORS for error responses
         projects_api.add_gateway_response(
-            apigw.ResponseType.DEFAULT_4_XX,
+            "DEFAULT_4XX",
+            type=apigw.ResponseType.DEFAULT_4_XX,
             response_headers={
                 "Access-Control-Allow-Origin": "'*'",
                 "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
@@ -211,7 +212,8 @@ class AuthStack(Stack):
         )
         
         projects_api.add_gateway_response(
-            apigw.ResponseType.DEFAULT_5_XX,
+            "DEFAULT_5XX",
+            type=apigw.ResponseType.DEFAULT_5_XX,
             response_headers={
                 "Access-Control-Allow-Origin": "'*'",
                 "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
