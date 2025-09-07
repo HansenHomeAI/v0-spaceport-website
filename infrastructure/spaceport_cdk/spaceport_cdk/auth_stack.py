@@ -135,14 +135,6 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
-            default_method_options=apigw.MethodOptions(
-                authorization_type=apigw.AuthorizationType.COGNITO,
-                authorizer=apigw.CognitoUserPoolsAuthorizer(
-                    self,
-                    "ProjectsAuthorizer",
-                    cognito_user_pools=[user_pool],
-                ),
-            ),
             deploy_options=apigw.StageOptions(
                 stage_name="prod",
                 logging_level=apigw.MethodLoggingLevel.INFO,
@@ -162,14 +154,72 @@ class AuthStack(Stack):
                 ),
             ),
         )
+        # Create Cognito authorizer for projects API
+        projects_authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self,
+            "ProjectsAuthorizer",
+            cognito_user_pools=[user_pool],
+        )
+        
         proj_res = projects_api.root.add_resource("projects")
-        proj_res.add_method("GET", apigw.LambdaIntegration(projects_lambda))
-        proj_res.add_method("POST", apigw.LambdaIntegration(projects_lambda))
+        proj_res.add_method(
+            "GET", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_res.add_method(
+            "POST", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
         proj_id = proj_res.add_resource("{id}")
-        proj_id.add_method("GET", apigw.LambdaIntegration(projects_lambda))
-        proj_id.add_method("PUT", apigw.LambdaIntegration(projects_lambda))
-        proj_id.add_method("PATCH", apigw.LambdaIntegration(projects_lambda))
-        proj_id.add_method("DELETE", apigw.LambdaIntegration(projects_lambda))
+        proj_id.add_method(
+            "GET", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_id.add_method(
+            "PUT", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_id.add_method(
+            "PATCH", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_id.add_method(
+            "DELETE", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+
+        # Add Gateway Responses to handle CORS for error responses
+        projects_api.add_gateway_response(
+            "DEFAULT_4XX",
+            type=apigw.ResponseType.DEFAULT_4_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+            }
+        )
+        
+        projects_api.add_gateway_response(
+            "DEFAULT_5XX",
+            type=apigw.ResponseType.DEFAULT_5_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+            }
+        )
 
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
 
@@ -237,16 +287,7 @@ class AuthStack(Stack):
             )
         )
 
-        # Add SES permissions for email notifications (optional)
-        subscription_lambda.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail"
-                ],
-                resources=["*"]
-            )
-        )
+        # Note: SES permissions removed - now using Resend for all email functionality
 
         # Create subscription API Gateway
         subscription_api = apigw.RestApi(
@@ -371,11 +412,7 @@ class AuthStack(Stack):
                             ],
                             resources=[beta_access_permissions_table.table_arn]
                         ),
-                        iam.PolicyStatement(
-                            effect=iam.Effect.ALLOW,
-                            actions=["ses:SendEmail"],
-                            resources=["*"]
-                        )
+                        # Note: SES permissions removed - now using Resend for all email functionality
                     ]
                 )
             }

@@ -27,7 +27,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     GET_PRESIGNED_URL: buildApiUrl.fileUpload.getPresignedUrl(),
     COMPLETE_UPLOAD: buildApiUrl.fileUpload.completeUpload(),
     SAVE_SUBMISSION: buildApiUrl.fileUpload.saveSubmission(),
-    START_ML_PROCESSING: 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod/start-job',
+    START_ML_PROCESSING: buildApiUrl.mlPipeline.startJob(),
   } as const;
 
   const CHUNK_SIZE = 24 * 1024 * 1024; // 24MB

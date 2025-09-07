@@ -136,16 +136,7 @@ class SpaceportStack(Stack):
         self.drone_path_table.grant_read_write_data(self.lambda_role)
         self.waitlist_table.grant_read_write_data(self.lambda_role)
         
-        # Add SES permissions for sending emails
-        self.lambda_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail"
-                ],
-                resources=["*"]
-            )
-        )
+        # Note: SES permissions removed - now using Resend for all email functionality
         
         # Create Lambda functions with environment-specific naming
         self.drone_path_lambda = lambda_.Function(
@@ -178,7 +169,8 @@ class SpaceportStack(Stack):
             memory_size=512,
             environment={
                 "UPLOAD_BUCKET": self.upload_bucket.bucket_name,
-                "FILE_METADATA_TABLE": self.file_metadata_table.table_name
+                "FILE_METADATA_TABLE": self.file_metadata_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", "")
             }
         )
         
@@ -248,9 +240,23 @@ class SpaceportStack(Stack):
             )
         )
         
+        # Create Waitlist API Gateway
+        self.waitlist_api = apigw.RestApi(
+            self,
+            "SpaceportWaitlistApi",
+            rest_api_name=f"spaceport-waitlist-api-{suffix}",
+            description=f"Spaceport Waitlist API for {env_config['domain']}",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"]
+            )
+        )
+        
         # Create API Gateway resources and methods
         self._create_drone_path_endpoints()
         self._create_file_upload_endpoints()
+        self._create_waitlist_endpoints()
         
         # ========== OUTPUTS ==========
         CfnOutput(
@@ -265,6 +271,13 @@ class SpaceportStack(Stack):
             "FileUploadApiUrl",
             value=f"https://{self.file_upload_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
             description=f"File Upload API Gateway URL for {suffix}"
+        )
+        
+        CfnOutput(
+            self,
+            "WaitlistApiUrl",
+            value=f"https://{self.waitlist_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
+            description=f"Waitlist API Gateway URL for {suffix}"
         )
         
         CfnOutput(
@@ -323,6 +336,18 @@ class SpaceportStack(Stack):
         # Save submission
         save_resource = self.file_upload_api.root.add_resource("save-submission")
         save_resource.add_method("POST", apigw.LambdaIntegration(self.file_upload_lambda))
+
+    def _create_waitlist_endpoints(self):
+        """Create waitlist API endpoints"""
+        # Add waitlist endpoint
+        waitlist_resource = self.waitlist_api.root.add_resource("waitlist")
+        waitlist_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                self.waitlist_lambda,
+                proxy=True
+            )
+        )
 
     def _bucket_exists(self, bucket_name: str) -> bool:
         """Check if an S3 bucket exists"""
