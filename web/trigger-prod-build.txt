@@ -4,4 +4,6 @@
 // Test persistent Cognito client - Thu Sep  4 16:30:15 MDT 2025
 // Test persistent client fix - Thu Sep  4 16:57:06 MDT 2025
 
-Yessir just getting her deployed! Yeww
+Fix production Cognito client ID - $(date)
+✅ Updated COGNITO_USER_POOL_CLIENT_ID_PROD to cvtn1c5dprnfbvpbtsuhit6vi
+🚀 Triggering production rebuild to pick up new secrets
