@@ -245,7 +245,12 @@ class SpaceportStack(Stack):
             self,
             "SpaceportWaitlistApi",
             rest_api_name=f"spaceport-waitlist-api-{suffix}",
-            description=f"Spaceport Waitlist API for {env_config['domain']}"
+            description=f"Spaceport Waitlist API for {env_config['domain']}",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"]
+            )
         )
         
         # Create API Gateway resources and methods
@@ -338,14 +343,6 @@ class SpaceportStack(Stack):
         waitlist_resource = self.waitlist_api.root.add_resource("waitlist")
         waitlist_resource.add_method(
             "POST",
-            apigw.LambdaIntegration(
-                self.waitlist_lambda,
-                proxy=True
-            )
-        )
-        # Add OPTIONS method for CORS preflight requests (handled by Lambda)
-        waitlist_resource.add_method(
-            "OPTIONS",
             apigw.LambdaIntegration(
                 self.waitlist_lambda,
                 proxy=True

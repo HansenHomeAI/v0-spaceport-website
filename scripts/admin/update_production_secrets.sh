@@ -21,7 +21,7 @@ COGNITO_USER_POOL_CLIENT_ID="3ctkuqu98pmug5k5kgc119sq67"
 COGNITO_REGION="us-west-2"
 
 # Waitlist API (from staging - same as production for now)
-WAITLIST_API_URL="https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/waitlist"
+WAITLIST_API_URL="https://dbzo05n671.execute-api.us-west-2.amazonaws.com/prod/waitlist"
 
 echo "📋 Production API URLs:"
 echo "  Projects API: $PROJECTS_API_URL"

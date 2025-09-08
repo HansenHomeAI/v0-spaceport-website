@@ -25,8 +25,8 @@ DRONE_PATH_API_URL="https://0r3y4bx7lc.execute-api.us-west-2.amazonaws.com/prod"
 FILE_UPLOAD_API_URL="https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod"
 ML_PIPELINE_API_URL="https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod"
 
-# Waitlist API (from staging - same as production for now)
-WAITLIST_API_URL="https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/waitlist"
+# Waitlist API (from production account)
+WAITLIST_API_URL="https://dbzo05n671.execute-api.us-west-2.amazonaws.com/prod/waitlist"
 
 echo "📋 CORRECT Production API URLs:"
 echo "  Projects API: $PROJECTS_API_URL"
