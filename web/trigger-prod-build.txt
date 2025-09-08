@@ -9,5 +9,3 @@ Fix production Cognito client ID - $(date)
 Fix projects API URL - $(date)
 ✅ Updated NEXT_PUBLIC_PROJECTS_API_URL_PROD to correct endpoint
 🚀 Triggering production rebuild to pick up new secrets
-
-Triggering another rebuild, Sep 8, 10:02AMTriggering production rebuild to fix beta access API URL - Mon Sep  8 10:15:54 MDT 2025
