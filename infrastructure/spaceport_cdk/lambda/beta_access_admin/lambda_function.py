@@ -140,6 +140,7 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         'message': 'Invitation sent successfully',
         'email': email
     }
+    
     except Exception as e:
         logger.error(f"Failed to send invitation to {email}: {e}")
         raise e
