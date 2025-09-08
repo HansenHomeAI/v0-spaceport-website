@@ -103,6 +103,106 @@
   z-index: 2;
 }
 
+/* Resizable Section - Individual section resizing */
+.resizable-section {
+  position: relative;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 40px;
+  margin: 40px auto; /* Center the resizable section */
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  min-width: 320px; /* Minimum mobile width */
+  max-width: 100%;
+  width: 80%; /* Default width */
+  overflow: hidden;
+  box-sizing: border-box;
+  display: block;
+  transition: all 0.2s ease; /* Smooth transitions when resizing */
+  user-select: none; /* Prevent text selection during drag */
+}
+
+/* Hover effect on border edges */
+.resizable-section:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Visual feedback for draggable edges */
+.resizable-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 20px,
+    transparent calc(100% - 20px),
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.resizable-section:hover::before {
+  opacity: 1;
+}
+
+/* Responsive behavior inside resizable sections */
+.resizable-section .component-showcase {
+  /* Adapt to section width changes */
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Responsive simulation based on section width */
+.resizable-section {
+  /* Default desktop behavior */
+}
+
+/* Tablet simulation (60-80% width) */
+.resizable-section[style*="width: 60%"],
+.resizable-section[style*="width: 70%"],
+.resizable-section[style*="width: 80%"] {
+  /* Tablet breakpoint simulation */
+}
+
+/* Mobile simulation (20-50% width) */
+.resizable-section[style*="width: 20%"],
+.resizable-section[style*="width: 30%"],
+.resizable-section[style*="width: 40%"],
+.resizable-section[style*="width: 50%"] {
+  /* Mobile breakpoint simulation */
+}
+
+.resizable-section[style*="width: 20%"] .component-showcase,
+.resizable-section[style*="width: 30%"] .component-showcase,
+.resizable-section[style*="width: 40%"] .component-showcase,
+.resizable-section[style*="width: 50%"] .component-showcase {
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Simulate mobile responsive behavior for default card */
+.resizable-section[style*="width: 20%"] .default-card,
+.resizable-section[style*="width: 30%"] .default-card,
+.resizable-section[style*="width: 40%"] .default-card,
+.resizable-section[style*="width: 50%"] .default-card {
+  --card-padding: 24px; /* Smaller padding on mobile */
+  --concentric-spacing: 9px; /* Proportional spacing */
+  --button-margin: var(--concentric-spacing);
+  padding-bottom: calc(24px + 24px + 18px);
+  border-radius: 26px;
+  min-width: 280px; /* Smaller minimum width */
+  max-width: 100%;
+}
+
 /* Sandbox Sections */
 .sandbox-section {
   margin-bottom: 80px;
