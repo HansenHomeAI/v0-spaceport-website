@@ -6,7 +6,6 @@ import './sandbox.css';
 export default function DesignSystemSandbox(): JSX.Element {
   const [hoveredComponent, setHoveredComponent] = useState<string | null>(null);
   const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(80); // Default 80% width
   
   // Editable text state for live preview
   const [editableTexts, setEditableTexts] = useState({
@@ -31,44 +30,6 @@ export default function DesignSystemSandbox(): JSX.Element {
       ...prev,
       [key]: value
     }));
-  };
-
-  // Handle container resize for responsive testing
-  const handleContainerResize = (event: React.MouseEvent<HTMLDivElement>) => {
-    const container = event.currentTarget;
-    const rect = container.getBoundingClientRect();
-    const widthPercent = (rect.width / window.innerWidth) * 100;
-    setContainerWidth(Math.max(20, Math.min(100, widthPercent))); // Clamp between 20% and 100%
-  };
-
-  // Handle drag resize
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>, side: 'left' | 'right') => {
-    event.preventDefault();
-    const startX = event.clientX;
-    const startWidth = containerWidth;
-    const container = event.currentTarget.parentElement;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaX = e.clientX - startX;
-      const deltaPercent = (deltaX / window.innerWidth) * 100;
-      
-      let newWidth = startWidth;
-      if (side === 'right') {
-        newWidth = startWidth + deltaPercent;
-      } else {
-        newWidth = startWidth - deltaPercent;
-      }
-      
-      setContainerWidth(Math.max(20, Math.min(100, newWidth)));
-    };
-    
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
   };
 
   const handleDoubleClick = (key: string, event: React.MouseEvent<HTMLElement>) => {
@@ -653,22 +614,7 @@ export default function DesignSystemSandbox(): JSX.Element {
       </section>
 
       {/* Cards */}
-      <section 
-        className="sandbox-section resizable-section"
-        style={{ width: `${containerWidth}%` }}
-        onMouseDown={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const isLeftSide = clickX < 20; // 20px from left edge
-          const isRightSide = clickX > rect.width - 20; // 20px from right edge
-          
-          if (isLeftSide) {
-            handleMouseDown(e, 'left');
-          } else if (isRightSide) {
-            handleMouseDown(e, 'right');
-          }
-        }}
-      >
+      <section className="sandbox-section">
         <h2 className="section-title">Cards</h2>
         
         <div className="component-group">
