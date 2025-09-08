@@ -112,17 +112,6 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
             # User already exists - that's fine, we'll still send the email
             pass
         
-        # Add to beta-testers-v2 group (works for both new and existing users)
-        try:
-            cognito.admin_add_user_to_group(
-                UserPoolId=USER_POOL_ID,
-                Username=email,
-                GroupName='beta-testers-v2',
-            )
-        except cognito.exceptions.InvalidParameterException:
-            # User might already be in the group, that's fine
-            pass
-        
         # Send custom invitation email regardless of whether user was created or already existed
         _send_custom_invite_email(
             email=email,
