@@ -348,6 +348,14 @@ class SpaceportStack(Stack):
                 proxy=True
             )
         )
+        # Add OPTIONS method for CORS preflight requests
+        waitlist_resource.add_method(
+            "OPTIONS",
+            apigw.LambdaIntegration(
+                self.waitlist_lambda,
+                proxy=True
+            )
+        )
 
     def _bucket_exists(self, bucket_name: str) -> bool:
         """Check if an S3 bucket exists"""
