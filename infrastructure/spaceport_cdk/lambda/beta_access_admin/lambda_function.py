@@ -63,7 +63,13 @@ def _check_beta_access_permission(user_id: str) -> bool:
     try:
         response = permissions_table.get_item(Key={'user_id': user_id})
         item = response.get('Item', {})
-        return item.get('has_beta_access_permission', False)
+        permission_type = item.get('permission_type', '')
+        status = item.get('status', '')
+        
+        # User has beta access admin permission if:
+        # 1. permission_type is 'beta_access_admin' AND
+        # 2. status is 'active'
+        return permission_type == 'beta_access_admin' and status == 'active'
     except Exception as e:
         logger.error(f"Failed to check permissions for user {user_id}: {e}")
         return False
