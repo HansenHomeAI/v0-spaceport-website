@@ -11,3 +11,4 @@ Fix projects API URL - $(date)
 🚀 Triggering production rebuild to pick up new secrets
 
 Another update trying to get beta access, Sept 8th, 11:19AMUpdated all production API URL secrets with correct Gateway IDs - Mon Sep  8 12:11:12 MDT 2025
+FIXED: Reverted all secrets to CORRECT values, only FILE_UPLOAD needed update - Mon Sep  8 12:17:56 MDT 2025
