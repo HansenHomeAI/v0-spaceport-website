@@ -6,4 +6,6 @@
 
 Fix production Cognito client ID - $(date)
 ✅ Updated COGNITO_USER_POOL_CLIENT_ID_PROD to cvtn1c5dprnfbvpbtsuhit6vi
+Fix projects API URL - $(date)
+✅ Updated NEXT_PUBLIC_PROJECTS_API_URL_PROD to correct endpoint
 🚀 Triggering production rebuild to pick up new secrets
