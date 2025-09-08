@@ -93,31 +93,26 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         if name:
             user_attributes.append({'Name': 'name', 'Value': name.strip()})
         
-        # Create user with suppressed email (we'll send custom email)
-        create_params = {
-            'UserPoolId': USER_POOL_ID,
-            'Username': email,
-            'UserAttributes': user_attributes,
-            'DesiredDeliveryMediums': ['EMAIL'],
-            'MessageAction': 'SUPPRESS',
-            'TemporaryPassword': _generate_temp_password(),
-        }
-        
-        resp = cognito.admin_create_user(**create_params)
-        temp_password = create_params.get('TemporaryPassword')
-        
-        # Add to beta-testers-v2 group
-        cognito.admin_add_user_to_group(
-            UserPoolId=USER_POOL_ID,
-            Username=email,
-            GroupName='beta-testers-v2',
-        )
-        
-    except cognito.exceptions.UsernameExistsException:
-        # User already exists - generate a new temp password for the email
+        # Try to create user first
         temp_password = _generate_temp_password()
+        try:
+            # Create user with suppressed email (we'll send custom email)
+            create_params = {
+                'UserPoolId': USER_POOL_ID,
+                'Username': email,
+                'UserAttributes': user_attributes,
+                'DesiredDeliveryMediums': ['EMAIL'],
+                'MessageAction': 'SUPPRESS',
+                'TemporaryPassword': temp_password,
+            }
+            
+            resp = cognito.admin_create_user(**create_params)
+            
+        except cognito.exceptions.UsernameExistsException:
+            # User already exists - that's fine, we'll still send the email
+            pass
         
-        # Add to beta-testers-v2 group if not already there
+        # Add to beta-testers-v2 group (works for both new and existing users)
         try:
             cognito.admin_add_user_to_group(
                 UserPoolId=USER_POOL_ID,
@@ -127,20 +122,20 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         except cognito.exceptions.InvalidParameterException:
             # User might already be in the group, that's fine
             pass
-    
-    # Send custom invitation email regardless of whether user was created or already existed
-    _send_custom_invite_email(
-        email=email,
-        name=name,
-        temp_password=temp_password
-    )
-    
-    return {
-        'success': True,
-        'message': 'Invitation sent successfully',
-        'email': email
-    }
-    
+        
+        # Send custom invitation email regardless of whether user was created or already existed
+        _send_custom_invite_email(
+            email=email,
+            name=name,
+            temp_password=temp_password
+        )
+        
+        return {
+            'success': True,
+            'message': 'Invitation sent successfully',
+            'email': email
+        }
+        
     except Exception as e:
         logger.error(f"Failed to send invitation to {email}: {e}")
         raise e
