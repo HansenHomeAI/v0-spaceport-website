@@ -14,6 +14,7 @@ export default function DesignSystemSandbox(): JSX.Element {
     'h3': 'h3',
     'body-text': 'Transform your real estate photography into immersive 3D experiences that showcase properties in stunning detail.',
     'body-text with highlights': 'Transform your real estate photography into immersive 3D experiences. Our AI-powered pipeline creates stunning Gaussian splat models that bring properties to life with incredible detail and realism.',
+    'beta-text': 'beta',
     'pill-button': 'Pill Button',
     'pure-white': 'Pure White',
     'hex-dc9ed8': '#DC9ED8',
@@ -210,6 +211,24 @@ export default function DesignSystemSandbox(): JSX.Element {
                 onDoubleClick={(e) => handleDoubleClick('body-text with highlights', e)}
               >
                 This paragraph shows how <span className="text-highlight">text-highlight</span> works within our body-text class. You can emphasize <span className="text-highlight">key phrases</span> or <span className="text-highlight">important terms</span> to draw attention to specific content. The highlight maintains the same font weight but increases opacity to 100% for better visibility while keeping the text cohesive.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="component-group">
+          <h3 className="h3">Beta Text</h3>
+          <div className="component-showcase">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+              <div 
+                className="beta-text"
+                data-component="beta-text"
+                onMouseEnter={(e) => handleComponentHover('beta-text', e)}
+                onMouseLeave={handleComponentLeave}
+                onClick={() => handleComponentClick('beta-text')}
+                onDoubleClick={(e) => handleDoubleClick('beta-text', e)}
+              >
+                {editableTexts['beta-text']}
               </div>
             </div>
           </div>

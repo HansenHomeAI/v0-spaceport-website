@@ -363,6 +363,57 @@
   letter-spacing: 0em;
 }
 
+/* Beta Text - Pill-shaped outline with smaller body text */
+.beta-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  color: #fff; /* White at 100% opacity */
+  font-size: 0.7rem; /* Beta text size */
+  line-height: 1;
+  letter-spacing: 0em;
+  padding: 2px 8px;
+  border: 1.2px solid #fff; /* White border at 100% opacity */
+  border-radius: 999px; /* Pill shape */
+  background: transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  height: 1.6em; /* Match full ascender/descender height of body text (1.6 line-height) */
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.beta-text::before {
+  content: '';
+  position: absolute;
+  top: -2px; /* Extend 2px beyond to fill edge gaps */
+  left: -2px; /* Extend 2px beyond to fill edge gaps */
+  right: -2px; /* Extend 2px beyond to fill edge gaps */
+  bottom: -2px; /* Extend 2px beyond to fill edge gaps */
+  background: #fff;
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left; /* Fill from left to right */
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.beta-text:hover {
+  color: #000; /* Black text on hover */
+  border-color: #fff; /* Keep white border */
+}
+
+.beta-text:hover::before {
+  transform: scaleX(1); /* Fill from left to right */
+}
+
+/* Exit animation - different transform origin for opposite direction */
+.beta-text:not(:hover)::before {
+  transform-origin: right; /* Exit from left to right (opposite direction) */
+}
+
 /* Text Highlight Class - For emphasizing words/phrases */
 .text-highlight {
   color: rgba(255, 255, 255, 1);
