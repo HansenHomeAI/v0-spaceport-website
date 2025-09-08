@@ -140,6 +140,9 @@ def _generate_temp_password() -> str:
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
     """Send custom invitation email via Resend"""
     
+    # Debug logging to see what email is being sent
+    logger.info(f"DEBUG: Sending invitation email to: {email}, name: {name}")
+    
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
     body_text = (
@@ -219,6 +222,10 @@ def lambda_handler(event, context):
             
             email = data.get('email', '').strip().lower()
             name = data.get('name', '').strip()
+            
+            # Debug logging to see what we received
+            logger.info(f"DEBUG: Received invitation request - email: {email}, name: {name}")
+            logger.info(f"DEBUG: Full request data: {data}")
             
             if not email:
                 return _response(400, {'error': 'Email address is required'})
