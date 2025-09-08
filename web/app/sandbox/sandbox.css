@@ -757,9 +757,16 @@
   -webkit-backdrop-filter: blur(40px);
   border-radius: 25px;
   padding: 32px;
+  padding-bottom: calc(32px + 24px + 24px); /* Add space for button (24px height + 12px margin + 12px bottom) */
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  /* CSS Variables for concentricity */
+  --card-padding: 32px;
+  --concentric-spacing: 12px; /* Increased from 8px to 12px */
+  --button-margin: var(--concentric-spacing);
+  --button-height: 24px; /* Button height for calculations */
+  border-radius: 29px; /* Recalculated: 25px base + 4px (12px - 8px) = 29px */
 }
 
 /* Apply gradient border to default cards */
@@ -813,6 +820,37 @@
   width: 100%;
   box-sizing: border-box;
   letter-spacing: 0em;
+}
+
+/* Default Card Button - New class based on cta-button2-fixed but independent */
+.component-showcase .default-card .default-card-button {
+  position: absolute; /* Break out of card's padding system */
+  bottom: var(--button-margin); /* 12px from card's bottom border (concentric spacing) */
+  left: var(--button-margin); /* 12px from card's left border (concentric spacing) */
+  right: var(--button-margin); /* 12px from card's right border (concentric spacing) */
+  z-index: 1;
+  display: block; /* Make it a block element for full width */
+  text-align: center; /* Center the button text */
+  box-sizing: border-box; /* Include border in width calculation */
+  
+  /* Based on cta-button2-fixed styling */
+  text-decoration: none;
+  padding: 9.5px 21.5px;
+  border-radius: 999px;
+  transition: background 0.3s ease;
+  border: 2.5px solid #fff;
+  color: #fff;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  /* Button height: 24px (9.5px padding top + 9.5px padding bottom + 2.5px border top + 2.5px border bottom) */
+  /* Now truly concentric: 12px from all card borders, regardless of card padding changes */
+}
+
+.component-showcase .default-card .default-card-button:hover {
+  background: #fff;
+  color: #000;
 }
 
 .component-showcase .waitlist-card {
@@ -973,6 +1011,15 @@
 @media (max-width: 768px) {
   .sandbox-container {
     padding: 100px 16px 40px 16px;
+  }
+  
+  /* Adjust card concentricity for smaller screens */
+  .component-showcase .default-card {
+    --card-padding: 24px; /* Smaller padding on mobile */
+    --concentric-spacing: 9px; /* Proportional spacing (12px * 0.75) */
+    --button-margin: var(--concentric-spacing);
+    padding-bottom: calc(24px + 24px + 18px); /* Add space for button (24px height + 9px margin + 9px bottom) */
+    border-radius: 26px; /* Recalculated: 25px base + 1px (9px - 8px) = 26px */
   }
   
   .sandbox-title {

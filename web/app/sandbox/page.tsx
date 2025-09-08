@@ -627,8 +627,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('default-card')}
             >
-                             <h3 className="h3">Default Card</h3>
-               <p className="body-text">This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</p>
+              <h3 className="h3">Default Card</h3>
+              <p className="body-text">This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</p>
+              <a href="#" className="default-card-button">Action Button</a>
             </div>
           </div>
         </div>
