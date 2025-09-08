@@ -104,13 +104,7 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         }
         
         resp = cognito.admin_create_user(**create_params)
-        
-        # Send custom SES email
-        _send_custom_invite_email(
-            email=email,
-            name=name,
-            temp_password=create_params.get('TemporaryPassword')
-        )
+        temp_password = create_params.get('TemporaryPassword')
         
         # Add to beta-testers-v2 group
         cognito.admin_add_user_to_group(
@@ -119,18 +113,33 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
             GroupName='beta-testers-v2',
         )
         
-        return {
-            'success': True,
-            'message': 'Invitation sent successfully',
-            'email': email
-        }
-        
     except cognito.exceptions.UsernameExistsException:
-        return {
-            'success': True,
-            'message': 'User already exists - invitation resent',
-            'email': email
-        }
+        # User already exists - generate a new temp password for the email
+        temp_password = _generate_temp_password()
+        
+        # Add to beta-testers-v2 group if not already there
+        try:
+            cognito.admin_add_user_to_group(
+                UserPoolId=USER_POOL_ID,
+                Username=email,
+                GroupName='beta-testers-v2',
+            )
+        except cognito.exceptions.InvalidParameterException:
+            # User might already be in the group, that's fine
+            pass
+    
+    # Send custom invitation email regardless of whether user was created or already existed
+    _send_custom_invite_email(
+        email=email,
+        name=name,
+        temp_password=temp_password
+    )
+    
+    return {
+        'success': True,
+        'message': 'Invitation sent successfully',
+        'email': email
+    }
     except Exception as e:
         logger.error(f"Failed to send invitation to {email}: {e}")
         raise e
