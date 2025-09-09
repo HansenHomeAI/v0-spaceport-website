@@ -453,12 +453,37 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [open, isFullscreen, toggleFullscreen]);
 
+  // Keep coordinates synchronized between state and ref
+  useEffect(() => {
+    console.log('🔍 Coordinate sync effect:', {
+      selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
+      refCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
+    });
+    
+    if (selectedCoords) {
+      selectedCoordsRef.current = selectedCoords;
+      console.log('🔍 Updated coordinates ref:', selectedCoords);
+    }
+  }, [selectedCoords]);
+
   const canOptimize = useMemo(() => {
-    const coords = selectedCoords || selectedCoordsRef.current;
+    // Always use ref as source of truth for coordinates
+    const coords = selectedCoordsRef.current;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
-    return Boolean(coords && minutes && batteries);
-  }, [batteryMinutes, numBatteries, selectedCoords]); // Use selectedCoords state for better reactivity
+    const isValid = Boolean(coords && minutes && batteries);
+    
+    // Debug logging to help track state
+    console.log('🔍 Optimization validation:', {
+      hasCoords: !!coords,
+      coordsValue: coords,
+      minutes,
+      batteries,
+      isValid
+    });
+    
+    return isValid;
+  }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
 
   // Rotating processing messages for optimization
   const processingMessages = [
