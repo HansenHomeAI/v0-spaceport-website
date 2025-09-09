@@ -3388,7 +3388,11 @@ class ProjectPopupPhotoUpload {
       // Upload chunk
       const uploadResponse = await fetch(url, {
         method: 'PUT',
-        body: chunk
+        body: chunk,
+        headers: {
+          'Content-Length': chunk.size.toString(),
+          'Content-Type': 'application/octet-stream'
+        }
       });
       
       if (!uploadResponse.ok) {
