@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_s3 as s3,
     aws_dynamodb as dynamodb,
+    BundlingOptions,
     aws_iam as iam,
     aws_ssm as ssm,
     RemovalPolicy,
@@ -172,7 +173,16 @@ class SpaceportStack(Stack):
             function_name=f"Spaceport-FileUploadFunction-{suffix}",
             runtime=lambda_.Runtime.NODEJS_18_X,
             handler="index.handler",
-            code=lambda_.Code.from_asset("lambda/file_upload"),
+            code=lambda_.Code.from_asset(
+                "lambda/file_upload",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.NODEJS_18_X.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "npm install && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
