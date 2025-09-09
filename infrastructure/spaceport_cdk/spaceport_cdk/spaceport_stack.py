@@ -145,7 +145,16 @@ class SpaceportStack(Stack):
             function_name=f"Spaceport-DronePathFunction-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/drone_path"),
+            code=lambda_.Code.from_asset(
+                "lambda/drone_path",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
