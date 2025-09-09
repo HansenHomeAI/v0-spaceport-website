@@ -1730,7 +1730,8 @@ async function uploadPart(uploadId, bucketName, objectKey, chunk, partNumber) {
             method: 'PUT',
             body: chunk,
             headers: {
-                'Content-Type': 'application/octet-stream'
+                'Content-Type': 'application/octet-stream',
+                'Content-Length': chunk.size.toString()
             }
         });
 
@@ -3388,7 +3389,10 @@ class ProjectPopupPhotoUpload {
       // Upload chunk
       const uploadResponse = await fetch(url, {
         method: 'PUT',
-        body: chunk
+        body: chunk,
+        headers: {
+          'Content-Length': chunk.size.toString()
+        }
       });
       
       if (!uploadResponse.ok) {
