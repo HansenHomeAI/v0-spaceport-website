@@ -405,6 +405,15 @@ class SpaceportStack(Stack):
             auto_delete_objects=False,
             versioned=True,
             encryption=s3.BucketEncryption.S3_MANAGED,
+            cors=[
+                s3.CorsRule(
+                    allowed_headers=["*"],
+                    allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.PUT, s3.HttpMethods.POST, s3.HttpMethods.HEAD],
+                    allowed_origins=["*"],
+                    exposed_headers=["ETag"],
+                    max_age=3000
+                )
+            ],
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
