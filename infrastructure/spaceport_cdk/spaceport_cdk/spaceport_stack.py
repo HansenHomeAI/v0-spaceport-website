@@ -179,7 +179,7 @@ class SpaceportStack(Stack):
                     image=lambda_.Runtime.NODEJS_18_X.bundling_image,
                     command=[
                         "bash", "-c",
-                        "npm install && cp -au . /asset-output"
+                        "npm cache clean --force && npm install --no-optional && cp -au . /asset-output"
                     ],
                 ),
             ),
