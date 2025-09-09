@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_s3 as s3,
     aws_dynamodb as dynamodb,
+    BundlingOptions,
     aws_iam as iam,
     aws_ssm as ssm,
     RemovalPolicy,
@@ -170,9 +171,18 @@ class SpaceportStack(Stack):
             self, 
             "SpaceportFileUploadFunction",
             function_name=f"Spaceport-FileUploadFunction-{suffix}",
-            runtime=lambda_.Runtime.NODEJS_18_X,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda/file_upload"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "lambda/file_upload",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
@@ -395,6 +405,15 @@ class SpaceportStack(Stack):
             auto_delete_objects=False,
             versioned=True,
             encryption=s3.BucketEncryption.S3_MANAGED,
+            cors=[
+                s3.CorsRule(
+                    allowed_headers=["*"],
+                    allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.PUT, s3.HttpMethods.POST, s3.HttpMethods.HEAD],
+                    allowed_origins=["*"],
+                    exposed_headers=["ETag"],
+                    max_age=3000
+                )
+            ],
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
