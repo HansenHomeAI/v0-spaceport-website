@@ -3213,7 +3213,8 @@ class ProjectPopupPhotoUpload {
         method: 'PUT',
         body: chunk,
         headers: {
-          'Content-Length': chunk.size.toString()
+          'Content-Length': chunk.size.toString(),
+          'Content-Type': 'application/octet-stream'
         }
       });
       
