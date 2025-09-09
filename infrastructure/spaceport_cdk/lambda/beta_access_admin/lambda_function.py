@@ -63,7 +63,13 @@ def _check_beta_access_permission(user_id: str) -> bool:
     try:
         response = permissions_table.get_item(Key={'user_id': user_id})
         item = response.get('Item', {})
-        return item.get('has_beta_access_permission', False)
+        permission_type = item.get('permission_type', '')
+        status = item.get('status', '')
+        
+        # User has beta access admin permission if:
+        # 1. permission_type is 'beta_access_admin' AND
+        # 2. status is 'active'
+        return permission_type == 'beta_access_admin' and status == 'active'
     except Exception as e:
         logger.error(f"Failed to check permissions for user {user_id}: {e}")
         return False
@@ -87,30 +93,30 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         if name:
             user_attributes.append({'Name': 'name', 'Value': name.strip()})
         
-        # Create user with suppressed email (we'll send custom email)
-        create_params = {
-            'UserPoolId': USER_POOL_ID,
-            'Username': email,
-            'UserAttributes': user_attributes,
-            'DesiredDeliveryMediums': ['EMAIL'],
-            'MessageAction': 'SUPPRESS',
-            'TemporaryPassword': _generate_temp_password(),
-        }
+        # Try to create user first
+        temp_password = _generate_temp_password()
+        try:
+            # Create user with suppressed email (we'll send custom email)
+            create_params = {
+                'UserPoolId': USER_POOL_ID,
+                'Username': email,
+                'UserAttributes': user_attributes,
+                'DesiredDeliveryMediums': ['EMAIL'],
+                'MessageAction': 'SUPPRESS',
+                'TemporaryPassword': temp_password,
+            }
+            
+            resp = cognito.admin_create_user(**create_params)
+            
+        except cognito.exceptions.UsernameExistsException:
+            # User already exists - that's fine, we'll still send the email
+            pass
         
-        resp = cognito.admin_create_user(**create_params)
-        
-        # Send custom SES email
+        # Send custom invitation email regardless of whether user was created or already existed
         _send_custom_invite_email(
             email=email,
             name=name,
-            temp_password=create_params.get('TemporaryPassword')
-        )
-        
-        # Add to beta-testers-v2 group
-        cognito.admin_add_user_to_group(
-            UserPoolId=USER_POOL_ID,
-            Username=email,
-            GroupName='beta-testers-v2',
+            temp_password=temp_password
         )
         
         return {
@@ -119,12 +125,6 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
             'email': email
         }
         
-    except cognito.exceptions.UsernameExistsException:
-        return {
-            'success': True,
-            'message': 'User already exists - invitation resent',
-            'email': email
-        }
     except Exception as e:
         logger.error(f"Failed to send invitation to {email}: {e}")
         raise e
@@ -139,6 +139,9 @@ def _generate_temp_password() -> str:
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
     """Send custom invitation email via Resend"""
+    
+    # Debug logging to see what email is being sent
+    logger.info(f"DEBUG: Sending invitation email to: {email}, name: {name}")
     
     subject = 'You have been invited to Spaceport AI'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
@@ -219,6 +222,10 @@ def lambda_handler(event, context):
             
             email = data.get('email', '').strip().lower()
             name = data.get('name', '').strip()
+            
+            # Debug logging to see what we received
+            logger.info(f"DEBUG: Received invitation request - email: {email}, name: {name}")
+            logger.info(f"DEBUG: Full request data: {data}")
             
             if not email:
                 return _response(400, {'error': 'Email address is required'})

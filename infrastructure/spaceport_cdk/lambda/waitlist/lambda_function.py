@@ -303,7 +303,7 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
     try:
         # Send via Resend
         params = {
-            "from": "Spaceport AI <hello@spcprt.com>",
+            "from": "Gabriel Hansen <gabriel@spcprt.com>",
             "to": [email],
             "subject": subject,
             "html": body_html,
