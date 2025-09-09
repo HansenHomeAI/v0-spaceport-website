@@ -7,9 +7,17 @@ import time
 from botocore.exceptions import ClientError
 from urllib.parse import urlparse
 import requests
+from botocore.config import Config
 
 # Initialize AWS clients
-s3_client = boto3.client('s3', region_name='us-west-2')
+# Force regional, SigV4, virtual-hosted style URLs to avoid cross-region redirects
+AWS_REGION = os.environ.get('AWS_REGION', 'us-west-2')
+s3_client = boto3.client(
+    's3',
+    region_name=AWS_REGION,
+    endpoint_url=f'https://s3.{AWS_REGION}.amazonaws.com',
+    config=Config(signature_version='s3v4', s3={'addressing_style': 'virtual'})
+)
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
 # Environment variables from CDK
