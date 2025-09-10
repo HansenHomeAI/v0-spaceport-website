@@ -928,9 +928,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           const chunk = selectedFile.slice(start, end);
           const partNumber = chunkIndex + 1;
           
+          // Clone the chunk so it can be read multiple times (for retries)
+          const chunkClone = chunk.slice();
+          
           // Create upload promise for this chunk
           const uploadPromise = uploadChunkWithRetry(
-            chunk, 
+            chunkClone, 
             partNumber, 
             init, 
             MAX_RETRIES, 

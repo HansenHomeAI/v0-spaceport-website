@@ -3206,9 +3206,12 @@ class ProjectPopupPhotoUpload {
         const chunk = file.slice(start, end);
         const partNumber = chunkIndex + 1;
         
+        // Clone the chunk so it can be read multiple times (for retries)
+        const chunkClone = chunk.slice();
+        
         // Create upload promise for this chunk
         const uploadPromise = this.uploadChunkWithRetry(
-          chunk, 
+          chunkClone, 
           partNumber, 
           uploadInit, 
           MAX_RETRIES, 
