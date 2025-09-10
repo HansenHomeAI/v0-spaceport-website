@@ -923,9 +923,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         // Create batch of concurrent uploads
         for (let j = 0; j < MAX_CONCURRENT_UPLOADS && (i + j) < totalChunks; j++) {
           const chunkIndex = i + j;
-          const start = chunkIndex * CHUNK_SIZE;
-          const end = Math.min(start + CHUNK_SIZE, selectedFile.size);
-          const chunk = selectedFile.slice(start, end);
           const partNumber = chunkIndex + 1;
           
           // Create upload promise for this chunk
