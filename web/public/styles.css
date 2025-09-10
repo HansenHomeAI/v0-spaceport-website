@@ -6129,6 +6129,154 @@ input.text-fade-right,
   }
 }
 
+/* Terms of Service Modal */
+.terms-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.terms-modal {
+  background: #000;
+  border-radius: 24px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.terms-modal-content {
+  padding: 32px;
+  max-height: 80vh;
+  overflow-y: auto;
+  color: #fff;
+  position: relative;
+}
+
+.terms-modal-close-container {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+}
+
+.terms-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.terms-modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.terms-modal-close img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+.terms-modal-content h1 {
+  color: #fff;
+  font-size: clamp(2rem, 8vw, 2.9rem);
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.terms-modal-content h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 32px 0 16px 0;
+}
+
+.terms-modal-content h2:first-of-type {
+  margin-top: 24px;
+}
+
+.terms-modal-content p {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.terms-company-info {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.terms-intro {
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.terms-conclusion {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terms-modal-content ul {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  margin: 12px 0 16px 20px;
+}
+
+.terms-modal-content li {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.terms-modal-content strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Terms Link */
+.terms-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.terms-link:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 
 
 

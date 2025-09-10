@@ -1,9 +1,11 @@
 'use client';
 import { useState } from 'react';
+import TermsOfServiceModal from './TermsOfServiceModal';
 
 export default function Footer(): JSX.Element {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,9 +65,23 @@ export default function Footer(): JSX.Element {
       {/* Traditional footer content */}
       <footer>
         <div className="footer-content">
-          <p>© 2025 Spaceport AI · All rights reserved</p>
+          <p>
+            © 2025 Spaceport AI · By using Spaceport AI, you agree to the{' '}
+            <button 
+              className="terms-link" 
+              onClick={() => setIsTermsModalOpen(true)}
+            >
+              Terms of Service
+            </button>
+          </p>
         </div>
       </footer>
+
+      {/* Terms of Service Modal */}
+      <TermsOfServiceModal 
+        isOpen={isTermsModalOpen} 
+        onClose={() => setIsTermsModalOpen(false)} 
+      />
     </>
   );
 }
