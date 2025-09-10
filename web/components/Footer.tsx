@@ -16,7 +16,7 @@ export default function Footer(): JSX.Element {
     // Create mailto link
     const subject = encodeURIComponent('Spaceport AI Feedback');
     const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:hello@spcprt.com?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:gabriel@spcprt.com,ethan@spcprt.com?subject=${subject}&body=${body}`;
     
     // Open email client
     window.location.href = mailtoLink;
@@ -46,7 +46,7 @@ export default function Footer(): JSX.Element {
                 type="text"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Where do we have room for improvement?"
+                placeholder="How can we improve?"
                 className="feedback-input"
                 disabled={isSubmitting}
               />
