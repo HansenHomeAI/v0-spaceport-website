@@ -3209,13 +3209,13 @@ class ProjectPopupPhotoUpload {
       const { url } = await urlResponse.json();
       
       // Upload chunk
+      const chunkBuffer = await chunk.arrayBuffer();
       const uploadResponse = await fetch(url, {
         method: 'PUT',
-        body: chunk,
         headers: {
-          'Content-Length': chunk.size.toString(),
           'Content-Type': 'application/octet-stream'
-        }
+        },
+        body: new Uint8Array(chunkBuffer)
       });
       
       if (!uploadResponse.ok) {
