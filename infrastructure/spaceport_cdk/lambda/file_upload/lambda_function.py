@@ -145,7 +145,8 @@ def lambda_handler(event, context):
                     'Bucket': bucket_name,
                     'Key': object_key,
                     'UploadId': upload_id,
-                    'PartNumber': int(part_number)
+                    'PartNumber': int(part_number),
+                    'ContentType': 'application/octet-stream'
                 },
                 ExpiresIn=3600  # 1 hour
             )

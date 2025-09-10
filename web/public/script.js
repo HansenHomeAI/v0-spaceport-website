@@ -2997,7 +2997,7 @@ class ProjectPopupPhotoUpload {
       START_ML_PROCESSING: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL + "/start-job"
     };
     
-    this.CHUNK_SIZE = 24 * 1024 * 1024; // 24MB chunks
+    this.CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks (S3 minimum)
     this.MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB max
     
     this.uploadData = null;
