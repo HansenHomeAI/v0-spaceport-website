@@ -3206,12 +3206,10 @@ class ProjectPopupPhotoUpload {
         const chunk = file.slice(start, end);
         const partNumber = chunkIndex + 1;
         
-        // Clone the chunk so it can be read multiple times (for retries)
-        const chunkClone = chunk.slice();
-        
         // Create upload promise for this chunk
         const uploadPromise = this.uploadChunkWithRetry(
-          chunkClone, 
+          file, // Pass the original file
+          chunkIndex, // Pass the chunk index
           partNumber, 
           uploadInit, 
           MAX_RETRIES, 
@@ -3264,11 +3262,16 @@ class ProjectPopupPhotoUpload {
     return { objectKey: uploadInit.objectKey, parts };
   }
   
-  async uploadChunkWithRetry(chunk, partNumber, uploadInit, maxRetries, retryDelay) {
+  async uploadChunkWithRetry(file, chunkIndex, partNumber, uploadInit, maxRetries, retryDelay) {
     let retryCount = 0;
     
     while (retryCount < maxRetries) {
       try {
+        // Create fresh chunk for each retry attempt
+        const start = chunkIndex * this.CHUNK_SIZE;
+        const end = Math.min(start + this.CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, end);
+        
         // Get presigned URL for this chunk
         const urlResponse = await fetch(this.API_ENDPOINTS.GET_PRESIGNED_URL, {
           method: 'POST',

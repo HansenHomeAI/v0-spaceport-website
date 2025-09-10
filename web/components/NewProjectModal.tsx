@@ -928,12 +928,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           const chunk = selectedFile.slice(start, end);
           const partNumber = chunkIndex + 1;
           
-          // Clone the chunk so it can be read multiple times (for retries)
-          const chunkClone = chunk.slice();
-          
           // Create upload promise for this chunk
           const uploadPromise = uploadChunkWithRetry(
-            chunkClone, 
+            selectedFile, // Pass the original file
+            chunkIndex, // Pass the chunk index
             partNumber, 
             init, 
             MAX_RETRIES, 
@@ -964,11 +962,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       console.log(`🎉 All ${totalChunks} chunks uploaded successfully!`);
       
       // Helper function for chunk upload with retry
-      async function uploadChunkWithRetry(chunk: Blob, partNumber: number, uploadInit: any, maxRetries: number, retryDelay: number) {
+      async function uploadChunkWithRetry(file: File, chunkIndex: number, partNumber: number, uploadInit: any, maxRetries: number, retryDelay: number) {
         let retryCount = 0;
         
         while (retryCount < maxRetries) {
           try {
+            // Create fresh chunk for each retry attempt
+            const start = chunkIndex * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+            
             const urlRes = await fetch(API_UPLOAD.GET_PRESIGNED_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
