@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let selectedFile = null;
   const MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB
-  const CHUNK_SIZE    = 24 * 1024 * 1024;       // 24MB
+  const CHUNK_SIZE    = 64 * 1024 * 1024;       // 64MB - industry standard for optimal speed/reliability balance
 
   // Required text fields
   const requiredFields = [propertyTitle, addressOfProp, listingDesc, emailField];
@@ -2997,7 +2997,7 @@ class ProjectPopupPhotoUpload {
       START_ML_PROCESSING: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL + "/start-job"
     };
     
-    this.CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks (S3 minimum)
+    this.CHUNK_SIZE = 64 * 1024 * 1024; // 64MB chunks - industry standard for optimal speed/reliability balance
     this.MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB max
     
     this.uploadData = null;
@@ -3183,54 +3183,63 @@ class ProjectPopupPhotoUpload {
   async uploadFileInChunks(file, uploadInit) {
     const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
     const parts = [];
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second
+    const MAX_CONCURRENT_UPLOADS = 10; // Optimized for high-bandwidth connections
     
-    for (let i = 0; i < totalChunks; i++) {
-      const start = i * this.CHUNK_SIZE;
-      const end = Math.min(start + this.CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
-      const partNumber = i + 1;
+    console.log(`📤 Starting parallel chunked upload: ${totalChunks} chunks of ${Math.round(this.CHUNK_SIZE / 1024 / 1024)}MB each`);
+    console.log(`🚀 Uploading up to ${MAX_CONCURRENT_UPLOADS} chunks in parallel`);
+    
+    // Create array of chunk upload promises
+    const chunkPromises = [];
+    let completedChunks = 0;
+    
+    // Process chunks in batches to control concurrency
+    for (let i = 0; i < totalChunks; i += MAX_CONCURRENT_UPLOADS) {
+      const batch = [];
       
-      // Get presigned URL for this chunk
-      const urlResponse = await fetch(this.API_ENDPOINTS.GET_PRESIGNED_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uploadId: uploadInit.uploadId,
-          bucketName: uploadInit.bucketName,
-          objectKey: uploadInit.objectKey,
-          partNumber
-        })
-      });
-      
-      if (!urlResponse.ok) {
-        throw new Error(`Failed to get upload URL for part ${partNumber}`);
+      // Create batch of concurrent uploads
+      for (let j = 0; j < MAX_CONCURRENT_UPLOADS && (i + j) < totalChunks; j++) {
+        const chunkIndex = i + j;
+        const start = chunkIndex * this.CHUNK_SIZE;
+        const end = Math.min(start + this.CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, end);
+        const partNumber = chunkIndex + 1;
+        
+        // Create upload promise for this chunk
+        const uploadPromise = this.uploadChunkWithRetry(
+          chunk, 
+          partNumber, 
+          uploadInit, 
+          MAX_RETRIES, 
+          RETRY_DELAY
+        ).then(result => {
+          completedChunks++;
+          const progress = (completedChunks / totalChunks) * 100;
+          this.updateUploadProgress(progress);
+          console.log(`✅ Part ${partNumber}/${totalChunks} uploaded successfully (${completedChunks}/${totalChunks} complete)`);
+          return result;
+        });
+        
+        batch.push(uploadPromise);
       }
       
-      const { url } = await urlResponse.json();
-      
-      // Upload chunk
-      const chunkBuffer = await chunk.arrayBuffer();
-      const uploadResponse = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/octet-stream'
-        },
-        body: new Uint8Array(chunkBuffer)
-      });
-      
-      if (!uploadResponse.ok) {
-        throw new Error(`Failed to upload part ${partNumber}`);
+      // Wait for this batch to complete before starting next batch
+      try {
+        const batchResults = await Promise.all(batch);
+        parts.push(...batchResults);
+      } catch (error) {
+        throw new Error(`Batch upload failed: ${error.message}`);
       }
-      
-      const etag = uploadResponse.headers.get('ETag');
-      parts.push({ ETag: etag, PartNumber: partNumber });
-      
-      // Update progress
-      const progress = (partNumber / totalChunks) * 100;
-      this.updateUploadProgress(progress);
     }
     
+    // Sort parts by part number to ensure correct order
+    parts.sort((a, b) => a.PartNumber - b.PartNumber);
+    
+    console.log(`🎉 All ${totalChunks} chunks uploaded successfully!`);
+    
     // Complete multipart upload
+    console.log(`✅ Completing multipart upload...`);
     const completeResponse = await fetch(this.API_ENDPOINTS.COMPLETE_UPLOAD, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -3243,10 +3252,71 @@ class ProjectPopupPhotoUpload {
     });
     
     if (!completeResponse.ok) {
-      throw new Error('Failed to complete upload');
+      throw new Error('Failed to complete multipart upload');
     }
     
-    return { objectKey: uploadInit.objectKey };
+    const completeResult = await completeResponse.json();
+    console.log(`🎉 Multipart upload completed successfully!`);
+    
+    return { objectKey: uploadInit.objectKey, parts };
+  }
+  
+  async uploadChunkWithRetry(chunk, partNumber, uploadInit, maxRetries, retryDelay) {
+    let retryCount = 0;
+    
+    while (retryCount < maxRetries) {
+      try {
+        // Get presigned URL for this chunk
+        const urlResponse = await fetch(this.API_ENDPOINTS.GET_PRESIGNED_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uploadId: uploadInit.uploadId,
+            bucketName: uploadInit.bucketName,
+            objectKey: uploadInit.objectKey,
+            partNumber
+          })
+        });
+        
+        if (!urlResponse.ok) {
+          throw new Error(`Failed to get upload URL for part ${partNumber}: ${urlResponse.status}`);
+        }
+        
+        const { url } = await urlResponse.json();
+        
+        // Upload chunk
+        const chunkBuffer = await chunk.arrayBuffer();
+        const uploadResponse = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/octet-stream'
+          },
+          body: new Uint8Array(chunkBuffer)
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error(`Failed to upload part ${partNumber}: ${uploadResponse.status}`);
+        }
+        
+        const etag = uploadResponse.headers.get('ETag');
+        if (!etag) {
+          throw new Error(`No ETag received for part ${partNumber}`);
+        }
+        
+        return { ETag: etag, PartNumber: partNumber };
+        
+      } catch (error) {
+        retryCount++;
+        console.warn(`⚠️ Part ${partNumber} upload failed (attempt ${retryCount}/${maxRetries}):`, error.message);
+        
+        if (retryCount >= maxRetries) {
+          throw new Error(`Failed to upload part ${partNumber} after ${maxRetries} attempts: ${error.message}`);
+        }
+        
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, retryDelay * retryCount));
+      }
+    }
   }
 
   async saveSubmissionMetadata(objectKey, formData) {
