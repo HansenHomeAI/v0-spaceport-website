@@ -170,9 +170,18 @@ class SpaceportStack(Stack):
             self, 
             "SpaceportFileUploadFunction",
             function_name=f"Spaceport-FileUploadFunction-{suffix}",
-            runtime=lambda_.Runtime.NODEJS_18_X,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda/file_upload"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "lambda/file_upload",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
