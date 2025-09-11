@@ -21,4 +21,4 @@ INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → tr
 - RESULT: Correct COLMAP syntax + NerfStudio standard workflow
 🎯 FINAL FIX: Remove --pipeline.datamanager.dataparser colmap from ns-train (use transforms.json)!
 
-** TRIGGER GITHUB ACTIONS BUILD **
+** TRIGGER GITHUB ACTIONS BUILD **# Trigger 3DGS rebuild Wed Sep 10 21:03:54 MDT 2025
