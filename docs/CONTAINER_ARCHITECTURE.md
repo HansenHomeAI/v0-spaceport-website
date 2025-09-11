@@ -34,7 +34,7 @@ infrastructure/containers/
 
 ### **3DGS Container** (`infrastructure/containers/3dgs/`) ✅ **PRODUCTION READY**
 - **Purpose**: 3D Gaussian Splatting training with optimization
-- **Instance**: `ml.g5.xlarge` (4 vCPUs, 16 GB RAM, 1x NVIDIA A10G GPU)
+- **Instance**: `ml.g5.2xlarge` (8 vCPUs, 32 GB RAM, 1x NVIDIA A10G GPU)
 - **Entry Point**: `train_gaussian_production.py`
 - **Features**: Progressive resolution, PSNR plateau termination, early stopping
 - **ECR URI**: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest`

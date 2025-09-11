@@ -3,7 +3,7 @@ name: Trigger ML Container Build
 on:
   workflow_dispatch:  # Manual trigger
   push:
-    branches: [ main, development ]
+    branches: [ main, development, ml-development ]
     # container-only workflow; no change
     paths:
       - 'infrastructure/containers/**'

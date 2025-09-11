@@ -29,10 +29,10 @@ This is a comprehensive web application with an integrated Gaussian Splatting ML
 ## 🤖 ML Pipeline - Gaussian Splatting
 
 ### Approved AWS SageMaker Quotas (PRODUCTION READY):
-✅ **ml.g5.xlarge for training job usage**: 1 instance
+✅ **ml.g5.2xlarge for training job usage**: 1 instance
    - **Usage**: 3D Gaussian Splatting Training step
-   - **Specs**: 4 vCPUs, 16 GB RAM, 1x NVIDIA A10G GPU
-   - **Purpose**: GPU-accelerated neural rendering training (supports gsplat labeled_partition)
+   - **Specs**: 8 vCPUs, 32 GB RAM, 1x NVIDIA A10G GPU
+   - **Purpose**: GPU-accelerated neural rendering training (supports Vincent Woo's full methodology)
 
 ✅ **ml.c6i.2xlarge for processing job usage**: 1 instance  
    - **Usage**: SfM Processing (COLMAP) step
