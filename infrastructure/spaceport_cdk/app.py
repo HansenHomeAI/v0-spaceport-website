@@ -1,45 +1,49 @@
 #!/usr/bin/env python3
-from aws_cdk import App, DefaultStackSynthesizer
+from aws_cdk import App
 from spaceport_cdk.spaceport_stack import SpaceportStack
 from spaceport_cdk.auth_stack import AuthStack
 from spaceport_cdk.ml_pipeline_stack import MLPipelineStack
 
 app = App()
 
-# Use a fixed qualifier so deployments target the correct bootstrap resources
-stack_synthesizer = DefaultStackSynthesizer(qualifier="spcdkprod2")
+# Environment detection from context or default to staging
+env_name = app.node.try_get_context('environment') or 'staging'
+env_config = app.node.try_get_context('environments')[env_name]
 
-# Deploy the existing Spaceport stack
+print(f"Deploying to environment: {env_name}")
+print(f"Environment config: {env_config}")
+
+# Deploy the main Spaceport stack with environment context
 spaceport_stack = SpaceportStack(
     app,
-    "SpaceportStack",
+    f"Spaceport{env_name.title()}Stack",
+    env_config=env_config,
     env={
-        'account': app.node.try_get_context('account') or None,
-        'region': app.node.try_get_context('region') or 'us-west-2'
-    },
-    synthesizer=stack_synthesizer,
+        'account': app.node.try_get_context('account') or None,  # Dynamically resolved
+        'region': env_config['region']
+    }
 )
 
-# Deploy the new ML pipeline stack
+# Deploy the ML pipeline stack with environment context
 ml_pipeline_stack = MLPipelineStack(
     app,
-    "SpaceportMLPipelineStack",
+    f"SpaceportMLPipeline{env_name.title()}Stack",
+    env_config=env_config,
     env={
-        'account': app.node.try_get_context('account') or None,
-        'region': app.node.try_get_context('region') or 'us-west-2'
-    },
-    synthesizer=stack_synthesizer,
+        'account': app.node.try_get_context('account') or None,  # Dynamically resolved
+        'region': env_config['region']
+    }
 )
 
-# Deploy dedicated Auth stack (v2) to avoid legacy pool immutability
+# Deploy the Auth stack with environment context
 auth_stack = AuthStack(
     app,
-    "SpaceportAuthStack",
+    f"SpaceportAuth{env_name.title()}Stack",
+    env_config=env_config,
     env={
-        'account': app.node.try_get_context('account') or None,
-        'region': app.node.try_get_context('region') or 'us-west-2'
-    },
-    synthesizer=stack_synthesizer,
+        'account': app.node.try_get_context('account') or None,  # Dynamically resolved
+        'region': env_config['region']
+    }
 )
 
 app.synth() 
