@@ -8,8 +8,9 @@ export function configureAmplify(): boolean {
   if (configured) return;
   // Prefer env, but fall back to deployed pool/client so sign-in is never blocked in prod
   const region = process.env.NEXT_PUBLIC_COGNITO_REGION || 'us-west-2';
-  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || 'us-west-2_a2jf3ldGV';
-  const userPoolWebClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '3ctkuqu98pmug5k5kgc119sq67';
+  // IMPORTANT: do not default to development pool in production. Require explicit env variables.
+  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || '';
+  const userPoolWebClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '';
 
   if (!region || !userPoolId || !userPoolWebClientId) {
     // Leave unconfigured in dev if not provided
@@ -31,8 +32,11 @@ export function configureAmplify(): boolean {
     },
     ssr: true,
   } as any);
-  // Expose Projects API URL for client calls (can be overridden via env)
-  (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects');
+  // Expose Projects API URL for client calls (must be provided via env by environment)
+  const apiUrl = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
+  if (apiUrl) {
+    (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL = apiUrl;
+  }
   configured = true;
   available = true;
   return true;

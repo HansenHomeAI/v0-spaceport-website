@@ -2,29 +2,31 @@ const { S3Client, CreateMultipartUploadCommand, UploadPartCommand, CompleteMulti
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
-const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
+const { Resend } = require("resend");
 
 // Initialize clients
 const s3Client = new S3Client({ region: "us-west-2" });
 const dynamoClient = new DynamoDBClient({ region: "us-west-2" });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
-const sesClient = new SESClient({ region: "us-west-2" });
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const BUCKET_NAME = process.env.BUCKET_NAME; // Use environment variable from CDK
 const METADATA_TABLE_NAME = process.env.METADATA_TABLE_NAME; // Use environment variable from CDK
 
-// Helper function to send an email via SES
-async function sendEmailNotification(toAddress, subject, bodyText) {
+// Helper function to send an email via Resend
+async function sendEmailNotification(toAddress, subject, bodyText, bodyHtml = null) {
   const params = {
-    Destination: { ToAddresses: [toAddress] },
-    Message: {
-      Subject: { Data: subject },
-      Body: { Text: { Data: bodyText } },
-    },
-    Source: "gabriel@spcprt.com", // Must be a verified sender in SES
+    from: "Spaceport AI <hello@spcprt.com>",
+    to: [toAddress],
+    subject: subject,
+    text: bodyText,
   };
-  const command = new SendEmailCommand(params);
-  return sesClient.send(command);
+  
+  if (bodyHtml) {
+    params.html = bodyHtml;
+  }
+  
+  return await resend.emails.send(params);
 }
 
 exports.handler = async (event) => {
@@ -246,6 +248,26 @@ Best,
 The Spaceport Team
 `;
 
+        const userBodyHtml = `
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #2563eb;">We've Received Your Drone Photos!</h2>
+            
+            <p>Hello,</p>
+            
+            <p>Thank you for your submission! We have received your photos and will start processing them soon.</p>
+            
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Upload ID:</strong> ${objectKey}</p>
+            </div>
+            
+            <p>Best regards,<br>The Spaceport Team</p>
+          </div>
+        </body>
+        </html>
+        `;
+
         const adminSubject = "New Upload Received";
         const adminBody = `New drone photo submission received:
 
@@ -258,12 +280,35 @@ Upload ID: ${objectKey}
 
 Please process this submission accordingly.`;
 
+        const adminBodyHtml = `
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #dc3545;">New Upload Received</h2>
+            
+            <p>New drone photo submission received:</p>
+            
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Property Title:</strong> ${propertyTitle}</p>
+              <p><strong>Description:</strong> ${listingDescription}</p>
+              <p><strong>Address:</strong> ${addressOfProperty}</p>
+              <p><strong>Optional Notes:</strong> ${optionalNotes}</p>
+              <p><strong>Upload ID:</strong> ${objectKey}</p>
+            </div>
+            
+            <p>Please process this submission accordingly.</p>
+          </div>
+        </body>
+        </html>
+        `;
+
         await Promise.all([
-          sendEmailNotification(email, userSubject, userBody),
-          sendEmailNotification("gabriel@spcprt.com", adminSubject, adminBody)
+          sendEmailNotification(email, userSubject, userBody, userBodyHtml),
+          sendEmailNotification("gabriel@spcprt.com", adminSubject, adminBody, adminBodyHtml)
         ]);
 
-        console.log("Email notifications sent.");
+        console.log("Email notifications sent via Resend.");
       } catch (emailErr) {
         console.error("Error sending email notifications:", emailErr);
         // Not throwing here, so we still return a 200 if metadata was saved

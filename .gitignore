@@ -68,3 +68,4 @@ tests/pipeline/*.log
 .vercel/
 web/.next/
 web/.vercel/
+.env

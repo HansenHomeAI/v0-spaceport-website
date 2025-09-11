@@ -1,9 +1,11 @@
 'use client';
 import { useState } from 'react';
+import TermsOfServiceModal from './TermsOfServiceModal';
 
 export default function Footer(): JSX.Element {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,7 +16,7 @@ export default function Footer(): JSX.Element {
     // Create mailto link
     const subject = encodeURIComponent('Spaceport AI Feedback');
     const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:gabriel@spcprt.com?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:gabriel@spcprt.com,ethan@spcprt.com?subject=${subject}&body=${body}`;
     
     // Open email client
     window.location.href = mailtoLink;
@@ -44,7 +46,7 @@ export default function Footer(): JSX.Element {
                 type="text"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Where do we have room for improvement?"
+                placeholder="How can we improve?"
                 className="feedback-input"
                 disabled={isSubmitting}
               />
@@ -63,9 +65,23 @@ export default function Footer(): JSX.Element {
       {/* Traditional footer content */}
       <footer>
         <div className="footer-content">
-          <p>© 2025 Spaceport AI · All rights reserved</p>
+          <p>
+            © 2025 Spaceport AI · By using Spaceport AI, you agree to the{' '}
+            <button 
+              className="terms-link" 
+              onClick={() => setIsTermsModalOpen(true)}
+            >
+              Terms of Service
+            </button>
+          </p>
         </div>
       </footer>
+
+      {/* Terms of Service Modal */}
+      <TermsOfServiceModal 
+        isOpen={isTermsModalOpen} 
+        onClose={() => setIsTermsModalOpen(false)} 
+      />
     </>
   );
 }

@@ -245,3 +245,215 @@ docker run --platform linux/amd64 \
 **Created**: December 2024 - For current 3DGS container runtime failure  
 **Status**: Investigation guide - to be updated as debugging progresses  
 **Next Update**: After CloudWatch log analysis and specific error identification 
+
+# Troubleshooting 3DGS ML Pipeline
+
+## Common Issues and Solutions
+
+### 1. GitHub Actions Workflow Parsing Failures
+
+#### Issue: "This run likely failed because of a workflow file issue" (No jobs created)
+
+**Symptoms:**
+- Workflow fails immediately upon triggering
+- No jobs are created or started
+- Generic "workflow file issue" error message
+- Workflow appears to fail before any execution begins
+
+**Root Cause:**
+Heredoc syntax (`<< 'EOF'`) within GitHub Actions `run: |` blocks can cause YAML parsing failures due to indentation requirements. Specifically:
+
+```yaml
+# ❌ PROBLEMATIC - EOF not at column 0
+run: |
+  cat > file.json << 'EOF'
+  {
+    "key": "value"
+  }
+  EOF  # This EOF must start at column 0, not indented
+```
+
+**Solution:**
+Replace heredocs with echo-based file creation to avoid shell parsing issues:
+
+```yaml
+# ✅ SOLUTION - Use echo statements instead of heredocs
+run: |
+  echo '{' > file.json
+  echo '  "key": "value"' >> file.json
+  echo '}' >> file.json
+```
+
+**Files Affected:**
+- `.github/workflows/build-containers.yml` - Fixed heredoc EOF alignment issues
+
+**Verification:**
+- Local YAML validation: `python -c "import yaml; yaml.safe_load(open('.github/workflows/build-containers.yml'))"`
+- Ruby YAML parser: `ruby -e "require 'psych'; Psych.safe_load(File.read('.github/workflows/build-containers.yml'))"`
+
+**Lessons Learned:**
+1. **Heredoc Delimiters**: The closing delimiter (EOF) must start at column 0 relative to the script content, not indented
+2. **YAML Parsing**: GitHub Actions validates YAML before execution; syntax errors prevent any jobs from starting
+3. **Debugging Approach**: Use multiple YAML parsers (Python, Ruby) to identify specific syntax issues
+4. **Alternative Solutions**: Echo-based file creation is more reliable than heredocs in complex YAML contexts
+
+**Example Fix Applied:**
+```yaml
+# Before (problematic):
+cat > trust.json << 'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {"Service": "codebuild.amazonaws.com"},
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+
+# After (working):
+echo '{' > trust.json
+echo '  "Version": "2012-10-17",' >> trust.json
+echo '  "Statement": [' >> trust.json
+echo '    {' >> trust.json
+echo '      "Effect": "Allow",' >> trust.json
+echo '      "Principal": {"Service": "codebuild.amazonaws.com"},' >> trust.json
+echo '      "Action": "sts:AssumeRole"' >> trust.json
+echo '    }' >> trust.json
+echo '  ]' >> trust.json
+echo '}' >> trust.json
+```
+
+### 2. AWS Credential Configuration Issues
+
+#### Issue: "Credentials could not be loaded, please check your action inputs"
+
+**Symptoms:**
+- Workflow fails during AWS credential configuration step
+- Error: "Could not load credentials from any providers"
+- Workflow appears to start but fails at credential step
+
+**Root Cause:**
+Missing environment secrets in GitHub repository environments:
+- `staging` environment missing `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+- `production` environment missing `AWS_ROLE_TO_ASSUME`
+
+**Solution:**
+1. **For Staging Environment**: Use personal AWS access keys
+   ```bash
+   gh secret set AWS_ACCESS_KEY_ID --env staging
+   gh secret set AWS_SECRET_ACCESS_KEY --env staging
+   ```
+
+2. **For Production Environment**: Use OIDC role assumption
+   ```bash
+   gh secret set AWS_ROLE_TO_ASSUME --env production
+   ```
+
+**Verification:**
+```bash
+# Check environment secrets
+gh secret list --env staging
+gh secret list --env production
+
+# Verify environments exist
+gh api repos/:owner/:repo/environments
+```
+
+### 3. CDK Bootstrap Trust Policy Issues
+
+#### Issue: "Invalid principal in policy: arn:aws:iam::ACCOUNT:role/GithubActionsProdRole"
+
+**Symptoms:**
+- CDK deployment fails during bootstrap step
+- Error about invalid principal in trust policy
+- Cross-account role reference issues
+
+**Root Cause:**
+CDK bootstrap command referencing production role while deploying to staging account:
+```bash
+# ❌ PROBLEMATIC - References production role in staging account
+cdk bootstrap --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole
+```
+
+**Solution:**
+Conditional credential configuration based on branch:
+```yaml
+- name: Configure AWS credentials (production via OIDC)
+  if: github.ref_name == 'main'
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+    aws-region: us-west-2
+
+- name: Configure AWS credentials (staging via access keys)
+  if: github.ref_name != 'main'
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    aws-region: us-west-2
+```
+
+## Debugging Workflow Failures
+
+### Step-by-Step Investigation Process
+
+1. **Check Workflow Status**
+   ```bash
+   gh run list --limit 5 --json status,conclusion,workflowName,headBranch
+   ```
+
+2. **Examine Specific Run**
+   ```bash
+   gh run view <RUN_ID> --log
+   ```
+
+3. **Identify Failure Point**
+   - No jobs created → YAML syntax issue
+   - Credential failure → Missing environment secrets
+   - Runtime failure → Code logic or AWS permission issue
+
+4. **Validate YAML Locally**
+   ```bash
+   # Python
+   python -c "import yaml; yaml.safe_load(open('.github/workflows/workflow.yml'))"
+   
+   # Ruby
+   ruby -e "require 'psych'; Psych.safe_load(File.read('.github/workflows/workflow.yml'))"
+   ```
+
+5. **Check Environment Secrets**
+   ```bash
+   gh secret list --env <ENVIRONMENT_NAME>
+   ```
+
+## Prevention and Best Practices
+
+1. **YAML Syntax**
+   - Avoid complex heredocs in GitHub Actions
+   - Use echo-based file creation for JSON/configuration files
+   - Validate YAML locally before pushing
+
+2. **Credential Management**
+   - Separate environments for staging and production
+   - Use OIDC for production (more secure)
+   - Use access keys for staging (simpler setup)
+
+3. **Testing**
+   - Test workflow changes on development branch first
+   - Use `workflow_dispatch` for manual testing
+   - Monitor workflow runs immediately after changes
+
+4. **Documentation**
+   - Document all environment-specific configurations
+   - Maintain troubleshooting guides for common issues
+   - Record successful fixes and their root causes
+
+---
+
+**Last Updated**: 2025-08-21 - GitHub Actions Workflow Parsing Issues Resolved
+**Status**: Production Ready ✅
+**Next Steps**: Monitor workflow stability and document any new issues 
