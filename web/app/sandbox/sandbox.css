@@ -1,5 +1,95 @@
 /* Design System Sandbox - Hyper Minimalist */
 
+/* Formatting Section */
+.formatting-demo {
+  min-width: 400px;
+  max-width: 600px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.formatting-demo h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 20px 0;
+  color: #fff;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.math-formula {
+  margin: 16px 0;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.math-formula code {
+  display: block;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 4px 0;
+  padding: 2px 0;
+}
+
+.concentric-demo {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.concentric-outer {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 41px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.concentric-middle {
+  width: 184px;
+  height: 184px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 33px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.concentric-inner {
+  width: 168px;
+  height: 168px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.concentric-inner span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 /* Sandbox Container */
 .sandbox-container {
   background: #000;
@@ -38,11 +128,11 @@
 .sandbox-subtitle {
   font-size: 1.2rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.5);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.05;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0em;
 }
 
@@ -62,13 +152,17 @@
   margin-bottom: 50px;
   padding: 30px;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
   position: relative;
 }
 
-/* 8pt Grid Indicator for Component Groups */
-.component-group::before {
+/* Apply standard border to component groups */
+.component-group {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 8pt Grid Indicator for Component Groups - REMOVED */
+/* .component-group::before {
   content: "";
   position: absolute;
   top: 0;
@@ -81,7 +175,7 @@
   pointer-events: none;
   border-radius: inherit;
   z-index: 0;
-}
+} */
 
 .h3 {
   font-size: 1.2rem;
@@ -90,6 +184,7 @@
   color: rgba(255, 255, 255, 1);
   letter-spacing: 0em;
   line-height: 1.05;
+  text-align: center;
 }
 
 /* Component Showcase */
@@ -102,6 +197,18 @@
   text-align: center;
 }
 
+/* Prevent buttons from stretching in flex containers */
+.component-showcase .cta-button,
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed {
+  flex-shrink: 0;
+  flex-grow: 0;
+  align-self: center;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Component Selector Tool - No Hover Effects */
 .component-showcase > * {
   cursor: pointer;
@@ -111,7 +218,7 @@
 /* Editable Text Fields */
 .component-showcase [contenteditable="true"] {
   outline: none;
-  border-radius: 4px;
+  border-radius: 25px;
   transition: all 0.2s ease;
 }
 
@@ -133,7 +240,7 @@
   background: rgba(255, 255, 255, 0.95);
   color: #000;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 25px;
   font-size: 0.8rem;
   font-weight: 500;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -183,9 +290,57 @@
   line-height: 1.05;
 }
 
+/* Universal Typography Classes */
+.section h1 {
+  font-size: clamp(2.9rem, 8vw, 3.9rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 2rem 0;  /* Top: 0, Right: 0, Bottom: 2rem, Left: 0 */
+}
 
+.section h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 1.5rem 0;  /* Top: 0, Right: 0, Bottom: 1.5rem, Left: 0 */
+}
 
-/* Universal Body Text Class */
+.h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+  color: rgba(255, 255, 255, 1);
+  letter-spacing: 0em;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.body-text {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  line-height: 1.6;
+  font-size: 1.2rem;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+}
+
+.body-text-highlight {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  line-height: 1.6;
+  font-size: 1.2rem;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+}
+
 .component-showcase .body-text {
   max-width: 400px;
   margin-bottom: 1.5rem;
@@ -208,121 +363,71 @@
   letter-spacing: 0em;
 }
 
+/* Beta Text - Pill-shaped outline with smaller body text */
+.beta-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  color: #fff; /* White at 100% opacity */
+  font-size: 0.7rem; /* Beta text size */
+  line-height: 1;
+  letter-spacing: 0em;
+  padding: 2px 8px;
+  border: 1.2px solid #fff; /* White border at 100% opacity */
+  border-radius: 999px; /* Pill shape */
+  background: transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  height: 1.6em; /* Match full ascender/descender height of body text (1.6 line-height) */
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.beta-text::before {
+  content: '';
+  position: absolute;
+  top: -2px; /* Extend 2px beyond to fill edge gaps */
+  left: -2px; /* Extend 2px beyond to fill edge gaps */
+  right: -2px; /* Extend 2px beyond to fill edge gaps */
+  bottom: -2px; /* Extend 2px beyond to fill edge gaps */
+  background: #fff;
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left; /* Fill from left to right */
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.beta-text:hover {
+  color: #000; /* Black text on hover */
+  border-color: #fff; /* Keep white border */
+}
+
+.beta-text:hover::before {
+  transform: scaleX(1); /* Fill from left to right */
+}
+
+/* Exit animation - different transform origin for opposite direction */
+.beta-text:not(:hover)::before {
+  transform-origin: right; /* Exit from left to right (opposite direction) */
+}
+
 /* Text Highlight Class - For emphasizing words/phrases */
+.text-highlight {
+  color: rgba(255, 255, 255, 1);
+  font-weight: 400;
+  margin: 0;  /* No additional spacing for inline elements */
+  padding: 0;  /* No additional padding for inline elements */
+}
+
 .component-showcase .text-highlight {
   color: rgba(255, 255, 255, 1);
   font-weight: 400;
 }
 
-/* Header Typography Components */
-.component-showcase .header-logo {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  padding: 6px 12px;
-  line-height: 1.2;
-  letter-spacing: 0em;
-  max-width: 200px;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(50px);
-  border-radius: 999px;
-  position: relative;
-  overflow: hidden;
-}
-
-.component-showcase .header-logo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: rgba(255, 255, 255, 0.15);
-  z-index: -1;
-  opacity: 0;
-  transform: scale(0.7);
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.component-showcase .header-logo:hover::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.component-showcase .nav-link {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  padding: 6px 12px;
-  line-height: 1.2;
-  letter-spacing: 0em;
-  max-width: 200px;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(50px);
-  border-radius: 999px;
-  position: relative;
-  overflow: hidden;
-}
-
-.component-showcase .nav-link::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: rgba(255, 255, 255, 0.15);
-  z-index: -1;
-  opacity: 0;
-  transform: scale(0.7);
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.component-showcase .nav-link:hover::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.component-showcase .toggle-icon {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  padding: 8px;
-  line-height: 0;
-  letter-spacing: 0em;
-  width: 50px;
-  height: 50px;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(50px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.component-showcase .toggle-icon::before {
-  content: "";
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: -1;
-}
-
-.component-showcase .toggle-icon:hover::before {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
+/* Header Typography Components - Removed header-logo, nav-link, toggle-icon */
 
 /* Header Layout Preview */
 .component-showcase .header-preview {
@@ -342,6 +447,7 @@
   margin-bottom: 20px;
 }
 
+/* Apply gradient border to header previews */
 .component-showcase .header-preview::before {
   content: "";
   position: absolute;
@@ -372,17 +478,25 @@
 }
 
 .component-showcase .header-logo-preview {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 16px;
-  line-height: 1.2;
   background: transparent;
   border-radius: 999px;
   position: relative;
   z-index: 1;
   cursor: pointer;
   transition: background 0.2s ease;
+  height: auto;
+  min-height: 40px;
+}
+
+.component-showcase .header-logo-preview img {
+  height: 24px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
 }
 
 .component-showcase .header-logo-preview:hover {
@@ -401,12 +515,16 @@
   font-size: 1.2rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 1);
-  padding: 6px 12px;
+  padding: 8px 16px;
   line-height: 1.2;
   background: transparent;
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .component-showcase .nav-link-preview:hover {
@@ -518,52 +636,163 @@
 .component-showcase .cta-button2-fixed {
   margin: 0 10px 20px 10px;
   flex-shrink: 0;
-  min-width: 200px;
+  min-width: 100px;
 }
 
+/* Override main styles for sandbox - White button theme */
+.component-showcase .cta-button {
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  padding: 12px 21.5px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+}
 
+/* CTA button arrow functionality - Clean SVG arrow only */
+.component-showcase .cta-button::after {
+  content: '' !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  right: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center !important;
+  background-size: contain !important;
+  filter: brightness(0) !important;
+  transition: opacity 0.3s ease !important;
+  border: none !important;
+}
+
+.component-showcase .cta-button:hover {
+  padding-right: 40px !important;
+}
+
+.component-showcase .cta-button:hover::after {
+  opacity: 1 !important;
+}
+
+.component-showcase .cta-button2,
+.component-showcase .cta-button2-fixed {
+  background: transparent !important;
+  color: #fff !important;
+  border: 2.5px solid #fff !important;
+  padding: 9.5px 21.5px !important;
+  box-sizing: border-box !important;
+}
+
+.component-showcase .cta-button2:hover,
+.component-showcase .cta-button2-fixed:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+/* Button with Icon Styles */
+.component-showcase .cta-button.with-symbol,
+.component-showcase .cta-button2-fixed.with-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.component-showcase .symbol-3d {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Icon styling for CTA button (white background, black text) */
+.component-showcase .cta-button.with-symbol .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) !important; /* Makes SVG black */
+}
+
+/* Icon styling for CTA2-fixed button (white border, white text) */
+.component-showcase .cta-button2-fixed.with-symbol .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) invert(1) !important; /* Makes SVG white */
+}
+
+/* Icon styling for CTA2-fixed button hover (white background, black text) */
+.component-showcase .cta-button2-fixed.with-symbol:hover .symbol-3d {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(0) !important; /* Makes SVG black on hover */
+}
+
+/* Robust icon color system - works for any icon */
+.component-showcase .cta-button .symbol-3d {
+  filter: brightness(0) !important; /* Black icons on white background */
+}
+
+.component-showcase .cta-button2 .symbol-3d,
+.component-showcase .cta-button2-fixed .symbol-3d {
+  filter: brightness(0) invert(1) !important; /* White icons on transparent background */
+}
+
+.component-showcase .cta-button2:hover .symbol-3d,
+.component-showcase .cta-button2-fixed:hover .symbol-3d {
+  filter: brightness(0) !important; /* Black icons on white background on hover */
+}
 
 /* Cards Showcase */
 .component-showcase .default-card {
-  min-width: 320px;
-  max-width: 400px;
-  flex-shrink: 0;
+  width: 100%;
+  max-width: 480px; /* Increased from 400px for better desktop width */
+  min-width: 280px; /* Reduced from 320px for better mobile fit */
+  flex: 1; /* Allow flexible sizing instead of flex-shrink: 0 */
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   border-radius: 25px;
   padding: 32px;
+  padding-bottom: calc(32px + 24px + 24px); /* Add space for button (24px height + 12px margin + 12px bottom) */
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  /* CSS Variables for concentricity */
+  --card-padding: 32px;
+  --concentric-spacing: 12px; /* Increased from 8px to 12px */
+  --button-margin: var(--concentric-spacing);
+  --button-height: 24px; /* Button height for calculations */
+  border-radius: 29px; /* Recalculated: 25px base + 4px (12px - 8px) = 29px */
 }
 
-/* Glasmorphic Edge Border - Style Guide Spec */
-.default-card::before {
+/* Apply gradient border to default cards */
+.component-showcase .default-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 3px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
 
-.default-card h3 {
+.component-showcase .default-card h3 {
   font-size: 1.5rem;
   font-weight: 500;
   margin: 0 0 16px 0;
@@ -577,7 +806,7 @@
   letter-spacing: 0em;
 }
 
-.default-card p {
+.component-showcase .default-card p {
   color: rgba(255, 255, 255, 0.5);
   font-size: 1.2rem;
   line-height: 1.6;
@@ -594,11 +823,169 @@
   letter-spacing: 0em;
 }
 
-.component-showcase .project-box,
-.component-showcase .new-project-card,
+/* Default Card Button - New class based on cta-button2-fixed but independent */
+.component-showcase .default-card .default-card-button {
+  position: absolute; /* Break out of card's padding system */
+  bottom: var(--button-margin); /* 12px from card's bottom border (concentric spacing) */
+  left: var(--button-margin); /* 12px from card's left border (concentric spacing) */
+  right: var(--button-margin); /* 12px from card's right border (concentric spacing) */
+  z-index: 1;
+  display: block; /* Make it a block element for full width */
+  text-align: center; /* Center the button text */
+  box-sizing: border-box; /* Include border in width calculation */
+  
+  /* Based on cta-button2-fixed styling */
+  text-decoration: none;
+  padding: 9.5px 21.5px;
+  border-radius: 999px;
+  transition: background 0.3s ease;
+  border: 2.5px solid #fff;
+  color: #fff;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  /* Button height: 24px (9.5px padding top + 9.5px padding bottom + 2.5px border top + 2.5px border bottom) */
+  /* Now truly concentric: 12px from all card borders, regardless of card padding changes */
+}
+
+.component-showcase .default-card .default-card-button:hover {
+  background: #fff;
+  color: #000;
+}
+
 .component-showcase .waitlist-card {
   min-width: 280px;
   flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 25px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Apply gradient border to waitlist card */
+.component-showcase .waitlist-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dashboard project cards should use standard border, not gradient */
+.component-showcase .project-cards .project-box,
+.component-showcase .account-card,
+.component-showcase .loading-card {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.component-showcase .project-cards .project-box::before,
+.component-showcase .account-card::before,
+.component-showcase .loading-card::before {
+  display: none;
+}
+
+/* New project card styles removed */
+
+/* Popup components should use standard border */
+.component-showcase .popup-overlay,
+.component-showcase .accordion-section,
+.component-showcase .category-outline,
+.component-showcase .popup-input-wrapper,
+.component-showcase .flight-path-download-btn,
+.component-showcase .upload-zone,
+.component-showcase .address-search-wrapper,
+.component-showcase .expand-button,
+.component-showcase .modal-popup-overlay {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.component-showcase .popup-overlay::before,
+.component-showcase .accordion-section::before,
+.component-showcase .category-outline::before,
+.component-showcase .popup-input-wrapper::before,
+.component-showcase .flight-path-download-btn::before,
+.component-showcase .upload-zone::before,
+.component-showcase .address-search-wrapper::before,
+.component-showcase .expand-button::before,
+.component-showcase .modal-popup-overlay::before {
+  display: none;
+}
+
+/* Expand button and address search should have gradient borders only */
+.component-showcase .expand-button,
+.component-showcase .address-search-wrapper {
+  border: none;
+}
+
+.component-showcase .expand-button::before,
+.component-showcase .address-search-wrapper::before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Modal popup content and accordion sections need proper border radius */
+.component-showcase .modal-popup-content,
+.component-showcase .accordion-section,
+.component-showcase .popup-overlay {
+  border-radius: 25px;
+}
+
+/* Popup section should match the clean design from actual new project popup */
+.component-showcase .popup-section {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.component-showcase .popup-section::before {
+  display: none;
+}
+
+/* Ensure card content is above the border */
+.component-showcase .waitlist-card .waitlist-header,
+.component-showcase .waitlist-card h1,
+.component-showcase .waitlist-card p {
+  position: relative;
+  z-index: 1;
 }
 
 /* Map Showcase */
@@ -622,9 +1009,30 @@
 }
 
 /* Responsive Design */
+
+/* Tablet breakpoint */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .component-showcase .default-card {
+    max-width: 480px; /* Match desktop width for consistency */
+    min-width: 260px;
+  }
+}
+
 @media (max-width: 768px) {
   .sandbox-container {
     padding: 100px 16px 40px 16px;
+  }
+  
+  /* Adjust card concentricity for smaller screens */
+  .component-showcase .default-card {
+    --card-padding: 24px; /* Smaller padding on mobile */
+    --concentric-spacing: 9px; /* Proportional spacing (12px * 0.75) */
+    --button-margin: var(--concentric-spacing);
+    padding: 24px; /* Override desktop padding */
+    padding-bottom: calc(24px + 24px + 18px); /* Add space for button (24px height + 9px margin + 9px bottom) */
+    border-radius: 26px; /* Recalculated: 25px base + 1px (9px - 8px) = 26px */
+    min-width: 240px; /* Even smaller minimum for mobile */
+    max-width: 100%; /* Allow full width on mobile */
   }
   
   .sandbox-title {
@@ -637,20 +1045,21 @@
   
   .component-showcase {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
   }
   
   .component-showcase .cta-button,
   .component-showcase .cta-button2,
   .component-showcase .cta-button2-fixed {
-    width: 100%;
     text-align: center;
+    width: auto !important;
+    max-width: none !important;
+    flex: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block;
   }
   
-
-  
-  .component-showcase .project-box,
-  .component-showcase .new-project-card,
   .component-showcase .waitlist-card {
     width: 100%;
     min-width: unset;
@@ -665,8 +1074,6 @@
     width: 100%;
     max-width: none;
   }
-  
-
   
   .component-name-pill {
     font-size: 0.75rem;
@@ -696,6 +1103,17 @@
     font-size: 1.1rem;
   }
   
+  .component-showcase .default-card {
+    min-width: 200px;
+    max-width: 100%; /* Full width on very small screens */
+    padding: 20px;
+    padding-bottom: calc(20px + 24px + 16px);
+    --card-padding: 20px;
+    --concentric-spacing: 8px;
+    --button-margin: var(--concentric-spacing);
+    border-radius: 25px; /* Back to base radius on very small screens */
+  }
+  
   .component-name-pill {
     font-size: 0.7rem;
     padding: 5px 10px;
@@ -718,29 +1136,37 @@
   align-items: center;
   margin-bottom: 20px;
   padding: 20px;
-  border-radius: 25px;
+  border-radius: 40px;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  border: 3px solid rgba(255, 255, 255, 0.1);
   min-width: 400px;
   box-sizing: border-box;
+}
+
+/* Apply standard border to color swatch container */
+.component-showcase .color-swatch-container {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .color-swatch {
   width: 80px;
   height: 80px;
-  border-radius: 12px;
+  border-radius: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(255, 255, 255, 0.1);
   font-size: 0.875rem;
   text-align: center;
   line-height: 1.2;
   box-sizing: border-box;
+}
+
+/* Apply standard border to color swatches */
+.component-showcase .color-swatch {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .color-swatch.pure-white {
@@ -754,11 +1180,19 @@
 .component-showcase .opacity-stop-50 { background: rgba(255, 255, 255, 0.5); }
 .component-showcase .opacity-stop-100 { background: rgba(255, 255, 255, 1); color: rgba(0, 0, 0, 0.8); }
 
+/* Hex Color Swatches */
+.component-showcase .hex-dc9ed8 { background: #DC9ED8; }
+.component-showcase .hex-cd70e4 { background: #CD70E4; }
+.component-showcase .hex-d869b3 { background: #D869B3; }
+.component-showcase .hex-e4617c { background: #E4617C; }
+.component-showcase .hex-eb5c5a { background: #EB5C5A; }
+.component-showcase .hex-e47991 { background: #E47991; }
+
 /* Opacity Stops against Light Background */
 .component-showcase .light-background-container {
   background: rgba(255, 255, 255, 0.9);
   padding: 20px;
-  border-radius: 25px;
+  border-radius: 40px;
   margin-bottom: 20px;
   min-width: 400px;
   display: flex;
@@ -766,12 +1200,20 @@
   gap: 16px;
   justify-content: center;
   align-items: center;
-  border: 3px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+
+/* Apply standard border to light background container */
+.component-showcase .light-background-container {
+  border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
 .component-showcase .light-background-container .color-swatch {
   color: rgba(0, 0, 0, 0.8);
+}
+
+/* Apply standard border to light background color swatches */
+.component-showcase .light-background-container .color-swatch {
   border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -779,57 +1221,6 @@
 .component-showcase .light-background-container .opacity-stop-20-dark { background: rgba(0, 0, 0, 0.2); }
 .component-showcase .light-background-container .opacity-stop-50-dark { background: rgba(0, 0, 0, 0.5); }
 .component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: rgba(255, 255, 255, 0.8); }
-
-/* Spaceport Prism - Actual conic gradient with six hex codes from gradient editor */
-.component-showcase .spaceport-prism {
-  width: 300px;
-  height: 200px;
-  background: conic-gradient(
-    from 0deg,
-    #DC9ED8 0deg,
-    #CD70E4 144deg,
-    #D869B3 180deg,
-    #E4617C 208.8deg,
-    #EB5C5A 259.2deg,
-    #E47991 334.8deg,
-    #DC9ED8 360deg
-  );
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 1);
-  font-weight: 600;
-  margin-bottom: 20px;
-  position: relative;
-  box-sizing: border-box;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.component-showcase .spaceport-prism::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  box-sizing: border-box;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.component-showcase .spaceport-prism .prism-content {
-  text-align: center;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 16px 24px;
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  position: relative;
-  z-index: 2;
-}
 
 /* Border Demo Components */
 .component-showcase .standard-border-demo {
@@ -840,8 +1231,12 @@
   -webkit-backdrop-filter: blur(40px);
   border-radius: 25px;
   padding: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
+}
+
+/* Apply standard border to standard border demo */
+.component-showcase .standard-border-demo {
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .component-showcase .standard-border-demo h3 {
@@ -873,26 +1268,24 @@
   box-sizing: border-box;
 }
 
+/* Apply gradient border to gradient border demo */
 .component-showcase .gradient-border-demo::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1px;
+  padding: 1.4px;
   pointer-events: none;
   z-index: 0;
 }
