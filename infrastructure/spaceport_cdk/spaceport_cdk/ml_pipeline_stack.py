@@ -112,7 +112,8 @@ class MLPipelineStack(Stack):
                                 "sagemaker:DescribeProcessingJob",
                                 "sagemaker:DescribeTrainingJob",
                                 "sagemaker:StopProcessingJob",
-                                "sagemaker:StopTrainingJob"
+                                "sagemaker:StopTrainingJob",
+                                "sagemaker:AddTags"
                             ],
                             resources=["*"]
                         ),
@@ -299,6 +300,17 @@ class MLPipelineStack(Stack):
                         }
                     }]
                 },
+                # Enable comprehensive CloudWatch logging
+                # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
+                "Environment": {
+                    "AWS_DEFAULT_REGION": self.region,
+                    "PYTHONUNBUFFERED": "1"
+                },
+                "Tags": [
+                    {"Key": "Project", "Value": "Spaceport"},
+                    {"Key": "Component", "Value": "SfM"},
+                    {"Key": "Environment", "Value": suffix}
+                ],
                 "RoleArn": sagemaker_role.role_arn
             },
             iam_resources=[
@@ -356,14 +368,26 @@ class MLPipelineStack(Stack):
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g5.xlarge",  # A10G GPU - supports gsplat labeled_partition
+                    "InstanceType": "ml.g5.2xlarge",  # A10G GPU with 32GB RAM - supports Vincent Woo's full methodology
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
                     "MaxRuntimeInSeconds": 7200  # 2 hours for real training
                 },
                 "RoleArn": sagemaker_role.role_arn,
+                # Enable comprehensive CloudWatch logging for training
+                # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
+                "Tags": [
+                    {"Key": "Project", "Value": "Spaceport"},
+                    {"Key": "Component", "Value": "3DGS"},
+                    {"Key": "Environment", "Value": suffix}
+                ],
                 "Environment": {
+                    # Enable detailed logging
+                    "AWS_DEFAULT_REGION": self.region,
+                    "PYTHONUNBUFFERED": "1",
+                    "SAGEMAKER_PROGRAM": "train.py",
+                    
                     # Vincent Woo's NerfStudio Methodology - Core Parameters
                     # Note: All values must be strings for SageMaker environment variables
                     "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MAX_ITERATIONS")),
@@ -454,6 +478,17 @@ class MLPipelineStack(Stack):
                         }
                     }]
                 },
+                # Enable comprehensive CloudWatch logging
+                # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
+                "Environment": {
+                    "AWS_DEFAULT_REGION": self.region,
+                    "PYTHONUNBUFFERED": "1"
+                },
+                "Tags": [
+                    {"Key": "Project", "Value": "Spaceport"},
+                    {"Key": "Component", "Value": "Compression"},
+                    {"Key": "Environment", "Value": suffix}
+                ],
                 "RoleArn": sagemaker_role.role_arn
             },
             iam_resources=[

@@ -123,6 +123,12 @@ class OpenSfMGPSPipeline:
             
             # Map photos to 3D positions
             processor.map_photos_to_3d_positions(photos)
+            # Refine using EXIF+trajectory projection for sub-meter altitude
+            try:
+                processor.apply_exif_trajectory_projection(photos)
+                logger.info("✅ Applied EXIF+trajectory projection refinement")
+            except Exception as refine_err:
+                logger.warning(f"⚠️ EXIF+trajectory projection skipped due to error: {refine_err}")
             
             # Generate OpenSfM files
             processor.generate_opensfm_files(self.opensfm_dir)
@@ -329,18 +335,31 @@ class OpenSfMGPSPipeline:
                 with open(points_file, 'r') as f:
                     lines = f.readlines()
                     
-                # Check header for mean track length
-                for line in lines:
-                    if line.startswith('# Number of points:') and 'mean track length:' in line:
-                        parts = line.split('mean track length:')
-                        if len(parts) > 1:
-                            try:
-                                results['mean_track_length'] = float(parts[1].strip())
-                                if results['mean_track_length'] > 0:
-                                    results['has_tracks'] = True
-                            except ValueError:
-                                pass
-                        break
+                # Check for tracks by analyzing COLMAP points3D.txt structure
+                # OpenSfM native export doesn't include mean track length header,
+                # so we validate tracks by checking if points have observations
+                non_comment_lines = [line for line in lines if line.strip() and not line.startswith('#')]
+                if non_comment_lines:
+                    # Sample first few points to check for track data
+                    sample_size = min(10, len(non_comment_lines))
+                    total_observations = 0
+                    
+                    for line in non_comment_lines[:sample_size]:
+                        parts = line.strip().split()
+                        # COLMAP points3D.txt format: POINT3D_ID X Y Z R G B ERROR TRACK[...]
+                        if len(parts) >= 8:  # At least point data + error
+                            # Track data starts after ERROR (index 7)
+                            track_data = parts[8:]  # Everything after ERROR
+                            # Track format: IMAGE_ID POINT2D_IDX IMAGE_ID POINT2D_IDX ...
+                            observations = len(track_data) // 2  # Each observation is 2 values
+                            total_observations += observations
+                    
+                    if total_observations > 0:
+                        results['mean_track_length'] = total_observations / sample_size
+                        results['has_tracks'] = True
+                        logger.info(f"   Track validation: {total_observations} total observations in {sample_size} sample points")
+                    else:
+                        logger.warning("   Track validation: No observations found in sampled points")
                 
                 # Count points
                 point_lines = [line for line in lines if line.strip() and not line.startswith('#')]
