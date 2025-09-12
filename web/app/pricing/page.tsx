@@ -1,17 +1,56 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSubscription } from '../hooks/useSubscription';
+import { configureAmplify } from '../amplifyClient';
+import { Auth } from 'aws-amplify';
 
 export const runtime = 'edge';
 
 export default function Pricing(): JSX.Element {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const { redirectToCheckout, loading } = useSubscription();
 
+  useEffect(() => {
+    // Configure Amplify and check authentication status
+    configureAmplify();
+    
+    const checkAuth = async () => {
+      try {
+        await Auth.currentAuthenticatedUser();
+        setIsAuthenticated(true);
+        
+        // Check for pending plan selection
+        const selectedPlanStr = sessionStorage.getItem('selectedPlan');
+        if (selectedPlanStr) {
+          const { plan, referral } = JSON.parse(selectedPlanStr);
+          sessionStorage.removeItem('selectedPlan');
+          console.log('Found pending plan selection, starting checkout:', plan);
+          await redirectToCheckout(plan, referral);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    
+    checkAuth();
+  }, [redirectToCheckout]);
+
   const handleSubscribe = async (planType: 'single' | 'starter' | 'growth') => {
-    try {
-      await redirectToCheckout(planType);
-    } catch (error) {
-      console.error('Subscription error:', error);
+    if (isAuthenticated === false) {
+      // Redirect to auth page with plan selection
+      router.push(`/auth?redirect=pricing&plan=${planType}`);
+      return;
+    }
+    
+    if (isAuthenticated === true) {
+      try {
+        await redirectToCheckout(planType);
+      } catch (error) {
+        console.error('Subscription error:', error);
+      }
     }
   };
 
@@ -32,9 +71,11 @@ export default function Pricing(): JSX.Element {
             <button 
               onClick={() => handleSubscribe('single')} 
               className="cta-button"
-              disabled={loading}
+              disabled={isAuthenticated === null || loading}
             >
-              {loading ? 'Loading...' : 'Get started'}
+              {isAuthenticated === null ? 'Loading...' : 
+               isAuthenticated === false ? 'Sign in to Subscribe' : 
+               loading ? 'Loading...' : 'Get started'}
             </button>
           </div>
 
@@ -45,9 +86,11 @@ export default function Pricing(): JSX.Element {
             <button 
               onClick={() => handleSubscribe('starter')} 
               className="cta-button"
-              disabled={loading}
+              disabled={isAuthenticated === null || loading}
             >
-              {loading ? 'Loading...' : 'Start Starter'}
+              {isAuthenticated === null ? 'Loading...' : 
+               isAuthenticated === false ? 'Sign in to Subscribe' : 
+               loading ? 'Loading...' : 'Start Starter'}
             </button>
           </div>
 
@@ -58,9 +101,11 @@ export default function Pricing(): JSX.Element {
             <button 
               onClick={() => handleSubscribe('growth')} 
               className="cta-button"
-              disabled={loading}
+              disabled={isAuthenticated === null || loading}
             >
-              {loading ? 'Loading...' : 'Start Growth'}
+              {isAuthenticated === null ? 'Loading...' : 
+               isAuthenticated === false ? 'Sign in to Subscribe' : 
+               loading ? 'Loading...' : 'Start Growth'}
             </button>
           </div>
 

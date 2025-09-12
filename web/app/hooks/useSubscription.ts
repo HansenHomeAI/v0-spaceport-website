@@ -36,9 +36,16 @@ export const useSubscription = () => {
       setError(null);
       
       // Check if user is authenticated first
-      const currentUser = await Auth.currentAuthenticatedUser();
-      if (!currentUser) {
-        console.log('No authenticated user, skipping subscription fetch');
+      try {
+        const currentUser = await Auth.currentAuthenticatedUser();
+        if (!currentUser) {
+          console.log('No authenticated user, skipping subscription fetch');
+          setLoading(false);
+          return;
+        }
+      } catch (authError) {
+        // User is not authenticated, which is fine for pricing page
+        console.log('User not authenticated, skipping subscription fetch');
         setLoading(false);
         return;
       }
@@ -78,6 +85,7 @@ export const useSubscription = () => {
     try {
       setError(null);
       
+      // Assume user is authenticated when this function is called
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       const currentUser = await Auth.currentAuthenticatedUser();
@@ -130,8 +138,16 @@ export const useSubscription = () => {
     try {
       setError(null);
       
-      const session = await Auth.currentSession();
-      const idToken = session.getIdToken().getJwtToken();
+      // Check if user is authenticated
+      let idToken;
+      try {
+        const session = await Auth.currentSession();
+        idToken = session.getIdToken().getJwtToken();
+      } catch (authError) {
+        console.error('User not authenticated, cannot cancel subscription');
+        setError('You must be signed in to cancel your subscription');
+        return;
+      }
       
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
