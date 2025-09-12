@@ -51,7 +51,7 @@ export const useSubscription = () => {
       }
       
       const session = await Auth.currentSession();
-      const accessToken = session.getAccessToken().getJwtToken();
+      const accessToken = session.getIdToken().getJwtToken();
       
       const response = await fetch('/api/subscription-status', {
         headers: {
@@ -87,7 +87,7 @@ export const useSubscription = () => {
       
       // Assume user is authenticated when this function is called
       const session = await Auth.currentSession();
-      const accessToken = session.getAccessToken().getJwtToken();
+      const accessToken = session.getIdToken().getJwtToken();
       const currentUser = await Auth.currentAuthenticatedUser();
       
       const response = await fetch('/api/create-checkout-session', {
