@@ -14,12 +14,17 @@ export default function Pricing(): JSX.Element {
   const { redirectToCheckout, loading } = useSubscription();
 
   useEffect(() => {
+    console.log('Pricing page useEffect running...');
+    
     // Configure Amplify and check authentication status
-    configureAmplify();
+    const amplifyConfigured = configureAmplify();
+    console.log('Amplify configured:', amplifyConfigured);
     
     const checkAuth = async () => {
       try {
+        console.log('Checking authentication...');
         await Auth.currentAuthenticatedUser();
+        console.log('User is authenticated');
         setIsAuthenticated(true);
         
         // Check for pending plan selection
@@ -30,7 +35,8 @@ export default function Pricing(): JSX.Element {
           console.log('Found pending plan selection, starting checkout:', plan);
           await redirectToCheckout(plan, referral);
         }
-      } catch {
+      } catch (error) {
+        console.log('User is not authenticated:', error);
         setIsAuthenticated(false);
       }
     };
@@ -73,9 +79,13 @@ export default function Pricing(): JSX.Element {
               className="cta-button"
               disabled={isAuthenticated === null || loading}
             >
-              {isAuthenticated === null ? 'Loading...' : 
-               isAuthenticated === false ? 'Sign in to Subscribe' : 
-               loading ? 'Loading...' : 'Get started'}
+              {(() => {
+                console.log('Button render - isAuthenticated:', isAuthenticated, 'loading:', loading);
+                if (isAuthenticated === null) return 'Loading...';
+                if (isAuthenticated === false) return 'Sign in to Subscribe';
+                if (loading) return 'Loading...';
+                return 'Get started';
+              })()}
             </button>
           </div>
 
