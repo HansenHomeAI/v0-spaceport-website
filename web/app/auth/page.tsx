@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import AuthGate from './AuthGate';
 
-export default function AuthPage(): JSX.Element {
+// Component that handles redirect after authentication
+function AuthSuccessRedirect() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -13,11 +14,7 @@ export default function AuthPage(): JSX.Element {
   const referral = searchParams.get('referral');
 
   useEffect(() => {
-    // This effect will run after successful authentication
-    // AuthGate will handle the authentication flow
-  }, []);
-
-  const handleAuthSuccess = () => {
+    // This will run when the component mounts (after AuthGate renders children)
     // Determine where to redirect after successful authentication
     if (redirect === 'pricing' && plan) {
       // Store plan selection and redirect to pricing
@@ -29,16 +26,21 @@ export default function AuthPage(): JSX.Element {
       // Default redirect to dashboard/create
       router.push('/create');
     }
-  };
+  }, [redirect, plan, referral, router]);
 
+  return (
+    <div className="auth-success">
+      <h2>Authentication Successful!</h2>
+      <p>Redirecting you now...</p>
+    </div>
+  );
+}
+
+export default function AuthPage(): JSX.Element {
   return (
     <div className="auth-page">
       <AuthGate>
-        <div className="auth-success">
-          <h2>Authentication Successful!</h2>
-          <p>Redirecting you now...</p>
-          {handleAuthSuccess()}
-        </div>
+        <AuthSuccessRedirect />
       </AuthGate>
     </div>
   );
