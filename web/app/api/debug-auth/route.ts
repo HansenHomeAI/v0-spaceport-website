@@ -6,7 +6,7 @@ export async function GET(): Promise<Response> {
     const { Auth } = await import('aws-amplify');
     
     // Test if we can configure Amplify
-    const { configureAmplify } = await import('../amplifyClient');
+    const { configureAmplify } = await import('../../amplifyClient');
     const configured = configureAmplify();
     
     return new Response(JSON.stringify({
