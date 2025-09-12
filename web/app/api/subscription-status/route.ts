@@ -1,15 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+export const runtime = 'edge';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request): Promise<Response> {
   try {
     // Get the subscription API URL from environment variables
     const subscriptionApiUrl = process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL;
     
     if (!subscriptionApiUrl) {
-      return NextResponse.json(
-        { error: 'Subscription API URL not configured' },
-        { status: 500 }
+      return new Response(
+        JSON.stringify({ error: 'Subscription API URL not configured' }),
+        { 
+          status: 500,
+          headers: { 'content-type': 'application/json; charset=utf-8' }
+        }
       );
     }
 
@@ -24,9 +26,10 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
     
-    return NextResponse.json(data, { 
+    return new Response(JSON.stringify(data), {
       status: response.status,
       headers: {
+        'content-type': 'application/json; charset=utf-8',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -35,15 +38,18 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error proxying subscription status request:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch subscription status' },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch subscription status' }),
+      { 
+        status: 500,
+        headers: { 'content-type': 'application/json; charset=utf-8' }
+      }
     );
   }
 }
 
-export async function OPTIONS() {
-  return new NextResponse(null, {
+export async function OPTIONS(): Promise<Response> {
+  return new Response(null, {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
