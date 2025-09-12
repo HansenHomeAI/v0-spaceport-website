@@ -51,11 +51,11 @@ export const useSubscription = () => {
       }
       
       const session = await Auth.currentSession();
-      const accessToken = session.getAccessToken().getJwtToken();
+      const idToken = session.getIdToken().getJwtToken();
       
       const response = await fetch('/api/subscription-status', {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json',
         },
       });
@@ -87,13 +87,13 @@ export const useSubscription = () => {
       
       // Assume user is authenticated when this function is called
       const session = await Auth.currentSession();
-      const accessToken = session.getAccessToken().getJwtToken();
+      const idToken = session.getIdToken().getJwtToken();
       const currentUser = await Auth.currentAuthenticatedUser();
       
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -139,10 +139,10 @@ export const useSubscription = () => {
       setError(null);
       
       // Check if user is authenticated
-      let accessToken;
+      let idToken;
       try {
         const session = await Auth.currentSession();
-        accessToken = session.getAccessToken().getJwtToken();
+        idToken = session.getIdToken().getJwtToken();
       } catch (authError) {
         console.error('User not authenticated, cannot cancel subscription');
         setError('You must be signed in to cancel your subscription');
@@ -152,7 +152,7 @@ export const useSubscription = () => {
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json',
         },
       });
