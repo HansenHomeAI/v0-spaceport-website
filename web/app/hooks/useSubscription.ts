@@ -51,12 +51,12 @@ export const useSubscription = () => {
       }
       
       const session = await Auth.currentSession();
-      const idToken = session.getIdToken().getJwtToken();
+      const accessToken = session.getAccessToken().getJwtToken();
       const userSub = session.getIdToken().decodePayload().sub;
       
       const response = await fetch('/api/subscription-status', {
         headers: {
-          'Authorization': `Bearer ${idToken}`,
+          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
           'X-User-Sub': userSub || '',
         },
@@ -89,14 +89,14 @@ export const useSubscription = () => {
       
       // Assume user is authenticated when this function is called
       const session = await Auth.currentSession();
-      const idToken = session.getIdToken().getJwtToken();
+      const accessToken = session.getAccessToken().getJwtToken();
       const currentUser = await Auth.currentAuthenticatedUser();
       const userSub = session.getIdToken().decodePayload().sub;
       
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${idToken}`,
+          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
           'X-User-Sub': userSub || '',
         },
@@ -143,11 +143,11 @@ export const useSubscription = () => {
       setError(null);
       
       // Check if user is authenticated
-      let idToken;
+      let accessToken;
       let userSub;
       try {
         const session = await Auth.currentSession();
-        idToken = session.getIdToken().getJwtToken();
+        accessToken = session.getAccessToken().getJwtToken();
         userSub = session.getIdToken().decodePayload().sub;
       } catch (authError) {
         console.error('User not authenticated, cannot cancel subscription');
@@ -158,7 +158,7 @@ export const useSubscription = () => {
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${idToken}`,
+          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
           'X-User-Sub': userSub || '',
         },
