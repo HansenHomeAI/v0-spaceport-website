@@ -52,13 +52,11 @@ export const useSubscription = () => {
       
       const session = await Auth.currentSession();
       const accessToken = session.getAccessToken().getJwtToken();
-      const userSub = session.getIdToken().decodePayload().sub;
       
       const response = await fetch('/api/subscription-status', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-          'X-User-Sub': userSub || '',
         },
       });
 
@@ -91,14 +89,12 @@ export const useSubscription = () => {
       const session = await Auth.currentSession();
       const accessToken = session.getAccessToken().getJwtToken();
       const currentUser = await Auth.currentAuthenticatedUser();
-      const userSub = session.getIdToken().decodePayload().sub;
       
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-          'X-User-Sub': userSub || '',
         },
         body: JSON.stringify({
           planType,
@@ -144,11 +140,9 @@ export const useSubscription = () => {
       
       // Check if user is authenticated
       let accessToken;
-      let userSub;
       try {
         const session = await Auth.currentSession();
         accessToken = session.getAccessToken().getJwtToken();
-        userSub = session.getIdToken().decodePayload().sub;
       } catch (authError) {
         console.error('User not authenticated, cannot cancel subscription');
         setError('You must be signed in to cancel your subscription');
@@ -160,7 +154,6 @@ export const useSubscription = () => {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-          'X-User-Sub': userSub || '',
         },
       });
 
