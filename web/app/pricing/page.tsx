@@ -11,7 +11,8 @@ export const runtime = 'edge';
 export default function Pricing(): JSX.Element {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const { redirectToCheckout, loading } = useSubscription();
+  const [isLoading, setIsLoading] = useState(true);
+  const { redirectToCheckout, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     console.log('Pricing page useEffect running...');
@@ -26,6 +27,7 @@ export default function Pricing(): JSX.Element {
         await Auth.currentAuthenticatedUser();
         console.log('User is authenticated');
         setIsAuthenticated(true);
+        setIsLoading(false);
         
         // Check for pending plan selection
         const selectedPlanStr = sessionStorage.getItem('selectedPlan');
@@ -38,6 +40,7 @@ export default function Pricing(): JSX.Element {
       } catch (error) {
         console.log('User is not authenticated:', error);
         setIsAuthenticated(false);
+        setIsLoading(false);
       }
     };
     
@@ -77,13 +80,13 @@ export default function Pricing(): JSX.Element {
             <button 
               onClick={() => handleSubscribe('single')} 
               className="cta-button"
-              disabled={isAuthenticated === null || loading}
+              disabled={isLoading || subscriptionLoading}
             >
               {(() => {
-                console.log('Button render - isAuthenticated:', isAuthenticated, 'loading:', loading);
-                if (isAuthenticated === null) return 'Loading...';
+                console.log('Button render - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading, 'subscriptionLoading:', subscriptionLoading);
+                if (isLoading) return 'Loading...';
                 if (isAuthenticated === false) return 'Sign in to Subscribe';
-                if (loading) return 'Loading...';
+                if (subscriptionLoading) return 'Loading...';
                 return 'Get started';
               })()}
             </button>
@@ -96,11 +99,11 @@ export default function Pricing(): JSX.Element {
             <button 
               onClick={() => handleSubscribe('starter')} 
               className="cta-button"
-              disabled={isAuthenticated === null || loading}
+              disabled={isLoading || subscriptionLoading}
             >
-              {isAuthenticated === null ? 'Loading...' : 
+              {isLoading ? 'Loading...' : 
                isAuthenticated === false ? 'Sign in to Subscribe' : 
-               loading ? 'Loading...' : 'Start Starter'}
+               subscriptionLoading ? 'Loading...' : 'Start Starter'}
             </button>
           </div>
 
@@ -111,11 +114,11 @@ export default function Pricing(): JSX.Element {
             <button 
               onClick={() => handleSubscribe('growth')} 
               className="cta-button"
-              disabled={isAuthenticated === null || loading}
+              disabled={isLoading || subscriptionLoading}
             >
-              {isAuthenticated === null ? 'Loading...' : 
+              {isLoading ? 'Loading...' : 
                isAuthenticated === false ? 'Sign in to Subscribe' : 
-               loading ? 'Loading...' : 'Start Growth'}
+               subscriptionLoading ? 'Loading...' : 'Start Growth'}
             </button>
           </div>
 
