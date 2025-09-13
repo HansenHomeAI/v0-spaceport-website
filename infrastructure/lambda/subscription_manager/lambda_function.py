@@ -36,7 +36,15 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         http_method = event.get('httpMethod', '')
         path = event.get('path', '')
-        
+
+        # Normalize API Gateway resource prefix to match internal routing
+        # API resources are defined under '/subscription/*', but internal
+        # handlers expect paths without the '/subscription' prefix.
+        if isinstance(path, str) and path.startswith('/subscription'):
+            normalized = path[len('/subscription'):] or '/'
+            logger.info(f"Normalizing path from {path} to {normalized}")
+            path = normalized
+
         logger.info(f"Processing {http_method} request to {path}")
         
         if http_method == 'POST' and path == '/create-checkout-session':
