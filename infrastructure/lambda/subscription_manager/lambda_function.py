@@ -308,8 +308,8 @@ def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str
     try:
         table = dynamodb.Table(USERS_TABLE)
         
-        # Get current user data using userSub
-        response = table.get_item(Key={'userSub': user_sub})
+        # Get current user data using id (table partition key)
+        response = table.get_item(Key={'id': user_sub})
         current_data = response.get('Item', {})
         
         # Get plan features from centralized config
@@ -317,7 +317,7 @@ def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str
         
         # Update subscription data
         subscription_data = {
-            'userSub': user_sub,
+            'id': user_sub,
             'subscriptionId': subscription_id,
             'SubType': plan_type,  # Main field for subscription tier
             'planType': plan_type,  # Keep for backward compatibility
@@ -593,7 +593,7 @@ def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
         
         # Get subscription from DynamoDB
         table = dynamodb.Table(USERS_TABLE)
-        response = table.get_item(Key={'userSub': user_sub})
+        response = table.get_item(Key={'id': user_sub})
         
         if 'Item' in response:
             user_data = response['Item']
@@ -657,7 +657,7 @@ def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
         
         # Get subscription ID
         table = dynamodb.Table(USERS_TABLE)
-        response = table.get_item(Key={'userSub': user_sub})
+        response = table.get_item(Key={'id': user_sub})
         
         if 'Item' not in response:
             return {
@@ -731,7 +731,7 @@ def create_default_user_profile(user_sub: str) -> None:
         
         # Create default user profile
         user_profile = {
-            'userSub': user_sub,
+            'id': user_sub,
             'SubType': 'beta',  # Default to beta plan
             'planType': 'beta',
             'status': 'active',
