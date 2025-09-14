@@ -19,7 +19,7 @@ export async function POST(request: Request): Promise<Response> {
     const body = await request.json();
 
     // Forward the request to the AWS Lambda API (ensure /subscription prefix)
-      const response = await fetch(`${subscriptionApiUrl}/create-checkout-session`, {
+      const response = await fetch(`${subscriptionApiUrl}/subscription/create-checkout-session`, {
       method: 'POST',
       headers: {
         'Authorization': request.headers.get('Authorization') || '',

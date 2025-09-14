@@ -16,7 +16,7 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     // Forward the request to the AWS Lambda API (ensure /subscription prefix)
-      const response = await fetch(`${subscriptionApiUrl}/cancel-subscription`, {
+      const response = await fetch(`${subscriptionApiUrl}/subscription/cancel-subscription`, {
       method: 'POST',
       headers: {
         'Authorization': request.headers.get('Authorization') || '',
