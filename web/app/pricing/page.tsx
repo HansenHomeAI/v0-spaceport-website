@@ -1,6 +1,68 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSubscription } from '../hooks/useSubscription';
+import { configureAmplify } from '../amplifyClient';
+import { Auth } from 'aws-amplify';
+
 export const runtime = 'edge';
 
 export default function Pricing(): JSX.Element {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { redirectToCheckout, loading: subscriptionLoading } = useSubscription();
+
+  useEffect(() => {
+    console.log('Pricing page useEffect running...');
+    
+    // Configure Amplify and check authentication status
+    const amplifyConfigured = configureAmplify();
+    console.log('Amplify configured:', amplifyConfigured);
+    
+    const checkAuth = async () => {
+      try {
+        console.log('Checking authentication...');
+        await Auth.currentAuthenticatedUser();
+        console.log('User is authenticated');
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        
+        // Check for pending plan selection
+        const selectedPlanStr = sessionStorage.getItem('selectedPlan');
+        if (selectedPlanStr) {
+          const { plan, referral } = JSON.parse(selectedPlanStr);
+          sessionStorage.removeItem('selectedPlan');
+          console.log('Found pending plan selection, starting checkout:', plan);
+          await redirectToCheckout(plan, referral);
+        }
+      } catch (error) {
+        console.log('User is not authenticated:', error);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuth();
+  }, [redirectToCheckout]);
+
+  const handleSubscribe = async (planType: 'single' | 'starter' | 'growth') => {
+    if (isAuthenticated === false) {
+      // Redirect to auth page with plan selection
+      router.push(`/auth?redirect=pricing&plan=${planType}`);
+      return;
+    }
+    
+    if (isAuthenticated === true) {
+      try {
+        await redirectToCheckout(planType);
+      } catch (error) {
+        console.error('Subscription error:', error);
+      }
+    }
+  };
+
   return (
     <>
       <section className="section" id="pricing-header">
