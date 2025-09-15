@@ -628,62 +628,6 @@ html, body {
   color: transparent;
 }
 
-/* Ensure pricing card buttons use proper CTA button styling */
-.pricing-card .cta-button {
-  display: inline-block !important;
-  background: #fff !important;
-  color: #000 !important;
-  text-decoration: none !important;
-  padding: 12px 21.5px !important;
-  border-radius: 999px !important;
-  transition: all 0.3s ease !important;
-  margin-top: 10px !important;
-  position: relative !important;
-  cursor: pointer !important;
-  border: none !important;
-  font-size: 1rem !important;
-  font-weight: 500 !important;
-  font-family: inherit !important;
-  line-height: 1.2 !important;
-  text-align: center !important;
-  width: auto !important;
-  min-width: auto !important;
-  max-width: none !important;
-  height: auto !important;
-  box-sizing: border-box !important;
-}
-
-.pricing-card .cta-button::after {
-  content: '' !important;
-  opacity: 0 !important;
-  position: absolute !important;
-  right: 18px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  width: 0 !important;
-  height: 0 !important;
-  border-left: 6px solid transparent !important;
-  border-right: 6px solid transparent !important;
-  border-bottom: 6px solid #000 !important;
-  transition: opacity 0.3s ease !important;
-}
-
-.pricing-card .cta-button:hover {
-  padding-right: 40px !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-}
-
-.pricing-card .cta-button:hover::after {
-  opacity: 1 !important;
-}
-
-.pricing-card .cta-button:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-  transform: none !important;
-}
-
 /* Feedback Section */
 .feedback-section {
   max-width: 640px;
