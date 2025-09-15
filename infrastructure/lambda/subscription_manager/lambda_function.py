@@ -318,7 +318,7 @@ def get_price_id(plan_type: str) -> Optional[str]:
 
 def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str, status: str) -> None:
     """
-    Update user subscription in DynamoDB - ADDITIVE MODEL LIMITS
+    Update user subscription in DynamoDB - ADDITIVE MODEL LIMITS WITH DUPLICATE PROTECTION
     """
     try:
         table = dynamodb.Table(USERS_TABLE)
@@ -326,6 +326,12 @@ def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str
         # Get current user data using id (table partition key)
         response = table.get_item(Key={'id': user_sub})
         current_data = response.get('Item', {})
+        
+        # DUPLICATE PROTECTION: Check if this subscription ID was already processed
+        current_subscription_id = current_data.get('subscriptionId')
+        if current_subscription_id == subscription_id:
+            logger.info(f"Subscription {subscription_id} already processed for user {user_sub}, skipping duplicate")
+            return
         
         # Calculate additive model limits
         current_max_models = current_data.get('maxModels', 0)  # Default to 0 for new users
