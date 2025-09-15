@@ -6,8 +6,6 @@ import { useSubscription } from '../hooks/useSubscription';
 import { configureAmplify } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
 
-export const runtime = 'edge';
-
 export default function Pricing(): JSX.Element {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
