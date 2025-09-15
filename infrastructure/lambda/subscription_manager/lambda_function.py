@@ -318,7 +318,7 @@ def get_price_id(plan_type: str) -> Optional[str]:
 
 def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str, status: str) -> None:
     """
-    Update user subscription in DynamoDB - UPDATED TO USE userSub
+    Update user subscription in DynamoDB - ADDITIVE MODEL LIMITS
     """
     try:
         table = dynamodb.Table(USERS_TABLE)
@@ -327,10 +327,19 @@ def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str
         response = table.get_item(Key={'id': user_sub})
         current_data = response.get('Item', {})
         
-        # Get plan features from centralized config
+        # Calculate additive model limits
+        current_max_models = current_data.get('maxModels', 0)  # Default to 0 for new users
         plan_features = get_plan_features_new_structure(plan_type)
+        plan_model_increase = plan_features.get('maxModels', 0)
         
-        # Update subscription data
+        # ADDITIVE LOGIC: Add plan models to existing limit
+        # Special case: Enterprise sets to unlimited regardless of current
+        if plan_type == 'enterprise':
+            new_max_models = -1  # Unlimited
+        else:
+            new_max_models = current_max_models + plan_model_increase
+        
+        # Update subscription data with additive limits
         subscription_data = {
             'id': user_sub,
             'subscriptionId': subscription_id,
@@ -339,8 +348,15 @@ def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str
             'status': status,
             'updatedAt': datetime.utcnow().isoformat(),
             'planFeatures': plan_features,
-            'maxModels': plan_features.get('maxModels', 5),
-            'support': plan_features.get('support', 'email')
+            'maxModels': new_max_models,  # Additive total
+            'support': plan_features.get('support', 'email'),
+            'subscriptionHistory': current_data.get('subscriptionHistory', []) + [{
+                'planType': plan_type,
+                'modelIncrease': plan_model_increase,
+                'previousMax': current_max_models,
+                'newMax': new_max_models,
+                'timestamp': datetime.utcnow().isoformat()
+            }]
         }
         
         # Preserve referral data if exists
@@ -363,34 +379,34 @@ def update_user_subscription(user_sub: str, subscription_id: str, plan_type: str
     except Exception as e:
         logger.error(f"Error updating user subscription: {str(e)}")
 
-# SUBSCRIPTION TIERS CONFIGURATION
+# SUBSCRIPTION TIERS CONFIGURATION - ADDITIVE MODEL LIMITS
 SUBSCRIPTION_TIERS = {
     'beta': {
-        'maxModels': 5,
+        'maxModels': 5,  # Beta users start with 5 models
         'support': 'email',
         'price': 0,
         'displayName': 'Beta Plan'
     },
     'single': {
-        'maxModels': 1,
+        'maxModels': 1,  # Adds 1 model to existing limit
         'support': 'email',
         'price': 29,
         'displayName': 'Single Model'
     },
     'starter': {
-        'maxModels': 5,
+        'maxModels': 5,  # Adds 5 models to existing limit
         'support': 'priority',
         'price': 99,
         'displayName': 'Starter'
     },
     'growth': {
-        'maxModels': 20,
+        'maxModels': 20,  # Adds 20 models to existing limit
         'support': 'dedicated',
         'price': 299,
         'displayName': 'Growth'
     },
     'enterprise': {
-        'maxModels': -1,  # Unlimited
+        'maxModels': -1,  # Unlimited (sets to unlimited regardless of current)
         'support': 'dedicated',
         'price': 0,  # Custom pricing
         'displayName': 'Enterprise'
@@ -744,15 +760,22 @@ def create_default_user_profile(user_sub: str) -> None:
     try:
         table = dynamodb.Table(USERS_TABLE)
         
-        # Create default user profile
+        # Create default user profile with beta plan (5 models)
         user_profile = {
             'id': user_sub,
             'SubType': 'beta',  # Default to beta plan
             'planType': 'beta',
             'status': 'active',
-            'maxModels': 5,
+            'maxModels': 5,  # Beta users start with 5 models
             'support': 'email',
             'planFeatures': get_plan_features_new_structure('beta'),
+            'subscriptionHistory': [{
+                'planType': 'beta',
+                'modelIncrease': 5,
+                'previousMax': 0,
+                'newMax': 5,
+                'timestamp': datetime.utcnow().isoformat()
+            }],
             'createdAt': datetime.utcnow().isoformat(),
             'updatedAt': datetime.utcnow().isoformat()
         }

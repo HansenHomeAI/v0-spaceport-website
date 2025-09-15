@@ -189,7 +189,11 @@ export const useSubscription = () => {
         support: 'email'
       };
     }
-    return subscription.planFeatures;
+    // Return the actual maxModels from the user's subscription (additive total)
+    return {
+      maxModels: subscription.maxModels || subscription.planFeatures?.maxModels || 5,
+      support: subscription.support || subscription.planFeatures?.support || 'email'
+    };
   }, [subscription]);
 
   // Check if subscription is active
