@@ -67,7 +67,7 @@ export default function Pricing(): JSX.Element {
     <>
       <section className="section" id="pricing-header">
         <h1>Pricing.</h1>
-        <p><span className="inline-white">Be among the first to capture the imagination of your buyers like never before. Each model includes a 1-month free trial for the $29/mo hosting.</span></p>
+        <p><span className="inline-white">Be among the first to capture the imagination of your buyers like never before.</span></p>
 
       </section>
       <section className="section" id="pricing">
