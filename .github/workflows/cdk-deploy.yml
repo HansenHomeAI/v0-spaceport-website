@@ -115,8 +115,8 @@ jobs:
       if: github.event_name == 'push'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        # Stripe secrets for staging environment
-        STRIPE_SECRET_KEY_STAGING: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
+        # Stripe secrets for staging environment (CDK expects _TEST suffix for staging)
+        STRIPE_SECRET_KEY_TEST: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
         STRIPE_WEBHOOK_SECRET_STAGING: ${{ secrets.STRIPE_WEBHOOK_SECRET_STAGING }}
         STRIPE_PRICE_SINGLE_STAGING: ${{ secrets.STRIPE_PRICE_SINGLE_STAGING }}
         STRIPE_PRICE_STARTER_STAGING: ${{ secrets.STRIPE_PRICE_STARTER_STAGING }}
