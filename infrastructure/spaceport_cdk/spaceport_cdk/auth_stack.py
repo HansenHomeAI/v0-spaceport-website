@@ -259,7 +259,7 @@ class AuthStack(Stack):
             environment={
                 "USERS_TABLE": users_table.table_name,
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
-                "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{suffix.upper()}", ""),
+                "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}", ""),
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
                 "STRIPE_WEBHOOK_SECRET": os.environ.get(f"STRIPE_WEBHOOK_SECRET_{suffix.upper()}", ""),
                 "STRIPE_PRICE_SINGLE": os.environ.get(f"STRIPE_PRICE_SINGLE_{suffix.upper()}", ""),
