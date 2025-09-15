@@ -145,7 +145,13 @@ def handle_webhook(event: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         body = event.get('body', '')
-        sig_header = event.get('headers', {}).get('stripe-signature', '')
+        headers = event.get('headers', {})
+        sig_header = headers.get('stripe-signature', '')
+        
+        # DEBUG: Log headers to understand what's being received
+        logger.info(f"DEBUG: Received headers: {list(headers.keys())}")
+        logger.info(f"DEBUG: stripe-signature header: '{sig_header}'")
+        logger.info(f"DEBUG: body length: {len(body) if body else 0}")
         
         if not body or not sig_header:
             return {
