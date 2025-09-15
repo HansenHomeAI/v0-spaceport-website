@@ -9,11 +9,20 @@ export interface SubscriptionData {
   status: 'active' | 'past_due' | 'canceled' | 'trialing';
   createdAt: string;
   updatedAt: string;
+  maxModels: number;  // Direct maxModels field for additive total
+  support: string;    // Direct support field
   planFeatures: {
     maxModels: number;
     support: string;
     trialDays: number;
   };
+  subscriptionHistory?: Array<{
+    planType: string;
+    modelIncrease: number;
+    previousMax: number;
+    newMax: number;
+    timestamp: string;
+  }>;
   referralCode?: string;
   referredBy?: string;
   referralEarnings?: number;
