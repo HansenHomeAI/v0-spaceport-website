@@ -25,7 +25,8 @@ export default function Create(): JSX.Element {
     isSubscriptionActive,
     isOnTrial,
     getTrialDaysRemaining,
-    canCreateModel
+    canCreateModel,
+    getPlanFeatures
   } = useSubscription();
 
   // Lock body scroll when popup is open
