@@ -144,14 +144,23 @@ def handle_webhook(event: Dict[str, Any]) -> Dict[str, Any]:
     Handle Stripe webhook events
     """
     try:
+        # Get raw body, handling base64 if needed
         body = event.get('body', '')
-        headers = event.get('headers', {})
+        is_base64 = event.get('isBase64Encoded', False)
+        if is_base64 and body:
+            import base64
+            body = base64.b64decode(body).decode('utf-8')
+            logger.info(f"DEBUG: Decoded base64 body, length: {len(body)}")
+        
+        # Case-insensitive header lookup
+        headers = {k.lower(): v for k, v in event.get('headers', {}).items()}
         sig_header = headers.get('stripe-signature', '')
         
-        # DEBUG: Log headers to understand what's being received
-        logger.info(f"DEBUG: Received headers: {list(headers.keys())}")
+        # Enhanced debug logging
+        logger.info(f"DEBUG: isBase64Encoded: {is_base64}")
+        logger.info(f"DEBUG: Headers (normalized): {list(headers.keys())}")
         logger.info(f"DEBUG: stripe-signature header: '{sig_header}'")
-        logger.info(f"DEBUG: body length: {len(body) if body else 0}")
+        logger.info(f"DEBUG: Raw body length: {len(body) if body else 0}")
         
         if not body or not sig_header:
             return {
