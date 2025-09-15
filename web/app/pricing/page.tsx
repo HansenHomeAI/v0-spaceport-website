@@ -6,6 +6,8 @@ import { useSubscription } from '../hooks/useSubscription';
 import { configureAmplify } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
 
+export const runtime = 'edge';
+
 export default function Pricing(): JSX.Element {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -75,19 +77,10 @@ export default function Pricing(): JSX.Element {
             <div className="price">$29/mo</div>
             <p>Subscribe per model. Ideal for one-off projects or trying Spaceport with a single active model.</p>
 
-            <a 
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                if (!isLoading && !subscriptionLoading) {
-                  handleSubscribe('single');
-                }
-              }}
+            <button 
+              onClick={() => handleSubscribe('single')} 
               className="cta-button"
-              style={{ 
-                cursor: (isLoading || subscriptionLoading) ? 'not-allowed' : 'pointer',
-                opacity: (isLoading || subscriptionLoading) ? 0.6 : 1 
-              }}
+              disabled={isLoading || subscriptionLoading}
             >
               {(() => {
                 console.log('Button render - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading, 'subscriptionLoading:', subscriptionLoading);
@@ -96,55 +89,37 @@ export default function Pricing(): JSX.Element {
                 if (subscriptionLoading) return 'Loading...';
                 return 'Get started';
               })()}
-            </a>
+            </button>
           </div>
 
           <div className="pricing-card">
             <h2>Starter (up to 5 models).</h2>
             <div className="price">$99/mo</div>
             <p>Includes up to five active models. Need more? Add additional models at $29/mo each.</p>
-            <a 
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                if (!isLoading && !subscriptionLoading) {
-                  handleSubscribe('starter');
-                }
-              }}
+            <button 
+              onClick={() => handleSubscribe('starter')} 
               className="cta-button"
-              style={{ 
-                cursor: (isLoading || subscriptionLoading) ? 'not-allowed' : 'pointer',
-                opacity: (isLoading || subscriptionLoading) ? 0.6 : 1 
-              }}
+              disabled={isLoading || subscriptionLoading}
             >
               {isLoading ? 'Loading...' : 
                isAuthenticated === false ? 'Sign in to Subscribe' : 
                subscriptionLoading ? 'Loading...' : 'Start Starter'}
-            </a>
+            </button>
           </div>
 
           <div className="pricing-card">
             <h2>Growth (up to 20 models).</h2>
             <div className="price">$299/mo</div>
             <p>Includes up to twenty active models. Additional models are $29/mo each beyond your plan.</p>
-            <a 
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                if (!isLoading && !subscriptionLoading) {
-                  handleSubscribe('growth');
-                }
-              }}
+            <button 
+              onClick={() => handleSubscribe('growth')} 
               className="cta-button"
-              style={{ 
-                cursor: (isLoading || subscriptionLoading) ? 'not-allowed' : 'pointer',
-                opacity: (isLoading || subscriptionLoading) ? 0.6 : 1 
-              }}
+              disabled={isLoading || subscriptionLoading}
             >
               {isLoading ? 'Loading...' : 
                isAuthenticated === false ? 'Sign in to Subscribe' : 
                subscriptionLoading ? 'Loading...' : 'Start Growth'}
-            </a>
+            </button>
           </div>
 
           <div className="pricing-card">
