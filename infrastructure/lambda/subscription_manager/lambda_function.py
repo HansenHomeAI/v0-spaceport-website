@@ -100,7 +100,7 @@ def create_checkout_session(event: Dict[str, Any]) -> Dict[str, Any]:
                 'quantity': 1,
             }],
             'mode': 'subscription',
-            'success_url': f"{os.environ.get('FRONTEND_URL', 'https://spcprt.com')}/dashboard?success=true",
+            'success_url': f"{os.environ.get('FRONTEND_URL', 'https://spcprt.com')}/create?subscription=success",
             'cancel_url': f"{os.environ.get('FRONTEND_URL', 'https://spcprt.com')}/pricing?canceled=true",
             'metadata': {
                 'user_id': user_id,
