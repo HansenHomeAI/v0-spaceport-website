@@ -25,7 +25,8 @@ export default function Create(): JSX.Element {
     isSubscriptionActive,
     isOnTrial,
     getTrialDaysRemaining,
-    canCreateModel
+    canCreateModel,
+    getPlanFeatures
   } = useSubscription();
 
   // Lock body scroll when popup is open
@@ -176,7 +177,7 @@ export default function Create(): JSX.Element {
                           {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
                         </button>
                         <span className="model-count">
-                          {projects.length}/5 active models
+                          {projects.length}/{subscription?.planFeatures?.maxModels || getPlanFeatures().maxModels} active models
                         </span>
                       </div>
                     </div>

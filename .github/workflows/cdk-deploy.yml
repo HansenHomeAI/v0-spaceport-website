@@ -115,6 +115,25 @@ jobs:
       if: github.event_name == 'push'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        # Stripe secrets for staging environment (CDK expects _TEST suffix for staging)
+        STRIPE_SECRET_KEY_TEST: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
+        STRIPE_WEBHOOK_SECRET_STAGING: ${{ secrets.STRIPE_WEBHOOK_SECRET_STAGING }}
+        STRIPE_PRICE_SINGLE_STAGING: ${{ secrets.STRIPE_PRICE_SINGLE_STAGING }}
+        STRIPE_PRICE_STARTER_STAGING: ${{ secrets.STRIPE_PRICE_STARTER_STAGING }}
+        STRIPE_PRICE_GROWTH_STAGING: ${{ secrets.STRIPE_PRICE_GROWTH_STAGING }}
+        # Stripe secrets for production environment
+        STRIPE_SECRET_KEY_PROD: ${{ secrets.STRIPE_SECRET_KEY_PROD }}
+        STRIPE_WEBHOOK_SECRET_PROD: ${{ secrets.STRIPE_WEBHOOK_SECRET_PROD }}
+        STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
+        STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
+        STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
+        # Referral system configuration - using CDK defaults (Option A)
+        # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
+        # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
+        # COMPANY_KICKBACK_PERCENTAGE: 70 (default)
+        # REFERRAL_DURATION_MONTHS: 6 (default)
+        # EMPLOYEE_USER_ID: "" (optional)
+        # FRONTEND_URL: "https://spcprt.com" (default)
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
