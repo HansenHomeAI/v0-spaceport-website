@@ -115,6 +115,25 @@ jobs:
       if: github.event_name == 'push'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        # Stripe secrets for staging environment
+        STRIPE_SECRET_KEY_STAGING: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
+        STRIPE_WEBHOOK_SECRET_STAGING: ${{ secrets.STRIPE_WEBHOOK_SECRET_STAGING }}
+        STRIPE_PRICE_SINGLE_STAGING: ${{ secrets.STRIPE_PRICE_SINGLE_STAGING }}
+        STRIPE_PRICE_STARTER_STAGING: ${{ secrets.STRIPE_PRICE_STARTER_STAGING }}
+        STRIPE_PRICE_GROWTH_STAGING: ${{ secrets.STRIPE_PRICE_GROWTH_STAGING }}
+        # Stripe secrets for production environment
+        STRIPE_SECRET_KEY_PROD: ${{ secrets.STRIPE_SECRET_KEY_PROD }}
+        STRIPE_WEBHOOK_SECRET_PROD: ${{ secrets.STRIPE_WEBHOOK_SECRET_PROD }}
+        STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
+        STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
+        STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
+        # Referral system configuration
+        REFERRAL_KICKBACK_PERCENTAGE: ${{ secrets.REFERRAL_KICKBACK_PERCENTAGE }}
+        EMPLOYEE_KICKBACK_PERCENTAGE: ${{ secrets.EMPLOYEE_KICKBACK_PERCENTAGE }}
+        COMPANY_KICKBACK_PERCENTAGE: ${{ secrets.COMPANY_KICKBACK_PERCENTAGE }}
+        REFERRAL_DURATION_MONTHS: ${{ secrets.REFERRAL_DURATION_MONTHS }}
+        EMPLOYEE_USER_ID: ${{ secrets.EMPLOYEE_USER_ID }}
+        FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
