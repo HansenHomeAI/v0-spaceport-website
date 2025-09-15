@@ -127,13 +127,13 @@ jobs:
         STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
         STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
         STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
-        # Referral system configuration
-        REFERRAL_KICKBACK_PERCENTAGE: ${{ secrets.REFERRAL_KICKBACK_PERCENTAGE }}
-        EMPLOYEE_KICKBACK_PERCENTAGE: ${{ secrets.EMPLOYEE_KICKBACK_PERCENTAGE }}
-        COMPANY_KICKBACK_PERCENTAGE: ${{ secrets.COMPANY_KICKBACK_PERCENTAGE }}
-        REFERRAL_DURATION_MONTHS: ${{ secrets.REFERRAL_DURATION_MONTHS }}
-        EMPLOYEE_USER_ID: ${{ secrets.EMPLOYEE_USER_ID }}
-        FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+        # Referral system configuration - using CDK defaults (Option A)
+        # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
+        # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
+        # COMPANY_KICKBACK_PERCENTAGE: 70 (default)
+        # REFERRAL_DURATION_MONTHS: 6 (default)
+        # EMPLOYEE_USER_ID: "" (optional)
+        # FRONTEND_URL: "https://spcprt.com" (default)
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
