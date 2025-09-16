@@ -1,5 +1,10 @@
 import * as Sentry from '@sentry/nextjs';
 
+// Temporary debug log to verify DSN is present at runtime
+if (typeof window !== 'undefined') {
+  console.log('[Sentry] DSN at runtime:', process.env.NEXT_PUBLIC_SENTRY_DSN);
+}
+
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   
