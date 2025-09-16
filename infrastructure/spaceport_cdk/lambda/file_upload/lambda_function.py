@@ -7,6 +7,7 @@ import time
 from botocore.exceptions import ClientError
 from urllib.parse import urlparse
 import requests
+import resend
 from botocore.config import Config
 
 # Initialize AWS clients
@@ -25,6 +26,9 @@ UPLOAD_BUCKET = os.environ.get('UPLOAD_BUCKET')
 FILE_METADATA_TABLE = os.environ.get('FILE_METADATA_TABLE')
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
+# Initialize Resend
+resend.api_key = RESEND_API_KEY
+
 def send_email_notification(to_address, subject, body_text, body_html=None):
     """Send email notification using Resend API"""
     print(f"DEBUG: send_email_notification called with to_address={to_address}, subject={subject}")
@@ -32,36 +36,25 @@ def send_email_notification(to_address, subject, body_text, body_html=None):
     if not RESEND_API_KEY:
         print("Warning: RESEND_API_KEY not configured")
         return
-        
-    url = "https://api.resend.com/emails"
-    
-    payload = {
-        "from": "Spaceport AI <hello@spcprt.com>",
-        "to": [to_address],
-        "subject": subject,
-        "text": body_text
-    }
-    
-    if body_html:
-        payload["html"] = body_html
-    
-    headers = {
-        "Authorization": f"Bearer {RESEND_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    
-    print(f"DEBUG: About to send request to Resend API with payload: {payload}")
     
     try:
-        response = requests.post(url, json=payload, headers=headers)
-        print(f"DEBUG: Resend API response status: {response.status_code}")
-        print(f"DEBUG: Resend API response body: {response.text}")
-        response.raise_for_status()
-        result = response.json()
-        print(f"DEBUG: Email sent successfully, response: {result}")
-        return result
-    except requests.RequestException as e:
-        print(f"Error sending email: {e}")
+        params = {
+            "from": "Spaceport AI <hello@spcprt.com>",
+            "to": [to_address],
+            "subject": subject,
+            "text": body_text
+        }
+        
+        if body_html:
+            params["html"] = body_html
+        
+        print(f"DEBUG: About to send email via Resend SDK with params: {params}")
+        
+        response = resend.Emails.send(params)
+        print(f"DEBUG: Email sent successfully via Resend SDK, response: {response}")
+        return response
+    except Exception as e:
+        print(f"Error sending email via Resend SDK: {e}")
         print(f"DEBUG: Full exception details: {str(e)}")
         raise
 
