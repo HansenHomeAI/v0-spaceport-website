@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSubscription } from '../hooks/useSubscription';
 import { configureAmplify } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
+import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
 
 export const runtime = 'edge';
 
@@ -48,6 +49,13 @@ export default function Pricing(): JSX.Element {
   }, [redirectToCheckout]);
 
   const handleSubscribe = async (planType: 'single' | 'starter' | 'growth') => {
+    trackEvent(AnalyticsEvents.BUTTON_CLICK, {
+      action: 'subscribe_plan',
+      plan_type: planType,
+      page: 'pricing',
+      is_authenticated: isAuthenticated
+    });
+
     if (isAuthenticated === false) {
       // Redirect to auth page with plan selection
       router.push(`/auth?redirect=pricing&plan=${planType}`);
@@ -59,6 +67,11 @@ export default function Pricing(): JSX.Element {
         await redirectToCheckout(planType);
       } catch (error) {
         console.error('Subscription error:', error);
+        trackEvent(AnalyticsEvents.ERROR_OCCURRED, {
+          error_message: error instanceof Error ? error.message : 'Unknown error',
+          context: 'subscription_checkout',
+          plan_type: planType
+        });
       }
     }
   };
