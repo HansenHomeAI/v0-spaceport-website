@@ -27,6 +27,8 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 def send_email_notification(to_address, subject, body_text, body_html=None):
     """Send email notification using Resend API"""
+    print(f"DEBUG: send_email_notification called with to_address={to_address}, subject={subject}")
+    
     if not RESEND_API_KEY:
         print("Warning: RESEND_API_KEY not configured")
         return
@@ -48,12 +50,19 @@ def send_email_notification(to_address, subject, body_text, body_html=None):
         "Content-Type": "application/json"
     }
     
+    print(f"DEBUG: About to send request to Resend API with payload: {payload}")
+    
     try:
         response = requests.post(url, json=payload, headers=headers)
+        print(f"DEBUG: Resend API response status: {response.status_code}")
+        print(f"DEBUG: Resend API response body: {response.text}")
         response.raise_for_status()
-        return response.json()
+        result = response.json()
+        print(f"DEBUG: Email sent successfully, response: {result}")
+        return result
     except requests.RequestException as e:
         print(f"Error sending email: {e}")
+        print(f"DEBUG: Full exception details: {str(e)}")
         raise
 
 def lambda_handler(event, context):
