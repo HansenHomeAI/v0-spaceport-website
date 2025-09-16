@@ -2,7 +2,7 @@ name: CDK Deploy
 
 on:
   push:
-    branches: [ main, development, ml-development, email-notifications ]
+    branches: [ main, development, ml-development ]
   pull_request:
     branches: [ main ]
 
