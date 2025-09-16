@@ -45,16 +45,9 @@ export const useSubscription = () => {
       setError(null);
       
       // Check if user is authenticated first
-      try {
-        const currentUser = await Auth.currentAuthenticatedUser();
-        if (!currentUser) {
-          console.log('No authenticated user, skipping subscription fetch');
-          setLoading(false);
-          return;
-        }
-      } catch (authError) {
-        // User is not authenticated, which is fine for pricing page
-        console.log('User not authenticated, skipping subscription fetch');
+      const currentUser = await Auth.currentAuthenticatedUser();
+      if (!currentUser) {
+        console.log('No authenticated user, skipping subscription fetch');
         setLoading(false);
         return;
       }
@@ -94,7 +87,6 @@ export const useSubscription = () => {
     try {
       setError(null);
       
-      // Assume user is authenticated when this function is called
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       const currentUser = await Auth.currentAuthenticatedUser();
