@@ -6,6 +6,7 @@ import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
 import BetaAccessInvite from '../../components/BetaAccessInvite';
 import { Auth } from 'aws-amplify';
+import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
 
 export default function Create(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
@@ -25,7 +26,8 @@ export default function Create(): JSX.Element {
     isSubscriptionActive,
     isOnTrial,
     getTrialDaysRemaining,
-    canCreateModel
+    canCreateModel,
+    getPlanFeatures
   } = useSubscription();
 
   // Lock body scroll when popup is open
@@ -100,11 +102,20 @@ export default function Create(): JSX.Element {
   };
 
   const handleUpgrade = async (planType: string) => {
+    trackEvent(AnalyticsEvents.BUTTON_CLICK, {
+      action: 'upgrade_subscription',
+      plan_type: planType,
+      page: 'create'
+    });
     await redirectToCheckout(planType as any);
   };
 
   const handleCancelSubscription = async () => {
     if (confirm('Are you sure you want to cancel your subscription? You\'ll lose access to premium features at the end of your current billing period.')) {
+      trackEvent(AnalyticsEvents.BUTTON_CLICK, {
+        action: 'cancel_subscription',
+        page: 'create'
+      });
       await cancelSubscription();
     }
   };
@@ -176,7 +187,7 @@ export default function Create(): JSX.Element {
                           {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
                         </button>
                         <span className="model-count">
-                          {projects.length}/5 active models
+                          {projects.length}/{subscription?.planFeatures?.maxModels || getPlanFeatures().maxModels} active models
                         </span>
                       </div>
                     </div>

@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 # Constants – update if stack changes
 REGION = "us-west-2"
 ACCOUNT_ID = "975050048887"
-START_JOB_LAMBDA = "Spaceport-StartMLJob"  # Name set in CDK stack
-STATE_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:SpaceportMLPipeline"
+START_JOB_LAMBDA = "Spaceport-StartMLJob-staging"  # Staging environment
+STATE_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:SpaceportMLPipeline-staging"
 
 # Test inputs
-S3_URL = "s3://spaceport-uploads/1751413909023-l2zkyj-Battery-1.zip"
+S3_URL = "s3://spaceport-ml-processing/test-data/1751413909023-l2zkyj-Battery-1.zip"
 CSV_DATA = dedent(
     """latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval
 41.73272,-111.83423,130.0,249,14.48,0,2,-35,0,8.85,41.73231,-111.83423,-35,0,3.0,0

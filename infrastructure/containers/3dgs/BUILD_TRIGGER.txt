@@ -11,8 +11,8 @@ Vincent Woo's Sutro Tower Methodology Implementation:
 - SOGS-compatible PLY output
 - AWS ml.g5.xlarge optimization
 
-Container Build Timestamp: 2025-08-18-v1.0.17
-Build ID: nerfstudio-vincent-woo-v1.0.17-REMOVE-DATAPARSER-FLAG
+Container Build Timestamp: 2025-01-08-v3.0.1
+Build ID: vincent-woo-jit-compilation-v3.0.1-COLMAP-FIX
 
 INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → transforms.json → ns-train
 - FIXED: Remove unsupported --input_type flag from colmap model_converter (auto-detects format)
@@ -21,4 +21,4 @@ INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → tr
 - RESULT: Correct COLMAP syntax + NerfStudio standard workflow
 🎯 FINAL FIX: Remove --pipeline.datamanager.dataparser colmap from ns-train (use transforms.json)!
 
-** TRIGGER GITHUB ACTIONS BUILD **
+** TRIGGER GITHUB ACTIONS BUILD **# Trigger 3DGS rebuild Wed Sep 10 21:03:54 MDT 2025

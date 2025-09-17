@@ -1,0 +1,146 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DynamoDBReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:BatchGetItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:ListTables",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTagsOfResource"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-FileMetadata-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-FileMetadata-prod/index/*",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-DroneFlightPaths-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-DroneFlightPaths-prod/index/*",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-Waitlist-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-Waitlist-prod/index/*",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-Projects-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-Projects-prod/index/*",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-Users-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-Users-prod/index/*",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-BetaAccessPermissions-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-BetaAccessPermissions-prod/index/*",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-PasswordResetCodes-prod",
+                "arn:aws:dynamodb:us-west-2:356638455876:table/Spaceport-PasswordResetCodes-prod/index/*"
+            ]
+        },
+        {
+            "Sid": "DynamoDBGeneralAccess",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:DescribeTable"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3ReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetBucketLocation",
+                "s3:GetBucketVersioning"
+            ],
+            "Resource": [
+                "arn:aws:s3:::spaceport-uploads-prod",
+                "arn:aws:s3:::spaceport-uploads-prod/*",
+                "arn:aws:s3:::spaceport-ml-processing-prod",
+                "arn:aws:s3:::spaceport-ml-processing-prod/*"
+            ]
+        },
+        {
+            "Sid": "CloudWatchLogsReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:GetLogEvents",
+                "logs:FilterLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-west-2:356638455876:log-group:/aws/lambda/*",
+                "arn:aws:logs:us-west-2:356638455876:log-group:/aws/stepfunctions/*",
+                "arn:aws:logs:us-west-2:356638455876:log-group:/aws/sagemaker/*",
+                "arn:aws:logs:us-west-2:356638455876:log-group:/aws/apigateway/*"
+            ]
+        },
+        {
+            "Sid": "CognitoReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-idp:ListUsers",
+                "cognito-idp:AdminGetUser",
+                "cognito-idp:ListUserPools",
+                "cognito-idp:DescribeUserPool",
+                "cognito-idp:ListUserPoolClients"
+            ],
+            "Resource": [
+                "arn:aws:cognito-idp:us-west-2:356638455876:userpool/*"
+            ]
+        },
+        {
+            "Sid": "LambdaReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:ListFunctions",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration",
+                "lambda:ListTags"
+            ],
+            "Resource": [
+                "arn:aws:lambda:us-west-2:356638455876:function:Spaceport-*"
+            ]
+        },
+        {
+            "Sid": "StepFunctionsReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "states:ListStateMachines",
+                "states:DescribeStateMachine",
+                "states:ListExecutions",
+                "states:DescribeExecution",
+                "states:GetExecutionHistory"
+            ],
+            "Resource": [
+                "arn:aws:states:us-west-2:356638455876:stateMachine:*",
+                "arn:aws:states:us-west-2:356638455876:execution:*"
+            ]
+        },
+        {
+            "Sid": "SageMakerReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sagemaker:ListTrainingJobs",
+                "sagemaker:DescribeTrainingJob",
+                "sagemaker:ListProcessingJobs",
+                "sagemaker:DescribeProcessingJob",
+                "sagemaker:ListEndpoints",
+                "sagemaker:DescribeEndpoint"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "ECRReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:DescribeRepositories",
+                "ecr:ListImages",
+                "ecr:DescribeImages",
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": [
+                "arn:aws:ecr:us-west-2:356638455876:repository/spaceport/*"
+            ]
+        }
+    ]
+}
