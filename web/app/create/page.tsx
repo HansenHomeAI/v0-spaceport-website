@@ -6,6 +6,7 @@ import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
 import BetaAccessInvite from '../../components/BetaAccessInvite';
 import { Auth } from 'aws-amplify';
+import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
 
 export default function Create(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
@@ -101,11 +102,20 @@ export default function Create(): JSX.Element {
   };
 
   const handleUpgrade = async (planType: string) => {
+    trackEvent(AnalyticsEvents.BUTTON_CLICK, {
+      action: 'upgrade_subscription',
+      plan_type: planType,
+      page: 'create'
+    });
     await redirectToCheckout(planType as any);
   };
 
   const handleCancelSubscription = async () => {
     if (confirm('Are you sure you want to cancel your subscription? You\'ll lose access to premium features at the end of your current billing period.')) {
+      trackEvent(AnalyticsEvents.BUTTON_CLICK, {
+        action: 'cancel_subscription',
+        page: 'create'
+      });
       await cancelSubscription();
     }
   };

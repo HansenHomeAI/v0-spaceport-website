@@ -6,6 +6,26 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 import logging
 
+# Sentry for error tracking
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
+    from sentry_sdk.integrations.boto3 import Boto3Integration
+    
+    # Initialize Sentry
+    sentry_sdk.init(
+        dsn=os.environ.get('SENTRY_DSN'),
+        integrations=[
+            AwsLambdaIntegration(),
+            Boto3Integration(),
+        ],
+        traces_sample_rate=0.1,
+        environment=os.environ.get('ENVIRONMENT', 'production'),
+    )
+except ImportError:
+    # Sentry not available, continue without it
+    pass
+
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
