@@ -15,22 +15,46 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
-    // Get the request body
+    const authorization =
+      request.headers.get('authorization') || request.headers.get('Authorization') || '';
+
+    if (!authorization) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization token' }),
+        {
+          status: 401,
+          headers: { 'content-type': 'application/json; charset=utf-8' }
+        }
+      );
+    }
+
     const body = await request.json();
 
-    // Forward the request to the AWS Lambda API (ensure /subscription prefix)
-      const response = await fetch(`${subscriptionApiUrl}/subscription/create-checkout-session`, {
+    const response = await fetch(`${subscriptionApiUrl}/subscription/create-checkout-session`, {
       method: 'POST',
       headers: {
-        'Authorization': request.headers.get('Authorization') || '',
+        Authorization: authorization,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });
 
-    const data = await response.json();
-    
-    return new Response(JSON.stringify(data), {
+    const raw = await response.text();
+    let payload = raw;
+
+    if (!raw) {
+      payload = '{}';
+    } else {
+      try {
+        // Validate JSON to avoid double encoding downstream
+        JSON.parse(raw);
+      } catch (parseError) {
+        console.error('Failed to parse checkout session response', parseError);
+        payload = JSON.stringify({ error: 'Invalid response from subscription service' });
+      }
+    }
+
+    return new Response(payload, {
       status: response.status,
       headers: {
         'content-type': 'application/json; charset=utf-8',

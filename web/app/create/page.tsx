@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
 import AuthGate from '../auth/AuthGate';
@@ -44,7 +44,7 @@ export default function Create(): JSX.Element {
     };
   }, [subscriptionPopupOpen]);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
       const session = await Auth.currentSession();
@@ -61,35 +61,15 @@ export default function Create(): JSX.Element {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchUser = async () => {
-    try {
-      const currentUser = await Auth.currentAuthenticatedUser();
-      setUser(currentUser);
-    } catch {
-      // ignore
-    }
-  };
+  useEffect(() => {
+    if (!user) return;
+    fetchProjects();
+  }, [fetchProjects, user]);
 
-  useEffect(() => { 
-    // Wait for user to be authenticated before fetching data
-    const initializeData = async () => {
-      try {
-        // Wait for user to be available
-        const currentUser = await Auth.currentAuthenticatedUser();
-        setUser(currentUser);
-        
-        // Now fetch projects and subscription data
-        await fetchProjects();
-      } catch (error) {
-        console.log('User not authenticated yet, waiting...');
-        // Retry after a short delay
-        setTimeout(initializeData, 1000);
-      }
-    };
-    
-    initializeData();
+  const handleAuthenticated = useCallback((currentUser: any) => {
+    setUser(currentUser);
   }, []);
 
   const signOut = async () => {
@@ -169,7 +149,7 @@ export default function Create(): JSX.Element {
       </section>
 
       {/* Auth-gated creation experience below the header */}
-      <AuthGate>
+      <AuthGate onAuthenticated={handleAuthenticated}>
         <section className="section" id="create-dashboard">
           <div className="project-cards">
             {/* Account Settings Card */}
