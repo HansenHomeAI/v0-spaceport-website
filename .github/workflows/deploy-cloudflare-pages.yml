@@ -56,6 +56,12 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
+            echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
+            echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
+            # Analytics environment variables
+            echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
+            echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
+            echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}" >> .env
           else
             echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PREVIEW }}" >> .env
@@ -66,6 +72,12 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
+            # Analytics environment variables
+            echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
+            echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
+            echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}" >> .env
           fi
           echo "Wrote $(wc -l < .env) vars to .env"
 

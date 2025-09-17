@@ -9,11 +9,20 @@ export interface SubscriptionData {
   status: 'active' | 'past_due' | 'canceled' | 'trialing';
   createdAt: string;
   updatedAt: string;
+  maxModels: number;  // Direct maxModels field for additive total
+  support: string;    // Direct support field
   planFeatures: {
     maxModels: number;
     support: string;
     trialDays: number;
   };
+  subscriptionHistory?: Array<{
+    planType: string;
+    modelIncrease: number;
+    previousMax: number;
+    newMax: number;
+    timestamp: string;
+  }>;
   referralCode?: string;
   referredBy?: string;
   referralEarnings?: number;
@@ -130,8 +139,16 @@ export const useSubscription = () => {
     try {
       setError(null);
       
-      const session = await Auth.currentSession();
-      const idToken = session.getIdToken().getJwtToken();
+      // Check if user is authenticated
+      let idToken;
+      try {
+        const session = await Auth.currentSession();
+        idToken = session.getIdToken().getJwtToken();
+      } catch (authError) {
+        console.error('User not authenticated, cannot cancel subscription');
+        setError('You must be signed in to cancel your subscription');
+        return;
+      }
       
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
@@ -173,7 +190,11 @@ export const useSubscription = () => {
         support: 'email'
       };
     }
-    return subscription.planFeatures;
+    // Return the actual maxModels from the user's subscription (additive total)
+    return {
+      maxModels: subscription.maxModels || subscription.planFeatures?.maxModels || 5,
+      support: subscription.support || subscription.planFeatures?.support || 'email'
+    };
   }, [subscription]);
 
   // Check if subscription is active
