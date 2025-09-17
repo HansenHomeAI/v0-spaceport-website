@@ -3,7 +3,7 @@ export const runtime = 'edge';
 export async function POST(request: Request): Promise<Response> {
   try {
     // Get the subscription API URL from environment variables
-    const subscriptionApiUrl = process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL;
+    const subscriptionApiUrl = (process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL || '').replace(/\/+$/, '');
     
     if (!subscriptionApiUrl) {
       return new Response(
