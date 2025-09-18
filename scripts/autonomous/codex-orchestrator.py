@@ -70,26 +70,39 @@ class CodexOrchestrator:
         
     async def create_agent_worktree(self, task: AgentTask) -> str:
         """Create a Git worktree for the agent to work in isolation"""
-        worktree_path = self.workspace_root / f".agent-worktrees" / task.branch_name
+        worktree_path = self.workspace_root / f".agent-worktrees" / task.branch_name.replace('/', '-')
         
         # Clean up existing worktree if it exists
         if worktree_path.exists():
-            subprocess.run(["git", "worktree", "remove", str(worktree_path)], 
+            subprocess.run(["git", "worktree", "remove", "--force", str(worktree_path)], 
                          capture_output=True, cwd=self.workspace_root)
         
-        # Create new worktree
+        # Ensure worktree directory exists
+        worktree_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create new worktree from development branch
         result = subprocess.run([
-            "git", "worktree", "add", str(worktree_path), "development"
+            "git", "worktree", "add", "-b", task.branch_name, str(worktree_path), "origin/development"
         ], capture_output=True, text=True, cwd=self.workspace_root)
         
         if result.returncode != 0:
-            raise Exception(f"Failed to create worktree: {result.stderr}")
+            # Try alternative approach if the branch already exists
+            logger.warning(f"Primary worktree creation failed, trying alternative approach: {result.stderr}")
             
-        # Create and checkout agent branch
-        subprocess.run([
-            "git", "checkout", "-b", task.branch_name
-        ], capture_output=True, cwd=worktree_path)
+            # Delete branch if it exists
+            subprocess.run([
+                "git", "branch", "-D", task.branch_name
+            ], capture_output=True, cwd=self.workspace_root)
+            
+            # Try again
+            result = subprocess.run([
+                "git", "worktree", "add", "-b", task.branch_name, str(worktree_path), "origin/development"
+            ], capture_output=True, text=True, cwd=self.workspace_root)
+            
+            if result.returncode != 0:
+                raise Exception(f"Failed to create worktree: {result.stderr}")
         
+        logger.info(f"✅ Created agent worktree: {worktree_path}")
         return str(worktree_path)
 
     async def spawn_codex_agent(self, task: AgentTask, worktree_path: str) -> subprocess.Popen:
@@ -159,10 +172,7 @@ Output JSON status with deployment URLs and test results:
 
         # Spawn Codex CLI process
         cmd = [
-            "codex", "do", "--file", prompt_file,
-            "--working-directory", worktree_path,
-            "--timeout", "3600",  # 1 hour timeout
-            "--output", "json"
+            "codex", "exec", "--full-auto", "-C", worktree_path, codex_prompt
         ]
         
         logger.info(f"🤖 Spawning Codex agent for task: {task.description}")
@@ -342,8 +352,8 @@ Output JSON status with deployment URLs and test results:
 {chr(10).join(f"- ✅ {criteria}" for criteria in task.success_criteria)}
 
 ### 🧪 Test Results
-- **Deployment URL**: {task.test_results.get('deployment_url', 'N/A')}
-- **Tests Passed**: {task.test_results.get('success', False)}
+- **Deployment URL**: {task.test_results.get('deployment_url', 'N/A') if task.test_results else 'N/A'}
+- **Tests Passed**: {task.test_results.get('success', False) if task.test_results else False}
 - **Execution Time**: {(task.end_time - task.start_time):.1f} seconds
 
 ### 🔍 Validation

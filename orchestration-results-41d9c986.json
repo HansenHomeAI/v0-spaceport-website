@@ -1,0 +1,30 @@
+{
+  "session_id": "41d9c986",
+  "total_tasks": 1,
+  "completed_tasks": 0,
+  "failed_tasks": 1,
+  "total_time_seconds": 0.014786005020141602,
+  "tasks": [
+    {
+      "id": "1d1552cc",
+      "description": "Add a subtle hover effect to the join waitlist button that makes it slightly glow when hovered",
+      "branch_name": "agent/1d1552cc",
+      "priority": 1,
+      "estimated_time_minutes": 30,
+      "dependencies": [],
+      "success_criteria": [
+        "Code compiles without errors",
+        "All tests pass",
+        "Frontend loads without console errors",
+        "Deployment succeeds"
+      ],
+      "status": "failed",
+      "agent_id": null,
+      "start_time": null,
+      "end_time": null,
+      "output_log": "",
+      "test_results": null
+    }
+  ],
+  "summary": "\n\ud83e\udd16 Autonomous Development Session Complete\n==========================================\n\nSession ID: 41d9c986\nSuccess Rate: 0.0% (0/1)\nTotal Time: 0.0 seconds\n\n\u2705 Completed Tasks:\n\n\n\u274c Failed Tasks:\n  - Add a subtle hover effect to the join waitlist button that makes it slightly glow when hovered (agent/1d1552cc)\n\nNext Steps:\n- Review failed tasks for manual intervention\n- Merge successful branches to development\n- Update task definitions based on learnings\n"
+}
