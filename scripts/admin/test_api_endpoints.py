@@ -23,7 +23,8 @@ class APITester:
                 'invite': 'https://xtmhni13l2.execute-api.us-west-2.amazonaws.com/prod/invite',
                 'projects': 'https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/projects',
                 'beta_access_admin': 'https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod',
-                'subscription': 'https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod'
+                'subscription': 'https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod',
+                'feedback': 'https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod'
             }
         }
     
@@ -142,6 +143,18 @@ class APITester:
         """Test subscription endpoint"""
         url = f"{base_url}/subscription"
         return self.test_endpoint("Subscription API", url, "OPTIONS")
+
+    def test_feedback_endpoint(self, base_url: str) -> Dict:
+        """Test feedback endpoint (POST feedback message)"""
+        url = f"{base_url}/feedback"
+        data = {
+            "message": "Automated feedback test submission.",
+            "pageUrl": "https://staging.spaceport.ai/test-script"
+        }
+        headers = {
+            "Content-Type": "application/json"
+        }
+        return self.test_endpoint("Feedback API", url, "POST", data, headers)
     
     def run_all_tests(self, environment: str = 'staging') -> List[Dict]:
         """Run all API tests for the specified environment"""
@@ -164,7 +177,8 @@ class APITester:
             ('password_reset', self.test_password_reset_endpoint),
             ('invite', self.test_invite_endpoint),
             ('beta_access_admin', self.test_beta_access_admin_endpoint),
-            ('subscription', self.test_subscription_endpoint)
+            ('subscription', self.test_subscription_endpoint),
+            ('feedback', self.test_feedback_endpoint)
         ]
         
         for endpoint_name, test_func in test_functions:
@@ -233,7 +247,8 @@ class APITester:
             'password_reset': 'PASSWORD_RESET_API_URL_PREVIEW',
             'invite': 'INVITE_API_URL_PREVIEW',
             'beta_access_admin': 'BETA_ACCESS_API_URL_PREVIEW',
-            'subscription': 'SUBSCRIPTION_API_URL_PREVIEW'
+            'subscription': 'SUBSCRIPTION_API_URL_PREVIEW',
+            'feedback': 'FEEDBACK_API_URL_PREVIEW'
         }
         
         for result in results:

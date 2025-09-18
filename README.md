@@ -100,6 +100,7 @@ NEXT_PUBLIC_PROJECTS_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/
 NEXT_PUBLIC_DRONE_PATH_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 NEXT_PUBLIC_FILE_UPLOAD_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 NEXT_PUBLIC_WAITLIST_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/waitlist
+NEXT_PUBLIC_FEEDBACK_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/feedback
 
 # Authentication
 NEXT_PUBLIC_COGNITO_REGION=us-west-2

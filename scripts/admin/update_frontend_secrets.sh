@@ -53,6 +53,7 @@ SECRETS=(
     "FILE_UPLOAD_API_URL_PREVIEW"
     "ML_PIPELINE_API_URL_PREVIEW"
     "BETA_ACCESS_API_URL_PREVIEW"
+    "FEEDBACK_API_URL_PREVIEW"
 )
 
 URLS=(
@@ -62,6 +63,7 @@ URLS=(
     "https://xv4bpkwlb8.execute-api.us-west-2.amazonaws.com/prod"
     "https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod"
     "https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod"
+    "https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod/feedback"
 )
 
 # Update each frontend-used secret
@@ -95,6 +97,7 @@ echo "   • DRONE_PATH_API_URL_PREVIEW - Flight path optimization"
 echo "   • FILE_UPLOAD_API_URL_PREVIEW - File uploads"
 echo "   • ML_PIPELINE_API_URL_PREVIEW - ML processing"
 echo "   • BETA_ACCESS_API_URL_PREVIEW - Employee beta access management"
+echo "   • FEEDBACK_API_URL_PREVIEW - Footer feedback submissions"
 echo ""
 echo "❌ NOT USED by Frontend (Skipped):"
 echo "   • PASSWORD_RESET_API_URL_PREVIEW - Frontend uses Cognito directly"
@@ -117,3 +120,4 @@ echo "  gh secret set DRONE_PATH_API_URL_PROD --body 'PRODUCTION_URL'"
 echo "  gh secret set FILE_UPLOAD_API_URL_PROD --body 'PRODUCTION_URL'"
 echo "  gh secret set ML_PIPELINE_API_URL_PROD --body 'PRODUCTION_URL'"
 echo "  gh secret set BETA_ACCESS_API_URL_PROD --body 'PRODUCTION_URL'"
+echo "  gh secret set FEEDBACK_API_URL_PROD --body 'PRODUCTION_URL'"
