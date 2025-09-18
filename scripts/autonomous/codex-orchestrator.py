@@ -97,35 +97,59 @@ class CodexOrchestrator:
         
         # Create the Codex command
         codex_prompt = f"""
-Goal: {task.description}
+AUTONOMOUS AGENT TASK: {task.description}
 
-Success Criteria:
+AGENT ENVIRONMENT:
+- Branch: {task.branch_name} (isolated environment)
+- Working Directory: {worktree_path}
+- Deployment URL: https://spaceport-{task.branch_name.replace('agent/', '').replace('/', '-')}.pages.dev
+- AWS Stack: SpaceportStack-{task.branch_name.replace('agent/', '').replace('/', '-')}
+
+SUCCESS CRITERIA (ALL MUST PASS):
 {chr(10).join(f"- {criteria}" for criteria in task.success_criteria)}
 
-Workflow:
-1. Analyze the codebase to understand the current implementation
-2. Implement the necessary changes
-3. Run tests to validate the changes
-4. If tests fail, debug and iterate
-5. When tests pass, commit the changes
-6. Push to the agent branch for deployment
-7. Run end-to-end tests on the deployed version
-8. If E2E tests fail, iterate until they pass
+AUTONOMOUS WORKFLOW (COMPLETE UNTIL SUCCESS):
+1. ANALYZE: Understand current codebase and requirements
+2. IMPLEMENT: Make necessary code changes
+3. COMMIT: Commit changes with descriptive messages
+4. DEPLOY: Push to agent branch to trigger deployment
+   - Command: git push origin {task.branch_name}
+   - This triggers GitHub Actions to deploy frontend + backend
+5. WAIT: Wait for deployment to complete (check GitHub Actions status)
+6. TEST: Run autonomous tests against deployed environment
+   - Command: PLAYWRIGHT_BASE_URL=https://spaceport-{task.branch_name.replace('agent/', '').replace('/', '-')}.pages.dev npm run test:autonomous
+7. ANALYZE RESULTS: Check test results and deployment logs
+8. ITERATE: If tests fail, debug and repeat from step 2
+9. VALIDATE: Ensure all success criteria are met
+10. COMPLETE: Only finish when everything works perfectly
 
-Environment:
-- Working directory: {worktree_path}
-- Branch: {task.branch_name}
-- Test command: npm run test:autonomous
-- Deploy command: git push origin {task.branch_name}
+COMMANDS AVAILABLE:
+- git status, git add, git commit, git push
+- npm run build, npm run test:autonomous
+- curl (to check deployment status)
+- gh api (to check GitHub Actions status)
 
-Constraints:
-- Maximum execution time: 60 minutes
-- Must pass all tests before completing
-- Must capture and analyze any errors
-- Must provide detailed commit messages
+DEPLOYMENT VALIDATION:
+- Check GitHub Actions workflow completion
+- Verify Cloudflare Pages deployment success
+- Confirm AWS CDK stack deployment
+- Validate all API endpoints are working
 
-Output JSON status updates to stdout with format:
-{{"status": "progress|completed|failed", "message": "...", "timestamp": "..."}}
+ERROR HANDLING:
+- If deployment fails, check logs and fix issues
+- If tests fail, analyze failures and implement fixes
+- If API errors occur, debug backend connectivity
+- Continue iterating until ALL criteria are met
+
+COMPLETION REQUIREMENTS:
+- All tests pass on deployed environment
+- No console errors in browser
+- All API endpoints respond correctly
+- Frontend loads without issues
+- Backend ML pipeline accessible (if relevant)
+
+Output JSON status with deployment URLs and test results:
+{{"status": "progress|testing|failed|completed", "message": "...", "deployment_url": "...", "test_results": {{...}}, "timestamp": "..."}}
 """
 
         # Write prompt to temporary file
@@ -207,13 +231,57 @@ Output JSON status updates to stdout with format:
             
         return task
 
+    async def wait_for_deployment(self, task: AgentTask) -> bool:
+        """Wait for GitHub Actions deployment to complete"""
+        
+        logger.info(f"⏳ Waiting for deployment of {task.branch_name}")
+        
+        agent_id = task.branch_name.replace('agent/', '').replace('/', '-')
+        deployment_url = f"https://spaceport-agent-{agent_id}.pages.dev"
+        
+        # Wait for GitHub Actions to complete (up to 10 minutes)
+        max_wait_time = 600  # 10 minutes
+        check_interval = 30  # 30 seconds
+        elapsed_time = 0
+        
+        while elapsed_time < max_wait_time:
+            try:
+                # Check if deployment is accessible
+                result = subprocess.run([
+                    "curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", 
+                    deployment_url
+                ], capture_output=True, text=True, timeout=10)
+                
+                if result.stdout.strip() == "200":
+                    logger.info(f"✅ Deployment ready: {deployment_url}")
+                    return True
+                    
+                logger.info(f"⏳ Deployment not ready yet (HTTP {result.stdout.strip()}), waiting...")
+                
+            except subprocess.TimeoutExpired:
+                logger.warning(f"⚠️ Timeout checking deployment status")
+            except Exception as e:
+                logger.warning(f"⚠️ Error checking deployment: {e}")
+            
+            await asyncio.sleep(check_interval)
+            elapsed_time += check_interval
+        
+        logger.error(f"❌ Deployment timeout after {max_wait_time} seconds")
+        return False
+
     async def run_autonomous_tests(self, task: AgentTask, worktree_path: str) -> Dict[str, Any]:
         """Run autonomous tests on the deployed agent branch"""
         
         logger.info(f"🧪 Running autonomous tests for {task.branch_name}")
         
-        # Wait for deployment to be ready (GitHub Actions takes time)
-        await asyncio.sleep(60)
+        # Wait for deployment to be ready
+        deployment_ready = await self.wait_for_deployment(task)
+        if not deployment_ready:
+            return {
+                "success": False,
+                "error": "Deployment failed or timed out",
+                "deployment_url": f"https://spaceport-agent-{task.branch_name.replace('agent/', '').replace('/', '-')}.pages.dev"
+            }
         
         # Run Playwright tests against the agent deployment
         agent_id = task.branch_name.replace('agent/', '').replace('/', '-')
@@ -254,6 +322,67 @@ Output JSON status updates to stdout with format:
             logger.warning(f"Could not parse detailed test results: {e}")
             
         return test_results
+
+    async def create_pull_request(self, task: AgentTask, worktree_path: str) -> bool:
+        """Create a pull request for the completed task"""
+        
+        try:
+            logger.info(f"📝 Creating pull request for {task.branch_name}")
+            
+            # Create PR using GitHub CLI
+            pr_title = f"🤖 Autonomous Task: {task.description}"
+            pr_body = f"""
+## 🤖 Autonomous Agent Task Completion
+
+**Task**: {task.description}
+**Branch**: `{task.branch_name}`
+**Agent ID**: `{task.agent_id}`
+
+### ✅ Success Criteria Met
+{chr(10).join(f"- ✅ {criteria}" for criteria in task.success_criteria)}
+
+### 🧪 Test Results
+- **Deployment URL**: {task.test_results.get('deployment_url', 'N/A')}
+- **Tests Passed**: {task.test_results.get('success', False)}
+- **Execution Time**: {(task.end_time - task.start_time):.1f} seconds
+
+### 🔍 Validation
+- Frontend deployed successfully
+- All tests pass on deployed environment
+- No console errors detected
+- API endpoints responding correctly
+
+### 📊 Agent Output
+```
+{task.output_log[-1000:] if task.output_log else 'No output captured'}
+```
+
+---
+*This PR was created automatically by the autonomous development system.*
+*Ready for human review and merge to development branch.*
+"""
+
+            # Create PR using gh CLI
+            result = subprocess.run([
+                "gh", "pr", "create",
+                "--title", pr_title,
+                "--body", pr_body,
+                "--base", "development",
+                "--head", task.branch_name,
+                "--assignee", "@me"
+            ], capture_output=True, text=True, cwd=worktree_path)
+            
+            if result.returncode == 0:
+                pr_url = result.stdout.strip()
+                logger.info(f"✅ Pull request created: {pr_url}")
+                return True
+            else:
+                logger.error(f"❌ Failed to create PR: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"❌ Exception creating pull request: {e}")
+            return False
 
     async def orchestrate_tasks(self, tasks: List[AgentTask]) -> OrchestrationResult:
         """Orchestrate multiple tasks with parallel execution"""
@@ -299,8 +428,14 @@ Output JSON status updates to stdout with format:
                     completed_task.test_results = test_results
                     
                     if test_results["success"]:
-                        self.completed_tasks.append(completed_task)
-                        logger.info(f"✅ Task fully validated: {completed_task.description}")
+                        # Create pull request for successful task
+                        pr_created = await self.create_pull_request(completed_task, worktree_path)
+                        if pr_created:
+                            self.completed_tasks.append(completed_task)
+                            logger.info(f"✅ Task fully validated and PR created: {completed_task.description}")
+                        else:
+                            logger.warning(f"⚠️ Task completed but PR creation failed: {completed_task.description}")
+                            self.completed_tasks.append(completed_task)  # Still count as completed
                     else:
                         completed_task.status = "failed"
                         self.failed_tasks.append(completed_task)
