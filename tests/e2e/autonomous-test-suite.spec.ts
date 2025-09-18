@@ -127,6 +127,10 @@ test.describe('Autonomous Full-Stack Test Suite', () => {
     
     await page.goto('/');
     
+    // Check if we have test credentials from environment
+    const testEmail = process.env.TEST_EMAIL;
+    const testPassword = process.env.TEST_PASSWORD;
+    
     // Look for auth elements
     const signInButton = page.locator('button:has-text("Sign In"), input[type="email"]').first();
     
@@ -136,7 +140,26 @@ test.describe('Autonomous Full-Stack Test Suite', () => {
       
       // Try to interact with auth form
       const emailInput = page.locator('input[type="email"]').first();
-      if (await emailInput.isVisible()) {
+      const passwordInput = page.locator('input[type="password"]').first();
+      
+      if (await emailInput.isVisible() && testEmail && testPassword) {
+        // Attempt full authentication with test credentials
+        await emailInput.fill(testEmail);
+        await passwordInput.fill(testPassword);
+        
+        await testHelper.captureScreenshot(page, 'auth-form-filled');
+        
+        // Try to submit
+        const submitButton = page.locator('button[type="submit"]').first();
+        if (await submitButton.isVisible()) {
+          await submitButton.click();
+          
+          // Wait for navigation or error
+          await page.waitForTimeout(3000);
+          await testHelper.captureScreenshot(page, 'auth-submission-result');
+        }
+      } else if (await emailInput.isVisible()) {
+        // Just test form interaction without credentials
         await emailInput.fill('test@example.com');
         await testHelper.captureScreenshot(page, 'auth-form-filled');
       }

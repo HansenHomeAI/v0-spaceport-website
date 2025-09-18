@@ -1,0 +1,327 @@
+name: Agent Branch Deployment (Fixed)
+
+on:
+  push:
+    branches: 
+      - 'agent/*'
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Agent branch to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy-agent-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      actions: read
+    
+    env:
+      BRANCH_NAME: ${{ github.ref_name || github.event.inputs.branch_name }}
+      
+    outputs:
+      agent_id: ${{ steps.agent_id.outputs.agent_id }}
+      deployment_url: ${{ steps.deployment.outputs.deployment_url }}
+      aws_stack_name: ${{ steps.deployment.outputs.aws_stack_name }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Extract and validate agent ID
+        id: agent_id
+        run: |
+          # Extract agent ID from branch name (agent/feature-123 -> feature-123)
+          AGENT_ID="${BRANCH_NAME#agent/}"
+          # Sanitize for AWS/Cloudflare resource naming
+          AGENT_ID=$(echo "$AGENT_ID" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | head -c 20)
+          
+          # Validate agent ID
+          if [[ ! "$AGENT_ID" =~ ^[a-z0-9][a-z0-9-]*[a-z0-9]$ ]]; then
+            echo "❌ Invalid agent ID: $AGENT_ID"
+            exit 1
+          fi
+          
+          echo "agent_id=$AGENT_ID" >> $GITHUB_OUTPUT
+          echo "subdomain=spaceport-agent-$AGENT_ID" >> $GITHUB_OUTPUT
+          echo "✅ Agent ID: $AGENT_ID"
+
+      # Frontend Deployment with Project Creation
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: web
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Build frontend
+        working-directory: web
+        run: |
+          # Use staging environment variables for agent branches
+          echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=${{ secrets.BETA_ACCESS_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=agent-pool-${{ steps.agent_id.outputs.agent_id }}" >> .env
+          echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=agent-client-${{ steps.agent_id.outputs.agent_id }}" >> .env
+          echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PREVIEW }}" >> .env
+          
+          npm run build
+          npm run cf:build
+
+      - name: Create Cloudflare Pages Project
+        working-directory: web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PROJECT_NAME="spaceport-agent-${{ steps.agent_id.outputs.agent_id }}"
+          
+          # Check if project exists
+          if npx wrangler pages project list | grep -q "$PROJECT_NAME"; then
+            echo "✅ Cloudflare Pages project exists: $PROJECT_NAME"
+          else
+            echo "🆕 Creating Cloudflare Pages project: $PROJECT_NAME"
+            npx wrangler pages project create "$PROJECT_NAME" \
+              --compatibility-date="2024-01-01" \
+              --compatibility-flags="nodejs_compat"
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        id: cf_deploy
+        working-directory: web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PROJECT_NAME="spaceport-agent-${{ steps.agent_id.outputs.agent_id }}"
+          
+          # Deploy and capture output
+          DEPLOY_OUTPUT=$(npx wrangler pages deploy .vercel/output/static \
+            --project-name="$PROJECT_NAME" \
+            --compatibility-date="2024-01-01" 2>&1)
+          
+          echo "$DEPLOY_OUTPUT"
+          
+          # Extract deployment URL
+          DEPLOYMENT_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*\.pages\.dev' | head -1)
+          
+          if [ -z "$DEPLOYMENT_URL" ]; then
+            DEPLOYMENT_URL="https://$PROJECT_NAME.pages.dev"
+          fi
+          
+          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "✅ Frontend deployed: $DEPLOYMENT_URL"
+
+      # AWS Infrastructure Deployment
+      - name: Setup Python for CDK
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Install CDK dependencies
+        working-directory: infrastructure/spaceport_cdk
+        run: |
+          python -m pip install --upgrade pip
+          pip install aws-cdk-lib==2.89.0 constructs==10.3.0 boto3==1.28.0 --no-deps
+          pip install pytest jsii cattrs typeguard typing-extensions publication --no-deps
+          pip install -e .
+          npm install -g aws-cdk@2.89.0
+
+      - name: Deploy CDK with agent configuration
+        id: cdk_deploy
+        working-directory: infrastructure/spaceport_cdk
+        env:
+          AGENT_ID: ${{ steps.agent_id.outputs.agent_id }}
+        run: |
+          # Create agent-specific environment configuration
+          cat > agent-context.json << EOF
+          {
+            "environment": "agent-$AGENT_ID",
+            "environments": {
+              "agent-$AGENT_ID": {
+                "region": "us-west-2",
+                "resourceSuffix": "$AGENT_ID",
+                "domain": "agent-$AGENT_ID.spaceport-staging.com",
+                "useOIDC": false
+              }
+            }
+          }
+          EOF
+          
+          # Bootstrap CDK
+          cdk bootstrap
+          
+          # Deploy stacks with agent configuration
+          STACK_NAME="SpaceportAgent${AGENT_ID}Stack"
+          
+          cdk deploy "$STACK_NAME" \
+            --require-approval never \
+            --context environment="agent-$AGENT_ID" \
+            --context-file agent-context.json \
+            --outputs-file cdk-outputs.json
+          
+          echo "aws_stack_name=$STACK_NAME" >> $GITHUB_OUTPUT
+          echo "✅ AWS stack deployed: $STACK_NAME"
+
+      - name: Create test user in Cognito
+        id: test_user
+        run: |
+          # Extract Cognito details from CDK outputs
+          USER_POOL_ID=$(jq -r '.SpaceportAgent${{ steps.agent_id.outputs.agent_id }}Stack.CognitoUserPoolId' infrastructure/spaceport_cdk/cdk-outputs.json)
+          
+          if [ "$USER_POOL_ID" != "null" ] && [ -n "$USER_POOL_ID" ]; then
+            # Create test user
+            TEST_EMAIL="test-agent-${{ steps.agent_id.outputs.agent_id }}@spaceport.dev"
+            TEST_PASSWORD="TestPass123!"
+            
+            aws cognito-idp admin-create-user \
+              --user-pool-id "$USER_POOL_ID" \
+              --username "$TEST_EMAIL" \
+              --user-attributes Name=email,Value="$TEST_EMAIL" Name=email_verified,Value=true \
+              --temporary-password "$TEST_PASSWORD" \
+              --message-action SUPPRESS || true
+            
+            # Set permanent password
+            aws cognito-idp admin-set-user-password \
+              --user-pool-id "$USER_POOL_ID" \
+              --username "$TEST_EMAIL" \
+              --password "$TEST_PASSWORD" \
+              --permanent || true
+            
+            echo "test_email=$TEST_EMAIL" >> $GITHUB_OUTPUT
+            echo "test_password=$TEST_PASSWORD" >> $GITHUB_OUTPUT
+            echo "✅ Test user created: $TEST_EMAIL"
+          else
+            echo "⚠️ No Cognito User Pool found, skipping test user creation"
+          fi
+
+  # Deployment Monitoring and Testing
+  monitor-and-test:
+    needs: deploy-agent-branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Wait for deployment readiness
+        id: wait_deployment
+        env:
+          DEPLOYMENT_URL: ${{ needs.deploy-agent-branch.outputs.deployment_url }}
+          AWS_STACK_NAME: ${{ needs.deploy-agent-branch.outputs.aws_stack_name }}
+        run: |
+          echo "🔍 Monitoring deployment readiness..."
+          echo "Frontend: $DEPLOYMENT_URL"
+          echo "AWS Stack: $AWS_STACK_NAME"
+          
+          # Wait for Cloudflare Pages
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
+          
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            echo "⏳ Checking frontend deployment (attempt $((ATTEMPT + 1))/$MAX_ATTEMPTS)..."
+            
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL" || echo "000")
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Frontend is ready: $DEPLOYMENT_URL"
+              break
+            fi
+            
+            echo "⏳ Frontend not ready (HTTP $HTTP_CODE), waiting..."
+            sleep 20
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Frontend deployment timeout"
+            exit 1
+          fi
+          
+          # Wait for AWS stack
+          aws cloudformation wait stack-create-complete \
+            --stack-name "$AWS_STACK_NAME" \
+            --region us-west-2 || \
+          aws cloudformation wait stack-update-complete \
+            --stack-name "$AWS_STACK_NAME" \
+            --region us-west-2 || true
+          
+          echo "✅ Deployment monitoring complete"
+
+      - name: Setup Node.js for testing
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install test dependencies
+        working-directory: web
+        run: |
+          npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+          npx playwright install chromium
+
+      - name: Run autonomous test suite
+        working-directory: web
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ needs.deploy-agent-branch.outputs.deployment_url }}
+          TEST_EMAIL: ${{ needs.deploy-agent-branch.outputs.test_email }}
+          TEST_PASSWORD: ${{ needs.deploy-agent-branch.outputs.test_password }}
+        run: |
+          # Run tests with proper environment
+          npm run test:autonomous -- --reporter=json --output-file=test-results/autonomous-results.json || true
+          
+          # Output results for agent analysis
+          if [ -f test-results/autonomous-results.json ]; then
+            echo "AUTONOMOUS_TEST_RESULTS:"
+            cat test-results/autonomous-results.json
+          fi
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-test-results-${{ needs.deploy-agent-branch.outputs.agent_id }}
+          path: web/test-results/
+          retention-days: 7
+
+      - name: Comment deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const agentId = '${{ needs.deploy-agent-branch.outputs.agent_id }}';
+            const deploymentUrl = '${{ needs.deploy-agent-branch.outputs.deployment_url }}';
+            const awsStack = '${{ needs.deploy-agent-branch.outputs.aws_stack_name }}';
+            
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `🤖 **Agent Deployment Complete**
+              
+              **Branch:** \`${context.ref}\`
+              **Agent ID:** \`${agentId}\`
+              **Frontend URL:** ${deploymentUrl}
+              **AWS Stack:** \`${awsStack}\`
+              **Test User:** test-agent-${agentId}@spaceport.dev
+              
+              ✅ Ready for autonomous testing and iteration!
+              
+              View test results in the Actions artifacts.`
+            });

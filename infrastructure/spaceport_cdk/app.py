@@ -8,15 +8,31 @@ app = App()
 
 # Environment detection from context or default to staging
 env_name = app.node.try_get_context('environment') or 'staging'
-env_config = app.node.try_get_context('environments')[env_name]
+
+# Handle agent environments
+if env_name.startswith('agent-'):
+    # Agent environment - create dynamic config
+    agent_id = env_name.replace('agent-', '')
+    env_config = {
+        'region': 'us-west-2',
+        'resourceSuffix': agent_id,
+        'domain': f'agent-{agent_id}.spaceport-staging.com',
+        'useOIDC': False
+    }
+    stack_name = f"SpaceportAgent{agent_id.title().replace('-', '')}Stack"
+else:
+    # Standard environment
+    env_config = app.node.try_get_context('environments')[env_name]
+    stack_name = f"Spaceport{env_name.title()}Stack"
 
 print(f"Deploying to environment: {env_name}")
 print(f"Environment config: {env_config}")
+print(f"Stack name: {stack_name}")
 
 # Deploy the main Spaceport stack with environment context
 spaceport_stack = SpaceportStack(
     app,
-    f"Spaceport{env_name.title()}Stack",
+    stack_name,
     env_config=env_config,
     env={
         'account': app.node.try_get_context('account') or None,  # Dynamically resolved
