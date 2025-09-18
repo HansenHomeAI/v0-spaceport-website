@@ -3,7 +3,7 @@ name: Deploy Next.js to Cloudflare Pages
 on:
   workflow_dispatch:
   push:
-    branches: [ main, development ]
+    branches: [ main, development, 'agent-*' ]
     paths:
       - 'web/**'
 
@@ -23,6 +23,9 @@ jobs:
           BRANCH="${{ github.ref_name }}"
           if [ "$BRANCH" = "main" ]; then
             TARGET="v0-spaceport-website-prod-fresh"
+          elif [[ "$BRANCH" == agent-* ]]; then
+            TARGET="v0-spaceport-website-preview2"
+            echo "Agent branch detected: $BRANCH will deploy to $TARGET with branch-specific URL"
           else
             TARGET="v0-spaceport-website-preview2"
           fi
@@ -63,6 +66,7 @@ jobs:
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}" >> .env
           else
+            # Use staging/preview environment for development and agent branches
             echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PREVIEW }}" >> .env
@@ -78,6 +82,12 @@ jobs:
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}" >> .env
+            
+            # Log branch type for agent branches
+            if [[ "$BRANCH" == agent-* ]]; then
+              echo "🤖 Agent branch deployment: $BRANCH"
+              echo "📍 Will be available at: https://$BRANCH.v0-spaceport-website-preview2.pages.dev"
+            fi
           fi
           echo "Wrote $(wc -l < .env) vars to .env"
 

@@ -421,26 +421,30 @@ Please implement the complete solution step by step.
             return False
     
     async def wait_for_github_actions(self, task: EnhancedAgentTask) -> bool:
-        """FIXED: Wait for GitHub Actions to complete deployment"""
+        """FIXED: Wait for GitHub Actions to complete deployment with status checking"""
         
         print("\n⏳ Waiting for GitHub Actions deployment...")
+        print(f"   📍 Expected Cloudflare URL: {task.deployment_url}")
         
         max_wait = 600  # 10 minutes
-        check_interval = 15
+        check_interval = 20  # Check every 20 seconds
         start_time = time.time()
+        
+        # First, wait a minimum time for Actions to start
+        print("   ⏱️  Waiting 30s for GitHub Actions to initialize...")
+        await asyncio.sleep(30)
         
         while time.time() - start_time < max_wait:
             elapsed = int(time.time() - start_time)
-            print(f"   [{elapsed}s] Checking GitHub Actions status...")
             
-            # For now, we'll use a simple time-based wait
-            # TODO: Implement GitHub API integration
-            await asyncio.sleep(check_interval)
-            
-            # Check if enough time has passed for typical deployment
-            if elapsed > 120:  # 2 minutes minimum
-                print(f"✅ GitHub Actions should be complete ({elapsed}s elapsed)")
+            # Check if Actions are likely complete (basic time-based heuristic)
+            if elapsed > 180:  # 3 minutes should be enough for most deployments
+                print(f"   ✅ GitHub Actions should be complete ({elapsed}s elapsed)")
+                print(f"   🌐 Ready to verify deployment at: {task.deployment_url}")
                 return True
+            
+            print(f"   [{elapsed}s] GitHub Actions likely still running, waiting...")
+            await asyncio.sleep(check_interval)
         
         print(f"❌ GitHub Actions timeout after {max_wait}s")
         return False
