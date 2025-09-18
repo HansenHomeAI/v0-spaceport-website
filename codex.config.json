@@ -1,0 +1,174 @@
+{
+  "version": "1.0",
+  "name": "spaceport-autonomous-development",
+  "description": "Autonomous full-stack development environment for Spaceport ML pipeline",
+  
+  "workspace": {
+    "root": ".",
+    "exclude": [
+      "node_modules/**",
+      ".git/**",
+      "infrastructure/cdk.out/**",
+      "infrastructure/spaceport_cdk/venv/**",
+      "tests/__pycache__/**",
+      "*.log"
+    ]
+  },
+
+  "environments": {
+    "development": {
+      "branch": "development", 
+      "aws_profile": "spaceport-staging",
+      "frontend_url": "https://v0-spaceport-website-preview2.pages.dev",
+      "api_base": "https://api-staging.spaceport.com"
+    },
+    "agent": {
+      "branch_pattern": "agent/*",
+      "aws_profile": "spaceport-staging", 
+      "frontend_url_pattern": "https://spaceport-agent-{agent_id}.pages.dev",
+      "api_base_pattern": "https://api-agent-{agent_id}.spaceport.com"
+    },
+    "production": {
+      "branch": "main",
+      "aws_profile": "spaceport-production", 
+      "frontend_url": "https://v0-spaceport-website-prod-fresh.pages.dev",
+      "api_base": "https://api.spaceport.com"
+    }
+  },
+
+  "commands": {
+    "safe": [
+      "npm install",
+      "npm run build", 
+      "npm run test:e2e",
+      "npm run test:autonomous",
+      "python -m pytest tests/",
+      "git status",
+      "git log --oneline -10",
+      "git diff",
+      "aws sts get-caller-identity",
+      "cdk diff",
+      "playwright test --reporter=json"
+    ],
+    "deploy": [
+      "git push origin {branch}",
+      "cdk deploy --require-approval never",
+      "./scripts/deployment/deploy.sh"
+    ],
+    "dangerous": [
+      "rm -rf",
+      "cdk destroy",
+      "git push --force",
+      "aws s3 rm --recursive"
+    ]
+  },
+
+  "testing": {
+    "frontend": {
+      "command": "npm run test:autonomous",
+      "working_directory": "./web",
+      "timeout": 300,
+      "output_format": "json",
+      "success_criteria": {
+        "no_console_errors": true,
+        "no_network_failures": true,
+        "load_time_under": 5000
+      }
+    },
+    "backend": {
+      "command": "python -m pytest tests/pipeline/ -v --tb=short",
+      "working_directory": "./",
+      "timeout": 1800,
+      "output_format": "pytest",
+      "success_criteria": {
+        "all_tests_pass": true,
+        "ml_pipeline_functional": true
+      }
+    },
+    "integration": {
+      "command": "./scripts/admin/validate_full_pipeline.py",
+      "working_directory": "./",
+      "timeout": 3600,
+      "output_format": "json"
+    }
+  },
+
+  "deployment": {
+    "strategy": "branch_based",
+    "auto_deploy": true,
+    "validation_required": true,
+    "rollback_on_failure": true,
+    
+    "steps": [
+      {
+        "name": "create_agent_branch",
+        "command": "git checkout -b agent/{task_id}",
+        "required": true
+      },
+      {
+        "name": "implement_changes", 
+        "command": "# AI implements code changes here",
+        "required": true
+      },
+      {
+        "name": "run_tests",
+        "command": "npm run test:autonomous && python -m pytest tests/",
+        "required": true,
+        "retry_on_failure": true,
+        "max_retries": 3
+      },
+      {
+        "name": "deploy_to_agent_environment",
+        "command": "git push origin agent/{task_id}",
+        "required": true
+      },
+      {
+        "name": "validate_deployment",
+        "command": "npm run test:e2e",
+        "required": true,
+        "timeout": 600
+      },
+      {
+        "name": "create_pull_request",
+        "command": "gh pr create --title '{task_description}' --body 'Autonomous implementation by Codex AI'",
+        "required": false
+      }
+    ]
+  },
+
+  "monitoring": {
+    "log_level": "INFO",
+    "capture_screenshots": true,
+    "capture_network_logs": true,
+    "capture_console_logs": true,
+    "performance_monitoring": true
+  },
+
+  "limits": {
+    "max_execution_time": 3600,
+    "max_file_size": "10MB", 
+    "max_concurrent_operations": 3,
+    "cost_limit_usd": 50
+  },
+
+  "integrations": {
+    "github": {
+      "auto_create_branches": true,
+      "auto_create_prs": true,
+      "require_reviews": false
+    },
+    "aws": {
+      "region": "us-west-2",
+      "cost_monitoring": true,
+      "resource_tagging": {
+        "Project": "Spaceport",
+        "Environment": "Agent",
+        "ManagedBy": "CodexAI"
+      }
+    },
+    "cloudflare": {
+      "auto_create_projects": true,
+      "custom_domains": false
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "session_name": "Authentication and UI Improvements",
+  "description": "Example task configuration for autonomous development",
+  "tasks": [
+    {
+      "id": "auth-fix-001",
+      "description": "Fix authentication state persistence across page reloads",
+      "branch_name": "agent/auth-persistence-fix",
+      "priority": 1,
+      "estimated_time_minutes": 45,
+      "dependencies": [],
+      "success_criteria": [
+        "User remains logged in after page refresh",
+        "Authentication tokens are properly stored",
+        "No console errors related to auth state",
+        "Login flow works end-to-end",
+        "Logout properly clears all auth data"
+      ]
+    },
+    {
+      "id": "ui-modal-002", 
+      "description": "Improve NewProjectModal loading states and error handling",
+      "branch_name": "agent/modal-improvements",
+      "priority": 2,
+      "estimated_time_minutes": 30,
+      "dependencies": [],
+      "success_criteria": [
+        "Loading spinners show during async operations",
+        "Error messages display clearly to users", 
+        "Modal can be closed during loading states",
+        "Form validation provides helpful feedback",
+        "No layout shifts during state changes"
+      ]
+    },
+    {
+      "id": "api-error-003",
+      "description": "Add comprehensive error handling to ML pipeline API calls",
+      "branch_name": "agent/api-error-handling",
+      "priority": 3,
+      "estimated_time_minutes": 60,
+      "dependencies": [],
+      "success_criteria": [
+        "API errors are caught and displayed to users",
+        "Retry logic for transient failures",
+        "Graceful degradation when services are unavailable",
+        "Proper HTTP status code handling",
+        "Error tracking integration with Sentry"
+      ]
+    },
+    {
+      "id": "performance-004",
+      "description": "Optimize frontend bundle size and loading performance",
+      "branch_name": "agent/performance-optimization", 
+      "priority": 4,
+      "estimated_time_minutes": 90,
+      "dependencies": [],
+      "success_criteria": [
+        "Bundle size reduced by at least 20%",
+        "Page load time under 3 seconds",
+        "Core Web Vitals scores improved",
+        "Proper code splitting implemented",
+        "Lighthouse performance score > 90"
+      ]
+    },
+    {
+      "id": "ml-monitoring-005",
+      "description": "Add real-time monitoring for ML pipeline jobs",
+      "branch_name": "agent/ml-monitoring",
+      "priority": 5, 
+      "estimated_time_minutes": 75,
+      "dependencies": [],
+      "success_criteria": [
+        "Job progress updates in real-time",
+        "CloudWatch logs accessible from frontend",
+        "Cost tracking for ML jobs",
+        "Failure notifications sent to users",
+        "Job cancellation functionality works"
+      ]
+    }
+  ],
+  "global_constraints": {
+    "max_execution_time_minutes": 120,
+    "require_tests_pass": true,
+    "require_deployment_success": true,
+    "cost_limit_usd": 25
+  },
+  "notification_settings": {
+    "slack_webhook": null,
+    "email_notifications": false,
+    "github_comments": true
+  }
+}

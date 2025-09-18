@@ -1,0 +1,172 @@
+name: Agent Branch Deployment
+
+on:
+  push:
+    branches: 
+      - 'agent/*'  # Matches agent/feature-123, agent/bugfix-456, etc.
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Agent branch to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy-agent-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    
+    env:
+      BRANCH_NAME: ${{ github.ref_name || github.event.inputs.branch_name }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Extract agent ID from branch name
+        id: agent_id
+        run: |
+          # Extract agent ID from branch name (agent/feature-123 -> feature-123)
+          AGENT_ID="${BRANCH_NAME#agent/}"
+          # Sanitize for AWS resource naming (replace special chars with hyphens)
+          AGENT_ID=$(echo "$AGENT_ID" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+          echo "agent_id=$AGENT_ID" >> $GITHUB_OUTPUT
+          echo "subdomain=agent-$AGENT_ID" >> $GITHUB_OUTPUT
+          echo "Agent ID: $AGENT_ID"
+          echo "Subdomain: agent-$AGENT_ID"
+
+      # Deploy Frontend to Cloudflare Pages with agent-specific project
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: web
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Build frontend with agent-specific environment
+        working-directory: web
+        run: |
+          # Use development environment variables for agent branches
+          echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=${{ secrets.BETA_ACCESS_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
+          echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PREVIEW }}" >> .env
+          
+          npm run build
+          npm run cf:build
+
+      - name: Deploy to Cloudflare Pages (agent-specific project)
+        working-directory: web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Create or deploy to agent-specific Pages project
+          npx wrangler pages deploy .vercel/output/static \
+            --project-name="spaceport-agent-${{ steps.agent_id.outputs.agent_id }}" \
+            --compatibility-date="2024-01-01"
+
+      # Deploy AWS Infrastructure with agent-specific suffix
+      - name: Setup Python for CDK
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Configure AWS credentials (staging)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Install CDK dependencies
+        working-directory: infrastructure/spaceport_cdk
+        run: |
+          python -m pip install --upgrade pip
+          pip install aws-cdk-lib==2.89.0 constructs==10.3.0 boto3==1.28.0 --no-deps
+          pip install pytest jsii cattrs typeguard typing-extensions publication --no-deps
+          pip install -e .
+          npm install -g aws-cdk@2.89.0
+
+      - name: Deploy CDK with agent suffix
+        working-directory: infrastructure/spaceport_cdk
+        env:
+          AGENT_SUFFIX: ${{ steps.agent_id.outputs.agent_id }}
+        run: |
+          # Bootstrap if needed
+          cdk bootstrap
+          
+          # Deploy with agent-specific stack names
+          cdk deploy SpaceportStack-${{ steps.agent_id.outputs.agent_id }} \
+            --require-approval never \
+            --context agentSuffix=${{ steps.agent_id.outputs.agent_id }}
+
+      # Run Autonomous Tests
+      - name: Install Playwright
+        working-directory: web
+        run: npx playwright install chromium
+
+      - name: Run autonomous test suite
+        working-directory: web
+        env:
+          PLAYWRIGHT_BASE_URL: https://spaceport-agent-${{ steps.agent_id.outputs.agent_id }}.pages.dev
+        run: |
+          # Wait for deployment to be ready
+          sleep 30
+          
+          # Run autonomous tests and capture results
+          npm run test:autonomous || true
+          
+          # Output test results for agent analysis
+          if [ -f test-results/results.json ]; then
+            echo "AUTONOMOUS_TEST_RESULTS:"
+            cat test-results/results.json
+          fi
+
+      - name: Comment deployment status on commit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const agentId = '${{ steps.agent_id.outputs.agent_id }}';
+            const subdomain = `spaceport-agent-${agentId}`;
+            const deploymentUrl = `https://${subdomain}.pages.dev`;
+            
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `🤖 **Agent Deployment Complete**
+              
+              **Branch:** \`${context.ref}\`
+              **Agent ID:** \`${agentId}\`
+              **Frontend URL:** ${deploymentUrl}
+              **AWS Stack:** \`SpaceportStack-${agentId}\`
+              
+              ✅ Ready for autonomous testing and iteration!`
+            });
+
+  cleanup-stale-deployments:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Cleanup stale agent deployments
+        run: |
+          echo "TODO: Implement cleanup of agent deployments older than 7 days"
+          # This would involve:
+          # 1. List all agent branches older than 7 days
+          # 2. Delete corresponding Cloudflare Pages projects
+          # 3. Delete corresponding AWS CloudFormation stacks
+          # 4. Delete the Git branches
