@@ -1,5 +1,7 @@
 export const runtime = 'edge';
 
+import { JoinWaitlistButton } from './JoinWaitlistButton';
+
 export default function Landing(): JSX.Element {
   return (
     <>
@@ -8,9 +10,7 @@ export default function Landing(): JSX.Element {
         <div id="iframe-overlay" />
         <div className="landing-content">
           <h1>Location. Visualized in 3D.</h1>
-          <a href="/create" className="cta-button">
-            Join waitlist
-          </a>
+          <JoinWaitlistButton />
         </div>
       </section>
 
@@ -103,4 +103,3 @@ export default function Landing(): JSX.Element {
     </>
   );
 }
-
