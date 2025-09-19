@@ -834,24 +834,23 @@
   text-align: center; /* Center the button text */
   box-sizing: border-box; /* Include border in width calculation */
   
-  /* Based on cta-button2-fixed styling */
+  /* Updated styling - no outline, white background with opacity */
   text-decoration: none;
-  padding: 9.5px 21.5px;
+  padding: 12px 21.5px;
   border-radius: 999px;
   transition: background 0.3s ease;
-  border: 2.5px solid #fff;
+  border: none;
   color: #fff;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   font-size: 1rem;
   cursor: pointer;
   user-select: none;
-  /* Button height: 24px (9.5px padding top + 9.5px padding bottom + 2.5px border top + 2.5px border bottom) */
+  /* Button height: 24px (12px padding top + 12px padding bottom) */
   /* Now truly concentric: 12px from all card borders, regardless of card padding changes */
 }
 
 .component-showcase .default-card .default-card-button:hover {
-  background: #fff;
-  color: #000;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .component-showcase .waitlist-card {
