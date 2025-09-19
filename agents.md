@@ -2,9 +2,9 @@
 
 ## Agentic Dev Loop SOP
 1. **Branch**: from `development` create `agent-12345678-task-name` (unique eight-digit ID plus slug, e.g. `agent-74120953-update-web-copy`).
-2. **Baseline**: deploy, monitor GitHub Actions until the Cloudflare preview is green, and capture failing logs.
+2. **Baseline**: deploy, monitor GitHub Actions until the Cloudflare preview is green, and capture failing logs (no coding debug cycle is complete until the live preview succeeds).
 3. **Test**: start Playwright MCP with `python3 scripts/playwright-mcp-manager.py ensure`, record a baseline run, and expand coverage when gaps appear.
-4. **Iterate**: apply the smallest fix, redeploy, and rerun the baseline until everything passes.
+4. **Iterate**: apply the smallest fix, redeploy, watch the live preview build/logs, and rerun the baseline until everything passes.
 5. **Wrap**: open a `development` PR only after preview and tests are green; escalate secret or production-config work.
 
 ## Guardrails (Never Do)
@@ -17,7 +17,7 @@
 `web/` holds the Next.js App Router (`app/`), shared `components/`, helpers in `lib/`, and static `public/`. `infrastructure/` covers CDK stacks, Lambda code, and container contexts; `scripts/` hosts automation; `tests/` contains regression suites.
 
 ## Build, Test, and Development Commands
-Inside `web/`: run `npm install`, `npm run dev`, `npm run build`, `npm run start`, and `npm run cf:build`/`npm run cf:preview` for Cloudflare builds. For CDK use `pip install -r infrastructure/spaceport_cdk/requirements.txt` followed by `cdk synth` or `cdk deploy`.
+Inside `web/`: run `npm install`, `npm run dev`, `npm run build`, `npm run start`, and `npm run cf:build`/`npm run cf:preview` for Cloudflare builds. For CDK use `pip install -r infrastructure/spaceport_cdk/requirements.txt` followed by `cdk synth` or `cdk deploy`. Environment tip: surface `NEXT_PUBLIC_FEEDBACK_API_URL` (Feedback API output) alongside the existing public API URLs.
 
 ## Coding Style & Naming Conventions
 Frontend: TypeScript, two-space indent, PascalCase components, camelCase utilities, `npx next lint` before committing, and keep server/client modules split. Infrastructure Python follows PEP 8 (snake_case, docstrings).
