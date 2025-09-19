@@ -5,25 +5,40 @@ import TermsOfServiceModal from './TermsOfServiceModal';
 export default function Footer(): JSX.Element {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!feedback.trim()) return;
+    const trimmedFeedback = feedback.trim();
+    if (!trimmedFeedback) return;
 
     setIsSubmitting(true);
-    
-    // Create mailto link
-    const subject = encodeURIComponent('Spaceport AI Feedback');
-    const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:gabriel@spcprt.com,ethan@spcprt.com?subject=${subject}&body=${body}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Reset form
-    setFeedback('');
-    setIsSubmitting(false);
+    setHasError(false);
+
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: trimmedFeedback,
+          source: 'website-footer',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Feedback submission failed with status ${response.status}`);
+      }
+
+      setFeedback('');
+    } catch (error) {
+      console.error('Failed to submit feedback', error);
+      setHasError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,6 +73,28 @@ export default function Footer(): JSX.Element {
                 {isSubmitting ? 'Sending...' : 'Send Feedback'}
               </button>
             </div>
+            <span
+              aria-live="polite"
+              style={{
+                position: 'absolute',
+                width: 1,
+                height: 1,
+                padding: 0,
+                margin: -1,
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: 0,
+              }}
+            >
+              {isSubmitting
+                ? 'Sending feedback'
+                : hasError
+                ? 'There was a problem sending your feedback. Please try again.'
+                : feedback
+                ? ''
+                : 'Feedback submitted successfully.'}
+            </span>
           </form>
         </div>
       </section>
@@ -67,8 +104,8 @@ export default function Footer(): JSX.Element {
         <div className="footer-content">
           <p>
             © 2025 Spaceport AI · By using Spaceport AI, you agree to the{' '}
-            <button 
-              className="terms-link" 
+            <button
+              className="terms-link"
               onClick={() => setIsTermsModalOpen(true)}
             >
               Terms of Service
@@ -78,11 +115,10 @@ export default function Footer(): JSX.Element {
       </footer>
 
       {/* Terms of Service Modal */}
-      <TermsOfServiceModal 
-        isOpen={isTermsModalOpen} 
-        onClose={() => setIsTermsModalOpen(false)} 
+      <TermsOfServiceModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
       />
     </>
   );
 }
-
