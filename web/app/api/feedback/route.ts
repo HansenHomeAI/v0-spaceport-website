@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 const FEEDBACK_API_URL =
   process.env.FEEDBACK_API_URL || process.env.NEXT_PUBLIC_FEEDBACK_API_URL;
 const FEEDBACK_API_KEY = process.env.FEEDBACK_API_KEY;
