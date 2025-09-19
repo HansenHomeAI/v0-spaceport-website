@@ -3,6 +3,8 @@
 ## Branching & Isolation
 - Start from the designated integration branch (default `development`) unless stated otherwise.
 - Create a unique feature branch named `agent-<XXXXXXXX>` (exactly eight digits, zero-padded if needed) for every task and keep all edits isolated there until validation succeeds.
+- Never rewrite published history: avoid `git push --force`, `--force-with-lease`, or amending commits after pushing. Use follow-up commits for additional changes.
+- When merging into the integration branch, prefer `--no-ff` merges to preserve the branch history.
 
 ## Autonomy Mandate
 - Once a task is assigned, execute the full loop autonomously without pausing for user feedback unless a hard blocker or safety issue (like changing secrets) is encountered.
