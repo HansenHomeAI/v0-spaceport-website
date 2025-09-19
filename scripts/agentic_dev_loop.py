@@ -19,7 +19,7 @@ DEFAULT_BRANCH = "development"
 DEFAULT_CODEX_COMMAND = os.environ.get("CODEX_CLI_COMMAND", "codex")
 DEFAULT_PLAYWRIGHT_MCP_TASK = os.environ.get(
     "PLAYWRIGHT_MCP_BASELINE_TASK",
-    "playwright-mcp baseline --output .agentic/playwright-baseline",
+    "npx playwright test --reporter=json --output-dir=.agentic/playwright-baseline",
 )
 
 
@@ -85,19 +85,20 @@ def build_instruction_block(
         4. Discover the Cloudflare preview URL:
            - Prefer workflow outputs (hash + alias URLs).
            - Otherwise query `wrangler pages deployment list --project-name <preview-project>` and resolve latest deployment.
-        5. With `BASE_URL` set to the preview URL, execute baseline end-to-end checks via Playwright MCP:
-           - Run `{playwright_task} --base-url "$BASE_URL"` (adjust task if baseline scripts change).
+        5. Execute baseline end-to-end checks via Playwright:
+           - Set BASE_URL environment variable to preview URL
+           - Run `{playwright_task}` (adjust task if baseline scripts change).
            - Archive results in `.agentic/playwright-baseline` and summarize pass/fail status.
         6. Analyse failures and plan the minimum fix. Document the hypothesis before editing files.
         7. Implement the fix, run unit/integration tests as needed (`npm test`, targeted Python suites under `tests/`).
-        8. Commit with a clear message, push, redeploy, and repeat validation (CI ➜ preview ➜ Playwright MCP).
+        8. Commit with a clear message, push, redeploy, and repeat validation (CI ➜ preview ➜ Playwright).
         9. Once CI is green, preview is healthy, and tests pass, open a PR targeting `{DEFAULT_BRANCH}` including:
            - Summary of changes and rationale.
            - Links to CI runs, deployment previews, and test artifacts.
 
         ## Evidence & Logging Expectations
         - Maintain `notes/agentic/{branch_name}.md` (create if absent) capturing investigation notes.
-        - Store links to GitHub Action runs, Cloudflare deployment IDs, and MCP outputs.
+        - Store links to GitHub Action runs, Cloudflare deployment IDs, and Playwright test outputs.
         - Surface blockers early; request human support if secrets or credentials are missing.
 
         Execute iteratively until the objective is met or a blocking issue is identified.
