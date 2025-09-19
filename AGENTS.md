@@ -4,6 +4,11 @@
 - Start from the designated integration branch (default `development`) unless stated otherwise.
 - Create a unique feature branch named `agent-<id>` for every task and keep all edits isolated there until validation succeeds.
 
+## Autonomy Mandate
+- Once a task is assigned, execute the full loop autonomously without pausing for user feedback unless a hard blocker or safety issue (like changing secrets) is encountered.
+- Continue iterating (plan ➜ implement ➜ validate) until success or two consecutive validation cycles fail; only then report the blocker.
+- Keep the user informed via status updates while progress is ongoing, but never wait for explicit permission between loop stages.
+
 ## Planning & Execution Loop
 1. Perform a brief structured analysis before coding covering objectives, risks, approach, and validation.
 2. Implement the smallest viable change that satisfies the objectives while minimizing churn.

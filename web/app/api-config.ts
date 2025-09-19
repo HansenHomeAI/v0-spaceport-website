@@ -14,6 +14,9 @@ export const API_CONFIG = {
   // Waitlist API - User waitlist submissions
   WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL!,
   
+  // Feedback API - Website feedback submissions
+  FEEDBACK_API_URL: process.env.NEXT_PUBLIC_FEEDBACK_API_URL!,
+  
   // ML Pipeline API - ML processing operations
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
   
@@ -45,6 +48,9 @@ export const buildApiUrl = {
   
   // Waitlist API endpoints
   waitlist: () => API_CONFIG.WAITLIST_API_URL,
+  
+  // Feedback API endpoints
+  feedback: () => API_CONFIG.FEEDBACK_API_URL,
   
   // ML Pipeline API endpoints
   mlPipeline: {

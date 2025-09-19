@@ -725,6 +725,20 @@ html, body {
   cursor: not-allowed;
 }
 
+.feedback-status {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  min-height: 1.25rem;
+}
+
+.feedback-status-success {
+  color: #22c55e;
+}
+
+.feedback-status-error {
+  color: #f87171;
+}
+
 /* Responsive adjustments for feedback form */
 @media (max-width: 600px) {
   .feedback-input-container {
