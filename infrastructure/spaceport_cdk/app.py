@@ -8,22 +8,36 @@ app = App()
 
 # Environment detection from context or default to staging
 env_name = app.node.try_get_context('environment') or 'staging'
+agent_id = app.node.try_get_context('agent-id')
 
 # Handle agent environments
-if env_name.startswith('agent-'):
-    # Agent environment - create dynamic config
-    agent_id = env_name.replace('agent-', '')
+if agent_id:
+    # Agent environment - create dynamic config using staging base with agent suffix
+    print(f"🤖 Agent deployment detected: {agent_id}")
     env_config = {
         'region': 'us-west-2',
-        'resourceSuffix': agent_id,
-        'domain': f'agent-{agent_id}.spaceport-staging.com',
+        'resourceSuffix': f"staging-{agent_id}",  # Use staging account with agent suffix
+        'domain': f'staging.spcprt.com',  # Use staging domain
         'useOIDC': False
     }
-    stack_name = f"SpaceportAgent{agent_id.title().replace('-', '')}Stack"
+    # Create unique stack name for agent
+    clean_agent_id = agent_id.replace('agent-', '').replace('-', '')
+    stack_name = f"SpaceportAgent{clean_agent_id.title()}Stack"
 else:
     # Standard environment
-    env_config = app.node.try_get_context('environments')[env_name]
-    stack_name = f"Spaceport{env_name.title()}Stack"
+    try:
+        env_config = app.node.try_get_context('environments')[env_name]
+        stack_name = f"Spaceport{env_name.title()}Stack"
+    except (TypeError, KeyError):
+        # Fallback for missing environments context
+        print(f"⚠️ No environments context found, using default staging config")
+        env_config = {
+            'region': 'us-west-2',
+            'resourceSuffix': 'staging',
+            'domain': 'staging.spcprt.com',
+            'useOIDC': False
+        }
+        stack_name = f"Spaceport{env_name.title()}Stack"
 
 print(f"Deploying to environment: {env_name}")
 print(f"Environment config: {env_config}")
