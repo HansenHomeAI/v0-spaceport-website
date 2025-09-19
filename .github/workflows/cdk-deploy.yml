@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    environment: ${{ github.ref_name == 'main' && 'production' || (startsWith(github.ref_name, 'agent-') && 'agent-testing' || 'staging') }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -47,8 +47,16 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
 
+    - name: Configure AWS credentials (agent branches via staging keys)  
+      if: startsWith(github.ref_name, 'agent-')
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
     - name: Configure AWS credentials (staging via access keys)
-      if: github.ref_name != 'main'
+      if: github.ref_name != 'main' && !startsWith(github.ref_name, 'agent-')
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -142,19 +150,37 @@ jobs:
         if [ "${GITHUB_REF_NAME}" = "main" ]; then
           ENVIRONMENT="production"
           echo "Deploying to production environment"
+        elif [[ "${GITHUB_REF_NAME}" == agent-* ]]; then
+          ENVIRONMENT="staging"
+          AGENT_ID="${GITHUB_REF_NAME}"
+          echo "🤖 Deploying agent environment: $AGENT_ID"
+          echo "📍 Using staging AWS account with agent-specific resources"
         else
           ENVIRONMENT="staging"
           echo "Deploying to staging environment"
         fi
         
         # Deploy all stacks with environment context
-        cdk deploy --all \
-          --require-approval never \
-          --no-fail-on-empty-changeset \
-          --context environment=$ENVIRONMENT \
-          --context account=$ACCOUNT \
-          --context region=us-west-2 \
-          --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+        if [[ "${GITHUB_REF_NAME}" == agent-* ]]; then
+          # Agent-specific deployment with dynamic context
+          cdk deploy --all \
+            --require-approval never \
+            --no-fail-on-empty-changeset \
+            --context environment=$ENVIRONMENT \
+            --context agent-id="$AGENT_ID" \
+            --context account=$ACCOUNT \
+            --context region=us-west-2 \
+            --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+        else
+          # Standard deployment
+          cdk deploy --all \
+            --require-approval never \
+            --no-fail-on-empty-changeset \
+            --context environment=$ENVIRONMENT \
+            --context account=$ACCOUNT \
+            --context region=us-west-2 \
+            --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+        fi
 
     - name: Update Frontend Environment Variables
       if: github.event_name == 'push'

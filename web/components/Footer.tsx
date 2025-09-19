@@ -1,29 +1,60 @@
 'use client';
 import { useState } from 'react';
+import { buildApiUrl } from '../app/api-config';
 import TermsOfServiceModal from './TermsOfServiceModal';
+
+type FeedbackStatus = {
+  type: 'success' | 'error';
+  message: string;
+};
 
 export default function Footer(): JSX.Element {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<FeedbackStatus | null>(null);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!feedback.trim()) return;
+    const trimmedFeedback = feedback.trim();
+    if (!trimmedFeedback) return;
 
     setIsSubmitting(true);
-    
-    // Create mailto link
-    const subject = encodeURIComponent('Spaceport AI Feedback');
-    const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:gabriel@spcprt.com,ethan@spcprt.com?subject=${subject}&body=${body}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Reset form
-    setFeedback('');
-    setIsSubmitting(false);
+    setStatus(null);
+
+    try {
+      const response = await fetch(buildApiUrl.feedback(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: trimmedFeedback,
+          pageUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+        }),
+      });
+
+      const data = await response
+        .json()
+        .catch(() => ({ message: 'Unable to parse response' }));
+
+      if (!response.ok) {
+        const errorMessage = typeof data?.error === 'string' ? data.error : 'Failed to send feedback. Please try again.';
+        setStatus({ type: 'error', message: errorMessage });
+        return;
+      }
+
+      setStatus({
+        type: 'success',
+        message: 'Thanks for the feedback! Our team will review it shortly.',
+      });
+      setFeedback('');
+    } catch (error) {
+      const fallbackMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again later.';
+      setStatus({ type: 'error', message: fallbackMessage });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,6 +89,11 @@ export default function Footer(): JSX.Element {
                 {isSubmitting ? 'Sending...' : 'Send Feedback'}
               </button>
             </div>
+            {status && (
+              <p className={`feedback-status ${status.type}`}>
+                {status.message}
+              </p>
+            )}
           </form>
         </div>
       </section>
@@ -85,4 +121,3 @@ export default function Footer(): JSX.Element {
     </>
   );
 }
-

@@ -231,7 +231,31 @@ class SpaceportStack(Stack):
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
             }
         )
-        
+
+        self.feedback_lambda = lambda_.Function(
+            self,
+            "SpaceportFeedbackFunction",
+            function_name=f"Spaceport-FeedbackFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "lambda/feedback",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            role=self.lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+            }
+        )
+
         # ========== API GATEWAY CONFIGURATION ==========
         # Create API Gateway with environment-specific naming
         self.drone_path_api = apigw.RestApi(
@@ -270,11 +294,24 @@ class SpaceportStack(Stack):
                 allow_headers=["*"]
             )
         )
-        
+
+        self.feedback_api = apigw.RestApi(
+            self,
+            "SpaceportFeedbackApi",
+            rest_api_name=f"spaceport-feedback-api-{suffix}",
+            description=f"Spaceport Feedback API for {env_config['domain']}",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"]
+            )
+        )
+
         # Create API Gateway resources and methods
         self._create_drone_path_endpoints()
         self._create_file_upload_endpoints()
         self._create_waitlist_endpoints()
+        self._create_feedback_endpoints()
         
         # ========== OUTPUTS ==========
         CfnOutput(
@@ -297,7 +334,14 @@ class SpaceportStack(Stack):
             value=f"https://{self.waitlist_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
             description=f"Waitlist API Gateway URL for {suffix}"
         )
-        
+
+        CfnOutput(
+            self,
+            "FeedbackApiUrl",
+            value=f"https://{self.feedback_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
+            description=f"Feedback API Gateway URL for {suffix}"
+        )
+
         CfnOutput(
             self,
             "UploadBucketName",
@@ -363,6 +407,17 @@ class SpaceportStack(Stack):
             "POST",
             apigw.LambdaIntegration(
                 self.waitlist_lambda,
+                proxy=True
+            )
+        )
+
+    def _create_feedback_endpoints(self):
+        """Create feedback API endpoints"""
+        feedback_resource = self.feedback_api.root.add_resource("feedback")
+        feedback_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                self.feedback_lambda,
                 proxy=True
             )
         )

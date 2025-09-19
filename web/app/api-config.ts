@@ -14,6 +14,9 @@ export const API_CONFIG = {
   // Waitlist API - User waitlist submissions
   WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL!,
   
+  // Feedback API - Footer feedback submissions
+  FEEDBACK_API_URL: process.env.NEXT_PUBLIC_FEEDBACK_API_URL!,
+  
   // ML Pipeline API - ML processing operations
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
   
@@ -46,6 +49,9 @@ export const buildApiUrl = {
   // Waitlist API endpoints
   waitlist: () => API_CONFIG.WAITLIST_API_URL,
   
+  // Feedback API endpoints
+  feedback: () => API_CONFIG.FEEDBACK_API_URL,
+  
   // ML Pipeline API endpoints
   mlPipeline: {
     startJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/start-job`,
@@ -67,6 +73,7 @@ export const API_ENDPOINTS = {
   COMPLETE_UPLOAD: buildApiUrl.fileUpload.completeUpload(),
   SAVE_SUBMISSION: buildApiUrl.fileUpload.saveSubmission(),
   WAITLIST: buildApiUrl.waitlist(),
+  FEEDBACK: buildApiUrl.feedback(),
 } as const;
 
 export const ENHANCED_API_BASE = API_CONFIG.DRONE_PATH_API_URL;

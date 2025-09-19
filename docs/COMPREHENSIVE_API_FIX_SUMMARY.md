@@ -37,6 +37,7 @@ export const API_CONFIG = {
   DRONE_PATH_API_URL: process.env.NEXT_PUBLIC_DRONE_PATH_API_URL || 'fallback',
   FILE_UPLOAD_API_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL || 'fallback',
   WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL || 'fallback',
+  FEEDBACK_API_URL: process.env.NEXT_PUBLIC_FEEDBACK_API_URL || 'fallback',
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL || 'fallback',
 } as const;
 ```
@@ -51,6 +52,7 @@ Updated GitHub Actions workflow to inject all API URLs during build:
       echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PROD }}" >> .env
       echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PROD }}" >> .env
       echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PROD }}" >> .env
+      echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PROD }}" >> .env
       # ... more environment variables
     fi
 ```
@@ -62,12 +64,14 @@ Added all required secrets for both production and preview environments:
 - `DRONE_PATH_API_URL_PROD`: `https://0r3y4bx7lc.execute-api.us-west-2.amazonaws.com/prod`
 - `FILE_UPLOAD_API_URL_PROD`: `https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod`
 - `WAITLIST_API_URL_PROD`: `https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod/waitlist`
+- `FEEDBACK_API_URL_PROD`: `https://<FEEDBACK_ID>.execute-api.us-west-2.amazonaws.com/prod/feedback`
 - `ML_PIPELINE_API_URL_PROD`: `https://2vulsewyl5.execute-api.us-west-2.amazonaws.com/prod`
 
 #### **Preview Environment (development branch):**
 - `DRONE_PATH_API_URL_PREVIEW`: `https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod`
 - `FILE_UPLOAD_API_URL_PREVIEW`: `https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod`
 - `WAITLIST_API_URL_PREVIEW`: `https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist`
+- `FEEDBACK_API_URL_PREVIEW`: `https://<DEV_FEEDBACK_ID>.execute-api.us-west-2.amazonaws.com/prod/feedback`
 - `ML_PIPELINE_API_URL_PREVIEW`: `https://kg7jszrdai.execute-api.us-west-2.amazonaws.com/prod`
 
 ### **Phase 4: Frontend Code Updates**
