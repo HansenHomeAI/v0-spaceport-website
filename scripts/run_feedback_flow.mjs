@@ -70,7 +70,7 @@ async function main() {
     await callTool('browser_click', { element: 'Send Feedback', ref: submitRef });
     logStep('Submit feedback form', 'pass');
 
-    const waitResponse = await callTool('browser_wait_for', {
+   const waitResponse = await callTool('browser_wait_for', {
       text: 'Thanks for sharing your feedback!',
       time: 2
     });
@@ -84,6 +84,9 @@ async function main() {
     const finalSnapshot = extractSnapshot(await callTool('browser_snapshot', {}));
     const messagePersisted = finalSnapshot.includes(message);
     logStep('Verify message cleared', messagePersisted ? 'warn' : 'pass');
+    if (messagePersisted || !confirmationVisible) {
+      console.warn('Final snapshot excerpt:', finalSnapshot.slice(0, 500));
+    }
   } catch (error) {
     logStep('Feedback flow failed', 'fail', error.message ?? String(error));
     process.exitCode = 1;

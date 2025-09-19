@@ -63,12 +63,14 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Prepare email content
         subject = f"New Feedback from {source.title()}"
         
+        formatted_message = message.replace('\n', '<br>')
+
         html_content = f"""
         <h2>New Customer Feedback</h2>
         <p><strong>Source:</strong> {source}</p>
         <p><strong>Message:</strong></p>
         <blockquote style="margin: 16px 0; padding: 12px; border-left: 4px solid #E7621E; background-color: #f9f9f9;">
-            {message.replace('\n', '<br>')}
+            {formatted_message}
         </blockquote>
         <hr>
         <p style="color: #666; font-size: 12px;">
