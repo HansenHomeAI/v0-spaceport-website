@@ -16,6 +16,9 @@ export const API_CONFIG = {
   
   // Feedback API - Footer feedback submissions
   FEEDBACK_API_URL: process.env.NEXT_PUBLIC_FEEDBACK_API_URL!,
+
+  // Contact API - Homepage contact form submissions
+  CONTACT_API_URL: process.env.NEXT_PUBLIC_CONTACT_API_URL!,
   
   // ML Pipeline API - ML processing operations
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
@@ -51,6 +54,9 @@ export const buildApiUrl = {
   
   // Feedback API endpoints
   feedback: () => API_CONFIG.FEEDBACK_API_URL,
+
+  // Contact API endpoints
+  contact: () => API_CONFIG.CONTACT_API_URL,
   
   // ML Pipeline API endpoints
   mlPipeline: {
@@ -74,6 +80,7 @@ export const API_ENDPOINTS = {
   SAVE_SUBMISSION: buildApiUrl.fileUpload.saveSubmission(),
   WAITLIST: buildApiUrl.waitlist(),
   FEEDBACK: buildApiUrl.feedback(),
+  CONTACT: buildApiUrl.contact(),
 } as const;
 
 export const ENHANCED_API_BASE = API_CONFIG.DRONE_PATH_API_URL;

@@ -57,6 +57,7 @@ declare -A API_URLS=(
     ["SUBSCRIPTION_API_URL_PREVIEW"]="https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod"
     ["ML_PIPELINE_API_URL_PREVIEW"]="https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod"
     ["FEEDBACK_API_URL_PREVIEW"]="https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod/feedback"
+    ["CONTACT_API_URL_PREVIEW"]="https://pending-contact-api.execute-api.us-west-2.amazonaws.com/prod/contact"
 )
 
 # Update each secret

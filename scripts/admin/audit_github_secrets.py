@@ -20,7 +20,8 @@ class GitHubSecretsAuditor:
             'INVITE_API_URL_PREVIEW': 'https://xtmhni13l2.execute-api.us-west-2.amazonaws.com/prod',
             'BETA_ACCESS_API_URL_PREVIEW': 'https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod',
             'SUBSCRIPTION_API_URL_PREVIEW': 'https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod',
-            'FEEDBACK_API_URL_PREVIEW': 'https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod/feedback'
+            'FEEDBACK_API_URL_PREVIEW': 'https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod/feedback',
+            'CONTACT_API_URL_PREVIEW': 'https://pending-contact-api.execute-api.us-west-2.amazonaws.com/prod/contact'
         }
         
         self.required_secrets = [
@@ -33,6 +34,7 @@ class GitHubSecretsAuditor:
             'BETA_ACCESS_API_URL_PREVIEW',
             'SUBSCRIPTION_API_URL_PREVIEW',
             'FEEDBACK_API_URL_PREVIEW',
+            'CONTACT_API_URL_PREVIEW',
             'ML_PIPELINE_API_URL_PREVIEW'  # This one we need to check separately
         ]
     

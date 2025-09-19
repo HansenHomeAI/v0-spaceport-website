@@ -54,6 +54,7 @@ SECRETS=(
     "ML_PIPELINE_API_URL_PREVIEW"
     "BETA_ACCESS_API_URL_PREVIEW"
     "FEEDBACK_API_URL_PREVIEW"
+    "CONTACT_API_URL_PREVIEW"
 )
 
 URLS=(
@@ -64,6 +65,7 @@ URLS=(
     "https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod"
     "https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod"
     "https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod/feedback"
+    "https://pending-contact-api.execute-api.us-west-2.amazonaws.com/prod/contact"
 )
 
 # Update each frontend-used secret
@@ -98,6 +100,7 @@ echo "   • FILE_UPLOAD_API_URL_PREVIEW - File uploads"
 echo "   • ML_PIPELINE_API_URL_PREVIEW - ML processing"
 echo "   • BETA_ACCESS_API_URL_PREVIEW - Employee beta access management"
 echo "   • FEEDBACK_API_URL_PREVIEW - Footer feedback submissions"
+echo "   • CONTACT_API_URL_PREVIEW - Homepage contact form"
 echo ""
 echo "❌ NOT USED by Frontend (Skipped):"
 echo "   • PASSWORD_RESET_API_URL_PREVIEW - Frontend uses Cognito directly"
@@ -121,3 +124,4 @@ echo "  gh secret set FILE_UPLOAD_API_URL_PROD --body 'PRODUCTION_URL'"
 echo "  gh secret set ML_PIPELINE_API_URL_PROD --body 'PRODUCTION_URL'"
 echo "  gh secret set BETA_ACCESS_API_URL_PROD --body 'PRODUCTION_URL'"
 echo "  gh secret set FEEDBACK_API_URL_PROD --body 'PRODUCTION_URL'"
+echo "  gh secret set CONTACT_API_URL_PROD --body 'PRODUCTION_URL'"

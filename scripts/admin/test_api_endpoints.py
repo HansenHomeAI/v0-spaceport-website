@@ -24,7 +24,8 @@ class APITester:
                 'projects': 'https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/projects',
                 'beta_access_admin': 'https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod',
                 'subscription': 'https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod',
-                'feedback': 'https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod'
+                'feedback': 'https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod',
+                'contact': 'https://pending-contact-api.execute-api.us-west-2.amazonaws.com/prod'
             }
         }
     
@@ -155,6 +156,19 @@ class APITester:
             "Content-Type": "application/json"
         }
         return self.test_endpoint("Feedback API", url, "POST", data, headers)
+
+    def test_contact_endpoint(self, base_url: str) -> Dict:
+        """Test contact endpoint (POST contact message)"""
+        url = f"{base_url}/contact"
+        data = {
+            "name": "API Tester",
+            "email": "tester@example.com",
+            "message": "Automated contact form submission for monitoring."
+        }
+        headers = {
+            "Content-Type": "application/json"
+        }
+        return self.test_endpoint("Contact API", url, "POST", data, headers)
     
     def run_all_tests(self, environment: str = 'staging') -> List[Dict]:
         """Run all API tests for the specified environment"""
@@ -178,7 +192,8 @@ class APITester:
             ('invite', self.test_invite_endpoint),
             ('beta_access_admin', self.test_beta_access_admin_endpoint),
             ('subscription', self.test_subscription_endpoint),
-            ('feedback', self.test_feedback_endpoint)
+            ('feedback', self.test_feedback_endpoint),
+            ('contact', self.test_contact_endpoint)
         ]
         
         for endpoint_name, test_func in test_functions:
@@ -248,7 +263,8 @@ class APITester:
             'invite': 'INVITE_API_URL_PREVIEW',
             'beta_access_admin': 'BETA_ACCESS_API_URL_PREVIEW',
             'subscription': 'SUBSCRIPTION_API_URL_PREVIEW',
-            'feedback': 'FEEDBACK_API_URL_PREVIEW'
+            'feedback': 'FEEDBACK_API_URL_PREVIEW',
+            'contact': 'CONTACT_API_URL_PREVIEW'
         }
         
         for result in results:

@@ -22,6 +22,7 @@ NEXT_PUBLIC_DRONE_PATH_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.co
 NEXT_PUBLIC_FILE_UPLOAD_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 NEXT_PUBLIC_WAITLIST_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/waitlist
 NEXT_PUBLIC_FEEDBACK_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/feedback
+NEXT_PUBLIC_CONTACT_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/contact
 NEXT_PUBLIC_ML_PIPELINE_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 
 # Development (development branch)  
@@ -30,6 +31,7 @@ NEXT_PUBLIC_DRONE_PATH_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaw
 NEXT_PUBLIC_FILE_UPLOAD_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod
 NEXT_PUBLIC_WAITLIST_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod/waitlist
 NEXT_PUBLIC_FEEDBACK_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod/feedback
+NEXT_PUBLIC_CONTACT_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod/contact
 NEXT_PUBLIC_ML_PIPELINE_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod
 ```
 
@@ -45,6 +47,7 @@ NEXT_PUBLIC_ML_PIPELINE_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazona
 | **File Upload** | `rf3fnnejg2` | `https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod` | ✅ Working |
 | **Waitlist** | `rf3fnnejg2` | `https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod/waitlist` | ✅ Working |
 | **Feedback** | `TBD` | `https://<FEEDBACK_ID>.execute-api.us-west-2.amazonaws.com/prod/feedback` | 🚧 Pending deploy |
+| **Contact** | `TBD` | `https://<CONTACT_ID>.execute-api.us-west-2.amazonaws.com/prod/contact` | 🚧 Pending deploy |
 
 ### **Development APIs (Account: 975050048887):**
 | Service | API Gateway ID | Base URL | Status |
@@ -54,6 +57,7 @@ NEXT_PUBLIC_ML_PIPELINE_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazona
 | **File Upload** | `34ap3qgem7` | `https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod` | ✅ Working |
 | **Waitlist** | `34ap3qgem7` | `https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/waitlist` | ✅ Working |
 | **Feedback** | `TBD` | `https://<DEV_FEEDBACK_ID>.execute-api.us-west-2.amazonaws.com/prod/feedback` | 🚧 Pending deploy |
+| **Contact** | `TBD` | `https://<DEV_CONTACT_ID>.execute-api.us-west-2.amazonaws.com/prod/contact` | 🚧 Pending deploy |
 
 ---
 
@@ -67,6 +71,7 @@ export const API_CONFIG = {
   FILE_UPLOAD_API_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL!,
   WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL!,
   FEEDBACK_API_URL: process.env.NEXT_PUBLIC_FEEDBACK_API_URL!,
+  CONTACT_API_URL: process.env.NEXT_PUBLIC_CONTACT_API_URL!,
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
 } as const;
 
@@ -87,6 +92,7 @@ export const buildApiUrl = {
   },
   waitlist: () => API_CONFIG.WAITLIST_API_URL,
   feedback: () => API_CONFIG.FEEDBACK_API_URL,
+  contact: () => API_CONFIG.CONTACT_API_URL,
   mlPipeline: {
     startJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/start-job`,
     stopJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/stop-job`,
@@ -108,6 +114,7 @@ export const buildApiUrl = {
       echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PROD }}" >> .env
       echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PROD }}" >> .env
       echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PROD }}" >> .env
+      echo "NEXT_PUBLIC_CONTACT_API_URL=${{ secrets.CONTACT_API_URL_PROD }}" >> .env
       echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PROD }}" >> .env
     else
       echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
@@ -115,6 +122,7 @@ export const buildApiUrl = {
       echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PREVIEW }}" >> .env
       echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PREVIEW }}" >> .env
       echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PREVIEW }}" >> .env
+      echo "NEXT_PUBLIC_CONTACT_API_URL=${{ secrets.CONTACT_API_URL_PREVIEW }}" >> .env
       echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PREVIEW }}" >> .env
     fi
 ```
@@ -130,6 +138,7 @@ DRONE_PATH_API_URL_PROD=https://0r3y4bx7lc.execute-api.us-west-2.amazonaws.com/p
 FILE_UPLOAD_API_URL_PROD=https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod
 WAITLIST_API_URL_PROD=https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod/waitlist
 FEEDBACK_API_URL_PROD=https://<FEEDBACK_ID>.execute-api.us-west-2.amazonaws.com/prod/feedback
+CONTACT_API_URL_PROD=https://<CONTACT_ID>.execute-api.us-west-2.amazonaws.com/prod/contact
 ML_PIPELINE_API_URL_PROD=https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod
 ```
 
@@ -140,6 +149,7 @@ DRONE_PATH_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.co
 FILE_UPLOAD_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod
 WAITLIST_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/waitlist
 FEEDBACK_API_URL_PREVIEW=https://<DEV_FEEDBACK_ID>.execute-api.us-west-2.amazonaws.com/prod/feedback
+CONTACT_API_URL_PREVIEW=https://<DEV_CONTACT_ID>.execute-api.us-west-2.amazonaws.com/prod/contact
 ML_PIPELINE_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod
 ```
 

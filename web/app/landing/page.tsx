@@ -1,6 +1,7 @@
 export const runtime = 'edge';
 
 import { JoinWaitlistButton } from './JoinWaitlistButton';
+import { ContactForm } from './ContactForm';
 
 export default function Landing(): JSX.Element {
   return (
@@ -99,6 +100,15 @@ export default function Landing(): JSX.Element {
         </div>
       </section>
 
+      <section className="section" id="landing-contact">
+        <div className="contact-section">
+          <div className="contact-copy">
+            <h2>Ready to start your project?</h2>
+            <p>Tell us what you&apos;re building and we&apos;ll reach out to help you capture every angle.</p>
+          </div>
+          <ContactForm />
+        </div>
+      </section>
 
     </>
   );

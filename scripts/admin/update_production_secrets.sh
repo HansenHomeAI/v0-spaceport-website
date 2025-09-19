@@ -24,6 +24,8 @@ COGNITO_REGION="us-west-2"
 WAITLIST_API_URL="https://dbzo05n671.execute-api.us-west-2.amazonaws.com/prod/waitlist"
 # Feedback API placeholder (update with actual API ID after deployment)
 FEEDBACK_API_URL="https://pending-feedback-api.execute-api.us-west-2.amazonaws.com/prod/feedback"
+# Contact API placeholder (update with actual API ID after deployment)
+CONTACT_API_URL="https://pending-contact-api.execute-api.us-west-2.amazonaws.com/prod/contact"
 
 echo "📋 Production API URLs:"
 echo "  Projects API: $PROJECTS_API_URL"
@@ -33,6 +35,7 @@ echo "  ML Pipeline API: $ML_PIPELINE_API_URL"
 echo "  Invite API: $INVITE_API_URL"
 echo "  Waitlist API: $WAITLIST_API_URL"
 echo "  Feedback API: $FEEDBACK_API_URL"
+echo "  Contact API: $CONTACT_API_URL"
 echo ""
 
 echo "🔐 Cognito Configuration:"
@@ -62,6 +65,9 @@ echo "✅ Updated NEXT_PUBLIC_WAITLIST_API_URL_PROD"
 
 gh secret set NEXT_PUBLIC_FEEDBACK_API_URL_PROD --body "$FEEDBACK_API_URL"
 echo "✅ Updated NEXT_PUBLIC_FEEDBACK_API_URL_PROD"
+
+gh secret set NEXT_PUBLIC_CONTACT_API_URL_PROD --body "$CONTACT_API_URL"
+echo "✅ Updated NEXT_PUBLIC_CONTACT_API_URL_PROD"
 
 # Cognito Configuration
 gh secret set COGNITO_USER_POOL_ID_PROD --body "$COGNITO_USER_POOL_ID"
