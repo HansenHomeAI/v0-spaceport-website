@@ -3,7 +3,7 @@ name: Trigger ML Container Build
 on:
   workflow_dispatch:  # Manual trigger
   push:
-    branches: [ main, development, ml-development ]
+    branches: [ main, development, ml-development, 'agent-*' ]
     # container-only workflow; no change
     paths:
       - 'infrastructure/containers/**'
@@ -13,7 +13,8 @@ on:
 jobs:
   trigger-codebuild:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'development' && 'staging' || format('preview-{0}', github.ref_name) }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -72,11 +73,18 @@ jobs:
         aws-region: us-west-2
 
     - name: Configure AWS credentials (staging via access keys)
-      if: github.ref_name != 'main'
+      if: github.ref_name != 'main' && secrets.AWS_ACCESS_KEY_ID != ''
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Configure AWS credentials (preview via OIDC)
+      if: github.ref_name != 'main' && secrets.AWS_ACCESS_KEY_ID == ''
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME != '' && secrets.AWS_STAGING_ROLE_TO_ASSUME || secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
 
     - name: Create ECR repositories if they don't exist

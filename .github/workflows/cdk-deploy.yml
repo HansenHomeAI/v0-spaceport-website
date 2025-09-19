@@ -2,14 +2,15 @@ name: CDK Deploy
 
 on:
   push:
-    branches: [ main, development, ml-development, email-notifications ]
+    branches: [ main, development, ml-development, email-notifications, 'agent-*' ]
   pull_request:
     branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'development' && 'staging' || format('preview-{0}', github.ref_name) }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -48,11 +49,18 @@ jobs:
         aws-region: us-west-2
 
     - name: Configure AWS credentials (staging via access keys)
-      if: github.ref_name != 'main'
+      if: github.ref_name != 'main' && secrets.AWS_ACCESS_KEY_ID != ''
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Configure AWS credentials (preview via OIDC)
+      if: github.ref_name != 'main' && secrets.AWS_ACCESS_KEY_ID == ''
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME != '' && secrets.AWS_STAGING_ROLE_TO_ASSUME || secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-west-2
 
     - name: Install jq
@@ -175,6 +183,7 @@ jobs:
         STACK_NAME="Spaceport${ENVIRONMENT^}Stack"
         DRONE_PATH_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DronePathApiUrl'].OutputValue" --output text)
         FILE_UPLOAD_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FileUploadApiUrl'].OutputValue" --output text)
+        FEEDBACK_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackApiUrl'].OutputValue" --output text)
         
         # Get Auth stack outputs
         AUTH_STACK_NAME="SpaceportAuth${ENVIRONMENT^}Stack"
@@ -187,6 +196,7 @@ jobs:
         echo "Retrieved API URLs:"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"
+        echo "Feedback API: $FEEDBACK_API_URL"
         echo "Projects API: $PROJECTS_API_URL"
         echo "ML Pipeline API: $ML_PIPELINE_API_URL"
         

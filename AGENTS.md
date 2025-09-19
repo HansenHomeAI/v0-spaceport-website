@@ -2,7 +2,7 @@
 
 ## Branching & Isolation
 - Start from the designated integration branch (default `development`) unless stated otherwise.
-- Create a unique feature branch named `agent-<id>` for every task and keep all edits isolated there until validation succeeds.
+- Create a unique feature branch named `agent-<XXXXXXXX>` (exactly eight digits, zero-padded if needed) for every task and keep all edits isolated there until validation succeeds.
 
 ## Autonomy Mandate
 - Once a task is assigned, execute the full loop autonomously without pausing for user feedback unless a hard blocker or safety issue (like changing secrets) is encountered.
