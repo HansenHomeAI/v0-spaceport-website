@@ -5,15 +5,18 @@ Handles starting/stopping the Playwright MCP server for the agentic dev loop.
 """
 
 import argparse
-import subprocess
-import time
-import signal
-import os
-import sys
 import json
+import os
+import shlex
+import signal
+import socket
+import subprocess
+import sys
+import time
 from pathlib import Path
+from typing import List
 
-PLAYWRIGHT_MCP_PORT = 3001
+PLAYWRIGHT_MCP_PORT = int(os.environ.get("PLAYWRIGHT_MCP_PORT", "5174"))
 PID_FILE = Path.home() / ".agentic" / "playwright-mcp.pid"
 
 def is_server_running() -> bool:
@@ -33,43 +36,77 @@ def is_server_running() -> bool:
         PID_FILE.unlink(missing_ok=True)
         return False
 
+def _is_port_available(port: int) -> bool:
+    """Return True if the TCP port can be bound on localhost."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind(("127.0.0.1", port))
+        except OSError:
+            return False
+    return True
+
+
+def _candidate_commands() -> List[List[str]]:
+    """Compute launch command candidates for the MCP server."""
+    commands: List[List[str]] = []
+
+    override = os.environ.get("PLAYWRIGHT_MCP_COMMAND")
+    if override:
+        commands.append(shlex.split(override))
+
+    headless_cmd = ["npx", "@playwright/mcp@latest", "--headless"]
+    if _is_port_available(PLAYWRIGHT_MCP_PORT):
+        headless_cmd += ["--port", str(PLAYWRIGHT_MCP_PORT)]
+    commands.append(headless_cmd)
+
+    legacy_cmd = ["playwright-mcp", "server", "--port", str(PLAYWRIGHT_MCP_PORT)]
+    commands.append(legacy_cmd)
+
+    return commands
+
+
 def start_server() -> bool:
     """Start the Playwright MCP server in the background."""
     if is_server_running():
         print(f"Playwright MCP server already running on port {PLAYWRIGHT_MCP_PORT}")
         return True
-    
-    try:
-        # Ensure .agentic directory exists
-        PID_FILE.parent.mkdir(exist_ok=True)
-        
-        # Start server in background
-        process = subprocess.Popen(
-            ["playwright-mcp", "server", "--port", str(PLAYWRIGHT_MCP_PORT)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            preexec_fn=os.setsid  # Create new process group
-        )
-        
-        # Save PID
-        with open(PID_FILE, 'w') as f:
-            f.write(str(process.pid))
-        
-        # Wait a moment and check if it started successfully
+
+    # Ensure .agentic directory exists so we can persist the PID.
+    PID_FILE.parent.mkdir(exist_ok=True)
+
+    last_error: Exception | None = None
+    for command in _candidate_commands():
+        try:
+            process = subprocess.Popen(
+                command,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                preexec_fn=os.setsid
+            )
+        except FileNotFoundError as exc:
+            last_error = exc
+            continue
+        except Exception as exc:  # pylint: disable=broad-except
+            last_error = exc
+            continue
+
         time.sleep(2)
         if process.poll() is not None:
-            print("Failed to start Playwright MCP server")
-            return False
-        
-        print(f"Playwright MCP server started on port {PLAYWRIGHT_MCP_PORT} (PID: {process.pid})")
+            last_error = RuntimeError(f"Command {' '.join(command)} exited with code {process.returncode}")
+            continue
+
+        with open(PID_FILE, 'w') as f:
+            f.write(str(process.pid))
+
+        print(f"Playwright MCP server started via {' '.join(command)} (PID: {process.pid})")
         return True
-        
-    except FileNotFoundError:
-        print("playwright-mcp command not found. Please install Playwright MCP.")
-        return False
-    except Exception as e:
-        print(f"Error starting Playwright MCP server: {e}")
-        return False
+
+    if last_error:
+        print(f"Failed to start Playwright MCP server: {last_error}")
+    else:
+        print("Failed to start Playwright MCP server: unknown error")
+    return False
 
 def stop_server() -> bool:
     """Stop the Playwright MCP server."""
