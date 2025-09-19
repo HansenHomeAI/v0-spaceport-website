@@ -22,11 +22,13 @@ export default function Footer(): JSX.Element {
       return;
     }
 
+    const endpoint = `${feedbackEndpoint.replace(/\/$/, '')}/feedback`;
+
     setIsSubmitting(true);
     setStatus('idle');
 
     try {
-      const response = await fetch(feedbackEndpoint, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
