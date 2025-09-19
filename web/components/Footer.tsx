@@ -2,28 +2,56 @@
 import { useState } from 'react';
 import TermsOfServiceModal from './TermsOfServiceModal';
 
+const FEEDBACK_ENDPOINT =
+  process.env.NEXT_PUBLIC_FEEDBACK_API_URL || '/api/feedback';
+
 export default function Footer(): JSX.Element {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [statusType, setStatusType] = useState<'success' | 'error' | null>(null);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!feedback.trim()) return;
 
     setIsSubmitting(true);
-    
-    // Create mailto link
-    const subject = encodeURIComponent('Spaceport AI Feedback');
-    const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:gabriel@spcprt.com,ethan@spcprt.com?subject=${subject}&body=${body}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Reset form
-    setFeedback('');
-    setIsSubmitting(false);
+    setStatusMessage(null);
+    setStatusType(null);
+
+    try {
+      const response = await fetch(FEEDBACK_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: feedback.trim(),
+          source: 'web-footer',
+        }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || result?.success === false) {
+        const errorMessage =
+          result?.error || 'We could not send your feedback. Please try again.';
+        setStatusMessage(errorMessage);
+        setStatusType('error');
+        return;
+      }
+
+      setStatusMessage('Thanks for the feedback!');
+      setStatusType('success');
+      setFeedback('');
+    } catch (error) {
+      console.error('Failed to send feedback', error);
+      setStatusMessage('We could not send your feedback. Please try again.');
+      setStatusType('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,6 +86,17 @@ export default function Footer(): JSX.Element {
                 {isSubmitting ? 'Sending...' : 'Send Feedback'}
               </button>
             </div>
+            {statusMessage && (
+              <p
+                className={`feedback-status ${
+                  statusType === 'error' ? 'feedback-status-error' : 'feedback-status-success'
+                }`}
+                role="status"
+                aria-live="polite"
+              >
+                {statusMessage}
+              </p>
+            )}
           </form>
         </div>
       </section>
@@ -85,4 +124,3 @@ export default function Footer(): JSX.Element {
     </>
   );
 }
-

@@ -725,6 +725,22 @@ html, body {
   cursor: not-allowed;
 }
 
+.feedback-status {
+  width: 100%;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.feedback-status-success {
+  color: #9BE7C4;
+}
+
+.feedback-status-error {
+  color: #F5A7A7;
+}
+
 /* Responsive adjustments for feedback form */
 @media (max-width: 600px) {
   .feedback-input-container {
@@ -6276,7 +6292,6 @@ input.text-fade-right,
 .terms-link:hover {
   color: rgba(255, 255, 255, 0.7);
 }
-
 
 
 
