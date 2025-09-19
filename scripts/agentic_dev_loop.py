@@ -90,7 +90,11 @@ def build_instruction_block(
            - Run `{playwright_task}` (adjust task if baseline scripts change).
            - Archive results in `.agentic/playwright-baseline` and summarize pass/fail status.
         6. Analyse failures and plan the minimum fix. Document the hypothesis before editing files.
-        7. Implement the fix, run unit/integration tests as needed (`npm test`, targeted Python suites under `tests/`).
+        7. Implement the fix, create/update tests as needed:
+           - Create `playwright.config.ts` if missing for E2E testing
+           - Write smoke tests for new features (e.g., feedback form submission)
+           - Run unit/integration tests (`npm test`, targeted Python suites under `tests/`)
+           - Run Playwright tests with `npx playwright test` if config exists
         8. Commit with a clear message, push, redeploy, and repeat validation (CI ➜ preview ➜ Playwright).
         9. Once CI is green, preview is healthy, and tests pass, open a PR targeting `{DEFAULT_BRANCH}` including:
            - Summary of changes and rationale.
