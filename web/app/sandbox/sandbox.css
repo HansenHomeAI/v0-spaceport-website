@@ -834,24 +834,23 @@
   text-align: center; /* Center the button text */
   box-sizing: border-box; /* Include border in width calculation */
   
-  /* Based on cta-button2-fixed styling */
+  /* Updated styling - no outline, white background with opacity */
   text-decoration: none;
-  padding: 9.5px 21.5px;
+  padding: 12px 21.5px;
   border-radius: 999px;
   transition: background 0.3s ease;
-  border: 2.5px solid #fff;
+  border: none;
   color: #fff;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   font-size: 1rem;
   cursor: pointer;
   user-select: none;
-  /* Button height: 24px (9.5px padding top + 9.5px padding bottom + 2.5px border top + 2.5px border bottom) */
+  /* Button height: 24px (12px padding top + 12px padding bottom) */
   /* Now truly concentric: 12px from all card borders, regardless of card padding changes */
 }
 
 .component-showcase .default-card .default-card-button:hover {
-  background: #fff;
-  color: #000;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .component-showcase .waitlist-card {
@@ -912,8 +911,7 @@
 .component-showcase .flight-path-download-btn,
 .component-showcase .upload-zone,
 .component-showcase .address-search-wrapper,
-.component-showcase .expand-button,
-.component-showcase .modal-popup-overlay {
+.component-showcase .expand-button {
   border: 2.5px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -924,8 +922,7 @@
 .component-showcase .flight-path-download-btn::before,
 .component-showcase .upload-zone::before,
 .component-showcase .address-search-wrapper::before,
-.component-showcase .expand-button::before,
-.component-showcase .modal-popup-overlay::before {
+.component-showcase .expand-button::before {
   display: none;
 }
 
@@ -967,6 +964,128 @@
 .component-showcase .popup-overlay {
   border-radius: 25px;
 }
+
+/* Modal Popup System - Exact copy of default-card styling */
+.component-showcase .modal-popup-overlay {
+  width: 100% !important;
+  max-width: 480px !important; /* Increased from 400px for better desktop width */
+  min-width: 280px !important; /* Reduced from 320px for better mobile fit */
+  flex: 1 !important; /* Allow flexible sizing instead of flex-shrink: 0 */
+  background: rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(40px) !important;
+  border-radius: 25px !important;
+  padding: 32px !important;
+  padding-bottom: calc(32px + 24px + 24px) !important; /* Add space for button (24px height + 12px margin + 12px bottom) */
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  /* CSS Variables for concentricity */
+  --card-padding: 32px;
+  --concentric-spacing: 12px; /* Increased from 8px to 12px */
+  --button-margin: var(--concentric-spacing);
+  --button-height: 24px; /* Button height for calculations */
+  border-radius: 29px !important; /* Recalculated: 25px base + 4px (12px - 8px) = 29px */
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: block !important;
+  align-items: unset !important;
+  justify-content: unset !important;
+  z-index: auto !important;
+}
+
+/* Apply gradient border to modal popup overlay */
+.component-showcase .modal-popup-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.component-showcase .modal-popup-overlay h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  letter-spacing: 0em;
+}
+
+.component-showcase .modal-popup-overlay p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0 0 1.5rem 0;
+  position: relative;
+  z-index: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  letter-spacing: 0em;
+}
+
+/* Modal Popup Button - Exact copy of default-card-button */
+.component-showcase .modal-popup-overlay .modal-popup-button {
+  position: absolute !important; /* Break out of card's padding system */
+  bottom: var(--button-margin) !important; /* 12px from card's bottom border (concentric spacing) */
+  left: var(--button-margin) !important; /* 12px from card's left border (concentric spacing) */
+  right: var(--button-margin) !important; /* 12px from card's right border (concentric spacing) */
+  z-index: 1 !important;
+  display: block !important; /* Make it a block element for full width */
+  text-align: center !important; /* Center the button text */
+  box-sizing: border-box !important; /* Include border in width calculation */
+  
+  /* Updated styling - no outline, white background with opacity */
+  text-decoration: none !important;
+  padding: 12px 21.5px !important;
+  border-radius: 999px !important;
+  transition: background 0.3s ease !important;
+  border: none !important;
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  /* Button height: 24px (12px padding top + 12px padding bottom) */
+  /* Now truly concentric: 12px from all card borders, regardless of card padding changes */
+  min-width: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.component-showcase .modal-popup-overlay .modal-popup-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+
 
 /* Popup section should match the clean design from actual new project popup */
 .component-showcase .popup-section {
