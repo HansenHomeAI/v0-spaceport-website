@@ -11,6 +11,34 @@
 4. **Iterate**: apply the smallest fix, redeploy, watch the live preview build/logs, and rerun the baseline until everything passes.
 5. **Wrap**: open a `development` PR only after preview and tests are green; escalate secret or production-config work.
 
+## Autonomy Contract (Do Not Pause)
+- You are a continuous worker. After every action, immediately choose and execute the next action without asking for approval.
+- Only stop if BLOCKED by one of: (1) missing or invalid secrets or permissions, (2) environment protections you cannot alter, (3) an irreversible destructive change that violates Guardrails, (4) an instruction conflict you cannot safely resolve.
+- If BLOCKED, write `STATE.md` with `reason`, `last_step`, `next_unblocked_step`, and exact `owner_action_needed`, then stop.
+
+## Watchdog Usage (Required)
+- Run the autonomy watchdog whenever you want continuous iteration:
+```bash
+tmux new -s codex 'scripts/codex-loop.sh'
+```
+
+## Checkpoints & Self-Resume
+- Maintain `STATE.md` at repo root. On start, if it exists, read it and resume from `next_unblocked_step`.
+- After each loop (push → deploy → validate → fix), append a terse line to `logs/agent-loop.log`: `[timestamp] step -> outcome -> next`.
+- Always bump `web/trigger-dev-build.txt` when you need a Pages build.
+- Prefer silent iteration: store long logs under `logs/` and link paths in commits.
+
+## Output Budget
+- Keep messages ≤ 120 lines. Do not paste full CI or browser logs inline—save to `logs/` and summarize in ≤ 10 lines.
+- Set model verbosity to minimal; do not produce progress essays.
+
+## Deployment & URL Discovery (No Guesswork)
+- Never hit production until preview is green.
+- After push, resolve the exact preview URL deterministically:
+  1) `gh run watch --workflow deploy-cloudflare-pages.yml --branch <branch> --exit-status`
+  2) Query run outputs or derive Pages alias from `$BRANCH` and print: `PREVIEW_URL=<resolved-url>`
+- Use that `PREVIEW_URL` in Playwright MCP; fail the loop if it is missing.
+
 ## Guardrails (Never Do)
 - Modify `main` or production configuration.
 - Change secrets or add deploy targets.
