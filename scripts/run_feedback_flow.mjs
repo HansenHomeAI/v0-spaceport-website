@@ -85,7 +85,7 @@ async function main() {
     const messagePersisted = finalSnapshot.includes(message);
     logStep('Verify message cleared', messagePersisted ? 'warn' : 'pass');
     if (messagePersisted || !confirmationVisible) {
-      console.warn('Final snapshot excerpt:', finalSnapshot.slice(0, 500));
+      console.warn('Final snapshot excerpt:', finalSnapshot.slice(0, 1000));
     }
   } catch (error) {
     logStep('Feedback flow failed', 'fail', error.message ?? String(error));

@@ -18,7 +18,7 @@
 `web/` holds the Next.js App Router (`app/`), shared `components/`, helpers in `lib/`, and static `public/`. `infrastructure/` covers CDK stacks, Lambda code, and container contexts; `scripts/` hosts automation; `tests/` contains regression suites.
 
 ## Build, Test, and Development Commands
-Inside `web/`: run `npm install`, `npm run dev`, `npm run build`, `npm run start`, and `npm run cf:build`/`npm run cf:preview` for Cloudflare builds. For CDK use `pip install -r infrastructure/spaceport_cdk/requirements.txt` followed by `cdk synth` or `cdk deploy`. Environment tip: surface `NEXT_PUBLIC_FEEDBACK_API_URL` (Feedback API output) alongside the existing public API URLs.
+Inside `web/`: run `npm install`, `npm run dev`, `npm run build`, `npm run start`, and `npm run cf:build`/`npm run cf:preview` for Cloudflare builds. For CDK use `pip install -r infrastructure/spaceport_cdk/requirements.txt` followed by `cdk synth` or `cdk deploy`. Environment tip: surface `NEXT_PUBLIC_FEEDBACK_API_URL` (Feedback API output) alongside the existing public API URLs, and verify branch-specific `NEXT_PUBLIC_*` secrets with `gh secret list --repo …` instead of hardcoding fallbacks.
 
 ## Coding Style & Naming Conventions
 Frontend: TypeScript, two-space indent, PascalCase components, camelCase utilities, `npx next lint` before committing, and keep server/client modules split. Infrastructure Python follows PEP 8 (snake_case, docstrings).
