@@ -1056,52 +1056,10 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('modal-popup-overlay', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('modal-popup-overlay')}
-              style={{ position: 'relative', display: 'block' }}
             >
-              <div 
-                className="modal-popup-content"
-                data-component="modal-popup-content"
-                onMouseEnter={(e) => handleComponentHover('modal-popup-content', e)}
-                onMouseLeave={handleComponentLeave}
-                onClick={() => handleComponentClick('modal-popup-content')}
-              >
-                <div 
-                  className="modal-popup-icon success"
-                  data-component="modal-popup-icon"
-                  onMouseEnter={(e) => handleComponentHover('modal-popup-icon', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('modal-popup-icon')}
-                >
-                  ✓
-                </div>
-                <h3 
-                  className="modal-popup-title"
-                  data-component="modal-popup-title"
-                  onMouseEnter={(e) => handleComponentHover('modal-popup-title', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('modal-popup-title')}
-                >
-                  Success
-                </h3>
-                <p 
-                  className="modal-popup-message"
-                  data-component="modal-popup-message"
-                  onMouseEnter={(e) => handleComponentHover('modal-popup-message', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('modal-popup-message')}
-                >
-                  Your project has been saved successfully.
-                </p>
-                <button 
-                  className="modal-popup-button"
-                  data-component="modal-popup-button"
-                  onMouseEnter={(e) => handleComponentHover('modal-popup-button', e)}
-                  onMouseLeave={handleComponentLeave}
-                  onClick={() => handleComponentClick('modal-popup-button')}
-                >
-                  OK
-                </button>
-              </div>
+              <h3 className="h3">Success</h3>
+              <p className="body-text">Your project has been saved successfully.</p>
+              <a href="#" className="modal-popup-button">OK</a>
             </div>
           </div>
         </div>
