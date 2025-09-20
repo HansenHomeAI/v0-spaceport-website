@@ -8,7 +8,10 @@ export default function Footer(): JSX.Element {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
-  const feedbackEndpoint = process.env.NEXT_PUBLIC_FEEDBACK_API_URL;
+  const rawFeedbackEndpoint = process.env.NEXT_PUBLIC_FEEDBACK_API_URL;
+  const feedbackEndpoint = rawFeedbackEndpoint && rawFeedbackEndpoint !== '/-'
+    ? rawFeedbackEndpoint
+    : 'https://42l1g4mmkk.execute-api.us-west-2.amazonaws.com/prod';
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
