@@ -9,7 +9,9 @@ export default function Footer(): JSX.Element {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const rawFeedbackEndpoint = process.env.NEXT_PUBLIC_FEEDBACK_API_URL;
-  const normalizedFeedbackEndpoint = rawFeedbackEndpoint?.trim();
+  const normalizedFeedbackEndpoint = rawFeedbackEndpoint
+    ?.trim()
+    .replace(/\s+/g, '');
   const invalidSentinels = new Set(['/-', '-']);
   const feedbackEndpoint = normalizedFeedbackEndpoint && !invalidSentinels.has(normalizedFeedbackEndpoint)
     ? normalizedFeedbackEndpoint
