@@ -1,15 +1,16 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { configureAmplify, isAuthAvailable } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
 
 type AuthGateProps = {
   children: React.ReactNode;
+  onAuthenticated?: (user: any) => void | Promise<void>;
 };
 
 type View = 'signin' | 'new_password' | 'forgot_password' | 'reset_password';
 
-export default function AuthGate({ children }: AuthGateProps): JSX.Element {
+export default function AuthGate({ children, onAuthenticated }: AuthGateProps): JSX.Element {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<View>('signin');
@@ -33,6 +34,26 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const completeSignIn = useCallback(
+    (authUser: any) => {
+      if (!authUser) return;
+      setUser(authUser);
+      if (!onAuthenticated) return;
+
+      try {
+        const result = onAuthenticated(authUser);
+        if (result && typeof (result as Promise<unknown>).then === 'function') {
+          (result as Promise<unknown>).catch((callbackError) => {
+            console.error('onAuthenticated callback rejected', callbackError);
+          });
+        }
+      } catch (callbackError) {
+        console.error('onAuthenticated callback threw an error', callbackError);
+      }
+    },
+    [onAuthenticated]
+  );
 
   const EyeIcon = ({ hidden = false }: { hidden?: boolean }) => (
     <svg
@@ -66,7 +87,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
       try {
         if (ok && isAuthAvailable()) {
           const current = await Auth.currentAuthenticatedUser();
-          setUser(current);
+          completeSignIn(current);
         } else {
           setUser(null);
         }
@@ -76,7 +97,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
         setReady(true);
       }
     })();
-  }, []);
+  }, [completeSignIn]);
 
   if (!ready) return <div style={{ padding: 24 }}>Loading…</div>;
   if (user) return <>{children}</>;
@@ -94,7 +115,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
         return;
       }
       const current = await Auth.currentAuthenticatedUser();
-      setUser(current);
+      completeSignIn(current);
     } catch (err: any) {
       setError(err?.message || 'Sign in failed');
     } finally {
@@ -369,7 +390,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                   try {
                     const completed = await Auth.completeNewPassword(pendingUser, newPassword, attrs);
                     const current = await Auth.currentAuthenticatedUser();
-                    setUser(current || completed);
+                    completeSignIn(current || completed);
                   } catch (errInner: any) {
                     const msg = (errInner?.message || '').toLowerCase();
                     const code = (errInner?.name || errInner?.code || '').toString();
@@ -382,7 +403,7 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
                       // Fallback for v2 pool where preferred_username is immutable; complete without attributes
                       const completed = await Auth.completeNewPassword(pendingUser, newPassword);
                       const current = await Auth.currentAuthenticatedUser();
-                      setUser(current || completed);
+                      completeSignIn(current || completed);
                     } else {
                       throw errInner;
                     }
@@ -427,5 +448,3 @@ export default function AuthGate({ children }: AuthGateProps): JSX.Element {
     </section>
   );
 }
-
-

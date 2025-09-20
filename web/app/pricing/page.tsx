@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSubscription } from '../hooks/useSubscription';
 import { configureAmplify } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
@@ -11,9 +11,15 @@ export const runtime = 'edge';
 
 export default function Pricing(): JSX.Element {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { redirectToCheckout, loading: subscriptionLoading } = useSubscription();
+
+  const referralCode = useMemo(() => {
+    const value = searchParams.get('ref') || searchParams.get('referral');
+    return value ? value.trim() : null;
+  }, [searchParams]);
 
   useEffect(() => {
     console.log('Pricing page useEffect running...');
@@ -33,10 +39,15 @@ export default function Pricing(): JSX.Element {
         // Check for pending plan selection
         const selectedPlanStr = sessionStorage.getItem('selectedPlan');
         if (selectedPlanStr) {
-          const { plan, referral } = JSON.parse(selectedPlanStr);
-          sessionStorage.removeItem('selectedPlan');
-          console.log('Found pending plan selection, starting checkout:', plan);
-          await redirectToCheckout(plan, referral);
+          try {
+            const { plan, referral } = JSON.parse(selectedPlanStr);
+            sessionStorage.removeItem('selectedPlan');
+            console.log('Found pending plan selection, starting checkout:', plan);
+            await redirectToCheckout(plan, referral || undefined);
+          } catch (parseError) {
+            console.error('Failed to parse pending plan selection', parseError);
+            sessionStorage.removeItem('selectedPlan');
+          }
         }
       } catch (error) {
         console.log('User is not authenticated:', error);
@@ -57,14 +68,23 @@ export default function Pricing(): JSX.Element {
     });
 
     if (isAuthenticated === false) {
-      // Redirect to auth page with plan selection
-      router.push(`/auth?redirect=pricing&plan=${planType}`);
+      // Persist choice so we can resume checkout after authentication
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem(
+          'selectedPlan',
+          JSON.stringify({ plan: planType, referral: referralCode || null })
+        );
+      }
+
+      const params = new URLSearchParams({ redirect: 'pricing', plan: planType });
+      if (referralCode) params.set('ref', referralCode);
+      router.push(`/auth?${params.toString()}`);
       return;
     }
     
     if (isAuthenticated === true) {
       try {
-        await redirectToCheckout(planType);
+        await redirectToCheckout(planType, referralCode || undefined);
       } catch (error) {
         console.error('Subscription error:', error);
         trackEvent(AnalyticsEvents.ERROR_OCCURRED, {
@@ -173,3 +193,4 @@ export default function Pricing(): JSX.Element {
     </>
   );
 }
+
