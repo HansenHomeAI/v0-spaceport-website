@@ -72,7 +72,7 @@ async function main() {
 
    const waitResponse = await callTool('browser_wait_for', {
       text: 'Thanks for sharing your feedback!',
-      time: 6
+      time: 4
     });
     const waitSnapshot = extractSnapshot(waitResponse);
     const confirmationVisible = /Thanks for sharing your feedback!/.test(waitSnapshot);
