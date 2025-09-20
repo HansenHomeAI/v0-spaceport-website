@@ -3,6 +3,7 @@
 ## Agentic Dev Loop SOP
 1. **Branch**: from `development` create `agent-12345678-task-name` (unique eight-digit ID plus slug, e.g. `agent-74120953-update-web-copy`).
 2. **Baseline**: deploy, monitor GitHub Actions until the Cloudflare preview is green, and capture failing logs (run `gh run watch/logs` locally before touching the API—no debug cycle is complete until the live preview succeeds).
+   - Push the branch upstream as soon as there is meaningful work (`git push origin agent-…`) so deploy workflows and reviewers can see your changes.
    - If a deployment is rejected, immediately check environment protection rules: `gh api repos/$OWNER/$REPO/environments/<env>/deployment-branch-policies` and adjust with `gh api ... --field name="agent-*" --field type="branch"` (or coordinate with the maintainer) before retrying.
 3. **Test**: start Playwright MCP with `python3 scripts/playwright-mcp-manager.py ensure`, record a baseline run, and expand coverage when gaps appear.
 4. **Iterate**: apply the smallest fix, redeploy, watch the live preview build/logs, and rerun the baseline until everything passes.
@@ -11,6 +12,7 @@
 ## Guardrails (Never Do)
 - Modify `main` or production configuration.
 - Change secrets or add deploy targets.
+  - If a secret needs to change, document the exact key/value and pause for maintainer approval—do not edit secrets yourself.
 - Disable tests or drop coverage to "make it pass".
 - Commit binaries larger than 5 MB.
 
