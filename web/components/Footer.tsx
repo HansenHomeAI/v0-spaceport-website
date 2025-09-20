@@ -9,8 +9,9 @@ export default function Footer(): JSX.Element {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const rawFeedbackEndpoint = process.env.NEXT_PUBLIC_FEEDBACK_API_URL;
-  const feedbackEndpoint = rawFeedbackEndpoint && rawFeedbackEndpoint !== '/-'
-    ? rawFeedbackEndpoint
+  const normalizedFeedbackEndpoint = rawFeedbackEndpoint?.trim();
+  const feedbackEndpoint = normalizedFeedbackEndpoint && normalizedFeedbackEndpoint !== '/-'
+    ? normalizedFeedbackEndpoint
     : undefined;
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
