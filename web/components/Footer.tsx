@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TermsOfServiceModal from './TermsOfServiceModal';
 
 export default function Footer(): JSX.Element {
@@ -16,6 +16,20 @@ export default function Footer(): JSX.Element {
   const feedbackEndpoint = normalizedFeedbackEndpoint && !invalidSentinels.has(normalizedFeedbackEndpoint)
     ? normalizedFeedbackEndpoint
     : undefined;
+
+  useEffect(() => {
+    if (status !== 'success') {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setStatus('idle');
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [status]);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
