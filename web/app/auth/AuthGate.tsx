@@ -117,7 +117,21 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       const current = await Auth.currentAuthenticatedUser();
       completeSignIn(current);
     } catch (err: any) {
-      setError(err?.message || 'Sign in failed');
+      console.error('Sign in error:', err);
+      const errorMessage = err?.message || 'Sign in failed';
+      
+      // Provide more specific error messages for common issues
+      if (errorMessage.includes('UserNotFoundException')) {
+        setError('User not found. Please check your email address.');
+      } else if (errorMessage.includes('NotAuthorizedException')) {
+        setError('Invalid username or password. Please check your credentials.');
+      } else if (errorMessage.includes('UserNotConfirmedException')) {
+        setError('Please check your email and click the confirmation link.');
+      } else if (errorMessage.includes('TooManyRequestsException')) {
+        setError('Too many failed attempts. Please wait a moment and try again.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }

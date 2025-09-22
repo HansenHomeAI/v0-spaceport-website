@@ -80,6 +80,7 @@ def lambda_handler(event, context):
             create_params['TemporaryPassword'] = generate_temp_password()
 
         resp = cognito.admin_create_user(**create_params)
+        print(f"User created successfully: {email}, UserStatus: {resp.get('User', {}).get('UserStatus')}")
 
         # If suppressed, send a custom SES email with clear next steps
         if data.get('suppress'):
@@ -89,8 +90,10 @@ def lambda_handler(event, context):
                     name=name,
                     temp_password=create_params.get('TemporaryPassword')
                 )
+                print(f"Custom invite email sent successfully to {email}")
             except Exception as e:
                 print(f"Failed to send custom invite email: {e}")
+                # Don't fail the entire operation if email fails
 
         # Add to group
         if group:
@@ -108,9 +111,20 @@ def lambda_handler(event, context):
         return _response(500, {'error': str(e)})
 def generate_temp_password() -> str:
     import random
-    digits = ''.join(random.choice('0123456789') for _ in range(4))
-    # Must meet pool policy: length>=8, includes lower, upper, digit
-    return f"Spcprt{digits}A"
+    import string
+    
+    # Generate a more robust temporary password that meets all Cognito requirements
+    # Length >= 8, includes lower, upper, digit, and symbol
+    lowercase = ''.join(random.choice(string.ascii_lowercase) for _ in range(2))
+    uppercase = ''.join(random.choice(string.ascii_uppercase) for _ in range(2))
+    digits = ''.join(random.choice(string.digits) for _ in range(2))
+    symbols = ''.join(random.choice('!@#$%^&*') for _ in range(2))
+    
+    # Combine and shuffle
+    password_chars = list(lowercase + uppercase + digits + symbols)
+    random.shuffle(password_chars)
+    
+    return ''.join(password_chars)
 
 
 def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
