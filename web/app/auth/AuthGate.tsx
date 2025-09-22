@@ -9,11 +9,13 @@ type AuthGateProps = {
 };
 
 type View = 'signin' | 'new_password' | 'forgot_password' | 'reset_password';
+type AuthMode = 'waitlist' | 'login';
 
 export default function AuthGate({ children, onAuthenticated }: AuthGateProps): JSX.Element {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<View>('signin');
+  const [authMode, setAuthMode] = useState<AuthMode>('waitlist');
   const [signInEmail, setSignInEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -99,6 +101,39 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     })();
   }, [completeSignIn]);
 
+  // Default modal tab selection based on URL params or referrer
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const hash = (window.location.hash || '').toLowerCase();
+      const ref = (document.referrer || '').toLowerCase();
+      const hints = [
+        params.get('mode'),
+        params.get('intent'),
+        params.get('from'),
+        params.get('flow'),
+        params.get('checkout'),
+        hash.includes('login') ? 'login' : null,
+        hash.includes('signin') ? 'login' : null,
+        ref.includes('stripe') ? 'login' : null,
+        ref.includes('checkout') ? 'login' : null,
+      ]
+        .filter(Boolean)
+        .map((v) => String(v).toLowerCase());
+
+      const shouldLogin = hints.some((h) =>
+        ['login', 'signin', 'stripe', 'checkout', 'true', '1'].includes(h as string)
+      );
+
+      if (shouldLogin) {
+        setAuthMode('login');
+        setView('signin');
+      }
+    } catch {
+      // ignore URL parsing errors
+    }
+  }, []);
+
   if (!ready) return <div style={{ padding: 24 }}>Loading…</div>;
   if (user) return <>{children}</>;
 
@@ -111,6 +146,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       const res = await Auth.signIn(signInEmail, password);
       if (res.challengeName === 'NEW_PASSWORD_REQUIRED') {
         setPendingUser(res);
+        setAuthMode('login');
         setView('new_password');
         return;
       }
@@ -131,6 +167,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       if (!isAuthAvailable()) throw new Error('Password reset temporarily disabled');
       await Auth.forgotPassword(forgotEmail);
       setSuccessMessage('Password reset code sent to your email');
+      setAuthMode('login');
       setView('reset_password');
     } catch (err: any) {
       setError(err?.message || 'Failed to send reset code');
@@ -147,6 +184,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       if (!isAuthAvailable()) throw new Error('Password reset temporarily disabled');
       await Auth.forgotPasswordSubmit(forgotEmail, resetCode, resetPassword);
       setSuccessMessage('Password reset successfully! You can now sign in.');
+      setAuthMode('login');
       setView('signin');
       // Clear form data
       setForgotEmail('');
@@ -165,6 +203,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     setForgotEmail('');
     setResetCode('');
     setResetPassword('');
+    setAuthMode('login');
     setView('signin');
   };
 
@@ -190,55 +229,75 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
   };
 
   return (
-    <section className="section" id="signup" style={{ maxWidth: 900, margin: '0 auto' }}>
-      <div className="signup-stack">
-        <div className="waitlist-card" style={{ width: '100%', maxWidth: 520 }}>
-          <div className="waitlist-header">
-            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="waitlist-logo" />
-            <h2>New here?</h2>
-            <p>Join the waitlist to be among the first to access Spaceport AI.</p>
-          </div>
-          <form onSubmit={joinWaitlist} className="waitlist-form">
+    <div className="auth-modal-overlay">
+      <div className="auth-modal">
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="waitlist-logo" />
+        </div>
+        <div className={`auth-toggle ${authMode === 'login' ? 'active-login' : 'active-waitlist'}`}>
+          <button
+            type="button"
+            aria-pressed={authMode === 'waitlist'}
+            onClick={() => {
+              setAuthMode('waitlist');
+            }}
+          >
+            Sign Up for Waitlist
+          </button>
+          <button
+            type="button"
+            aria-pressed={authMode === 'login'}
+            onClick={() => {
+              setAuthMode('login');
+              setView('signin');
+            }}
+          >
+            Login
+          </button>
+          <span className="auth-toggle-indicator" />
+        </div>
+
+        {authMode === 'waitlist' && (
+          <form onSubmit={joinWaitlist} className="waitlist-form" style={{ marginTop: 12 }}>
+            <p className="auth-description">Join the waitlist to be among the first to access Spaceport AI.</p>
             <div className="input-group">
               <input className="waitlist-input" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="input-group">
               <input className="waitlist-input" placeholder="Email Address" type="email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} />
             </div>
+            {error && <p style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '8px' }}>{error}</p>}
             <button type="submit" className="waitlist-submit-btn" disabled={waitlistSubmitting}>
               <span>{waitlistSubmitting ? 'Submitting…' : 'Join Waitlist'}</span>
               <div className="spinner" style={{ display: waitlistSubmitting ? 'inline-block' : 'none', marginLeft: 8 }} />
             </button>
           </form>
-        </div>
+        )}
 
-        <div className="signin-block" style={{ width: '100%', maxWidth: 520 }}>
-          <div className="waitlist-card" style={{ width: '100%' }}>
-            <div className="waitlist-header">
-              <h2>Sign in to create your model</h2>
-            </div>
-            
+        {authMode === 'login' && (
+          <div className="waitlist-card" style={{ width: '100%', background: 'transparent', border: 'none', padding: 0 }}>
             {/* Sign In View */}
             {view === 'signin' && (
-              <form onSubmit={signIn} className="waitlist-form">
+              <form onSubmit={signIn} className="waitlist-form" style={{ marginTop: 12 }}>
+                <p className="auth-description">Sign in to create your model.</p>
                 <div className="input-group">
-                  <input 
-                    value={signInEmail} 
-                    onChange={(e) => setSignInEmail(e.target.value)} 
-                    type="email" 
-                    className="waitlist-input" 
-                    placeholder="Email" 
-                    required 
+                  <input
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
+                    type="email"
+                    className="waitlist-input"
+                    placeholder="Email"
+                    required
                   />
                 </div>
                 <div className="input-group" style={{ position: 'relative' }}>
-                  <input 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    type={showPassword ? 'text' : 'password'} 
-                    className="waitlist-input" 
-                    placeholder="Password" 
-                    required 
+                  <input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    type={showPassword ? 'text' : 'password'}
+                    className="waitlist-input"
+                    placeholder="Password"
+                    required
                   />
                   <button
                     type="button"
@@ -258,7 +317,10 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
                 <div style={{ textAlign: 'center', marginTop: '16px' }}>
                   <button
                     type="button"
-                    onClick={() => setView('forgot_password')}
+                    onClick={() => {
+                      setAuthMode('login');
+                      setView('forgot_password');
+                    }}
                     style={{
                       background: 'transparent',
                       border: 'none',
@@ -276,18 +338,18 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
 
             {/* Forgot Password View */}
             {view === 'forgot_password' && (
-              <form onSubmit={handleForgotPassword} className="waitlist-form">
-                <p style={{ marginBottom: '16px', fontSize: '14px', color: '#666' }}>
+              <form onSubmit={handleForgotPassword} className="waitlist-form" style={{ marginTop: 12 }}>
+                <p className="auth-description" style={{ marginBottom: 16 }}>
                   Enter your email address and we'll send you a code to reset your password.
                 </p>
                 <div className="input-group">
-                  <input 
-                    value={forgotEmail} 
-                    onChange={(e) => setForgotEmail(e.target.value)} 
-                    type="email" 
-                    className="waitlist-input" 
-                    placeholder="Email address" 
-                    required 
+                  <input
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    type="email"
+                    className="waitlist-input"
+                    placeholder="Email address"
+                    required
                   />
                 </div>
                 {error && <p style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '8px' }}>{error}</p>}
@@ -316,29 +378,29 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
 
             {/* Reset Password View */}
             {view === 'reset_password' && (
-              <form onSubmit={handleResetPassword} className="waitlist-form">
-                <p style={{ marginBottom: '16px', fontSize: '14px', color: '#666' }}>
+              <form onSubmit={handleResetPassword} className="waitlist-form" style={{ marginTop: 12 }}>
+                <p className="auth-description" style={{ marginBottom: 16 }}>
                   Enter the code from your email and choose a new password.
                 </p>
                 <div className="input-group">
-                  <input 
-                    value={resetCode} 
-                    onChange={(e) => setResetCode(e.target.value)} 
-                    type="text" 
-                    className="waitlist-input" 
-                    placeholder="Reset code" 
-                    required 
+                  <input
+                    value={resetCode}
+                    onChange={(e) => setResetCode(e.target.value)}
+                    type="text"
+                    className="waitlist-input"
+                    placeholder="Reset code"
+                    required
                     maxLength={6}
                   />
                 </div>
                 <div className="input-group" style={{ position: 'relative' }}>
-                  <input 
-                    value={resetPassword} 
-                    onChange={(e) => setResetPassword(e.target.value)} 
-                    type={showResetPassword ? 'text' : 'password'} 
-                    className="waitlist-input" 
-                    placeholder="New password" 
-                    required 
+                  <input
+                    value={resetPassword}
+                    onChange={(e) => setResetPassword(e.target.value)}
+                    type={showResetPassword ? 'text' : 'password'}
+                    className="waitlist-input"
+                    placeholder="New password"
+                    required
                     minLength={8}
                   />
                   <button
@@ -374,77 +436,76 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
               </form>
             )}
           </div>
+        )}
 
-          {/* New Password Required View */}
-          {view === 'new_password' && (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setError(null);
-                setIsLoading(true);
+        {/* New Password Required View (always in Login mode visuals) */}
+        {view === 'new_password' && authMode === 'login' && (
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setError(null);
+              setIsLoading(true);
+              try {
+                if (!pendingUser) throw new Error('Session expired');
+                const attrs: any = {};
+                if (handle) attrs.preferred_username = handle;
                 try {
-                  if (!pendingUser) throw new Error('Session expired');
-                  // First attempt: set password and preferred_username if provided (v3 pool supports this)
-                  const attrs: any = {};
-                  if (handle) attrs.preferred_username = handle;
-                  try {
-                    const completed = await Auth.completeNewPassword(pendingUser, newPassword, attrs);
+                  const completed = await Auth.completeNewPassword(pendingUser, newPassword, attrs);
+                  const current = await Auth.currentAuthenticatedUser();
+                  completeSignIn(current || completed);
+                } catch (errInner: any) {
+                  const msg = (errInner?.message || '').toLowerCase();
+                  const code = (errInner?.name || errInner?.code || '').toString();
+                  const isPrefUsernameIssue =
+                    code === 'InvalidParameterException' ||
+                    msg.includes('preferred_username') ||
+                    msg.includes('mutability') ||
+                    msg.includes('invalid user attributes');
+                  if (isPrefUsernameIssue) {
+                    const completed = await Auth.completeNewPassword(pendingUser, newPassword);
                     const current = await Auth.currentAuthenticatedUser();
                     completeSignIn(current || completed);
-                  } catch (errInner: any) {
-                    const msg = (errInner?.message || '').toLowerCase();
-                    const code = (errInner?.name || errInner?.code || '').toString();
-                    const isPrefUsernameIssue =
-                      code === 'InvalidParameterException' ||
-                      msg.includes('preferred_username') ||
-                      msg.includes('mutability') ||
-                      msg.includes('invalid user attributes');
-                    if (isPrefUsernameIssue) {
-                      // Fallback for v2 pool where preferred_username is immutable; complete without attributes
-                      const completed = await Auth.completeNewPassword(pendingUser, newPassword);
-                      const current = await Auth.currentAuthenticatedUser();
-                      completeSignIn(current || completed);
-                    } else {
-                      throw errInner;
-                    }
-                  }
-                } catch (err: any) {
-                  const code = err?.name || err?.code || '';
-                  if (code === 'AliasExistsException') {
-                    setError('Username is taken. Please choose another.');
                   } else {
-                    setError(err?.message || 'Failed to set password/handle');
+                    throw errInner;
                   }
-                } finally {
-                  setIsLoading(false);
                 }
-              }}
-              className="waitlist-form"
-            >
-              <p>Finish setup by choosing your password and a unique handle.</p>
-              <div className="input-group" style={{ position: 'relative' }}>
-                <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type={showNewPassword ? 'text' : 'password'} required className="waitlist-input" placeholder="New password" />
-                <button
-                  type="button"
-                  aria-label={showNewPassword ? 'Hide password' : 'Show password'}
-                  onClick={() => setShowNewPassword((v) => !v)}
-                  style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
-                >
-                  <EyeIcon hidden={showNewPassword} />
-                </button>
-              </div>
-              <div className="input-group">
-                <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="Handle (e.g. johndoe)" />
-              </div>
-              {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-              <button className="waitlist-submit-btn" type="submit" disabled={isLoading}>
-                <span>{isLoading ? 'Saving...' : 'Save and sign in'}</span>
-                {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
+              } catch (err: any) {
+                const code = err?.name || err?.code || '';
+                if (code === 'AliasExistsException') {
+                  setError('Username is taken. Please choose another.');
+                } else {
+                  setError(err?.message || 'Failed to set password/handle');
+                }
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className="waitlist-form"
+            style={{ marginTop: 12 }}
+          >
+            <p className="auth-description">Finish setup by choosing your password and a unique handle.</p>
+            <div className="input-group" style={{ position: 'relative' }}>
+              <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type={showNewPassword ? 'text' : 'password'} required className="waitlist-input" placeholder="New password" />
+              <button
+                type="button"
+                aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                onClick={() => setShowNewPassword((v) => !v)}
+                style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer' }}
+              >
+                <EyeIcon hidden={showNewPassword} />
               </button>
-            </form>
-          )}
-        </div>
+            </div>
+            <div className="input-group">
+              <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="waitlist-input" placeholder="Handle (e.g. johndoe)" />
+            </div>
+            {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
+            <button className="waitlist-submit-btn" type="submit" disabled={isLoading}>
+              <span>{isLoading ? 'Saving...' : 'Save and sign in'}</span>
+              {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
+            </button>
+          </form>
+        )}
       </div>
-    </section>
+    </div>
   );
 }
