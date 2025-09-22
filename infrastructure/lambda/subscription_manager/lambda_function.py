@@ -4,7 +4,8 @@ import boto3
 import stripe
 from copy import deepcopy
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple, Union
+from decimal import Decimal
 import logging
 from botocore.exceptions import ClientError
 
@@ -73,6 +74,18 @@ def _enrich_user_identifiers(payload: Dict[str, Any], user_id: str, primary_key:
     payload.setdefault('userId', user_id)
     payload.setdefault('id', user_id)
     payload[primary_key] = user_id
+
+
+def _coerce_decimal(value: Union[Dict[str, Any], list, Decimal, Any]) -> Any:
+    if isinstance(value, Decimal):
+        if value % 1 == 0:
+            return int(value)
+        return float(value)
+    if isinstance(value, list):
+        return [_coerce_decimal(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _coerce_decimal(v) for k, v in value.items()}
+    return value
 
 # Table names - using existing users table
 USERS_TABLE = os.environ.get('USERS_TABLE', 'Spaceport-Users')
@@ -775,6 +788,8 @@ def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
             'referralCode': user_data.get('referralCode'),
             'referralEarnings': user_data.get('referralEarnings', 0)
         }
+
+        subscription = _coerce_decimal(subscription)
         
         return {
             'statusCode': 200,
