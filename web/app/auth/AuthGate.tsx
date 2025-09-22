@@ -108,7 +108,8 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     setIsLoading(true);
     try {
       if (!isAuthAvailable()) throw new Error('Sign-in temporarily disabled');
-      const res = await Auth.signIn(signInEmail, password);
+      const normalizedEmail = (signInEmail || '').trim().toLowerCase();
+      const res = await Auth.signIn(normalizedEmail, password.trim());
       if (res.challengeName === 'NEW_PASSWORD_REQUIRED') {
         setPendingUser(res);
         setView('new_password');
@@ -117,7 +118,15 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       const current = await Auth.currentAuthenticatedUser();
       completeSignIn(current);
     } catch (err: any) {
-      setError(err?.message || 'Sign in failed');
+      const raw = (err?.message || '').toString();
+      const msg = raw.toLowerCase();
+      if (msg.includes('user does not exist') || msg.includes('user not found')) {
+        setError('No account found for that email. Check spelling or contact support.');
+      } else if (msg.includes('incorrect username or password') || msg.includes('invalid parameter') || msg.includes('not authorized')) {
+        setError('Invalid email or password. Remove any extra spaces and try again, or use Forgot Password.');
+      } else {
+        setError(err?.message || 'Sign in failed');
+      }
     } finally {
       setIsLoading(false);
     }

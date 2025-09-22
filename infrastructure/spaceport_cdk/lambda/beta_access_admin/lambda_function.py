@@ -109,8 +109,21 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
             resp = cognito.admin_create_user(**create_params)
             
         except cognito.exceptions.UsernameExistsException:
-            # User already exists - that's fine, we'll still send the email
-            pass
+            # User already exists – set a fresh temporary password so the invite works consistently
+            try:
+                cognito.admin_set_user_password(
+                    UserPoolId=USER_POOL_ID,
+                    Username=email,
+                    Password=temp_password,
+                    Permanent=False,
+                )
+            except Exception as set_err:
+                logger.warning(f"Failed to set temp password for existing user {email}: {set_err}")
+            # Best-effort ensure the user is enabled
+            try:
+                cognito.admin_enable_user(UserPoolId=USER_POOL_ID, Username=email)
+            except Exception:
+                pass
         
         # Send custom invitation email regardless of whether user was created or already existed
         _send_custom_invite_email(
@@ -151,6 +164,7 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
         + "1) Go to https://spcprt.com/create\n"
         + f"2) Sign in with your email ({email}) and the temporary password: {temp_password or '<check your email>'}\n"
         + "3) You'll be prompted to choose a new password and set your handle.\n\n"
+        + "Tip: If you see 'Invalid username or password', remove any extra spaces and try again, or click 'Forgot Password' to reset.\n\n"
         + "If you need help, just reply to this email.\n\n— Spaceport AI"
     )
 
@@ -163,6 +177,7 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
         <li>Sign in with your email (<strong>{email}</strong>) and the temporary password: <code>{temp_password or '&lt;check your email&gt;'}</code></li>
         <li>You'll be prompted to choose a new password and set your handle.</li>
       </ol>
+      <p style="margin-top:12px; color:#666"><em>Tip:</em> If you see <strong>Invalid username or password</strong>, remove any extra spaces and try again, or click <strong>Forgot Password</strong> to reset.</p>
       <p>If you need help, just reply to this email.</p>
       <p>— Spaceport AI</p>
     </body></html>

@@ -79,7 +79,30 @@ def lambda_handler(event, context):
             # Provide a memorable but policy-compliant temporary password when suppressing
             create_params['TemporaryPassword'] = generate_temp_password()
 
-        resp = cognito.admin_create_user(**create_params)
+        try:
+            resp = cognito.admin_create_user(**create_params)
+        except cognito.exceptions.UsernameExistsException:
+            # If the user already exists, set a fresh temporary password when suppressing
+            if create_params.get('MessageAction') == 'SUPPRESS':
+                temp_pw = create_params.get('TemporaryPassword') or generate_temp_password()
+                try:
+                    cognito.admin_set_user_password(
+                        UserPoolId=USER_POOL_ID,
+                        Username=email,
+                        Password=temp_pw,
+                        Permanent=False,
+                    )
+                except Exception as set_err:
+                    print(f"Failed to set temp password for existing user {email}: {set_err}")
+                try:
+                    cognito.admin_enable_user(UserPoolId=USER_POOL_ID, Username=email)
+                except Exception:
+                    pass
+                # Continue as if created (we'll send custom email below)
+                resp = {'User': {'Username': email}}
+            else:
+                # For non-suppressed path, surface a user-friendly message
+                return _response(200, {'message': 'User already exists. Use resend=true to resend Cognito email.', 'email': email})
 
         # If suppressed, send a custom SES email with clear next steps
         if data.get('suppress'):
@@ -122,6 +145,7 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
         + "1) Go to https://spcprt.com/create\n"
         + f"2) Sign in with your email ({email}) and the temporary password: {temp_password or '<check your email>'}\n"
         + "3) You'll be prompted to choose a new password and set your handle.\n\n"
+        + "Tip: If you see 'Invalid username or password', remove any extra spaces and try again, or click 'Forgot Password' to reset.\n\n"
         + "If you need help, just reply to this email.\n\n— Spaceport AI"
     )
 
@@ -134,6 +158,7 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
         <li>Sign in with your email (<strong>{email}</strong>) and the temporary password: <code>{temp_password or '&lt;check your email&gt;'}</code></li>
         <li>You'll be prompted to choose a new password and set your handle.</li>
       </ol>
+      <p style=\"margin-top:12px; color:#666\"><em>Tip:</em> If you see <strong>Invalid username or password</strong>, remove any extra spaces and try again, or click <strong>Forgot Password</strong> to reset.</p>
       <p>If you need help, just reply to this email.</p>
       <p>— Spaceport AI</p>
     </body></html>
