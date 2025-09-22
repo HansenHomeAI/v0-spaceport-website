@@ -4,8 +4,9 @@ import boto3
 import stripe
 from copy import deepcopy
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 import logging
+from botocore.exceptions import ClientError
 
 # Sentry for error tracking
 try:
@@ -37,6 +38,41 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 # Initialize AWS services
 dynamodb = boto3.resource('dynamodb')
 cognito_idp = boto3.client('cognito-idp')
+
+_USERS_TABLE_KEY_CACHE: Dict[str, str] = {}
+
+
+def _resolve_users_table() -> Tuple[Any, str]:
+    """Return the DynamoDB table resource and its hash key attribute."""
+    table = dynamodb.Table(USERS_TABLE)
+
+    cached_key = _USERS_TABLE_KEY_CACHE.get(USERS_TABLE)
+    if cached_key:
+        return table, cached_key
+
+    key_name = 'userSub'
+    try:
+        key_schema = getattr(table, 'key_schema', [])
+        for entry in key_schema:
+            if entry.get('KeyType') == 'HASH':
+                key_name = entry.get('AttributeName', key_name)
+                break
+    except Exception as exc:  # pragma: no cover - defensive logging only
+        logger.warning("Failed to inspect key schema for %s: %s", USERS_TABLE, exc)
+
+    _USERS_TABLE_KEY_CACHE[USERS_TABLE] = key_name
+    return table, key_name
+
+
+def _build_user_key(primary_key: str, user_id: str) -> Dict[str, str]:
+    return {primary_key: user_id}
+
+
+def _enrich_user_identifiers(payload: Dict[str, Any], user_id: str, primary_key: str) -> None:
+    payload.setdefault('userSub', user_id)
+    payload.setdefault('userId', user_id)
+    payload.setdefault('id', user_id)
+    payload[primary_key] = user_id
 
 # Table names - using existing users table
 USERS_TABLE = os.environ.get('USERS_TABLE', 'Spaceport-Users')
@@ -340,16 +376,22 @@ def get_price_id(plan_type: str) -> Optional[str]:
 def update_user_subscription(user_sub: str, subscription_id: Optional[str], plan_type: Optional[str], status: Optional[str]) -> None:
     """Persist subscription state in DynamoDB with idempotent model limits."""
     try:
-        table = dynamodb.Table(USERS_TABLE)
+        table, primary_key = _resolve_users_table()
 
         # Load or bootstrap the user's profile so we always have a baseline to build from.
-        response = table.get_item(Key={'userSub': user_sub})
+        try:
+            response = table.get_item(Key=_build_user_key(primary_key, user_sub))
+        except ClientError as err:
+            logger.error("Failed to load user %s from %s: %s", user_sub, USERS_TABLE, err)
+            return
+
         current_data = response.get('Item')
         if not current_data:
-            current_data = create_default_user_profile(user_sub)
+            current_data = create_default_user_profile(user_sub, table=table, primary_key=primary_key)
         else:
             # Ensure we don't accidentally mutate the cached response.
             current_data = dict(current_data)
+            _enrich_user_identifiers(current_data, user_sub, primary_key)
 
         now_iso = datetime.utcnow().isoformat()
 
@@ -433,6 +475,7 @@ def update_user_subscription(user_sub: str, subscription_id: Optional[str], plan
             if key in current_data:
                 subscription_payload[key] = current_data[key]
 
+        _enrich_user_identifiers(subscription_payload, user_sub, primary_key)
         table.put_item(Item=subscription_payload)
 
         update_cognito_subscription_attributes(user_sub, normalized_plan_type, normalized_status)
@@ -520,12 +563,12 @@ def store_referral_tracking(user_id: str, referral_code: str, plan_type: str) ->
     Store referral tracking information
     """
     try:
-        table = dynamodb.Table(USERS_TABLE)
+        table, primary_key = _resolve_users_table()
         
         # Store referral data in user record
         table.update_item(
-            Key={'userSub': user_id},
-            UpdateExpression='SET referralCode = :code, planType = :plan, referralStatus = :status, createdAt = if_not_exists(createdAt, :created), userId = :user_id',
+            Key=_build_user_key(primary_key, user_id),
+            UpdateExpression='SET referralCode = :code, planType = :plan, referralStatus = :status, createdAt = if_not_exists(createdAt, :created), userId = :user_id, userSub = if_not_exists(userSub, :user_id), id = if_not_exists(id, :user_id)',
             ExpressionAttributeValues={
                 ':code': referral_code,
                 ':plan': plan_type,
@@ -550,10 +593,10 @@ def process_referral(user_id: str, referral_code: str, plan_type: str) -> None:
             return
         
         # Update referral tracking in user record
-        table = dynamodb.Table(USERS_TABLE)
+        table, primary_key = _resolve_users_table()
         table.update_item(
-            Key={'userSub': user_id},
-            UpdateExpression='SET referredBy = :referred_by, referralStatus = :status, userId = :user_id',
+            Key=_build_user_key(primary_key, user_id),
+            UpdateExpression='SET referredBy = :referred_by, referralStatus = :status, userId = :user_id, userSub = if_not_exists(userSub, :user_id), id = if_not_exists(id, :user_id)',
             ExpressionAttributeValues={
                 ':referred_by': referred_by_user,
                 ':status': 'active',
@@ -574,7 +617,7 @@ def find_user_by_handle(handle: str) -> Optional[str]:
     try:
         # This would need to be implemented based on your user storage
         # For now, we'll assume users are stored in DynamoDB with handles
-        table = dynamodb.Table(USERS_TABLE)
+        table, _ = _resolve_users_table()
         response = table.scan(
             FilterExpression='preferred_username = :handle',
             ExpressionAttributeValues={':handle': handle}
@@ -583,7 +626,7 @@ def find_user_by_handle(handle: str) -> Optional[str]:
         items = response.get('Items', [])
         if items:
             item = items[0]
-            return item.get('userSub') or item.get('userId')
+            return item.get('userSub') or item.get('userId') or item.get('id')
         
         return None
         
@@ -611,12 +654,12 @@ def setup_referral_payouts_new_structure(referred_by_user: str, new_user: str, p
         company_kickback = (total_referee_kickback * COMPANY_KICKBACK_PERCENTAGE) / 100
         
         # Store payout tracking in user record
-        table = dynamodb.Table(USERS_TABLE)
+        table, primary_key = _resolve_users_table()
         
         # Update user's referral earnings
         table.update_item(
-            Key={'userSub': referred_by_user},
-            UpdateExpression='SET referralEarnings = :earnings, lastReferralUpdate = :updated, userId = :user_id',
+            Key=_build_user_key(primary_key, referred_by_user),
+            UpdateExpression='SET referralEarnings = :earnings, lastReferralUpdate = :updated, userId = :user_id, userSub = if_not_exists(userSub, :user_id), id = if_not_exists(id, :user_id)',
             ExpressionAttributeValues={
                 ':earnings': {
                     'totalUsd': total_referee_kickback,
@@ -642,7 +685,7 @@ def process_referral_payouts_new_structure(subscription_id: str, amount_paid: in
     """
     try:
         # Find referral payouts for this subscription
-        table = dynamodb.Table(USERS_TABLE)
+        table, primary_key = _resolve_users_table()
         response = table.scan(
             FilterExpression='referredUser = :subscription_id AND #status = :status',
             ExpressionAttributeNames={'#status': 'status'},
@@ -655,7 +698,7 @@ def process_referral_payouts_new_structure(subscription_id: str, amount_paid: in
             if months_remaining <= 0:
                 continue
 
-            user_sub = item.get('userId') or item.get('userSub')
+            user_sub = item.get('userId') or item.get('userSub') or item.get(primary_key)
             if not user_sub:
                 logger.warning('Referral payout item missing user identifier, skipping: %s', item)
                 continue
@@ -667,7 +710,7 @@ def process_referral_payouts_new_structure(subscription_id: str, amount_paid: in
 
             try:
                 table.update_item(
-                    Key={'userSub': user_sub},
+                    Key=_build_user_key(primary_key, user_sub),
                     UpdateExpression='SET referralEarnings.totalUsd = :total, referralEarnings.monthsRemaining = :months, referralEarnings.lastUpdated = :updated',
                     ExpressionAttributeValues={
                         ':total': new_total,
@@ -700,13 +743,20 @@ def get_subscription_status(event: Dict[str, Any]) -> Dict[str, Any]:
             }
         
         # Get subscription from DynamoDB
-        table = dynamodb.Table(USERS_TABLE)
-        response = table.get_item(Key={'userSub': user_sub})
+        table, primary_key = _resolve_users_table()
+        try:
+            response = table.get_item(Key=_build_user_key(primary_key, user_sub))
+        except ClientError as err:
+            logger.error("Failed to fetch subscription status for %s: %s", user_sub, err)
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'error': 'Failed to get subscription status'})
+            }
 
         if 'Item' in response:
             user_data = dict(response['Item'])
         else:
-            user_data = create_default_user_profile(user_sub)
+            user_data = create_default_user_profile(user_sub, table=table, primary_key=primary_key)
 
         plan_type = user_data.get('planType', DEFAULT_PLAN_TYPE)
         plan_features = user_data.get('planFeatures', get_plan_features_new_structure(plan_type))
@@ -758,8 +808,15 @@ def cancel_subscription(event: Dict[str, Any]) -> Dict[str, Any]:
             }
         
         # Get subscription ID
-        table = dynamodb.Table(USERS_TABLE)
-        response = table.get_item(Key={'userSub': user_sub})
+        table, primary_key = _resolve_users_table()
+        try:
+            response = table.get_item(Key=_build_user_key(primary_key, user_sub))
+        except ClientError as err:
+            logger.error("Failed to load subscription for cancellation for %s: %s", user_sub, err)
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'error': 'Failed to cancel subscription'})
+            }
 
         if 'Item' not in response:
             return {
@@ -828,7 +885,7 @@ def extract_user_sub_from_jwt(event: Dict[str, Any]) -> Optional[str]:
         logger.error(f"Error extracting userSub from JWT: {str(e)}")
         return None
 
-def create_default_user_profile(user_sub: str) -> Dict[str, Any]:
+def create_default_user_profile(user_sub: str, table: Any = None, primary_key: Optional[str] = None) -> Dict[str, Any]:
     """Create a baseline beta subscription profile for new users."""
     plan_features = get_plan_features_new_structure(DEFAULT_PLAN_TYPE)
     plan_features.setdefault('baseMaxModels', plan_features.get('maxModels'))
@@ -859,7 +916,10 @@ def create_default_user_profile(user_sub: str) -> Dict[str, Any]:
     }
 
     try:
-        table = dynamodb.Table(USERS_TABLE)
+        if table is None or primary_key is None:
+            table, primary_key = _resolve_users_table()
+
+        _enrich_user_identifiers(user_profile, user_sub, primary_key)
         table.put_item(Item=user_profile)
         logger.info(f"Created default beta profile for user: {user_sub}")
     except Exception as e:
