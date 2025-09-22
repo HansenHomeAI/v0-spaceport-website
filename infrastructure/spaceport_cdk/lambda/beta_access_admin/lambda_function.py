@@ -95,6 +95,8 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         
         # Try to create user first
         temp_password = _generate_temp_password()
+        logger.info(f"Generated temp password for {email}: {temp_password}")
+
         try:
             # Create user with suppressed email (we'll send custom email)
             create_params = {
@@ -105,12 +107,17 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
                 'MessageAction': 'SUPPRESS',
                 'TemporaryPassword': temp_password,
             }
-            
+
+            logger.info(f"Creating user in Cognito: {email}")
             resp = cognito.admin_create_user(**create_params)
-            
+            logger.info(f"User created successfully: {email}")
+
         except cognito.exceptions.UsernameExistsException:
             # User already exists - that's fine, we'll still send the email
-            pass
+            logger.info(f"User already exists, will still send invitation email: {email}")
+        except Exception as e:
+            logger.error(f"Failed to create user {email}: {e}")
+            # Continue anyway - might be a temporary issue, still send email
         
         # Send custom invitation email regardless of whether user was created or already existed
         _send_custom_invite_email(
@@ -133,8 +140,33 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
 def _generate_temp_password() -> str:
     """Generate a policy-compliant temporary password"""
     import random
-    digits = ''.join(random.choice('0123456789') for _ in range(4))
-    return f"Spcprt{digits}A"
+    import string
+
+    # Ensure password meets requirements:
+    # - At least 8 characters
+    # - At least 1 uppercase
+    # - At least 1 lowercase
+    # - At least 1 digit
+    # - At least 1 symbol (optional but good practice)
+
+    while True:
+        # Generate a random password with all required character types
+        uppercase = random.choice(string.ascii_uppercase)
+        lowercase = random.choice(string.ascii_lowercase)
+        digits = ''.join(random.choice(string.digits) for _ in range(4))
+        symbols = random.choice('!@#$%^&*')
+
+        # Combine and shuffle
+        password_chars = list(f"Space{uppercase}{lowercase}{digits}{symbols}")
+        random.shuffle(password_chars)
+        password = ''.join(password_chars)
+
+        # Verify it meets minimum requirements
+        if (len(password) >= 8 and
+            any(c.isupper() for c in password) and
+            any(c.islower() for c in password) and
+            any(c.isdigit() for c in password)):
+            return password
 
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
@@ -168,7 +200,7 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     </body></html>
     """
 
-    # Send via Resend
+    # Send via Resend with retry logic
     params = {
         "from": "Spaceport AI <hello@spcprt.com>",
         "to": [email],
@@ -176,9 +208,22 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
         "html": body_html,
         "text": body_text,
     }
-    
-    email_response = resend.Emails.send(params)
-    logger.info(f"Beta invitation email sent via Resend: {email_response}")
+
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            email_response = resend.Emails.send(params)
+            logger.info(f"Beta invitation email sent via Resend: {email_response}")
+            return
+        except Exception as e:
+            logger.error(f"Failed to send email (attempt {attempt + 1}/{max_retries}): {e}")
+            if attempt == max_retries - 1:
+                # Last attempt failed, log and continue but don't fail the whole invitation
+                logger.error(f"Failed to send invitation email to {email} after {max_retries} attempts")
+            else:
+                # Wait before retry
+                import time
+                time.sleep(2 ** attempt)  # Exponential backoff
 
 
 def lambda_handler(event, context):

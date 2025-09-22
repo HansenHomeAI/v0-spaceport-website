@@ -117,7 +117,27 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       const current = await Auth.currentAuthenticatedUser();
       completeSignIn(current);
     } catch (err: any) {
-      setError(err?.message || 'Sign in failed');
+      const errorMessage = err?.message || 'Sign in failed';
+      const errorCode = err?.name || err?.code || '';
+
+      // Provide more specific error messages for common issues
+      let userFriendlyMessage = errorMessage;
+
+      if (errorCode === 'UserNotFoundException' || errorMessage.includes('User does not exist')) {
+        userFriendlyMessage = 'This email address is not registered. Please check your email or contact support if you were invited.';
+      } else if (errorCode === 'NotAuthorizedException' || errorMessage.includes('Incorrect username or password')) {
+        userFriendlyMessage = 'Invalid email or password. If you were invited, please use the temporary password from your invitation email.';
+      } else if (errorCode === 'UserNotConfirmedException') {
+        userFriendlyMessage = 'Your account needs to be confirmed. Please check your email for confirmation instructions.';
+      } else if (errorCode === 'TooManyRequestsException' || errorMessage.includes('Too Many Requests')) {
+        userFriendlyMessage = 'Too many sign-in attempts. Please wait a few minutes before trying again.';
+      } else if (errorMessage.includes('Temporary password has expired')) {
+        userFriendlyMessage = 'Your temporary password has expired. Please request a new invitation from support.';
+      } else if (errorMessage.includes('Password reset required')) {
+        userFriendlyMessage = 'Your password needs to be reset. Please use the "Forgot your password?" link.';
+      }
+
+      setError(userFriendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -256,20 +276,42 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
                   {isLoading && <div className="spinner" style={{ display: 'inline-block', marginLeft: 8 }} />}
                 </button>
                 <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setView('forgot_password')}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#4CAF50',
-                      textDecoration: 'underline',
-                      cursor: 'pointer',
-                      fontSize: '14px'
-                    }}
-                  >
-                    Forgot your password?
-                  </button>
+                  <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
+                    Having trouble signing in?
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => setView('forgot_password')}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#4CAF50',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Forgot your password?
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Provide guidance for invitation issues
+                        setError('If you were invited but having issues, please check that you\'re using the temporary password from your invitation email exactly as shown. Temporary passwords are case-sensitive and expire after 7 days.');
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#666',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Having trouble with invitation?
+                    </button>
+                  </div>
                 </div>
               </form>
             )}
