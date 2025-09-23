@@ -222,7 +222,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
             className={`auth-mode-button ${authMode === 'waitlist' ? 'active' : ''}`}
             onClick={() => setAuthMode('waitlist')}
           >
-            Sign Up for Waitlist
+            Sign Up
           </button>
           <button
             type="button"

@@ -2496,7 +2496,7 @@ footer {
 .auth-mode-toggle {
   display: flex;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 999px;
+  border-radius: 20px; /* Concentric with auth-modal's 25px - inner padding creates perfect concentricity */
   padding: 4px;
   margin-bottom: 32px;
   position: relative;
@@ -2509,9 +2509,10 @@ footer {
   position: absolute;
   top: 4px;
   bottom: 4px;
-  width: calc(50% - 2px);
+  left: 4px;
+  width: calc(50% - 4px); /* Fixed width calculation accounting for padding */
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
+  border-radius: 16px; /* Concentric with toggle container */
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
   z-index: 0;
@@ -2522,7 +2523,7 @@ footer {
 }
 
 .auth-mode-slider.slide-right {
-  transform: translateX(calc(100% + 4px));
+  transform: translateX(100%);
 }
 
 .auth-mode-button {
@@ -2531,7 +2532,7 @@ footer {
   border: none;
   color: rgba(255, 255, 255, 0.5);
   padding: 12px 20px;
-  border-radius: 999px;
+  border-radius: 16px; /* Match slider radius */
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -2752,9 +2753,24 @@ footer {
     font-size: 0.9rem;
   }
 
+  .auth-mode-toggle {
+    border-radius: 18px; /* Slightly smaller for mobile while maintaining concentricity */
+    padding: 3px;
+    margin-bottom: 24px; /* Reduce spacing on mobile */
+  }
+
+  .auth-mode-slider {
+    border-radius: 15px; /* Concentric with mobile toggle */
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+  }
+
   .auth-mode-button {
     font-size: 0.8rem;
     padding: 10px 16px;
+    border-radius: 15px; /* Match mobile slider radius */
   }
 }
 
