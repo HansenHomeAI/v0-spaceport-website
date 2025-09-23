@@ -2461,7 +2461,7 @@ footer {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-  border-radius: 25px;
+  border-radius: 40px;
   padding: 32px;
   max-width: 480px;
   width: 100%;
@@ -2492,27 +2492,29 @@ footer {
   z-index: 0;
 }
 
-/* Mode Toggle */
+/* Mode Toggle - True pill shape following iOS design patterns */
 .auth-mode-toggle {
   display: flex;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px; /* Concentric with auth-modal's 25px - inner padding creates perfect concentricity */
-  padding: 4px;
+  border-radius: 999px; /* True pill shape */
+  padding: 6px; /* Increased padding for better pill proportions */
   margin-bottom: 32px;
   position: relative;
   z-index: 1;
   gap: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Match input box height: 16px top + 16px bottom + font-size + padding */
+  min-height: 56px; /* Match auth-input height */
 }
 
 .auth-mode-slider {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc(50% - 4px); /* Fixed width calculation accounting for padding */
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc(50% - 6px); /* Fixed width calculation accounting for increased padding */
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px; /* Concentric with toggle container */
+  border-radius: 999px; /* True pill shape matching container */
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
   z-index: 0;
@@ -2531,9 +2533,9 @@ footer {
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.5);
-  padding: 12px 20px;
-  border-radius: 16px; /* Match slider radius */
-  font-size: 0.9rem;
+  padding: 16px 20px; /* Match auth-input padding for consistent height */
+  border-radius: 999px; /* True pill shape */
+  font-size: 1rem; /* Match auth-input font size */
   font-weight: 500;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -2743,6 +2745,7 @@ footer {
   .auth-modal {
     padding: 24px;
     margin: 0 16px;
+    border-radius: 32px; /* Proportionally smaller but still very rounded on mobile */
   }
 
   .auth-modal-header h2 {
@@ -2754,23 +2757,24 @@ footer {
   }
 
   .auth-mode-toggle {
-    border-radius: 18px; /* Slightly smaller for mobile while maintaining concentricity */
-    padding: 3px;
+    border-radius: 999px; /* Maintain true pill shape on mobile */
+    padding: 4px; /* Proportional mobile padding */
     margin-bottom: 24px; /* Reduce spacing on mobile */
+    min-height: 48px; /* Proportional mobile height matching smaller inputs */
   }
 
   .auth-mode-slider {
-    border-radius: 15px; /* Concentric with mobile toggle */
-    top: 3px;
-    bottom: 3px;
-    left: 3px;
-    width: calc(50% - 3px);
+    border-radius: 999px; /* Maintain true pill shape on mobile */
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
   }
 
   .auth-mode-button {
-    font-size: 0.8rem;
-    padding: 10px 16px;
-    border-radius: 15px; /* Match mobile slider radius */
+    font-size: 0.9rem; /* Slightly larger for better readability */
+    padding: 12px 18px; /* Proportional mobile padding */
+    border-radius: 999px; /* Maintain true pill shape on mobile */
   }
 }
 
