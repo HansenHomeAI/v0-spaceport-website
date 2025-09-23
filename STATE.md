@@ -1,5 +1,5 @@
 # Agent State
-reason: waiting for Cloudflare preview to validate model delivery workflow
-last_step: pushed agent-48291537-model-delivery to origin
-next_unblocked_step: monitor deploy-cloudflare-pages.yml for branch preview and capture preview URL
+reason: ready to verify model delivery feature on preview deployment
+last_step: Cloudflare preview published at https://agent-48291537-model-deliver.v0-spaceport-website-preview2.pages.dev
+next_unblocked_step: run targeted preview QA or Playwright coverage for delivery workflow
 owner_action_needed: none
