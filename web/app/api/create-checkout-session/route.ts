@@ -1,13 +1,14 @@
+import { resolveSubscriptionApiUrl } from 'lib/subscriptionApi';
+
 export const runtime = 'edge';
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    // Get the subscription API URL from environment variables
-    const subscriptionApiUrl = (process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL || '').replace(/\/+$/, '');
-    
-    if (!subscriptionApiUrl) {
+    const target = resolveSubscriptionApiUrl('/create-checkout-session');
+
+    if (target.kind === 'error') {
       return new Response(
-        JSON.stringify({ error: 'Subscription API URL not configured' }),
+        JSON.stringify({ error: target.error }),
         { 
           status: 500,
           headers: { 'content-type': 'application/json; charset=utf-8' }
@@ -30,7 +31,7 @@ export async function POST(request: Request): Promise<Response> {
 
     const body = await request.json();
 
-    const response = await fetch(`${subscriptionApiUrl}/subscription/create-checkout-session`, {
+    const response = await fetch(target.url, {
       method: 'POST',
       headers: {
         Authorization: authorization,
