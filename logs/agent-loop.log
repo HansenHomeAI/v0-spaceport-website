@@ -5,3 +5,4 @@
 2025-09-23T14:12:00-0600 waitlist normalization -> code updated -> run deploy workflow
 2025-09-23T14:25:00-0600 playwright waitlist -> pass (run1, run2) -> ready for QA wrap
 [2025-09-23T22:32:46Z] push -> success -> monitor preview
+[2025-09-23T22:36:13Z] preview -> green -> manual QA pending
