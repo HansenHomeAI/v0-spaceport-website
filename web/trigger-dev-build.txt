@@ -1,1 +1,1 @@
-2025-09-23 - sliding pill selector fixes and iOS concentric design
+2025-09-23 - increased auth modal border radius to 40px
