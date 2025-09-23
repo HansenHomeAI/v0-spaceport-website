@@ -142,7 +142,7 @@ def lambda_handler(event, context):
         if method in ('PUT', 'PATCH') and project_id:
             # Update mutable fields
             update_fields = {}
-            for key in ('title', 'status', 'progress', 'params', 'upload', 'ml'):
+            for key in ('title', 'status', 'progress', 'params', 'upload', 'ml', 'delivery'):
                 if key in body:
                     # Convert floats to Decimal for DynamoDB compatibility
                     update_fields[key] = convert_floats_to_decimal(body[key])
@@ -174,5 +174,4 @@ def lambda_handler(event, context):
     except Exception as e:
         print('Error:', e)
         return _response(500, {'error': 'Internal server error'})
-
 

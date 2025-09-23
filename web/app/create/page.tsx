@@ -5,6 +5,7 @@ import NewProjectModal from '../../components/NewProjectModal';
 import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
 import BetaAccessInvite from '../../components/BetaAccessInvite';
+import ModelDeliveryManager from '../../components/ModelDeliveryManager';
 import { Auth } from 'aws-amplify';
 import { useRouter } from 'next/navigation';
 import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
@@ -190,6 +191,7 @@ export default function Create(): JSX.Element {
             
             {/* Beta Access Management - Only shown to authorized employees */}
             <BetaAccessInvite />
+            <ModelDeliveryManager />
           </div>
         </section>
 

@@ -113,6 +113,116 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [status, setStatus] = useState<string>('draft');
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(project?.projectId || null);
 
+  const [deliveryDetails, setDeliveryDetails] = useState<{ link: string; deliveredAt?: number; deliveredByEmail?: string; deliveredBySub?: string } | null>(project?.delivery || null);
+  const [deliveryCopyStatus, setDeliveryCopyStatus] = useState<'idle' | 'copied'>('idle');
+
+  const deliverySectionStyles: React.CSSProperties = {
+    marginTop: 24,
+    padding: '24px',
+    borderRadius: 16,
+    border: '1px solid rgba(255,255,255,0.12)',
+    background: 'rgba(8, 10, 19, 0.65)',
+    backdropFilter: 'blur(16px)',
+  };
+
+  const deliveryHeaderStyles: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 16,
+  };
+
+  const deliveryPillStyles: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '12px 18px',
+    borderRadius: 999,
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    flexWrap: 'wrap',
+  };
+
+  const deliveryLinkStyles: React.CSSProperties = {
+    color: '#ffffff',
+    textDecoration: 'none',
+    fontWeight: 600,
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    flex: '1 1 auto',
+  };
+
+  const deliveryCopyButtonStyles: React.CSSProperties = {
+    padding: '8px 14px',
+    borderRadius: 999,
+    border: 'none',
+    background: '#ffffff',
+    color: '#05070f',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'transform 0.2s ease',
+  };
+
+  const deliveryMetaStyles: React.CSSProperties = {
+    marginTop: 12,
+    display: 'flex',
+    gap: 16,
+    flexWrap: 'wrap',
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: '0.9rem',
+  };
+
+  const deliveryBadgeStyles: React.CSSProperties = {
+    borderRadius: 999,
+    padding: '6px 14px',
+    background: 'rgba(34,197,94,0.15)',
+    border: '1px solid rgba(34,197,94,0.3)',
+    color: '#bbf7d0',
+    fontSize: '0.8rem',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+  };
+
+  const deliveryCopyFeedbackStyles: React.CSSProperties = {
+    marginTop: 10,
+    color: '#bef264',
+    fontSize: '0.85rem',
+  };
+
+  const deliveryPlaceholderStyles: React.CSSProperties = {
+    color: 'rgba(255,255,255,0.6)',
+    margin: 0,
+    fontSize: '0.95rem',
+  };
+
+  const formattedDeliveryDate = useMemo(() => {
+    if (!deliveryDetails?.deliveredAt) return null;
+    try {
+      return new Date(Number(deliveryDetails.deliveredAt) * 1000).toLocaleString();
+    } catch {
+      return null;
+    }
+  }, [deliveryDetails?.deliveredAt]);
+
+  const handleCopyDeliveryLink = useCallback(async () => {
+    if (!deliveryDetails?.link) return;
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(deliveryDetails.link);
+        setDeliveryCopyStatus('copied');
+        setTimeout(() => setDeliveryCopyStatus('idle'), 2000);
+      } else {
+        throw new Error('Clipboard access unavailable');
+      }
+    } catch (err) {
+      console.warn('Copy to clipboard failed', err);
+      showSystemNotification('error', 'Unable to copy the model link automatically. Please copy it manually.');
+    }
+  }, [deliveryDetails?.link, showSystemNotification]);
+
   const [setupOpen, setSetupOpen] = useState<boolean>(true);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
 
@@ -166,6 +276,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
+      setDeliveryDetails(project.delivery || null);
+      setDeliveryCopyStatus('idle');
       
       // CRITICAL FIX: Restore saved coordinates if they exist
       if (params.latitude && params.longitude) {
@@ -251,6 +363,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setCurrentProjectId(null);
       selectedCoordsRef.current = null;
       setSelectedCoords(null);
+      setDeliveryDetails(null);
+      setDeliveryCopyStatus('idle');
     }
 
     // Cleanup timeout on unmount
@@ -1469,7 +1583,48 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           )}
         </div>
         {/* Autosave enabled; no explicit Save button */}
-        
+
+        <div style={deliverySectionStyles}>
+          <div style={deliveryHeaderStyles}>
+            <h4 style={{ margin: 0 }}>Model Delivery</h4>
+            {deliveryDetails?.link && (
+              <span style={deliveryBadgeStyles}>Ready</span>
+            )}
+          </div>
+          {deliveryDetails?.link ? (
+            <>
+              <div style={deliveryPillStyles}>
+                <a
+                  style={deliveryLinkStyles}
+                  href={deliveryDetails.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {deliveryDetails.link}
+                </a>
+                <button
+                  type="button"
+                  style={{ ...deliveryCopyButtonStyles, transform: deliveryCopyStatus === 'copied' ? 'scale(0.98)' : 'none' }}
+                  onClick={handleCopyDeliveryLink}
+                >
+                  {deliveryCopyStatus === 'copied' ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+              <div style={deliveryMetaStyles}>
+                {formattedDeliveryDate && <span>Delivered {formattedDeliveryDate}</span>}
+                {deliveryDetails.deliveredByEmail && <span>Sent by {deliveryDetails.deliveredByEmail}</span>}
+              </div>
+              {deliveryCopyStatus === 'copied' && (
+                <div style={deliveryCopyFeedbackStyles}>Link copied to clipboard</div>
+              )}
+            </>
+          ) : (
+            <p style={deliveryPlaceholderStyles}>
+              When your model is ready, we will drop the 3D link here and email you right away.
+            </p>
+          )}
+        </div>
+
         {/* Delete Project Button - Only show when editing existing project */}
         {currentProjectId && (
           <div className="popup-section" style={{ marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
@@ -1531,5 +1686,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-
-
