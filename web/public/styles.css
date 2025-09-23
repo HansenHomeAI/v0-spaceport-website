@@ -2456,6 +2456,328 @@ footer {
   font-weight: 500;
 }
 
+/* New Auth Modal Styles */
+.auth-modal {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border-radius: 40px;
+  padding: 32px;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.auth-modal::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Mode Toggle - True pill shape following iOS design patterns */
+.auth-mode-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px; /* True pill shape */
+  padding: 6px; /* Increased padding for better pill proportions */
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  gap: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Match input box height: 16px top + 16px bottom + font-size + padding */
+  min-height: 56px; /* Match auth-input height */
+}
+
+.auth-mode-slider {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc(50% - 6px); /* Fixed width calculation accounting for increased padding */
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px; /* True pill shape matching container */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+  z-index: 0;
+}
+
+.auth-mode-slider.slide-left {
+  transform: translateX(0);
+}
+
+.auth-mode-slider.slide-right {
+  transform: translateX(100%);
+}
+
+.auth-mode-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 16px 20px; /* Match auth-input padding for consistent height */
+  border-radius: 999px; /* True pill shape */
+  font-size: 1rem; /* Match auth-input font size */
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.auth-mode-button.active {
+  color: #fff;
+}
+
+.auth-mode-button:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Modal Content */
+.auth-modal-content {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-modal-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-logo {
+  height: 32px;
+  width: auto;
+  margin-bottom: 24px;
+  opacity: 1;
+  filter: brightness(1) contrast(1);
+}
+
+.auth-modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.auth-modal-header p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* Form Styles */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Password Toggle */
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.password-toggle svg path {
+  stroke: rgba(255, 255, 255, 0.5);
+}
+
+.password-toggle:hover svg path {
+  stroke: rgba(255, 255, 255, 0.8);
+}
+
+/* Submit Button */
+.auth-submit-btn {
+  background: linear-gradient(135deg, #FF4F00 0%, #FF6B35 100%);
+  color: #fff;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 79, 0, 0.3);
+}
+
+.auth-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Error and Success Messages */
+.auth-error {
+  color: #ff6b6b;
+  font-size: 14px;
+  margin: 0;
+  text-align: center;
+}
+
+.auth-success {
+  color: #4CAF50;
+  font-size: 14px;
+  margin: 0;
+  text-align: center;
+}
+
+/* Description Text */
+.auth-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+/* Auth Links */
+.auth-links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-link {
+  background: transparent;
+  border: none;
+  color: #4CAF50;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+  color: #66BB6A;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments for auth modal */
+@media (max-width: 768px) {
+  .auth-modal {
+    padding: 24px;
+    margin: 0 16px;
+    border-radius: 32px; /* Proportionally smaller but still very rounded on mobile */
+  }
+
+  .auth-modal-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .auth-modal-header p {
+    font-size: 0.9rem;
+  }
+
+  .auth-mode-toggle {
+    border-radius: 999px; /* Maintain true pill shape on mobile */
+    padding: 4px; /* Proportional mobile padding */
+    margin-bottom: 24px; /* Reduce spacing on mobile */
+    min-height: 48px; /* Proportional mobile height matching smaller inputs */
+  }
+
+  .auth-mode-slider {
+    border-radius: 999px; /* Maintain true pill shape on mobile */
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+  }
+
+  .auth-mode-button {
+    font-size: 0.9rem; /* Slightly larger for better readability */
+    padding: 12px 18px; /* Proportional mobile padding */
+    border-radius: 999px; /* Maintain true pill shape on mobile */
+  }
+}
+
 /* Noise overlay layer for all three */
 #pricing-header::after,
 #about::after,
