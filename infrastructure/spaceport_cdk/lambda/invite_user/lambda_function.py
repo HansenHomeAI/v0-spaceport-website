@@ -4,6 +4,8 @@ import boto3
 import resend
 from typing import Optional
 
+from ..shared.password_utils import generate_user_friendly_password
+
 # Initialize Resend
 resend.api_key = os.environ.get('RESEND_API_KEY')
 
@@ -12,6 +14,7 @@ cognito = boto3.client('cognito-idp')
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 INVITE_GROUP = os.environ.get('INVITE_GROUP', 'beta-testers')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
+LOG_INVITE_DEBUG = os.environ.get('LOG_INVITE_DEBUG', 'false').lower() in ('1', 'true', 'yes', 'on')
 
 
 def _response(status, body):
@@ -114,6 +117,9 @@ def lambda_handler(event, context):
             except Exception as pwd_err:
                 return _response(500, {'error': f'Failed to set temporary password: {pwd_err}'})
 
+            if LOG_INVITE_DEBUG and temp_password:
+                print(f"INVITE_DEBUG email={email} temp_password={temp_password}")
+
         # If suppressed, send a custom SES email with clear next steps
         if data.get('suppress'):
             try:
@@ -142,18 +148,7 @@ def lambda_handler(event, context):
     except Exception as e:
         return _response(500, {'error': str(e)})
 def generate_temp_password() -> str:
-    import secrets
-    import string
-
-    length = 12
-    lowercase = secrets.choice(string.ascii_lowercase)
-    uppercase = secrets.choice(string.ascii_uppercase)
-    digit = secrets.choice(string.digits)
-    pool = string.ascii_letters + string.digits
-    remaining = [secrets.choice(pool) for _ in range(length - 3)]
-    password_chars = [lowercase, uppercase, digit, *remaining]
-    secrets.SystemRandom().shuffle(password_chars)
-    return ''.join(password_chars)
+    return generate_user_friendly_password()
 
 
 def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:

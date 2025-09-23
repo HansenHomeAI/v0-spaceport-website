@@ -5,6 +5,8 @@ import resend
 from typing import Optional, Dict, Any
 import logging
 
+from ..shared.password_utils import generate_user_friendly_password
+
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,6 +20,7 @@ dynamodb = boto3.resource('dynamodb')
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
+LOG_INVITE_DEBUG = os.environ.get('LOG_INVITE_DEBUG', 'false').lower() in ('1', 'true', 'yes', 'on')
 
 # Initialize permissions table
 permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
@@ -139,6 +142,9 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
             logger.error(f"Failed to set temporary password for {email}: {pwd_err}")
             raise
 
+        if LOG_INVITE_DEBUG:
+            logger.info(f"INVITE_DEBUG email={email} temp_password={temp_password}")
+
         _send_custom_invite_email(
             email=email,
             name=name,
@@ -157,21 +163,7 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
 
 
 def _generate_temp_password() -> str:
-    """Generate a policy-compliant temporary password"""
-    import secrets
-    import string
-
-    length = 12
-    lowercase = secrets.choice(string.ascii_lowercase)
-    uppercase = secrets.choice(string.ascii_uppercase)
-    digit = secrets.choice(string.digits)
-    pool = string.ascii_letters + string.digits
-    remaining = [secrets.choice(pool) for _ in range(length - 3)]
-    password_chars = [lowercase, uppercase, digit, *remaining]
-
-    # Shuffle using SystemRandom for cryptographic randomness
-    secrets.SystemRandom().shuffle(password_chars)
-    return ''.join(password_chars)
+    return generate_user_friendly_password()
 
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
