@@ -216,6 +216,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
       <div className="auth-modal">
         {/* Mode Toggle */}
         <div className="auth-mode-toggle">
+          <div className={`auth-mode-slider ${authMode === 'login' ? 'slide-right' : 'slide-left'}`} />
           <button
             type="button"
             className={`auth-mode-button ${authMode === 'waitlist' ? 'active' : ''}`}

@@ -2505,6 +2505,26 @@ footer {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.auth-mode-slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 2px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+  z-index: 0;
+}
+
+.auth-mode-slider.slide-left {
+  transform: translateX(0);
+}
+
+.auth-mode-slider.slide-right {
+  transform: translateX(calc(100% + 4px));
+}
+
 .auth-mode-button {
   flex: 1;
   background: transparent;
@@ -2515,19 +2535,16 @@ footer {
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .auth-mode-button.active {
-  background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
 .auth-mode-button:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.8);
 }
 
