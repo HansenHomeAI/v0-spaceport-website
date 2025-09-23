@@ -1,0 +1,7 @@
+[2025-09-23T17:32:46Z] invite-debug -> fix validated in dev via AWS CLI -> prep branch push
+[2025-09-23T17:37:37Z] deploy -> cloudflare preview green -> ready for review
+[2025-09-23T18:55:25Z] invite-debug -> created test user + Playwright login -> prepping analysis
+[2025-09-23T18:59:53Z] deploy -> preview refreshed (run 17956179829) -> continue QA
+2025-09-23T14:12:00-0600 waitlist normalization -> code updated -> run deploy workflow
+2025-09-23T14:25:00-0600 playwright waitlist -> pass (run1, run2) -> ready for QA wrap
+[2025-09-23T22:32:46Z] push -> success -> monitor preview
