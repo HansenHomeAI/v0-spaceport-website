@@ -244,8 +244,8 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
               </>
             ) : (
               <>
-                <h2>Sign in to create your model</h2>
-                <p>Welcome back! Sign in to access your account.</p>
+                <h2>Welcome back!</h2>
+                <p>Sign in to access your account.</p>
               </>
             )}
           </div>
