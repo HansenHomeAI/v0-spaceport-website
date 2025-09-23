@@ -93,10 +93,10 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         if name:
             user_attributes.append({'Name': 'name', 'Value': name.strip()})
         
-        # Try to create user first
         temp_password = _generate_temp_password()
+        user_already_existed = False
+
         try:
-            # Create user with suppressed email (we'll send custom email)
             create_params = {
                 'UserPoolId': USER_POOL_ID,
                 'Username': email,
@@ -105,23 +105,49 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
                 'MessageAction': 'SUPPRESS',
                 'TemporaryPassword': temp_password,
             }
-            
-            resp = cognito.admin_create_user(**create_params)
-            
+
+            cognito.admin_create_user(**create_params)
         except cognito.exceptions.UsernameExistsException:
-            # User already exists - that's fine, we'll still send the email
-            pass
-        
-        # Send custom invitation email regardless of whether user was created or already existed
+            user_already_existed = True
+            logger.info(f"User {email} already exists, resetting invite password")
+
+        # Always ensure attributes are trimmed + synced
+        updatable_attributes = [attr for attr in user_attributes if attr['Name'] != 'preferred_username']
+
+        try:
+            if updatable_attributes:
+                cognito.admin_update_user_attributes(
+                    UserPoolId=USER_POOL_ID,
+                    Username=email,
+                    UserAttributes=updatable_attributes,
+                )
+        except Exception as attr_err:
+            logger.warning(f"Failed to update attributes for {email}: {attr_err}")
+
+        password_message = 'Invitation sent successfully'
+
+        try:
+            cognito.admin_set_user_password(
+                UserPoolId=USER_POOL_ID,
+                Username=email,
+                Password=temp_password,
+                Permanent=False,
+            )
+            if user_already_existed:
+                password_message = 'Existing user reset and invitation sent successfully'
+        except Exception as pwd_err:
+            logger.error(f"Failed to set temporary password for {email}: {pwd_err}")
+            raise
+
         _send_custom_invite_email(
             email=email,
             name=name,
             temp_password=temp_password
         )
-        
+
         return {
             'success': True,
-            'message': 'Invitation sent successfully',
+            'message': password_message,
             'email': email
         }
         
@@ -132,9 +158,20 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
 
 def _generate_temp_password() -> str:
     """Generate a policy-compliant temporary password"""
-    import random
-    digits = ''.join(random.choice('0123456789') for _ in range(4))
-    return f"Spcprt{digits}A"
+    import secrets
+    import string
+
+    length = 12
+    lowercase = secrets.choice(string.ascii_lowercase)
+    uppercase = secrets.choice(string.ascii_uppercase)
+    digit = secrets.choice(string.digits)
+    pool = string.ascii_letters + string.digits
+    remaining = [secrets.choice(pool) for _ in range(length - 3)]
+    password_chars = [lowercase, uppercase, digit, *remaining]
+
+    # Shuffle using SystemRandom for cryptographic randomness
+    secrets.SystemRandom().shuffle(password_chars)
+    return ''.join(password_chars)
 
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:

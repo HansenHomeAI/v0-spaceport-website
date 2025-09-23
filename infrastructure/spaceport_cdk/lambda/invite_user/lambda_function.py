@@ -72,14 +72,47 @@ def lambda_handler(event, context):
             'DesiredDeliveryMediums': ['EMAIL'],
         }
 
+        user_already_existed = False
+        temp_password = None
+
         if data.get('resend'):
             create_params['MessageAction'] = 'RESEND'
         elif data.get('suppress'):
             create_params['MessageAction'] = 'SUPPRESS'
             # Provide a memorable but policy-compliant temporary password when suppressing
-            create_params['TemporaryPassword'] = generate_temp_password()
+            temp_password = generate_temp_password()
+            create_params['TemporaryPassword'] = temp_password
 
-        resp = cognito.admin_create_user(**create_params)
+        try:
+            cognito.admin_create_user(**create_params)
+        except cognito.exceptions.UsernameExistsException:
+            user_already_existed = True
+            if not data.get('suppress'):
+                return _response(200, {'message': 'User already exists. If they did not receive email, you can use resend=true', 'email': email})
+
+        if data.get('suppress'):
+            # Ensure attributes stay in sync and reset the temporary password for existing users
+            updatable_attributes = [attr for attr in user_attributes if attr['Name'] != 'preferred_username']
+
+            try:
+                if updatable_attributes:
+                    cognito.admin_update_user_attributes(
+                        UserPoolId=USER_POOL_ID,
+                        Username=email,
+                        UserAttributes=updatable_attributes,
+                    )
+            except Exception as attr_err:
+                print(f"Failed to update attributes for {email}: {attr_err}")
+
+            try:
+                cognito.admin_set_user_password(
+                    UserPoolId=USER_POOL_ID,
+                    Username=email,
+                    Password=temp_password,
+                    Permanent=False,
+                )
+            except Exception as pwd_err:
+                return _response(500, {'error': f'Failed to set temporary password: {pwd_err}'})
 
         # If suppressed, send a custom SES email with clear next steps
         if data.get('suppress'):
@@ -87,7 +120,7 @@ def lambda_handler(event, context):
                 send_custom_invite_email(
                     email=email,
                     name=name,
-                    temp_password=create_params.get('TemporaryPassword')
+                    temp_password=temp_password
                 )
             except Exception as e:
                 print(f"Failed to send custom invite email: {e}")
@@ -100,17 +133,27 @@ def lambda_handler(event, context):
                 GroupName=group,
             )
 
-        return _response(200, {'message': 'Invite sent', 'email': email, 'group': group, 'handle': handle or None})
+        response_message = 'Invite sent'
+        if user_already_existed and data.get('suppress'):
+            response_message = 'Existing user reset and invite sent'
 
-    except cognito.exceptions.UsernameExistsException:
-        return _response(200, {'message': 'User already exists. If they did not receive email, you can use resend=true', 'email': email})
+        return _response(200, {'message': response_message, 'email': email, 'group': group, 'handle': handle or None})
+
     except Exception as e:
         return _response(500, {'error': str(e)})
 def generate_temp_password() -> str:
-    import random
-    digits = ''.join(random.choice('0123456789') for _ in range(4))
-    # Must meet pool policy: length>=8, includes lower, upper, digit
-    return f"Spcprt{digits}A"
+    import secrets
+    import string
+
+    length = 12
+    lowercase = secrets.choice(string.ascii_lowercase)
+    uppercase = secrets.choice(string.ascii_uppercase)
+    digit = secrets.choice(string.digits)
+    pool = string.ascii_letters + string.digits
+    remaining = [secrets.choice(pool) for _ in range(length - 3)]
+    password_chars = [lowercase, uppercase, digit, *remaining]
+    secrets.SystemRandom().shuffle(password_chars)
+    return ''.join(password_chars)
 
 
 def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:
@@ -150,4 +193,3 @@ def send_custom_invite_email(email: str, name: str, temp_password: Optional[str]
     
     email_response = resend.Emails.send(params)
     print(f"Invite email sent via Resend: {email_response}")
-
