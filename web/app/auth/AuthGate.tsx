@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { configureAmplify, isAuthAvailable } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
+import { buildApiUrl } from '../api-config';
 
 type AuthGateProps = {
   children: React.ReactNode;
@@ -22,7 +23,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
   const [name, setName] = useState('');
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const WAITLIST_API = process.env.NEXT_PUBLIC_WAITLIST_API_URL;
+  const WAITLIST_API = buildApiUrl.waitlist();
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
   const [pendingUser, setPendingUser] = useState<any>(null);
   const [newPassword, setNewPassword] = useState('');
@@ -197,6 +198,10 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     setError(null);
     setWaitlistSubmitting(true);
     try {
+      if (!WAITLIST_API) {
+        throw new Error('Waitlist signups are temporarily unavailable');
+      }
+
       const res = await fetch(WAITLIST_API, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
