@@ -22,18 +22,21 @@ Requirements:
 """
 
 import asyncio
+import concurrent.futures
 import json
 import os
+import random
 import sys
 import time
 import uuid
-import random
-import requests
-import concurrent.futures
 from datetime import datetime
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
+
 import boto3
+import requests
 from botocore.exceptions import ClientError
+
+from util.api_discovery import discover_api_endpoint
 
 # Color codes for terminal output
 class Colors:
@@ -53,19 +56,13 @@ class BetaReadinessTestSuite:
     def __init__(self):
         """Initialize test suite with production API endpoints"""
         
-        # Production API Endpoints
-        self.api_endpoints = {
-            'projects': 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects',
-            'drone_path': 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod',
-            'file_upload': 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod',
-            'ml_pipeline': 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod',
-            'waitlist': 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist'
-        }
-        
         # AWS Configuration
-        self.region = 'us-west-2'
-        self.cognito_user_pool_id = 'us-west-2_a2jf3ldGV'
-        self.cognito_client_id = '3ctkuqu98pmug5k5kgc119sq67'
+        self.region = os.environ.get('AWS_REGION', 'us-west-2')
+        self.cognito_user_pool_id = os.environ.get('COGNITO_USER_POOL_ID', 'us-west-2_a2jf3ldGV')
+        self.cognito_client_id = os.environ.get('COGNITO_CLIENT_ID', '3ctkuqu98pmug5k5kgc119sq67')
+
+        # Resolve API endpoints dynamically to avoid stale hard-coded domains
+        self.api_endpoints = self._discover_api_endpoints()
         
         # Test Configuration
         self.test_users = []
@@ -85,7 +82,51 @@ class BetaReadinessTestSuite:
             sys.exit(1)
             
         print(f"{Colors.CYAN}🧪 Beta Readiness Test Suite Initialized{Colors.END}")
-        print(f"{Colors.WHITE}Testing against production endpoints{Colors.END}\n")
+        print(f"{Colors.WHITE}Testing against endpoints:{Colors.END}")
+        for key, value in self.api_endpoints.items():
+            print(f"  • {key}: {value}")
+        print()
+
+    def _discover_api_endpoints(self) -> Dict[str, str]:
+        """Resolve API endpoints from environment or AWS API Gateway."""
+
+        endpoints: Dict[str, str] = {}
+
+        def env_or_discover(env_keys, *, name_prefix, resource_path=""):
+            for key in env_keys:
+                value = os.environ.get(key)
+                if value:
+                    return value.rstrip('/')
+            return discover_api_endpoint(name_prefix, region=self.region, resource_path=resource_path)
+
+        endpoints['projects'] = env_or_discover(
+            ['BETA_PROJECTS_API_URL', 'NEXT_PUBLIC_PROJECTS_API_URL'],
+            name_prefix='Spaceport-ProjectsApi',
+            resource_path='projects'
+        )
+
+        endpoints['drone_path'] = env_or_discover(
+            ['BETA_DRONE_PATH_API_URL', 'NEXT_PUBLIC_DRONE_PATH_API_URL'],
+            name_prefix='spaceport-drone-path-api'
+        )
+
+        endpoints['file_upload'] = env_or_discover(
+            ['BETA_FILE_UPLOAD_API_URL', 'NEXT_PUBLIC_FILE_UPLOAD_API_URL'],
+            name_prefix='spaceport-file-upload-api'
+        )
+
+        endpoints['ml_pipeline'] = env_or_discover(
+            ['BETA_ML_PIPELINE_API_URL', 'NEXT_PUBLIC_ML_PIPELINE_API_URL'],
+            name_prefix='Spaceport-ML-API'
+        )
+
+        waitlist_base = env_or_discover(
+            ['BETA_WAITLIST_API_URL', 'NEXT_PUBLIC_WAITLIST_API_URL'],
+            name_prefix='spaceport-waitlist-api'
+        )
+        endpoints['waitlist'] = waitlist_base if waitlist_base.endswith('/waitlist') else f"{waitlist_base}/waitlist"
+
+        return endpoints
 
     def log_test(self, test_name: str, status: str, details: str = ""):
         """Log test results with colored output"""

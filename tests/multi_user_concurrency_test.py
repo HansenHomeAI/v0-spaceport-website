@@ -13,14 +13,18 @@ This is crucial for beta testing with multiple users simultaneously.
 """
 
 import asyncio
+import concurrent.futures
 import json
+import os
 import time
 import uuid
-import requests
-import concurrent.futures
-from typing import Dict, List, Tuple
-import boto3
 from datetime import datetime
+from typing import Dict, List, Tuple
+
+import boto3
+import requests
+
+from util.api_discovery import discover_api_endpoint
 
 class MultiUserConcurrencyTest:
     """Test multi-user scenarios and concurrency"""
@@ -28,11 +32,20 @@ class MultiUserConcurrencyTest:
     def __init__(self):
         """Initialize test with production endpoints"""
         
-        self.projects_api = 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects'
-        self.drone_api = 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod'
+        region = os.environ.get('AWS_REGION', 'us-west-2')
+        self.projects_api = (
+            os.environ.get('BETA_PROJECTS_API_URL')
+            or os.environ.get('NEXT_PUBLIC_PROJECTS_API_URL')
+            or discover_api_endpoint('Spaceport-ProjectsApi', region=region, resource_path='projects')
+        )
+        self.drone_api = (
+            os.environ.get('BETA_DRONE_PATH_API_URL')
+            or os.environ.get('NEXT_PUBLIC_DRONE_PATH_API_URL')
+            or discover_api_endpoint('spaceport-drone-path-api', region=region)
+        )
         
         # AWS resources
-        self.region = 'us-west-2'
+        self.region = region
         self.dynamodb = boto3.resource('dynamodb', region_name=self.region)
         self.projects_table = self.dynamodb.Table('Spaceport-Projects')
         

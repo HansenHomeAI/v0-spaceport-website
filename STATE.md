@@ -1,5 +1,5 @@
 # Agent State
-reason: continuing validation loop for model delivery workflow
-last_step: captured beta readiness quick report (known infra gaps)
-next_unblocked_step: manual QA on preview once infrastructure endpoints accessible
+reason: beta readiness suite now green after dynamic API discovery updates
+last_step: ran python3 tests/run_beta_readiness_suite.py --quick (pass)
+next_unblocked_step: manual QA via preview and email verification
 owner_action_needed: none
