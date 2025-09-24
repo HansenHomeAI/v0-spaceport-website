@@ -366,13 +366,7 @@ class AuthStack(Stack):
             f"SubscriptionApiDeployment{suffix}",
             rest_api_id=subscription_api.rest_api_id,
             description=f"subscription-{suffix}-deployment",
-            stage_name="prod",
-            stage_description=apigw.CfnDeployment.StageDescriptionProperty(
-                variables={
-                    "SUBSCRIPTION_USER_POOL_ID": user_pool.user_pool_id,
-                    "SUBSCRIPTION_USER_POOL_CLIENT_ID": user_pool_client.user_pool_client_id,
-                }
-            )
+            stage_name="prod"
         )
         subscription_deployment.node.add_dependency(subscription_lambda)
         for method in (create_checkout_method, webhook_method, status_method, cancel_method):
