@@ -424,14 +424,14 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
     if (modelLink) return '';
 
     // Friendly, stage-based guidance
-    if (!s && p <= 0) return 'Plan your first drone flight to get started.';
-    if (/new|created|draft/.test(s) || p === 0) return 'Create a drone flight to capture images.';
-    if (/upload|pending_upload/.test(s) || (p > 0 && p < 15)) return 'Upload your photos to begin reconstruction.';
-    if (/processing|reconstruct|colmap|sfm|dense/.test(s) || (p >= 15 && p < 60)) return 'Reconstructing your scene—aligning images and building detail.';
-    if (/training|3dgs|render/.test(s) || (p >= 60 && p < 90)) return 'Training your 3D model—this can take up to about two hours.';
-    if (/compress|optimiz|sogs/.test(s) || (p >= 90 && p < 100)) return 'Optimizing for the web—almost there.';
-    if (isDelivered) return 'Finalizing delivery—your link will appear here shortly.';
-    return 'Preparing your model—your link will appear here when ready.';
+    if (!s && p <= 0) return 'Plan drone flight';
+    if (/new|created|draft/.test(s) || p === 0) return 'Plan drone flight';
+    if (/upload|pending_upload/.test(s) || (p > 0 && p < 15)) return 'Upload photos';
+    if (/processing|reconstruct|colmap|sfm|dense/.test(s) || (p >= 15 && p < 60)) return 'Reconstructing scene';
+    if (/training|3dgs|render/.test(s) || (p >= 60 && p < 90)) return 'Training model';
+    if (/compress|optimiz|sogs/.test(s) || (p >= 90 && p < 100)) return 'Optimizing web';
+    if (isDelivered) return 'Finalizing delivery';
+    return 'Preparing model';
   };
 
   return (
