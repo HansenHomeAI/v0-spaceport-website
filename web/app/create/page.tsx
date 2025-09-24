@@ -309,7 +309,6 @@ type ProjectCardProps = {
 };
 
 function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
-  const labelId = useId();
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
   const [copyMessage, setCopyMessage] = useState('');
   const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -419,7 +418,21 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
     onEdit(project);
   }, [onEdit, project]);
 
-  const statusDescription = isDelivered ? 'Model link unavailable. Please contact support.' : 'Not delivered yet';
+  const getGuidanceText = (): string => {
+    const p = progressValue;
+    const s = normalizedStatus;
+    if (modelLink) return '';
+
+    // Friendly, stage-based guidance
+    if (!s && p <= 0) return 'Plan your first drone flight to get started.';
+    if (/new|created|draft/.test(s) || p === 0) return 'Create a drone flight to capture images.';
+    if (/upload|pending_upload/.test(s) || (p > 0 && p < 15)) return 'Upload your photos to begin reconstruction.';
+    if (/processing|reconstruct|colmap|sfm|dense/.test(s) || (p >= 15 && p < 60)) return 'Reconstructing your scene—aligning images and building detail.';
+    if (/training|3dgs|render/.test(s) || (p >= 60 && p < 90)) return 'Training your 3D model—this can take up to about two hours.';
+    if (/compress|optimiz|sogs/.test(s) || (p >= 90 && p < 100)) return 'Optimizing for the web—almost there.';
+    if (isDelivered) return 'Finalizing delivery—your link will appear here shortly.';
+    return 'Preparing your model—your link will appear here when ready.';
+  };
 
   return (
     <div className="project-box">
@@ -433,8 +446,7 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
         </div>
       </div>
 
-      <div className="model-link-area" aria-labelledby={labelId}>
-        <span id={labelId} className="model-link-label">Model Link</span>
+      <div className="model-link-area" role={modelLink ? 'group' : 'status'} aria-live={modelLink ? undefined : 'polite'}>
         {modelLink ? (
           <>
             <div className="model-link-pill">
@@ -467,8 +479,8 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
             )}
           </>
         ) : (
-          <div className={`model-link-status ${isDelivered ? 'error' : 'pending'}`} role="status">
-            {statusDescription}
+          <div className={`model-link-status ${isDelivered ? 'pending' : 'pending'}`} role="status">
+            {getGuidanceText()}
           </div>
         )}
       </div>
