@@ -306,6 +306,7 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
+            deploy=False,
         )
 
         # Add subscription endpoints
@@ -313,7 +314,7 @@ class AuthStack(Stack):
         
         # Create checkout session endpoint (requires auth)
         create_checkout_resource = subscription_resource.add_resource("create-checkout-session")
-        create_checkout_resource.add_method(
+        create_checkout_method = create_checkout_resource.add_method(
             "POST",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
@@ -326,7 +327,7 @@ class AuthStack(Stack):
 
         # Webhook endpoint (no auth required for Stripe)
         webhook_resource = subscription_resource.add_resource("webhook")
-        webhook_resource.add_method(
+        webhook_method = webhook_resource.add_method(
             "POST",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.NONE,
@@ -334,7 +335,7 @@ class AuthStack(Stack):
 
         # Subscription status endpoint (requires auth)
         status_resource = subscription_resource.add_resource("subscription-status")
-        status_resource.add_method(
+        status_method = status_resource.add_method(
             "GET",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
@@ -347,7 +348,7 @@ class AuthStack(Stack):
 
         # Cancel subscription endpoint (requires auth)
         cancel_resource = subscription_resource.add_resource("cancel-subscription")
-        cancel_resource.add_method(
+        cancel_method = cancel_resource.add_method(
             "POST",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
@@ -358,10 +359,36 @@ class AuthStack(Stack):
             ),
         )
 
+        # Explicit deployment to ensure stage picks up authorizer changes (e.g. user pool rotations)
+        subscription_deployment = apigw.Deployment(
+            self,
+            f"SubscriptionApiDeployment{suffix}",
+            api=subscription_api,
+            description=f"subscription-{suffix}-deployment",
+        )
+        subscription_deployment.node.add_dependency(subscription_lambda)
+        for method in (create_checkout_method, webhook_method, status_method, cancel_method):
+            subscription_deployment.node.add_dependency(method)
+
+        subscription_stage = apigw.Stage(
+            self,
+            f"SubscriptionApiStage{suffix}",
+            deployment=subscription_deployment,
+            stage_name="prod",
+            variables={
+                "SUBSCRIPTION_USER_POOL_ID": user_pool.user_pool_id,
+                "SUBSCRIPTION_USER_POOL_CLIENT_ID": user_pool_client.user_pool_client_id,
+            },
+        )
+
         # Outputs
-        CfnOutput(self, "SubscriptionApiUrl", value=subscription_api.url)
+        subscription_api_url = (
+            f"https://{subscription_api.rest_api_id}.execute-api.{self.region}.amazonaws.com/"
+            f"{subscription_stage.stage_name}/"
+        )
+        CfnOutput(self, "SubscriptionApiUrl", value=subscription_api_url)
         CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
-        
+
         # Debug: Ensure subscription resources are included in stack
         CfnOutput(self, "SubscriptionStackDebug", value="Subscription resources included in AuthStack")
         
