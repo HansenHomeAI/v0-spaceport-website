@@ -502,6 +502,126 @@ class AuthStack(Stack):
         self.beta_access_api = beta_access_api
         self.beta_access_permissions_table = beta_access_permissions_table
 
+        # ========== MODEL DELIVERY ADMIN ==========
+        model_delivery_table_arn = getattr(projects_table, "table_arn", "*")
+
+        model_delivery_lambda_role = iam.Role(
+            self, "ModelDeliveryAdminLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "ModelDeliveryAdminPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "cognito-idp:AdminGetUser",
+                                "cognito-idp:ListUsers"
+                            ],
+                            resources=[user_pool.user_pool_arn]
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "dynamodb:GetItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan"
+                            ],
+                            resources=[
+                                beta_access_permissions_table.table_arn,
+                                model_delivery_table_arn,
+                            ]
+                        ),
+                    ]
+                )
+            }
+        )
+
+        model_delivery_lambda = lambda_.Function(
+            self, "Spaceport-ModelDeliveryAdminFunction",
+            function_name=f"Spaceport-ModelDeliveryAdminFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "model_delivery_admin"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            role=model_delivery_lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
+                "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+            },
+        )
+
+        # Grant table access
+        beta_access_permissions_table.grant_read_write_data(model_delivery_lambda)
+        projects_table.grant_read_write_data(model_delivery_lambda)
+
+        model_delivery_api = apigw.RestApi(
+            self, "Spaceport-ModelDeliveryAdminApi",
+            rest_api_name=f"Spaceport-ModelDeliveryAdminApi-{suffix}",
+            description="Model delivery admin API for sending model links to clients",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                ],
+            ),
+        )
+
+        model_delivery_authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self,
+            "ModelDeliveryAuthorizer",
+            cognito_user_pools=[user_pool],
+        )
+
+        model_delivery_resource = model_delivery_api.root.add_resource("admin").add_resource("model-delivery")
+
+        model_delivery_resource.add_resource("check-permission").add_method(
+            "GET",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        model_delivery_resource.add_resource("resolve-client").add_method(
+            "POST",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        model_delivery_resource.add_resource("send").add_method(
+            "POST",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        CfnOutput(self, "ModelDeliveryAdminApiUrl", value=model_delivery_api.url)
+
+        self.model_delivery_lambda = model_delivery_lambda
+        self.model_delivery_api = model_delivery_api
+
         # ========== PASSWORD RESET SYSTEM ==========
         # Create DynamoDB table for password reset codes
         password_reset_codes_table = self._get_or_create_dynamodb_table(

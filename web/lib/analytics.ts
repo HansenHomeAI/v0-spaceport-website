@@ -57,6 +57,8 @@ export const AnalyticsEvents = {
   MODEL_LINK_COPIED: 'model_link_copied',
   MODEL_LINK_COPY_FAILED: 'model_link_copy_failed',
   MODEL_LINK_UNAVAILABLE: 'model_link_unavailable',
+  MODEL_LINK_SENT: 'model_link_sent',
+  MODEL_LINK_SEND_FAILED: 'model_link_send_failed',
 
   // Error tracking
   ERROR_OCCURRED: 'error_occurred',

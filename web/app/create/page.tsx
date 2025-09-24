@@ -8,6 +8,8 @@ import BetaAccessInvite from '../../components/BetaAccessInvite';
 import { Auth } from 'aws-amplify';
 import { useRouter } from 'next/navigation';
 import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
+import ModelDeliveryModal from '../../components/ModelDeliveryModal';
+import { useModelDeliveryAdmin } from '../hooks/useModelDeliveryAdmin';
 
 type ProjectRecord = Record<string, any> & {
   projectId?: string;
@@ -116,6 +118,7 @@ export default function Create(): JSX.Element {
   const [editing, setEditing] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [modelDeliveryOpen, setModelDeliveryOpen] = useState(false);
   
   // Subscription hook
   const { 
@@ -128,6 +131,16 @@ export default function Create(): JSX.Element {
     canCreateModel,
     getPlanFeatures
   } = useSubscription();
+
+  const {
+    loading: modelDeliveryLoading,
+    hasPermission: hasModelDeliveryPermission,
+    error: modelDeliveryError,
+    apiConfigured: modelDeliveryApiConfigured,
+    resolveClient,
+    sendDelivery,
+    checkPermission: refreshModelDeliveryPermission,
+  } = useModelDeliveryAdmin();
 
 
   const fetchProjects = useCallback(async () => {
@@ -156,7 +169,8 @@ export default function Create(): JSX.Element {
 
   const handleAuthenticated = useCallback((currentUser: any) => {
     setUser(currentUser);
-  }, []);
+    refreshModelDeliveryPermission();
+  }, [refreshModelDeliveryPermission]);
 
   const signOut = async () => {
     try {
@@ -199,6 +213,16 @@ export default function Create(): JSX.Element {
         return 'subscription-status active'; // Default to active for beta
     }
   };
+
+  const handleDeliverySuccess = useCallback((delivered: ProjectRecord) => {
+    setProjects((prev) => prev.map((project) => {
+      if (project.projectId === delivered.projectId) {
+        return { ...project, ...delivered };
+      }
+      return project;
+    }));
+    fetchProjects();
+  }, [fetchProjects]);
 
   return (
     <>
@@ -247,6 +271,20 @@ export default function Create(): JSX.Element {
                   <span className="sign-out-icon"></span>
                   Sign Out
                 </button>
+                {hasModelDeliveryPermission && (
+                  <button
+                    className="model-delivery-trigger"
+                    onClick={() => setModelDeliveryOpen(true)}
+                    disabled={modelDeliveryLoading || !modelDeliveryApiConfigured}
+                  >
+                    Send Model Link
+                  </button>
+                )}
+                {hasModelDeliveryPermission && modelDeliveryError && (
+                  <p className="model-delivery-banner-error" role="status">
+                    {modelDeliveryError}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -297,6 +335,16 @@ export default function Create(): JSX.Element {
           project={editing || undefined}
           onSaved={fetchProjects}
         />
+
+        {hasModelDeliveryPermission && (
+          <ModelDeliveryModal
+            open={modelDeliveryOpen}
+            onClose={() => setModelDeliveryOpen(false)}
+            resolveClient={resolveClient}
+            sendDelivery={sendDelivery}
+            onDelivered={handleDeliverySuccess}
+          />
+        )}
 
       </AuthGate>
     </>
