@@ -50,7 +50,14 @@ export const AnalyticsEvents = {
   PRICING_VIEWED: 'pricing_viewed',
   CREATE_PAGE_VIEWED: 'create_page_viewed',
   WAITLIST_SIGNUP: 'waitlist_signup',
-  
+
+  // Project delivery
+  MODEL_LINK_VIEWED: 'model_link_viewed',
+  MODEL_LINK_OPENED: 'model_link_opened',
+  MODEL_LINK_COPIED: 'model_link_copied',
+  MODEL_LINK_COPY_FAILED: 'model_link_copy_failed',
+  MODEL_LINK_UNAVAILABLE: 'model_link_unavailable',
+
   // Error tracking
   ERROR_OCCURRED: 'error_occurred',
   API_ERROR: 'api_error',

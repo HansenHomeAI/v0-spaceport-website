@@ -1445,6 +1445,138 @@ footer {
   max-width: none;
 }
 
+.project-progress {
+  margin-top: 12px;
+}
+
+.project-progress-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.project-progress-fill {
+  height: 6px;
+  border-radius: 3px;
+  background: #fff;
+  transition: width 0.3s ease;
+}
+
+.model-link-area {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.model-link-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.model-link-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-wrap: wrap;
+}
+
+.model-link-text {
+  flex: 1;
+  min-width: 140px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model-link-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.model-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.model-link-button:hover,
+.model-link-button:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  outline: none;
+}
+
+.model-link-button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.model-link-feedback {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.model-link-feedback.error {
+  color: rgba(255, 119, 119, 0.9);
+}
+
+.model-link-status {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.model-link-status.pending {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.model-link-status.error {
+  background: rgba(255, 71, 71, 0.12);
+  border-color: rgba(255, 71, 71, 0.45);
+  color: rgba(255, 189, 189, 0.95);
+}
+
+@media (max-width: 640px) {
+  .model-link-pill {
+    padding: 10px 14px;
+  }
+
+  .model-link-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .model-link-button {
+    width: auto;
+  }
+}
+
+
 /* New Project Card Styling - Pill shape, full width on desktop */
 .new-project-card {
   background: rgba(255, 255, 255, 0.1) !important;
@@ -6598,7 +6730,6 @@ input.text-fade-right,
 .terms-link:hover {
   color: rgba(255, 255, 255, 0.7);
 }
-
 
 
 
