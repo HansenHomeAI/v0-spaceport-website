@@ -49,6 +49,9 @@ export const API_CONFIG = {
   
   // Beta Access Admin API - Employee beta access management
   BETA_ACCESS_API_URL: process.env.NEXT_PUBLIC_BETA_ACCESS_API_URL || '',
+
+  // Model Delivery Admin API - Employee model delivery workflow
+  MODEL_DELIVERY_ADMIN_API_URL: process.env.NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL || '',
 } as const;
 
 // Individual API endpoint builders
@@ -86,6 +89,19 @@ export const buildApiUrl = {
   betaAccess: {
     checkPermission: () => `${API_CONFIG.BETA_ACCESS_API_URL}/admin/beta-access/check-permission`,
     sendInvitation: () => `${API_CONFIG.BETA_ACCESS_API_URL}/admin/beta-access/send-invitation`,
+  },
+  
+  // Model Delivery Admin API endpoints
+  modelDelivery: {
+    checkPermission: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
+      ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/check-permission`
+      : '',
+    resolveClient: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
+      ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/resolve-client`
+      : '',
+    send: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
+      ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/send`
+      : '',
   },
 } as const;
 
