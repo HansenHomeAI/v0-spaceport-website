@@ -1,6 +1,36 @@
 // Centralized API configuration for Spaceport
 // All API endpoints are configured via environment variables for easy management
 
+function ensureWaitlistEndpoint(rawUrl: string | undefined): string {
+  if (!rawUrl) return '';
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return '';
+
+  try {
+    const url = new URL(trimmed);
+    const segments = url.pathname.split('/').filter(Boolean);
+    const lowerSegment = 'waitlist';
+
+    if (!segments.some(segment => segment.toLowerCase() === lowerSegment)) {
+      segments.push(lowerSegment);
+    }
+
+    url.pathname = segments.length ? `/${segments.join('/')}` : '/waitlist';
+    return url.toString();
+  } catch {
+    const segment = 'waitlist';
+    const parts = trimmed.match(/^([^?#]+)(.*)$/);
+    const base = (parts?.[1] || trimmed).replace(/\/+$/, '');
+    const suffix = parts?.[2] || '';
+
+    if (base.toLowerCase().endsWith(`/${segment}`)) {
+      return `${base}${suffix}`;
+    }
+
+    return `${base}/${segment}${suffix}`;
+  }
+}
+
 export const API_CONFIG = {
   // Projects API - User project management
   PROJECTS_API_URL: process.env.NEXT_PUBLIC_PROJECTS_API_URL!,
@@ -12,13 +42,16 @@ export const API_CONFIG = {
   FILE_UPLOAD_API_URL: process.env.NEXT_PUBLIC_FILE_UPLOAD_API_URL!,
   
   // Waitlist API - User waitlist submissions
-  WAITLIST_API_URL: process.env.NEXT_PUBLIC_WAITLIST_API_URL!,
+  WAITLIST_API_URL: ensureWaitlistEndpoint(process.env.NEXT_PUBLIC_WAITLIST_API_URL),
   
   // ML Pipeline API - ML processing operations
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
   
   // Beta Access Admin API - Employee beta access management
   BETA_ACCESS_API_URL: process.env.NEXT_PUBLIC_BETA_ACCESS_API_URL || '',
+
+  // Model Delivery Admin API - Employee model delivery workflow
+  MODEL_DELIVERY_ADMIN_API_URL: process.env.NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL || '',
 } as const;
 
 // Individual API endpoint builders
@@ -56,6 +89,19 @@ export const buildApiUrl = {
   betaAccess: {
     checkPermission: () => `${API_CONFIG.BETA_ACCESS_API_URL}/admin/beta-access/check-permission`,
     sendInvitation: () => `${API_CONFIG.BETA_ACCESS_API_URL}/admin/beta-access/send-invitation`,
+  },
+  
+  // Model Delivery Admin API endpoints
+  modelDelivery: {
+    checkPermission: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
+      ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/check-permission`
+      : '',
+    resolveClient: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
+      ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/resolve-client`
+      : '',
+    send: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
+      ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/send`
+      : '',
   },
 } as const;
 

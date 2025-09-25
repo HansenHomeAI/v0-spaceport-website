@@ -26,21 +26,32 @@ git push origin feature/new-feature
 
 ### 2. Staging Deployment
 ```bash
-# Merge feature branch to development
+# Merge feature branch to development (preserve history)
 git checkout development
-git merge feature/new-feature
+git merge --no-ff feature/new-feature
 git push origin development
 # ✅ Auto-deploys to staging AWS account
 ```
 
 ### 3. Production Release
 ```bash
-# Create PR from development → main
-# Review and approve changes
+# Merge development to main (preserve history)
 git checkout main
-git merge development
+git merge --no-ff development
 git push origin main
 # 🚀 Auto-deploys to production AWS account
+```
+
+### 4. Branch Archiving (After Successful Merge)
+```bash
+# Create archive tag to preserve branch history
+git tag archive/feature-name HEAD~1
+
+# Delete remote branch (keeps repository clean)
+git push origin --delete feature/new-feature
+
+# Optional: Delete local branch
+git branch -d feature/new-feature
 ```
 
 ## 🏗️ Infrastructure Deployment
@@ -86,6 +97,45 @@ environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
 - ❌ Use `output: 'export'` in Next.js config
 - ❌ Share credentials between environments
 - ❌ Deploy untested changes directly to main
+
+## 🗂️ Branch Archiving Strategy
+
+### Archive Tags Approach
+After successful feature completion and merge, branches are archived using git tags:
+
+```bash
+# 1. Create archive tag (preserves exact branch state)
+git tag archive/agent-12345678-feature-name HEAD~1
+
+# 2. Delete remote branch (cleans repository)
+git push origin --delete agent-12345678-feature-name
+
+# 3. Push archive tag to remote
+git push origin archive/agent-12345678-feature-name
+```
+
+### Archive Tag Benefits
+- ✅ **Clean repository** - No cluttered feature branches
+- ✅ **Preserved history** - All work accessible via archive tags
+- ✅ **Easy reference** - `git show archive/agent-12345678-feature-name`
+- ✅ **Organized structure** - Clear separation between active and archived work
+
+### Current Archive Tags
+```bash
+# View all archive tags
+git tag -l "archive/*"
+# archive/agent-20250919184906-improve-the-custom
+# archive/agent-274
+# archive/agent-58392017-footer-feedback
+# archive/agent-73510264
+# archive/agent-80aef7e9
+# archive/agent-ba4c1671
+# archive/agent-c24d0458
+# archive/agent-setup-sop
+
+# Check out archived branch for reference
+git checkout archive/agent-58392017-footer-feedback
+```
 
 ## 🔄 Rollback Strategy
 
