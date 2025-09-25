@@ -1,13 +1,14 @@
+import { resolveSubscriptionApiUrl } from 'lib/subscriptionApi';
+
 export const runtime = 'edge';
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    // Get the subscription API URL from environment variables
-    const subscriptionApiUrl = process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL;
-    
-    if (!subscriptionApiUrl) {
+    const target = resolveSubscriptionApiUrl('/cancel-subscription');
+
+    if (target.kind === 'error') {
       return new Response(
-        JSON.stringify({ error: 'Subscription API URL not configured' }),
+        JSON.stringify({ error: target.error }),
         { 
           status: 500,
           headers: { 'content-type': 'application/json; charset=utf-8' }
@@ -15,18 +16,42 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
-    // Forward the request to the AWS Lambda API (ensure /subscription prefix)
-      const response = await fetch(`${subscriptionApiUrl}/subscription/cancel-subscription`, {
+    const authorization =
+      request.headers.get('authorization') || request.headers.get('Authorization') || '';
+
+    if (!authorization) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization token' }),
+        {
+          status: 401,
+          headers: { 'content-type': 'application/json; charset=utf-8' }
+        }
+      );
+    }
+
+    const response = await fetch(target.url, {
       method: 'POST',
       headers: {
-        'Authorization': request.headers.get('Authorization') || '',
+        Authorization: authorization,
         'Content-Type': 'application/json',
       },
     });
 
-    const data = await response.json();
+    const raw = await response.text();
+    let payload = raw;
+
+    if (!raw) {
+      payload = '{}';
+    } else {
+      try {
+        JSON.parse(raw);
+      } catch (parseError) {
+        console.error('Failed to parse cancel subscription response', parseError);
+        payload = JSON.stringify({ error: 'Invalid response from subscription service' });
+      }
+    }
     
-    return new Response(JSON.stringify(data), {
+    return new Response(payload, {
       status: response.status,
       headers: {
         'content-type': 'application/json; charset=utf-8',
