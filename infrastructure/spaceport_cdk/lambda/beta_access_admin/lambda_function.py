@@ -5,6 +5,8 @@ import resend
 from typing import Optional, Dict, Any
 import logging
 
+from ..shared.password_utils import generate_user_friendly_password
+
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,6 +20,7 @@ dynamodb = boto3.resource('dynamodb')
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
 INVITE_API_KEY = os.environ.get('INVITE_API_KEY')
+LOG_INVITE_DEBUG = os.environ.get('LOG_INVITE_DEBUG', 'false').lower() in ('1', 'true', 'yes', 'on')
 
 # Initialize permissions table
 permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
@@ -93,10 +96,10 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
         if name:
             user_attributes.append({'Name': 'name', 'Value': name.strip()})
         
-        # Try to create user first
         temp_password = _generate_temp_password()
+        user_already_existed = False
+
         try:
-            # Create user with suppressed email (we'll send custom email)
             create_params = {
                 'UserPoolId': USER_POOL_ID,
                 'Username': email,
@@ -105,23 +108,52 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
                 'MessageAction': 'SUPPRESS',
                 'TemporaryPassword': temp_password,
             }
-            
-            resp = cognito.admin_create_user(**create_params)
-            
+
+            cognito.admin_create_user(**create_params)
         except cognito.exceptions.UsernameExistsException:
-            # User already exists - that's fine, we'll still send the email
-            pass
-        
-        # Send custom invitation email regardless of whether user was created or already existed
+            user_already_existed = True
+            logger.info(f"User {email} already exists, resetting invite password")
+
+        # Always ensure attributes are trimmed + synced
+        updatable_attributes = [attr for attr in user_attributes if attr['Name'] != 'preferred_username']
+
+        try:
+            if updatable_attributes:
+                cognito.admin_update_user_attributes(
+                    UserPoolId=USER_POOL_ID,
+                    Username=email,
+                    UserAttributes=updatable_attributes,
+                )
+        except Exception as attr_err:
+            logger.warning(f"Failed to update attributes for {email}: {attr_err}")
+
+        password_message = 'Invitation sent successfully'
+
+        try:
+            cognito.admin_set_user_password(
+                UserPoolId=USER_POOL_ID,
+                Username=email,
+                Password=temp_password,
+                Permanent=False,
+            )
+            if user_already_existed:
+                password_message = 'Existing user reset and invitation sent successfully'
+        except Exception as pwd_err:
+            logger.error(f"Failed to set temporary password for {email}: {pwd_err}")
+            raise
+
+        if LOG_INVITE_DEBUG:
+            logger.info(f"INVITE_DEBUG email={email} temp_password={temp_password}")
+
         _send_custom_invite_email(
             email=email,
             name=name,
             temp_password=temp_password
         )
-        
+
         return {
             'success': True,
-            'message': 'Invitation sent successfully',
+            'message': password_message,
             'email': email
         }
         
@@ -131,10 +163,7 @@ def _send_invitation(email: str, name: str = "") -> Dict[str, Any]:
 
 
 def _generate_temp_password() -> str:
-    """Generate a policy-compliant temporary password"""
-    import random
-    digits = ''.join(random.choice('0123456789') for _ in range(4))
-    return f"Spcprt{digits}A"
+    return generate_user_friendly_password()
 
 
 def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str]) -> None:

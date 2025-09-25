@@ -310,10 +310,10 @@ class AuthStack(Stack):
 
         # Add subscription endpoints
         subscription_resource = subscription_api.root.add_resource("subscription")
-        
+
         # Create checkout session endpoint (requires auth)
         create_checkout_resource = subscription_resource.add_resource("create-checkout-session")
-        create_checkout_resource.add_method(
+        create_checkout_method = create_checkout_resource.add_method(
             "POST",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
@@ -326,7 +326,7 @@ class AuthStack(Stack):
 
         # Webhook endpoint (no auth required for Stripe)
         webhook_resource = subscription_resource.add_resource("webhook")
-        webhook_resource.add_method(
+        webhook_method = webhook_resource.add_method(
             "POST",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.NONE,
@@ -334,7 +334,7 @@ class AuthStack(Stack):
 
         # Subscription status endpoint (requires auth)
         status_resource = subscription_resource.add_resource("subscription-status")
-        status_resource.add_method(
+        status_method = status_resource.add_method(
             "GET",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
@@ -347,7 +347,7 @@ class AuthStack(Stack):
 
         # Cancel subscription endpoint (requires auth)
         cancel_resource = subscription_resource.add_resource("cancel-subscription")
-        cancel_resource.add_method(
+        cancel_method = cancel_resource.add_method(
             "POST",
             apigw.LambdaIntegration(subscription_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
@@ -358,10 +358,29 @@ class AuthStack(Stack):
             ),
         )
 
+        # Explicit deployment to ensure prod stage picks up authorizer changes without
+        # requiring manual API Gateway redeploys. CfnDeployment updates the existing
+        # "prod" stage in-place, so it works with the legacy stage the stack already created.
+        subscription_deployment = apigw.CfnDeployment(
+            self,
+            f"SubscriptionApiDeployment{suffix}",
+            rest_api_id=subscription_api.rest_api_id,
+            description=f"subscription-{suffix}-deployment",
+            stage_name="prod"
+        )
+        subscription_deployment.node.add_dependency(subscription_lambda)
+        for method in (create_checkout_method, webhook_method, status_method, cancel_method):
+            default_child = method.node.default_child
+            if default_child is not None:
+                subscription_deployment.node.add_dependency(default_child)
+
         # Outputs
-        CfnOutput(self, "SubscriptionApiUrl", value=subscription_api.url)
+        subscription_api_url = (
+            f"https://{subscription_api.rest_api_id}.execute-api.{self.region}.amazonaws.com/prod/"
+        )
+        CfnOutput(self, "SubscriptionApiUrl", value=subscription_api_url)
         CfnOutput(self, "SubscriptionLambdaArn", value=subscription_lambda.function_arn)
-        
+
         # Debug: Ensure subscription resources are included in stack
         CfnOutput(self, "SubscriptionStackDebug", value="Subscription resources included in AuthStack")
         
@@ -501,6 +520,126 @@ class AuthStack(Stack):
         self.beta_access_lambda = beta_access_lambda
         self.beta_access_api = beta_access_api
         self.beta_access_permissions_table = beta_access_permissions_table
+
+        # ========== MODEL DELIVERY ADMIN ==========
+        model_delivery_table_arn = getattr(projects_table, "table_arn", "*")
+
+        model_delivery_lambda_role = iam.Role(
+            self, "ModelDeliveryAdminLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+            inline_policies={
+                "ModelDeliveryAdminPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "cognito-idp:AdminGetUser",
+                                "cognito-idp:ListUsers"
+                            ],
+                            resources=[user_pool.user_pool_arn]
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "dynamodb:GetItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan"
+                            ],
+                            resources=[
+                                beta_access_permissions_table.table_arn,
+                                model_delivery_table_arn,
+                            ]
+                        ),
+                    ]
+                )
+            }
+        )
+
+        model_delivery_lambda = lambda_.Function(
+            self, "Spaceport-ModelDeliveryAdminFunction",
+            function_name=f"Spaceport-ModelDeliveryAdminFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "model_delivery_admin"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            role=model_delivery_lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
+                "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+            },
+        )
+
+        # Grant table access
+        beta_access_permissions_table.grant_read_write_data(model_delivery_lambda)
+        projects_table.grant_read_write_data(model_delivery_lambda)
+
+        model_delivery_api = apigw.RestApi(
+            self, "Spaceport-ModelDeliveryAdminApi",
+            rest_api_name=f"Spaceport-ModelDeliveryAdminApi-{suffix}",
+            description="Model delivery admin API for sending model links to clients",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                ],
+            ),
+        )
+
+        model_delivery_authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self,
+            "ModelDeliveryAuthorizer",
+            cognito_user_pools=[user_pool],
+        )
+
+        model_delivery_resource = model_delivery_api.root.add_resource("admin").add_resource("model-delivery")
+
+        model_delivery_resource.add_resource("check-permission").add_method(
+            "GET",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        model_delivery_resource.add_resource("resolve-client").add_method(
+            "POST",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        model_delivery_resource.add_resource("send").add_method(
+            "POST",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        CfnOutput(self, "ModelDeliveryAdminApiUrl", value=model_delivery_api.url)
+
+        self.model_delivery_lambda = model_delivery_lambda
+        self.model_delivery_api = model_delivery_api
 
         # ========== PASSWORD RESET SYSTEM ==========
         # Create DynamoDB table for password reset codes
