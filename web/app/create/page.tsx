@@ -1,28 +1,130 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 export const runtime = 'edge';
 import NewProjectModal from '../../components/NewProjectModal';
 import AuthGate from '../auth/AuthGate';
 import { useSubscription } from '../hooks/useSubscription';
 import BetaAccessInvite from '../../components/BetaAccessInvite';
 import { Auth } from 'aws-amplify';
+import { useRouter } from 'next/navigation';
 import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
+import ModelDeliveryModal from '../../components/ModelDeliveryModal';
+import { useModelDeliveryAdmin } from '../hooks/useModelDeliveryAdmin';
+
+type ProjectRecord = Record<string, any> & {
+  projectId?: string;
+  title?: string;
+  status?: string;
+  progress?: number;
+};
+
+const MODEL_LINK_KEYS = [
+  'modelLink',
+  'model_link',
+  'modelUrl',
+  'model_url',
+  'finalModelUrl',
+  'final_model_url',
+  'viewerUrl',
+  'viewer_url',
+  'finalViewerUrl',
+  'final_viewer_url',
+  'deliveryUrl',
+  'delivery_url',
+  'viewerLink',
+  'viewer_link',
+] as const;
+
+const MODEL_LINK_KEY_SET = new Set<string>(Array.from(MODEL_LINK_KEYS));
+const MODEL_LINK_CONTAINER_KEYS = ['delivery', 'links', 'assets', 'urls', 'outputs', 'result', 'metadata'];
+const MODEL_LINK_KEY_PATTERN = /(model|viewer).*(url|link)|(url|link).*(model|viewer)/i;
+
+const isLinkString = (value: unknown): value is string =>
+  typeof value === 'string' && /^https?:\/\//i.test(value.trim());
+
+const pickLinkFromObject = (source: Record<string, any> | undefined | null): string | null => {
+  if (!source || typeof source !== 'object') return null;
+  for (const [key, value] of Object.entries(source)) {
+    if (isLinkString(value) && (MODEL_LINK_KEY_PATTERN.test(key) || MODEL_LINK_KEY_SET.has(key))) {
+      return value.trim();
+    }
+  }
+  return null;
+};
+
+const extractModelLink = (project: ProjectRecord): string | null => {
+  const direct = pickLinkFromObject(project);
+  if (direct) return direct;
+
+  for (const key of MODEL_LINK_KEYS) {
+    const candidate = project?.[key];
+    if (isLinkString(candidate)) {
+      return candidate.trim();
+    }
+  }
+
+  for (const containerKey of MODEL_LINK_CONTAINER_KEYS) {
+    const container = project?.[containerKey];
+    if (isLinkString(container) && MODEL_LINK_KEY_PATTERN.test(containerKey)) {
+      return container.trim();
+    }
+    if (container && typeof container === 'object') {
+      const nested = pickLinkFromObject(container as Record<string, any>);
+      if (nested) return nested;
+    }
+  }
+
+  const visited = new Set<any>();
+  const deepSearch = (node: any, depth: number): string | null => {
+    if (!node || typeof node !== 'object' || depth > 3 || visited.has(node)) {
+      return null;
+    }
+    visited.add(node);
+
+    for (const [key, value] of Object.entries(node)) {
+      if (isLinkString(value) && (MODEL_LINK_KEY_PATTERN.test(key) || MODEL_LINK_KEY_SET.has(key))) {
+        return value.trim();
+      }
+    }
+
+    for (const value of Object.values(node)) {
+      if (typeof value === 'object') {
+        const nested = deepSearch(value, depth + 1);
+        if (nested) return nested;
+      }
+    }
+
+    return null;
+  };
+
+  return deepSearch(project, 0);
+};
+
+const formatModelLinkDisplay = (link: string): string => {
+  try {
+    const url = new URL(link);
+    const pathSegments = url.pathname.split('/').filter(Boolean);
+    const finalSegment = pathSegments[pathSegments.length - 1];
+    return finalSegment ? `${url.host}/${finalSegment}` : url.host;
+  } catch {
+    return link;
+  }
+};
 
 export default function Create(): JSX.Element {
+  const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [subscriptionPopupOpen, setSubscriptionPopupOpen] = useState(false);
+  const [modelDeliveryOpen, setModelDeliveryOpen] = useState(false);
   
   // Subscription hook
   const { 
     subscription, 
     loading: subscriptionLoading, 
     error: subscriptionError,
-    redirectToCheckout,
-    cancelSubscription,
     isSubscriptionActive,
     isOnTrial,
     getTrialDaysRemaining,
@@ -30,19 +132,16 @@ export default function Create(): JSX.Element {
     getPlanFeatures
   } = useSubscription();
 
-  // Lock body scroll when popup is open
-  useEffect(() => {
-    if (subscriptionPopupOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
-    // Cleanup on unmount
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [subscriptionPopupOpen]);
+  const {
+    loading: modelDeliveryLoading,
+    hasPermission: hasModelDeliveryPermission,
+    error: modelDeliveryError,
+    apiConfigured: modelDeliveryApiConfigured,
+    resolveClient,
+    sendDelivery,
+    checkPermission: refreshModelDeliveryPermission,
+  } = useModelDeliveryAdmin();
+
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -70,7 +169,8 @@ export default function Create(): JSX.Element {
 
   const handleAuthenticated = useCallback((currentUser: any) => {
     setUser(currentUser);
-  }, []);
+    refreshModelDeliveryPermission();
+  }, [refreshModelDeliveryPermission]);
 
   const signOut = async () => {
     try {
@@ -81,24 +181,7 @@ export default function Create(): JSX.Element {
     }
   };
 
-  const handleUpgrade = async (planType: string) => {
-    trackEvent(AnalyticsEvents.BUTTON_CLICK, {
-      action: 'upgrade_subscription',
-      plan_type: planType,
-      page: 'create'
-    });
-    await redirectToCheckout(planType as any);
-  };
 
-  const handleCancelSubscription = async () => {
-    if (confirm('Are you sure you want to cancel your subscription? You\'ll lose access to premium features at the end of your current billing period.')) {
-      trackEvent(AnalyticsEvents.BUTTON_CLICK, {
-        action: 'cancel_subscription',
-        page: 'create'
-      });
-      await cancelSubscription();
-    }
-  };
 
   const getSubscriptionStatusDisplay = () => {
     if (subscriptionLoading) return 'Loading...';
@@ -131,6 +214,16 @@ export default function Create(): JSX.Element {
     }
   };
 
+  const handleDeliverySuccess = useCallback((delivered: ProjectRecord) => {
+    setProjects((prev) => prev.map((project) => {
+      if (project.projectId === delivered.projectId) {
+        return { ...project, ...delivered };
+      }
+      return project;
+    }));
+    fetchProjects();
+  }, [fetchProjects]);
+
   return (
     <>
       {/* Always-visible header matching pricing/about spacing and swirl */}
@@ -162,7 +255,7 @@ export default function Create(): JSX.Element {
                       <div className="subscription-compact">
                         <button
                           className="subscription-pill clickable"
-                          onClick={() => setSubscriptionPopupOpen(true)}
+                          onClick={() => router.push('/pricing')}
                         >
                           {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
                         </button>
@@ -178,6 +271,20 @@ export default function Create(): JSX.Element {
                   <span className="sign-out-icon"></span>
                   Sign Out
                 </button>
+                {hasModelDeliveryPermission && (
+                  <button
+                    className="model-delivery-trigger"
+                    onClick={() => setModelDeliveryOpen(true)}
+                    disabled={modelDeliveryLoading || !modelDeliveryApiConfigured}
+                  >
+                    Send Model Link
+                  </button>
+                )}
+                {hasModelDeliveryPermission && modelDeliveryError && (
+                  <p className="model-delivery-banner-error" role="status">
+                    {modelDeliveryError}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -205,18 +312,15 @@ export default function Create(): JSX.Element {
             )}
             
             {/* Projects */}
-            {!loading && projects.map((p) => (
-              <div key={p.projectId} className="project-box">
-                <button className="project-controls-btn" aria-label="Edit project" onClick={() => { setEditing(p); setModalOpen(true); }}>
-                  <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
-                </button>
-                <h1>{p.title || 'Untitled'}</h1>
-                <div style={{marginTop:12}}>
-                  <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
-                    <div style={{height:6, borderRadius:3, width:`${Math.max(0, Math.min(100, p.progress||0))}%`, background:'#fff'}}></div>
-                  </div>
-                </div>
-              </div>
+            {!loading && projects.map((project, index) => (
+              <ProjectCard
+                key={project?.projectId || `project-${index}`}
+                project={project as ProjectRecord}
+                onEdit={(selected) => {
+                  setEditing(selected);
+                  setModalOpen(true);
+                }}
+              />
             ))}
             
             {/* Beta Access Management - Only shown to authorized employees */}
@@ -232,145 +336,203 @@ export default function Create(): JSX.Element {
           onSaved={fetchProjects}
         />
 
-        {/* Subscription Popup */}
-        {subscriptionPopupOpen && (
-          <div className="subscription-popup-overlay" onClick={() => setSubscriptionPopupOpen(false)}>
-            <div className="subscription-popup" onClick={(e) => e.stopPropagation()}>
-              <div className="subscription-popup-header">
-                <h2>Choose Your Plan</h2>
-                <button className="popup-close" onClick={() => setSubscriptionPopupOpen(false)} />
-              </div>
-              
-              <div className="subscription-plans">
-                {/* Current Plan Display */}
-                {subscription ? (
-                  <div className="plan-card current">
-                    <div className="plan-header">
-                      <h3>{subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan</h3>
-                      <span className="current-badge">Current</span>
-                    </div>
-                    <div className="plan-price">
-                      {subscription.status === 'trialing' ? 'Free Trial' : 'Active'}
-                    </div>
-                    <div className="plan-features">
-                      <div className="feature">• {subscription.planFeatures.maxModels === -1 ? 'Unlimited' : `Up to ${subscription.planFeatures.maxModels}`} active models</div>
-                      <div className="feature">• {subscription.planFeatures.support} support</div>
-                      <div className="feature">• {subscription.planFeatures.trialDays > 0 ? `${subscription.planFeatures.trialDays}-day trial` : 'No trial'}</div>
-                    </div>
-                    {subscription.status !== 'canceled' && (
-                      <button 
-                        className="plan-cancel-btn"
-                        onClick={handleCancelSubscription}
-                      >
-                        Cancel Subscription
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="plan-card current">
-                    <div className="plan-header">
-                      <h3>Beta Plan</h3>
-                      <span className="current-badge">Current</span>
-                    </div>
-                    <div className="plan-price">Free</div>
-                    <div className="plan-features">
-                      <div className="feature">• {projects.length} of 5 active models used</div>
-                      <div className="feature">• Email support</div>
-                      <div className="feature">• Perfect for getting started</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Available Plans */}
-                <div className="plan-card">
-                  <div className="plan-header">
-                    <h3>Single Model</h3>
-                  </div>
-                  <div className="plan-price">$29<span className="plan-period">/mo</span></div>
-                  <div className="plan-features">
-                    <div className="feature">• One active model</div>
-                    <div className="feature">• 1-month free trial</div>
-                    <div className="feature">• Perfect for trying Spaceport</div>
-                  </div>
-                  <button 
-                    className="plan-upgrade-btn"
-                    onClick={() => handleUpgrade('single')}
-                    disabled={subscription?.planType === 'single'}
-                  >
-                    {subscription?.planType === 'single' ? 'Current Plan' : 'Get Started'}
-                  </button>
-                </div>
-
-                <div className="plan-card">
-                  <div className="plan-header">
-                    <h3>Starter</h3>
-                  </div>
-                  <div className="plan-price">$99<span className="plan-period">/mo</span></div>
-                  <div className="plan-features">
-                    <div className="feature">• Up to 5 active models</div>
-                    <div className="feature">• Additional models $29/mo each</div>
-                    <div className="feature">• 1-month free trial included</div>
-                  </div>
-                  <button 
-                    className="plan-upgrade-btn"
-                    onClick={() => handleUpgrade('starter')}
-                    disabled={subscription?.planType === 'starter'}
-                  >
-                    {subscription?.planType === 'starter' ? 'Current Plan' : 'Start Starter'}
-                  </button>
-                </div>
-
-                <div className="plan-card">
-                  <div className="plan-header">
-                    <h3>Growth</h3>
-                  </div>
-                  <div className="plan-price">$299<span className="plan-period">/mo</span></div>
-                  <div className="plan-features">
-                    <div className="feature">• Up to 20 active models</div>
-                    <div className="feature">• Additional models $29/mo each</div>
-                    <div className="feature">• 1-month free trial included</div>
-                  </div>
-                  <button 
-                    className="plan-upgrade-btn"
-                    onClick={() => handleUpgrade('growth')}
-                    disabled={subscription?.planType === 'growth'}
-                  >
-                    {subscription?.planType === 'growth' ? 'Current Plan' : 'Start Growth'}
-                  </button>
-                </div>
-
-                <div className="plan-card">
-                  <div className="plan-header">
-                    <h3>Enterprise</h3>
-                  </div>
-                  <div className="plan-price">Custom</div>
-                  <div className="plan-features">
-                    <div className="feature">• High-volume projects</div>
-                    <div className="feature">• Custom integrations</div>
-                    <div className="feature">• Dedicated support</div>
-                    <div className="feature">• Team management</div>
-                  </div>
-                  <button className="plan-contact-btn">
-                    Contact Sales
-                  </button>
-                </div>
-              </div>
-              
-              <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.9rem', opacity: '0.7' }}>
-                All plans support additional active models at <span style={{ color: '#fff', opacity: '1' }}>$29/mo</span> per model beyond your plan.
-              </p>
-              
-              {/* Referral Program Info */}
-              <div className="referral-program-info">
-                <h3>Referral Program</h3>
-                <p>Share your unique handle with others. When they subscribe using your code, you'll receive 10% of their subscription for 6 months!</p>
-                <p><strong>Your handle:</strong> {user?.attributes?.preferred_username || 'Not set'}</p>
-              </div>
-            </div>
-          </div>
+        {hasModelDeliveryPermission && (
+          <ModelDeliveryModal
+            open={modelDeliveryOpen}
+            onClose={() => setModelDeliveryOpen(false)}
+            resolveClient={resolveClient}
+            sendDelivery={sendDelivery}
+            onDelivered={handleDeliverySuccess}
+          />
         )}
+
       </AuthGate>
     </>
+  );
+}
+
+type ProjectCardProps = {
+  project: ProjectRecord;
+  onEdit: (project: ProjectRecord) => void;
+};
+
+function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
+  const [copyMessage, setCopyMessage] = useState('');
+  const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const viewTrackedRef = useRef(false);
+  const unavailableTrackedRef = useRef(false);
+
+  const modelLink = useMemo(() => extractModelLink(project), [project]);
+  const displayLink = useMemo(() => (modelLink ? formatModelLinkDisplay(modelLink) : ''), [modelLink]);
+
+  const normalizedStatus = useMemo(() => {
+    const rawStatus = project?.status;
+    return typeof rawStatus === 'string' ? rawStatus.toLowerCase() : '';
+  }, [project?.status]);
+
+  const isDelivered = normalizedStatus === 'delivered';
+
+  const progressValue = useMemo(() => {
+    const rawProgress = project?.progress;
+    const numeric = typeof rawProgress === 'number' ? rawProgress : Number(rawProgress ?? 0);
+    if (!Number.isFinite(numeric)) return 0;
+    return Math.max(0, Math.min(100, numeric));
+  }, [project?.progress]);
+
+  useEffect(() => {
+    if (modelLink && !viewTrackedRef.current) {
+      trackEvent(AnalyticsEvents.MODEL_LINK_VIEWED, {
+        project_id: project?.projectId,
+        status: normalizedStatus || undefined,
+      });
+      viewTrackedRef.current = true;
+    }
+  }, [modelLink, normalizedStatus, project?.projectId]);
+
+  useEffect(() => {
+    if (!modelLink && isDelivered && !unavailableTrackedRef.current) {
+      trackEvent(AnalyticsEvents.MODEL_LINK_UNAVAILABLE, {
+        project_id: project?.projectId,
+        status: normalizedStatus || undefined,
+      });
+      unavailableTrackedRef.current = true;
+    }
+  }, [isDelivered, modelLink, normalizedStatus, project?.projectId]);
+
+  useEffect(() => () => {
+    if (feedbackTimerRef.current) {
+      clearTimeout(feedbackTimerRef.current);
+    }
+  }, []);
+
+  const setFeedback = useCallback((state: 'copied' | 'error', message: string) => {
+    setCopyState(state);
+    setCopyMessage(message);
+    if (feedbackTimerRef.current) {
+      clearTimeout(feedbackTimerRef.current);
+    }
+    feedbackTimerRef.current = setTimeout(() => {
+      setCopyState('idle');
+      setCopyMessage('');
+    }, 2500);
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    if (!modelLink) return;
+
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(modelLink);
+      } else if (typeof document !== 'undefined') {
+        const textarea = document.createElement('textarea');
+        textarea.value = modelLink;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } else {
+        throw new Error('Clipboard unavailable');
+      }
+
+      setFeedback('copied', 'Link copied to clipboard');
+      trackEvent(AnalyticsEvents.MODEL_LINK_COPIED, {
+        project_id: project?.projectId,
+        status: normalizedStatus || undefined,
+      });
+    } catch (error: any) {
+      setFeedback('error', 'Unable to copy link');
+      trackEvent(AnalyticsEvents.MODEL_LINK_COPY_FAILED, {
+        project_id: project?.projectId,
+        status: normalizedStatus || undefined,
+        error: error?.message,
+      });
+    }
+  }, [modelLink, normalizedStatus, project?.projectId, setFeedback]);
+
+  const handleOpen = useCallback(() => {
+    if (!modelLink) return;
+    trackEvent(AnalyticsEvents.MODEL_LINK_OPENED, {
+      project_id: project?.projectId,
+      status: normalizedStatus || undefined,
+    });
+  }, [modelLink, normalizedStatus, project?.projectId]);
+
+  const handleEdit = useCallback(() => {
+    onEdit(project);
+  }, [onEdit, project]);
+
+  const getGuidanceText = (): string => {
+    const p = progressValue;
+    const s = normalizedStatus;
+    if (modelLink) return '';
+
+    // Friendly, stage-based guidance
+    if (!s && p <= 0) return 'Plan drone flight';
+    if (/new|created|draft/.test(s) || p === 0) return 'Plan drone flight';
+    if (/upload|pending_upload/.test(s) || (p > 0 && p < 15)) return 'Upload photos';
+    if (/processing|reconstruct|colmap|sfm|dense/.test(s) || (p >= 15 && p < 60)) return 'Reconstructing scene';
+    if (/training|3dgs|render/.test(s) || (p >= 60 && p < 90)) return 'Training model';
+    if (/compress|optimiz|sogs/.test(s) || (p >= 90 && p < 100)) return 'Optimizing web';
+    if (isDelivered) return 'Finalizing delivery';
+    return 'Preparing model';
+  };
+
+  return (
+    <div className="project-box">
+      <button className="project-controls-btn" aria-label="Edit project" onClick={handleEdit}>
+        <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
+      </button>
+      <h1>{project?.title || 'Untitled'}</h1>
+      <div className="project-progress">
+        <div className="project-progress-track">
+          <div className="project-progress-fill" style={{ width: `${progressValue}%` }}></div>
+        </div>
+      </div>
+
+      <div className="model-link-area" role={modelLink ? 'group' : 'status'} aria-live={modelLink ? undefined : 'polite'}>
+        {modelLink ? (
+          <>
+            <div className="model-link-pill">
+              <span className="model-link-text" title={modelLink}>{displayLink}</span>
+              <div className="model-link-actions">
+                <a
+                  className="model-link-button"
+                  href={modelLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleOpen}
+                  aria-label="Open model link in a new tab"
+                >
+                  Open
+                </a>
+                <button
+                  type="button"
+                  className="model-link-button"
+                  onClick={handleCopy}
+                  aria-label="Copy model link to clipboard"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+            {copyState !== 'idle' && (
+              <span className={`model-link-feedback ${copyState === 'error' ? 'error' : ''}`} role="status">
+                {copyMessage}
+              </span>
+            )}
+          </>
+        ) : (
+          <div className={`model-link-status ${isDelivered ? 'pending' : 'pending'}`} role="status">
+            {getGuidanceText()}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
