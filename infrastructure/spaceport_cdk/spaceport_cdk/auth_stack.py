@@ -449,7 +449,7 @@ class AuthStack(Stack):
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
                     command=[
                         "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output && cp -au ../shared /asset-output/shared"
                     ],
                 ),
             ),
