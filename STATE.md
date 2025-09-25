@@ -1,5 +1,5 @@
-reason: restructure scope exceeds session bandwidth; need to align on phased rollout
-last_step: audited existing sandbox layout and styling
-next_unblocked_step: confirm phased migration plan or narrow scope before refactoring sandbox.css/page.tsx
-owner_action_needed: clarify priority components or approve incremental rollout plan
-updated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+reason: lego token refactor in progress
+last_step: normalized sandbox.css/page.tsx to lego design tokens and removed bespoke pixel values
+next_unblocked_step: confirm visual parity on preview build then expand Playwright coverage per SOP
+owner_action_needed: none
+updated: 2025-09-25T19:07:21Z

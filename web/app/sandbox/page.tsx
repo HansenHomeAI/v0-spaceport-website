@@ -6,6 +6,7 @@ import './sandbox.css';
 export default function DesignSystemSandbox(): JSX.Element {
   const [hoveredComponent, setHoveredComponent] = useState<string | null>(null);
   const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(null);
+  const hoveredRect = hoveredElement ? hoveredElement.getBoundingClientRect() : null;
   
   // Editable text state for live preview
   const [editableTexts, setEditableTexts] = useState({
@@ -1345,14 +1346,12 @@ export default function DesignSystemSandbox(): JSX.Element {
       </section>
 
       {/* Component Name Pill - Positioned above hovered element */}
-      {hoveredComponent && hoveredElement && (
+      {hoveredComponent && hoveredRect && (
         <div 
           className="component-name-pill"
           style={{
-            position: 'fixed',
-            top: hoveredElement.getBoundingClientRect().top - 40,
-            left: hoveredElement.getBoundingClientRect().left + (hoveredElement.getBoundingClientRect().width / 2) - 50,
-            zIndex: 10000
+            top: hoveredRect.top,
+            left: hoveredRect.left + hoveredRect.width / 2
           }}
         >
           {hoveredComponent}
