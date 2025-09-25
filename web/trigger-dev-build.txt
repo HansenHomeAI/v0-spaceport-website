@@ -7,3 +7,7 @@
 2025-09-24 11:53 MDT - add project model link UI display
 Sept 24th, 12:01PM
 2025-09-24 12:47 MDT - employee model delivery flow
+2025-09-25 16:14 UTC - auth fallback + model delivery fixes
+Sep 25th 10:57am
+2025-09-25 17:04 UTC - remove Amplify fallback, add env guard
+Sep 25th 1:39PM

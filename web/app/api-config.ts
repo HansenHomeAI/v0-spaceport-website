@@ -93,6 +93,7 @@ export const buildApiUrl = {
   
   // Model Delivery Admin API endpoints
   modelDelivery: {
+    base: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL || '',
     checkPermission: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
       ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/check-permission`
       : '',

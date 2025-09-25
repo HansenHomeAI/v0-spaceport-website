@@ -81,12 +81,16 @@ export function useBetaAccess(): BetaAccessState & BetaAccessActions {
         error: null
       }));
     } catch (error: any) {
-      console.error('Error checking beta access permission:', error);
+      const message = error?.message || 'Failed to check permissions';
+      const benignAuthError = /not authenticated|no current user/i.test(message);
+      if (!benignAuthError) {
+        console.error('Error checking beta access permission:', error);
+      }
       setState(prev => ({
         ...prev,
         hasBetaAccessPermission: false,
         loading: false,
-        error: error.message || 'Failed to check permissions'
+        error: benignAuthError ? null : message
       }));
     }
   }, [getApiUrls]);
