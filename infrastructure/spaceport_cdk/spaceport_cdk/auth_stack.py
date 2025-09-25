@@ -447,9 +447,15 @@ class AuthStack(Stack):
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin"),
                 bundling=BundlingOptions(
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    volumes=[
+                        lambda_.DockerVolume(
+                            host_path=os.path.join(os.path.dirname(__file__), "..", "lambda", "shared"),
+                            container_path="/shared-src",
+                        ),
+                    ],
                     command=[
                         "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output && cp -au ../shared /asset-output/shared"
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output && cp -au /shared-src /asset-output/shared"
                     ],
                 ),
             ),
