@@ -2,9 +2,9 @@
 
 ## Agentic Dev Loop SOP
 1. **Branch**: from `development` create `agent-12345678-task-name` (unique eight-digit ID plus slug, e.g. `agent-74120953-update-web-copy`).
-2. **Baseline**: push your task branch to trigger the Cloudflare Pages workflow, then monitor GitHub Actions until the preview build is green and capture failing logs (use `gh run watch/logs` locally before touching the API—no debug cycle is complete until the live preview succeeds).
+2. **Baseline**: push your task branch to trigger the Cloudflare Pages workflow, then monitor *every* GitHub Actions run kicked off by the push until they finish successfully (use `gh run list --branch <branch>` to enumerate, and `gh run watch <id> --exit-status` on each run). At minimum, confirm both the Pages deploy and the "CDK Deploy" workflow are green before moving on, capturing failing logs immediately if either stops early.
  - Push the branch upstream as soon as there is meaningful work (`git push origin agent-…`) so deploy workflows and reviewers can see your changes.
- - If a deployment is rejected, immediately check environment protection rules: `gh api repos/$OWNER/$REPO/environments/<env>/deployment-branch-policies` and adjust with `gh api ... --field name="agent-*" --field type="branch"` (or coordinate with the maintainer) before retrying.
+ - If a deployment is rejected, immediately check environment protection rules: `gh api repos/$OWNER/$REPO/environments/<env>/deployment-branch-policies` and adjust with `gh api ... --field name="agent-*" --field type="branch"` (or coordinate with the maintainer) before retrying. The same expectation applies to infrastructure runs—never continue while "CDK Deploy" is red.
  - When validating UI or MCP flows, always use the Cloudflare preview alias produced by your branch deployment—avoid hitting production until the preview passes.
   - Stay in the loop: keep iterating (push → deploy → validate → fix) without pausing for maintainer approval unless you are blocked by secrets or protections.
 3. **Test**: start Playwright MCP with `python3 scripts/playwright-mcp-manager.py ensure`, record a baseline run, and expand coverage when gaps appear.

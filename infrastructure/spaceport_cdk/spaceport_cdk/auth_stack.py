@@ -498,12 +498,12 @@ class AuthStack(Stack):
             ),
         )
 
-        for response_type in (
-            apigw.ResponseType.DEFAULT_4_XX,
-            apigw.ResponseType.DEFAULT_5_XX,
+        for response_type, label in (
+            (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
+            (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
         ):
             beta_access_api.add_gateway_response(
-                f"BetaAccess{response_type.name}",
+                f"BetaAccess{label}",
                 type=response_type,
                 response_headers={
                     "Access-Control-Allow-Origin": "'*'",
@@ -650,12 +650,12 @@ class AuthStack(Stack):
             authorizer=model_delivery_authorizer,
         )
 
-        for response_type in (
-            apigw.ResponseType.DEFAULT_4_XX,
-            apigw.ResponseType.DEFAULT_5_XX,
+        for response_type, label in (
+            (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
+            (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
         ):
             model_delivery_api.add_gateway_response(
-                f"ModelDelivery{response_type.name}",
+                f"ModelDelivery{label}",
                 type=response_type,
                 response_headers={
                     "Access-Control-Allow-Origin": "'*'",
