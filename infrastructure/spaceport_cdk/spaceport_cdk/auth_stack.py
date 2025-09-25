@@ -455,7 +455,7 @@ class AuthStack(Stack):
                     ],
                     command=[
                         "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output && cp -au /shared-src /asset-output/shared"
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output && mkdir -p /asset-output/shared && cp -au /shared-src/. /asset-output/shared/"
                     ],
                 ),
             ),
