@@ -144,7 +144,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="h3">Instructions</h3>
-          <p className="body-text" style={{ textAlign: 'center' }}>
+          <p className="body-text">
             Double-click on any text below to edit it and see how different content looks in each typography style. 
             Press Enter to save changes or click outside to cancel. Single-click to copy component names.
           </p>
@@ -153,7 +153,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="h3">Headings - Largest to Smallest</h3>
           <div className="component-showcase">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
+            <div className="lego-stack lego-gap-5 lego-align-center">
               <h1 
                 className="section h1"
                 data-component="section h1"
@@ -191,7 +191,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="h3">Body Text Examples</h3>
           <div className="component-showcase">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '600px' }}>
+            <div className="lego-stack lego-gap-6 lego-align-center lego-max-wide lego-center-block">
               <div 
                 className="body-text"
                 data-component="body-text"
@@ -219,7 +219,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         <div className="component-group">
           <h3 className="h3">Beta Text</h3>
           <div className="component-showcase">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+            <div className="lego-stack lego-gap-4 lego-align-center">
               <div 
                 className="beta-text"
                 data-component="beta-text"
@@ -312,7 +312,7 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Opacity Stops - Against Dark Background</h3>
-          <p className="body-text" style={{ textAlign: 'center' }}>
+          <p className="body-text lego-center-block lego-max-wide">
             These are our predetermined opacity levels for creating grayscale elements. We never hardcode gray - we use white with specific opacity values.
           </p>
           <div className="component-showcase">
@@ -359,7 +359,7 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Opacity Stops - Against Light Background</h3>
-          <p className="body-text" style={{ textAlign: 'center' }}>
+          <p className="body-text lego-center-block lego-max-wide">
             Same opacity levels, but against a light background to show contrast.
           </p>
           <div className="component-showcase">
@@ -406,7 +406,7 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Spaceport Prism Pattern</h3>
-          <p className="body-text" style={{ textAlign: 'center' }}>
+          <p className="body-text lego-center-block lego-max-wide">
             This is our signature Spaceport Prism effect using six specific hex codes in a horizontal linear gradient pattern.
           </p>
           <div className="component-showcase">
@@ -476,7 +476,7 @@ export default function DesignSystemSandbox(): JSX.Element {
         
         <div className="component-group">
           <h3 className="h3">Standard Border</h3>
-          <p className="body-text" style={{ textAlign: 'center' }}>
+          <p className="body-text lego-center-block lego-max-wide">
             Our default border style - 3px solid with subtle transparency. Used for most components.
           </p>
           <div className="component-showcase">
@@ -495,7 +495,7 @@ export default function DesignSystemSandbox(): JSX.Element {
 
         <div className="component-group">
           <h3 className="h3">Gradient Border</h3>
-          <p className="body-text" style={{ textAlign: 'center' }}>
+          <p className="body-text lego-center-block lego-max-wide">
             Our premium border style - diagonal gradient edge that highlights important elements.
           </p>
           <div className="component-showcase">
@@ -517,11 +517,11 @@ export default function DesignSystemSandbox(): JSX.Element {
       <section className="sandbox-section">
         <h2 className="section-title">Header Typography</h2>
         
-        <div className="component-group">
-          <h3 className="h3">Navigation Elements</h3>
-          <div className="component-showcase">
-            <div 
-              className="pill-button"
+          <div className="component-group">
+            <h3 className="h3">Navigation Elements</h3>
+            <div className="component-showcase">
+              <div 
+              className="pill-button lego-button lego-button-outline"
               data-component="pill-button"
               onMouseEnter={(e) => handleComponentHover('pill-button', e)}
               onMouseLeave={handleComponentLeave}
@@ -546,7 +546,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               <div className="header-logo-preview">
                 <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" />
               </div>
-              <div className="h4 pill-button">
+              <div className="h4 pill-button lego-button lego-button-outline">
                 <span></span>
                 <span></span>
               </div>
@@ -563,9 +563,9 @@ export default function DesignSystemSandbox(): JSX.Element {
                 <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" />
               </div>
               <div className="nav-links-preview">
-                <span className="h4 pill-button">Pricing</span>
-                <span className="h4 pill-button">About</span>
-                <span className="h4 pill-button">Create</span>
+                <span className="h4 pill-button lego-button lego-button-outline">Pricing</span>
+                <span className="h4 pill-button lego-button lego-button-outline">About</span>
+                <span className="h4 pill-button lego-button lego-button-outline">Create</span>
               </div>
             </div>
           </div>
@@ -581,7 +581,7 @@ export default function DesignSystemSandbox(): JSX.Element {
           <div className="component-showcase">
             <a 
               href="#"
-              className="cta-button"
+              className="cta-button lego-button lego-button-primary"
               data-component="cta-button"
               onMouseEnter={(e) => handleComponentHover('cta-button', e)}
               onMouseLeave={handleComponentLeave}
@@ -591,7 +591,7 @@ export default function DesignSystemSandbox(): JSX.Element {
             </a>
             <a 
               href="#"
-              className="cta-button2-fixed"
+              className="cta-button2-fixed lego-button lego-button-outline"
               data-component="cta-button2-fixed"
               onMouseEnter={(e) => handleComponentHover('cta-button2-fixed', e)}
               onMouseLeave={handleComponentLeave}
@@ -600,7 +600,7 @@ export default function DesignSystemSandbox(): JSX.Element {
               View Demo Gallery
             </a>
             <div 
-              className="pill-button"
+              className="pill-button lego-button lego-button-outline"
               data-component="pill-button"
               onMouseEnter={(e) => handleComponentHover('pill-button', e)}
               onMouseLeave={handleComponentLeave}
@@ -629,7 +629,7 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               <h3 className="h3">Default Card</h3>
               <p className="body-text">This is our foundation card component with the proper glasmorphic gradient edge border. It follows the style guide specifications exactly.</p>
-              <a href="#" className="default-card-button">Action Button</a>
+              <a href="#" className="default-card-button lego-button lego-button-outline">Action Button</a>
             </div>
           </div>
         </div>
@@ -669,12 +669,11 @@ export default function DesignSystemSandbox(): JSX.Element {
           <h3 className="h3">Popup Overlay & Header</h3>
           <div className="component-showcase">
             <div 
-              className="popup-overlay"
+              className="popup-overlay demo-popup-frame"
               data-component="popup-overlay"
               onMouseEnter={(e) => handleComponentHover('popup-overlay', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('popup-overlay')}
-              style={{ position: 'relative', height: '200px', display: 'block' }}
             >
               <div 
                 className="popup-header"
@@ -760,7 +759,6 @@ export default function DesignSystemSandbox(): JSX.Element {
                 onMouseEnter={(e) => handleComponentHover('accordion-content', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('accordion-content')}
-                style={{ maxHeight: '200px', opacity: 1 }}
               >
                 <div 
                   className="category-outline"
@@ -858,7 +856,6 @@ export default function DesignSystemSandbox(): JSX.Element {
                 onMouseEnter={(e) => handleComponentHover('flight-path-download-btn', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('flight-path-download-btn')}
-                style={{ opacity: 1, transform: 'translateY(0) scale(1)' }}
               >
                 <span 
                   className="download-icon"
@@ -875,7 +872,6 @@ export default function DesignSystemSandbox(): JSX.Element {
                 onMouseEnter={(e) => handleComponentHover('flight-path-download-btn', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('flight-path-download-btn')}
-                style={{ opacity: 1, transform: 'translateY(0) scale(1)' }}
               >
                 <span 
                   className="download-icon"
@@ -921,15 +917,13 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('upload-button-container', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('upload-button-container')}
-              style={{ position: 'relative', height: '50px' }}
             >
               <button 
-                className="upload-btn-with-icon"
+                className="upload-btn-with-icon lego-button"
                 data-component="upload-btn-with-icon"
                 onMouseEnter={(e) => handleComponentHover('upload-btn-with-icon', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('upload-btn-with-icon')}
-                style={{ position: 'relative', top: 'auto', left: 'auto', transform: 'none' }}
               >
                 <span 
                   className="upload-btn-icon"
@@ -941,12 +935,11 @@ export default function DesignSystemSandbox(): JSX.Element {
                 Upload
               </button>
               <button 
-                className="cancel-btn-with-icon"
+                className="cancel-btn-with-icon lego-button"
                 data-component="cancel-btn-with-icon"
                 onMouseEnter={(e) => handleComponentHover('cancel-btn-with-icon', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('cancel-btn-with-icon')}
-                style={{ position: 'relative', top: 'auto', left: 'auto', transform: 'none', opacity: 1, color: '#111' }}
               >
                 <span 
                   className="cancel-btn-icon"
@@ -970,7 +963,6 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('address-search-overlay', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('address-search-overlay')}
-              style={{ position: 'relative', bottom: 'auto', left: 'auto', right: 'auto' }}
             >
               <div 
                 className="address-search-wrapper"
@@ -1003,7 +995,6 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('expand-button', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('expand-button')}
-              style={{ position: 'relative', top: 'auto', right: 'auto' }}
             >
               <span 
                 className="expand-icon"
@@ -1059,7 +1050,7 @@ export default function DesignSystemSandbox(): JSX.Element {
             >
               <h3 className="h3">Success</h3>
               <p className="body-text">Your project has been saved successfully.</p>
-              <a href="#" className="modal-popup-button">OK</a>
+              <a href="#" className="modal-popup-button lego-button lego-button-outline">OK</a>
             </div>
           </div>
         </div>
@@ -1073,12 +1064,11 @@ export default function DesignSystemSandbox(): JSX.Element {
           <h3 className="h3">Project Cards Container</h3>
           <div className="component-showcase">
             <div 
-              className="project-cards"
+              className="project-cards lego-flex lego-wrap lego-gap-5 lego-justify-center"
               data-component="project-cards"
               onMouseEnter={(e) => handleComponentHover('project-cards', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('project-cards')}
-              style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}
             >
               <div 
                 className="project-box"
@@ -1086,7 +1076,6 @@ export default function DesignSystemSandbox(): JSX.Element {
                 onMouseEnter={(e) => handleComponentHover('project-box', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('project-box')}
-                style={{ flex: '0 0 calc(50% - 10px)', width: 'calc(50% - 10px)' }}
               >
                 <button 
                   className="project-controls-btn"
@@ -1107,9 +1096,9 @@ export default function DesignSystemSandbox(): JSX.Element {
                 </button>
                 <h1>Downtown Property</h1>
                 <p>Processing - Neural network training in progress.</p>
-                <div style={{marginTop:12}}>
-                  <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
-                    <div style={{height:6, borderRadius:3, width:'75%', background:'#fff'}}></div>
+                <div className="demo-progress">
+                  <div className="demo-progress-track">
+                    <div className="demo-progress-fill progress-75"></div>
                   </div>
                 </div>
               </div>
@@ -1119,7 +1108,6 @@ export default function DesignSystemSandbox(): JSX.Element {
                 onMouseEnter={(e) => handleComponentHover('project-box', e)}
                 onMouseLeave={handleComponentLeave}
                 onClick={() => handleComponentClick('project-box')}
-                style={{ flex: '0 0 calc(50% - 10px)', width: 'calc(50% - 10px)' }}
               >
                 <button 
                   className="project-controls-btn"
@@ -1140,9 +1128,9 @@ export default function DesignSystemSandbox(): JSX.Element {
                 </button>
                 <h1>Lakeside Home</h1>
                 <p>Complete - Ready for deployment.</p>
-                <div style={{marginTop:12}}>
-                  <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
-                    <div style={{height:6, borderRadius:3, width:'100%', background:'#fff'}}></div>
+                <div className="demo-progress">
+                  <div className="demo-progress-track">
+                    <div className="demo-progress-fill progress-100"></div>
                   </div>
                 </div>
               </div>
@@ -1159,7 +1147,6 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('account-card', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('account-card')}
-              style={{ height: '50px', width: '100%' }}
             >
               <div 
                 className="account-info"
@@ -1232,7 +1219,6 @@ export default function DesignSystemSandbox(): JSX.Element {
               onMouseEnter={(e) => handleComponentHover('new-project-card', e)}
               onMouseLeave={handleComponentLeave}
               onClick={() => handleComponentClick('new-project-card')}
-              style={{ width: '100%' }}
             >
               <h1>
                 New Project
@@ -1310,9 +1296,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               </button>
               <h1>Mountain View Estate</h1>
               <p>Processing - Structure from Motion in progress.</p>
-              <div style={{marginTop:12}}>
-                <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
-                  <div style={{height:6, borderRadius:3, width:'45%', background:'#fff'}}></div>
+              <div className="demo-progress">
+                <div className="demo-progress-track">
+                  <div className="demo-progress-fill progress-45"></div>
                 </div>
               </div>
             </div>
@@ -1348,9 +1334,9 @@ export default function DesignSystemSandbox(): JSX.Element {
               </button>
               <h1>Historic Courthouse</h1>
               <p>Complete - Hosting at spaceport.ai</p>
-              <div style={{marginTop:12}}>
-                <div style={{height:6, borderRadius:3, background:'rgba(255,255,255,0.1)'}}>
-                  <div style={{height:6, borderRadius:3, width:'100%', background:'#fff'}}></div>
+              <div className="demo-progress">
+                <div className="demo-progress-track">
+                  <div className="demo-progress-fill progress-100"></div>
                 </div>
               </div>
             </div>

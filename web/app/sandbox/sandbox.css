@@ -1,113 +1,618 @@
 /* Design System Sandbox - Hyper Minimalist */
 
+/*
+ * Stage 1: Lego-style design tokens and utility building blocks.
+ * These classes will back the sandbox components in later passes.
+ */
+
+:where(.sandbox-container) {
+  /* Spacing scale based on 8px grid */
+  --lego-unit: 8px;
+  --lego-space-1: calc(var(--lego-unit) / 2);   /* 4px */
+  --lego-space-2: var(--lego-unit);             /* 8px */
+  --lego-space-3: calc(var(--lego-unit) * 1.5); /* 12px */
+  --lego-space-4: calc(var(--lego-unit) * 2);   /* 16px */
+  --lego-space-5: calc(var(--lego-unit) * 2.5); /* 20px */
+  --lego-space-6: calc(var(--lego-unit) * 3);   /* 24px */
+  --lego-space-7: calc(var(--lego-unit) * 3.75);/* 30px */
+  --lego-space-8: calc(var(--lego-unit) * 4);   /* 32px */
+  --lego-space-9: calc(var(--lego-unit) * 5);   /* 40px */
+  --lego-space-10: calc(var(--lego-unit) * 6);  /* 48px */
+  --lego-space-11: calc(var(--lego-unit) * 7.5);/* 60px */
+  --lego-space-12: calc(var(--lego-unit) * 8.75);/* 70px */
+  --lego-space-13: calc(var(--lego-unit) * 10); /* 80px */
+  --lego-space-14: calc(var(--lego-unit) * 12.5);/* 100px */
+  --lego-space-15: calc(var(--lego-unit) * 15); /* 120px */
+
+  /* Radii */
+  --lego-radius-xs: 6px;
+  --lego-radius-sm: 16px;
+  --lego-radius-md: 25px;
+  --lego-radius-lg: 32px;
+  --lego-radius-xl: 40px;
+  --lego-radius-pill: 999px;
+
+  /* Borders */
+  --lego-border-thin: 1px;
+  --lego-border-regular: 1.5px;
+  --lego-border-strong: 2px;
+  --lego-border-heavy: 2.5px;
+  --lego-border-max: 3px;
+  --lego-border-light: rgba(0, 0, 0, 0.1);
+
+  /* Surface palette */
+  --lego-surface-root: #000000;
+  --lego-surface-panel: rgba(255, 255, 255, 0.02);
+  --lego-surface-layer: rgba(255, 255, 255, 0.05);
+  --lego-surface-strong: rgba(255, 255, 255, 0.1);
+  --lego-surface-glass: rgba(0, 0, 0, 0.12);
+  --lego-surface-highlight: rgba(255, 255, 255, 0.16);
+  --lego-surface-light: rgba(255, 255, 255, 0.9);
+
+  /* Text palette */
+  --lego-text-primary: rgba(255, 255, 255, 1);
+  --lego-text-secondary: rgba(255, 255, 255, 0.55);
+  --lego-text-tertiary: rgba(255, 255, 255, 0.35);
+  --lego-text-inverse: #000000;
+  --lego-text-dark: rgba(0, 0, 0, 0.8);
+
+  /* Accent palette */
+  --lego-accent-1: #DC9ED8;
+  --lego-accent-2: #CD70E4;
+  --lego-accent-3: #D869B3;
+  --lego-accent-4: #E4617C;
+  --lego-accent-5: #EB5C5A;
+  --lego-accent-6: #E47991;
+
+  /* Typography */
+  --lego-font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --lego-font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  --lego-type-display: clamp(2.9rem, 8vw, 3.9rem);
+  --lego-type-h1: 2.5rem;
+  --lego-type-h2: 2rem;
+  --lego-type-h3: 1.2rem;
+  --lego-type-h4: 1.5rem;
+  --lego-type-body: 1.2rem;
+  --lego-type-caption: 0.95rem;
+  --lego-type-micro: 0.75rem;
+  --lego-type-swatch: 0.875rem;
+  --lego-leading-tight: 1.05;
+  --lego-leading-body: 1.6;
+
+  /* Effects */
+  --lego-blur-sm: 24px;
+  --lego-blur-md: 36px;
+  --lego-blur-lg: 48px;
+  --lego-shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --lego-transition: 200ms ease;
+
+  /* Layout widths */
+  --lego-width-narrow: 280px;
+  --lego-width-compact: 320px;
+  --lego-width-demo: 400px;
+  --lego-width-card: 480px;
+  --lego-width-wide: 600px;
+  --lego-width-max: 640px;
+  --lego-width-page: 1200px;
+  --lego-width-medium: 500px;
+  --lego-width-tiny: 200px;
+
+  /* Icon sizing */
+  --lego-icon-xs: 14px;
+  --lego-icon-sm: 18px;
+
+  /* Demonstration sizing */
+  --lego-demo-height-md: calc(var(--lego-space-13) * 2.5);
+  --lego-control-height: calc(var(--lego-space-5) * 2.5);
+  --lego-progress-thickness: 6px;
+
+  /* Structural tokens */
+  --lego-border-gradient: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 42%,
+    rgba(255, 255, 255, 0) 58%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+}
+
+/* Layout utilities */
+.lego-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.lego-inline {
+  display: inline-flex;
+}
+
+.lego-flex {
+  display: flex;
+}
+
+.lego-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.lego-center-horizontal {
+  justify-content: center;
+}
+
+.lego-center-vertical {
+  align-items: center;
+}
+
+.lego-align-center {
+  align-items: center;
+}
+
+.lego-justify-center {
+  justify-content: center;
+}
+
+.lego-fluid {
+  width: 100%;
+}
+
+.lego-wrap {
+  flex-wrap: wrap;
+}
+
+.lego-gap-3 {
+  gap: var(--lego-space-3);
+}
+
+.lego-gap-4 {
+  gap: var(--lego-space-4);
+}
+
+.lego-gap-5 {
+  gap: var(--lego-space-5);
+}
+
+.lego-gap-6 {
+  gap: var(--lego-space-6);
+}
+
+.lego-gap-7 {
+  gap: var(--lego-space-7);
+}
+
+.lego-gap-8 {
+  gap: var(--lego-space-8);
+}
+
+.lego-gap-9 {
+  gap: var(--lego-space-9);
+}
+
+.lego-flow-start {
+  align-items: flex-start;
+}
+
+.lego-text-center {
+  text-align: center;
+}
+
+.lego-text-left {
+  text-align: left;
+}
+
+/* Surface utilities */
+.lego-surface-panel {
+  background: var(--lego-surface-panel);
+  border-radius: var(--lego-radius-lg);
+  border: var(--lego-border-max) solid var(--lego-surface-strong);
+}
+
+.lego-surface-glass {
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-md);
+  border: var(--lego-border-heavy) solid var(--lego-surface-strong);
+}
+
+.lego-surface-layer {
+  background: var(--lego-surface-layer);
+}
+
+.lego-border-rounded {
+  border-radius: var(--lego-radius-md);
+}
+
+.lego-border-strong {
+  border: var(--lego-border-strong) solid var(--lego-surface-strong);
+}
+
+.lego-border-gradient {
+  position: relative;
+  border-radius: var(--lego-radius-md);
+  overflow: hidden;
+}
+
+.lego-border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: var(--lego-border-thin);
+  border-radius: inherit;
+  background: var(--lego-border-gradient);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Typography utilities */
+.lego-display {
+  font-size: var(--lego-type-display);
+  line-height: var(--lego-leading-tight);
+  font-weight: 500;
+}
+
+.lego-heading-lg {
+  font-size: var(--lego-type-h1);
+  line-height: var(--lego-leading-tight);
+  font-weight: 500;
+}
+
+.lego-heading-md {
+  font-size: var(--lego-type-h2);
+  line-height: var(--lego-leading-tight);
+  font-weight: 500;
+}
+
+.lego-heading-sm {
+  font-size: var(--lego-type-h3);
+  line-height: var(--lego-leading-tight);
+  font-weight: 500;
+}
+
+.lego-body {
+  font-size: var(--lego-type-body);
+  line-height: var(--lego-leading-body);
+  font-weight: 400;
+  color: var(--lego-text-secondary);
+}
+
+.lego-body-strong {
+  color: var(--lego-text-primary);
+}
+
+.lego-inline-highlight {
+  color: var(--lego-text-primary);
+}
+
+.lego-caption {
+  font-size: var(--lego-type-caption);
+  line-height: 1.4;
+}
+
+.lego-micro {
+  font-size: var(--lego-type-micro);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Button primitives */
+.lego-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lego-space-2);
+  padding: var(--lego-space-3) var(--lego-space-6);
+  border-radius: var(--lego-radius-pill);
+  font-size: var(--lego-type-body);
+  font-weight: 500;
+  line-height: var(--lego-leading-tight);
+  text-decoration: none;
+  transition: background var(--lego-transition), color var(--lego-transition), transform var(--lego-transition), box-shadow var(--lego-transition);
+}
+
+.lego-button-primary {
+  background: var(--lego-text-primary);
+  color: var(--lego-text-inverse);
+  box-shadow: var(--lego-shadow-soft);
+}
+
+.lego-button-primary:hover {
+  transform: translateY(-2px);
+}
+
+.lego-button-outline {
+  border: var(--lego-border-heavy) solid var(--lego-text-primary);
+  color: var(--lego-text-primary);
+}
+
+.lego-button-outline:hover {
+  background: var(--lego-text-primary);
+  color: var(--lego-text-inverse);
+}
+
+.lego-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--lego-space-1) / 2) var(--lego-space-2);
+  border-radius: var(--lego-radius-pill);
+  border: var(--lego-border-thin) solid var(--lego-text-primary);
+  font-size: var(--lego-type-micro);
+  letter-spacing: 0.08em;
+}
+
+/* Width helpers */
+.lego-max-narrow {
+  max-width: var(--lego-width-narrow);
+}
+
+.lego-max-compact {
+  max-width: var(--lego-width-compact);
+}
+
+.lego-max-demo {
+  max-width: var(--lego-width-demo);
+}
+
+.lego-max-card {
+  max-width: var(--lego-width-card);
+}
+
+.lego-max-wide {
+  max-width: var(--lego-width-wide);
+}
+
+.lego-max-full {
+  max-width: var(--lego-width-page);
+}
+
+/* Padding helpers */
+.lego-pad-panel {
+  padding: var(--lego-space-7);
+}
+
+.lego-pad-stack {
+  padding: var(--lego-space-8);
+}
+
+.lego-pad-shell {
+  padding: var(--lego-space-2);
+}
+
+.lego-pad-inline {
+  padding: var(--lego-space-3) var(--lego-space-6);
+}
+
+.lego-pad-block-large {
+  padding-block: var(--lego-space-9);
+}
+
+.lego-pad-block-xlarge {
+  padding-block: var(--lego-space-13);
+}
+
+/* Alignment helpers */
+.lego-self-center {
+  align-self: center;
+}
+
+.lego-justify-between {
+  justify-content: space-between;
+}
+
+.lego-align-stretch {
+  align-items: stretch;
+}
+
+.lego-center-block {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Demo helpers */
+.demo-popup-frame {
+  position: relative;
+  height: var(--lego-demo-height-md);
+  display: block;
+}
+
+.demo-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lego-space-5);
+  justify-content: center;
+}
+
+.demo-progress-track {
+  height: var(--lego-progress-thickness);
+  border-radius: var(--lego-radius-xs);
+  background: var(--lego-surface-layer);
+  overflow: hidden;
+}
+
+.demo-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lego-text-primary);
+}
+
+.demo-progress {
+  margin-top: var(--lego-space-4);
+}
+
+.demo-progress-fill.progress-45 { width: 45%; }
+.demo-progress-fill.progress-75 { width: 75%; }
+.demo-progress-fill.progress-100 { width: 100%; }
+
+.upload-button-container {
+  position: relative;
+  height: var(--lego-control-height);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lego-space-4);
+}
+
+.address-search-overlay {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.upload-btn-with-icon,
+.cancel-btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lego-space-2);
+}
+
+.upload-btn-with-icon {
+  background: var(--lego-text-primary);
+  color: var(--lego-text-inverse);
+  border: none;
+}
+
+.upload-btn-with-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--lego-shadow-soft);
+}
+
+.cancel-btn-with-icon {
+  background: var(--lego-surface-layer);
+  color: var(--lego-text-primary);
+  border: var(--lego-border-heavy) solid var(--lego-surface-strong);
+}
+
+.cancel-btn-with-icon:hover {
+  background: var(--lego-surface-strong);
+}
+
+.upload-btn-icon,
+.cancel-btn-icon {
+  width: var(--lego-icon-sm);
+  height: var(--lego-icon-sm);
+  display: inline-block;
+}
+
 /* Formatting Section */
 .formatting-demo {
-  min-width: 400px;
-  max-width: 600px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-radius: 25px;
-  padding: 32px;
+  min-width: var(--lego-width-demo);
+  max-width: var(--lego-width-wide);
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-md);
+  padding: var(--lego-space-8);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-max) solid var(--lego-surface-strong);
 }
 
 .formatting-demo h4 {
-  font-size: 1.5rem;
+  font-size: var(--lego-type-h4);
   font-weight: 500;
-  margin: 0 0 20px 0;
-  color: #fff;
-  line-height: 1.05;
+  margin: 0 0 var(--lego-space-5) 0;
+  color: var(--lego-text-primary);
+  line-height: var(--lego-leading-tight);
   text-align: center;
 }
 
 .math-formula {
-  margin: 16px 0;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: var(--lego-space-4) 0;
+  padding: var(--lego-space-4);
+  background: var(--lego-surface-layer);
+  border-radius: var(--lego-radius-sm);
+  border: var(--lego-border-thin) solid var(--lego-surface-strong);
 }
 
 .math-formula code {
   display: block;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.9rem;
+  font-family: var(--lego-font-mono);
+  font-size: var(--lego-type-code);
   color: rgba(255, 255, 255, 0.8);
-  margin: 4px 0;
-  padding: 2px 0;
+  margin: calc(var(--lego-space-2) / 2) 0;
+  padding: calc(var(--lego-space-2) / 2) 0;
 }
 
 .concentric-demo {
-  margin-top: 24px;
+  margin-top: var(--lego-space-6);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: var(--lego-space-5);
 }
 
 .concentric-outer {
-  width: 200px;
-  height: 200px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 41px;
-  padding: 8px;
+  width: var(--lego-demo-height-md);
+  height: var(--lego-demo-height-md);
+  background: var(--lego-surface-strong);
+  border-radius: calc(var(--lego-radius-md) + var(--lego-space-4));
+  padding: var(--lego-space-2);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-heavy) solid var(--lego-surface-strong);
 }
 
 .concentric-middle {
-  width: 184px;
-  height: 184px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 33px;
-  padding: 8px;
+  width: calc(var(--lego-demo-height-md) - var(--lego-space-2) * 2);
+  height: calc(var(--lego-demo-height-md) - var(--lego-space-2) * 2);
+  background: var(--lego-surface-layer);
+  border-radius: calc(var(--lego-radius-md) + var(--lego-space-2));
+  padding: var(--lego-space-2);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-regular) solid var(--lego-surface-strong);
 }
 
 .concentric-inner {
-  width: 168px;
-  height: 168px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 25px;
+  width: calc(var(--lego-demo-height-md) - var(--lego-space-2) * 4);
+  height: calc(var(--lego-demo-height-md) - var(--lego-space-2) * 4);
+  background: var(--lego-surface-strong);
+  border-radius: var(--lego-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: var(--lego-border-thin) solid var(--lego-border-strong);
 }
 
 .concentric-inner span {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.8rem;
+  color: var(--lego-text-primary);
+  font-size: var(--lego-type-micro);
   font-weight: 500;
 }
 
 /* Sandbox Container */
+
 .sandbox-container {
-  background: #000;
-  color: #fff;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--lego-surface-root);
+  color: var(--lego-text-primary);
+  font-family: var(--lego-font-sans);
   min-height: 100vh;
-  padding: 120px 20px 40px 20px;
-  max-width: 1200px;
+  padding: var(--lego-space-15) var(--lego-space-5) var(--lego-space-9);
+  max-width: var(--lego-width-page);
   margin: 0 auto;
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lego-space-12);
 }
 
 /* Sandbox Sections */
 .sandbox-section {
-  margin-bottom: 80px;
-  padding: 40px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--lego-space-6);
+  padding: var(--lego-space-9) 0;
+  border-bottom: var(--lego-border-thin) solid var(--lego-surface-strong);
 }
 
 .sandbox-section:last-child {
@@ -116,49 +621,48 @@
 
 /* Sandbox Header */
 .sandbox-title {
-  font-size: 2.5rem;
+  font-size: var(--lego-type-h1);
   font-weight: 500;
   text-align: center;
-  margin-bottom: 20px;
-  color: #fff;
-  letter-spacing: 0em;
-  line-height: 1.05;
+  margin: 0;
+  color: var(--lego-text-primary);
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
 }
 
 .sandbox-subtitle {
-  font-size: 1.2rem;
+  font-size: var(--lego-type-body);
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-  max-width: 600px;
+  color: var(--lego-text-secondary);
+  max-width: var(--lego-width-wide);
   margin: 0 auto;
-  line-height: 1.05;
+  line-height: var(--lego-leading-tight);
   font-weight: 400;
-  letter-spacing: 0em;
+  letter-spacing: 0;
 }
 
 /* Section Titles */
 .section-title {
-  font-size: 2rem;
+  font-size: var(--lego-type-h2);
   font-weight: 500;
-  margin-bottom: 40px;
-  color: #fff;
+  margin: 0;
+  color: var(--lego-text-primary);
   text-align: center;
-  letter-spacing: 0em;
-  line-height: 1.05;
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
 }
 
 /* Component Groups */
 .component-group {
-  margin-bottom: 50px;
-  padding: 30px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 32px;
+  margin: 0;
+  padding: var(--lego-space-7);
+  background: var(--lego-surface-panel);
+  border-radius: var(--lego-radius-lg);
   position: relative;
-}
-
-/* Apply standard border to component groups */
-.component-group {
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-max) solid var(--lego-surface-strong);
+  display: flex;
+  flex-direction: column;
+  gap: var(--lego-space-5);
 }
 
 /* 8pt Grid Indicator for Component Groups - REMOVED */
@@ -178,12 +682,12 @@
 } */
 
 .h3 {
-  font-size: 1.2rem;
+  font-size: var(--lego-type-h3);
   font-weight: 500;
-  margin-bottom: 25px;
-  color: rgba(255, 255, 255, 1);
-  letter-spacing: 0em;
-  line-height: 1.05;
+  margin: 0;
+  color: var(--lego-text-primary);
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
   text-align: center;
 }
 
@@ -191,7 +695,7 @@
 .component-showcase {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--lego-space-5);
   align-items: flex-start;
   justify-content: center;
   text-align: center;
@@ -218,39 +722,39 @@
 /* Editable Text Fields */
 .component-showcase [contenteditable="true"] {
   outline: none;
-  border-radius: 25px;
+  border-radius: var(--lego-radius-md);
   transition: all 0.2s ease;
 }
 
 .component-showcase [contenteditable="true"]:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--lego-surface-layer);
   padding: 2px 4px;
   margin: -2px -4px;
 }
 
 .component-showcase [contenteditable="true"]:focus {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--lego-surface-strong);
   padding: 2px 4px;
   margin: -2px -4px;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px var(--lego-surface-strong);
 }
 
 /* Component Name Pill - Appears above hovered element */
 .component-name-pill {
   background: rgba(255, 255, 255, 0.95);
-  color: #000;
-  padding: 8px 16px;
-  border-radius: 25px;
-  font-size: 0.8rem;
+  color: var(--lego-text-inverse);
+  padding: var(--lego-space-2) var(--lego-space-4);
+  border-radius: var(--lego-radius-md);
+  font-size: var(--lego-type-micro);
   font-weight: 500;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--lego-font-sans);
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: none;
   z-index: 10000;
   text-align: center;
   min-width: 100px;
-  max-width: 200px;
+  max-width: var(--lego-width-demo);
   overflow: hidden;
   text-overflow: ellipsis;
   
@@ -269,98 +773,75 @@
 
 /* Typography Showcase */
 .component-showcase .section.h1 {
-  font-size: clamp(2.9rem, 8vw, 3.9rem);
-  margin-bottom: 20px;
+  font-size: var(--lego-type-display);
+  margin-bottom: var(--lego-space-5);
   font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  color: var(--lego-text-primary);
   text-align: center;
-  max-width: 600px;
-  letter-spacing: 0em;
-  line-height: 1.05;
+  max-width: var(--lego-width-wide);
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
 }
 
 .component-showcase .section.h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
+  font-size: var(--lego-type-h2);
+  margin-bottom: var(--lego-space-5);
   font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  color: var(--lego-text-primary);
   text-align: center;
   max-width: 500px;
-  letter-spacing: 0em;
-  line-height: 1.05;
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
 }
 
 /* Universal Typography Classes */
 .section h1 {
-  font-size: clamp(2.9rem, 8vw, 3.9rem);
+  font-size: var(--lego-type-display);
   font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  color: var(--lego-text-primary);
   text-align: center;
-  letter-spacing: 0em;
-  line-height: 1.05;
-  margin: 0 0 2rem 0;  /* Top: 0, Right: 0, Bottom: 2rem, Left: 0 */
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
+  margin: 0 0 var(--lego-space-8) 0;
 }
 
 .section h2 {
-  font-size: 2rem;
+  font-size: var(--lego-type-h2);
   font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  color: var(--lego-text-primary);
   text-align: center;
-  letter-spacing: 0em;
-  line-height: 1.05;
-  margin: 0 0 1.5rem 0;  /* Top: 0, Right: 0, Bottom: 1.5rem, Left: 0 */
+  letter-spacing: 0;
+  line-height: var(--lego-leading-tight);
+  margin: 0 0 var(--lego-space-6) 0;
 }
 
-.h3 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
-  color: rgba(255, 255, 255, 1);
-  letter-spacing: 0em;
-  line-height: 1.05;
+.body-text,
+.body-text-highlight {
+  font-weight: 400;
   text-align: center;
+  line-height: var(--lego-leading-body);
+  font-size: var(--lego-type-body);
+  letter-spacing: 0;
+  margin: 0 0 var(--lego-space-4) 0;
 }
 
 .body-text {
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  line-height: 1.6;
-  font-size: 1.2rem;
-  letter-spacing: 0em;
-  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+  color: var(--lego-text-secondary);
 }
 
-.body-text-highlight {
-  font-weight: 400;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  line-height: 1.6;
-  font-size: 1.2rem;
-  letter-spacing: 0em;
-  margin: 0 0 1rem 0;  /* Top: 0, Right: 0, Bottom: 1rem, Left: 0 */
+.body-text-highlight,
+.text-highlight {
+  color: var(--lego-text-primary);
 }
 
 .component-showcase .body-text {
-  max-width: 400px;
-  margin-bottom: 1.5rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  line-height: 1.6;
-  font-size: 1.2rem;
-  letter-spacing: 0em;
+  max-width: var(--lego-width-demo);
+  margin-bottom: var(--lego-space-6);
 }
 
 .component-showcase .body-text-highlight {
-  max-width: 500px;
-  margin-bottom: 1.5rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 1);
-  text-align: center;
-  line-height: 1.6;
-  font-size: 1.2rem;
-  letter-spacing: 0em;
+  max-width: var(--lego-width-wide);
+  margin-bottom: var(--lego-space-6);
 }
 
 /* Beta Text - Pill-shaped outline with smaller body text */
@@ -368,19 +849,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 400;
-  color: #fff; /* White at 100% opacity */
-  font-size: 0.7rem; /* Beta text size */
+  font-weight: 500;
+  color: var(--lego-text-primary);
+  font-size: var(--lego-type-micro);
   line-height: 1;
-  letter-spacing: 0em;
-  padding: 2px 8px;
-  border: 1.2px solid #fff; /* White border at 100% opacity */
-  border-radius: 999px; /* Pill shape */
+  padding: calc(var(--lego-space-1) / 2) var(--lego-space-2);
+  border: var(--lego-border-thin) solid var(--lego-text-primary);
+  border-radius: var(--lego-radius-pill);
   background: transparent;
   white-space: nowrap;
   cursor: pointer;
-  height: 1.6em; /* Match full ascender/descender height of body text (1.6 line-height) */
-  transition: all 0.3s ease;
+  min-height: calc(var(--lego-space-4));
+  transition: transform var(--lego-transition), color var(--lego-transition);
   position: relative;
   overflow: hidden;
 }
@@ -388,11 +868,8 @@
 .beta-text::before {
   content: '';
   position: absolute;
-  top: -2px; /* Extend 2px beyond to fill edge gaps */
-  left: -2px; /* Extend 2px beyond to fill edge gaps */
-  right: -2px; /* Extend 2px beyond to fill edge gaps */
-  bottom: -2px; /* Extend 2px beyond to fill edge gaps */
-  background: #fff;
+  inset: calc(var(--lego-border-thin) * -1);
+  background: var(--lego-text-primary);
   border-radius: inherit;
   transform: scaleX(0);
   transform-origin: left; /* Fill from left to right */
@@ -401,8 +878,8 @@
 }
 
 .beta-text:hover {
-  color: #000; /* Black text on hover */
-  border-color: #fff; /* Keep white border */
+  color: var(--lego-text-inverse);
+  transform: translateY(-1px);
 }
 
 .beta-text:hover::before {
@@ -551,20 +1028,20 @@
 
 /* Pill Background Button Class - Same hover effect as header components */
 .component-showcase .pill-button {
-  font-size: 1.2rem;
+  font-size: var(--lego-type-h3);
   font-weight: 500;
-  color: rgba(255, 255, 255, 1);
+  color: var(--lego-text-primary);
   text-align: center;
-  padding: 6px 12px;
-  line-height: 1.2;
+  padding: var(--lego-space-2) var(--lego-space-4);
+  line-height: var(--lego-leading-tight);
   background: transparent;
-  border-radius: 999px;
+  border-radius: var(--lego-radius-pill);
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
-  max-width: 200px;
-  margin-bottom: 20px;
+  transition: transform var(--lego-transition), color var(--lego-transition);
+  max-width: var(--lego-width-compact);
+  margin-bottom: var(--lego-space-5);
 }
 
 .component-showcase .pill-button::before {
@@ -572,11 +1049,11 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--lego-surface-highlight);
   z-index: -1;
   opacity: 0;
   transform: scale(0.7);
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--lego-transition), opacity var(--lego-transition);
 }
 
 .component-showcase .pill-button:hover::before {
@@ -634,60 +1111,64 @@
 .component-showcase .cta-button,
 .component-showcase .cta-button2,
 .component-showcase .cta-button2-fixed {
-  margin: 0 10px 20px 10px;
+  margin: 0 var(--lego-space-3) var(--lego-space-5) var(--lego-space-3);
   flex-shrink: 0;
-  min-width: 100px;
+  min-width: var(--lego-space-14);
 }
 
 /* Override main styles for sandbox - White button theme */
 .component-showcase .cta-button {
-  background: #fff !important;
-  color: #000 !important;
-  border: none !important;
-  padding: 12px 21.5px !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-  transition: all 0.3s ease !important;
+  position: relative;
+  background: var(--lego-text-primary);
+  color: var(--lego-text-inverse);
+  border: none;
+  padding: var(--lego-space-3) var(--lego-space-6);
+  box-sizing: border-box;
+  transition: transform var(--lego-transition), box-shadow var(--lego-transition), padding var(--lego-transition);
 }
 
 /* CTA button arrow functionality - Clean SVG arrow only */
 .component-showcase .cta-button::after {
-  content: '' !important;
-  opacity: 0 !important;
-  position: absolute !important;
-  right: 18px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  width: 14px !important;
-  height: 14px !important;
-  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center !important;
-  background-size: contain !important;
-  filter: brightness(0) !important;
-  transition: opacity 0.3s ease !important;
-  border: none !important;
+  content: '';
+  opacity: 0;
+  position: absolute;
+  right: var(--lego-space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--lego-icon-xs);
+  height: var(--lego-icon-xs);
+  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center;
+  background-size: contain;
+  filter: brightness(0);
+  transition: opacity var(--lego-transition);
+  border: none;
 }
 
 .component-showcase .cta-button:hover {
-  padding-right: 40px !important;
+  padding-right: calc(var(--lego-space-6) + var(--lego-space-4));
+  transform: translateY(-2px);
+  box-shadow: var(--lego-shadow-soft);
 }
 
 .component-showcase .cta-button:hover::after {
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 .component-showcase .cta-button2,
 .component-showcase .cta-button2-fixed {
-  background: transparent !important;
-  color: #fff !important;
-  border: 2.5px solid #fff !important;
-  padding: 9.5px 21.5px !important;
-  box-sizing: border-box !important;
+  background: transparent;
+  color: var(--lego-text-primary);
+  border: var(--lego-border-heavy) solid var(--lego-text-primary);
+  padding: var(--lego-space-3) var(--lego-space-6);
+  box-sizing: border-box;
+  transition: background var(--lego-transition), color var(--lego-transition), border-color var(--lego-transition);
 }
 
 .component-showcase .cta-button2:hover,
 .component-showcase .cta-button2-fixed:hover {
-  background: #fff !important;
-  color: #000 !important;
+  background: var(--lego-text-primary);
+  color: var(--lego-text-inverse);
+  border-color: var(--lego-text-primary);
 }
 
 /* Button with Icon Styles */
@@ -696,78 +1177,71 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--lego-space-2);
 }
 
 .component-showcase .symbol-3d {
-  width: 18px;
-  height: 18px;
+  width: var(--lego-icon-sm);
+  height: var(--lego-icon-sm);
   flex-shrink: 0;
 }
 
 /* Icon styling for CTA button (white background, black text) */
 .component-showcase .cta-button.with-symbol .symbol-3d {
-  width: 18px !important;
-  height: 18px !important;
-  display: block !important;
-  opacity: 1 !important;
-  filter: brightness(0) !important; /* Makes SVG black */
+  display: block;
+  opacity: 1;
+  filter: brightness(0); /* Makes SVG black */
 }
 
 /* Icon styling for CTA2-fixed button (white border, white text) */
 .component-showcase .cta-button2-fixed.with-symbol .symbol-3d {
-  width: 18px !important;
-  height: 18px !important;
-  display: block !important;
-  opacity: 1 !important;
-  filter: brightness(0) invert(1) !important; /* Makes SVG white */
+  display: block;
+  opacity: 1;
+  filter: brightness(0) invert(1); /* Makes SVG white */
 }
 
 /* Icon styling for CTA2-fixed button hover (white background, black text) */
 .component-showcase .cta-button2-fixed.with-symbol:hover .symbol-3d {
-  width: 18px !important;
-  height: 18px !important;
-  display: block !important;
-  opacity: 1 !important;
-  filter: brightness(0) !important; /* Makes SVG black on hover */
+  display: block;
+  opacity: 1;
+  filter: brightness(0); /* Makes SVG black on hover */
 }
 
 /* Robust icon color system - works for any icon */
 .component-showcase .cta-button .symbol-3d {
-  filter: brightness(0) !important; /* Black icons on white background */
+  filter: brightness(0); /* Black icons on white background */
 }
 
 .component-showcase .cta-button2 .symbol-3d,
 .component-showcase .cta-button2-fixed .symbol-3d {
-  filter: brightness(0) invert(1) !important; /* White icons on transparent background */
+  filter: brightness(0) invert(1); /* White icons on transparent background */
 }
 
 .component-showcase .cta-button2:hover .symbol-3d,
 .component-showcase .cta-button2-fixed:hover .symbol-3d {
-  filter: brightness(0) !important; /* Black icons on white background on hover */
+  filter: brightness(0); /* Black icons on white background on hover */
 }
 
 /* Cards Showcase */
 .component-showcase .default-card {
   width: 100%;
-  max-width: 480px; /* Increased from 400px for better desktop width */
-  min-width: 280px; /* Reduced from 320px for better mobile fit */
-  flex: 1; /* Allow flexible sizing instead of flex-shrink: 0 */
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-radius: 25px;
-  padding: 32px;
-  padding-bottom: calc(32px + 24px + 24px); /* Add space for button (24px height + 12px margin + 12px bottom) */
+  max-width: var(--lego-width-card);
+  min-width: var(--lego-width-narrow);
+  flex: 1;
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-lg);
+  padding: var(--lego-space-8);
+  padding-bottom: calc(var(--lego-space-8) + var(--lego-space-6) + var(--lego-space-6));
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
   /* CSS Variables for concentricity */
-  --card-padding: 32px;
-  --concentric-spacing: 12px; /* Increased from 8px to 12px */
+  --card-padding: var(--lego-space-8);
+  --concentric-spacing: var(--lego-space-3);
   --button-margin: var(--concentric-spacing);
-  --button-height: 24px; /* Button height for calculations */
-  border-radius: 29px; /* Recalculated: 25px base + 4px (12px - 8px) = 29px */
+  --button-height: var(--lego-space-6);
 }
 
 /* Apply gradient border to default cards */
@@ -776,28 +1250,22 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.4) 0%,
-    rgba(255,255,255,0) 41%,
-    rgba(255,255,255,0) 57%,
-    rgba(255,255,255,0.4) 100%
-  );
+  background: var(--lego-border-gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1.4px;
+  padding: var(--lego-border-thin);
   pointer-events: none;
   z-index: 0;
 }
 
 .component-showcase .default-card h3 {
-  font-size: 1.5rem;
+  font-size: var(--lego-type-h4);
   font-weight: 500;
-  margin: 0 0 16px 0;
-  color: #fff;
-  line-height: 1.05;
+  margin: 0 0 var(--lego-space-4) 0;
+  color: var(--lego-text-primary);
+  line-height: var(--lego-leading-tight);
   position: relative;
   z-index: 1;
   word-wrap: break-word;
@@ -807,11 +1275,11 @@
 }
 
 .component-showcase .default-card p {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 1.2rem;
-  line-height: 1.6;
+  color: var(--lego-text-secondary);
+  font-size: var(--lego-type-body);
+  line-height: var(--lego-leading-body);
   font-weight: 400;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--lego-space-6) 0;
   position: relative;
   z-index: 1;
   word-wrap: break-word;
@@ -836,13 +1304,13 @@
   
   /* Updated styling - no outline, white background with opacity */
   text-decoration: none;
-  padding: 12px 21.5px;
-  border-radius: 999px;
-  transition: background 0.3s ease;
-  border: none;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 1rem;
+  padding: var(--lego-space-3) var(--lego-space-6);
+  border-radius: var(--lego-radius-pill);
+  transition: background var(--lego-transition), color var(--lego-transition);
+  border: var(--lego-border-thin) solid rgba(255, 255, 255, 0.45);
+  color: var(--lego-text-primary);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: var(--lego-type-caption);
   cursor: pointer;
   user-select: none;
   /* Button height: 24px (12px padding top + 12px padding bottom) */
@@ -850,17 +1318,17 @@
 }
 
 .component-showcase .default-card .default-card-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .component-showcase .waitlist-card {
-  min-width: 280px;
+  min-width: var(--lego-width-narrow);
   flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-radius: 25px;
-  padding: 32px;
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-lg);
+  padding: var(--lego-space-8);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
@@ -872,27 +1340,48 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.4) 0%,
-    rgba(255,255,255,0) 41%,
-    rgba(255,255,255,0) 57%,
-    rgba(255,255,255,0.4) 100%
-  );
+  background: var(--lego-border-gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1.4px;
+  padding: var(--lego-border-thin);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Dashboard project cards should use standard border, not gradient */
+/* Dashboard project cards */
+.component-showcase .project-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lego-space-5);
+  justify-content: center;
+}
+
 .component-showcase .project-cards .project-box,
 .component-showcase .account-card,
 .component-showcase .loading-card {
-  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  flex: 1 1 calc(50% - var(--lego-space-4));
+  max-width: calc(50% - var(--lego-space-4));
+  min-width: var(--lego-width-compact);
+  border-radius: var(--lego-radius-md);
+  background: var(--lego-surface-panel);
+  border: var(--lego-border-heavy) solid var(--lego-surface-strong);
+  padding: var(--lego-space-6);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.account-card {
+  width: 100%;
+  min-height: var(--lego-control-height);
+  display: flex;
+  align-items: center;
+}
+
+.project-box.new-project-card {
+  flex: 1 1 100%;
+  max-width: 100%;
 }
 
 .component-showcase .project-cards .project-box::before,
@@ -912,7 +1401,25 @@
 .component-showcase .upload-zone,
 .component-showcase .address-search-wrapper,
 .component-showcase .expand-button {
-  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-heavy) solid var(--lego-surface-strong);
+}
+
+.flight-path-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lego-space-2);
+  padding: var(--lego-space-3) var(--lego-space-5);
+  border-radius: var(--lego-radius-pill);
+  background: transparent;
+  color: var(--lego-text-primary);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: transform var(--lego-transition), opacity var(--lego-transition), background var(--lego-transition);
+}
+
+.flight-path-download-btn:hover {
+  background: var(--lego-surface-layer);
 }
 
 .component-showcase .popup-overlay::before,
@@ -932,6 +1439,17 @@
   border: none;
 }
 
+.expand-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--lego-control-height);
+  height: var(--lego-control-height);
+  border-radius: var(--lego-radius-md);
+  background: transparent;
+}
+
 .component-showcase .expand-button::before,
 .component-showcase .address-search-wrapper::before {
   display: block;
@@ -942,18 +1460,12 @@
   right: 0;
   bottom: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.4) 0%,
-    rgba(255,255,255,0) 41%,
-    rgba(255,255,255,0) 57%,
-    rgba(255,255,255,0.4) 100%
-  );
+  background: var(--lego-border-gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1.4px;
+  padding: var(--lego-border-thin);
   pointer-events: none;
   z-index: 0;
 }
@@ -962,38 +1474,40 @@
 .component-showcase .modal-popup-content,
 .component-showcase .accordion-section,
 .component-showcase .popup-overlay {
-  border-radius: 25px;
+  border-radius: var(--lego-radius-md);
+}
+
+.accordion-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height var(--lego-transition), opacity var(--lego-transition);
+}
+
+.accordion-section.active .accordion-content {
+  max-height: var(--lego-demo-height-md);
+  opacity: 1;
 }
 
 /* Modal Popup System - Exact copy of default-card styling */
 .component-showcase .modal-popup-overlay {
-  width: 100% !important;
-  max-width: 480px !important; /* Increased from 400px for better desktop width */
-  min-width: 280px !important; /* Reduced from 320px for better mobile fit */
-  flex: 1 !important; /* Allow flexible sizing instead of flex-shrink: 0 */
-  background: rgba(0, 0, 0, 0.1) !important;
-  backdrop-filter: blur(40px) !important;
-  -webkit-backdrop-filter: blur(40px) !important;
-  border-radius: 25px !important;
-  padding: 32px !important;
-  padding-bottom: calc(32px + 24px + 24px) !important; /* Add space for button (24px height + 12px margin + 12px bottom) */
-  position: relative !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  /* CSS Variables for concentricity */
-  --card-padding: 32px;
-  --concentric-spacing: 12px; /* Increased from 8px to 12px */
+  width: 100%;
+  max-width: var(--lego-width-card);
+  min-width: var(--lego-width-narrow);
+  flex: 1;
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-lg);
+  padding: var(--lego-space-8);
+  padding-bottom: calc(var(--lego-space-8) + var(--lego-space-6) + var(--lego-space-6));
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  --card-padding: var(--lego-space-8);
+  --concentric-spacing: var(--lego-space-3);
   --button-margin: var(--concentric-spacing);
-  --button-height: 24px; /* Button height for calculations */
-  border-radius: 29px !important; /* Recalculated: 25px base + 4px (12px - 8px) = 29px */
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  display: block !important;
-  align-items: unset !important;
-  justify-content: unset !important;
-  z-index: auto !important;
+  --button-height: var(--lego-space-6);
 }
 
 /* Apply gradient border to modal popup overlay */
@@ -1002,28 +1516,22 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.4) 0%,
-    rgba(255,255,255,0) 41%,
-    rgba(255,255,255,0) 57%,
-    rgba(255,255,255,0.4) 100%
-  );
+  background: var(--lego-border-gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1.4px;
+  padding: var(--lego-border-thin);
   pointer-events: none;
   z-index: 0;
 }
 
 .component-showcase .modal-popup-overlay h3 {
-  font-size: 1.5rem;
+  font-size: var(--lego-type-h4);
   font-weight: 500;
-  margin: 0 0 16px 0;
-  color: #fff;
-  line-height: 1.05;
+  margin: 0 0 var(--lego-space-4) 0;
+  color: var(--lego-text-primary);
+  line-height: var(--lego-leading-tight);
   position: relative;
   z-index: 1;
   word-wrap: break-word;
@@ -1033,11 +1541,11 @@
 }
 
 .component-showcase .modal-popup-overlay p {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 1.2rem;
-  line-height: 1.6;
+  color: var(--lego-text-secondary);
+  font-size: var(--lego-type-body);
+  line-height: var(--lego-leading-body);
   font-weight: 400;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--lego-space-6) 0;
   position: relative;
   z-index: 1;
   word-wrap: break-word;
@@ -1051,38 +1559,34 @@
 
 /* Modal Popup Button - Exact copy of default-card-button */
 .component-showcase .modal-popup-overlay .modal-popup-button {
-  position: absolute !important; /* Break out of card's padding system */
-  bottom: var(--button-margin) !important; /* 12px from card's bottom border (concentric spacing) */
-  left: var(--button-margin) !important; /* 12px from card's left border (concentric spacing) */
-  right: var(--button-margin) !important; /* 12px from card's right border (concentric spacing) */
-  z-index: 1 !important;
-  display: block !important; /* Make it a block element for full width */
-  text-align: center !important; /* Center the button text */
-  box-sizing: border-box !important; /* Include border in width calculation */
-  
-  /* Updated styling - no outline, white background with opacity */
-  text-decoration: none !important;
-  padding: 12px 21.5px !important;
-  border-radius: 999px !important;
-  transition: background 0.3s ease !important;
-  border: none !important;
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  font-size: 1rem !important;
-  font-weight: 400 !important;
-  cursor: pointer !important;
-  user-select: none !important;
-  /* Button height: 24px (12px padding top + 12px padding bottom) */
-  /* Now truly concentric: 12px from all card borders, regardless of card padding changes */
-  min-width: auto !important;
-  transform: none !important;
-  box-shadow: none !important;
+  position: absolute;
+  bottom: var(--button-margin);
+  left: var(--button-margin);
+  right: var(--button-margin);
+  z-index: 1;
+  display: block;
+  text-align: center;
+  box-sizing: border-box;
+  text-decoration: none;
+  padding: var(--lego-space-3) var(--lego-space-6);
+  border-radius: var(--lego-radius-pill);
+  transition: background var(--lego-transition), color var(--lego-transition);
+  border: var(--lego-border-thin) solid rgba(255, 255, 255, 0.45);
+  color: var(--lego-text-primary);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: var(--lego-type-caption);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  min-width: auto;
+  transform: none;
+  box-shadow: none;
 }
 
 .component-showcase .modal-popup-overlay .modal-popup-button:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  transform: none !important;
-  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.25);
+  transform: none;
+  box-shadow: none;
 }
 
 
@@ -1109,7 +1613,7 @@
 
 /* Map Showcase */
 .component-showcase .map-wrapper {
-  min-width: 400px;
+  min-width: var(--lego-width-demo);
   flex-shrink: 0;
 }
 
@@ -1117,13 +1621,13 @@
 .component-showcase .popup-overlay {
   position: relative;
   width: 100%;
-  max-width: 500px;
+  max-width: var(--lego-width-medium);
   flex-shrink: 0;
 }
 
 /* Progress Showcase */
 .component-showcase .apple-progress-tracker {
-  min-width: 400px;
+  min-width: var(--lego-width-demo);
   flex-shrink: 0;
 }
 
@@ -1139,18 +1643,18 @@
 
 @media (max-width: 768px) {
   .sandbox-container {
-    padding: 100px 16px 40px 16px;
+    padding: var(--lego-space-14) var(--lego-space-4) var(--lego-space-9) var(--lego-space-4);
   }
   
   /* Adjust card concentricity for smaller screens */
   .component-showcase .default-card {
-    --card-padding: 24px; /* Smaller padding on mobile */
-    --concentric-spacing: 9px; /* Proportional spacing (12px * 0.75) */
+    --card-padding: var(--lego-space-6); /* Smaller padding on mobile */
+    --concentric-spacing: calc(var(--lego-space-3) * 0.75); /* Proportional spacing */
     --button-margin: var(--concentric-spacing);
-    padding: 24px; /* Override desktop padding */
-    padding-bottom: calc(24px + 24px + 18px); /* Add space for button (24px height + 9px margin + 9px bottom) */
-    border-radius: 26px; /* Recalculated: 25px base + 1px (9px - 8px) = 26px */
-    min-width: 240px; /* Even smaller minimum for mobile */
+    padding: var(--lego-space-6); /* Override desktop padding */
+    padding-bottom: calc(var(--lego-space-6) * 2 + calc(var(--lego-space-3) * 0.75));
+    border-radius: var(--lego-radius-md);
+    min-width: calc(var(--lego-width-narrow) - var(--lego-space-9));
     max-width: 100%; /* Allow full width on mobile */
   }
   
@@ -1215,28 +1719,28 @@
   }
   
   .component-group {
-    padding: 20px;
+    padding: var(--lego-space-5);
   }
   
   .h3 {
-    font-size: 1.1rem;
+    font-size: var(--lego-type-body);
   }
   
   .component-showcase .default-card {
-    min-width: 200px;
+    min-width: var(--lego-width-tiny);
     max-width: 100%; /* Full width on very small screens */
-    padding: 20px;
-    padding-bottom: calc(20px + 24px + 16px);
-    --card-padding: 20px;
-    --concentric-spacing: 8px;
+    padding: var(--lego-space-5);
+    padding-bottom: calc(var(--lego-space-5) + var(--lego-space-6) + var(--lego-space-4));
+    --card-padding: var(--lego-space-5);
+    --concentric-spacing: var(--lego-space-2);
     --button-margin: var(--concentric-spacing);
-    border-radius: 25px; /* Back to base radius on very small screens */
+    border-radius: var(--lego-radius-md);
   }
   
   .component-name-pill {
-    font-size: 0.7rem;
-    padding: 5px 10px;
-    min-width: 70px;
+    font-size: var(--lego-type-micro);
+    padding: var(--lego-space-2) var(--lego-space-3);
+    min-width: calc(var(--lego-space-14) * 0.7);
   }
 }
 
@@ -1250,47 +1754,39 @@
 .component-showcase .color-swatch-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--lego-space-4);
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 20px;
-  border-radius: 40px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  min-width: 400px;
+  margin-bottom: var(--lego-space-5);
+  padding: var(--lego-space-5);
+  border-radius: var(--lego-radius-xl);
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  min-width: var(--lego-width-demo);
   box-sizing: border-box;
-}
-
-/* Apply standard border to color swatch container */
-.component-showcase .color-swatch-container {
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-max) solid var(--lego-surface-strong);
 }
 
 .component-showcase .color-swatch {
-  width: 80px;
-  height: 80px;
-  border-radius: 25px;
+  width: var(--lego-space-13);
+  height: var(--lego-space-13);
+  border-radius: var(--lego-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
+  color: var(--lego-text-secondary);
+  font-size: var(--lego-type-swatch);
   text-align: center;
   line-height: 1.2;
   box-sizing: border-box;
-}
-
-/* Apply standard border to color swatches */
-.component-showcase .color-swatch {
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-max) solid var(--lego-surface-strong);
 }
 
 .component-showcase .color-swatch.pure-white {
-  background: rgba(255, 255, 255, 1);
-  color: rgba(0, 0, 0, 0.8);
+  background: var(--lego-text-primary);
+  color: var(--lego-text-dark);
 }
 
 /* Opacity Stops against Dark Background (default sandbox background is dark) */
@@ -1309,79 +1805,71 @@
 
 /* Opacity Stops against Light Background */
 .component-showcase .light-background-container {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 40px;
-  margin-bottom: 20px;
-  min-width: 400px;
+  background: var(--lego-surface-light);
+  padding: var(--lego-space-5);
+  border-radius: var(--lego-radius-xl);
+  margin-bottom: var(--lego-space-5);
+  min-width: var(--lego-width-demo);
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--lego-space-4);
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-}
-
-/* Apply standard border to light background container */
-.component-showcase .light-background-container {
-  border: 3px solid rgba(0, 0, 0, 0.1);
+  border: var(--lego-border-max) solid var(--lego-border-light);
 }
 
 .component-showcase .light-background-container .color-swatch {
-  color: rgba(0, 0, 0, 0.8);
-}
-
-/* Apply standard border to light background color swatches */
-.component-showcase .light-background-container .color-swatch {
-  border: 3px solid rgba(0, 0, 0, 0.1);
+  color: var(--lego-text-dark);
+  border: var(--lego-border-max) solid var(--lego-border-light);
 }
 
 .component-showcase .light-background-container .opacity-stop-10-dark { background: rgba(0, 0, 0, 0.1); }
 .component-showcase .light-background-container .opacity-stop-20-dark { background: rgba(0, 0, 0, 0.2); }
 .component-showcase .light-background-container .opacity-stop-50-dark { background: rgba(0, 0, 0, 0.5); }
-.component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: rgba(255, 255, 255, 0.8); }
+.component-showcase .light-background-container .opacity-stop-100-dark { background: rgba(0, 0, 0, 1); color: var(--lego-text-secondary); }
 
 /* Border Demo Components */
 .component-showcase .standard-border-demo {
-  min-width: 320px;
-  max-width: 400px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-radius: 25px;
-  padding: 32px;
+  min-width: var(--lego-width-compact);
+  max-width: var(--lego-width-demo);
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-md);
+  padding: var(--lego-space-8);
   box-sizing: border-box;
 }
 
 /* Apply standard border to standard border demo */
 .component-showcase .standard-border-demo {
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: var(--lego-border-max) solid var(--lego-surface-strong);
 }
 
 .component-showcase .standard-border-demo h3 {
-  font-size: 1.5rem;
+  font-size: var(--lego-type-h4);
   font-weight: 500;
-  margin: 0 0 16px 0;
-  color: #fff;
-  line-height: 1.05;
+  margin: 0 0 var(--lego-space-4) 0;
+  color: var(--lego-text-primary);
+  line-height: var(--lego-leading-tight);
 }
 
 .component-showcase .standard-border-demo p {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 1.2rem;
-  line-height: 1.6;
+  color: var(--lego-text-secondary);
+  font-size: var(--lego-type-body);
+  line-height: var(--lego-leading-body);
   font-weight: 400;
   margin: 0;
 }
 
 .component-showcase .gradient-border-demo {
-  min-width: 320px;
-  max-width: 400px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-radius: 25px;
-  padding: 32px;
+  min-width: var(--lego-width-compact);
+  max-width: var(--lego-width-demo);
+  background: var(--lego-surface-glass);
+  backdrop-filter: blur(var(--lego-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lego-blur-lg));
+  border-radius: var(--lego-radius-md);
+  padding: var(--lego-space-8);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
@@ -1393,18 +1881,12 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.4) 0%,
-    rgba(255,255,255,0) 41%,
-    rgba(255,255,255,0) 57%,
-    rgba(255,255,255,0.4) 100%
-  );
+  background: var(--lego-border-gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1.4px;
+  padding: var(--lego-border-thin);
   pointer-events: none;
   z-index: 0;
 }
