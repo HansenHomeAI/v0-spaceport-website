@@ -438,6 +438,8 @@ class AuthStack(Stack):
         )
 
         # Create beta access admin Lambda function
+        shared_lambda_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "lambda", "shared"))
+
         beta_access_lambda = lambda_.Function(
             self, "Spaceport-BetaAccessAdminFunction",
             function_name=f"Spaceport-BetaAccessAdminFunction-{suffix}",
@@ -449,7 +451,7 @@ class AuthStack(Stack):
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
                     volumes=[
                         lambda_.DockerVolume(
-                            host_path=os.path.join(os.path.dirname(__file__), "..", "lambda", "shared"),
+                            host_path=shared_lambda_dir,
                             container_path="/shared-src",
                         ),
                     ],
