@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 
 import { buildApiUrl } from '../api-config';
@@ -48,18 +48,61 @@ async function authorizedFetch(input: RequestInfo, init: RequestInit = {}): Prom
 }
 
 export function useModelDeliveryAdmin() {
+  const computeEndpoints = useCallback(() => {
+    const configuredBase = buildApiUrl.modelDelivery.base();
+
+    let base = configuredBase;
+    if (!base && typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      const isProductionHost = host.endsWith('spcprt.com');
+      base = isProductionHost
+        ? 'https://rimocf046k.execute-api.us-west-2.amazonaws.com/prod'
+        : 'https://tbzxbstibh.execute-api.us-west-2.amazonaws.com/prod';
+    }
+
+    if (typeof window !== 'undefined') {
+      console.log('[model-delivery] compute endpoints base', base);
+    }
+
+    if (!base) {
+      return {
+        check: '',
+        resolve: '',
+        send: '',
+      } as const;
+    }
+
+    return {
+      check: `${base}/admin/model-delivery/check-permission`,
+      resolve: `${base}/admin/model-delivery/resolve-client`,
+      send: `${base}/admin/model-delivery/send`,
+    } as const;
+  }, []);
+
+  const [endpoints, setEndpoints] = useState(() => computeEndpoints());
+
   const [state, setState] = useState<PermissionState>({
     loading: true,
     hasPermission: false,
     error: null,
-    apiConfigured: Boolean(buildApiUrl.modelDelivery.checkPermission()),
+    apiConfigured: Boolean(endpoints.check),
   });
 
-  const endpoints = useMemo(() => ({
-    check: buildApiUrl.modelDelivery.checkPermission(),
-    resolve: buildApiUrl.modelDelivery.resolveClient(),
-    send: buildApiUrl.modelDelivery.send(),
-  }), []);
+  useEffect(() => {
+    if (!endpoints.check) {
+      const next = computeEndpoints();
+      if (next.check) {
+        setEndpoints(next);
+        setState(prev => ({ ...prev, apiConfigured: true }));
+      }
+    }
+  }, [computeEndpoints, endpoints.check]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('[model-delivery] endpoints', endpoints);
+    }
+  }, [endpoints]);
 
   const checkPermission = useCallback(async () => {
     if (!endpoints.check) {
@@ -83,7 +126,14 @@ export function useModelDeliveryAdmin() {
       setState(prev => ({ ...prev, loading: false, hasPermission: allowed }));
       return { hasPermission: allowed };
     } catch (error: any) {
-      setState(prev => ({ ...prev, loading: false, hasPermission: false, error: error?.message || 'Failed to verify permissions' }));
+      const message = error?.message || 'Failed to verify permissions';
+      const benignAuthError = /not authenticated|no current user/i.test(message);
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        hasPermission: false,
+        error: benignAuthError ? null : message,
+      }));
       return { hasPermission: false, error };
     }
   }, [endpoints.check]);

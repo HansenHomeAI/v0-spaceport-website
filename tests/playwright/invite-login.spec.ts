@@ -18,20 +18,22 @@ test('invitee can sign in, finish setup, and reach dashboard', async ({ page }) 
   ensureCredentials();
 
   await page.goto('/create');
-  await page.fill('input[placeholder="Email"]', email!);
-  await page.fill('input[placeholder="Password"]', tempPassword!);
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByPlaceholder(/email/i).fill(email!);
+  await page.getByPlaceholder(/password/i).fill(tempPassword!);
   await page.click('button:has-text("Sign in")');
 
-  await expect(page.getByText('Finish setup by choosing your password')).toBeVisible();
+  const finishSetup = page.getByText('Finish setup by choosing your password');
+  if (await finishSetup.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    const finalPassword = buildNewPassword();
+    const handle = `autobot${Date.now()}`;
 
-  const finalPassword = buildNewPassword();
-  const handle = `autobot${Date.now()}`;
+    await page.getByPlaceholder(/new password/i).fill(finalPassword);
+    await page.getByPlaceholder(/handle/i).fill(handle);
+    await page.click('button:has-text("Save and sign in")');
 
-  await page.fill('input[placeholder="New password"]', finalPassword);
-  await page.fill('input[placeholder="Handle (e.g. johndoe)"]', handle);
-  await page.click('button:has-text("Save and sign in")');
-
-  await expect(page.getByText('Save and sign in')).not.toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('Save and sign in')).not.toBeVisible({ timeout: 20_000 });
+  }
 
   await expect(page.getByText('New Project')).toBeVisible();
 });

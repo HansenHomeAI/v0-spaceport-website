@@ -498,6 +498,20 @@ class AuthStack(Stack):
             ),
         )
 
+        for response_type in (
+            apigw.ResponseType.DEFAULT_4_XX,
+            apigw.ResponseType.DEFAULT_5_XX,
+        ):
+            beta_access_api.add_gateway_response(
+                f"BetaAccess{response_type.name}",
+                type=response_type,
+                response_headers={
+                    "Access-Control-Allow-Origin": "'*'",
+                    "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                    "Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                },
+            )
+
         # Send invitation endpoint
         send_invitation_resource = beta_access_resource.add_resource("send-invitation")
         send_invitation_resource.add_method(
@@ -635,6 +649,20 @@ class AuthStack(Stack):
             authorization_type=apigw.AuthorizationType.COGNITO,
             authorizer=model_delivery_authorizer,
         )
+
+        for response_type in (
+            apigw.ResponseType.DEFAULT_4_XX,
+            apigw.ResponseType.DEFAULT_5_XX,
+        ):
+            model_delivery_api.add_gateway_response(
+                f"ModelDelivery{response_type.name}",
+                type=response_type,
+                response_headers={
+                    "Access-Control-Allow-Origin": "'*'",
+                    "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                    "Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                },
+            )
 
         CfnOutput(self, "ModelDeliveryAdminApiUrl", value=model_delivery_api.url)
 
