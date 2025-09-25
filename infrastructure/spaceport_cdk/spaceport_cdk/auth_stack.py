@@ -3,6 +3,7 @@ from aws_cdk import (
     Duration,
     RemovalPolicy,
     BundlingOptions,  # For installing Python dependencies
+    DockerVolume,
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -450,7 +451,7 @@ class AuthStack(Stack):
                 bundling=BundlingOptions(
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
                     volumes=[
-                        lambda_.DockerVolume(
+                        DockerVolume(
                             host_path=shared_lambda_dir,
                             container_path="/shared-src",
                         ),
