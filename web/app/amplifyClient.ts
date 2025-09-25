@@ -12,14 +12,14 @@ type AmplifyAuthConfig = {
 
 const PROD_AMPLIFY_CONFIG: AmplifyAuthConfig = Object.freeze({
   region: 'us-west-2',
-  userPoolId: 'us-west-2_tEP8gS6lO',
-  userPoolWebClientId: '5n3ht41skp9a4rm4v89obrdnbk',
+  userPoolId: 'us-west-2_SnOJuAJXa',
+  userPoolWebClientId: 'cvtn1c5dprnfbvpbtsuhit6vi',
 });
 
 const PREVIEW_AMPLIFY_CONFIG: AmplifyAuthConfig = Object.freeze({
   region: 'us-west-2',
-  userPoolId: 'us-west-2_vsNUylBC4',
-  userPoolWebClientId: '4eh6vbm57mt2fkaduph1s3qpjh',
+  userPoolId: 'us-west-2_a2jf3ldGV',
+  userPoolWebClientId: '3ctkuqu98pmug5k5kgc119sq67',
 });
 
 function resolveFallbackAuthConfig(): AmplifyAuthConfig | null {
@@ -139,4 +139,3 @@ export function configureAmplify(): boolean {
 export function isAuthAvailable(): boolean {
   return available;
 }
-
