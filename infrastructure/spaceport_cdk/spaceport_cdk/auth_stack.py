@@ -416,7 +416,9 @@ class AuthStack(Stack):
                                 "cognito-idp:AdminAddUserToGroup",
                                 "cognito-idp:AdminGetUser",
                                 "cognito-idp:ListUsers",
-                                "cognito-idp:ListGroups"
+                                "cognito-idp:ListGroups",
+                                "cognito-idp:AdminUpdateUserAttributes",
+                                "cognito-idp:AdminSetUserPassword"
                             ],
                             resources=[user_pool.user_pool_arn]
                         ),
@@ -458,7 +460,7 @@ class AuthStack(Stack):
                     ],
                     command=[
                         "bash", "-c",
-                        "set -euo pipefail; pip install -r requirements.txt -t /asset-output; cp -au . /asset-output; ls -R /shared-src; mkdir -p /asset-output/shared; cp -au /shared-src/. /asset-output/shared/"
+                        "set -euo pipefail; pip install -r requirements.txt -t /asset-output; cp -au . /asset-output; mkdir -p /asset-output/shared; cp -au /shared-src/. /asset-output/shared/"
                     ],
                 ),
             ),
