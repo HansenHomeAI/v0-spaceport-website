@@ -34,16 +34,22 @@ test('employee can access delivery controls', async ({ page }) => {
   await page.getByPlaceholder(/password/i).fill(tempPassword!);
   await page.click('button:has-text("Sign in")');
 
-  const finishSetup = page.getByText('Finish setup by choosing your password');
-  if (await finishSetup.isVisible({ timeout: 5_000 }).catch(() => false)) {
+  const saveAndSignIn = page.getByRole('button', { name: 'Save and sign in' });
+  const newPasswordInput = page.getByPlaceholder(/new password/i);
+  const needsPassword = await newPasswordInput
+    .waitFor({ state: 'visible', timeout: 10_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (needsPassword) {
     const finalPassword = buildNewPassword();
     const handle = `employee${Date.now()}`;
 
-    await page.getByPlaceholder(/new password/i).fill(finalPassword);
+    await newPasswordInput.fill(finalPassword);
     await page.getByPlaceholder(/handle/i).fill(handle);
-    await page.click('button:has-text("Save and sign in")');
+    await saveAndSignIn.click();
 
-    await expect(page.getByText('Save and sign in')).not.toBeVisible({ timeout: 20_000 });
+    await expect(saveAndSignIn).not.toBeVisible({ timeout: 20_000 });
   }
 
   await page.waitForTimeout(2000);
@@ -54,7 +60,9 @@ test('employee can access delivery controls', async ({ page }) => {
   await expect(page.getByText('Beta Access Management')).toBeVisible();
 
   await page.getByRole('button', { name: 'Send Model Link' }).click();
-  await expect(page.getByRole('dialog', { name: 'Send Model Link' })).toBeVisible();
+  const modalOverlay = page.locator('.model-delivery-modal-overlay');
+  await expect(modalOverlay).toBeVisible();
+  await expect(page.getByRole('dialog')).toBeVisible();
   await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(page.getByRole('dialog', { name: 'Send Model Link' })).not.toBeVisible();
+  await expect(modalOverlay).not.toBeVisible();
 });

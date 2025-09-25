@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useId } from 'react';
 
 import type {
   ModelDeliveryClient,
@@ -33,6 +33,8 @@ export default function ModelDeliveryModal({
   sendDelivery,
   onDelivered,
 }: ModelDeliveryModalProps): JSX.Element | null {
+  const headingId = useId();
+  const descriptionId = useId();
   const [clientEmail, setClientEmail] = useState('');
   const [client, setClient] = useState<ModelDeliveryClient | null>(null);
   const [projects, setProjects] = useState<ModelDeliveryProject[]>([]);
@@ -124,16 +126,22 @@ export default function ModelDeliveryModal({
   if (!open) return null;
 
   return (
-    <div className="model-delivery-modal-overlay" role="dialog" aria-modal="true">
+    <div
+      className="model-delivery-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={headingId}
+      aria-describedby={descriptionId}
+    >
       <div className="model-delivery-modal" role="document">
         <div className="model-delivery-header">
-          <h2>Send Model Link</h2>
+          <h2 id={headingId}>Send Model Link</h2>
           <button className="model-delivery-close" onClick={onClose} aria-label="Close model delivery modal">
             <img src="/assets/SpaceportIcons/Close.svg" alt="Close" />
           </button>
         </div>
 
-        <p className="model-delivery-description">
+        <p className="model-delivery-description" id={descriptionId}>
           Deliver the final 3D model to a client. The link is saved to their project and an email is sent instantly.
         </p>
 
