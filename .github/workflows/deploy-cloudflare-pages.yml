@@ -83,6 +83,17 @@ jobs:
           fi
           echo "Wrote $(wc -l < .env) vars to .env"
 
+      - name: Verify injected env values
+        run: |
+          if ! [ -s .env ]; then
+            echo ".env missing or empty" >&2
+            exit 1
+          fi
+          if grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env; then
+            echo "Detected empty NEXT_PUBLIC variables in .env" >&2
+            exit 1
+          fi
+
       - name: Build Next for Cloudflare (SSR)
         run: |
           npm run build

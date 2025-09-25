@@ -4,46 +4,6 @@ import { Amplify } from 'aws-amplify';
 let configured = false;
 let available = false;
 
-type AmplifyAuthConfig = {
-  region: string;
-  userPoolId: string;
-  userPoolWebClientId: string;
-};
-
-const PROD_AMPLIFY_CONFIG: AmplifyAuthConfig = Object.freeze({
-  region: 'us-west-2',
-  userPoolId: 'us-west-2_SnOJuAJXa',
-  userPoolWebClientId: 'cvtn1c5dprnfbvpbtsuhit6vi',
-});
-
-const PREVIEW_AMPLIFY_CONFIG: AmplifyAuthConfig = Object.freeze({
-  region: 'us-west-2',
-  userPoolId: 'us-west-2_a2jf3ldGV',
-  userPoolWebClientId: '3ctkuqu98pmug5k5kgc119sq67',
-});
-
-function resolveFallbackAuthConfig(): AmplifyAuthConfig | null {
-  const host = (() => {
-    if (typeof window !== 'undefined' && window.location?.hostname) {
-      return window.location.hostname.toLowerCase();
-    }
-    const hintedHost = process.env.NEXT_PUBLIC_SITE_HOST || '';
-    return hintedHost.toLowerCase();
-  })();
-
-  if (!host) return null;
-
-  if (host.endsWith('spcprt.com')) {
-    return PROD_AMPLIFY_CONFIG;
-  }
-
-  if (host.endsWith('pages.dev') || host.includes('preview') || host.includes('localhost')) {
-    return PREVIEW_AMPLIFY_CONFIG;
-  }
-
-  return null;
-}
-
 function removeMismatchedCognitoTokens(expectedIssuer: string): void {
   if (typeof window === 'undefined') return;
   try {
@@ -90,18 +50,9 @@ function removeMismatchedCognitoTokens(expectedIssuer: string): void {
 export function configureAmplify(): boolean {
   if (configured) return available;
 
-  let region = process.env.NEXT_PUBLIC_COGNITO_REGION || '';
-  let userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || '';
-  let userPoolWebClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '';
-
-  if (!region || !userPoolId || !userPoolWebClientId) {
-    const fallback = resolveFallbackAuthConfig();
-    if (fallback) {
-      region = region || fallback.region;
-      userPoolId = userPoolId || fallback.userPoolId;
-      userPoolWebClientId = userPoolWebClientId || fallback.userPoolWebClientId;
-    }
-  }
+  const region = process.env.NEXT_PUBLIC_COGNITO_REGION || '';
+  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || '';
+  const userPoolWebClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '';
 
   if (!region || !userPoolId || !userPoolWebClientId) {
     configured = true;
@@ -119,14 +70,14 @@ export function configureAmplify(): boolean {
       userPoolId,
       userPoolWebClientId,
       mandatorySignIn: false,
-      loginWith: { // support email and username sign-in if enabled
+      loginWith: {
         username: true,
         email: true,
       }
     },
     ssr: true,
   } as any);
-  // Expose Projects API URL for client calls (must be provided via env by environment)
+
   const apiUrl = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
   if (apiUrl) {
     (globalThis as any).NEXT_PUBLIC_PROJECTS_API_URL = apiUrl;
