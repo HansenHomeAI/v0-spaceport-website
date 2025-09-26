@@ -1,5 +1,5 @@
 reason: none
-last_step: granted staging+production delivery permissions for gabriel@spcprt.com and ethan@spcprt.com
-next_unblocked_step: package changes and open PR once preview + tests reviewed
+last_step: implemented /flight-viewer page and dependencies
+next_unblocked_step: push branch, monitor workflows, open PR after preview + tests green
 owner_action_needed: none
-updated: 2025-09-25T16:42:49Z
+updated: 2025-09-26T21:35:00Z

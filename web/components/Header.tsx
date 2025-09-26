@@ -21,6 +21,7 @@ export default function Header(): JSX.Element {
         <div className="nav-links-desktop">
           <Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Pricing</Link>
           <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
+          <Link href="/flight-viewer" className={pathname === '/flight-viewer' ? 'active' : ''}>Flight viewer</Link>
           <Link href="/create" className={pathname === '/create' ? 'active' : ''}>Create</Link>
           {/* Signup is now handled inline on the create page via AuthGate */}
         </div>
@@ -34,9 +35,9 @@ export default function Header(): JSX.Element {
       <div className="nav-links" style={{ display: expanded ? 'flex' : 'none' }}>
         <Link href="/pricing" onClick={close}>Pricing</Link>
         <Link href="/about" onClick={close}>About</Link>
+        <Link href="/flight-viewer" onClick={close}>Flight viewer</Link>
         <Link href="/create" onClick={close}>Create</Link>
       </div>
     </header>
   );
 }
-
