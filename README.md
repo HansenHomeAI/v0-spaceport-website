@@ -69,6 +69,7 @@ Spaceport AI is a comprehensive web application with integrated ML pipeline for 
 - 🚀 **[ML Pipeline Analysis](docs/ML_PIPELINE_ANALYSIS.md)** - 3D Gaussian Splatting implementation
 - 🔍 **[Troubleshooting Guide](docs/TROUBLESHOOTING_3DGS.md)** - Common issues and solutions
 - 📊 **[Project Status](docs/PROJECT_STATUS.md)** - Overall project health
+- 🗺️ **[3D Flight Path Viewer](docs/FLIGHT_PATH_VIEWER.md)** - Visualise CSV missions in Google Photorealistic 3D tiles
 
 ---
 

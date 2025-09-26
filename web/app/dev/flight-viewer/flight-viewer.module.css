@@ -1,0 +1,292 @@
+.viewerPage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 24px;
+  color: #f5f5f5;
+  background: linear-gradient(135deg, rgba(18, 21, 35, 0.98), rgba(9, 12, 24, 0.94));
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.titleRow h1 {
+  font-size: 2.4rem;
+  margin: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(148, 94, 255, 0.18);
+  color: #c9a6ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 24px;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.panel {
+  background: rgba(28, 32, 52, 0.72);
+  border: 1px solid rgba(125, 133, 180, 0.18);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 36px rgba(4, 6, 14, 0.45);
+}
+
+.panel h2 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  color: #d6dcff;
+}
+
+.dropZone {
+  border: 2px dashed rgba(125, 133, 180, 0.4);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(17, 19, 31, 0.6);
+}
+
+.dropZone input[type='file'] {
+  display: none;
+}
+
+.dropZone button {
+  align-self: center;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #8d6dff, #c964ff);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.dropZone button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(127, 88, 255, 0.35);
+}
+
+.dropZone small {
+  color: rgba(211, 214, 240, 0.7);
+}
+
+.warningList,
+.warningList li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.warningList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #ffb86c;
+  font-size: 0.85rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.statCard {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(15, 18, 32, 0.75);
+  border: 1px solid rgba(94, 102, 152, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(198, 205, 248, 0.7);
+}
+
+.statValue {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #f4f7ff;
+}
+
+.mapPanel {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 540px;
+  background: rgba(8, 11, 19, 0.8);
+  border: 1px solid rgba(72, 80, 120, 0.2);
+}
+
+.mapCanvas {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 7, 12, 0.6);
+}
+
+.mapCanvas[role='alert'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 24px;
+  color: #ff9aac;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.mapLegend {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(14, 18, 30, 0.68);
+  border: 1px solid rgba(107, 114, 162, 0.32);
+  backdrop-filter: blur(10px);
+  font-size: 0.85rem;
+  color: #d2d7ff;
+}
+
+.mapLegend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendSwatch {
+  display: inline-flex;
+  width: 18px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.toggleGroup {
+  display: inline-flex;
+  background: rgba(20, 24, 38, 0.8);
+  border-radius: 999px;
+  border: 1px solid rgba(90, 98, 148, 0.35);
+  overflow: hidden;
+}
+
+.toggleButton {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  border: none;
+  background: transparent;
+  color: rgba(210, 216, 255, 0.75);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.toggleButtonActive {
+  background: linear-gradient(135deg, rgba(129, 91, 255, 0.9), rgba(201, 100, 255, 0.9));
+  color: #fff;
+}
+
+.waypointTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  color: rgba(220, 225, 255, 0.88);
+}
+
+.waypointTable thead {
+  background: rgba(24, 28, 44, 0.85);
+}
+
+.waypointTable th,
+.waypointTable td {
+  padding: 8px 10px;
+  text-align: right;
+  border-bottom: 1px solid rgba(64, 74, 110, 0.25);
+}
+
+.waypointTable th:first-child,
+.waypointTable td:first-child {
+  text-align: left;
+}
+
+.mapCallout {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(14, 18, 30, 0.8);
+  border: 1px solid rgba(107, 114, 162, 0.32);
+  backdrop-filter: blur(12px);
+  color: rgba(220, 225, 255, 0.9);
+  font-size: 0.86rem;
+}
+
+.errorBox {
+  background: rgba(190, 58, 74, 0.18);
+  border: 1px solid rgba(255, 112, 138, 0.45);
+  color: #ff9aac;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1080px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .mapPanel {
+    min-height: 460px;
+  }
+}
+
+@media (max-width: 720px) {
+  .viewerPage {
+    padding: 24px 16px;
+  }
+
+  .mapLegend {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
