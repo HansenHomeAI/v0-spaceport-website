@@ -121,18 +121,23 @@ export default function FlightPath3DMap({
   const loaderRef = useRef<Loader | null>(null);
   const poiMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
+  const rawApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const rawMapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
+  const apiKey = typeof rawApiKey === 'string' ? rawApiKey.trim() : '';
+  const mapId = typeof rawMapId === 'string' ? rawMapId.trim() : '';
+  const hasApiKey = apiKey && apiKey !== 'undefined';
+  const resolvedApiKey = hasApiKey ? apiKey : null;
+  const resolvedMapId = mapId && mapId !== 'undefined' ? mapId : null;
 
   useEffect(() => {
     if (!containerRef.current) return;
-    if (!apiKey) {
+    if (!resolvedApiKey) {
       setError('Missing NEXT_PUBLIC_GOOGLE_MAPS_API_KEY.');
       return;
     }
 
     const loader = new Loader({
-      apiKey,
+      apiKey: resolvedApiKey,
       version: 'beta',
       libraries: ['maps3d', 'marker'],
     });
@@ -148,7 +153,7 @@ export default function FlightPath3DMap({
           loader.importLibrary('maps3d'),
         ]);
         const mapOptions: google.maps.MapOptions = {
-          mapId: mapId || undefined,
+          mapId: resolvedMapId || undefined,
           tilt: DEFAULT_TILT,
           heading: waypoints[0]?.headingDeg ?? 0,
           zoom: DEFAULT_ZOOM,
@@ -268,7 +273,9 @@ export default function FlightPath3DMap({
       }
       polylineRef.current = null;
     };
-  }, [apiKey, mapId]);
+    // useEffect reinitialises map only when credentials change; waypoint updates handled elsewhere.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedApiKey, resolvedMapId]);
 
   useEffect(() => {
     if (!initialised) return;

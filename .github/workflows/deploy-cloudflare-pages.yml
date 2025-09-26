@@ -59,6 +59,8 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -76,6 +78,8 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -122,10 +126,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           FEEDBACK_API_URL_PREVIEW: ${{ secrets.FEEDBACK_API_URL_PREVIEW }}
           FEEDBACK_API_URL_PROD: ${{ secrets.FEEDBACK_API_URL_PROD }}
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+          NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}
         run: |
           jq -n \
             --arg prod "$FEEDBACK_API_URL_PROD" \
             --arg preview "$FEEDBACK_API_URL_PREVIEW" \
+            --arg mapsKey "$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY" \
+            --arg mapsId "$NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID" \
             '{
               deployment_configs: {
                 production: {
@@ -133,7 +141,9 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod }
+                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod },
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $mapsKey },
+                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $mapsId }
                   }
                 },
                 preview: {
@@ -141,7 +151,9 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview }
+                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview },
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $mapsKey },
+                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $mapsId }
                   }
                 }
               }
