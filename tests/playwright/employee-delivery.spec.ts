@@ -3,19 +3,30 @@ import { test, expect } from '@playwright/test';
 const email = process.env.TEST_EMAIL;
 const tempPassword = process.env.TEST_PASSWORD;
 
-const ensureCredentials = () => {
+const requireEmployeeCreds = () => {
   if (!email || !tempPassword) {
     test.skip(true, 'TEST_EMAIL and TEST_PASSWORD environment variables are required');
   }
 };
 
 const buildNewPassword = () => {
-  const stamp = Date.now().toString().slice(-4);
-  return `Final${stamp}Aa!`;
+  const suffix = Date.now().toString().slice(-4);
+  return `Deliver${suffix}Aa!`;
 };
 
-test('invitee can sign in, finish setup, and reach dashboard', async ({ page }) => {
-  ensureCredentials();
+test('employee can access delivery controls', async ({ page }) => {
+  requireEmployeeCreds();
+
+  page.on('console', (message) => {
+    console.log('browser console:', message.text());
+  });
+
+  page.on('response', async (response) => {
+    const url = response.url();
+    if (url.includes('/admin/model-delivery/')) {
+      console.log('model-delivery response', response.status(), url);
+    }
+  });
 
   await page.goto('/create');
   await page.getByRole('button', { name: 'Login' }).click();
@@ -32,7 +43,7 @@ test('invitee can sign in, finish setup, and reach dashboard', async ({ page }) 
 
   if (needsPassword) {
     const finalPassword = buildNewPassword();
-    const handle = `autobot${Date.now()}`;
+    const handle = `employee${Date.now()}`;
 
     await newPasswordInput.fill(finalPassword);
     await page.getByPlaceholder(/handle/i).fill(handle);
@@ -41,5 +52,17 @@ test('invitee can sign in, finish setup, and reach dashboard', async ({ page }) 
     await expect(saveAndSignIn).not.toBeVisible({ timeout: 20_000 });
   }
 
+  await page.waitForTimeout(2000);
+
   await expect(page.getByText('New Project')).toBeVisible({ timeout: 20_000 });
+  console.log('model delivery trigger count', await page.locator('.model-delivery-trigger').count());
+  await expect(page.getByRole('button', { name: 'Send Model Link' })).toBeVisible();
+  await expect(page.getByText('Beta Access Management')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Send Model Link' }).click();
+  const modalOverlay = page.locator('.model-delivery-modal-overlay');
+  await expect(modalOverlay).toBeVisible();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(modalOverlay).not.toBeVisible();
 });

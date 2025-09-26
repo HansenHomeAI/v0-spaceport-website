@@ -5,7 +5,7 @@ import resend
 from typing import Optional, Dict, Any
 import logging
 
-from ..shared.password_utils import generate_user_friendly_password
+from shared.password_utils import generate_user_friendly_password
 
 # Configure logging
 logger = logging.getLogger()
@@ -66,13 +66,17 @@ def _check_beta_access_permission(user_id: str) -> bool:
     try:
         response = permissions_table.get_item(Key={'user_id': user_id})
         item = response.get('Item', {})
-        permission_type = item.get('permission_type', '')
-        status = item.get('status', '')
-        
-        # User has beta access admin permission if:
-        # 1. permission_type is 'beta_access_admin' AND
-        # 2. status is 'active'
-        return permission_type == 'beta_access_admin' and status == 'active'
+
+        if not item:
+            return False
+
+        if item.get('has_beta_access_permission') is True:
+            return True
+
+        permission_type = (item.get('permission_type') or '').lower()
+        status = (item.get('status') or '').lower()
+
+        return permission_type == 'beta_access_admin' and status != 'revoked'
     except Exception as e:
         logger.error(f"Failed to check permissions for user {user_id}: {e}")
         return False

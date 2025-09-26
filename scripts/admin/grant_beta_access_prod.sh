@@ -86,6 +86,7 @@ else
       \"user_id\": {\"S\": \"$USER_ID\"},
       \"email\": {\"S\": \"$EMAIL\"},
       \"has_beta_access_permission\": {\"BOOL\": true},
+      \"model_delivery_permission\": {\"BOOL\": true},
       \"granted_at\": {\"S\": \"$TIMESTAMP\"},
       \"granted_by\": {\"S\": \"admin-script\"}
     }" \

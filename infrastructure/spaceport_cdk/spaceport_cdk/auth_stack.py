@@ -3,6 +3,7 @@ from aws_cdk import (
     Duration,
     RemovalPolicy,
     BundlingOptions,  # For installing Python dependencies
+    DockerVolume,
     CfnOutput,
     aws_cognito as cognito,
     aws_apigateway as apigw,
@@ -415,7 +416,9 @@ class AuthStack(Stack):
                                 "cognito-idp:AdminAddUserToGroup",
                                 "cognito-idp:AdminGetUser",
                                 "cognito-idp:ListUsers",
-                                "cognito-idp:ListGroups"
+                                "cognito-idp:ListGroups",
+                                "cognito-idp:AdminUpdateUserAttributes",
+                                "cognito-idp:AdminSetUserPassword"
                             ],
                             resources=[user_pool.user_pool_arn]
                         ),
@@ -438,6 +441,8 @@ class AuthStack(Stack):
         )
 
         # Create beta access admin Lambda function
+        shared_lambda_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "lambda", "shared"))
+
         beta_access_lambda = lambda_.Function(
             self, "Spaceport-BetaAccessAdminFunction",
             function_name=f"Spaceport-BetaAccessAdminFunction-{suffix}",
@@ -447,9 +452,15 @@ class AuthStack(Stack):
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "beta_access_admin"),
                 bundling=BundlingOptions(
                     image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    volumes=[
+                        DockerVolume(
+                            host_path=shared_lambda_dir,
+                            container_path="/shared-src",
+                        ),
+                    ],
                     command=[
                         "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                        "set -euo pipefail; pip install -r requirements.txt -t /asset-output; cp -au . /asset-output; mkdir -p /asset-output/shared; cp -au /shared-src/. /asset-output/shared/"
                     ],
                 ),
             ),
@@ -497,6 +508,20 @@ class AuthStack(Stack):
                 cognito_user_pools=[user_pool],
             ),
         )
+
+        for response_type, label in (
+            (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
+            (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
+        ):
+            beta_access_api.add_gateway_response(
+                f"BetaAccess{label}",
+                type=response_type,
+                response_headers={
+                    "Access-Control-Allow-Origin": "'*'",
+                    "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                    "Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                },
+            )
 
         # Send invitation endpoint
         send_invitation_resource = beta_access_resource.add_resource("send-invitation")
@@ -635,6 +660,20 @@ class AuthStack(Stack):
             authorization_type=apigw.AuthorizationType.COGNITO,
             authorizer=model_delivery_authorizer,
         )
+
+        for response_type, label in (
+            (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
+            (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
+        ):
+            model_delivery_api.add_gateway_response(
+                f"ModelDelivery{label}",
+                type=response_type,
+                response_headers={
+                    "Access-Control-Allow-Origin": "'*'",
+                    "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                    "Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                },
+            )
 
         CfnOutput(self, "ModelDeliveryAdminApiUrl", value=model_delivery_api.url)
 
