@@ -3,7 +3,7 @@ name: Deploy Next.js to Cloudflare Pages
 on:
   workflow_dispatch:
   push:
-    branches: [ main, development, 'agent-*' ]
+    branches: [ main, development, 'agent-*', frontend-development ]
     paths:
       - 'web/**'
 
