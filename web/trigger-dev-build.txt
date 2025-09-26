@@ -10,5 +10,7 @@ Sept 24th, 12:01PM
 2025-09-25 16:14 UTC - auth fallback + model delivery fixes
 Sep 25th 10:57am
 2025-09-25 17:04 UTC - remove Amplify fallback, add env guard
-Sep 25th 1:39PM2025-09-26 19:06 UTC - add dev 3D flight path viewer
+Sep 25th 1:39PM
+2025-09-26 19:06 UTC - add dev 3D flight path viewer
 Sep 26th 1:52PM
+2025-09-26 20:55 UTC - refresh flight viewer map styling & tests

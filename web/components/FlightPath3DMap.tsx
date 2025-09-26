@@ -115,6 +115,7 @@ export default function FlightPath3DMap({
   const overlayRef = useRef<google.maps.WebGLOverlayView | null>(null);
   const overlayStateRef = useRef<OverlayState>({ ...INITIAL_OVERLAY_STATE });
   const mapRef = useRef<google.maps.Map | null>(null);
+  const polylineRef = useRef<google.maps.Polyline | null>(null);
   const [initialised, setInitialised] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const loaderRef = useRef<Loader | null>(null);
@@ -144,6 +145,7 @@ export default function FlightPath3DMap({
         const [{ Map }, markerLib] = await Promise.all([
           loader.importLibrary('maps') as Promise<google.maps.MapsLibrary>,
           loader.importLibrary('marker') as Promise<google.maps.MarkerLibrary>,
+          loader.importLibrary('maps3d'),
         ]);
         const mapOptions: google.maps.MapOptions = {
           mapId: mapId || undefined,
@@ -164,6 +166,14 @@ export default function FlightPath3DMap({
         const mapElement = containerRef.current as HTMLElement;
         const map = new Map(mapElement, mapOptions);
         mapRef.current = map;
+
+        const fallbackPolyline = new google.maps.Polyline({
+          map,
+          strokeColor: '#ffffff',
+          strokeOpacity: 0.58,
+          strokeWeight: 2,
+        });
+        polylineRef.current = fallbackPolyline;
 
         const overlay = new google.maps.WebGLOverlayView();
         overlayRef.current = overlay;
@@ -253,6 +263,10 @@ export default function FlightPath3DMap({
         poiMarkerRef.current.map = null;
       }
       poiMarkerRef.current = null;
+      if (polylineRef.current) {
+        polylineRef.current.setMap(null);
+      }
+      polylineRef.current = null;
     };
   }, [apiKey, mapId]);
 
@@ -262,6 +276,18 @@ export default function FlightPath3DMap({
     overlayState.needsUpdate = true;
     overlayRef.current?.requestRedraw();
   }, [initialised, waypoints, colorMode]);
+
+  useEffect(() => {
+    if (!initialised || !mapRef.current || !polylineRef.current) return;
+    if (waypoints.length < 2) {
+      polylineRef.current.setMap(null);
+      return;
+    }
+
+    const path = waypoints.map((wp) => ({ lat: wp.latitude, lng: wp.longitude }));
+    polylineRef.current.setPath(path);
+    polylineRef.current.setMap(mapRef.current);
+  }, [initialised, waypoints]);
 
   useEffect(() => {
     if (!initialised || !mapRef.current || waypoints.length === 0) return;

@@ -1,107 +1,187 @@
 .viewerPage {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
   padding: 32px 24px;
-  color: #f5f5f5;
-  background: linear-gradient(135deg, rgba(18, 21, 35, 0.98), rgba(9, 12, 24, 0.94));
   min-height: 100vh;
+  background: #050505;
+  color: #f4f4f4;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .header {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-width: 760px;
 }
 
 .titleRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
   gap: 12px;
+  align-items: baseline;
 }
 
 .titleRow h1 {
-  font-size: 2.4rem;
   margin: 0;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(148, 94, 255, 0.18);
-  color: #c9a6ff;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.mainContent {
-  display: grid;
-  grid-template-columns: minmax(280px, 360px) 1fr;
-  gap: 24px;
-}
-
-.leftColumn {
+.layout {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
-.panel {
-  background: rgba(28, 32, 52, 0.72);
-  border: 1px solid rgba(125, 133, 180, 0.18);
-  border-radius: 16px;
-  padding: 20px;
-  backdrop-filter: blur(18px);
-  box-shadow: 0 12px 36px rgba(4, 6, 14, 0.45);
+.mapStage {
+  position: relative;
+  border-radius: 24px;
+  background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  min-height: 72vh;
 }
 
-.panel h2 {
-  margin: 0 0 12px 0;
-  font-size: 1.1rem;
-  color: #d6dcff;
+.mapCanvas {
+  position: absolute;
+  inset: 0;
+  background: #080808;
+}
+
+.mapCanvas[role='alert'] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  text-align: center;
+  color: #ff9d9d;
+}
+
+.mapOverlay {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(360px, calc(100% - 48px));
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 20px 22px;
+  backdrop-filter: blur(14px);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .dropZone {
-  border: 2px dashed rgba(125, 133, 180, 0.4);
-  border-radius: 14px;
-  padding: 20px;
-  text-align: center;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(17, 19, 31, 0.6);
+  align-items: stretch;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.68);
 }
 
 .dropZone input[type='file'] {
   display: none;
 }
 
+.dropZone strong {
+  letter-spacing: 0.04em;
+}
+
 .dropZone button {
   align-self: center;
   padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  font-size: 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: #ffffff;
+  color: #0a0a0a;
   font-weight: 600;
-  background: linear-gradient(135deg, #8d6dff, #c964ff);
-  color: #fff;
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .dropZone button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(127, 88, 255, 0.35);
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.16);
 }
 
 .dropZone small {
-  color: rgba(211, 214, 240, 0.7);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.overlayFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toggleGroup {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  gap: 6px;
+}
+
+.toggleButton {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.58);
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.toggleButtonActive {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.legendSwatch {
+  width: 128px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffffff 0%, #9f9f9f 50%, #000000 100%);
 }
 
 .warningList,
@@ -114,133 +194,107 @@
 .warningList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  color: #ffb86c;
+  gap: 6px;
+  color: #ff9090;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.errorBox {
+  background: rgba(255, 95, 95, 0.12);
+  border: 1px solid rgba(255, 95, 95, 0.34);
+  color: #ffb8b8;
+  border-radius: 12px;
+  padding: 10px 12px;
   font-size: 0.85rem;
 }
 
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
+.mapCallout {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  max-width: 360px;
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.metricsStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .statCard {
-  padding: 14px;
-  border-radius: 12px;
-  background: rgba(15, 18, 32, 0.75);
-  border: 1px solid rgba(94, 102, 152, 0.25);
+  min-width: 160px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .statLabel {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(198, 205, 248, 0.7);
+  color: rgba(255, 255, 255, 0.52);
 }
 
 .statValue {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #f4f7ff;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
 }
 
-.mapPanel {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  min-height: 540px;
-  background: rgba(8, 11, 19, 0.8);
-  border: 1px solid rgba(72, 80, 120, 0.2);
-}
-
-.mapCanvas {
-  position: absolute;
-  inset: 0;
-  background: rgba(5, 7, 12, 0.6);
-}
-
-.mapCanvas[role='alert'] {
+.waypointsPanel {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0 24px;
-  color: #ff9aac;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-.mapLegend {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
+  flex-direction: column;
   gap: 16px;
-  padding: 10px 14px;
+}
+
+.panelHeading {
+  margin: 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.tableScroll {
+  max-height: 320px;
+  overflow: auto;
   border-radius: 12px;
-  background: rgba(14, 18, 30, 0.68);
-  border: 1px solid rgba(107, 114, 162, 0.32);
-  backdrop-filter: blur(10px);
-  font-size: 0.85rem;
-  color: #d2d7ff;
-}
-
-.mapLegend span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legendSwatch {
-  display: inline-flex;
-  width: 18px;
-  height: 8px;
-  border-radius: 999px;
-}
-
-.toggleGroup {
-  display: inline-flex;
-  background: rgba(20, 24, 38, 0.8);
-  border-radius: 999px;
-  border: 1px solid rgba(90, 98, 148, 0.35);
-  overflow: hidden;
-}
-
-.toggleButton {
-  padding: 6px 14px;
-  font-size: 0.82rem;
-  border: none;
-  background: transparent;
-  color: rgba(210, 216, 255, 0.75);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.toggleButtonActive {
-  background: linear-gradient(135deg, rgba(129, 91, 255, 0.9), rgba(201, 100, 255, 0.9));
-  color: #fff;
 }
 
 .waypointTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
-  color: rgba(220, 225, 255, 0.88);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .waypointTable thead {
-  background: rgba(24, 28, 44, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 0;
 }
 
 .waypointTable th,
 .waypointTable td {
-  padding: 8px 10px;
+  padding: 9px 10px;
   text-align: right;
-  border-bottom: 1px solid rgba(64, 74, 110, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .waypointTable th:first-child,
@@ -248,44 +302,51 @@
   text-align: left;
 }
 
-.mapCallout {
+.srOnly {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  background: rgba(14, 18, 30, 0.8);
-  border: 1px solid rgba(107, 114, 162, 0.32);
-  backdrop-filter: blur(12px);
-  color: rgba(220, 225, 255, 0.9);
-  font-size: 0.86rem;
-}
-
-.errorBox {
-  background: rgba(190, 58, 74, 0.18);
-  border: 1px solid rgba(255, 112, 138, 0.45);
-  color: #ff9aac;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 0.9rem;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 1080px) {
-  .mainContent {
-    grid-template-columns: 1fr;
+  .viewerPage {
+    padding: 24px 18px;
   }
 
-  .mapPanel {
-    min-height: 460px;
+  .mapOverlay {
+    position: static;
+    width: 100%;
+    border-radius: 18px;
+    backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.78);
+  }
+
+  .mapStage {
+    min-height: 62vh;
+  }
+
+  .mapCallout {
+    position: static;
+    margin-top: 16px;
   }
 }
 
 @media (max-width: 720px) {
-  .viewerPage {
-    padding: 24px 16px;
+  .metricsStrip {
+    flex-direction: column;
   }
 
-  .mapLegend {
+  .statCard {
+    width: 100%;
+  }
+
+  .legendRow {
     flex-direction: column;
     align-items: flex-start;
   }

@@ -65,33 +65,45 @@ export default function FlightViewerPage(): JSX.Element {
     event.preventDefault();
   }, []);
 
-  const statsEntries = useMemo(() => {
+  type StatsEntry = {
+    label: string;
+    value: string;
+    testId?: string;
+  };
+
+  const statsEntries = useMemo<StatsEntry[]>(() => {
     if (!analysis) return [];
     const { stats } = analysis;
     return [
       {
         label: 'Waypoints',
         value: stats.totalWaypoints.toLocaleString(),
+        testId: 'metric-waypoints',
       },
       {
         label: 'Horizontal Distance',
         value: formatDistanceMeters(stats.totalHorizontalDistanceMeters),
+        testId: 'metric-horizontal-distance',
       },
       {
         label: '3D Distance',
         value: formatDistanceMeters(stats.total3dDistanceMeters),
+        testId: 'metric-3d-distance',
       },
       {
         label: 'Vertical Gain',
         value: formatDistanceMeters(stats.totalVerticalGainMeters),
+        testId: 'metric-vertical-gain',
       },
       {
         label: 'Vertical Drop',
         value: formatDistanceMeters(stats.totalVerticalDropMeters),
+        testId: 'metric-vertical-drop',
       },
       {
         label: 'Altitude Range',
         value: `${formatFeet(stats.minAltitudeFt, 0)} → ${formatFeet(stats.maxAltitudeFt, 0)}`,
+        testId: 'metric-altitude-range',
       },
       {
         label: 'Tightest Curve',
@@ -99,22 +111,27 @@ export default function FlightViewerPage(): JSX.Element {
           stats.tightestCurveRadiusMeters !== null
             ? formatDistanceMeters(stats.tightestCurveRadiusMeters)
             : '—',
+        testId: 'metric-tightest-curve',
       },
       {
         label: 'Average Speed',
         value: formatSpeed(stats.averageSpeedMs),
+        testId: 'metric-average-speed',
       },
       {
         label: 'Est. Duration',
         value: formatDurationSeconds(stats.estimatedDurationSeconds),
+        testId: 'metric-estimated-duration',
       },
       {
         label: 'Max Slope',
         value: `${formatSlopePercent(stats.maxSlopePercent)} (${stats.maxSlopeDegrees?.toFixed(1) ?? '—'}°)`,
+        testId: 'metric-max-slope',
       },
       {
         label: 'Average Slope',
         value: formatSlopePercent(stats.averageSlopePercent),
+        testId: 'metric-average-slope',
       },
     ];
   }, [analysis]);
@@ -136,138 +153,17 @@ export default function FlightViewerPage(): JSX.Element {
     <div className={styles.viewerPage}>
       <header className={styles.header}>
         <div className={styles.titleRow}>
-          <h1>Flight Path 3D Sandbox</h1>
-          <span className={styles.badge}>Experimental Tools</span>
+          <h1>Flight Path 3D Viewer</h1>
+          <span className={styles.badge}>internal</span>
         </div>
         <p>
-          Upload a generated Litchi CSV to inspect the precise 3D geometry of the planned mission.
-          The viewer renders Google Maps photorealistic tiles with altitude-aware path overlays so
-          you can confirm clearances, curvature, and camera behaviour before flying.
+          Inspect generated flight plans in a photorealistic 3D context. Drop a Litchi CSV to review
+          actual curvature, altitude envelopes, and POI alignment before flying.
         </p>
       </header>
 
-      <div className={styles.mainContent}>
-        <aside className={styles.leftColumn}>
-          <section className={styles.panel}>
-            <h2>Load Flight CSV</h2>
-            <label
-              htmlFor="flightPathCsv"
-              className={styles.dropZone}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-            >
-              <input
-                id="flightPathCsv"
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,text/csv"
-                onChange={onFileChange}
-              />
-              <strong>{fileName ?? 'Drop your CSV here or browse files'}</strong>
-              <button type="button" onClick={() => fileInputRef.current?.click()}>
-                Choose CSV
-              </button>
-              <small>We keep everything client-side. No uploads leave this tab.</small>
-            </label>
-            {error ? <div className={styles.errorBox}>{error}</div> : null}
-            {!googleMapsApiKey ? (
-              <small style={{ color: '#ff9aac' }}>
-                Set <code>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> to enable the photorealistic map tiles.
-              </small>
-            ) : null}
-            {googleMapsApiKey && !googleMapsMapId ? (
-              <small style={{ color: 'rgba(235, 210, 120, 0.9)' }}>
-                Tip: provide a <code>NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID</code> linked to a Photorealistic 3D style for
-                accurate terrain context.
-              </small>
-            ) : null}
-            {analysis?.warnings?.length ? (
-              <ul className={styles.warningList}>
-                {analysis.warnings.map((warning) => (
-                  <li key={warning}>⚠️ {warning}</li>
-                ))}
-              </ul>
-            ) : null}
-          </section>
-
-          {analysis ? (
-            <section className={styles.panel}>
-              <h2>Flight Metrics</h2>
-              <div className={styles.statsGrid}>
-                {statsEntries.map((entry) => (
-                  <div key={entry.label} className={styles.statCard}>
-                    <span className={styles.statLabel}>{entry.label}</span>
-                    <span className={styles.statValue}>{entry.value}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {analysis ? (
-            <section className={styles.panel}>
-              <h2>Waypoints Preview</h2>
-              <table className={styles.waypointTable}>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                    <th>Altitude (ft)</th>
-                    <th>Slope %</th>
-                    <th>Curve (ft)</th>
-                    <th>Heading°</th>
-                    <th>Speed (m/s)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analysis.waypoints.slice(0, 16).map((waypoint) => (
-                    <tr key={waypoint.index}>
-                      <td>{waypoint.index + 1}</td>
-                      <td>{waypoint.latitude.toFixed(6)}</td>
-                      <td>{waypoint.longitude.toFixed(6)}</td>
-                      <td>{waypoint.altitudeFt.toFixed(1)}</td>
-                      <td>{waypoint.slopePercentFromPrev?.toFixed(1) ?? '—'}</td>
-                      <td>{waypoint.curveSizeFt.toFixed(2)}</td>
-                      <td>{waypoint.headingDeg.toFixed(0)}</td>
-                      <td>{waypoint.speedMs.toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {analysis.waypoints.length > 16 ? (
-                <small>
-                  Showing first 16 waypoints — CSV contains {analysis.waypoints.length.toLocaleString()}.
-                </small>
-              ) : null}
-            </section>
-          ) : null}
-        </aside>
-
-        <section className={styles.mapPanel}>
-          <div className={styles.mapLegend}>
-            <span className={styles.toggleGroup}>
-              <button
-                type="button"
-                className={`${styles.toggleButton} ${colorMode === 'slope' ? styles.toggleButtonActive : ''}`}
-                onClick={() => setColorMode('slope')}
-              >
-                Slope
-              </button>
-              <button
-                type="button"
-                className={`${styles.toggleButton} ${colorMode === 'curvature' ? styles.toggleButtonActive : ''}`}
-                onClick={() => setColorMode('curvature')}
-              >
-                Curvature
-              </button>
-            </span>
-            <span>
-              <span className={styles.legendSwatch} style={{ background: legend.gradient }} />
-              {legend.label}
-            </span>
-          </div>
-
+      <section className={styles.layout}>
+        <div className={styles.mapStage}>
           {analysis ? (
             <FlightPath3DMap
               key={`${fileName ?? 'no-file'}-${colorMode}`}
@@ -279,13 +175,152 @@ export default function FlightViewerPage(): JSX.Element {
               className={styles.mapCanvas}
             />
           ) : (
-            <div className={styles.mapCallout}>
-              Upload a CSV to render the 3D path. We recommend using the latest generator output so the
-              curvature, POI focus, and altitude ladders match your planned flight.
-            </div>
+            <FlightPath3DMap
+              key="empty-map"
+              waypoints={[]}
+              poi={null}
+              bounds={null}
+              center={null}
+              colorMode={colorMode}
+              className={styles.mapCanvas}
+            />
           )}
-        </section>
-      </div>
+
+          <aside className={styles.mapOverlay}>
+            <div>
+              <h2 className={styles.panelTitle}>Load Flight CSV</h2>
+              <label
+                htmlFor="flightPathCsv"
+                className={styles.dropZone}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+              >
+                <input
+                  id="flightPathCsv"
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={onFileChange}
+                />
+                <strong>{fileName ?? 'Drop your CSV here or browse files'}</strong>
+                <button type="button" onClick={() => fileInputRef.current?.click()}>
+                  Choose CSV
+                </button>
+                <small>Processing stays in-browser. No files are uploaded.</small>
+              </label>
+              {error ? <div className={styles.errorBox}>{error}</div> : null}
+            </div>
+
+            <div className={styles.overlayFooter}>
+              <span className={styles.toggleGroup}>
+                <button
+                  type="button"
+                  className={`${styles.toggleButton} ${colorMode === 'slope' ? styles.toggleButtonActive : ''}`}
+                  onClick={() => setColorMode('slope')}
+                >
+                  Slope
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.toggleButton} ${colorMode === 'curvature' ? styles.toggleButtonActive : ''}`}
+                  onClick={() => setColorMode('curvature')}
+                >
+                  Curvature
+                </button>
+              </span>
+
+              <span className={styles.legendRow}>
+                <span className={styles.legendSwatch} style={{ background: legend.gradient }} />
+                {legend.label}
+              </span>
+
+              {!googleMapsApiKey ? (
+                <small>
+                  Set <code>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> to stream Photorealistic 3D tiles.
+                </small>
+              ) : null}
+              {googleMapsApiKey && !googleMapsMapId ? (
+                <small>
+                  Tip: provide a <code>NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID</code> linked to a 3D style for best
+                  results.
+                </small>
+              ) : null}
+
+              {analysis?.warnings?.length ? (
+                <ul className={styles.warningList}>
+                  {analysis.warnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </aside>
+
+          {!analysis ? (
+            <div className={styles.mapCallout}>
+              Upload a CSV to render the 3D path. Use generator output so curvature, POI focus, and altitude
+              ladders match your planned flight.
+            </div>
+          ) : null}
+        </div>
+
+        {analysis ? (
+          <>
+            <h2 className={styles.srOnly}>Flight Metrics</h2>
+            <div className={styles.metricsStrip}>
+              {statsEntries.map((entry) => (
+                <div
+                  key={entry.label}
+                  className={styles.statCard}
+                  data-testid={entry.testId}
+                >
+                  <span className={styles.statLabel}>{entry.label}</span>
+                  <span className={styles.statValue}>{entry.value}</span>
+                </div>
+              ))}
+            </div>
+
+            <section className={styles.waypointsPanel}>
+              <h2 className={styles.panelHeading}>Waypoints Preview</h2>
+              <div className={styles.tableScroll}>
+                <table className={styles.waypointTable}>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Latitude</th>
+                      <th>Longitude</th>
+                      <th>Altitude (ft)</th>
+                      <th>Slope %</th>
+                      <th>Curve (ft)</th>
+                      <th>Heading°</th>
+                      <th>Speed (m/s)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analysis.waypoints.slice(0, 32).map((waypoint) => (
+                      <tr key={waypoint.index}>
+                        <td>{waypoint.index + 1}</td>
+                        <td>{waypoint.latitude.toFixed(6)}</td>
+                        <td>{waypoint.longitude.toFixed(6)}</td>
+                        <td>{waypoint.altitudeFt.toFixed(1)}</td>
+                        <td>{waypoint.slopePercentFromPrev?.toFixed(1) ?? '—'}</td>
+                        <td>{waypoint.curveSizeFt.toFixed(2)}</td>
+                        <td>{waypoint.headingDeg.toFixed(0)}</td>
+                        <td>{waypoint.speedMs.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {analysis.waypoints.length > 32 ? (
+                <small>
+                  Showing first 32 waypoints — CSV contains {analysis.waypoints.length.toLocaleString()}.
+                </small>
+              ) : null}
+            </section>
+          </>
+        ) : null}
+      </section>
     </div>
   );
 }

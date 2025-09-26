@@ -97,7 +97,7 @@ const HEADER_TRANSFORM = (header: string): string => {
   return header
     .trim()
     .toLowerCase()
-    .replace(/[()]/g, '')
+    .replace(/[()]/g, ' ')
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_|_$/g, '');
 };
