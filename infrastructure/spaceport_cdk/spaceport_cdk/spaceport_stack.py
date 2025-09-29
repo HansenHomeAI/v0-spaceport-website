@@ -232,6 +232,18 @@ class SpaceportStack(Stack):
             }
         )
 
+        self.model_file_generator_lambda = lambda_.Function(
+            self,
+            "SpaceportModelFileGeneratorFunction",
+            function_name=f"Spaceport-ModelFileGenerator-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/model_file_generator"),
+            role=self.lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+        )
+
         feedback_allowed_origin = env_config.get("feedbackAllowedOrigin", "*")
         self.feedback_lambda = lambda_.Function(
             self,

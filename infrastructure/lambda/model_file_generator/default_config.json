@@ -1,0 +1,255 @@
+{
+  "page": {
+    "title": "Hart Bench Ranch",
+    "overlay": {
+      "text": "Lot #1",
+      "visible": false,
+      "style": {
+        "color": "#ffffff",
+        "fontSize": "24px",
+        "fontFamily": "Arial, sans-serif"
+      }
+    },
+    "details": {
+      "headline": "Hart Bench Ranch",
+      "paragraphs": [
+        "Efficient and compact in a setting that rivals some of the best in the West, Hart Bench Ranch sets a new bar for what a small scale agricultural operation can be. Situated on an eponymous bench in the shadows of the Bitterroot Mountains' most scenic peaks lies a near-perfect assemblage of irrigated meadows, riparian-influenced gullies, and a complete set of operational and residential improvements.",
+        "With views of Trapper Peak and the most impressive prominences in the southern Bitterroot Range, the 2,895± square foot main home sits to the south of the Ranch's improvement cluster. Constructed in 2001, the log home imbues turn-of-the-century charm, reminiscent of some of the West's most adventurous eras. A guest home, two-car garage, two large shops, a greenhouse, and a Western-style saloon complement the residential components.",
+        "Supporting the agricultural operation, the ranch boasts a new, 9,288± square-foot hay barn with equipment storage and a five-stall horse barn with wash station, tack, and vet room. With 56± acres under irrigation, the ranch provides sufficient feed for livestock. Nearly five miles of new split rail fencing tie it together, creating several pastures, paddocks, and perimeter enclosure.",
+        "Recreationally, the ranch is home to deer and elk and fishing is available in the pond. Two stems of the Bitterroot River flow nearby, creating the main channel just north of the ranch. There are multiple access points locally into the Selway-Bitterroot Wilderness, one of the largest roadless areas in the lower 48, providing a vast array of recreational opportunities.",
+        "Darby, just ten minutes north, is a charming Western town offering staples and dining with Hamilton and its more robust population center and FBO, roughly 30 minutes north. Missoula, Montana's second-largest metro area, is roughly one hour and thirty minutes to the north.",
+        "Hart Bench Ranch provides a rare opportunity to own a complete yet manageable operation in a true Western setting."
+      ],
+      "disclaimerHtml": ""
+    }
+  },
+  "assets": {
+    "fonts": [
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Helvetica+Neue&display=swap"
+    ],
+    "icons": {
+      "detailsDefault": "https://raw.githubusercontent.com/HansenHomeAI/FigmaSVGButtons/main/DetailsIconDefault.svg",
+      "detailsActive": "https://raw.githubusercontent.com/HansenHomeAI/FigmaSVGButtons/main/Close2IconDefault.svg",
+      "compassOutline": "https://raw.githubusercontent.com/HansenHomeAI/FigmaSVGButtons/main/NorthOutline.svg",
+      "compassFilled": "https://raw.githubusercontent.com/HansenHomeAI/FigmaSVGButtons/main/NorthFilled.svg",
+      "fullscreenDefault": "https://raw.githubusercontent.com/HansenHomeAI/FigmaSVGButtons/main/FullScreenIconDefault.svg",
+      "fullscreenExit": "https://raw.githubusercontent.com/HansenHomeAI/FigmaSVGButtons/main/ExitFullScreenIconDefault.svg"
+    },
+    "tapDotIcons": [
+      { "name": "info", "url": "https://raw.githubusercontent.com/HansenHomeAI/WhiteInfoIcon/main/3TestIcons-8.png" },
+      { "name": "camera", "url": "https://raw.githubusercontent.com/HansenHomeAI/WhiteCameraIcon/main/3TestIcons-9.png" }
+    ]
+  },
+  "ui": {
+    "body": {
+      "backgroundColor": "#000000",
+      "touchAction": "none",
+      "userSelect": "none"
+    },
+    "typography": {
+      "menuFamily": "'Helvetica Neue', Arial, sans-serif",
+      "detailsFamily": "'Helvetica Neue', Arial, sans-serif"
+    },
+    "menu": {
+      "width": 105,
+      "height": 59,
+      "padding": 7,
+      "gap": 1,
+      "borderRadius": 30,
+      "background": "rgba(128, 128, 128, 0.30)",
+      "backdropBlur": 50
+    },
+    "menuButton": {
+      "size": 45,
+      "hoverScale": 1.05,
+      "activeScale": 0.95
+    },
+    "menuIcon": {
+      "size": 21
+    },
+    "details": {
+      "background": "rgba(20,20,20,0.75)",
+      "border": "1px solid rgba(255,255,255,0.25)",
+      "borderRadius": 24,
+      "boxShadow": "0 25px 45px rgba(0, 0, 0, 0.35)",
+      "maxWidth": "480px"
+    },
+    "layout": {
+      "menu": {
+        "left": 20,
+        "bottom": 20
+      },
+      "details": {
+        "top": 60,
+        "bottom": 60,
+        "left": 20,
+        "right": 20
+      },
+      "fontSizes": {
+        "heading": 30,
+        "paragraph": 17,
+        "disclaimer": 10
+      },
+      "padding": {
+        "vertical": 40,
+        "horizontal": 30
+      }
+    }
+  },
+  "viewer": {
+    "parameters": {
+      "camera": {
+        "minY": -0.2,
+        "maxZoomOut": 1000,
+        "startPosition": { "x": 0, "y": 0.5, "z": 4.7 }
+      },
+      "scene": {
+        "origin": { "x": 0, "y": -0.4, "z": 0 },
+        "targetLimit": { "x": 1, "z": 1 }
+      },
+      "animation": {
+        "autoRotate": true,
+        "startRadius": 2,
+        "speed": -0.003,
+        "initialAngle": 0,
+        "center": { "x": 0, "y": -0.5, "z": 0 }
+      },
+      "rebound": {
+        "speed": 0.2,
+        "elasticity": 0.05
+      },
+      "maxDistance": {
+        "base": 2,
+        "responsiveness": 1.7
+      },
+      "minDistance": {
+        "center": { "x": 0, "y": -0.5, "z": 0 },
+        "radius": 0.8
+      },
+      "developerMode": false,
+      "compass": {
+        "northDirection": 77
+      }
+    },
+    "hotspots": [
+      { "text": "Main House", "position": { "x": 1.2, "y": -0.39, "z": 0.9 }, "scale": 0.3 },
+      { "text": "Guest House", "position": { "x": 0.67, "y": -0.45, "z": -0.8 }, "scale": 0.3 },
+      { "text": "Garage", "position": { "x": 1, "y": -0.41, "z": 0.28 }, "scale": 0.3 },
+      { "text": "Shop/Saloon", "position": { "x": -0.17, "y": -0.46, "z": -1.73 }, "scale": 0.3 },
+      { "text": "Garage", "position": { "x": 0.36, "y": -0.46, "z": -1.58 }, "scale": 0.3 },
+      { "text": "Horse Barn", "position": { "x": -0.057, "y": -0.39, "z": 1.35 }, "scale": 0.3 },
+      { "text": "Hay Barn", "position": { "x": -0.56, "y": -0.3, "z": 2.24 }, "scale": 0.3 },
+      { "text": "Greenhouse", "position": { "x": -1.46, "y": -0.5, "z": -0.3 }, "scale": 0.3 },
+      { "text": "Outdoor Riding Arena", "position": { "x": 0, "y": -0.55, "z": 0.3 }, "scale": 0.2 }
+    ],
+    "soldHotspots": [],
+    "tapDots": [],
+    "tapDetectionRadius": 15,
+    "tapDotSizes": {
+      "dotBase": 0.04,
+      "iconBase": 0.08
+    },
+    "borderDots": {
+      "positions": [
+        { "name": "BorderDot_1", "position": { "x": -6.878193, "y": 0.077806, "z": 13.167727 } },
+        { "name": "BorderDot_2", "position": { "x": -5.938526, "y": 0.038088, "z": 13.525839 } },
+        { "name": "BorderDot_3", "position": { "x": -5.818309, "y": 0.02656, "z": 13.571684 } },
+        { "name": "BorderDot_4", "position": { "x": -2.448949, "y": 0.123047, "z": 14.851578 } },
+        { "name": "BorderDot_5", "position": { "x": -1.02641, "y": 0.102909, "z": 15.392592 } },
+        { "name": "BorderDot_6", "position": { "x": 3.572359, "y": 0.172733, "z": 17.195967 } },
+        { "name": "BorderDot_7", "position": { "x": 5.715625, "y": -0.154551, "z": 11.471423 } },
+        { "name": "BorderDot_8", "position": { "x": 2.679111, "y": -0.174303, "z": 10.297943 } },
+        { "name": "BorderDot_9", "position": { "x": 4.880557, "y": -0.460688, "z": 4.61516 } },
+        { "name": "BorderDot_10", "position": { "x": 3.409587, "y": -0.425706, "z": 4.053903 } },
+        { "name": "BorderDot_11", "position": { "x": 5.438287, "y": -0.797607, "z": -1.127734 } },
+        { "name": "BorderDot_12", "position": { "x": 3.130762, "y": -0.875326, "z": -1.748823 } },
+        { "name": "BorderDot_13", "position": { "x": 2.755512, "y": -0.865828, "z": -1.8491 } },
+        { "name": "BorderDot_14", "position": { "x": 1.545343, "y": -0.864138, "z": -2.25001 } },
+        { "name": "BorderDot_15", "position": { "x": 0.998566, "y": -0.887877, "z": -2.455425 } },
+        { "name": "BorderDot_16", "position": { "x": 0.218198, "y": -0.859605, "z": -3.261807 } },
+        { "name": "BorderDot_17", "position": { "x": -0.144018, "y": -0.891144, "z": -3.780447 } },
+        { "name": "BorderDot_18", "position": { "x": -0.845834, "y": -0.614805, "z": -2.012696 } },
+        { "name": "BorderDot_19", "position": { "x": -2.365555, "y": -0.613988, "z": 1.80977 } },
+        { "name": "BorderDot_20", "position": { "x": -2.396761, "y": -0.614961, "z": 1.884764 } },
+        { "name": "BorderDot_21", "position": { "x": -4.638479, "y": -0.329859, "z": 7.526484 } },
+        { "name": "BorderDot_22", "position": { "x": -5.775157, "y": -0.041734, "z": 10.385389 } },
+        { "name": "BorderDot_23", "position": { "x": -6.416996, "y": 0.072384, "z": 12.004727 } },
+        { "name": "BorderDot_24", "position": { "x": -6.878193, "y": 0.077806, "z": 13.167727 } }
+      ],
+      "connections": [
+        { "start": "BorderDot_1", "end": "BorderDot_2" },
+        { "start": "BorderDot_2", "end": "BorderDot_3" },
+        { "start": "BorderDot_3", "end": "BorderDot_4" },
+        { "start": "BorderDot_4", "end": "BorderDot_5" },
+        { "start": "BorderDot_5", "end": "BorderDot_6" },
+        { "start": "BorderDot_6", "end": "BorderDot_7" },
+        { "start": "BorderDot_7", "end": "BorderDot_8" },
+        { "start": "BorderDot_8", "end": "BorderDot_9" },
+        { "start": "BorderDot_9", "end": "BorderDot_10" },
+        { "start": "BorderDot_10", "end": "BorderDot_11" },
+        { "start": "BorderDot_11", "end": "BorderDot_12" },
+        { "start": "BorderDot_12", "end": "BorderDot_13" },
+        { "start": "BorderDot_13", "end": "BorderDot_14" },
+        { "start": "BorderDot_14", "end": "BorderDot_15" },
+        { "start": "BorderDot_15", "end": "BorderDot_16" },
+        { "start": "BorderDot_16", "end": "BorderDot_17" },
+        { "start": "BorderDot_17", "end": "BorderDot_18" },
+        { "start": "BorderDot_18", "end": "BorderDot_19" },
+        { "start": "BorderDot_19", "end": "BorderDot_20" },
+        { "start": "BorderDot_20", "end": "BorderDot_21" },
+        { "start": "BorderDot_21", "end": "BorderDot_22" },
+        { "start": "BorderDot_22", "end": "BorderDot_23" },
+        { "start": "BorderDot_23", "end": "BorderDot_24" }
+      ],
+      "params": {
+        "radius": 0.01,
+        "widthSegments": 16,
+        "heightSegments": 16,
+        "color": 16753920
+      }
+    },
+    "zones": [
+      {
+        "name": "Zone1",
+        "center": { "x": 0, "y": 0, "z": 0 },
+        "radius": 100.6,
+        "splatsOn": ["splat2"],
+        "splatsOff": ["splat1"]
+      }
+    ],
+    "splats": {
+      "splat1": {
+        "source": "",
+        "position": { "x": 0.063, "y": 0, "z": -0.165 },
+        "rotation": { "x": 0, "y": 0, "z": 0 },
+        "scale": 1,
+        "particleReveal": {
+          "enabled": true,
+          "duration": 3.33
+        }
+      },
+      "splat2": {
+        "source": "https://lumalabs.ai/embed/b61d9dfa-7a08-49ae-af54-66dcc83ad6d5?mode=sparkles&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false",
+        "position": { "x": 1, "y": 0.5, "z": -1 },
+        "rotation": { "x": 3, "y": 0, "z": 6.3 },
+        "scale": 1,
+        "particleReveal": {
+          "enabled": true,
+          "duration": 3.33
+        }
+      }
+    }
+  },
+  "interactions": {
+    "animationDurationMs": 1500,
+    "compass": {
+      "toleranceDegrees": 15
+    },
+    "scrollbar": {
+      "topMargin": 30,
+      "bottomMargin": 30,
+      "fadeDelayMs": 1500,
+      "minThumbHeight": 20
+    }
+  }
+}
