@@ -10,6 +10,13 @@ const PREFIX = (process.env.NEXT_PUBLIC_MODEL_DELIVERY_PREFIX || 'models').repla
 const HTML_CACHE_SECONDS = Number(process.env.NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS || '60');
 const ASSET_CACHE_SECONDS = Number(process.env.NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS || String(30 * 24 * 60 * 60));
 
+type CloudflareRequestInit = RequestInit & {
+  cf?: {
+    cacheEverything?: boolean;
+    cacheTtl?: number;
+  };
+};
+
 function resolveBaseUrl(): string {
   if (BASE_URL.trim()) {
     return BASE_URL.replace(/\/$/, '');
@@ -88,13 +95,15 @@ export async function GET(request: NextRequest, context: { params: { path?: stri
   const cacheTtl = isHtml ? HTML_CACHE_SECONDS : ASSET_CACHE_SECONDS;
 
   try {
-    const upstream = await fetch(url, {
+    const init: CloudflareRequestInit = {
       method: 'GET',
       cf: { cacheEverything: true, cacheTtl },
       headers: {
         Accept: isHtml ? 'text/html,application/xhtml+xml' : '*/*',
       },
-    });
+    };
+
+    const upstream = await fetch(url, init);
 
     if (!upstream.ok) {
       if (upstream.status === 404) {
@@ -148,13 +157,15 @@ export async function HEAD(request: NextRequest, context: { params: { path?: str
   const cacheTtl = isHtml ? HTML_CACHE_SECONDS : ASSET_CACHE_SECONDS;
 
   try {
-    const upstream = await fetch(url, {
+    const init: CloudflareRequestInit = {
       method: 'HEAD',
       cf: { cacheEverything: true, cacheTtl },
       headers: {
         Accept: isHtml ? 'text/html,application/xhtml+xml' : '*/*',
       },
-    });
+    };
+
+    const upstream = await fetch(url, init);
 
     const headers = new Headers(upstream.headers);
     const cacheHeader = headers.get('Cache-Control') ?? computeCacheHeader(isHtml);
