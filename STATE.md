@@ -1,5 +1,5 @@
 reason: active
-last_step: parameterized viewer template and added model generator lambda + CLI
-next_unblocked_step: push branch, monitor deploy workflows, and prepare PR once previews/tests are green
+last_step: model generator branch pushed; Cloudflare + CDK workflows green
+next_unblocked_step: draft PR on development branch once review context ready
 owner_action_needed: none
-updated: 2025-09-29T19:37:10Z
+updated: 2025-09-29T19:49:15Z
