@@ -13,13 +13,14 @@ def test_collect_upload_items_from_single_file(tmp_path: Path):
     html = tmp_path / 'viewer.html'
     html.write_text('<html></html>', encoding='utf-8')
 
-    items, root = deploy_model.collect_upload_items(html, 'models', 'demo-hash', entrypoint=None)
+    items, root, entry_key = deploy_model.collect_upload_items(html, 'models', 'demo-hash', entrypoint=None)
 
     assert root == tmp_path
     assert len(items) == 1
     upload = items[0]
     assert upload.dest_key == 'models/demo-hash/viewer.html'
     assert upload.source == html
+    assert entry_key == 'models/demo-hash/viewer.html'
 
 
 def test_collect_upload_items_from_directory(tmp_path: Path):
@@ -31,7 +32,7 @@ def test_collect_upload_items_from_directory(tmp_path: Path):
     (assets / 'main.js').write_text('console.log("ok")', encoding='utf-8')
     (assets / 'styles.css').write_text('body{}', encoding='utf-8')
 
-    items, root = deploy_model.collect_upload_items(bundle, 'deliveries', 'scan-123', entrypoint=None)
+    items, root, entry_key = deploy_model.collect_upload_items(bundle, 'deliveries', 'scan-123', entrypoint=None)
 
     assert root == bundle
     keys = sorted(item.dest_key for item in items)
@@ -45,6 +46,7 @@ def test_collect_upload_items_from_directory(tmp_path: Path):
         assets / 'main.js',
         assets / 'styles.css',
     }
+    assert entry_key == 'deliveries/scan-123/index.html'
 
 
 def test_build_hash_is_deterministic(tmp_path: Path):

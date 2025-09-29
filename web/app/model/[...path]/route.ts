@@ -3,12 +3,33 @@ import type { NextRequest } from 'next/server';
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-const REGION = process.env.NEXT_PUBLIC_MODEL_DELIVERY_REGION || 'us-west-2';
-const BUCKET = process.env.NEXT_PUBLIC_MODEL_DELIVERY_BUCKET || '';
-const BASE_URL = process.env.NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL || '';
-const PREFIX = (process.env.NEXT_PUBLIC_MODEL_DELIVERY_PREFIX || 'models').replace(/^\/+|\/+$/g, '');
-const HTML_CACHE_SECONDS = Number(process.env.NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS || '60');
-const ASSET_CACHE_SECONDS = Number(process.env.NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS || String(30 * 24 * 60 * 60));
+const REGION =
+  process.env.NEXT_PUBLIC_MODEL_DELIVERY_REGION ||
+  process.env.MODEL_DELIVERY_REGION ||
+  'us-west-2';
+const BUCKET =
+  process.env.NEXT_PUBLIC_MODEL_DELIVERY_BUCKET ||
+  process.env.MODEL_DELIVERY_BUCKET ||
+  '';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL ||
+  process.env.MODEL_DELIVERY_BASE_URL ||
+  '';
+const PREFIX = (
+  process.env.NEXT_PUBLIC_MODEL_DELIVERY_PREFIX ||
+  process.env.MODEL_DELIVERY_PREFIX ||
+  'models'
+).replace(/^\/+|\/+$/g, '');
+const HTML_CACHE_SECONDS = Number(
+  process.env.NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS ||
+    process.env.MODEL_DELIVERY_HTML_CACHE_SECONDS ||
+    '60',
+);
+const ASSET_CACHE_SECONDS = Number(
+  process.env.NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS ||
+    process.env.MODEL_DELIVERY_ASSET_CACHE_SECONDS ||
+    String(30 * 24 * 60 * 60),
+);
 
 type CloudflareRequestInit = RequestInit & {
   cf?: {

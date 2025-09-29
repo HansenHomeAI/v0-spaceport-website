@@ -82,8 +82,14 @@ def build_hash(sources: Sequence[Path], hash_length: int) -> str:
     return hasher.hexdigest()[:hash_length]
 
 
-def collect_upload_items(input_path: Path, prefix: str, slug: str, *, entrypoint: Optional[str]) -> Tuple[List[UploadItem], Path]:
-    """Return files to upload and the resolved root directory."""
+def collect_upload_items(
+    input_path: Path,
+    prefix: str,
+    slug: str,
+    *,
+    entrypoint: Optional[str],
+) -> Tuple[List[UploadItem], Path, str]:
+    """Return files to upload, root directory, and the entry object key."""
     if not input_path.exists():
         raise FileNotFoundError(f"Input path does not exist: {input_path}")
 
@@ -99,6 +105,7 @@ def collect_upload_items(input_path: Path, prefix: str, slug: str, *, entrypoint
         key = f"{safe_prefix}/{slug}/{entry_name}"
         items.append(UploadItem(source=input_path, dest_key=key))
         target_root = root
+        entry_key = key
     elif input_path.is_dir():
         target_root = input_path
         index_name = entrypoint or "index.html"
@@ -111,10 +118,15 @@ def collect_upload_items(input_path: Path, prefix: str, slug: str, *, entrypoint
             rel_path = path.relative_to(target_root)
             dest_key = f"{safe_prefix}/{slug}/{rel_path.as_posix()}"
             items.append(UploadItem(source=path, dest_key=dest_key))
+            if rel_path.as_posix() == index_name:
+                entry_key = dest_key
     else:
         raise ValueError(f"Unsupported input path type: {input_path}")
 
-    return items, target_root
+    if 'entry_key' not in locals():
+        raise RuntimeError("Failed to resolve entry key for upload bundle")
+
+    return items, target_root, entry_key
 
 
 def ensure_bucket(client, bucket: str, region: str, *, create: bool = False) -> None:
@@ -182,10 +194,18 @@ def upload_files(
         else:
             extra_args["CacheControl"] = f"public, max-age={asset_cache_seconds}, immutable"
 
-        extra_args["ACL"] = "public-read"
-
         LOG.debug("Uploading %s -> s3://%s/%s", item.source, bucket, item.dest_key)
-        s3_client.upload_file(str(item.source), bucket, item.dest_key, ExtraArgs=extra_args)
+        try:
+            s3_client.upload_file(str(item.source), bucket, item.dest_key, ExtraArgs=extra_args)
+        except ClientError as exc:
+            error_code = exc.response.get("Error", {}).get("Code")
+            if error_code == "AccessControlListNotSupported" and "ACL" in extra_args:
+                LOG.debug("Bucket %s rejects ACLs; retrying without ACL", bucket)
+                retry_args = {k: v for k, v in extra_args.items() if k != "ACL"}
+                s3_client.upload_file(str(item.source), bucket, item.dest_key, ExtraArgs=retry_args)
+                extra_args = retry_args
+            else:
+                raise
 
         manifest.append(
             {
@@ -271,7 +291,6 @@ def write_metadata_file(
         Body=payload.encode("utf-8"),
         ContentType="application/json",
         CacheControl="public, max-age=300, must-revalidate",
-        ACL="public-read",
     )
 
 
@@ -317,7 +336,7 @@ def run(argv: Optional[Sequence[str]] = None) -> int:
     slug = f"{slug_root}-{short_hash}"
     LOG.info("Using slug %s", slug)
 
-    items, root_dir = collect_upload_items(input_path, args.prefix, slug, entrypoint=args.entrypoint)
+    items, root_dir, entry_key = collect_upload_items(input_path, args.prefix, slug, entrypoint=args.entrypoint)
     LOG.info("Prepared %d files for upload (root=%s)", len(items), root_dir)
 
     if args.dry_run:
@@ -361,7 +380,7 @@ def run(argv: Optional[Sequence[str]] = None) -> int:
     write_metadata_file(s3_client, args.bucket, metadata_payload, key=metadata_key)
 
     live_url = compose_live_url(args.domain, slug)
-    origin_html_url = build_s3_https_url(args.bucket, args.region, f"{s3_base_key}/index.html")
+    origin_html_url = build_s3_https_url(args.bucket, args.region, entry_key)
 
     purge_result = None
     if args.purge_cloudflare:

@@ -488,28 +488,34 @@ class SpaceportStack(Stack):
     def _get_or_create_public_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
         """Create or import an S3 bucket with public read for model delivery."""
         candidates = [preferred_name, fallback_name]
-        for bucket_name in candidates:
-            if self._bucket_exists(bucket_name):
-                print(f"Importing existing public S3 bucket: {bucket_name}")
-                return s3.Bucket.from_bucket_name(self, construct_id, bucket_name)
+        bucket: s3.IBucket
+        bucket_name: str
 
-        print(f"Creating new public S3 bucket: {preferred_name}")
-        bucket = s3.Bucket(
-            self,
-            construct_id,
-            bucket_name=preferred_name,
-            encryption=s3.BucketEncryption.S3_MANAGED,
-            removal_policy=RemovalPolicy.RETAIN,
-            auto_delete_objects=False,
-            public_read_access=True,
-            block_public_access=s3.BlockPublicAccess(
-                block_public_acls=False,
-                ignore_public_acls=False,
-                block_public_policy=False,
-                restrict_public_buckets=False,
-            ),
-            website_index_document="index.html",
-        )
+        for candidate in candidates:
+            if self._bucket_exists(candidate):
+                print(f"Importing existing public S3 bucket: {candidate}")
+                bucket = s3.Bucket.from_bucket_name(self, construct_id, candidate)
+                bucket_name = candidate
+                break
+        else:
+            print(f"Creating new public S3 bucket: {preferred_name}")
+            bucket = s3.Bucket(
+                self,
+                construct_id,
+                bucket_name=preferred_name,
+                encryption=s3.BucketEncryption.S3_MANAGED,
+                removal_policy=RemovalPolicy.RETAIN,
+                auto_delete_objects=False,
+                public_read_access=False,
+                block_public_access=s3.BlockPublicAccess(
+                    block_public_acls=False,
+                    ignore_public_acls=False,
+                    block_public_policy=False,
+                    restrict_public_buckets=False,
+                ),
+                object_ownership=s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+            )
+            bucket_name = preferred_name
 
         bucket.add_to_resource_policy(
             iam.PolicyStatement(

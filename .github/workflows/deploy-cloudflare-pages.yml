@@ -59,6 +59,12 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_BUCKET=spaceport-model-delivery-prod" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_REGION=us-west-2" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_PREFIX=models" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL=" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS=60" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS=2592000" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -76,6 +82,12 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_BUCKET=spaceport-model-delivery-staging" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_REGION=us-west-2" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_PREFIX=models" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL=" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS=60" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS=2592000" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -133,7 +145,13 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod }
+                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod },
+                    NEXT_PUBLIC_MODEL_DELIVERY_BUCKET: { value: "spaceport-model-delivery-prod" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_REGION: { value: "us-west-2" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_PREFIX: { value: "models" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL: { value: "" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS: { value: "60" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS: { value: "2592000" }
                   }
                 },
                 preview: {
@@ -141,7 +159,13 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview }
+                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview },
+                    NEXT_PUBLIC_MODEL_DELIVERY_BUCKET: { value: "spaceport-model-delivery-staging" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_REGION: { value: "us-west-2" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_PREFIX: { value: "models" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL: { value: "" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS: { value: "60" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS: { value: "2592000" }
                   }
                 }
               }
