@@ -58,6 +58,14 @@ class SpaceportStack(Stack):
             fallback_name="spaceport-uploads"
         )
         print(f"🆕 Main Spaceport stack owns upload bucket: {self.upload_bucket.bucket_name}")
+
+        # Public model delivery bucket exposed via Cloudflare routing
+        self.model_delivery_bucket = self._get_or_create_public_s3_bucket(
+            construct_id="SpaceportModelDeliveryBucket",
+            preferred_name=f"spaceport-model-delivery-{suffix}",
+            fallback_name="spaceport-model-delivery"
+        )
+        print(f"📦 Model delivery bucket ready: {self.model_delivery_bucket.bucket_name}")
         
         # Dynamic DynamoDB tables - import if exist, create if not
         self.file_metadata_table = self._get_or_create_dynamodb_table(
@@ -359,6 +367,13 @@ class SpaceportStack(Stack):
             value=self.upload_bucket.bucket_name,
             description=f"Upload S3 bucket name for {suffix}"
         )
+
+        CfnOutput(
+            self,
+            "ModelDeliveryBucketName",
+            value=self.model_delivery_bucket.bucket_name,
+            description=f"Model delivery bucket for {suffix}"
+        )
         
         CfnOutput(
             self,
@@ -469,6 +484,43 @@ class SpaceportStack(Stack):
             encryption=s3.BucketEncryption.S3_MANAGED,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
+
+    def _get_or_create_public_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
+        """Create or import an S3 bucket with public read for model delivery."""
+        candidates = [preferred_name, fallback_name]
+        for bucket_name in candidates:
+            if self._bucket_exists(bucket_name):
+                print(f"Importing existing public S3 bucket: {bucket_name}")
+                return s3.Bucket.from_bucket_name(self, construct_id, bucket_name)
+
+        print(f"Creating new public S3 bucket: {preferred_name}")
+        bucket = s3.Bucket(
+            self,
+            construct_id,
+            bucket_name=preferred_name,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            removal_policy=RemovalPolicy.RETAIN,
+            auto_delete_objects=False,
+            public_read_access=True,
+            block_public_access=s3.BlockPublicAccess(
+                block_public_acls=False,
+                ignore_public_acls=False,
+                block_public_policy=False,
+                restrict_public_buckets=False,
+            ),
+            website_index_document="index.html",
+        )
+
+        bucket.add_to_resource_policy(
+            iam.PolicyStatement(
+                effect=iam.Effect.ALLOW,
+                principals=[iam.AnyPrincipal()],
+                actions=["s3:GetObject"],
+                resources=[bucket.arn_for_objects("*")],
+            )
+        )
+
+        return bucket
 
     def _get_or_create_dynamodb_table(self, construct_id: str, preferred_name: str, fallback_name: str, 
                                      partition_key_name: str, partition_key_type: dynamodb.AttributeType) -> dynamodb.ITable:

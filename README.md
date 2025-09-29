@@ -70,6 +70,23 @@ Spaceport AI is a comprehensive web application with integrated ML pipeline for 
 - 🔍 **[Troubleshooting Guide](docs/TROUBLESHOOTING_3DGS.md)** - Common issues and solutions
 - 📊 **[Project Status](docs/PROJECT_STATUS.md)** - Overall project health
 
+## 📦 **Model Delivery Automation**
+
+Deploy production-ready 3D model viewers directly from the CLI:
+
+```bash
+python3 scripts/deployment/deploy_model.py ./dist/index.html "Downtown Rooftop Scan"
+```
+
+The command uploads the bundle to the public model delivery bucket, ensures Cloudflare can cache it, writes a manifest, and prints the final URL (for example `https://spcprt.com/model/downtown-rooftop-scan-1a2b3c4d`).
+
+Environment expectations:
+- `SPACEPORT_MODEL_BUCKET` / `SPACEPORT_MODEL_REGION` – target S3 bucket
+- `NEXT_PUBLIC_MODEL_DELIVERY_*` – surfaced to the Next.js app to proxy viewer traffic
+- Optional `SPACEPORT_MODEL_CLOUDFLARE_*` – purge cache after each deployment
+
+Need to ship additional assets? Pass a directory instead of a single HTML file; every file is uploaded with optimal cache headers, and the Edge runtime serves nested paths under `/model/<slug>/...`.
+
 ---
 
 ## 🏗️ **Architecture Overview**
