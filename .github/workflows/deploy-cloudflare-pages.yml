@@ -62,7 +62,7 @@ jobs:
             echo "NEXT_PUBLIC_MODEL_DELIVERY_BUCKET=spaceport-model-delivery-prod" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_REGION=us-west-2" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_PREFIX=models" >> .env
-            echo "NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL=" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL=https://spaceport-model-delivery-prod.s3.us-west-2.amazonaws.com" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS=60" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS=2592000" >> .env
             # Analytics environment variables
@@ -85,7 +85,7 @@ jobs:
             echo "NEXT_PUBLIC_MODEL_DELIVERY_BUCKET=spaceport-model-delivery-staging" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_REGION=us-west-2" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_PREFIX=models" >> .env
-            echo "NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL=" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL=https://spaceport-model-delivery-staging.s3.us-west-2.amazonaws.com" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS=60" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS=2592000" >> .env
             # Analytics environment variables
@@ -149,7 +149,7 @@ jobs:
                     NEXT_PUBLIC_MODEL_DELIVERY_BUCKET: { value: "spaceport-model-delivery-prod" },
                     NEXT_PUBLIC_MODEL_DELIVERY_REGION: { value: "us-west-2" },
                     NEXT_PUBLIC_MODEL_DELIVERY_PREFIX: { value: "models" },
-                    NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL: { value: "" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL: { value: "https://spaceport-model-delivery-prod.s3.us-west-2.amazonaws.com" },
                     NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS: { value: "60" },
                     NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS: { value: "2592000" }
                   }
@@ -163,7 +163,7 @@ jobs:
                     NEXT_PUBLIC_MODEL_DELIVERY_BUCKET: { value: "spaceport-model-delivery-staging" },
                     NEXT_PUBLIC_MODEL_DELIVERY_REGION: { value: "us-west-2" },
                     NEXT_PUBLIC_MODEL_DELIVERY_PREFIX: { value: "models" },
-                    NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL: { value: "" },
+                    NEXT_PUBLIC_MODEL_DELIVERY_BASE_URL: { value: "https://spaceport-model-delivery-staging.s3.us-west-2.amazonaws.com" },
                     NEXT_PUBLIC_MODEL_DELIVERY_HTML_CACHE_SECONDS: { value: "60" },
                     NEXT_PUBLIC_MODEL_DELIVERY_ASSET_CACHE_SECONDS: { value: "2592000" }
                   }
