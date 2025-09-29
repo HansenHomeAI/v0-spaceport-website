@@ -11,7 +11,7 @@ import pytest
 
 @pytest.fixture(scope="module")
 def lambda_module():
-    module_path = Path('infrastructure/lambda/model_file_generator/lambda_function.py')
+    module_path = Path('infrastructure/spaceport_cdk/lambda/model_file_generator/lambda_function.py')
     spec = importlib.util.spec_from_file_location('model_file_generator_lambda', module_path)
     if spec is None or spec.loader is None:
         raise RuntimeError('Unable to load lambda module for tests')

@@ -21,7 +21,7 @@ def load_overrides(config_path: Optional[Path]) -> Dict[str, Any]:
 
 
 def load_lambda_module() -> types.ModuleType:
-    module_path = Path(__file__).resolve().parents[1] / 'infrastructure' / 'lambda' / 'model_file_generator' / 'lambda_function.py'
+    module_path = Path(__file__).resolve().parents[1] / 'infrastructure' / 'spaceport_cdk' / 'lambda' / 'model_file_generator' / 'lambda_function.py'
     if not module_path.exists():
         raise FileNotFoundError(f'Lambda module not found at {module_path}')
     spec = importlib.util.spec_from_file_location('model_file_generator_lambda', module_path)
