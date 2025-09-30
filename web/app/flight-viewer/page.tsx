@@ -175,15 +175,8 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
   
   const waypointArray = Array.isArray(placemarks) ? placemarks : [placemarks];
   
-  // Sort waypoints by wpml:index to ensure correct flight order
-  const sortedWaypoints = waypointArray.sort((a, b) => {
-    const indexA = Number(a?.["wpml:index"] ?? 0);
-    const indexB = Number(b?.["wpml:index"] ?? 0);
-    return indexA - indexB;
-  });
-  
   const rows: PreparedRow[] = [];
-  for (const mark of sortedWaypoints) {
+  for (const mark of waypointArray) {
     const coords = mark?.Point?.coordinates;
     const executeHeight = mark?.["wpml:executeHeight"];
     const speed = mark?.["wpml:waypointSpeed"];
