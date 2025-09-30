@@ -175,20 +175,23 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
   
   const waypointArray = Array.isArray(placemarks) ? placemarks : [placemarks];
   
+  // Sort waypoints by wpml:index to ensure correct flight order
+  const sortedWaypoints = waypointArray.sort((a, b) => {
+    const indexA = Number(a?.["wpml:index"] ?? 0);
+    const indexB = Number(b?.["wpml:index"] ?? 0);
+    return indexA - indexB;
+  });
+  
   const rows: PreparedRow[] = [];
-  for (const mark of waypointArray) {
+  for (const mark of sortedWaypoints) {
     const coords = mark?.Point?.coordinates;
     const executeHeight = mark?.["wpml:executeHeight"];
     const speed = mark?.["wpml:waypointSpeed"];
     const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
     const gimbalPitch = mark?.["wpml:actionGroup"]?.["wpml:action"]?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
     const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
-    const index = mark?.["wpml:index"];
     
-    if (!coords || !executeHeight) {
-      console.log(`Skipping waypoint ${index}: missing coords or executeHeight`);
-      continue;
-    }
+    if (!coords || !executeHeight) continue;
     
     const [lon, lat] = coords.split(",").map(Number);
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
@@ -228,7 +231,6 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
     });
   }
   
-  console.log(`KMZ parsed: ${rows.length} waypoints (indices 0-${rows.length-1})`);
   return rows;
 }
 
@@ -422,7 +424,6 @@ export default function FlightViewerPage(): JSX.Element {
                 prepared = result.data
                   .map(sanitizeRow)
                   .filter((value): value is PreparedRow => value !== null);
-                console.log(`CSV parsed: ${prepared.length} waypoints`);
                 resolve();
               },
               error: err => reject(err),
