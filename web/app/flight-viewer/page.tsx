@@ -183,8 +183,12 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
     const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
     const gimbalPitch = mark?.["wpml:actionGroup"]?.["wpml:action"]?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
     const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+    const index = mark?.["wpml:index"];
     
-    if (!coords || !executeHeight) continue;
+    if (!coords || !executeHeight) {
+      console.log(`Skipping waypoint ${index}: missing coords or executeHeight`);
+      continue;
+    }
     
     const [lon, lat] = coords.split(",").map(Number);
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
@@ -224,6 +228,7 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
     });
   }
   
+  console.log(`KMZ parsed: ${rows.length} waypoints (indices 0-${rows.length-1})`);
   return rows;
 }
 
@@ -417,6 +422,7 @@ export default function FlightViewerPage(): JSX.Element {
                 prepared = result.data
                   .map(sanitizeRow)
                   .filter((value): value is PreparedRow => value !== null);
+                console.log(`CSV parsed: ${prepared.length} waypoints`);
                 resolve();
               },
               error: err => reject(err),
