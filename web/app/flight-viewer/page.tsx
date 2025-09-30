@@ -2,6 +2,8 @@
 
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import Papa from "papaparse";
+import JSZip from "jszip";
+import { XMLParser } from "fast-xml-parser";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Line, PerspectiveCamera, Grid } from "@react-three/drei";
 import * as THREE from "three";
@@ -41,13 +43,20 @@ interface PoiData {
 }
 
 interface FlightData {
+  id: string;
   name: string;
+  color: string;
   samples: ProcessedSample[];
   poi: PoiData | null;
 }
 
 const EARTH_RADIUS_METERS = 6_378_137;
 const FEET_TO_METERS = 0.3048;
+
+const FLIGHT_COLORS = [
+  "#4f83ff", "#ff7a18", "#00d9ff", "#ff4d94", "#7aff7a",
+  "#ffbb00", "#bb7aff", "#ff5757", "#00ffaa", "#ffcc66"
+];
 
 function toNumber(value: unknown): number {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -98,13 +107,18 @@ function degreesToRadians(value: number): number {
   return (value * Math.PI) / 180;
 }
 
-function buildLocalFrame(samples: PreparedRow[]): { samples: ProcessedSample[]; poi: PoiData | null } {
+function buildLocalFrame(
+  samples: PreparedRow[], 
+  referencePoint?: { lat: number; lon: number }
+): { samples: ProcessedSample[]; poi: PoiData | null } {
   if (!samples.length) {
     return { samples: [], poi: null };
   }
 
-  const referenceLat = degreesToRadians(samples[0].latitude);
-  const referenceLon = degreesToRadians(samples[0].longitude);
+  const refLat = referencePoint?.lat ?? samples[0].latitude;
+  const refLon = referencePoint?.lon ?? samples[0].longitude;
+  const referenceLat = degreesToRadians(refLat);
+  const referenceLon = degreesToRadians(refLon);
   const cosReferenceLat = Math.cos(referenceLat);
 
   const toLocal = (lat: number, lon: number, altitudeFt: number): [number, number, number] => {
@@ -139,6 +153,78 @@ function buildLocalFrame(samples: PreparedRow[]): { samples: ProcessedSample[]; 
   }
 
   return { samples: processedSamples, poi };
+}
+
+async function parseKMZFile(file: File): Promise<PreparedRow[]> {
+  const zip = new JSZip();
+  const contents = await zip.loadAsync(file);
+  
+  const wpmlFile = contents.file("wpmz/waylines.wpml");
+  if (!wpmlFile) {
+    throw new Error("No waylines.wpml found in KMZ");
+  }
+  
+  const xmlContent = await wpmlFile.async("string");
+  const parser = new XMLParser({ ignoreAttributes: false });
+  const parsed = parser.parse(xmlContent);
+  
+  const placemarks = parsed?.kml?.Document?.Folder?.Placemark;
+  if (!placemarks) {
+    throw new Error("No waypoints found in KMZ");
+  }
+  
+  const waypointArray = Array.isArray(placemarks) ? placemarks : [placemarks];
+  
+  const rows: PreparedRow[] = [];
+  for (const mark of waypointArray) {
+    const coords = mark?.Point?.coordinates;
+    const executeHeight = mark?.["wpml:executeHeight"];
+    const speed = mark?.["wpml:waypointSpeed"];
+    const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
+    const gimbalPitch = mark?.["wpml:actionGroup"]?.["wpml:action"]?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
+    const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+    
+    if (!coords || !executeHeight) continue;
+    
+    const [lon, lat] = coords.split(",").map(Number);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    
+    const altitudeMeters = Number(executeHeight);
+    const altitudeFt = altitudeMeters / FEET_TO_METERS;
+    
+    let poiLat = null;
+    let poiLon = null;
+    let poiAltFt = null;
+    if (poiPoint && typeof poiPoint === "string") {
+      const poiParts = poiPoint.split(",").map(Number);
+      if (poiParts.length >= 3 && Number.isFinite(poiParts[0]) && Number.isFinite(poiParts[1])) {
+        poiLat = poiParts[0];
+        poiLon = poiParts[1];
+        poiAltFt = poiParts[2] / FEET_TO_METERS;
+      }
+    }
+    
+    rows.push({
+      latitude: lat,
+      longitude: lon,
+      altitudeFt,
+      headingDeg: toOptionalNumber(heading),
+      curveSizeFt: null,
+      rotationDir: null,
+      gimbalMode: null,
+      gimbalPitchAngle: toOptionalNumber(gimbalPitch),
+      altitudeMode: null,
+      speedMs: toOptionalNumber(speed),
+      poiLatitude: poiLat,
+      poiLongitude: poiLon,
+      poiAltitudeFt: poiAltFt,
+      poiAltitudeMode: null,
+      photoTimeInterval: null,
+      photoDistInterval: null,
+    });
+  }
+  
+  return rows;
 }
 
 function computeStats(flight: FlightData | null) {
@@ -194,34 +280,30 @@ function formatSpeed(speedMs: number | null): string {
 }
 
 interface FlightPathSceneProps {
-  samples: ProcessedSample[];
-  poi: PoiData | null;
+  flights: FlightData[];
 }
 
-function FlightPathScene({ samples, poi }: FlightPathSceneProps): JSX.Element {
-  const vectors = useMemo(() => samples.map(sample => new THREE.Vector3(...sample.localPosition)), [samples]);
-
-  const smoothPath = useMemo(() => {
-    if (vectors.length < 2) {
-      return vectors;
-    }
-    const curve = new THREE.CatmullRomCurve3(vectors, false, "centripetal", 0.25);
-    const density = Math.min(1_200, Math.max(vectors.length * 16, 200));
-    return curve.getPoints(density);
-  }, [vectors]);
-
+function FlightPathScene({ flights }: FlightPathSceneProps): JSX.Element {
   const { center, radius } = useMemo(() => {
-    if (!vectors.length) {
+    const allVectors: THREE.Vector3[] = [];
+    flights.forEach(flight => {
+      flight.samples.forEach(sample => {
+        allVectors.push(new THREE.Vector3(...sample.localPosition));
+      });
+    });
+    
+    if (!allVectors.length) {
       return { center: new THREE.Vector3(0, 0, 0), radius: 50 };
     }
-    const box = new THREE.Box3().setFromPoints(vectors);
+    
+    const box = new THREE.Box3().setFromPoints(allVectors);
     const dimensions = box.getSize(new THREE.Vector3());
     const computedRadius = Math.max(dimensions.x, dimensions.y, dimensions.z) * 0.75;
     return {
       center: box.getCenter(new THREE.Vector3()),
       radius: Math.max(computedRadius, 30),
     };
-  }, [vectors]);
+  }, [flights]);
 
   const cameraPosition = useMemo(() => {
     return [center.x + radius * 1.8, center.y + radius * 1.1, center.z + radius * 1.8];
@@ -237,29 +319,44 @@ function FlightPathScene({ samples, poi }: FlightPathSceneProps): JSX.Element {
       <OrbitControls makeDefault target={[center.x, center.y, center.z]} maxDistance={radius * 5} minDistance={radius * 0.2} />
       <Grid args={[radius * 4, radius * 4, 20, 20]} position={[center.x, 0, center.z]} sectionColor={"#1c1c24"} cellColor={"#11111a"} infiniteGrid fadeDistance={radius * 1.5} fadeStrength={2} />
 
-      {smoothPath.length >= 2 && (
-        <Line
-          points={smoothPath}
-          color="#4f83ff"
-          lineWidth={2.4}
-          transparent
-          opacity={0.95}
-        />
-      )}
+      {flights.map(flight => {
+        const vectors = flight.samples.map(sample => new THREE.Vector3(...sample.localPosition));
+        let smoothPath = vectors;
+        
+        if (vectors.length >= 2) {
+          const curve = new THREE.CatmullRomCurve3(vectors, false, "centripetal", 0.25);
+          const density = Math.min(1_200, Math.max(vectors.length * 16, 200));
+          smoothPath = curve.getPoints(density);
+        }
 
-      {samples.map(sample => (
-        <mesh key={sample.index} position={sample.localPosition} castShadow>
-          <sphereGeometry args={[Math.max(radius * 0.01, 0.6), 16, 16]} />
-          <meshStandardMaterial color="#ffffff" emissive="#1c2e66" emissiveIntensity={0.4} />
-        </mesh>
-      ))}
+        return (
+          <group key={flight.id}>
+            {smoothPath.length >= 2 && (
+              <Line
+                points={smoothPath}
+                color={flight.color}
+                lineWidth={2.4}
+                transparent
+                opacity={0.95}
+              />
+            )}
 
-      {poi && (
-        <mesh position={poi.localPosition} castShadow>
-          <sphereGeometry args={[Math.max(radius * 0.012, 0.8), 24, 24]} />
-          <meshStandardMaterial color="#ff7a18" emissive="#ff7a18" emissiveIntensity={0.6} />
-        </mesh>
-      )}
+            {flight.samples.map(sample => (
+              <mesh key={`${flight.id}-${sample.index}`} position={sample.localPosition} castShadow>
+                <sphereGeometry args={[Math.max(radius * 0.01, 0.6), 16, 16]} />
+                <meshStandardMaterial color={flight.color} emissive={flight.color} emissiveIntensity={0.4} />
+              </mesh>
+            ))}
+
+            {flight.poi && (
+              <mesh key={`${flight.id}-poi`} position={flight.poi.localPosition} castShadow>
+                <sphereGeometry args={[Math.max(radius * 0.012, 0.8), 24, 24]} />
+                <meshStandardMaterial color="#ff7a18" emissive="#ff7a18" emissiveIntensity={0.6} />
+              </mesh>
+            )}
+          </group>
+        );
+      })}
 
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
@@ -274,149 +371,190 @@ function FlightPathScene({ samples, poi }: FlightPathSceneProps): JSX.Element {
 }
 
 export default function FlightViewerPage(): JSX.Element {
-  const [flight, setFlight] = useState<FlightData | null>(null);
+  const [flights, setFlights] = useState<FlightData[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
 
-  const onFileSelected = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
+  const globalReferencePoint = useMemo(() => {
+    if (!flights.length) return undefined;
+    const first = flights[0].samples[0];
+    if (!first) return undefined;
+    return { lat: first.latitude, lon: first.longitude };
+  }, [flights]);
+
+  const onFilesSelected = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (!fileList || fileList.length === 0) {
       return;
     }
+    
     setIsParsing(true);
     setStatus(null);
 
-    Papa.parse<RawFlightRow>(file, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: result => {
-        setIsParsing(false);
-        if (result.errors.length) {
-          setFlight(null);
-          setStatus(`CSV parse error: ${result.errors[0].message}`);
-          return;
-        }
+    const newFlights: FlightData[] = [];
+    const errors: string[] = [];
 
-        const prepared = result.data
-          .map(sanitizeRow)
-          .filter((value): value is PreparedRow => value !== null);
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const fileExtension = file.name.toLowerCase().split(".").pop();
+      
+      try {
+        let prepared: PreparedRow[] = [];
+
+        if (fileExtension === "kmz") {
+          prepared = await parseKMZFile(file);
+        } else if (fileExtension === "csv") {
+          await new Promise<void>((resolve, reject) => {
+            Papa.parse<RawFlightRow>(file, {
+              header: true,
+              skipEmptyLines: true,
+              dynamicTyping: true,
+              complete: result => {
+                if (result.errors.length) {
+                  reject(new Error(`CSV parse error: ${result.errors[0].message}`));
+                  return;
+                }
+                prepared = result.data
+                  .map(sanitizeRow)
+                  .filter((value): value is PreparedRow => value !== null);
+                resolve();
+              },
+              error: err => reject(err),
+            });
+          });
+        } else {
+          errors.push(`${file.name}: Unsupported format (use .csv or .kmz)`);
+          continue;
+        }
 
         if (!prepared.length) {
-          setFlight(null);
-          setStatus("No valid flight samples were found in the file.");
-          return;
+          errors.push(`${file.name}: No valid waypoints found`);
+          continue;
         }
 
-        const { samples, poi } = buildLocalFrame(prepared);
-        setFlight({
+        const referencePoint = globalReferencePoint || { lat: prepared[0].latitude, lon: prepared[0].longitude };
+        const { samples, poi } = buildLocalFrame(prepared, referencePoint);
+        
+        const flightId = `${Date.now()}-${i}`;
+        const colorIndex = (flights.length + newFlights.length) % FLIGHT_COLORS.length;
+        
+        newFlights.push({
+          id: flightId,
           name: file.name,
+          color: FLIGHT_COLORS[colorIndex],
           samples,
           poi,
         });
-      },
-      error: err => {
-        setIsParsing(false);
-        setFlight(null);
-        setStatus(`Unable to read file: ${err.message}`);
-      },
-    });
+      } catch (err) {
+        errors.push(`${file.name}: ${err instanceof Error ? err.message : "Unknown error"}`);
+      }
+    }
+
+    setIsParsing(false);
+    
+    if (newFlights.length > 0) {
+      setFlights(prev => [...prev, ...newFlights]);
+      setStatus(null);
+    }
+    
+    if (errors.length > 0 && newFlights.length === 0) {
+      setStatus(errors.join("; "));
+    }
+  }, [flights.length, globalReferencePoint]);
+
+  const removeFlight = useCallback((id: string) => {
+    setFlights(prev => prev.filter(f => f.id !== id));
   }, []);
 
-  const stats = useMemo(() => computeStats(flight), [flight]);
+  const clearAll = useCallback(() => {
+    setFlights([]);
+    setStatus(null);
+  }, []);
 
   return (
     <main className="flight-viewer">
       <div className="flight-viewer__intro">
         <h1>Flight Viewer</h1>
-        <p>Upload a mission CSV to inspect path curvature, altitude changes, and points of interest in 3D.</p>
+        <p>Upload CSV or KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.</p>
       </div>
 
       <section className="flight-viewer__content">
         <aside className="flight-viewer__sidebar">
           <label className="flight-viewer__upload">
-            <span className="flight-viewer__upload-title">Drag or choose CSV</span>
-            <span className="flight-viewer__upload-hint">Latitude, longitude, altitude, heading, and POI columns are detected automatically.</span>
+            <span className="flight-viewer__upload-title">Add flight files</span>
+            <span className="flight-viewer__upload-hint">Support for CSV (Litchi/DJI) and KMZ (DJI WPML) formats. Select multiple files to overlay paths.</span>
             <input
               type="file"
-              accept=".csv,text/csv"
-              onChange={onFileSelected}
+              accept=".csv,text/csv,.kmz,application/vnd.google-earth.kmz"
+              multiple
+              onChange={onFilesSelected}
               disabled={isParsing}
             />
           </label>
 
-          {isParsing && <p className="flight-viewer__status">Parsing file…</p>}
+          {isParsing && <p className="flight-viewer__status">Parsing files…</p>}
           {status && !isParsing && <p className="flight-viewer__status flight-viewer__status--error">{status}</p>}
 
-          {flight && (
-            <div className="flight-viewer__details">
-              <h2>{flight.name}</h2>
-              <dl>
-                <div>
-                  <dt>Samples</dt>
-                  <dd>{flight.samples.length}</dd>
+          {flights.length > 0 && (
+            <>
+              <div className="flight-viewer__flight-list">
+                <div className="flight-viewer__flight-list-header">
+                  <h3>Loaded Flights ({flights.length})</h3>
+                  <button onClick={clearAll} className="flight-viewer__clear-btn">Clear All</button>
                 </div>
-                {stats && (
-                  <>
-                    <div>
-                      <dt>Total track length</dt>
-                      <dd>
-                        {formatNumber(stats.totalDistanceMeters, 1)} m
-                        <span> ({formatNumber(stats.totalDistanceFeet, 0)} ft)</span>
-                      </dd>
+                {flights.map(flight => {
+                  const stats = computeStats(flight);
+                  return (
+                    <div key={flight.id} className="flight-viewer__flight-item">
+                      <div className="flight-viewer__flight-item-header">
+                        <div className="flight-viewer__flight-color" style={{ backgroundColor: flight.color }} />
+                        <span className="flight-viewer__flight-name">{flight.name}</span>
+                        <button 
+                          onClick={() => removeFlight(flight.id)} 
+                          className="flight-viewer__remove-btn"
+                          aria-label={`Remove ${flight.name}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <div className="flight-viewer__flight-stats">
+                        <span>{flight.samples.length} pts</span>
+                        {stats && (
+                          <>
+                            <span>·</span>
+                            <span>{formatNumber(stats.totalDistanceMeters, 0)}m</span>
+                            <span>·</span>
+                            <span>{formatNumber(stats.minAltitudeFt, 0)}–{formatNumber(stats.maxAltitudeFt, 0)}ft</span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <dt>Altitude span</dt>
-                      <dd>
-                        {formatNumber(stats.minAltitudeFt, 0)}–{formatNumber(stats.maxAltitudeFt, 0)} ft
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Avg. speed</dt>
-                      <dd>{formatSpeed(stats.averageSpeedMs)}</dd>
-                    </div>
-                  </>
-                )}
-                {flight.samples[0]?.photoTimeInterval !== null && (
-                  <div>
-                    <dt>Photo cadence</dt>
-                    <dd>
-                      {flight.samples[0].photoTimeInterval ?? "—"} s / {flight.samples[0].photoDistInterval ?? "—"} m
-                    </dd>
-                  </div>
-                )}
-                {flight.poi && (
-                  <div>
-                    <dt>POI</dt>
-                    <dd>
-                      {flight.poi.latitude.toFixed(6)}, {flight.poi.longitude.toFixed(6)}
-                      <span> ({formatNumber(flight.poi.altitudeFt, 0)} ft)</span>
-                    </dd>
-                  </div>
-                )}
-              </dl>
-            </div>
+                  );
+                })}
+              </div>
+            </>
           )}
 
-          {!flight && !isParsing && (
+          {flights.length === 0 && !isParsing && (
             <div className="flight-viewer__details flight-viewer__details--placeholder">
               <h2>How it works</h2>
               <ul>
-                <li>Exports from DJI or Litchi style CSVs are supported out of the box.</li>
-                <li>We project the mission into a local ENU frame so you can inspect the path curvature accurately.</li>
-                <li>The viewer highlights altitude changes, individual waypoints, and POIs.</li>
+                <li>Upload CSV (Litchi/DJI) or KMZ (DJI WPML) flight plans.</li>
+                <li>All paths share a common reference point for accurate overlays.</li>
+                <li>Metric and imperial units are automatically converted.</li>
+                <li>Each flight gets a unique color for easy comparison.</li>
               </ul>
             </div>
           )}
         </aside>
 
         <div className="flight-viewer__visualizer" aria-live="polite">
-          {flight ? (
-            <FlightPathScene samples={flight.samples} poi={flight.poi} />
+          {flights.length > 0 ? (
+            <FlightPathScene flights={flights} />
           ) : (
             <div className="flight-viewer__placeholder">
               <div className="flight-viewer__placeholder-inner">
-                <p>Select a flight plan to render its 3D trajectory.</p>
+                <p>Select flight files to render their 3D trajectories.</p>
               </div>
             </div>
           )}
@@ -556,6 +694,108 @@ export default function FlightViewerPage(): JSX.Element {
           gap: 0.5rem;
           font-size: 0.95rem;
           color: rgba(210, 214, 250, 0.8);
+        }
+
+        .flight-viewer__flight-list {
+          background: rgba(11, 14, 36, 0.55);
+          padding: 1.25rem;
+          border-radius: 16px;
+          border: 1px solid rgba(80, 82, 126, 0.3);
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .flight-viewer__flight-list-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid rgba(80, 82, 126, 0.25);
+        }
+
+        .flight-viewer__flight-list-header h3 {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: rgba(231, 234, 255, 0.92);
+        }
+
+        .flight-viewer__clear-btn {
+          background: rgba(255, 82, 82, 0.15);
+          border: 1px solid rgba(255, 82, 82, 0.4);
+          color: #ff5757;
+          padding: 0.35rem 0.75rem;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .flight-viewer__clear-btn:hover {
+          background: rgba(255, 82, 82, 0.25);
+          border-color: #ff5757;
+        }
+
+        .flight-viewer__flight-item {
+          background: rgba(16, 19, 48, 0.4);
+          padding: 0.75rem;
+          border-radius: 12px;
+          border: 1px solid rgba(80, 82, 126, 0.2);
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .flight-viewer__flight-item-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .flight-viewer__flight-color {
+          width: 16px;
+          height: 16px;
+          border-radius: 4px;
+          flex-shrink: 0;
+        }
+
+        .flight-viewer__flight-name {
+          flex: 1;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: rgba(231, 234, 255, 0.95);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .flight-viewer__remove-btn {
+          background: none;
+          border: none;
+          color: rgba(174, 180, 228, 0.6);
+          font-size: 1.5rem;
+          line-height: 1;
+          padding: 0;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          transition: color 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .flight-viewer__remove-btn:hover {
+          color: #ff766a;
+        }
+
+        .flight-viewer__flight-stats {
+          display: flex;
+          gap: 0.5rem;
+          font-size: 0.8rem;
+          color: rgba(174, 180, 228, 0.75);
+          padding-left: 1.5rem;
         }
 
         .flight-viewer__visualizer {
