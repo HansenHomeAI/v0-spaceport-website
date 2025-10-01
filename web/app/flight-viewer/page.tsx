@@ -7,7 +7,7 @@ import { XMLParser } from "fast-xml-parser";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Line, PerspectiveCamera, Grid } from "@react-three/drei";
 import * as THREE from "three";
-import { convertLitchiCSVToKMZ, downloadBlob } from "@/lib/flightConverter";
+import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
 
 type RawFlightRow = Record<string, unknown>;
 
