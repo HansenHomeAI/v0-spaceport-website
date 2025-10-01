@@ -202,8 +202,29 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
     const executeHeight = mark?.["wpml:executeHeight"];
     const speed = mark?.["wpml:waypointSpeed"];
     const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
-    const gimbalPitch = mark?.["wpml:actionGroup"]?.["wpml:action"]?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
     const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+    
+    // Extract gimbal pitch from action groups (can be array or single object)
+    let gimbalPitch = null;
+    const actionGroups = mark?.["wpml:actionGroup"];
+    if (actionGroups) {
+      const groups = Array.isArray(actionGroups) ? actionGroups : [actionGroups];
+      for (const group of groups) {
+        const action = group?.["wpml:action"];
+        const actions = Array.isArray(action) ? action : [action];
+        for (const act of actions) {
+          const func = act?.["wpml:actionActuatorFunc"];
+          if (func === "gimbalRotate" || func === "gimbalEvenlyRotate") {
+            const pitch = act?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
+            if (pitch !== undefined && pitch !== null) {
+              gimbalPitch = pitch;
+              break;
+            }
+          }
+        }
+        if (gimbalPitch !== null) break;
+      }
+    }
     
     if (!coords || !executeHeight) continue;
     

@@ -261,7 +261,7 @@ function generateWaylinesWPML(waypoints: LitchiWaypoint[], options: ConversionOp
     let headingMode = "manually";
     let headingAngle = wp.heading_deg;
     let headingPathMode = "followBadArc";
-    let headingAngleEnable = 0;
+    let headingAngleEnable = 1; // Enable heading angle by default
 
     if (options.headingMode === "follow_wayline") {
       headingMode = "followWayline";
@@ -269,12 +269,14 @@ function generateWaylinesWPML(waypoints: LitchiWaypoint[], options: ConversionOp
     } else if (options.headingMode === "manual") {
       headingMode = "manually";
       headingAngleEnable = 0;
-    } else if (poiPoint) {
+    } else if (poiPoint && options.headingMode === "poi_or_interpolate") {
+      // Use POI mode if POI exists and mode is set to POI
       headingMode = "towardPOI";
       headingAngleEnable = 0;
     } else {
+      // Use manual heading with the specified angle
       headingMode = "manually";
-      headingAngleEnable = 0;
+      headingAngleEnable = 1;
     }
 
     // Waypoint turn mode
