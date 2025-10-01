@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
@@ -51,6 +51,17 @@ interface FlightData {
   poi: PoiData | null;
 }
 
+interface CameraFrustumProps {
+  position: [number, number, number];
+  heading: number;
+  gimbalPitch: number;
+  color: string;
+  fov: number;
+  scale: number;
+  onPointerOver: () => void;
+  onPointerOut: () => void;
+}
+
 const EARTH_RADIUS_METERS = 6_378_137;
 const FEET_TO_METERS = 0.3048;
 
@@ -58,6 +69,15 @@ const FLIGHT_COLORS = [
   "#4f83ff", "#ff7a18", "#00d9ff", "#ff4d94", "#7aff7a",
   "#ffbb00", "#bb7aff", "#ff5757", "#00ffaa", "#ffcc66"
 ];
+
+// Drone lens specifications (horizontal FOV in degrees)
+const DRONE_LENSES: Record<string, { name: string; fov: number; aspectRatio: number }> = {
+  "mavic3_wide": { name: "Mavic 3 Wide (24mm)", fov: 84, aspectRatio: 4/3 },
+  "mavic3_tele": { name: "Mavic 3 Tele (162mm)", fov: 15, aspectRatio: 4/3 },
+  "air3_wide": { name: "Air 3 Wide (24mm)", fov: 82, aspectRatio: 4/3 },
+  "mini4_wide": { name: "Mini 4 Pro (24mm)", fov: 82.1, aspectRatio: 4/3 },
+  "phantom4": { name: "Phantom 4 Pro (24mm)", fov: 73.7, aspectRatio: 3/2 },
+};
 
 function toNumber(value: unknown): number {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -280,11 +300,153 @@ function formatSpeed(speedMs: number | null): string {
   return `${formatNumber(speedMs, 2)} m/s (${formatNumber(mph, 1)} mph)`;
 }
 
-interface FlightPathSceneProps {
-  flights: FlightData[];
+// Camera Frustum Component - represents camera position and FOV
+function CameraFrustum({ 
+  position, 
+  heading, 
+  gimbalPitch, 
+  color, 
+  fov, 
+  scale,
+  onPointerOver,
+  onPointerOut 
+}: CameraFrustumProps): JSX.Element {
+  const meshRef = React.useRef<THREE.Mesh>(null);
+
+  // Create pyramid geometry for camera
+  const pyramidGeometry = useMemo(() => {
+    const size = scale * 0.8;
+    const depth = scale * 1.2;
+    
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+      // Base quad
+      -size, 0, 0,
+      size, 0, 0,
+      size, 0, 0,
+      size, size * 0.75, 0,
+      size, size * 0.75, 0,
+      -size, size * 0.75, 0,
+      -size, size * 0.75, 0,
+      -size, 0, 0,
+      
+      // Apex connections
+      -size, 0, 0,
+      0, size * 0.375, depth,
+      size, 0, 0,
+      0, size * 0.375, depth,
+      size, size * 0.75, 0,
+      0, size * 0.375, depth,
+      -size, size * 0.75, 0,
+      0, size * 0.375, depth,
+    ]);
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    return geometry;
+  }, [scale]);
+
+  // Create FOV frustum lines
+  const frustumLines = useMemo(() => {
+    const halfFovH = (fov / 2) * (Math.PI / 180);
+    const halfFovV = halfFovH * 0.75; // 4:3 aspect ratio
+    const distance = scale * 8;
+    
+    const points: THREE.Vector3[] = [];
+    const apex = new THREE.Vector3(0, 0, 0);
+    
+    // Four corners of FOV frustum
+    const corners = [
+      new THREE.Vector3(
+        Math.tan(halfFovH) * distance,
+        Math.tan(halfFovV) * distance,
+        distance
+      ),
+      new THREE.Vector3(
+        -Math.tan(halfFovH) * distance,
+        Math.tan(halfFovV) * distance,
+        distance
+      ),
+      new THREE.Vector3(
+        -Math.tan(halfFovH) * distance,
+        -Math.tan(halfFovV) * distance,
+        distance
+      ),
+      new THREE.Vector3(
+        Math.tan(halfFovH) * distance,
+        -Math.tan(halfFovV) * distance,
+        distance
+      ),
+    ];
+    
+    // Lines from apex to each corner
+    corners.forEach(corner => {
+      points.push(apex.clone(), corner);
+    });
+    
+    return points;
+  }, [fov, scale]);
+
+  // Calculate rotation from heading and gimbal pitch
+  const rotation = useMemo(() => {
+    const headingRad = (heading * Math.PI) / 180;
+    const pitchRad = (gimbalPitch * Math.PI) / 180;
+    return new THREE.Euler(pitchRad, headingRad, 0, 'YXZ');
+  }, [heading, gimbalPitch]);
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Camera pyramid body */}
+      <lineSegments geometry={pyramidGeometry}>
+        <lineBasicMaterial color={color} opacity={0.9} transparent linewidth={2} />
+      </lineSegments>
+      
+      {/* Camera body fill */}
+      <mesh
+        ref={meshRef}
+        onPointerOver={onPointerOver}
+        onPointerOut={onPointerOut}
+      >
+        <coneGeometry args={[scale * 0.5, scale * 1.2, 4]} />
+        <meshStandardMaterial 
+          color={color} 
+          opacity={0.7} 
+          transparent 
+          emissive={color}
+          emissiveIntensity={0.3}
+        />
+      </mesh>
+
+      {/* FOV frustum lines */}
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={frustumLines.length}
+            array={new Float32Array(frustumLines.flatMap(v => [v.x, v.y, v.z]))}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineDashedMaterial 
+          color={color} 
+          opacity={0.4} 
+          transparent 
+          dashSize={scale * 0.3}
+          gapSize={scale * 0.2}
+        />
+      </lineSegments>
+    </group>
+  );
 }
 
-function FlightPathScene({ flights }: FlightPathSceneProps): JSX.Element {
+interface FlightPathSceneProps {
+  flights: FlightData[];
+  selectedLens: string;
+  onWaypointHover: (flightId: string, waypointIndex: number | null) => void;
+}
+
+function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathSceneProps): JSX.Element {
+  const lensSpec = DRONE_LENSES[selectedLens] || DRONE_LENSES["mavic3_wide"];
+  
   const { center, radius } = useMemo(() => {
     const allVectors: THREE.Vector3[] = [];
     flights.forEach(flight => {
@@ -309,6 +471,8 @@ function FlightPathScene({ flights }: FlightPathSceneProps): JSX.Element {
   const cameraPosition = useMemo(() => {
     return [center.x + radius * 1.8, center.y + radius * 1.1, center.z + radius * 1.8];
   }, [center, radius]);
+  
+  const cameraScale = useMemo(() => Math.max(radius * 0.015, 1), [radius]);
 
   return (
     <Canvas className="flight-viewer__canvas-inner" shadows>
@@ -342,12 +506,24 @@ function FlightPathScene({ flights }: FlightPathSceneProps): JSX.Element {
               />
             )}
 
-            {flight.samples.map(sample => (
-              <mesh key={`${flight.id}-${sample.index}`} position={sample.localPosition} castShadow>
-                <sphereGeometry args={[Math.max(radius * 0.01, 0.6), 16, 16]} />
-                <meshStandardMaterial color={flight.color} emissive={flight.color} emissiveIntensity={0.4} />
-              </mesh>
-            ))}
+            {flight.samples.map(sample => {
+              const heading = sample.headingDeg || 0;
+              const gimbalPitch = sample.gimbalPitchAngle || -90;
+              
+              return (
+                <CameraFrustum
+                  key={`${flight.id}-${sample.index}`}
+                  position={sample.localPosition}
+                  heading={heading}
+                  gimbalPitch={gimbalPitch}
+                  color={flight.color}
+                  fov={lensSpec.fov}
+                  scale={cameraScale}
+                  onPointerOver={() => onWaypointHover(flight.id, sample.index)}
+                  onPointerOut={() => onWaypointHover(flight.id, null)}
+                />
+              );
+            })}
 
             {flight.poi && (
               <mesh key={`${flight.id}-poi`} position={flight.poi.localPosition} castShadow>
@@ -375,6 +551,10 @@ export default function FlightViewerPage(): JSX.Element {
   const [flights, setFlights] = useState<FlightData[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
+  
+  // Camera/lens state
+  const [selectedLens, setSelectedLens] = useState("mavic3_wide");
+  const [hoveredWaypoint, setHoveredWaypoint] = useState<{ flightId: string; index: number } | null>(null);
   
   // Converter modal state
   const [showConverter, setShowConverter] = useState(false);
@@ -484,6 +664,23 @@ export default function FlightViewerPage(): JSX.Element {
     setFlights([]);
     setStatus(null);
   }, []);
+
+  const handleWaypointHover = useCallback((flightId: string, waypointIndex: number | null) => {
+    if (waypointIndex === null) {
+      setHoveredWaypoint(null);
+    } else {
+      setHoveredWaypoint({ flightId, index: waypointIndex });
+    }
+  }, []);
+
+  const hoveredData = useMemo(() => {
+    if (!hoveredWaypoint) return null;
+    const flight = flights.find(f => f.id === hoveredWaypoint.flightId);
+    if (!flight) return null;
+    const sample = flight.samples[hoveredWaypoint.index];
+    if (!sample) return null;
+    return { flight, sample };
+  }, [hoveredWaypoint, flights]);
 
   const handleConvertFile = useCallback(async () => {
     if (!converterFile) return;
@@ -601,8 +798,54 @@ export default function FlightViewerPage(): JSX.Element {
         </aside>
 
         <div className="flight-viewer__visualizer" aria-live="polite">
+          {flights.length > 0 && (
+            <div className="flight-viewer__controls">
+              <label className="flight-viewer__lens-select">
+                <span>Camera Lens:</span>
+                <select value={selectedLens} onChange={(e) => setSelectedLens(e.target.value)}>
+                  {Object.entries(DRONE_LENSES).map(([key, lens]) => (
+                    <option key={key} value={key}>
+                      {lens.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
+          
+          {hoveredData && (
+            <div className="flight-viewer__tooltip">
+              <div className="flight-viewer__tooltip-header">
+                <span className="flight-viewer__tooltip-marker" style={{ background: hoveredData.flight.color }} />
+                <strong>{hoveredData.flight.name}</strong> - Waypoint {hoveredData.sample.index + 1}
+              </div>
+              <div className="flight-viewer__tooltip-body">
+                <div className="flight-viewer__tooltip-row">
+                  <span>Heading:</span>
+                  <span>{hoveredData.sample.headingDeg?.toFixed(1) || "—"}°</span>
+                </div>
+                <div className="flight-viewer__tooltip-row">
+                  <span>Gimbal Pitch:</span>
+                  <span>{hoveredData.sample.gimbalPitchAngle?.toFixed(1) || "—"}°</span>
+                </div>
+                <div className="flight-viewer__tooltip-row">
+                  <span>Altitude:</span>
+                  <span>{hoveredData.sample.altitudeFt.toFixed(1)} ft</span>
+                </div>
+                <div className="flight-viewer__tooltip-row">
+                  <span>Speed:</span>
+                  <span>{hoveredData.sample.speedMs?.toFixed(1) || "—"} m/s</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {flights.length > 0 ? (
-            <FlightPathScene flights={flights} />
+            <FlightPathScene 
+              flights={flights} 
+              selectedLens={selectedLens}
+              onWaypointHover={handleWaypointHover}
+            />
           ) : (
             <div className="flight-viewer__placeholder">
               <div className="flight-viewer__placeholder-inner">
@@ -1256,6 +1499,113 @@ export default function FlightViewerPage(): JSX.Element {
           background: linear-gradient(160deg, rgba(12, 18, 52, 0.8), rgba(4, 6, 18, 0.95));
           border: 1px solid rgba(65, 68, 104, 0.35);
           min-height: 520px;
+        }
+
+        .flight-viewer__controls {
+          position: absolute;
+          top: 1rem;
+          left: 1rem;
+          z-index: 10;
+          background: rgba(11, 14, 36, 0.85);
+          backdrop-filter: blur(12px);
+          padding: 0.75rem 1rem;
+          border-radius: 12px;
+          border: 1px solid rgba(79, 131, 255, 0.25);
+        }
+
+        .flight-viewer__lens-select {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.9rem;
+        }
+
+        .flight-viewer__lens-select span {
+          color: rgba(210, 214, 250, 0.9);
+          font-weight: 500;
+        }
+
+        .flight-viewer__lens-select select {
+          background: rgba(16, 19, 48, 0.8);
+          border: 1px solid rgba(80, 82, 126, 0.4);
+          color: rgba(231, 234, 255, 0.95);
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: border-color 0.2s ease;
+        }
+
+        .flight-viewer__lens-select select:focus {
+          outline: none;
+          border-color: #4f83ff;
+        }
+
+        .flight-viewer__tooltip {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          z-index: 10;
+          background: rgba(11, 14, 36, 0.95);
+          backdrop-filter: blur(12px);
+          padding: 1rem;
+          border-radius: 12px;
+          border: 1px solid rgba(79, 131, 255, 0.35);
+          min-width: 240px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+          animation: slideInRight 0.2s ease;
+        }
+
+        @keyframes slideInRight {
+          from { 
+            opacity: 0;
+            transform: translateX(10px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .flight-viewer__tooltip-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding-bottom: 0.75rem;
+          margin-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(80, 82, 126, 0.25);
+          font-size: 0.9rem;
+          color: rgba(231, 234, 255, 0.95);
+        }
+
+        .flight-viewer__tooltip-marker {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .flight-viewer__tooltip-body {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .flight-viewer__tooltip-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.85rem;
+        }
+
+        .flight-viewer__tooltip-row span:first-child {
+          color: rgba(174, 180, 228, 0.75);
+        }
+
+        .flight-viewer__tooltip-row span:last-child {
+          color: rgba(231, 234, 255, 0.95);
+          font-weight: 500;
+          font-family: 'SF Mono', Monaco, 'Courier New', monospace;
         }
 
         .flight-viewer__canvas-inner {
