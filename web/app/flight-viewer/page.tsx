@@ -351,7 +351,7 @@ function CameraFrustum({
     return { pyramidGeometry: geometry, baseCorners, apex };
   }, [scale]);
 
-  // Create FOV frustum lines - extending from the 4 pyramid edges
+  // Create FOV frustum lines - extending from apex in camera direction
   const frustumLines = useMemo(() => {
     const halfFovH = (fov / 2) * (Math.PI / 180);
     const halfFovV = halfFovH * 0.75; // 4:3 aspect ratio
@@ -359,38 +359,40 @@ function CameraFrustum({
     
     const points: number[] = [];
     
-    // Calculate the 4 far corners based on FOV
-    const farCorners = [
-      new THREE.Vector3(
-        Math.tan(halfFovH) * distance,
-        Math.tan(halfFovV) * distance,
-        distance
-      ),
-      new THREE.Vector3(
-        -Math.tan(halfFovH) * distance,
-        Math.tan(halfFovV) * distance,
-        distance
-      ),
-      new THREE.Vector3(
-        -Math.tan(halfFovH) * distance,
-        -Math.tan(halfFovV) * distance,
-        distance
-      ),
-      new THREE.Vector3(
-        Math.tan(halfFovH) * distance,
-        -Math.tan(halfFovV) * distance,
-        distance
-      ),
+    // Calculate camera's forward direction vector
+    const headingRad = (heading * Math.PI) / 180;
+    const pitchRad = (gimbalPitch * Math.PI) / 180;
+    
+    // Forward vector in camera's local coordinate system
+    const forward = new THREE.Vector3(0, 0, 1);
+    
+    // Apply rotation to get world-space forward direction
+    const rotation = new THREE.Euler(pitchRad, headingRad, 0, 'YXZ');
+    forward.applyEuler(rotation);
+    
+    // Calculate the 4 FOV corner directions in camera's local space
+    const localCorners = [
+      new THREE.Vector3(Math.tan(halfFovH), Math.tan(halfFovV), 1).normalize(),
+      new THREE.Vector3(-Math.tan(halfFovH), Math.tan(halfFovV), 1).normalize(),
+      new THREE.Vector3(-Math.tan(halfFovH), -Math.tan(halfFovV), 1).normalize(),
+      new THREE.Vector3(Math.tan(halfFovH), -Math.tan(halfFovV), 1).normalize(),
     ];
     
-    // Draw lines from apex to far corners
-    farCorners.forEach(corner => {
+    // Transform corner directions to world space
+    const worldCorners = localCorners.map(corner => {
+      const worldCorner = corner.clone();
+      worldCorner.applyEuler(rotation);
+      return worldCorner.multiplyScalar(distance);
+    });
+    
+    // Draw lines from apex to each world corner
+    worldCorners.forEach(corner => {
       points.push(apex.x, apex.y, apex.z);
-      points.push(corner.x, corner.y, corner.z);
+      points.push(apex.x + corner.x, apex.y + corner.y, apex.z + corner.z);
     });
     
     return new Float32Array(points);
-  }, [fov, scale, apex]);
+  }, [fov, scale, apex, heading, gimbalPitch]);
 
   // Calculate rotation from heading and gimbal pitch
   const rotation = useMemo(() => {
