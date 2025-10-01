@@ -7,7 +7,6 @@ import { XMLParser } from "fast-xml-parser";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Line, PerspectiveCamera, Grid } from "@react-three/drei";
 import * as THREE from "three";
-import { convertLitchiCSVToKMZ, downloadBlob } from "@/lib/flightConverter";
 
 type RawFlightRow = Record<string, unknown>;
 
@@ -375,19 +374,6 @@ export default function FlightViewerPage(): JSX.Element {
   const [flights, setFlights] = useState<FlightData[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
-  
-  // Converter modal state
-  const [showConverter, setShowConverter] = useState(false);
-  const [converterFile, setConverterFile] = useState<File | null>(null);
-  const [converting, setConverting] = useState(false);
-  const [converterStatus, setConverterStatus] = useState<string | null>(null);
-  const [converterOptions, setConverterOptions] = useState({
-    signalLostAction: "executeLostAction" as "continue" | "executeLostAction",
-    missionSpeed: 8.85,
-    droneType: "dji_fly" as "dji_fly" | "mavic3_enterprise" | "matrice_30",
-    headingMode: "poi_or_interpolate" as "poi_or_interpolate" | "follow_wayline" | "manual",
-    allowStraightLines: false,
-  });
 
   const globalReferencePoint = useMemo(() => {
     if (!flights.length) return undefined;
@@ -485,49 +471,11 @@ export default function FlightViewerPage(): JSX.Element {
     setStatus(null);
   }, []);
 
-  const handleConvertFile = useCallback(async () => {
-    if (!converterFile) return;
-    
-    setConverting(true);
-    setConverterStatus(null);
-
-    try {
-      const csvContent = await converterFile.text();
-      const kmzBlob = await convertLitchiCSVToKMZ(
-        csvContent,
-        converterFile.name,
-        converterOptions
-      );
-
-      const outputName = converterFile.name.replace(/\.csv$/i, ".kmz");
-      downloadBlob(kmzBlob, outputName);
-      
-      setConverterStatus(`✓ Converted to ${outputName}`);
-      setTimeout(() => {
-        setShowConverter(false);
-        setConverterFile(null);
-        setConverterStatus(null);
-      }, 2000);
-    } catch (err) {
-      setConverterStatus(`Error: ${err instanceof Error ? err.message : "Conversion failed"}`);
-    } finally {
-      setConverting(false);
-    }
-  }, [converterFile, converterOptions]);
-
   return (
     <main className="flight-viewer">
       <div className="flight-viewer__intro">
-        <div>
-          <h1>Flight Viewer</h1>
-          <p>Upload CSV or KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.</p>
-        </div>
-        <button 
-          className="flight-viewer__converter-btn"
-          onClick={() => setShowConverter(true)}
-        >
-          Convert CSV → KMZ
-        </button>
+        <h1>Flight Viewer</h1>
+        <p>Upload CSV or KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.</p>
       </div>
 
       <section className="flight-viewer__content">
@@ -613,139 +561,6 @@ export default function FlightViewerPage(): JSX.Element {
         </div>
       </section>
 
-      {showConverter && (
-        <div className="flight-viewer__modal-overlay" onClick={() => setShowConverter(false)}>
-          <div className="flight-viewer__modal" onClick={(e) => e.stopPropagation()}>
-            <div className="flight-viewer__modal-header">
-              <h2>CSV → KMZ Converter</h2>
-              <button 
-                className="flight-viewer__modal-close"
-                onClick={() => setShowConverter(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flight-viewer__modal-body">
-              <p className="flight-viewer__modal-description">
-                Convert Litchi CSV waypoint missions to DJI Fly/Pilot 2 compatible KMZ files.
-              </p>
-
-              <label className="flight-viewer__converter-upload">
-                <span>Select Litchi CSV file</span>
-                <input
-                  type="file"
-                  accept=".csv,text/csv"
-                  onChange={(e) => setConverterFile(e.target.files?.[0] || null)}
-                />
-              </label>
-
-              {converterFile && (
-                <div className="flight-viewer__converter-file">
-                  {converterFile.name}
-                </div>
-              )}
-
-              <div className="flight-viewer__converter-options">
-                <label>
-                  <span>Signal Lost Action</span>
-                  <select
-                    value={converterOptions.signalLostAction}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      signalLostAction: e.target.value as "continue" | "executeLostAction"
-                    }))}
-                  >
-                    <option value="executeLostAction">Execute Lost Action</option>
-                    <option value="continue">Continue Mission</option>
-                  </select>
-                </label>
-
-                <label>
-                  <span>Mission Speed (m/s)</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max="15"
-                    step="0.1"
-                    value={converterOptions.missionSpeed}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      missionSpeed: parseFloat(e.target.value)
-                    }))}
-                  />
-                </label>
-
-                <label>
-                  <span>Drone Type</span>
-                  <select
-                    value={converterOptions.droneType}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      droneType: e.target.value as any
-                    }))}
-                  >
-                    <option value="dji_fly">DJI Fly (Consumer)</option>
-                    <option value="mavic3_enterprise">Mavic 3 Enterprise</option>
-                    <option value="matrice_30">Matrice 30</option>
-                  </select>
-                </label>
-
-                <label>
-                  <span>Heading Mode</span>
-                  <select
-                    value={converterOptions.headingMode}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      headingMode: e.target.value as any
-                    }))}
-                  >
-                    <option value="poi_or_interpolate">Toward POI / Interpolate</option>
-                    <option value="follow_wayline">Follow Wayline</option>
-                    <option value="manual">Manual</option>
-                  </select>
-                </label>
-
-                <label className="flight-viewer__converter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={converterOptions.allowStraightLines}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      allowStraightLines: e.target.checked
-                    }))}
-                  />
-                  <span>Allow Straight Lines (may show incorrectly in DJI Fly)</span>
-                </label>
-              </div>
-
-              {converterStatus && (
-                <div className={`flight-viewer__converter-status ${converterStatus.startsWith("✓") ? "success" : "error"}`}>
-                  {converterStatus}
-                </div>
-              )}
-
-              <div className="flight-viewer__modal-actions">
-                <button
-                  className="flight-viewer__modal-btn secondary"
-                  onClick={() => setShowConverter(false)}
-                  disabled={converting}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="flight-viewer__modal-btn primary"
-                  onClick={handleConvertFile}
-                  disabled={!converterFile || converting}
-                >
-                  {converting ? "Converting..." : "Convert & Download"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       <style jsx>{`
         .flight-viewer {
           display: flex;
@@ -755,17 +570,6 @@ export default function FlightViewerPage(): JSX.Element {
           color: #f5f6fb;
           background: radial-gradient(circle at top, #0b0b1a, #030309 55%);
           min-height: calc(100vh - 160px);
-        }
-
-        .flight-viewer__intro {
-          display: flex;
-          align-items: center;
-          gap: 2rem;
-          flex-wrap: wrap;
-        }
-
-        .flight-viewer__intro > div {
-          flex: 1;
         }
 
         .flight-viewer__intro h1 {
@@ -779,24 +583,6 @@ export default function FlightViewerPage(): JSX.Element {
           max-width: 40rem;
           line-height: 1.5;
           color: rgba(220, 224, 255, 0.75);
-        }
-
-        .flight-viewer__converter-btn {
-          background: linear-gradient(135deg, #4f83ff 0%, #3d6dd9 100%);
-          border: 1px solid rgba(79, 131, 255, 0.5);
-          color: white;
-          padding: 0.75rem 1.5rem;
-          border-radius: 12px;
-          font-size: 0.95rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-        }
-
-        .flight-viewer__converter-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(79, 131, 255, 0.3);
         }
 
         .flight-viewer__content {
@@ -1010,243 +796,6 @@ export default function FlightViewerPage(): JSX.Element {
           font-size: 0.8rem;
           color: rgba(174, 180, 228, 0.75);
           padding-left: 1.5rem;
-        }
-
-        .flight-viewer__modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(3, 3, 9, 0.85);
-          backdrop-filter: blur(8px);
-          z-index: 1000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem;
-          animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        .flight-viewer__modal {
-          background: linear-gradient(160deg, rgba(15, 20, 50, 0.98), rgba(8, 10, 28, 0.98));
-          border: 1px solid rgba(79, 131, 255, 0.25);
-          border-radius: 20px;
-          max-width: 600px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-          animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-
-        .flight-viewer__modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem 2rem;
-          border-bottom: 1px solid rgba(80, 82, 126, 0.25);
-        }
-
-        .flight-viewer__modal-header h2 {
-          margin: 0;
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: rgba(231, 234, 255, 0.95);
-        }
-
-        .flight-viewer__modal-close {
-          background: none;
-          border: none;
-          color: rgba(174, 180, 228, 0.6);
-          font-size: 2rem;
-          line-height: 1;
-          cursor: pointer;
-          padding: 0;
-          width: 32px;
-          height: 32px;
-          transition: color 0.2s ease;
-        }
-
-        .flight-viewer__modal-close:hover {
-          color: #ff766a;
-        }
-
-        .flight-viewer__modal-body {
-          padding: 2rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .flight-viewer__modal-description {
-          margin: 0;
-          font-size: 0.95rem;
-          color: rgba(210, 214, 250, 0.8);
-          line-height: 1.5;
-        }
-
-        .flight-viewer__converter-upload {
-          border: 2px dashed rgba(79, 131, 255, 0.4);
-          border-radius: 12px;
-          padding: 1.5rem;
-          text-align: center;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          position: relative;
-        }
-
-        .flight-viewer__converter-upload:hover {
-          border-color: #4f83ff;
-          background: rgba(79, 131, 255, 0.05);
-        }
-
-        .flight-viewer__converter-upload span {
-          display: block;
-          font-size: 0.95rem;
-          color: rgba(231, 234, 255, 0.9);
-          margin-bottom: 0.5rem;
-        }
-
-        .flight-viewer__converter-upload input {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          cursor: pointer;
-        }
-
-        .flight-viewer__converter-file {
-          background: rgba(79, 131, 255, 0.1);
-          border: 1px solid rgba(79, 131, 255, 0.3);
-          padding: 0.75rem 1rem;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          color: rgba(231, 234, 255, 0.95);
-          text-align: center;
-        }
-
-        .flight-viewer__converter-options {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .flight-viewer__converter-options label {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .flight-viewer__converter-options label > span {
-          font-size: 0.85rem;
-          font-weight: 500;
-          color: rgba(210, 214, 250, 0.9);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .flight-viewer__converter-options select,
-        .flight-viewer__converter-options input[type="number"] {
-          background: rgba(16, 19, 48, 0.6);
-          border: 1px solid rgba(80, 82, 126, 0.4);
-          color: rgba(231, 234, 255, 0.95);
-          padding: 0.75rem 1rem;
-          border-radius: 8px;
-          font-size: 0.95rem;
-          transition: border-color 0.2s ease;
-        }
-
-        .flight-viewer__converter-options select:focus,
-        .flight-viewer__converter-options input[type="number"]:focus {
-          outline: none;
-          border-color: #4f83ff;
-        }
-
-        .flight-viewer__converter-checkbox {
-          flex-direction: row !important;
-          align-items: center;
-          gap: 0.75rem !important;
-        }
-
-        .flight-viewer__converter-checkbox input[type="checkbox"] {
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-        }
-
-        .flight-viewer__converter-checkbox span {
-          text-transform: none !important;
-          font-size: 0.9rem !important;
-        }
-
-        .flight-viewer__converter-status {
-          padding: 0.75rem 1rem;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          text-align: center;
-        }
-
-        .flight-viewer__converter-status.success {
-          background: rgba(122, 255, 122, 0.1);
-          border: 1px solid rgba(122, 255, 122, 0.3);
-          color: #7aff7a;
-        }
-
-        .flight-viewer__converter-status.error {
-          background: rgba(255, 87, 87, 0.1);
-          border: 1px solid rgba(255, 87, 87, 0.3);
-          color: #ff5757;
-        }
-
-        .flight-viewer__modal-actions {
-          display: flex;
-          gap: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid rgba(80, 82, 126, 0.25);
-        }
-
-        .flight-viewer__modal-btn {
-          flex: 1;
-          padding: 0.875rem 1.5rem;
-          border-radius: 10px;
-          font-size: 0.95rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          border: 1px solid;
-        }
-
-        .flight-viewer__modal-btn.secondary {
-          background: rgba(80, 82, 126, 0.2);
-          border-color: rgba(80, 82, 126, 0.4);
-          color: rgba(231, 234, 255, 0.85);
-        }
-
-        .flight-viewer__modal-btn.secondary:hover:not(:disabled) {
-          background: rgba(80, 82, 126, 0.3);
-        }
-
-        .flight-viewer__modal-btn.primary {
-          background: linear-gradient(135deg, #4f83ff 0%, #3d6dd9 100%);
-          border-color: rgba(79, 131, 255, 0.5);
-          color: white;
-        }
-
-        .flight-viewer__modal-btn.primary:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(79, 131, 255, 0.3);
-        }
-
-        .flight-viewer__modal-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
         }
 
         .flight-viewer__visualizer {
