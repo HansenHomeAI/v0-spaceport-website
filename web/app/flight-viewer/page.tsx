@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState, useEffect } from "react";
 import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
@@ -311,51 +311,56 @@ function CameraFrustum({
   onPointerOver,
   onPointerOut 
 }: CameraFrustumProps): JSX.Element {
-  const meshRef = React.useRef<THREE.Mesh>(null);
+  const [isHovered, setIsHovered] = React.useState(false);
 
-  // Create pyramid geometry for camera
-  const pyramidGeometry = useMemo(() => {
+  // Create pyramid geometry for camera (wireframe only)
+  const { pyramidGeometry, baseCorners, apex } = useMemo(() => {
     const size = scale * 0.8;
-    const depth = scale * 1.2;
+    const depth = scale * 1.5;
+    
+    // Base rectangle corners (camera sensor plane)
+    const baseCorners = [
+      new THREE.Vector3(-size, -size * 0.6, 0),
+      new THREE.Vector3(size, -size * 0.6, 0),
+      new THREE.Vector3(size, size * 0.6, 0),
+      new THREE.Vector3(-size, size * 0.6, 0),
+    ];
+    
+    // Apex (camera lens position, pointing forward in +Z)
+    const apex = new THREE.Vector3(0, 0, depth);
     
     const geometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-      // Base quad
-      -size, 0, 0,
-      size, 0, 0,
-      size, 0, 0,
-      size, size * 0.75, 0,
-      size, size * 0.75, 0,
-      -size, size * 0.75, 0,
-      -size, size * 0.75, 0,
-      -size, 0, 0,
-      
-      // Apex connections
-      -size, 0, 0,
-      0, size * 0.375, depth,
-      size, 0, 0,
-      0, size * 0.375, depth,
-      size, size * 0.75, 0,
-      0, size * 0.375, depth,
-      -size, size * 0.75, 0,
-      0, size * 0.375, depth,
-    ]);
+    const vertices: number[] = [];
     
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    return geometry;
+    // Base rectangle edges
+    for (let i = 0; i < 4; i++) {
+      const current = baseCorners[i];
+      const next = baseCorners[(i + 1) % 4];
+      vertices.push(current.x, current.y, current.z);
+      vertices.push(next.x, next.y, next.z);
+    }
+    
+    // Lines from base corners to apex (the 4 pyramid edges)
+    baseCorners.forEach(corner => {
+      vertices.push(corner.x, corner.y, corner.z);
+      vertices.push(apex.x, apex.y, apex.z);
+    });
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+    
+    return { pyramidGeometry: geometry, baseCorners, apex };
   }, [scale]);
 
-  // Create FOV frustum lines
+  // Create FOV frustum lines - extending from the 4 pyramid edges
   const frustumLines = useMemo(() => {
     const halfFovH = (fov / 2) * (Math.PI / 180);
     const halfFovV = halfFovH * 0.75; // 4:3 aspect ratio
-    const distance = scale * 8;
+    const distance = scale * 50; // Extend very far
     
-    const points: THREE.Vector3[] = [];
-    const apex = new THREE.Vector3(0, 0, 0);
+    const points: number[] = [];
     
-    // Four corners of FOV frustum
-    const corners = [
+    // Calculate the 4 far corners based on FOV
+    const farCorners = [
       new THREE.Vector3(
         Math.tan(halfFovH) * distance,
         Math.tan(halfFovV) * distance,
@@ -378,62 +383,70 @@ function CameraFrustum({
       ),
     ];
     
-    // Lines from apex to each corner
-    corners.forEach(corner => {
-      points.push(apex.clone(), corner);
+    // Draw lines from apex to far corners
+    farCorners.forEach(corner => {
+      points.push(apex.x, apex.y, apex.z);
+      points.push(corner.x, corner.y, corner.z);
     });
     
-    return points;
-  }, [fov, scale]);
+    return new Float32Array(points);
+  }, [fov, scale, apex]);
 
   // Calculate rotation from heading and gimbal pitch
   const rotation = useMemo(() => {
     const headingRad = (heading * Math.PI) / 180;
     const pitchRad = (gimbalPitch * Math.PI) / 180;
+    // YXZ order: first rotate around Y (heading), then X (pitch)
     return new THREE.Euler(pitchRad, headingRad, 0, 'YXZ');
   }, [heading, gimbalPitch]);
 
+  const handlePointerOver = useCallback(() => {
+    setIsHovered(true);
+    onPointerOver();
+  }, [onPointerOver]);
+
+  const handlePointerOut = useCallback(() => {
+    setIsHovered(false);
+    onPointerOut();
+  }, [onPointerOut]);
+
   return (
     <group position={position} rotation={rotation}>
-      {/* Camera pyramid body */}
-      <lineSegments geometry={pyramidGeometry}>
-        <lineBasicMaterial color={color} opacity={0.9} transparent linewidth={2} />
-      </lineSegments>
-      
-      {/* Camera body fill */}
-      <mesh
-        ref={meshRef}
-        onPointerOver={onPointerOver}
-        onPointerOut={onPointerOut}
+      {/* Camera pyramid wireframe */}
+      <lineSegments 
+        geometry={pyramidGeometry}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
       >
-        <coneGeometry args={[scale * 0.5, scale * 1.2, 4]} />
-        <meshStandardMaterial 
+        <lineBasicMaterial 
           color={color} 
-          opacity={0.7} 
+          opacity={isHovered ? 1.0 : 0.85} 
           transparent 
-          emissive={color}
-          emissiveIntensity={0.3}
-        />
-      </mesh>
-
-      {/* FOV frustum lines */}
-      <lineSegments>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={frustumLines.length}
-            array={new Float32Array(frustumLines.flatMap(v => [v.x, v.y, v.z]))}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <lineDashedMaterial 
-          color={color} 
-          opacity={0.4} 
-          transparent 
-          dashSize={scale * 0.3}
-          gapSize={scale * 0.2}
+          linewidth={isHovered ? 3 : 2}
         />
       </lineSegments>
+
+      {/* FOV frustum lines - only visible on hover */}
+      {isHovered && (
+        <lineSegments>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              count={frustumLines.length / 3}
+              array={frustumLines}
+              itemSize={3}
+            />
+          </bufferGeometry>
+          <lineDashedMaterial 
+            color={color} 
+            opacity={0.5} 
+            transparent 
+            dashSize={scale * 0.8}
+            gapSize={scale * 0.4}
+            linewidth={2}
+          />
+        </lineSegments>
+      )}
     </group>
   );
 }
