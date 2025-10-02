@@ -656,17 +656,13 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
       <PerspectiveCamera makeDefault position={cameraPosition as [number, number, number]} fov={48} near={0.1} far={radius * 10} />
       <OrbitControls makeDefault target={[center.x, center.y, center.z]} maxDistance={radius * 5} minDistance={radius * 0.2} />
       
-      {centerCoords && GOOGLE_MAPS_API_KEY ? (
+      {centerCoords && GOOGLE_MAPS_API_KEY && (
         <Google3DTerrain 
           centerLat={centerCoords.lat} 
           centerLon={centerCoords.lon} 
           apiKey={GOOGLE_MAPS_API_KEY}
           radius={radius}
         />
-      ) : (
-        <group>
-          {!GOOGLE_MAPS_API_KEY && centerCoords && console.warn('[FlightPathScene] Terrain disabled: API key missing')}
-        </group>
       )}
       
       {!centerCoords && (
