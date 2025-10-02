@@ -1,13 +1,1 @@
-2025-09-22 3:26pm - subscription badge routing update
-2025-09-23 11:34AM MDT - invite reset fix
-2025-09-23 12:56PM MDT - invite playwright test
-2025-09-23 - increased auth modal border radius to 40px
-2025-09-23 14:10 MDT - waitlist endpoint normalization
-2025-09-24 17:20 UTC - redeploy subscription api authorizer
-2025-09-24 11:53 MDT - add project model link UI display
-Sept 24th, 12:01PM
-2025-09-24 12:47 MDT - employee model delivery flow
-2025-09-25 16:14 UTC - auth fallback + model delivery fixes
-Sep 25th 10:57am
-2025-09-25 17:04 UTC - remove Amplify fallback, add env guard
-Sep 25th 3:36PM2025-09-26 11:05 MDT - add 3D flight viewer page
+1759428562
