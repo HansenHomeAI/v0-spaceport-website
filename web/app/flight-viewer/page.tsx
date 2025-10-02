@@ -1,10 +1,10 @@
 "use client";
 
-import React, { ChangeEvent, useCallback, useMemo, useState, useEffect } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState, useEffect, useRef } from "react";
 import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Line, PerspectiveCamera, Grid } from "@react-three/drei";
 import * as THREE from "three";
 import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
@@ -476,9 +476,140 @@ interface FlightPathSceneProps {
   flights: FlightData[];
   selectedLens: string;
   onWaypointHover: (flightId: string, waypointIndex: number | null) => void;
+  centerCoords?: { lat: number; lon: number };
 }
 
-function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathSceneProps): JSX.Element {
+// Google 3D Satellite Terrain Component - Uses elevation data to create terrain mesh
+function Google3DTerrain({ centerLat, centerLon, apiKey, radius }: { centerLat: number; centerLon: number; apiKey: string; radius: number }): JSX.Element {
+  const [terrainMesh, setTerrainMesh] = useState<THREE.Mesh | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!apiKey || apiKey === 'your-google-maps-api-key') {
+      console.warn('[Google3DTerrain] No valid API key provided');
+      setIsLoading(false);
+      return;
+    }
+
+    // Create terrain mesh from elevation data
+    const createTerrainMesh = async () => {
+      try {
+        console.log('[Google3DTerrain] Loading terrain data for:', { centerLat, centerLon, radius });
+        
+        // Grid resolution (higher = more detail)
+        const gridSize = 50;
+        const metersPerGrid = (radius * 4) / gridSize;
+        
+        // Fetch elevation data in a grid
+        const elevationPromises: Promise<number>[] = [];
+        const gridPoints: Array<{ lat: number; lon: number; x: number; z: number }> = [];
+        
+        for (let i = 0; i <= gridSize; i++) {
+          for (let j = 0; j <= gridSize; j++) {
+            // Calculate lat/lon offsets (approximate)
+            const latOffset = ((i - gridSize / 2) * metersPerGrid) / 111000; // ~111km per degree
+            const lonOffset = ((j - gridSize / 2) * metersPerGrid) / (111000 * Math.cos(centerLat * Math.PI / 180));
+            
+            const lat = centerLat + latOffset;
+            const lon = centerLon + lonOffset;
+            const x = (j - gridSize / 2) * metersPerGrid;
+            const z = -(i - gridSize / 2) * metersPerGrid;
+            
+            gridPoints.push({ lat, lon, x, z });
+            
+            // Batch requests to avoid rate limiting
+            const promise = fetch(
+              `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lon}&key=${apiKey}`
+            )
+              .then(res => res.json())
+              .then(data => data.results?.[0]?.elevation || 0)
+              .catch(() => 0);
+            
+            elevationPromises.push(promise);
+          }
+        }
+        
+        // Wait for all elevation data
+        const elevations = await Promise.all(elevationPromises);
+        console.log('[Google3DTerrain] Fetched', elevations.length, 'elevation points');
+        
+        // Create geometry
+        const geometry = new THREE.BufferGeometry();
+        const vertices: number[] = [];
+        const indices: number[] = [];
+        const uvs: number[] = [];
+        
+        // Build vertices
+        gridPoints.forEach((point, idx) => {
+          vertices.push(point.x, elevations[idx], point.z);
+          uvs.push(point.x / (radius * 4) + 0.5, point.z / (radius * 4) + 0.5);
+        });
+        
+        // Build triangles
+        for (let i = 0; i < gridSize; i++) {
+          for (let j = 0; j < gridSize; j++) {
+            const a = i * (gridSize + 1) + j;
+            const b = a + gridSize + 1;
+            const c = a + 1;
+            const d = b + 1;
+            
+            indices.push(a, b, c);
+            indices.push(b, d, c);
+          }
+        }
+        
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        geometry.setIndex(indices);
+        geometry.computeVertexNormals();
+        
+        // Create material with satellite imagery texture
+        const textureUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLon}&zoom=17&size=640x640&maptype=satellite&key=${apiKey}`;
+        const texture = new THREE.TextureLoader().load(textureUrl, () => {
+          console.log('[Google3DTerrain] Satellite texture loaded');
+        });
+        
+        const material = new THREE.MeshStandardMaterial({
+          map: texture,
+          side: THREE.FrontSide,
+          roughness: 0.9,
+          metalness: 0.1,
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.receiveShadow = true;
+        mesh.castShadow = false;
+        
+        setTerrainMesh(mesh);
+        setIsLoading(false);
+        console.log('[Google3DTerrain] Terrain mesh created successfully');
+        
+      } catch (error) {
+        console.error('[Google3DTerrain] Failed to create terrain:', error);
+        setIsLoading(false);
+      }
+    };
+
+    createTerrainMesh();
+
+    return () => {
+      if (terrainMesh) {
+        terrainMesh.geometry.dispose();
+        if (terrainMesh.material instanceof THREE.Material) {
+          terrainMesh.material.dispose();
+        }
+      }
+    };
+  }, [centerLat, centerLon, apiKey, radius]);
+
+  if (isLoading) {
+    console.log('[Google3DTerrain] Loading terrain...');
+  }
+
+  return terrainMesh ? <primitive object={terrainMesh} /> : null;
+}
+
+function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords }: FlightPathSceneProps): JSX.Element {
   const lensSpec = DRONE_LENSES[selectedLens] || DRONE_LENSES["mavic3_wide"];
   
   const { center, radius } = useMemo(() => {
@@ -508,15 +639,29 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   
   const cameraScale = useMemo(() => Math.max(radius * 0.015, 1), [radius]);
 
+  const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+
   return (
     <Canvas className="flight-viewer__canvas-inner" shadows>
-      <color attach="background" args={["#080810"]} />
-      <fog attach="fog" args={["#080810", radius * 0.5, radius * 3.5]} />
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[radius, radius * 1.5, radius]} intensity={1.1} castShadow />
+      <color attach="background" args={["#87CEEB"]} />
+      <fog attach="fog" args={["#87CEEB", radius * 0.5, radius * 3.5]} />
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[radius, radius * 1.5, radius]} intensity={1.2} castShadow />
       <PerspectiveCamera makeDefault position={cameraPosition as [number, number, number]} fov={48} near={0.1} far={radius * 10} />
       <OrbitControls makeDefault target={[center.x, center.y, center.z]} maxDistance={radius * 5} minDistance={radius * 0.2} />
-      <Grid args={[radius * 4, radius * 4, 20, 20]} position={[center.x, 0, center.z]} sectionColor={"#1c1c24"} cellColor={"#11111a"} infiniteGrid fadeDistance={radius * 1.5} fadeStrength={2} />
+      
+      {centerCoords && GOOGLE_MAPS_API_KEY && (
+        <Google3DTerrain 
+          centerLat={centerCoords.lat} 
+          centerLon={centerCoords.lon} 
+          apiKey={GOOGLE_MAPS_API_KEY}
+          radius={radius}
+        />
+      )}
+      
+      {!centerCoords && (
+        <Grid args={[radius * 4, radius * 4, 20, 20]} position={[center.x, 0, center.z]} sectionColor={"#1c1c24"} cellColor={"#11111a"} infiniteGrid fadeDistance={radius * 1.5} fadeStrength={2} />
+      )}
 
       {flights.map(flight => {
         const vectors = flight.samples.map(sample => new THREE.Vector3(...sample.localPosition));
@@ -569,14 +714,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         );
       })}
 
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[center.x, center.y - radius * 0.05, center.z]}
-        receiveShadow
-      >
-        <planeGeometry args={[radius * 6, radius * 6]} />
-        <meshStandardMaterial color="#05050a" opacity={0.85} transparent />
-      </mesh>
+      {!centerCoords && (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[center.x, center.y - radius * 0.05, center.z]}
+          receiveShadow
+        >
+          <planeGeometry args={[radius * 6, radius * 6]} />
+          <meshStandardMaterial color="#05050a" opacity={0.85} transparent />
+        </mesh>
+      )}
     </Canvas>
   );
 }
@@ -585,6 +732,7 @@ export default function FlightViewerPage(): JSX.Element {
   const [flights, setFlights] = useState<FlightData[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
+  const [centerCoords, setCenterCoords] = useState<{ lat: number; lon: number } | undefined>(undefined);
   
   // Camera/lens state
   const [selectedLens, setSelectedLens] = useState("mavic3_wide");
@@ -683,6 +831,15 @@ export default function FlightViewerPage(): JSX.Element {
     if (newFlights.length > 0) {
       setFlights(prev => [...prev, ...newFlights]);
       setStatus(null);
+      
+      // Calculate center coordinates from all samples
+      const allSamples = newFlights.flatMap(f => f.samples);
+      if (allSamples.length > 0) {
+        const avgLat = allSamples.reduce((sum, s) => sum + s.latitude, 0) / allSamples.length;
+        const avgLon = allSamples.reduce((sum, s) => sum + s.longitude, 0) / allSamples.length;
+        setCenterCoords({ lat: avgLat, lon: avgLon });
+        console.log('[FlightViewer] Center coordinates:', { lat: avgLat, lon: avgLon });
+      }
     }
     
     if (errors.length > 0 && newFlights.length === 0) {
@@ -879,6 +1036,7 @@ export default function FlightViewerPage(): JSX.Element {
               flights={flights} 
               selectedLens={selectedLens}
               onWaypointHover={handleWaypointHover}
+              centerCoords={centerCoords}
             />
           ) : (
             <div className="flight-viewer__placeholder">
