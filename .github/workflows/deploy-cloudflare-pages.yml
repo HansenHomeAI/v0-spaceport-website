@@ -128,6 +128,7 @@ jobs:
           jq -n \
             --arg prod "$FEEDBACK_API_URL_PROD" \
             --arg preview "$FEEDBACK_API_URL_PREVIEW" \
+            --arg google_maps "${{ secrets.GOOGLE_MAPS_API_KEY }}" \
             '{
               deployment_configs: {
                 production: {
@@ -135,7 +136,8 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod }
+                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod },
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps }
                   }
                 },
                 preview: {
@@ -143,7 +145,8 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview }
+                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview },
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps }
                   }
                 }
               }

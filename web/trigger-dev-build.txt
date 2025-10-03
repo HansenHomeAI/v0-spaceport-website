@@ -1,3 +1,4 @@
+<<<<<<< Current (Your changes)
 2025-09-22 3:26pm - subscription badge routing update
 2025-09-23 11:34AM MDT - invite reset fix
 2025-09-23 12:56PM MDT - invite playwright test
@@ -11,3 +12,6 @@ Sept 24th, 12:01PM
 Sep 25th 10:57am
 2025-09-25 17:04 UTC - remove Amplify fallback, add env guard
 Sep 25th 3:36PM2025-09-26 11:05 MDT - add 3D flight viewer page
+=======
+1759428562
+>>>>>>> Incoming (Background Agent changes)
