@@ -1911,9 +1911,24 @@ export default function FlightViewerPage(): JSX.Element {
           font-family: 'SF Mono', Monaco, 'Courier New', monospace;
         }
 
-        .flight-viewer__canvas-inner {
+        .flight-viewer__map {
           width: 100%;
           height: 100%;
+          border-radius: 18px;
+          overflow: hidden;
+        }
+
+        .flight-viewer__map-placeholder {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          padding: 2rem;
+          text-align: center;
+          border-radius: 18px;
+          border: 1px dashed rgba(99, 104, 149, 0.4);
+          background: rgba(10, 13, 32, 0.45);
+          color: rgba(201, 206, 247, 0.85);
         }
 
         .flight-viewer__placeholder {

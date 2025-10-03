@@ -1,5 +1,5 @@
 reason: none
-last_step: implemented /flight-viewer page and dependencies
-next_unblocked_step: push branch, monitor workflows, open PR after preview + tests green
+last_step: replaced flight viewer terrain with Google Maps 3D overlay
+next_unblocked_step: push branch, watch Pages + CDK workflows, validate preview map + hover
 owner_action_needed: none
-updated: 2025-09-26T21:35:00Z
+updated: $(date -u +"%Y-%m-%dT%H:%M:%SZ")

@@ -151,7 +151,7 @@ class SpiralGenerator {
 }
 
 function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoint[]; showLabels: boolean }) {
-  const vectors = waypoints.map(wp => new THREE.Vector3(wp.x, wp.y, wp.z));
+  const vectors = waypoints.map(wp => new THREE.Vector3(wp.x, wp.y, 0));
   
   return (
     <group>
@@ -160,11 +160,40 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
         <Line
           points={vectors}
           color="#00ff88"
-          lineWidth={2}
+          lineWidth={2.5}
           transparent
-          opacity={0.8}
+          opacity={0.9}
         />
       )}
+      
+      {/* Grid reference */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -1]}>
+        <planeGeometry args={[10000, 10000]} />
+        <meshBasicMaterial color="#1a1a1a" transparent opacity={0.5} />
+      </mesh>
+      
+      {/* Grid lines for scale */}
+      {Array.from({ length: 21 }, (_, i) => {
+        const pos = (i - 10) * 500;
+        return (
+          <group key={i}>
+            <mesh position={[pos, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <planeGeometry args={[10000, 1]} />
+              <meshBasicMaterial color="#333333" transparent opacity={0.3} />
+            </mesh>
+            <mesh position={[0, pos, 0]}>
+              <planeGeometry args={[10000, 1]} />
+              <meshBasicMaterial color="#333333" transparent opacity={0.3} />
+            </mesh>
+          </group>
+        );
+      })}
+      
+      {/* Center marker */}
+      <mesh position={[0, 0, 0]}>
+        <circleGeometry args={[15, 32]} />
+        <meshBasicMaterial color="#666666" />
+      </mesh>
       
       {/* Waypoint markers */}
       {waypoints.map((wp, i) => {
@@ -173,32 +202,33 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
         const isHold = wp.phase.includes('hold');
         
         let color = '#ffffff';
-        let size = 3;
+        let size = 4;
         
         if (isStart) {
           color = '#ff0000';
-          size = 8;
+          size = 12;
         } else if (isBounce) {
           color = '#ffaa00';
-          size = 5;
+          size = 7;
         } else if (isHold) {
           color = '#0088ff';
-          size = 5;
+          size = 7;
         }
         
         return (
-          <mesh key={i} position={[wp.x, wp.y, wp.z]}>
-            <sphereGeometry args={[size, 16, 16]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
+          <mesh key={i} position={[wp.x, wp.y, 1]}>
+            <circleGeometry args={[size, 32]} />
+            <meshBasicMaterial color={color} />
             {showLabels && (
-              <Html distanceFactor={100}>
+              <Html distanceFactor={100} center>
                 <div style={{
-                  background: 'rgba(0,0,0,0.8)',
+                  background: 'rgba(0,0,0,0.85)',
                   color: 'white',
-                  padding: '2px 6px',
+                  padding: '3px 8px',
                   borderRadius: '4px',
-                  fontSize: '10px',
-                  whiteSpace: 'nowrap'
+                  fontSize: '11px',
+                  whiteSpace: 'nowrap',
+                  transform: 'translateY(-25px)'
                 }}>
                   {wp.index}: {wp.phase}
                 </div>
@@ -207,39 +237,6 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
           </mesh>
         );
       })}
-      
-      {/* Grid reference */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -1]}>
-        <planeGeometry args={[10000, 10000]} />
-        <meshBasicMaterial color="#2a2a2a" transparent opacity={0.8} />
-      </mesh>
-      
-      {/* Grid lines */}
-      {Array.from({ length: 21 }, (_, i) => {
-        const pos = (i - 10) * 500;
-        return (
-          <group key={i}>
-            <mesh position={[pos, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <planeGeometry args={[10000, 2]} />
-              <meshBasicMaterial color="#444444" transparent opacity={0.3} />
-            </mesh>
-            <mesh position={[0, pos, 0]}>
-              <planeGeometry args={[10000, 2]} />
-              <meshBasicMaterial color="#444444" transparent opacity={0.3} />
-            </mesh>
-          </group>
-        );
-      })}
-      
-      {/* Center cross */}
-      <mesh position={[0, 0, 0]}>
-        <planeGeometry args={[100, 4]} />
-        <meshBasicMaterial color="#666666" />
-      </mesh>
-      <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <planeGeometry args={[100, 4]} />
-        <meshBasicMaterial color="#666666" />
-      </mesh>
     </group>
   );
 }
@@ -255,10 +252,17 @@ function Scene({ params, batteryIndex, showLabels }: { params: FlightParams; bat
   
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[100, 100, 50]} intensity={1} />
+      <ambientLight intensity={1} />
       <FlightPathVisualization waypoints={waypoints} showLabels={showLabels} />
-      <OrbitControls makeDefault />
+      <OrbitControls 
+        makeDefault 
+        enableRotate={false}
+        mouseButtons={{
+          LEFT: THREE.MOUSE.PAN,
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.PAN
+        }}
+      />
     </>
   );
 }
@@ -454,7 +458,10 @@ export default function ShapeViewerPage() {
       
       {/* 2D Shape Viewer */}
       <div style={{ flex: 1, position: 'relative' }}>
-        <Canvas camera={{ position: [0, 0, 2000], fov: 50 }}>
+        <Canvas 
+          camera={{ position: [0, 0, 3000], fov: 50 }}
+          orthographic
+        >
           <Scene params={params} batteryIndex={batteryIndex} showLabels={showLabels} />
         </Canvas>
         
@@ -469,8 +476,8 @@ export default function ShapeViewerPage() {
           fontSize: '12px',
           fontFamily: 'monospace'
         }}>
-          <div>2D Top-Down View: Scroll to zoom, Right-click drag to pan</div>
-          <div style={{ marginTop: '5px', opacity: 0.7 }}>Grid = 500ft spacing, Center cross = origin</div>
+          <div>2D Top-Down View: Drag to pan, Scroll to zoom</div>
+          <div style={{ marginTop: '5px', opacity: 0.7 }}>Grid = 500ft spacing, Red dot = start point</div>
         </div>
       </div>
     </div>
