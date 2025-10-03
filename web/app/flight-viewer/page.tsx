@@ -4,8 +4,8 @@ import React, { ChangeEvent, useCallback, useMemo, useState, useEffect, useRef }
 import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
-import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Line, PerspectiveCamera, Grid } from "@react-three/drei";
+import { Loader } from "@googlemaps/js-api-loader";
+import { ThreeJSOverlayView } from "@googlemaps/three";
 import * as THREE from "three";
 import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
 
@@ -321,157 +321,6 @@ function formatSpeed(speedMs: number | null): string {
   return `${formatNumber(speedMs, 2)} m/s (${formatNumber(mph, 1)} mph)`;
 }
 
-// Camera Frustum Component - represents camera position and FOV
-function CameraFrustum({ 
-  position, 
-  heading, 
-  gimbalPitch, 
-  color, 
-  fov, 
-  scale,
-  onPointerOver,
-  onPointerOut 
-}: CameraFrustumProps): JSX.Element {
-  const [isHovered, setIsHovered] = React.useState(false);
-
-  // Create pyramid geometry for camera (wireframe only)
-  const { pyramidGeometry, baseCorners, apex } = useMemo(() => {
-    const size = scale * 0.8;
-    const depth = scale * 1.5;
-    
-    // Base rectangle corners (camera sensor plane)
-    const baseCorners = [
-      new THREE.Vector3(-size, -size * 0.6, 0),
-      new THREE.Vector3(size, -size * 0.6, 0),
-      new THREE.Vector3(size, size * 0.6, 0),
-      new THREE.Vector3(-size, size * 0.6, 0),
-    ];
-    
-    // Apex (camera lens position, pointing forward in +Z)
-    const apex = new THREE.Vector3(0, 0, depth);
-    
-    const geometry = new THREE.BufferGeometry();
-    const vertices: number[] = [];
-    
-    // Base rectangle edges
-    for (let i = 0; i < 4; i++) {
-      const current = baseCorners[i];
-      const next = baseCorners[(i + 1) % 4];
-      vertices.push(current.x, current.y, current.z);
-      vertices.push(next.x, next.y, next.z);
-    }
-    
-    // Lines from base corners to apex (the 4 pyramid edges)
-    baseCorners.forEach(corner => {
-      vertices.push(corner.x, corner.y, corner.z);
-      vertices.push(apex.x, apex.y, apex.z);
-    });
-    
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
-    
-    return { pyramidGeometry: geometry, baseCorners, apex };
-  }, [scale]);
-
-  // Create FOV frustum lines - extending from the 4 pyramid edges
-  const frustumLines = useMemo(() => {
-    const halfFovH = (fov / 2) * (Math.PI / 180);
-    const halfFovV = halfFovH * 0.75; // 4:3 aspect ratio
-    const distance = scale * 50; // Extend very far
-    
-    const points: number[] = [];
-    
-    // Calculate the 4 far corners based on FOV
-    const farCorners = [
-      new THREE.Vector3(
-        Math.tan(halfFovH) * distance,
-        Math.tan(halfFovV) * distance,
-        distance
-      ),
-      new THREE.Vector3(
-        -Math.tan(halfFovH) * distance,
-        Math.tan(halfFovV) * distance,
-        distance
-      ),
-      new THREE.Vector3(
-        -Math.tan(halfFovH) * distance,
-        -Math.tan(halfFovV) * distance,
-        distance
-      ),
-      new THREE.Vector3(
-        Math.tan(halfFovH) * distance,
-        -Math.tan(halfFovV) * distance,
-        distance
-      ),
-    ];
-    
-    // Draw lines from apex to far corners
-    farCorners.forEach(corner => {
-      points.push(apex.x, apex.y, apex.z);
-      points.push(corner.x, corner.y, corner.z);
-    });
-    
-    return new Float32Array(points);
-  }, [fov, scale, apex]);
-
-  // Calculate rotation from heading and gimbal pitch
-  const rotation = useMemo(() => {
-    const headingRad = (heading * Math.PI) / 180;
-    const pitchRad = (gimbalPitch * Math.PI) / 180;
-    // YXZ order: first rotate around Y (heading), then X (pitch)
-    return new THREE.Euler(pitchRad, headingRad, 0, 'YXZ');
-  }, [heading, gimbalPitch]);
-
-  const handlePointerOver = useCallback(() => {
-    setIsHovered(true);
-    onPointerOver();
-  }, [onPointerOver]);
-
-  const handlePointerOut = useCallback(() => {
-    setIsHovered(false);
-    onPointerOut();
-  }, [onPointerOut]);
-
-  return (
-    <group position={position} rotation={rotation}>
-      {/* Camera pyramid wireframe */}
-      <lineSegments 
-        geometry={pyramidGeometry}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-      >
-        <lineBasicMaterial 
-          color={color} 
-          opacity={isHovered ? 1.0 : 0.85} 
-          transparent 
-          linewidth={isHovered ? 3 : 2}
-        />
-      </lineSegments>
-
-      {/* FOV frustum lines - only visible on hover */}
-      {isHovered && (
-        <lineSegments>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={frustumLines.length / 3}
-              array={frustumLines}
-              itemSize={3}
-            />
-          </bufferGeometry>
-          <lineDashedMaterial 
-            color={color} 
-            opacity={0.5} 
-            transparent 
-            dashSize={scale * 0.8}
-            gapSize={scale * 0.4}
-            linewidth={2}
-          />
-        </lineSegments>
-      )}
-    </group>
-  );
-}
-
 interface FlightPathSceneProps {
   flights: FlightData[];
   selectedLens: string;
@@ -479,259 +328,515 @@ interface FlightPathSceneProps {
   centerCoords?: { lat: number; lon: number };
 }
 
-// Google 3D Satellite Terrain Component - Uses elevation data to create terrain mesh
-function Google3DTerrain({ centerLat, centerLon, apiKey, radius }: { centerLat: number; centerLon: number; apiKey: string; radius: number }): JSX.Element {
-  const [terrainMesh, setTerrainMesh] = useState<THREE.Mesh | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface WaypointVisual {
+  key: string;
+  flightId: string;
+  index: number;
+  targets: THREE.Object3D[];
+  setHover: (hovered: boolean) => void;
+}
 
-  useEffect(() => {
-    if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('[Google3DTerrain] No valid API key provided');
-      setIsLoading(false);
-      return;
+const GOOGLE_MAP_CAMERA_TILT = 67;
+const GOOGLE_MAP_CAMERA_HEADING = 0;
+const GOOGLE_MAP_DEFAULT_ZOOM = 18;
+
+function disposeObject3D(object: THREE.Object3D) {
+  object.traverse(child => {
+    const mesh = child as THREE.Mesh;
+    if (mesh.geometry) {
+      mesh.geometry.dispose();
     }
-
-    // Create terrain mesh from elevation data
-    const createTerrainMesh = async () => {
-      try {
-        console.log('[Google3DTerrain] Loading terrain data for:', { centerLat, centerLon, radius });
-        
-        // Grid resolution (higher = more detail)
-        const gridSize = 50;
-        const metersPerGrid = (radius * 4) / gridSize;
-        
-        // Fetch elevation data in a grid
-        const elevationPromises: Promise<number>[] = [];
-        const gridPoints: Array<{ lat: number; lon: number; x: number; z: number }> = [];
-        
-        for (let i = 0; i <= gridSize; i++) {
-          for (let j = 0; j <= gridSize; j++) {
-            // Calculate lat/lon offsets (approximate)
-            const latOffset = ((i - gridSize / 2) * metersPerGrid) / 111000; // ~111km per degree
-            const lonOffset = ((j - gridSize / 2) * metersPerGrid) / (111000 * Math.cos(centerLat * Math.PI / 180));
-            
-            const lat = centerLat + latOffset;
-            const lon = centerLon + lonOffset;
-            const x = (j - gridSize / 2) * metersPerGrid;
-            const z = -(i - gridSize / 2) * metersPerGrid;
-            
-            gridPoints.push({ lat, lon, x, z });
-            
-            // Batch requests to avoid rate limiting
-            const promise = fetch(
-              `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lon}&key=${apiKey}`
-            )
-              .then(res => res.json())
-              .then(data => data.results?.[0]?.elevation || 0)
-              .catch(() => 0);
-            
-            elevationPromises.push(promise);
-          }
-        }
-        
-        // Wait for all elevation data
-        const elevations = await Promise.all(elevationPromises);
-        console.log('[Google3DTerrain] Fetched', elevations.length, 'elevation points');
-        
-        // Create geometry
-        const geometry = new THREE.BufferGeometry();
-        const vertices: number[] = [];
-        const indices: number[] = [];
-        const uvs: number[] = [];
-        
-        // Build vertices
-        gridPoints.forEach((point, idx) => {
-          vertices.push(point.x, elevations[idx], point.z);
-          uvs.push(point.x / (radius * 4) + 0.5, point.z / (radius * 4) + 0.5);
-        });
-        
-        // Build triangles
-        for (let i = 0; i < gridSize; i++) {
-          for (let j = 0; j < gridSize; j++) {
-            const a = i * (gridSize + 1) + j;
-            const b = a + gridSize + 1;
-            const c = a + 1;
-            const d = b + 1;
-            
-            indices.push(a, b, c);
-            indices.push(b, d, c);
-          }
-        }
-        
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-        geometry.setIndex(indices);
-        geometry.computeVertexNormals();
-        
-        // Create material with satellite imagery texture
-        const textureUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLon}&zoom=17&size=640x640&maptype=satellite&key=${apiKey}`;
-        const texture = new THREE.TextureLoader().load(textureUrl, () => {
-          console.log('[Google3DTerrain] Satellite texture loaded');
-        });
-        
-        const material = new THREE.MeshStandardMaterial({
-          map: texture,
-          side: THREE.FrontSide,
-          roughness: 0.9,
-          metalness: 0.1,
-        });
-        
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.receiveShadow = true;
-        mesh.castShadow = false;
-        
-        setTerrainMesh(mesh);
-        setIsLoading(false);
-        console.log('[Google3DTerrain] Terrain mesh created successfully');
-        
-      } catch (error) {
-        console.error('[Google3DTerrain] Failed to create terrain:', error);
-        setIsLoading(false);
+    const material = mesh.material as THREE.Material | THREE.Material[] | undefined;
+    if (material) {
+      if (Array.isArray(material)) {
+        material.forEach(mat => mat.dispose());
+      } else if (typeof material.dispose === "function") {
+        material.dispose();
       }
-    };
+    }
+  });
+}
 
-    createTerrainMesh();
+function createCameraFrustumVisual({
+  sample,
+  lensSpec,
+  color,
+  flightId,
+}: {
+  sample: ProcessedSample;
+  lensSpec: { fov: number; aspectRatio: number };
+  color: string;
+  flightId: string;
+}): { group: THREE.Group; waypoint: WaypointVisual } {
+  const group = new THREE.Group();
 
-    return () => {
-      if (terrainMesh) {
-        terrainMesh.geometry.dispose();
-        if (terrainMesh.material instanceof THREE.Material) {
-          terrainMesh.material.dispose();
-        }
-      }
-    };
-  }, [centerLat, centerLon, apiKey, radius]);
+  const sizeScale = Math.max(sample.altitudeFt * FEET_TO_METERS * 0.02, 1.2);
+  const baseWidth = sizeScale * 0.8;
+  const baseHeight = baseWidth * (1 / lensSpec.aspectRatio);
+  const depth = sizeScale * 1.5;
 
-  if (isLoading) {
-    console.log('[Google3DTerrain] Loading terrain...');
+  const baseCorners = [
+    new THREE.Vector3(-baseWidth, -baseHeight, 0),
+    new THREE.Vector3(baseWidth, -baseHeight, 0),
+    new THREE.Vector3(baseWidth, baseHeight, 0),
+    new THREE.Vector3(-baseWidth, baseHeight, 0),
+  ];
+
+  const apex = new THREE.Vector3(0, 0, depth);
+
+  const pyramidVertices: number[] = [];
+  for (let i = 0; i < 4; i += 1) {
+    const current = baseCorners[i];
+    const next = baseCorners[(i + 1) % 4];
+    pyramidVertices.push(current.x, current.y, current.z);
+    pyramidVertices.push(next.x, next.y, next.z);
+  }
+  baseCorners.forEach(corner => {
+    pyramidVertices.push(corner.x, corner.y, corner.z);
+    pyramidVertices.push(apex.x, apex.y, apex.z);
+  });
+
+  const pyramidGeometry = new THREE.BufferGeometry();
+  pyramidGeometry.setAttribute("position", new THREE.Float32BufferAttribute(pyramidVertices, 3));
+
+  const frameMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.85 });
+  const wireframe = new THREE.LineSegments(pyramidGeometry, frameMaterial);
+
+  const halfFovH = THREE.MathUtils.degToRad(lensSpec.fov / 2);
+  const halfFovV = Math.atan(Math.tan(halfFovH) / lensSpec.aspectRatio);
+  const distance = sizeScale * 60;
+
+  const farCorners = [
+    new THREE.Vector3(Math.tan(halfFovH) * distance, Math.tan(halfFovV) * distance, distance),
+    new THREE.Vector3(-Math.tan(halfFovH) * distance, Math.tan(halfFovV) * distance, distance),
+    new THREE.Vector3(-Math.tan(halfFovH) * distance, -Math.tan(halfFovV) * distance, distance),
+    new THREE.Vector3(Math.tan(halfFovH) * distance, -Math.tan(halfFovV) * distance, distance),
+  ];
+
+  const frustumPoints: number[] = [];
+  farCorners.forEach(corner => {
+    frustumPoints.push(apex.x, apex.y, apex.z, corner.x, corner.y, corner.z);
+  });
+
+  const frustumGeometry = new THREE.BufferGeometry();
+  frustumGeometry.setAttribute("position", new THREE.Float32BufferAttribute(frustumPoints, 3));
+  const frustumMaterial = new THREE.LineDashedMaterial({
+    color,
+    transparent: true,
+    opacity: 0.45,
+    dashSize: sizeScale * 0.8,
+    gapSize: sizeScale * 0.4,
+  });
+  const frustumLines = new THREE.LineSegments(frustumGeometry, frustumMaterial);
+  frustumLines.computeLineDistances();
+  frustumLines.visible = false;
+
+  group.add(wireframe);
+  group.add(frustumLines);
+
+  const headingRad = THREE.MathUtils.degToRad(sample.headingDeg ?? 0);
+  const pitchRad = THREE.MathUtils.degToRad(sample.gimbalPitchAngle ?? -90);
+  group.setRotationFromEuler(new THREE.Euler(pitchRad, headingRad, 0, "YXZ"));
+
+  const key = `${flightId}:${sample.index}`;
+  wireframe.userData = { type: "waypoint", flightId, index: sample.index };
+  frustumLines.userData = { type: "waypoint", flightId, index: sample.index };
+
+  const waypoint: WaypointVisual = {
+    key,
+    flightId,
+    index: sample.index,
+    targets: [wireframe],
+    setHover: hovered => {
+      frameMaterial.opacity = hovered ? 1 : 0.85;
+      frustumLines.visible = hovered;
+      frustumMaterial.opacity = hovered ? 0.65 : 0.45;
+    },
+  };
+
+  return { group, waypoint };
+}
+
+function buildFlightOverlay(
+  flight: FlightData,
+  overlay: ThreeJSOverlayView,
+  lensSpec: { fov: number; aspectRatio: number }
+): { group: THREE.Group; waypoints: WaypointVisual[] } {
+  const flightGroup = new THREE.Group();
+  flightGroup.name = `flight-${flight.id}`;
+
+  const waypointEntries: WaypointVisual[] = [];
+
+  const worldPoints = flight.samples.map(sample =>
+    overlay.latLngAltitudeToVector3({
+      lat: sample.latitude,
+      lng: sample.longitude,
+      altitude: sample.altitudeFt * FEET_TO_METERS,
+    })
+  );
+
+  if (worldPoints.length >= 2) {
+    const curve = new THREE.CatmullRomCurve3(worldPoints, false, "centripetal", 0.25);
+    const detail = Math.min(2_000, Math.max(worldPoints.length * 8, 256));
+    const smoothPoints = curve.getPoints(detail);
+    const pathGeometry = new THREE.BufferGeometry().setFromPoints(smoothPoints);
+    const pathMaterial = new THREE.LineBasicMaterial({ color: flight.color, transparent: true, opacity: 0.95 });
+    const pathLine = new THREE.Line(pathGeometry, pathMaterial);
+    pathLine.name = `flight-path-${flight.id}`;
+    flightGroup.add(pathLine);
   }
 
-  return terrainMesh ? <primitive object={terrainMesh} /> : null;
+  flight.samples.forEach(sample => {
+    const { group, waypoint } = createCameraFrustumVisual({
+      sample,
+      lensSpec,
+      color: flight.color,
+      flightId: flight.id,
+    });
+
+    const worldPosition = overlay.latLngAltitudeToVector3({
+      lat: sample.latitude,
+      lng: sample.longitude,
+      altitude: sample.altitudeFt * FEET_TO_METERS,
+    });
+
+    group.position.copy(worldPosition);
+    waypointEntries.push(waypoint);
+    flightGroup.add(group);
+  });
+
+  if (flight.poi) {
+    const poiPosition = overlay.latLngAltitudeToVector3({
+      lat: flight.poi.latitude,
+      lng: flight.poi.longitude,
+      altitude: (flight.poi.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0) * FEET_TO_METERS,
+    });
+
+    const pathBox = new THREE.Box3().setFromPoints(worldPoints);
+    const sizeVector = pathBox.getSize(new THREE.Vector3());
+    const poiRadius = Math.max(sizeVector.length() * 0.01, 0.8);
+
+    const poiGeometry = new THREE.SphereGeometry(poiRadius, 24, 24);
+    const poiMaterial = new THREE.MeshStandardMaterial({ color: "#ff7a18", emissive: "#ff7a18", emissiveIntensity: 0.6 });
+    const poiMesh = new THREE.Mesh(poiGeometry, poiMaterial);
+    poiMesh.position.copy(poiPosition);
+    flightGroup.add(poiMesh);
+  }
+
+  return { group: flightGroup, waypoints: waypointEntries };
 }
 
 function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords }: FlightPathSceneProps): JSX.Element {
-  const lensSpec = DRONE_LENSES[selectedLens] || DRONE_LENSES["mavic3_wide"];
-  
-  const { center, radius } = useMemo(() => {
-    const allVectors: THREE.Vector3[] = [];
-    flights.forEach(flight => {
-      flight.samples.forEach(sample => {
-        allVectors.push(new THREE.Vector3(...sample.localPosition));
-      });
-    });
-    
-    if (!allVectors.length) {
-      return { center: new THREE.Vector3(0, 0, 0), radius: 50 };
-    }
-    
-    const box = new THREE.Box3().setFromPoints(allVectors);
-    const dimensions = box.getSize(new THREE.Vector3());
-    const computedRadius = Math.max(dimensions.x, dimensions.y, dimensions.z) * 0.75;
-    return {
-      center: box.getCenter(new THREE.Vector3()),
-      radius: Math.max(computedRadius, 30),
-    };
-  }, [flights]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<ThreeJSOverlayView | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const googleRef = useRef<typeof google | null>(null);
+  const initializingRef = useRef(false);
+  const flightsGroupRef = useRef<THREE.Group | null>(null);
+  const waypointLookupRef = useRef<Map<string, WaypointVisual>>(new Map());
+  const waypointTargetsRef = useRef<THREE.Object3D[]>([]);
+  const pointerVecRef = useRef(new THREE.Vector2(0, 0));
+  const pointerActiveRef = useRef(false);
+  const hoverKeyRef = useRef<string | null>(null);
+  const onWaypointHoverRef = useRef(onWaypointHover);
 
-  const cameraPosition = useMemo(() => {
-    return [center.x + radius * 1.8, center.y + radius * 1.1, center.z + radius * 1.8];
-  }, [center, radius]);
-  
-  const cameraScale = useMemo(() => Math.max(radius * 0.015, 1), [radius]);
-
-  const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+  const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+  const GOOGLE_MAPS_MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "";
 
   useEffect(() => {
-    console.log('[FlightPathScene] API Key status:', GOOGLE_MAPS_API_KEY ? `Present (${GOOGLE_MAPS_API_KEY.substring(0, 10)}...)` : 'MISSING');
-    console.log('[FlightPathScene] Center coords:', centerCoords);
-    console.log('[FlightPathScene] Will render terrain:', !!(centerCoords && GOOGLE_MAPS_API_KEY));
-  }, [centerCoords, GOOGLE_MAPS_API_KEY]);
+    onWaypointHoverRef.current = onWaypointHover;
+  }, [onWaypointHover]);
 
-  return (
-    <Canvas className="flight-viewer__canvas-inner" shadows>
-      <color attach="background" args={["#87CEEB"]} />
-      <fog attach="fog" args={["#87CEEB", radius * 0.5, radius * 3.5]} />
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[radius, radius * 1.5, radius]} intensity={1.2} castShadow />
-      <PerspectiveCamera makeDefault position={cameraPosition as [number, number, number]} fov={48} near={0.1} far={radius * 10} />
-      <OrbitControls makeDefault target={[center.x, center.y, center.z]} maxDistance={radius * 5} minDistance={radius * 0.2} />
-      
-      {centerCoords && GOOGLE_MAPS_API_KEY && (
-        <Google3DTerrain 
-          centerLat={centerCoords.lat} 
-          centerLon={centerCoords.lon} 
-          apiKey={GOOGLE_MAPS_API_KEY}
-          radius={radius}
-        />
-      )}
-      
-      {!centerCoords && (
-        <Grid args={[radius * 4, radius * 4, 20, 20]} position={[center.x, 0, center.z]} sectionColor={"#1c1c24"} cellColor={"#11111a"} infiniteGrid fadeDistance={radius * 1.5} fadeStrength={2} />
-      )}
+  useEffect(() => {
+    if (!centerCoords || !GOOGLE_MAPS_API_KEY) {
+      return;
+    }
 
-      {flights.map(flight => {
-        const vectors = flight.samples.map(sample => new THREE.Vector3(...sample.localPosition));
-        let smoothPath = vectors;
-        
-        if (vectors.length >= 2) {
-          const curve = new THREE.CatmullRomCurve3(vectors, false, "centripetal", 0.25);
-          const density = Math.min(1_200, Math.max(vectors.length * 16, 200));
-          smoothPath = curve.getPoints(density);
+    if (overlayRef.current && mapRef.current) {
+      overlayRef.current.setAnchor({ lat: centerCoords.lat, lng: centerCoords.lon, altitude: 0 });
+      mapRef.current.moveCamera?.({ center: { lat: centerCoords.lat, lng: centerCoords.lon } });
+      return;
+    }
+
+    if (!containerRef.current || initializingRef.current) {
+      return;
+    }
+
+    initializingRef.current = true;
+    let cancelled = false;
+    let overlayInstance: ThreeJSOverlayView | null = null;
+    let mapInstance: google.maps.Map | null = null;
+    const listeners: google.maps.MapsEventListener[] = [];
+
+    const loader = new Loader({
+      apiKey: GOOGLE_MAPS_API_KEY,
+      version: "weekly",
+      mapIds: GOOGLE_MAPS_MAP_ID ? [GOOGLE_MAPS_MAP_ID] : undefined,
+    });
+
+    loader
+      .load()
+      .then(googleMaps => {
+        if (cancelled) {
+          return;
         }
 
-        return (
-          <group key={flight.id}>
-            {smoothPath.length >= 2 && (
-              <Line
-                points={smoothPath}
-                color={flight.color}
-                lineWidth={2.4}
-                transparent
-                opacity={0.95}
-              />
-            )}
+        googleRef.current = googleMaps;
 
-            {flight.samples.map(sample => {
-              const heading = sample.headingDeg || 0;
-              const gimbalPitch = sample.gimbalPitchAngle || -90;
-              
-              return (
-                <CameraFrustum
-                  key={`${flight.id}-${sample.index}`}
-                  position={sample.localPosition}
-                  heading={heading}
-                  gimbalPitch={gimbalPitch}
-                  color={flight.color}
-                  fov={lensSpec.fov}
-                  scale={cameraScale}
-                  onPointerOver={() => onWaypointHover(flight.id, sample.index)}
-                  onPointerOut={() => onWaypointHover(flight.id, null)}
-                />
-              );
-            })}
+        mapInstance = new googleMaps.maps.Map(containerRef.current as HTMLElement, {
+          center: { lat: centerCoords.lat, lng: centerCoords.lon },
+          zoom: GOOGLE_MAP_DEFAULT_ZOOM,
+          tilt: GOOGLE_MAP_CAMERA_TILT,
+          heading: GOOGLE_MAP_CAMERA_HEADING,
+          mapId: GOOGLE_MAPS_MAP_ID || undefined,
+          mapTypeControl: false,
+          streetViewControl: false,
+          rotateControl: true,
+          fullscreenControl: false,
+        });
 
-            {flight.poi && (
-              <mesh key={`${flight.id}-poi`} position={flight.poi.localPosition} castShadow>
-                <sphereGeometry args={[Math.max(radius * 0.012, 0.8), 24, 24]} />
-                <meshStandardMaterial color="#ff7a18" emissive="#ff7a18" emissiveIntensity={0.6} />
-              </mesh>
-            )}
-          </group>
+        mapRef.current = mapInstance;
+
+        overlayInstance = new ThreeJSOverlayView({
+          map: mapInstance,
+          anchor: { lat: centerCoords.lat, lng: centerCoords.lon, altitude: 0 },
+          upAxis: "Z",
+          animationMode: "whenMapIdle",
+        });
+
+        overlayInstance.onBeforeDraw = () => {
+          if (!overlayRef.current) {
+            return;
+          }
+
+          if (!pointerActiveRef.current || waypointTargetsRef.current.length === 0) {
+            if (hoverKeyRef.current) {
+              const previous = waypointLookupRef.current.get(hoverKeyRef.current);
+              if (previous) {
+                previous.setHover(false);
+                const [prevFlightId] = hoverKeyRef.current.split(":");
+                onWaypointHoverRef.current(prevFlightId, null);
+              }
+              hoverKeyRef.current = null;
+            }
+            return;
+          }
+
+          const intersections = overlayRef.current.raycast(
+            pointerVecRef.current,
+            waypointTargetsRef.current,
+            { recursive: false }
+          );
+
+          const hit = intersections.find(item => item.object.userData?.type === "waypoint");
+          if (!hit) {
+            if (hoverKeyRef.current) {
+              const previous = waypointLookupRef.current.get(hoverKeyRef.current);
+              if (previous) {
+                previous.setHover(false);
+                const [prevFlightId] = hoverKeyRef.current.split(":");
+                onWaypointHoverRef.current(prevFlightId, null);
+              }
+              hoverKeyRef.current = null;
+            }
+            return;
+          }
+
+          const { flightId, index } = hit.object.userData as { flightId: string; index: number };
+          const key = `${flightId}:${index}`;
+
+          if (hoverKeyRef.current === key) {
+            return;
+          }
+
+          if (hoverKeyRef.current) {
+            const previous = waypointLookupRef.current.get(hoverKeyRef.current);
+            if (previous) {
+              previous.setHover(false);
+              const [prevFlightId] = hoverKeyRef.current.split(":");
+              onWaypointHoverRef.current(prevFlightId, null);
+            }
+          }
+
+          const current = waypointLookupRef.current.get(key);
+          if (current) {
+            current.setHover(true);
+            hoverKeyRef.current = key;
+            onWaypointHoverRef.current(current.flightId, current.index);
+          }
+        };
+
+        overlayRef.current = overlayInstance;
+
+        const mapDiv = mapInstance.getDiv();
+
+        listeners.push(
+          mapInstance.addListener("mousemove", event => {
+            if (!event.domEvent) {
+              return;
+            }
+            const rect = mapDiv.getBoundingClientRect();
+            const x = event.domEvent.clientX - rect.left;
+            const y = event.domEvent.clientY - rect.top;
+            pointerVecRef.current.set(2 * (x / rect.width) - 1, 1 - 2 * (y / rect.height));
+            pointerActiveRef.current = true;
+            overlayInstance?.requestRedraw();
+          })
         );
-      })}
 
-      {!centerCoords && (
-        <mesh
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[center.x, center.y - radius * 0.05, center.z]}
-          receiveShadow
-        >
-          <planeGeometry args={[radius * 6, radius * 6]} />
-          <meshStandardMaterial color="#05050a" opacity={0.85} transparent />
-        </mesh>
-      )}
-    </Canvas>
-  );
+        listeners.push(
+          mapInstance.addListener("mouseout", () => {
+            pointerActiveRef.current = false;
+            if (hoverKeyRef.current) {
+              const previous = waypointLookupRef.current.get(hoverKeyRef.current);
+              if (previous) {
+                previous.setHover(false);
+                const [prevFlightId] = hoverKeyRef.current.split(":");
+                onWaypointHoverRef.current(prevFlightId, null);
+              }
+              hoverKeyRef.current = null;
+            }
+            overlayInstance?.requestRedraw();
+          })
+        );
+
+        listeners.push(
+          mapInstance.addListener("zoom_changed", () => {
+            overlayInstance?.requestRedraw();
+          })
+        );
+
+        overlayInstance.setMap(mapInstance);
+      })
+      .catch(error => {
+        console.error("[FlightPathScene] Failed to load Google Maps API", error);
+      })
+      .finally(() => {
+        initializingRef.current = false;
+      });
+
+    return () => {
+      cancelled = true;
+      pointerActiveRef.current = false;
+
+      listeners.forEach(listener => listener.remove());
+
+      if (overlayInstance) {
+        overlayInstance.setMap(null);
+      }
+
+      overlayRef.current = null;
+      if (mapInstance) {
+        mapInstance = null;
+      }
+
+      if (hoverKeyRef.current) {
+        const previous = waypointLookupRef.current.get(hoverKeyRef.current);
+        if (previous) {
+          previous.setHover(false);
+          const [prevFlightId] = hoverKeyRef.current.split(":");
+          onWaypointHoverRef.current(prevFlightId, null);
+        }
+        hoverKeyRef.current = null;
+      }
+
+      waypointLookupRef.current.clear();
+      waypointTargetsRef.current = [];
+
+      if (flightsGroupRef.current) {
+        disposeObject3D(flightsGroupRef.current);
+        flightsGroupRef.current = null;
+      }
+    };
+  }, [centerCoords, GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID]);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) {
+      return;
+    }
+
+    if (flightsGroupRef.current) {
+      overlay.scene.remove(flightsGroupRef.current);
+      disposeObject3D(flightsGroupRef.current);
+      flightsGroupRef.current = null;
+    }
+
+    if (hoverKeyRef.current) {
+      const previous = waypointLookupRef.current.get(hoverKeyRef.current);
+      if (previous) {
+        previous.setHover(false);
+        const [prevFlightId] = hoverKeyRef.current.split(":");
+        onWaypointHoverRef.current(prevFlightId, null);
+      }
+      hoverKeyRef.current = null;
+    }
+
+    waypointLookupRef.current = new Map();
+    waypointTargetsRef.current = [];
+
+    if (flights.length === 0) {
+      overlay.requestRedraw();
+      return;
+    }
+
+    const lensSpec = DRONE_LENSES[selectedLens] || DRONE_LENSES["mavic3_wide"];
+
+    const rootGroup = new THREE.Group();
+    const lookup = new Map<string, WaypointVisual>();
+    const targets: THREE.Object3D[] = [];
+
+    flights.forEach(flight => {
+      const { group, waypoints } = buildFlightOverlay(flight, overlay, lensSpec);
+      rootGroup.add(group);
+      waypoints.forEach(entry => {
+        lookup.set(entry.key, entry);
+        targets.push(...entry.targets);
+      });
+    });
+
+    overlay.scene.add(rootGroup);
+    flightsGroupRef.current = rootGroup;
+    waypointLookupRef.current = lookup;
+    waypointTargetsRef.current = targets;
+
+    overlay.requestRedraw();
+  }, [flights, selectedLens]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const googleMaps = googleRef.current;
+    if (!map || !googleMaps || flights.length === 0) {
+      return;
+    }
+
+    const bounds = new googleMaps.maps.LatLngBounds();
+    flights.forEach(flight => {
+      flight.samples.forEach(sample => {
+        bounds.extend({ lat: sample.latitude, lng: sample.longitude });
+      });
+    });
+
+    if (!bounds.isEmpty()) {
+      map.fitBounds(bounds, 48);
+      const zoom = map.getZoom() ?? GOOGLE_MAP_DEFAULT_ZOOM;
+      if (zoom > 19) {
+        map.setZoom(19);
+      }
+      map.setTilt(GOOGLE_MAP_CAMERA_TILT);
+      map.setHeading(GOOGLE_MAP_CAMERA_HEADING);
+    }
+  }, [flights]);
+
+  if (!GOOGLE_MAPS_API_KEY) {
+    return (
+      <div className="flight-viewer__map-placeholder">
+        <p>Google Maps API key missing. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable map rendering.</p>
+      </div>
+    );
+  }
+
+  return <div ref={containerRef} className="flight-viewer__map" role="presentation" />;
 }
 
 export default function FlightViewerPage(): JSX.Element {

@@ -59,7 +59,8 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
-            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${{ secrets.GOOGLE_MAPS_MAP_ID }}" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -77,7 +78,8 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
-            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${{ secrets.GOOGLE_MAPS_MAP_ID }}" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -129,6 +131,7 @@ jobs:
             --arg prod "$FEEDBACK_API_URL_PROD" \
             --arg preview "$FEEDBACK_API_URL_PREVIEW" \
             --arg google_maps "${{ secrets.GOOGLE_MAPS_API_KEY }}" \
+            --arg google_maps_map_id "${{ secrets.GOOGLE_MAPS_MAP_ID }}" \
             '{
               deployment_configs: {
                 production: {
@@ -137,7 +140,8 @@ jobs:
                   build_image_major_version: 3,
                   environment_variables: {
                     NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod },
-                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps }
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
+                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
                   }
                 },
                 preview: {
@@ -146,7 +150,8 @@ jobs:
                   build_image_major_version: 3,
                   environment_variables: {
                     NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview },
-                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps }
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
+                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
                   }
                 }
               }

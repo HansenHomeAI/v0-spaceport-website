@@ -208,15 +208,38 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
         );
       })}
       
-      {/* Ground plane reference */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -10]}>
+      {/* Grid reference */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -1]}>
         <planeGeometry args={[10000, 10000]} />
-        <meshBasicMaterial color="#1a1a1a" transparent opacity={0.3} />
+        <meshBasicMaterial color="#2a2a2a" transparent opacity={0.8} />
       </mesh>
       
-      {/* Axis helpers */}
-      <arrowHelper args={[new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 500, 0xff0000]} />
-      <arrowHelper args={[new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 500, 0x00ff00]} />
+      {/* Grid lines */}
+      {Array.from({ length: 21 }, (_, i) => {
+        const pos = (i - 10) * 500;
+        return (
+          <group key={i}>
+            <mesh position={[pos, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <planeGeometry args={[10000, 2]} />
+              <meshBasicMaterial color="#444444" transparent opacity={0.3} />
+            </mesh>
+            <mesh position={[0, pos, 0]}>
+              <planeGeometry args={[10000, 2]} />
+              <meshBasicMaterial color="#444444" transparent opacity={0.3} />
+            </mesh>
+          </group>
+        );
+      })}
+      
+      {/* Center cross */}
+      <mesh position={[0, 0, 0]}>
+        <planeGeometry args={[100, 4]} />
+        <meshBasicMaterial color="#666666" />
+      </mesh>
+      <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <planeGeometry args={[100, 4]} />
+        <meshBasicMaterial color="#666666" />
+      </mesh>
     </group>
   );
 }
@@ -429,9 +452,9 @@ export default function ShapeViewerPage() {
         </div>
       </div>
       
-      {/* 3D Viewer */}
+      {/* 2D Shape Viewer */}
       <div style={{ flex: 1, position: 'relative' }}>
-        <Canvas camera={{ position: [1500, 1500, 1000], fov: 50 }}>
+        <Canvas camera={{ position: [0, 0, 2000], fov: 50 }}>
           <Scene params={params} batteryIndex={batteryIndex} showLabels={showLabels} />
         </Canvas>
         
@@ -446,8 +469,8 @@ export default function ShapeViewerPage() {
           fontSize: '12px',
           fontFamily: 'monospace'
         }}>
-          <div>Camera Controls: Left-click drag to rotate, Right-click drag to pan, Scroll to zoom</div>
-          <div style={{ marginTop: '5px', opacity: 0.7 }}>Red/Green arrows = X/Y axes</div>
+          <div>2D Top-Down View: Scroll to zoom, Right-click drag to pan</div>
+          <div style={{ marginTop: '5px', opacity: 0.7 }}>Grid = 500ft spacing, Center cross = origin</div>
         </div>
       </div>
     </div>
