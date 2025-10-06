@@ -56,6 +56,8 @@ interface FlightPathSceneProps {
 
 type CesiumModule = typeof import("cesium");
 
+declare const CESIUM_BASE_URL: string | undefined;
+
 declare global {
   interface Window {
     CESIUM_BASE_URL?: string;
@@ -381,6 +383,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   const hoverRef = useRef<{ flightId: string; index: number; key: string } | null>(null);
   const waypointEntityMapRef = useRef<Map<string, import("cesium").Entity>>(new Map());
   const [initError, setInitError] = useState<string | null>(null);
+  const [viewerReady, setViewerReady] = useState(false);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
@@ -399,11 +402,23 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       try {
         const Cesium = await import("cesium");
         cesiumRef.current = Cesium;
+        try {
+          Cesium.Ion.defaultAccessToken = undefined as unknown as string;
+        } catch {
+          /* noop */
+        }
         if (typeof window !== "undefined") {
-          window.CESIUM_BASE_URL = "/cesium";
+          window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
         }
 
-        const viewer = new Cesium.Viewer(containerRef.current, {
+        const transparentPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
+
+        const viewerOptions: any = {
+          imageryProvider: new Cesium.SingleTileImageryProvider({
+            url: transparentPixel,
+            rectangle: Cesium.Rectangle.MAX_VALUE,
+          }),
+          terrainProvider: new Cesium.EllipsoidTerrainProvider(),
           baseLayerPicker: false,
           geocoder: false,
           timeline: false,
@@ -414,13 +429,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           selectionIndicator: false,
           sceneModePicker: false,
           requestRenderMode: true,
-        });
+        };
+
+        const viewer = new Cesium.Viewer(containerRef.current, viewerOptions);
 
         viewer.scene.globe.show = false;
         viewer.scene.skyAtmosphere.show = false;
         viewer.scene.skyBox.show = false;
         viewer.imageryLayers.removeAll();
         viewerRef.current = viewer;
+        setViewerReady(true);
 
         try {
           const tileset = await Cesium.Cesium3DTileset.fromUrl(tilesetUrl(apiKey), {
@@ -504,13 +522,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         hoverRef.current = null;
       }
       waypointEntityMapRef.current.clear();
+      setViewerReady(false);
     };
   }, [apiKey, onWaypointHover]);
 
   useEffect(() => {
     const viewer = viewerRef.current;
     const Cesium = cesiumRef.current;
-    if (!viewer || !Cesium) {
+    if (!viewer || !Cesium || !viewerReady) {
       return;
     }
 
@@ -638,7 +657,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
     }
 
     viewer.scene.requestRender();
-  }, [flights, selectedLens]);
+  }, [flights, selectedLens, viewerReady]);
 
   if (!apiKey) {
     return (
