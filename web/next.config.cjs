@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
@@ -15,17 +14,11 @@ const nextConfig = {
   webpack: (config) => {
     config.plugins = config.plugins || [];
 
+    const cesiumBaseUrl = `${basePath || ''}/cesium`;
+
     config.plugins.push(
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            from: path.join(__dirname, 'node_modules/cesium/Build/Cesium'),
-            to: path.join(__dirname, 'public/cesium'),
-          },
-        ],
-      }),
       new webpack.DefinePlugin({
-        CESIUM_BASE_URL: JSON.stringify('/cesium'),
+        CESIUM_BASE_URL: JSON.stringify(cesiumBaseUrl),
       }),
       new webpack.NormalModuleReplacementPlugin(
         /^@zip\.js\/zip\.js\/lib\/zip-no-worker\.js$/,

@@ -7,6 +7,7 @@ The flight viewer now renders missions inside a Cesium globe that streams Google
 ## Key Changes
 
 - **Cesium Viewer** replaces the Google Maps WebGL overlay. A headless `Viewer` instance is mounted in the flight viewer panel and pointed at the Google 3D Tiles endpoint.
+- **Asset bundling**: `npm run build/dev/start` now run `scripts/copy-cesium-assets.cjs`, copying `node_modules/cesium/Build/Cesium` into `public/cesium` so assets like `approximateTerrainHeights.json`, Draco decoders, and imagery load without 404s.
 - **Entity-based overlays**: each flight creates Cesium polylines for the path, `PointGraphics` for waypoints, frustum direction lines, and an optional POI marker with a label.
 - **Hover state**: `ScreenSpaceEventHandler` drives picking. When the cursor intersects a waypoint entity we enlarge its point and propagate the hover event back to React for tooltip updates.
 - **Camera fitting**: after ingesting flights we compute a bounding sphere and call `viewer.camera.flyToBoundingSphere` so the mission is framed even when altitudes vary dramatically.
@@ -25,6 +26,7 @@ The key must have access to the **Map Tiles API** (Photorealistic 3D Tiles). No 
 ## Implementation Notes
 
 - We disable Cesium's default imagery/sky so the photorealistic tiles provide the full visual background.
+- `CESIUM_BASE_URL` respects any configured `basePath`, so preview deployments continue to resolve `/agent-*/cesium/...` correctly.
 - Google tiles are requested directly with `https://tile.googleapis.com/v1/3dtiles/root.json?key=...`.
 - Waypoint hover size changes use `ConstantProperty` updates so they render immediately without rebuilding the entity.
 - POIs render as 10px points with a "POI" label offset above the feature for readability.

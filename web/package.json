@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "predev": "node scripts/copy-cesium-assets.cjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copy-cesium-assets.cjs",
     "build": "next build",
+    "prestart": "node scripts/copy-cesium-assets.cjs",
     "start": "next start",
     "cf:build": "npx @cloudflare/next-on-pages",
     "cf:preview": "npx wrangler pages dev ./.vercel/output/static"

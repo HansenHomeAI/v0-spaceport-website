@@ -434,7 +434,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           }
         } catch (tilesetErr) {
           console.error("[FlightPathScene] Photorealistic tiles failed", tilesetErr);
-          setInitError("tileset");
+          const message = tilesetErr instanceof Error ? tilesetErr.message : "";
+          setInitError(message ? `tileset:${message}` : "tileset");
         }
 
         handlerRef.current = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
@@ -656,8 +657,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           {" "}
           {initError === "missing-key"
             ? "Add a Google Maps API key to render photorealistic terrain."
-            : initError === "tileset"
-            ? "Photorealistic tiles failed to load."
+            : initError.startsWith("tileset")
+            ? `Photorealistic tiles failed to load (${initError.split(":").slice(1).join(":") || "check Map Tiles API access"}).`
             : "WebGL initialization failed."}
         </div>
       )}
