@@ -91,6 +91,51 @@ const DRONE_LENSES: Record<string, { name: string; fov: number; aspectRatio: num
 };
 
 
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : Number.NaN;
+  }
+  return Number.NaN;
+}
+
+function toOptionalNumber(value: unknown): number | null {
+  const parsed = toNumber(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function sanitizeRow(row: RawFlightRow): PreparedRow | null {
+  const latitude = toNumber(row.latitude);
+  const longitude = toNumber(row.longitude);
+  const altitudeFt = toNumber(row["altitude(ft)"] ?? row.altitudeft ?? row.altitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isFinite(altitudeFt)) {
+    return null;
+  }
+
+  return {
+    latitude,
+    longitude,
+    altitudeFt,
+    headingDeg: toOptionalNumber(row["heading(deg)"] ?? row.headingdeg ?? row.heading),
+    curveSizeFt: toOptionalNumber(row["curvesize(ft)"] ?? row.curvesizeft),
+    rotationDir: toOptionalNumber(row.rotationdir),
+    gimbalMode: toOptionalNumber(row.gimbalmode),
+    gimbalPitchAngle: toOptionalNumber(row.gimbalpitchangle ?? row["gimbal_pitch(deg)"]),
+    altitudeMode: toOptionalNumber(row.altitudemode),
+    speedMs: toOptionalNumber(row["speed(m/s)"] ?? row.speedms ?? row.speed),
+    poiLatitude: toOptionalNumber(row.poi_latitude ?? row.poi_latitude_deg),
+    poiLongitude: toOptionalNumber(row.poi_longitude ?? row.poi_longitude_deg),
+    poiAltitudeFt: toOptionalNumber(row["poi_altitude(ft)"] ?? row.poi_altitudeft),
+    poiAltitudeMode: toOptionalNumber(row.poi_altitudemode),
+    photoTimeInterval: toOptionalNumber(row.photo_timeinterval),
+    photoDistInterval: toOptionalNumber(row.photo_distinterval),
+  };
+}
+
 function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi: PoiData | null } {
   if (!samples.length) {
     return { samples: [], poi: null };
@@ -117,6 +162,106 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
   }
 
   return { samples: processedSamples, poi };
+}
+
+async function parseKMZFile(file: File): Promise<PreparedRow[]> {
+  const zip = await JSZip.loadAsync(file);
+  const wpmlFile = zip.file("wpmz/waylines.wpml");
+  if (!wpmlFile) {
+    throw new Error("No waylines.wpml found in KMZ");
+  }
+
+  const xmlContent = await wpmlFile.async("string");
+  const parser = new XMLParser({ ignoreAttributes: false });
+  const parsed = parser.parse(xmlContent);
+
+  const placemarks = parsed?.kml?.Document?.Folder?.Placemark;
+  if (!placemarks) {
+    throw new Error("No waypoints found in KMZ");
+  }
+
+  const waypointArray = Array.isArray(placemarks) ? placemarks : [placemarks];
+  const rows: PreparedRow[] = [];
+
+  for (const mark of waypointArray) {
+    const coords = mark?.Point?.coordinates;
+    const executeHeight = mark?.["wpml:executeHeight"];
+    const speed = mark?.["wpml:waypointSpeed"];
+    const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
+    const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+
+    let gimbalPitch: number | null = null;
+    const actionGroups = mark?.["wpml:actionGroup"];
+    const groups = Array.isArray(actionGroups) ? actionGroups : actionGroups ? [actionGroups] : [];
+    for (const group of groups) {
+      const action = group?.["wpml:action"];
+      const actions = Array.isArray(action) ? action : action ? [action] : [];
+      for (const act of actions) {
+        const func = act?.["wpml:actionActuatorFunc"];
+        if (func === "gimbalRotate" || func === "gimbalEvenlyRotate") {
+          const pitch = act?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
+          if (pitch !== undefined && pitch !== null) {
+            gimbalPitch = Number(pitch);
+            break;
+          }
+        }
+      }
+      if (gimbalPitch !== null) {
+        break;
+      }
+    }
+
+    if (!coords || executeHeight === undefined || executeHeight === null) {
+      continue;
+    }
+
+    const [lon, lat] = String(coords)
+      .split(",")
+      .map(value => Number(value));
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      continue;
+    }
+
+    const altitudeMeters = Number(executeHeight);
+    const altitudeFt = altitudeMeters / FEET_TO_METERS;
+
+    let poiLat: number | null = null;
+    let poiLon: number | null = null;
+    let poiAltFt: number | null = null;
+    if (typeof poiPoint === "string") {
+      const poiParts = poiPoint.split(",").map(Number);
+      if (poiParts.length >= 3 && Number.isFinite(poiParts[0]) && Number.isFinite(poiParts[1])) {
+        poiLat = poiParts[0];
+        poiLon = poiParts[1];
+        poiAltFt = poiParts[2] / FEET_TO_METERS;
+      }
+    }
+
+    rows.push({
+      latitude: lat,
+      longitude: lon,
+      altitudeFt,
+      headingDeg: toOptionalNumber(heading),
+      curveSizeFt: null,
+      rotationDir: null,
+      gimbalMode: null,
+      gimbalPitchAngle: gimbalPitch,
+      altitudeMode: null,
+      speedMs: toOptionalNumber(speed),
+      poiLatitude: poiLat,
+      poiLongitude: poiLon,
+      poiAltitudeFt: poiAltFt,
+      poiAltitudeMode: null,
+      photoTimeInterval: null,
+      photoDistInterval: null,
+    });
+  }
+
+  if (!rows.length) {
+    throw new Error("KMZ file did not contain any waypoints");
+  }
+
+  return rows;
 }
 
 function computeStats(flight: FlightData | null) {
@@ -158,6 +303,10 @@ function computeStats(flight: FlightData | null) {
     minAltitudeFt,
     averageSpeedMs,
   };
+}
+
+function formatNumber(value: number, fractionDigits = 1): string {
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: fractionDigits }).format(value);
 }
 
 function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -206,6 +355,22 @@ function destinationLatLon(
   };
 }
 
+function setPointPixelSize(
+  Cesium: CesiumModule | null,
+  entity: import("cesium").Entity | undefined,
+  size: number,
+) {
+  if (!Cesium || !entity?.point) {
+    return;
+  }
+  const property = entity.point.pixelSize as { setValue?: (value: number) => void } | undefined;
+  if (property?.setValue) {
+    property.setValue(size);
+  } else {
+    entity.point.pixelSize = new Cesium.ConstantProperty(size);
+  }
+}
+
 function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathSceneProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<import("cesium").Viewer | null>(null);
@@ -213,7 +378,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   const tilesetRef = useRef<import("cesium").Cesium3DTileset | null>(null);
   const flightEntitiesRef = useRef<import("cesium").Entity[]>([]);
   const handlerRef = useRef<import("cesium").ScreenSpaceEventHandler | null>(null);
-  const hoverRef = useRef<{ flightId: string; index: number } | null>(null);
+  const hoverRef = useRef<{ flightId: string; index: number; key: string } | null>(null);
+  const waypointEntityMapRef = useRef<Map<string, import("cesium").Entity>>(new Map());
   const [initError, setInitError] = useState<string | null>(null);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
@@ -238,7 +404,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         }
 
         const viewer = new Cesium.Viewer(containerRef.current, {
-          imageryProvider: false,
           baseLayerPicker: false,
           geocoder: false,
           timeline: false,
@@ -247,12 +412,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           homeButton: false,
           infoBox: false,
           selectionIndicator: false,
+          sceneModePicker: false,
           requestRenderMode: true,
         });
 
         viewer.scene.globe.show = false;
         viewer.scene.skyAtmosphere.show = false;
         viewer.scene.skyBox.show = false;
+        viewer.imageryLayers.removeAll();
         viewerRef.current = viewer;
 
         try {
@@ -283,17 +450,28 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             const flightId = props.flightId?.getValue?.(timestamp) ?? props.flightId;
             const index = props.index?.getValue?.(timestamp) ?? props.index;
             if (typeof flightId === "string" && typeof index === "number") {
-              if (!hoverRef.current || hoverRef.current.flightId !== flightId || hoverRef.current.index !== index) {
+              const key = `${flightId}:${index}`;
+              if (!hoverRef.current || hoverRef.current.key !== key) {
+                if (hoverRef.current) {
+                  const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+                  setPointPixelSize(Cesium, previousEntity, 6);
+                }
+                const currentEntity = waypointEntityMapRef.current.get(key);
+                setPointPixelSize(Cesium, currentEntity, 9);
+                viewerRef.current?.scene.requestRender();
                 onWaypointHover(flightId, index);
-                hoverRef.current = { flightId, index };
+                hoverRef.current = { flightId, index, key };
               }
               return;
             }
           }
 
           if (hoverRef.current) {
+            const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+            setPointPixelSize(Cesium, previousEntity, 6);
             onWaypointHover(hoverRef.current.flightId, null);
             hoverRef.current = null;
+            viewerRef.current?.scene.requestRender();
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       } catch (err) {
@@ -319,31 +497,41 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         viewerRef.current = null;
       }
       if (hoverRef.current) {
+        const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+        setPointPixelSize(cesiumRef.current, previousEntity, 6);
         onWaypointHover(hoverRef.current.flightId, null);
         hoverRef.current = null;
       }
+      waypointEntityMapRef.current.clear();
     };
   }, [apiKey, onWaypointHover]);
 
- useEffect(() => {
-   const viewer = viewerRef.current;
-   const Cesium = cesiumRef.current;
-   if (!viewer || !Cesium) {
-     return;
-   }
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium) {
+      return;
+    }
 
-   flightEntitiesRef.current.forEach(entity => viewer.entities.remove(entity));
-   flightEntitiesRef.current = [];
+    flightEntitiesRef.current.forEach(entity => viewer.entities.remove(entity));
+    flightEntitiesRef.current = [];
+    if (hoverRef.current) {
+      const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+      setPointPixelSize(Cesium, previousEntity, 6);
+      onWaypointHover(hoverRef.current.flightId, null);
+      hoverRef.current = null;
+    }
+    waypointEntityMapRef.current.clear();
 
-   if (!flights.length) {
-     viewer.scene.requestRender();
-     return;
-   }
+    if (!flights.length) {
+      viewer.scene.requestRender();
+      return;
+    }
 
     const lensSpec = DRONE_LENSES[selectedLens] ?? DRONE_LENSES.mavic3_wide;
     const forwardDistanceBase = Math.max(20, 40 - lensSpec.fov * 0.2);
 
-   const positionsForFit: import("cesium").Cartesian3[] = [];
+    const positionsForFit: import("cesium").Cartesian3[] = [];
 
     flights.forEach(flight => {
       const positions = flight.samples.map(sample =>
@@ -377,9 +565,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           },
         });
         flightEntitiesRef.current.push(waypointEntity);
+        waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
 
-       const headingDeg = flight.samples[index].headingDeg ?? 0;
-       const pitchDeg = flight.samples[index].gimbalPitchAngle ?? -45;
+        const headingDeg = flight.samples[index].headingDeg ?? 0;
+        const pitchDeg = flight.samples[index].gimbalPitchAngle ?? -45;
         const forwardDistance = forwardDistanceBase;
         const horizontalDistance = forwardDistance * Math.cos(degreesToRadians(pitchDeg));
         const verticalOffset = forwardDistance * Math.sin(degreesToRadians(pitchDeg));
@@ -389,7 +578,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           headingDeg,
           horizontalDistance,
         );
-        const Cesium = cesiumRef.current!;
         const target = Cesium.Cartesian3.fromDegrees(
           destination.lon,
           destination.lat,
@@ -410,11 +598,37 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         flightEntitiesRef.current.push(frustumLine);
       });
 
+      if (flight.poi) {
+        const poiAltitudeFt = flight.poi.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
+        const poiEntity = viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(
+            flight.poi.longitude,
+            flight.poi.latitude,
+            poiAltitudeFt * FEET_TO_METERS,
+          ),
+          point: {
+            pixelSize: 10,
+            color: Cesium.Color.fromCssColorString("#ffbb00"),
+            outlineColor: Cesium.Color.fromCssColorString("#0b0e24"),
+            outlineWidth: 2,
+          },
+          label: {
+            text: "POI",
+            font: "14px 'Inter', sans-serif",
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.fromCssColorString("#1b1f3b"),
+            outlineWidth: 3,
+            pixelOffset: new Cesium.Cartesian2(0, -20),
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          },
+        });
+        flightEntitiesRef.current.push(poiEntity);
+      }
+
       positionsForFit.push(...positions);
     });
 
     if (positionsForFit.length) {
-      const Cesium = cesiumRef.current!;
       const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
       viewer.camera.flyToBoundingSphere(boundingSphere, {
         duration: 1.2,
@@ -617,7 +831,7 @@ export default function FlightViewerPage(): JSX.Element {
           className="flight-viewer__converter-btn"
           onClick={() => setShowConverter(true)}
         >
-          Convert CSV -> KMZ
+          Convert CSV to KMZ
         </button>
       </div>
 
@@ -754,7 +968,7 @@ export default function FlightViewerPage(): JSX.Element {
         <div className="flight-viewer__modal-overlay" onClick={() => setShowConverter(false)}>
           <div className="flight-viewer__modal" onClick={(e) => e.stopPropagation()}>
             <div className="flight-viewer__modal-header">
-              <h2>CSV -> KMZ Converter</h2>
+              <h2>CSV to KMZ Converter</h2>
               <button 
                 className="flight-viewer__modal-close"
                 onClick={() => setShowConverter(false)}

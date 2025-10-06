@@ -36,7 +36,7 @@ const nextConfig = {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      '@zip.js/zip.js/lib/zip-no-worker.js': path.join(__dirname, 'lib/zip-no-worker.js'),
+      '@zip.js/zip.js/lib/zip-no-worker.js$': path.join(__dirname, 'lib/zip-no-worker.js'),
     };
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),

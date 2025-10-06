@@ -1,59 +1,54 @@
-# Flight Viewer Google Maps 3D Overlay
+# Flight Viewer Cesium 3D Terrain
 
 ## Overview
 
-The Flight Viewer now renders flight plans on top of the live Google Maps 3D globe. We load the Maps JavaScript WebGL renderer, attach a `ThreeJSOverlayView`, and stream photorealistic terrain directly from Google so the drone path aligns with real-world topography and buildings.
+The flight viewer now renders missions inside a Cesium globe that streams Google Photorealistic 3D Tiles. Cesium handles terrain meshing, camera navigation, and level-of-detail loading, while we overlay missions as native Cesium entities (polylines, points, and labels). Hovering a waypoint highlights the entity and keeps the UI tooltip in sync with the scene.
 
 ## Key Changes
 
-- **WebGL Overlay**: Google maintains the terrain mesh/imagery; we no longer fetch Elevation & Static Map tiles manually.
-- **Three.js Sync**: A shared scene in `ThreeJSOverlayView` drives our flight path tube, waypoint frustums, and POI markers so they track the basemap camera.
-- **Raycast Hovering**: Cursor movement is forwarded through `overlay.raycast` to power the waypoint tooltip and highlight logic.
-- **Camera Alignment**: The overlay ties its anchor to the active flight centroid so coordinates convert straight from lat/lon/altitude to meters.
+- **Cesium Viewer** replaces the Google Maps WebGL overlay. A headless `Viewer` instance is mounted in the flight viewer panel and pointed at the Google 3D Tiles endpoint.
+- **Entity-based overlays**: each flight creates Cesium polylines for the path, `PointGraphics` for waypoints, frustum direction lines, and an optional POI marker with a label.
+- **Hover state**: `ScreenSpaceEventHandler` drives picking. When the cursor intersects a waypoint entity we enlarge its point and propagate the hover event back to React for tooltip updates.
+- **Camera fitting**: after ingesting flights we compute a bounding sphere and call `viewer.camera.flyToBoundingSphere` so the mission is framed even when altitudes vary dramatically.
+- **Asset packing**: `copy-webpack-plugin` ships `node_modules/cesium/Build/Cesium` into `public/cesium/`, and `CESIUM_BASE_URL` is defined at build time so runtime asset requests resolve correctly.
 
 ## Configuration
 
-Add the following public environment variables (preview + production):
+Environment variables:
 
 ```bash
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=xyz
-NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=abcdefghijklmno
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-google-key
 ```
 
-Secrets are injected at build and runtime via `.github/workflows/deploy-cloudflare-pages.yml` (`GOOGLE_MAPS_API_KEY` / `GOOGLE_MAPS_MAP_ID`).
-
-Required Google Maps Platform APIs:
-- Maps JavaScript API
-- Map Tiles API (Photorealistic 3D Tiles)
-- Optional: Places/Geocoding if other features rely on them (existing list already enabled).
+The key must have access to the **Map Tiles API** (Photorealistic 3D Tiles). No Map ID is required now that Cesium hosts the rendering. The Cloudflare Pages workflow already exposes the key via both legacy (`GOOGLE_MAPS_API_KEY`) and `NEXT_PUBLIC_` slots.
 
 ## Implementation Notes
 
-- Map bootstraps with `@googlemaps/js-api-loader` and a branch-specific `mapId` so preview builds can point at dedicated styles if needed. The Map ID must have **Photorealistic 3D Tiles** enabled; otherwise Google delivers raster tiles and the overlay is disabled.
-- `ThreeJSOverlayView` is created with `anchor = {lat, lng, altitude: 0}` and `upAxis = "Z"`, keeping Three.js coordinates in meters (X east, Y north, Z up).
-- Flight path geometry is derived from `overlay.latLngAltitudeToVector3` so every waypoint/POI is co-located with Google’s globe mesh.
-- Waypoint camera frustums are stand-alone `THREE.Group`s with dashed FOV lines that toggle on hover.
-- Hover detection stores a lookup of interactive objects; pointer movement updates a normalized vector passed to `overlay.raycast`.
-- Map bounds fit all loaded flights and then reset tilt/heading (67° tilt, heading 0°) to provide the Google Earth perspective.
-- The map container is a dedicated absolutely positioned div with a fixed 520px minimum height—matching Google’s examples—to guarantee the canvas is visible before the WebGL overlay initializes.
+- We disable Cesium's default imagery/sky so the photorealistic tiles provide the full visual background.
+- Google tiles are requested directly with `https://tile.googleapis.com/v1/3dtiles/root.json?key=...`.
+- Waypoint hover size changes use `ConstantProperty` updates so they render immediately without rebuilding the entity.
+- POIs render as 10px points with a "POI" label offset above the feature for readability.
+- All distances are computed in meters using Haversine math to keep the stats panel accurate even for multi-kilometre flights.
 
-## Usage
+## Usage Checklist
 
-1. Open `/flight-viewer` on the branch preview.
-2. Upload one or more CSV/KMZ files (e.g. `Edgewood-1.csv` in repo root).
-3. The map recenters, 3D terrain streams automatically, and the path renders with camera frustums stacked above the ground.
-4. Hover over a frustum to highlight it and surface waypoint metadata in the sidebar tooltip.
+1. Run `npm run build` to ensure the Cesium bundling passes locally.
+2. Start the dev server or load the Cloudflare preview for your branch.
+3. Upload CSV or KMZ flight plans; the viewer should recenter, stream terrain, and render the mission in 3D.
+4. Hover waypoints to confirm the marker grows and the sidebar tooltip updates with heading/pitch/altitude details.
 
 ## Troubleshooting
 
-- **Blank Map**: Confirm `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is present in the runtime environment (`console.log` at mount surfaces status). Missing keys render a placeholder warning.
-- **2D View Only**: Ensure the referenced `mapId` has Photorealistic 3D Tiles enabled and the browser exposes WebGL2. If `map.getRenderingType()` reports `RASTER`, the UI shows a warning and falls back to 2D polylines/markers.
-- **No Hover Feedback**: Check the browser console for `raycast` errors; they typically mean the overlay scene failed to rebuild after ingesting flights.
-- **Flight Misalignment**: Validate waypoint altitudes are in feet; the converter now multiplies by 0.3048 before passing to Google.
+| Symptom | What to check |
+| --- | --- |
+| **"Google Maps API key missing" placeholder** | Ensure `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is defined in the Pages deployment environment. |
+| **Tileset fails to load** | Verify the key has Map Tiles API access and the billing project is enabled. The console logs the exact error from Cesium. |
+| **Blank globe / no buildings** | The Photorealistic dataset sometimes blocks WebGL contexts without GPU support. Confirm the browser exposes WebGL2 (use `chrome://gpu`) or test in a GPU-enabled Playwright run. |
+| **Hover never triggers** | Picking requires `requestRenderMode` updates. Make sure entities exist (`viewer.entities.values.length`) and the handler still owns the canvas. Resetting the page usually restores state. |
 
-## Validation Checklist
+## Validation
 
-- `npm run build` (lint + typecheck) passes locally.
-- Load preview deployment, import `Edgewood-1.csv`, verify the path tracks over real terrain.
-- Hovering a waypoint lights up the dashed FOV lines and updates the stats panel.
-- Playwright MCP regression can continue hitting the preview URL (no API contract changes).
+- `npm run build` (typecheck + lint) succeeds.
+- Manual run in a GPU-enabled browser shows 3D tiles and highlighted waypoints.
+- Playwright MCP baseline can still upload `Edgewood-1.csv` without code changes (front-end only).
+- Logs for validation runs are appended to `logs/agent-loop.log` as part of the dev loop.
