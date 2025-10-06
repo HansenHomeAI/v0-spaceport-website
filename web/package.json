@@ -23,6 +23,8 @@
     "@sentry/nextjs": "^10.12.0",
     "@stripe/stripe-js": "^7.8.0",
     "aws-amplify": "^5.3.14",
+    "cesium": "^1.129.0",
+    "copy-webpack-plugin": "^13.0.1",
     "fast-xml-parser": "^5.2.5",
     "jszip": "^3.10.1",
     "mapbox-gl": "^3.7.0",
