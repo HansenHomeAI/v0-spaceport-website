@@ -41,11 +41,21 @@ jobs:
         run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
       - name: Inject build-time env (.env) for NEXT_PUBLIC_* per branch
+        env:
+          MAPS_KEY_PRIMARY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+          MAPS_KEY_LEGACY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          MAP_ID_PRIMARY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}
+          MAP_ID_LEGACY: ${{ secrets.GOOGLE_MAPS_MAP_ID }}
         run: |
           set -euo pipefail
           BRANCH="${{ github.ref_name }}"
           echo "Preparing .env for branch $BRANCH"
           : > .env
+          GOOGLE_MAPS_KEY="${MAPS_KEY_PRIMARY:-}"
+          if [ -z "$GOOGLE_MAPS_KEY" ]; then GOOGLE_MAPS_KEY="${MAPS_KEY_LEGACY:-}"; fi
+          GOOGLE_MAPS_MAP_ID="${MAP_ID_PRIMARY:-}"
+          if [ -z "$GOOGLE_MAPS_MAP_ID" ]; then GOOGLE_MAPS_MAP_ID="${MAP_ID_LEGACY:-}"; fi
+
           if [ "$BRANCH" = "main" ]; then
             echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PROD }}" >> .env
@@ -59,8 +69,8 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -78,8 +88,8 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -126,12 +136,22 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           FEEDBACK_API_URL_PREVIEW: ${{ secrets.FEEDBACK_API_URL_PREVIEW }}
           FEEDBACK_API_URL_PROD: ${{ secrets.FEEDBACK_API_URL_PROD }}
+          MAPS_KEY_PRIMARY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+          MAPS_KEY_LEGACY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          MAP_ID_PRIMARY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}
+          MAP_ID_LEGACY: ${{ secrets.GOOGLE_MAPS_MAP_ID }}
         run: |
+          set -euo pipefail
+          google_maps="$MAPS_KEY_PRIMARY"
+          if [ -z "$google_maps" ]; then google_maps="$MAPS_KEY_LEGACY"; fi
+          google_maps_map_id="$MAP_ID_PRIMARY"
+          if [ -z "$google_maps_map_id" ]; then google_maps_map_id="$MAP_ID_LEGACY"; fi
+
           jq -n \
             --arg prod "$FEEDBACK_API_URL_PROD" \
             --arg preview "$FEEDBACK_API_URL_PREVIEW" \
-            --arg google_maps "${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" \
-            --arg google_maps_map_id "${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}" \
+            --arg google_maps "$google_maps" \
+            --arg google_maps_map_id "$google_maps_map_id" \
             '{
               deployment_configs: {
                 production: {

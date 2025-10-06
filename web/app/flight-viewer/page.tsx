@@ -340,6 +340,8 @@ const GOOGLE_MAP_CAMERA_TILT = 67;
 const GOOGLE_MAP_CAMERA_HEADING = 0;
 const GOOGLE_MAP_DEFAULT_ZOOM = 18;
 
+type OverlaySupportState = "pending" | "supported" | "unsupported";
+
 function disposeObject3D(object: THREE.Object3D) {
   object.traverse(child => {
     const mesh = child as THREE.Mesh;
@@ -528,6 +530,7 @@ function buildFlightOverlay(
 
 function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords }: FlightPathSceneProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapHostRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<ThreeJSOverlayView | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const googleRef = useRef<typeof google | null>(null);
@@ -539,16 +542,51 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
   const pointerActiveRef = useRef(false);
   const hoverKeyRef = useRef<string | null>(null);
   const onWaypointHoverRef = useRef(onWaypointHover);
+  const fallbackPolylinesRef = useRef<google.maps.Polyline[]>([]);
+  const fallbackMarkersRef = useRef<google.maps.Marker[]>([]);
+  const overlayContextReadyRef = useRef(false);
+  const overlayReadyTimeoutRef = useRef<number | null>(null);
 
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   const GOOGLE_MAPS_MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "";
+
+  const [overlaySupport, setOverlaySupport] = useState<OverlaySupportState>("pending");
+  const overlayStateRef = useRef<OverlaySupportState>("pending");
+  const vectorReadyRef = useRef(false);
+
+  const applyOverlaySupport = useCallback((next: OverlaySupportState) => {
+    overlayStateRef.current = next;
+    setOverlaySupport(prev => (prev === next ? prev : next));
+  }, []);
+
+  const evaluateOverlaySupport = useCallback(() => {
+    if (vectorReadyRef.current && overlayContextReadyRef.current) {
+      applyOverlaySupport("supported");
+    } else if (!vectorReadyRef.current) {
+      applyOverlaySupport("unsupported");
+    } else {
+      applyOverlaySupport("pending");
+    }
+  }, [applyOverlaySupport]);
 
   useEffect(() => {
     onWaypointHoverRef.current = onWaypointHover;
   }, [onWaypointHover]);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as unknown as { __flightViewerOverlaySupport?: OverlaySupportState }).__flightViewerOverlaySupport = overlaySupport;
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[FlightPathScene] Overlay support state:", overlaySupport);
+      }
+    }
+  }, [overlaySupport]);
+
+  useEffect(() => {
     if (!centerCoords || !GOOGLE_MAPS_API_KEY) {
+      vectorReadyRef.current = false;
+      overlayContextReadyRef.current = false;
+      applyOverlaySupport("pending");
       return;
     }
 
@@ -563,10 +601,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
     }
 
     initializingRef.current = true;
+    overlayContextReadyRef.current = false;
+    vectorReadyRef.current = false;
+    applyOverlaySupport("pending");
     let cancelled = false;
     let overlayInstance: ThreeJSOverlayView | null = null;
     let mapInstance: google.maps.Map | null = null;
     const listeners: google.maps.MapsEventListener[] = [];
+    const cleanups: Array<() => void> = [];
 
     const loader = new Loader({
       apiKey: GOOGLE_MAPS_API_KEY,
@@ -583,7 +625,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
         googleRef.current = googleMaps;
 
-        mapInstance = new googleMaps.maps.Map(containerRef.current as HTMLElement, {
+        const host = document.createElement("div");
+        host.className = "flight-viewer__map-surface";
+        host.style.width = "100%";
+        host.style.height = "100%";
+        containerRef.current.appendChild(host);
+        mapHostRef.current = host;
+
+        mapInstance = new googleMaps.maps.Map(host, {
           center: { lat: centerCoords.lat, lng: centerCoords.lon },
           zoom: GOOGLE_MAP_DEFAULT_ZOOM,
           tilt: GOOGLE_MAP_CAMERA_TILT,
@@ -597,12 +646,44 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
         mapRef.current = mapInstance;
 
+        const ensureMapDivSize = () => {
+          const wrapper = containerRef.current;
+          const hostEl = mapHostRef.current;
+          if (!wrapper || !hostEl) {
+            return;
+          }
+          const targetHeight = Math.max(wrapper.parentElement?.clientHeight ?? wrapper.clientHeight ?? 0, 520);
+          wrapper.style.setProperty("min-height", `${targetHeight}px`, "important");
+          hostEl.style.setProperty("min-height", `${targetHeight}px`, "important");
+          hostEl.style.setProperty("height", "100%", "important");
+        };
+
+        ensureMapDivSize();
+        window.setTimeout(ensureMapDivSize, 50);
+        window.setTimeout(ensureMapDivSize, 250);
+
+        if (typeof ResizeObserver !== "undefined" && containerRef.current) {
+          const ro = new ResizeObserver(() => ensureMapDivSize());
+          ro.observe(containerRef.current);
+          cleanups.push(() => ro.disconnect());
+        } else {
+          cleanups.push(() => {});
+        }
+
         overlayInstance = new ThreeJSOverlayView({
           map: mapInstance,
           anchor: { lat: centerCoords.lat, lng: centerCoords.lon, altitude: 0 },
           upAxis: "Z",
           animationMode: "whenMapIdle",
         });
+
+        const originalContextRestored = overlayInstance.onContextRestored?.bind(overlayInstance);
+        overlayInstance.onContextRestored = options => {
+          originalContextRestored?.(options);
+          overlayContextReadyRef.current = true;
+          console.log("[FlightPathScene] WebGL overlay context restored");
+          evaluateOverlaySupport();
+        };
 
         overlayInstance.onBeforeDraw = () => {
           if (!overlayRef.current) {
@@ -670,6 +751,43 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
         const mapDiv = mapInstance.getDiv();
 
+        const handleRenderingType = () => {
+          if (!mapInstance) {
+            return;
+          }
+          const renderingType = mapInstance.getRenderingType?.();
+          const resolvedType = typeof renderingType === "string"
+            ? renderingType
+            : renderingType != null
+              ? String(renderingType)
+              : null;
+          if (resolvedType) {
+            if (process.env.NODE_ENV !== "production") {
+              console.log("[FlightPathScene] Map rendering type:", resolvedType);
+            }
+            const isVector =
+              resolvedType === "VECTOR" ||
+              resolvedType === googleMaps.maps.RenderingType?.VECTOR ||
+              resolvedType === String(googleMaps.maps.RenderingType?.VECTOR);
+            vectorReadyRef.current = !!isVector;
+            evaluateOverlaySupport();
+          }
+        };
+
+        listeners.push(mapInstance.addListener("renderingtype_changed", handleRenderingType));
+        handleRenderingType();
+
+        if (overlayReadyTimeoutRef.current) {
+          window.clearTimeout(overlayReadyTimeoutRef.current);
+        }
+        overlayReadyTimeoutRef.current = window.setTimeout(() => {
+          if (!overlayContextReadyRef.current) {
+            console.warn("[FlightPathScene] WebGL overlay context not ready; falling back to raster workflow");
+            vectorReadyRef.current = false;
+            applyOverlaySupport("unsupported");
+          }
+        }, 3500);
+
         listeners.push(
           mapInstance.addListener("mousemove", event => {
             if (!event.domEvent) {
@@ -720,10 +838,27 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
       pointerActiveRef.current = false;
 
       listeners.forEach(listener => listener.remove());
+      cleanups.forEach(fn => {
+        try {
+          fn();
+        } catch (err) {
+          console.warn("[FlightPathScene] Cleanup error", err);
+        }
+      });
 
       if (overlayInstance) {
         overlayInstance.setMap(null);
       }
+
+      if (overlayReadyTimeoutRef.current) {
+        window.clearTimeout(overlayReadyTimeoutRef.current);
+        overlayReadyTimeoutRef.current = null;
+      }
+
+      if (mapHostRef.current && mapHostRef.current.parentElement) {
+        mapHostRef.current.parentElement.removeChild(mapHostRef.current);
+      }
+      mapHostRef.current = null;
 
       overlayRef.current = null;
       if (mapInstance) {
@@ -747,12 +882,17 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
         disposeObject3D(flightsGroupRef.current);
         flightsGroupRef.current = null;
       }
+
+      fallbackPolylinesRef.current.forEach(poly => poly.setMap(null));
+      fallbackPolylinesRef.current = [];
+      fallbackMarkersRef.current.forEach(marker => marker.setMap(null));
+      fallbackMarkersRef.current = [];
     };
   }, [centerCoords, GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
-    if (!overlay) {
+    if (!overlay || overlaySupport !== "supported") {
       return;
     }
 
@@ -801,7 +941,81 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
     waypointTargetsRef.current = targets;
 
     overlay.requestRedraw();
-  }, [flights, selectedLens]);
+  }, [flights, selectedLens, overlaySupport]);
+
+  useEffect(() => {
+    if (overlaySupport !== "unsupported") {
+      return;
+    }
+
+    if (overlayRef.current) {
+      overlayRef.current.setMap(null);
+      overlayRef.current = null;
+    }
+
+    waypointLookupRef.current.clear();
+    waypointTargetsRef.current = [];
+    if (flightsGroupRef.current) {
+      disposeObject3D(flightsGroupRef.current);
+      flightsGroupRef.current = null;
+    }
+  }, [overlaySupport]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const googleMaps = googleRef.current;
+    if (!map || !googleMaps) {
+      return;
+    }
+
+    fallbackPolylinesRef.current.forEach(poly => poly.setMap(null));
+    fallbackPolylinesRef.current = [];
+    fallbackMarkersRef.current.forEach(marker => marker.setMap(null));
+    fallbackMarkersRef.current = [];
+
+    if (overlaySupport !== "unsupported") {
+      return;
+    }
+
+    flights.forEach(flight => {
+      if (flight.samples.length >= 2) {
+        const path = flight.samples.map(sample => ({ lat: sample.latitude, lng: sample.longitude }));
+        const polyline = new googleMaps.maps.Polyline({
+          map,
+          path,
+          strokeColor: flight.color,
+          strokeOpacity: 0.95,
+          strokeWeight: 3,
+        });
+        fallbackPolylinesRef.current.push(polyline);
+      }
+
+      flight.samples.forEach(sample => {
+        const marker = new googleMaps.maps.Marker({
+          map,
+          position: { lat: sample.latitude, lng: sample.longitude },
+          icon: {
+            path: googleMaps.maps.SymbolPath.CIRCLE,
+            scale: 4,
+            fillColor: flight.color,
+            fillOpacity: 0.85,
+            strokeColor: "#182036",
+            strokeWeight: 1,
+          },
+          title: `${flight.name} – Waypoint ${sample.index + 1}`,
+        });
+
+        marker.addListener("mouseover", () => {
+          onWaypointHoverRef.current(flight.id, sample.index);
+        });
+        marker.addListener("mouseout", () => {
+          onWaypointHoverRef.current(flight.id, null);
+        });
+
+        fallbackMarkersRef.current.push(marker);
+      });
+    });
+  }, [flights, overlaySupport]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -836,7 +1050,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
     );
   }
 
-  return <div ref={containerRef} className="flight-viewer__map" role="presentation" />;
+  return (
+    <div ref={containerRef} className="flight-viewer__map-container" role="presentation">
+      <span data-overlay-support={overlaySupport} className="flight-viewer__map-support-flag" aria-hidden="true" />
+      {overlaySupport === "unsupported" && (
+        <div className="flight-viewer__map-warning">
+          <strong>WebGL disabled.</strong> Showing 2D map fallback without 3D overlay.
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function FlightViewerPage(): JSX.Element {
@@ -1911,13 +2134,6 @@ export default function FlightViewerPage(): JSX.Element {
           font-family: 'SF Mono', Monaco, 'Courier New', monospace;
         }
 
-        .flight-viewer__map {
-          width: 100%;
-          height: 100%;
-          border-radius: 18px;
-          overflow: hidden;
-        }
-
         .flight-viewer__map-placeholder {
           position: absolute;
           inset: 0;
@@ -1929,6 +2145,42 @@ export default function FlightViewerPage(): JSX.Element {
           border: 1px dashed rgba(99, 104, 149, 0.4);
           background: rgba(10, 13, 32, 0.45);
           color: rgba(201, 206, 247, 0.85);
+        }
+
+        .flight-viewer__map-container {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          min-height: 520px;
+          border-radius: 18px;
+          overflow: hidden;
+        }
+
+        .flight-viewer__map-surface {
+          width: 100%;
+          height: 100%;
+          min-height: 520px;
+        }
+
+        .flight-viewer__map-warning {
+          position: absolute;
+          bottom: 1rem;
+          right: 1rem;
+          padding: 0.75rem 1rem;
+          border-radius: 10px;
+          background: rgba(9, 12, 32, 0.85);
+          border: 1px solid rgba(255, 183, 0, 0.4);
+          color: rgba(255, 235, 199, 0.95);
+          font-size: 0.85rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .flight-viewer__map-support-flag {
+          position: absolute;
+          width: 0;
+          height: 0;
+          overflow: hidden;
         }
 
         .flight-viewer__placeholder {
