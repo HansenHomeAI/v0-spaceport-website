@@ -528,6 +528,14 @@ function buildFlightOverlay(
   return { group: flightGroup, waypoints: waypointEntries };
 }
 
+function detachMarker(marker: google.maps.Marker | google.maps.marker.AdvancedMarkerElement) {
+  if ("setMap" in marker && typeof marker.setMap === "function") {
+    marker.setMap(null);
+  } else {
+    (marker as google.maps.marker.AdvancedMarkerElement).map = null;
+  }
+}
+
 function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords }: FlightPathSceneProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapHostRef = useRef<HTMLDivElement | null>(null);
@@ -543,7 +551,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
   const hoverKeyRef = useRef<string | null>(null);
   const onWaypointHoverRef = useRef(onWaypointHover);
   const fallbackPolylinesRef = useRef<google.maps.Polyline[]>([]);
-  const fallbackMarkersRef = useRef<google.maps.Marker[]>([]);
+  const fallbackMarkersRef = useRef<Array<google.maps.Marker | google.maps.marker.AdvancedMarkerElement>>([]);
   const overlayContextReadyRef = useRef(false);
   const overlayReadyTimeoutRef = useRef<number | null>(null);
 
@@ -553,6 +561,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
   const [overlaySupport, setOverlaySupport] = useState<OverlaySupportState>("pending");
   const overlayStateRef = useRef<OverlaySupportState>("pending");
   const vectorReadyRef = useRef(false);
+  const renderingTypeKnownRef = useRef(false);
 
   const applyOverlaySupport = useCallback((next: OverlaySupportState) => {
     overlayStateRef.current = next;
@@ -560,13 +569,19 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
   }, []);
 
   const evaluateOverlaySupport = useCallback(() => {
-    if (vectorReadyRef.current && overlayContextReadyRef.current) {
-      applyOverlaySupport("supported");
-    } else if (!vectorReadyRef.current) {
-      applyOverlaySupport("unsupported");
-    } else {
+    if (!renderingTypeKnownRef.current) {
       applyOverlaySupport("pending");
+      return;
     }
+    if (!vectorReadyRef.current) {
+      applyOverlaySupport("unsupported");
+      return;
+    }
+    if (overlayContextReadyRef.current) {
+      applyOverlaySupport("supported");
+      return;
+    }
+    applyOverlaySupport("pending");
   }, [applyOverlaySupport]);
 
   useEffect(() => {
@@ -584,6 +599,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
   useEffect(() => {
     if (!centerCoords || !GOOGLE_MAPS_API_KEY) {
+      renderingTypeKnownRef.current = false;
       vectorReadyRef.current = false;
       overlayContextReadyRef.current = false;
       applyOverlaySupport("pending");
@@ -602,6 +618,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
     initializingRef.current = true;
     overlayContextReadyRef.current = false;
+    renderingTypeKnownRef.current = false;
     vectorReadyRef.current = false;
     applyOverlaySupport("pending");
     let cancelled = false;
@@ -627,6 +644,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
         const host = document.createElement("div");
         host.className = "flight-viewer__map-surface";
+        host.style.position = "absolute";
+        host.style.inset = "0";
         host.style.width = "100%";
         host.style.height = "100%";
         containerRef.current.appendChild(host);
@@ -644,30 +663,43 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
           fullscreenControl: false,
         });
 
+        if (googleMaps.maps.MapTypeId?.SATELLITE) {
+          mapInstance.setMapTypeId(googleMaps.maps.MapTypeId.SATELLITE);
+        }
+
         mapRef.current = mapInstance;
 
-        const ensureMapDivSize = () => {
-          const wrapper = containerRef.current;
-          const hostEl = mapHostRef.current;
-          if (!wrapper || !hostEl) {
-            return;
-          }
-          const targetHeight = Math.max(wrapper.parentElement?.clientHeight ?? wrapper.clientHeight ?? 0, 520);
-          wrapper.style.setProperty("min-height", `${targetHeight}px`, "important");
-          hostEl.style.setProperty("min-height", `${targetHeight}px`, "important");
-          hostEl.style.setProperty("height", "100%", "important");
-        };
+        const importLibrary = (googleMaps as unknown as {
+          importLibrary?: typeof google.maps.importLibrary;
+        }).importLibrary;
 
-        ensureMapDivSize();
-        window.setTimeout(ensureMapDivSize, 50);
-        window.setTimeout(ensureMapDivSize, 250);
-
-        if (typeof ResizeObserver !== "undefined" && containerRef.current) {
-          const ro = new ResizeObserver(() => ensureMapDivSize());
-          ro.observe(containerRef.current);
-          cleanups.push(() => ro.disconnect());
-        } else {
-          cleanups.push(() => {});
+        if (typeof importLibrary === "function") {
+          importLibrary("maps3d")
+            .then((maps3d: unknown) => {
+              if (!maps3d || cancelled) {
+                return;
+              }
+              const lib = maps3d as {
+                FeatureLayer?: { fromMap: (map: google.maps.Map, type: unknown) => void };
+                FeatureType?: Record<string, unknown>;
+              };
+              const layer = lib.FeatureLayer;
+              const type = lib.FeatureType?.PHOTOREALISTIC_BUILDINGS;
+              if (layer && type) {
+                try {
+                  layer.fromMap(mapInstance, type);
+                } catch (err) {
+                  if (process.env.NODE_ENV !== "production") {
+                    console.warn("[FlightPathScene] Failed to enable photorealistic buildings", err);
+                  }
+                }
+              }
+            })
+            .catch(err => {
+              if (process.env.NODE_ENV !== "production") {
+                console.warn("[FlightPathScene] maps3d import failed", err);
+              }
+            });
         }
 
         overlayInstance = new ThreeJSOverlayView({
@@ -681,7 +713,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
         overlayInstance.onContextRestored = options => {
           originalContextRestored?.(options);
           overlayContextReadyRef.current = true;
-          console.log("[FlightPathScene] WebGL overlay context restored");
           evaluateOverlaySupport();
         };
 
@@ -762,13 +793,11 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
               ? String(renderingType)
               : null;
           if (resolvedType) {
-            if (process.env.NODE_ENV !== "production") {
-              console.log("[FlightPathScene] Map rendering type:", resolvedType);
-            }
             const isVector =
               resolvedType === "VECTOR" ||
               resolvedType === googleMaps.maps.RenderingType?.VECTOR ||
               resolvedType === String(googleMaps.maps.RenderingType?.VECTOR);
+            renderingTypeKnownRef.current = true;
             vectorReadyRef.current = !!isVector;
             evaluateOverlaySupport();
           }
@@ -781,12 +810,18 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
           window.clearTimeout(overlayReadyTimeoutRef.current);
         }
         overlayReadyTimeoutRef.current = window.setTimeout(() => {
+          if (!renderingTypeKnownRef.current) {
+            applyOverlaySupport("pending");
+            return;
+          }
+          if (!vectorReadyRef.current) {
+            applyOverlaySupport("unsupported");
+            return;
+          }
           if (!overlayContextReadyRef.current) {
-            console.warn("[FlightPathScene] WebGL overlay context not ready; falling back to raster workflow");
-            vectorReadyRef.current = false;
             applyOverlaySupport("unsupported");
           }
-        }, 3500);
+        }, 12000);
 
         listeners.push(
           mapInstance.addListener("mousemove", event => {
@@ -885,10 +920,15 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
 
       fallbackPolylinesRef.current.forEach(poly => poly.setMap(null));
       fallbackPolylinesRef.current = [];
-      fallbackMarkersRef.current.forEach(marker => marker.setMap(null));
+      fallbackMarkersRef.current.forEach(detachMarker);
       fallbackMarkersRef.current = [];
+
+      renderingTypeKnownRef.current = false;
+      vectorReadyRef.current = false;
+      overlayContextReadyRef.current = false;
+      applyOverlaySupport("pending");
     };
-  }, [centerCoords, GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID]);
+  }, [centerCoords, GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID, applyOverlaySupport]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -962,59 +1002,119 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover, centerCoords 
   }, [overlaySupport]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    const googleMaps = googleRef.current;
-    if (!map || !googleMaps) {
-      return;
-    }
+    let cancelled = false;
+
+    const setupFallback = async () => {
+      const map = mapRef.current;
+      const googleMaps = googleRef.current;
+      if (!map || !googleMaps) {
+        return;
+      }
 
     fallbackPolylinesRef.current.forEach(poly => poly.setMap(null));
     fallbackPolylinesRef.current = [];
-    fallbackMarkersRef.current.forEach(marker => marker.setMap(null));
+    fallbackMarkersRef.current.forEach(detachMarker);
     fallbackMarkersRef.current = [];
 
-    if (overlaySupport !== "unsupported") {
-      return;
-    }
-
-    flights.forEach(flight => {
-      if (flight.samples.length >= 2) {
-        const path = flight.samples.map(sample => ({ lat: sample.latitude, lng: sample.longitude }));
-        const polyline = new googleMaps.maps.Polyline({
-          map,
-          path,
-          strokeColor: flight.color,
-          strokeOpacity: 0.95,
-          strokeWeight: 3,
-        });
-        fallbackPolylinesRef.current.push(polyline);
+      if (overlaySupport !== "unsupported") {
+        return;
       }
 
-      flight.samples.forEach(sample => {
-        const marker = new googleMaps.maps.Marker({
-          map,
-          position: { lat: sample.latitude, lng: sample.longitude },
-          icon: {
-            path: googleMaps.maps.SymbolPath.CIRCLE,
-            scale: 4,
-            fillColor: flight.color,
-            fillOpacity: 0.85,
-            strokeColor: "#182036",
-            strokeWeight: 1,
-          },
-          title: `${flight.name} – Waypoint ${sample.index + 1}`,
-        });
+      let AdvancedMarker: typeof google.maps.marker.AdvancedMarkerElement | null = null;
 
-        marker.addListener("mouseover", () => {
-          onWaypointHoverRef.current(flight.id, sample.index);
-        });
-        marker.addListener("mouseout", () => {
-          onWaypointHoverRef.current(flight.id, null);
-        });
+      try {
+        const importLibrary = (googleMaps as unknown as {
+          importLibrary?: typeof google.maps.importLibrary;
+        }).importLibrary;
+        if (typeof importLibrary === "function") {
+          const markerLib = await importLibrary("marker");
+          AdvancedMarker = (markerLib as any)?.AdvancedMarkerElement ?? null;
+        } else if ((googleMaps as any).marker?.AdvancedMarkerElement) {
+          AdvancedMarker = (googleMaps as any).marker.AdvancedMarkerElement;
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("[FlightPathScene] AdvancedMarkerElement unavailable", err);
+        }
+      }
 
-        fallbackMarkersRef.current.push(marker);
+      if (cancelled) {
+        return;
+      }
+
+      flights.forEach(flight => {
+        if (flight.samples.length >= 2) {
+          const path = flight.samples.map(sample => ({ lat: sample.latitude, lng: sample.longitude }));
+          const polyline = new googleMaps.maps.Polyline({
+            map,
+            path,
+            strokeColor: flight.color,
+            strokeOpacity: 0.95,
+            strokeWeight: 3,
+          });
+          fallbackPolylinesRef.current.push(polyline);
+        }
+
+        flight.samples.forEach(sample => {
+          const position = { lat: sample.latitude, lng: sample.longitude };
+
+          if (AdvancedMarker) {
+            const markerEl = document.createElement("div");
+            markerEl.style.width = "10px";
+            markerEl.style.height = "10px";
+            markerEl.style.borderRadius = "50%";
+            markerEl.style.background = flight.color;
+            markerEl.style.border = "1px solid #182036";
+            markerEl.style.boxShadow = "0 0 6px rgba(0,0,0,0.4)";
+
+            const marker = new AdvancedMarker({
+              map,
+              position,
+              content: markerEl,
+              title: `${flight.name} – Waypoint ${sample.index + 1}`,
+            });
+
+            marker.addListener("mouseover", () => {
+              onWaypointHoverRef.current(flight.id, sample.index);
+            });
+            marker.addListener("mouseout", () => {
+              onWaypointHoverRef.current(flight.id, null);
+            });
+
+            fallbackMarkersRef.current.push(marker);
+          } else {
+            const marker = new googleMaps.maps.Marker({
+              map,
+              position,
+              icon: {
+                path: googleMaps.maps.SymbolPath.CIRCLE,
+                scale: 4,
+                fillColor: flight.color,
+                fillOpacity: 0.85,
+                strokeColor: "#182036",
+                strokeWeight: 1,
+              },
+              title: `${flight.name} – Waypoint ${sample.index + 1}`,
+            });
+
+            marker.addListener("mouseover", () => {
+              onWaypointHoverRef.current(flight.id, sample.index);
+            });
+            marker.addListener("mouseout", () => {
+              onWaypointHoverRef.current(flight.id, null);
+            });
+
+            fallbackMarkersRef.current.push(marker);
+          }
+        });
       });
-    });
+    };
+
+    setupFallback();
+
+    return () => {
+      cancelled = true;
+    };
   }, [flights, overlaySupport]);
 
   useEffect(() => {
