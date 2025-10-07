@@ -402,23 +402,23 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       try {
         const Cesium = await import("cesium");
         cesiumRef.current = Cesium;
-        try {
-          Cesium.Ion.defaultAccessToken = undefined as unknown as string;
-        } catch {
-          /* noop */
-        }
+        
+        // Disable Cesium Ion
+        Cesium.Ion.defaultAccessToken = "";
+        
+        // Set Cesium base URL
         if (typeof window !== "undefined") {
           window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
         }
 
+        // Create transparent imagery provider for no base layer
         const transparentPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
 
-        const viewerOptions: any = {
+        const viewer = new Cesium.Viewer(containerRef.current, {
           imageryProvider: new Cesium.SingleTileImageryProvider({
             url: transparentPixel,
             rectangle: Cesium.Rectangle.MAX_VALUE,
-          }),
-          terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+          }) as any,
           baseLayerPicker: false,
           geocoder: false,
           timeline: false,
@@ -429,52 +429,95 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           selectionIndicator: false,
           sceneModePicker: false,
           requestRenderMode: true,
-        };
+          maximumRenderTimeChange: Infinity,
+        } as any);
 
-        const viewer = new Cesium.Viewer(containerRef.current, viewerOptions);
-
+        // Configure scene for photorealistic tiles only
         viewer.scene.globe.show = false;
         viewer.scene.skyAtmosphere.show = false;
         viewer.scene.skyBox.show = false;
+        viewer.scene.backgroundColor = Cesium.Color.BLACK;
+        viewer.scene.fog.enabled = false;
         viewer.imageryLayers.removeAll();
+        
+        // Enable depth testing for proper 3D rendering
+        viewer.scene.globe.depthTestAgainstTerrain = false;
+        
         viewerRef.current = viewer;
-        setViewerReady(true);
 
         try {
-          const tileset = await Cesium.Cesium3DTileset.fromUrl(tilesetUrl(apiKey), {
-            showCreditsOnScreen: true,
-          });
+          // Load Google Photorealistic 3D Tiles
+          const tileset = await Cesium.Cesium3DTileset.fromUrl(
+            `https://tile.googleapis.com/v1/3dtiles/root.json?key=${apiKey}`,
+            {
+              // Enable screen space error for better quality
+              maximumScreenSpaceError: 16,
+              // Show credits as required by Google
+              showCreditsOnScreen: true,
+              // Optimize loading
+              skipLevelOfDetail: false,
+              baseScreenSpaceError: 1024,
+              skipScreenSpaceErrorFactor: 16,
+              skipLevels: 1,
+              immediatelyLoadDesiredLevelOfDetail: false,
+              loadSiblings: false,
+              cullWithChildrenBounds: true,
+            }
+          );
+          
           if (cancelled) {
             tileset.destroy();
-          } else {
-            viewer.scene.primitives.add(tileset);
-            tilesetRef.current = tileset;
+            return;
           }
+
+          viewer.scene.primitives.add(tileset);
+          tilesetRef.current = tileset;
+
+          // Wait for initial tiles to load
+          tileset.initialTilesLoaded.addEventListener(() => {
+            if (!cancelled && viewerRef.current) {
+              viewerRef.current.scene.requestRender();
+              setViewerReady(true);
+            }
+          });
+
+          // Handle tileset errors
+          tileset.tileFailed.addEventListener((error: any) => {
+            console.error("[FlightPathScene] Tile failed to load", error);
+          });
+
         } catch (tilesetErr) {
           console.error("[FlightPathScene] Photorealistic tiles failed", tilesetErr);
           const message = tilesetErr instanceof Error ? tilesetErr.message : "";
           setInitError(message ? `tileset:${message}` : "tileset");
+          // Still set viewer ready so we can show flight paths even without terrain
+          setViewerReady(true);
         }
 
+        // Set up mouse interaction for waypoint hover
         handlerRef.current = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-        handlerRef.current.setInputAction(movement => {
+        handlerRef.current.setInputAction((movement: any) => {
           if (!viewerRef.current || !cesiumRef.current) {
             return;
           }
           const Cesium = cesiumRef.current;
           const picked = viewerRef.current.scene.pick(movement.endPosition);
+          
           if (Cesium.defined(picked) && picked.id?.properties) {
             const props = picked.id.properties;
             const timestamp = Cesium.JulianDate.now();
             const flightId = props.flightId?.getValue?.(timestamp) ?? props.flightId;
             const index = props.index?.getValue?.(timestamp) ?? props.index;
+            
             if (typeof flightId === "string" && typeof index === "number") {
               const key = `${flightId}:${index}`;
               if (!hoverRef.current || hoverRef.current.key !== key) {
+                // Reset previous hover
                 if (hoverRef.current) {
                   const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
                   setPointPixelSize(Cesium, previousEntity, 6);
                 }
+                // Set new hover
                 const currentEntity = waypointEntityMapRef.current.get(key);
                 setPointPixelSize(Cesium, currentEntity, 9);
                 viewerRef.current?.scene.requestRender();
@@ -485,6 +528,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             }
           }
 
+          // Clear hover if nothing picked
           if (hoverRef.current) {
             const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
             setPointPixelSize(Cesium, previousEntity, 6);
@@ -493,6 +537,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             viewerRef.current?.scene.requestRender();
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+        
       } catch (err) {
         console.error("[FlightPathScene] Cesium initialization failed", err);
         setInitError("init");
@@ -650,9 +695,18 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     if (positionsForFit.length) {
       const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
-      viewer.camera.flyToBoundingSphere(boundingSphere, {
-        duration: 1.2,
-        maximumHeight: 5_000,
+      
+      // Add buffer to the bounding sphere for better view
+      const expandedRadius = boundingSphere.radius * 2.5;
+      const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+      
+      viewer.camera.flyToBoundingSphere(expandedSphere, {
+        duration: 1.5,
+        offset: new Cesium.HeadingPitchRange(
+          0,
+          Cesium.Math.toRadians(-45), // Look down at 45 degrees
+          expandedRadius
+        ),
       });
     }
 
