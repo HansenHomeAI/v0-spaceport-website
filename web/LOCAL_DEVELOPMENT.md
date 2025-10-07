@@ -1,5 +1,7 @@
 # Local Development Setup
 
+> ⚠️ **Security Note**: See [SECURITY_AND_LOCAL_DEVELOPMENT.md](../docs/SECURITY_AND_LOCAL_DEVELOPMENT.md) for full details on secrets, what's safe to use locally, and production vs development keys.
+
 ## Quick Start
 
 ### 1. Install Dependencies
