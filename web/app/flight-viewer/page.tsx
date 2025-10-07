@@ -411,14 +411,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
         }
 
-        // Create transparent imagery provider for no base layer
-        const transparentPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
-
         const viewer = new Cesium.Viewer(containerRef.current, {
-          imageryProvider: new Cesium.SingleTileImageryProvider({
-            url: transparentPixel,
-            rectangle: Cesium.Rectangle.MAX_VALUE,
-          }) as any,
+          imageryProvider: false as any,
           baseLayerPicker: false,
           geocoder: false,
           timeline: false,
