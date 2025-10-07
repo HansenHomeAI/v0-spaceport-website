@@ -1703,7 +1703,8 @@ export default function FlightViewerPage(): JSX.Element {
           overflow: hidden;
           background: linear-gradient(160deg, rgba(12, 18, 52, 0.8), rgba(4, 6, 18, 0.95));
           border: 1px solid rgba(65, 68, 104, 0.35);
-          min-height: 520px;
+          min-height: 720px;
+          height: 720px;
         }
 
         .flight-viewer__controls {
@@ -1900,7 +1901,8 @@ export default function FlightViewerPage(): JSX.Element {
           }
 
           .flight-viewer__visualizer {
-            min-height: 420px;
+            min-height: 520px;
+            height: 520px;
           }
         }
 
@@ -1910,7 +1912,8 @@ export default function FlightViewerPage(): JSX.Element {
           }
 
           .flight-viewer__visualizer {
-            min-height: 360px;
+            min-height: 420px;
+            height: 420px;
           }
         }
       `}</style>
