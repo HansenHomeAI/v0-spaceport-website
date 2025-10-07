@@ -382,6 +382,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   const handlerRef = useRef<import("cesium").ScreenSpaceEventHandler | null>(null);
   const hoverRef = useRef<{ flightId: string; index: number; key: string } | null>(null);
   const waypointEntityMapRef = useRef<Map<string, import("cesium").Entity>>(new Map());
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [initError, setInitError] = useState<string | null>(null);
   const [viewerReady, setViewerReady] = useState(false);
 
@@ -449,6 +450,19 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         viewer.scene.globe.depthTestAgainstTerrain = false;
         
         viewerRef.current = viewer;
+        
+        // Force initial resize to fill container and set up resize observer
+        if (containerRef.current) {
+          viewer.resize();
+          
+          // Set up resize observer to handle container size changes
+          resizeObserverRef.current = new ResizeObserver(() => {
+            if (viewerRef.current) {
+              viewerRef.current.resize();
+            }
+          });
+          resizeObserverRef.current.observe(containerRef.current);
+        }
 
         try {
           // Load Google Photorealistic 3D Tiles
@@ -551,6 +565,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     return () => {
       cancelled = true;
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
       if (handlerRef.current) {
         handlerRef.current.destroy();
         handlerRef.current = null;
