@@ -1,21 +1,6 @@
 const path = require('path');
-const fs = require('fs');
-const dotenv = require('dotenv');
 const webpack = require('webpack');
 const { withSentryConfig } = require('@sentry/nextjs');
-
-// Load local env files for dev, supporting both web/ and repo root locations
-// This lets NEXT_PUBLIC_GOOGLE_MAPS_API_KEY work locally without relying on CF Pages
-const loadIfExists = (filePath) => {
-  if (fs.existsSync(filePath)) {
-    dotenv.config({ path: filePath });
-  }
-};
-const repoRoot = path.join(__dirname, '..');
-loadIfExists(path.join(__dirname, '.env.local'));
-loadIfExists(path.join(__dirname, '.env'));
-loadIfExists(path.join(repoRoot, '.env.local'));
-loadIfExists(path.join(repoRoot, '.env'));
 
 /** @type {import('next').NextConfig} */
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -26,11 +11,6 @@ const nextConfig = {
   // Do not use static export; we deploy with @cloudflare/next-on-pages to enable Pages Functions.
   basePath,
   assetPrefix: basePath ? `${basePath}/` : undefined,
-  // Ensure client code receives the key in dev by falling back to GOOGLE_MAPS_API_KEY
-  env: {
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY || '',
-  },
   webpack: (config) => {
     config.plugins = config.plugins || [];
 
