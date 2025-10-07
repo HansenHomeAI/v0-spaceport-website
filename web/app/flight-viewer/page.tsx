@@ -422,9 +422,20 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           infoBox: false,
           selectionIndicator: false,
           sceneModePicker: false,
+          fullscreenButton: false,
+          vrButton: false,
+          navigationInstructionsInitiallyVisible: false,
           requestRenderMode: true,
           maximumRenderTimeChange: Infinity,
         } as any);
+        
+        // Hide Cesium credits
+        if (viewer.cesiumWidget?.creditContainer) {
+          const container = viewer.cesiumWidget.creditContainer as HTMLElement;
+          if (container.style) {
+            container.style.display = "none";
+          }
+        }
 
         // Configure scene for photorealistic tiles only
         viewer.scene.globe.show = false;
@@ -446,8 +457,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             {
               // Enable screen space error for better quality
               maximumScreenSpaceError: 16,
-              // Show credits as required by Google
-              showCreditsOnScreen: true,
+              // Don't show credits on screen (we'll handle attribution separately)
+              showCreditsOnScreen: false,
               // Optimize loading
               skipLevelOfDetail: false,
               baseScreenSpaceError: 1024,
@@ -1812,6 +1823,19 @@ export default function FlightViewerPage(): JSX.Element {
           inset: 0;
           width: 100%;
           height: 100%;
+        }
+        
+        /* Hide Cesium UI elements */
+        .flight-viewer__cesium-canvas :global(.cesium-viewer-bottom) {
+          display: none !important;
+        }
+        
+        .flight-viewer__cesium-canvas :global(.cesium-credit-logoContainer) {
+          display: none !important;
+        }
+        
+        .flight-viewer__cesium-canvas :global(.cesium-credit-textContainer) {
+          display: none !important;
         }
 
         .flight-viewer__map-warning {
