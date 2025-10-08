@@ -672,13 +672,15 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   }, [apiKey, onWaypointHover]);
 
   useEffect(() => {
-    const viewer = viewerRef.current;
+    const initialViewer = viewerRef.current;
     const Cesium = cesiumRef.current;
-    if (!viewer || !Cesium || !viewerReady) {
+    if (!initialViewer || !Cesium || !viewerReady) {
       return;
     }
 
-    flightEntitiesRef.current.forEach(entity => viewer.entities.remove(entity));
+    let disposed = false;
+
+    flightEntitiesRef.current.forEach(entity => initialViewer.entities.remove(entity));
     flightEntitiesRef.current = [];
     if (hoverRef.current) {
       const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
@@ -689,7 +691,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
     waypointEntityMapRef.current.clear();
 
     if (!flights.length) {
-      viewer.scene.requestRender();
+      const v = viewerRef.current as any;
+      if (!disposed && v && !(v.isDestroyed?.())) {
+        try { v.scene.requestRender(); } catch {}
+      }
       return;
     }
 
@@ -705,6 +710,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       
       fetchTerrainElevation(firstWaypoint.latitude, firstWaypoint.longitude)
         .then((terrainElevationMeters) => {
+          if (disposed) return;
+          const viewer = viewerRef.current as any;
+          if (!viewer || viewer.isDestroyed?.()) return;
           console.log(`[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`);
           
           flights.forEach(flight => {
@@ -820,27 +828,32 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           positionsForFit.push(...positions);
         });
 
-        if (positionsForFit.length) {
+          if (positionsForFit.length) {
           const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
 
           // Add buffer to the bounding sphere for better view
           const expandedRadius = boundingSphere.radius * 2.5;
           const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
-          viewer.camera.flyToBoundingSphere(expandedSphere, {
-            duration: 1.5,
-            offset: new Cesium.HeadingPitchRange(
-              0,
-              Cesium.Math.toRadians(-45), // Look down at 45 degrees
-              expandedRadius
-            ),
-          });
+          try {
+            viewer.camera.flyToBoundingSphere(expandedSphere, {
+              duration: 1.5,
+              offset: new Cesium.HeadingPitchRange(
+                0,
+                Cesium.Math.toRadians(-45), // Look down at 45 degrees
+                expandedRadius
+              ),
+            });
+          } catch {}
         }
 
-        viewer.scene.requestRender();
+          try { viewer.scene.requestRender(); } catch {}
       })
       .catch((error: Error) => {
         console.error('[FlightViewer] Google Elevation API failed, rendering without terrain correction:', error);
+          if (disposed) return;
+          const viewer = viewerRef.current as any;
+          if (!viewer || viewer.isDestroyed?.()) return;
         // Fallback: render without terrain correction (AGL as MSL)
         flights.forEach(flight => {
           const positions = flight.samples.map(sample =>
@@ -885,19 +898,22 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           const expandedRadius = boundingSphere.radius * 2.5;
           const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
-          viewer.camera.flyToBoundingSphere(expandedSphere, {
-            duration: 1.5,
-            offset: new Cesium.HeadingPitchRange(
-              0,
-              Cesium.Math.toRadians(-45),
-              expandedRadius
-            ),
-          });
+          try {
+            viewer.camera.flyToBoundingSphere(expandedSphere, {
+              duration: 1.5,
+              offset: new Cesium.HeadingPitchRange(
+                0,
+                Cesium.Math.toRadians(-45),
+                expandedRadius
+              ),
+            });
+          } catch {}
         }
 
-        viewer.scene.requestRender();
+        try { viewer.scene.requestRender(); } catch {}
       });
     }
+    return () => { disposed = true; };
   }, [flights, selectedLens, viewerReady, fetchTerrainElevation]);
 
   if (!apiKey) {
