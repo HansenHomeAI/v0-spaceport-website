@@ -621,38 +621,32 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     const positionsForFit: import("cesium").Cartesian3[] = [];
 
-    // Collect all waypoint positions for terrain sampling (AGL → MSL conversion)
-    const allCartographicPositions = flights.flatMap(flight =>
-      flight.samples.map(sample =>
+    // Process each flight's terrain sampling separately for better reliability
+    flights.forEach(flight => {
+      const flightCartographics = flight.samples.map(sample =>
         Cesium.Cartographic.fromDegrees(sample.longitude, sample.latitude)
-      )
-    );
+      );
 
-    // Sample terrain heights to convert AGL (Above Ground Level) → MSL (Mean Sea Level)
-    const terrainProvider = viewer.terrainProvider;
-    Cesium.sampleTerrainMostDetailed(terrainProvider, allCartographicPositions)
-      .then(() => {
-        // Terrain heights are now populated in cartographic.height
-        let globalCartographicIndex = 0;
+      // Sample terrain for this flight's waypoints
+      Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, flightCartographics)
+        .then(() => {
+          console.log(`[FlightPathScene] Processing flight ${flight.id} with terrain sampling completed`);
 
-        flights.forEach(flight => {
-          const positions: import("cesium").Cartesian3[] = [];
-
-          flight.samples.forEach((sample) => {
-            const cartographic = allCartographicPositions[globalCartographicIndex++];
+          // Convert AGL to MSL using sampled terrain
+          const positions = flight.samples.map((sample, index) => {
+            const cartographic = flightCartographics[index];
             const terrainHeightMeters = cartographic.height || 0; // Terrain elevation MSL
             const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS; // Flight altitude AGL
             const absoluteHeightMSL = terrainHeightMeters + aglHeightMeters; // MSL = terrain + AGL
 
-            const position = Cesium.Cartesian3.fromRadians(
+            return Cesium.Cartesian3.fromRadians(
               cartographic.longitude,
               cartographic.latitude,
               absoluteHeightMSL
             );
-            positions.push(position);
           });
 
-          // Now render using terrain-corrected positions
+          // Render flight path with terrain-corrected positions
           if (positions.length >= 2) {
             const path = viewer.entities.add({
               polyline: {
@@ -665,6 +659,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(path);
           }
 
+          // Render waypoints with terrain-corrected positions
           positions.forEach((position, index) => {
             const waypointEntity = viewer.entities.add({
               position,
@@ -682,6 +677,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(waypointEntity);
             waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
 
+            // Render camera frustum with terrain-corrected target
             const headingDeg = flight.samples[index].headingDeg ?? 0;
             const pitchDeg = flight.samples[index].gimbalPitchAngle ?? -45;
             const forwardDistance = forwardDistanceBase;
@@ -694,14 +690,13 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               horizontalDistance,
             );
 
-            // Use terrain-corrected height for frustum target
-            const cartographicAtWaypoint = allCartographicPositions[globalCartographicIndex + index];
-            const terrainAtWaypoint = cartographicAtWaypoint.height || 0;
-            const targetAbsoluteHeight = terrainAtWaypoint + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
+            const targetCartographic = flightCartographics[index];
+            const targetTerrainHeight = targetCartographic.height || 0;
+            const targetAbsoluteHeight = targetTerrainHeight + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
 
-            const target = Cesium.Cartesian3.fromDegrees(
-              destination.lon,
-              destination.lat,
+            const target = Cesium.Cartesian3.fromRadians(
+              Cesium.Math.toRadians(destination.lon),
+              Cesium.Math.toRadians(destination.lat),
               targetAbsoluteHeight,
             );
 
@@ -719,10 +714,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(frustumLine);
           });
 
+          // Handle POI with terrain sampling
           if (flight.poi) {
-            // Sample terrain for POI position too
             const poiCartographic = Cesium.Cartographic.fromDegrees(flight.poi.longitude, flight.poi.latitude);
-            Cesium.sampleTerrainMostDetailed(terrainProvider, [poiCartographic]).then(() => {
+            Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [poiCartographic]).then(() => {
               const poiTerrainHeight = poiCartographic.height || 0;
               const poiAltitudeFt = flight.poi!.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
               const poiAbsoluteHeight = poiTerrainHeight + (poiAltitudeFt * FEET_TO_METERS);
@@ -752,7 +747,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               flightEntitiesRef.current.push(poiEntity);
               viewer.scene.requestRender();
             }).catch(() => {
-              // Fallback: use AGL as MSL for POI
+              // Fallback for POI
               const poiAltitudeFt = flight.poi!.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
               const poiEntity = viewer.entities.add({
                 position: Cesium.Cartesian3.fromDegrees(
@@ -782,32 +777,29 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           }
 
           positionsForFit.push(...positions);
-          globalCartographicIndex += flight.samples.length;
-        });
 
-        if (positionsForFit.length) {
-          const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+          // Update camera view after all flights are processed
+          if (positionsForFit.length) {
+            const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+            const expandedRadius = boundingSphere.radius * 2.5;
+            const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
-          // Add buffer to the bounding sphere for better view
-          const expandedRadius = boundingSphere.radius * 2.5;
-          const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+            viewer.camera.flyToBoundingSphere(expandedSphere, {
+              duration: 1.5,
+              offset: new Cesium.HeadingPitchRange(
+                0,
+                Cesium.Math.toRadians(-45),
+                expandedRadius
+              ),
+            });
+          }
 
-          viewer.camera.flyToBoundingSphere(expandedSphere, {
-            duration: 1.5,
-            offset: new Cesium.HeadingPitchRange(
-              0,
-              Cesium.Math.toRadians(-45), // Look down at 45 degrees
-              expandedRadius
-            ),
-          });
-        }
+          viewer.scene.requestRender();
+        })
+        .catch((error: Error) => {
+          console.error(`[FlightPathScene] Terrain sampling failed for flight ${flight.id}, using fallback:`, error);
 
-        viewer.scene.requestRender();
-      })
-      .catch((error: Error) => {
-        console.error('[FlightPathScene] Terrain sampling failed, using fallback (AGL as MSL):', error);
-        // Fallback: render without terrain correction (old behavior)
-        flights.forEach(flight => {
+          // Fallback: render without terrain correction (old behavior)
           const positions = flight.samples.map(sample =>
             Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, sample.altitudeFt * FEET_TO_METERS)
           );
@@ -843,25 +835,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           });
 
           positionsForFit.push(...positions);
+          viewer.scene.requestRender();
         });
-
-        if (positionsForFit.length) {
-          const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
-          const expandedRadius = boundingSphere.radius * 2.5;
-          const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
-
-          viewer.camera.flyToBoundingSphere(expandedSphere, {
-            duration: 1.5,
-            offset: new Cesium.HeadingPitchRange(
-              0,
-              Cesium.Math.toRadians(-45),
-              expandedRadius
-            ),
-          });
-        }
-
-        viewer.scene.requestRender();
-      });
+    });
   }, [flights, selectedLens, viewerReady]);
 
   if (!apiKey) {
