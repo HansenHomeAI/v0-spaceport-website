@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server';
-
 export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
+
+import { NextResponse } from 'next/server';
 
 // Local dev proxy for Google Elevation API to avoid CORS
 // Usage: POST { center: "lat, lon" }
