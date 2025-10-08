@@ -605,50 +605,68 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     return () => {
       cancelled = true;
-      
-      // Clear hover state BEFORE destroying Cesium objects
+
+      // Clear hover highlight BEFORE destroying Cesium objects
       if (hoverRef.current) {
+        const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+        setPointPixelSize(cesiumRef.current, previousEntity, 6);
         onWaypointHover(hoverRef.current.flightId, null);
         hoverRef.current = null;
       }
-      
-      // Remove entities BEFORE destroying viewer
-      if (viewerRef.current && !viewerRef.current.isDestroyed()) {
-        flightEntitiesRef.current.forEach(entity => {
-          try {
-            viewerRef.current?.entities.remove(entity);
-          } catch (e) {
-            // Silently catch if entity already removed
-          }
-        });
+
+      // Remove entities while viewer is still alive
+      if (viewerRef.current) {
+        try {
+          flightEntitiesRef.current.forEach((entity) => {
+            try {
+              viewerRef.current?.entities.remove(entity);
+            } catch (_) {
+              // ignore if already removed
+            }
+          });
+        } finally {
+          flightEntitiesRef.current = [];
+        }
+      } else {
+        flightEntitiesRef.current = [];
       }
-      flightEntitiesRef.current = [];
       waypointEntityMapRef.current.clear();
-      
-      // Disconnect resize observer
+
+      // Disconnect observers/handlers
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
         resizeObserverRef.current = null;
       }
-      
-      // Destroy event handler
-      if (handlerRef.current && !handlerRef.current.isDestroyed()) {
-        handlerRef.current.destroy();
-        handlerRef.current = null;
+      if (handlerRef.current && typeof (handlerRef.current as any).isDestroyed === 'function') {
+        if (!(handlerRef.current as any).isDestroyed()) {
+          handlerRef.current.destroy();
+        }
+      } else if (handlerRef.current) {
+        // Some builds may not expose isDestroyed on handler
+        try { handlerRef.current.destroy(); } catch (_) {}
       }
-      
-      // Destroy tileset
-      if (tilesetRef.current && !tilesetRef.current.isDestroyed()) {
-        tilesetRef.current.destroy();
-        tilesetRef.current = null;
+      handlerRef.current = null;
+
+      // Destroy tileset before destroying the viewer
+      if (tilesetRef.current && typeof (tilesetRef.current as any).isDestroyed === 'function') {
+        if (!(tilesetRef.current as any).isDestroyed()) {
+          tilesetRef.current.destroy();
+        }
+      } else if (tilesetRef.current) {
+        try { tilesetRef.current.destroy(); } catch (_) {}
       }
-      
-      // Destroy viewer last
-      if (viewerRef.current && !viewerRef.current.isDestroyed()) {
-        viewerRef.current.destroy();
-        viewerRef.current = null;
+      tilesetRef.current = null;
+
+      // Finally destroy the viewer
+      if (viewerRef.current && typeof (viewerRef.current as any).isDestroyed === 'function') {
+        if (!(viewerRef.current as any).isDestroyed()) {
+          viewerRef.current.destroy();
+        }
+      } else if (viewerRef.current) {
+        try { viewerRef.current.destroy(); } catch (_) {}
       }
-      
+      viewerRef.current = null;
+
       setViewerReady(false);
     };
   }, [apiKey, onWaypointHover]);
