@@ -389,10 +389,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
-  // Fetch terrain elevation for first waypoint via our backend (avoids CORS)
+  // Fetch terrain elevation for first waypoint via backend in prod/preview,
+  // and via local Next API proxy in dev (avoids CORS in both cases)
   const fetchTerrainElevation = useCallback(async (lat: number, lon: number): Promise<number> => {
     try {
-      const elevationUrl = buildApiUrl.dronePath.elevation();
+      // Prefer backend elevation endpoint if configured
+      let elevationUrl = buildApiUrl.dronePath.elevation();
+      if (!elevationUrl || elevationUrl === 'undefined' || elevationUrl.endsWith('undefined')) {
+        // Local dev fallback: use Next.js API route
+        elevationUrl = '/api/elevation-proxy';
+      }
       const response = await fetch(elevationUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

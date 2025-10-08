@@ -62,10 +62,7 @@ export const buildApiUrl = {
   // Drone Path API endpoints
   dronePath: {
     optimizeSpiral: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/optimize-spiral`,
-    // If DRONE_PATH_API_URL is not configured locally, fall back to local Next.js route
-    elevation: () => API_CONFIG.DRONE_PATH_API_URL
-      ? `${API_CONFIG.DRONE_PATH_API_URL}/api/elevation`
-      : `/api/elevation`,
+    elevation: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/elevation`,
     csv: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv`,
     batteryCsv: (batteryId: string) => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv/battery/${batteryId}`,
     legacy: () => `${API_CONFIG.DRONE_PATH_API_URL}/DronePathREST`,
