@@ -647,23 +647,39 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       }
       handlerRef.current = null;
 
-      // Destroy tileset before destroying the viewer
-      if (tilesetRef.current && typeof (tilesetRef.current as any).isDestroyed === 'function') {
-        if (!(tilesetRef.current as any).isDestroyed()) {
-          tilesetRef.current.destroy();
-        }
-      } else if (tilesetRef.current) {
-        try { tilesetRef.current.destroy(); } catch (_) {}
+      // Remove/destroy tileset before destroying the viewer
+      if (tilesetRef.current) {
+        try {
+          if (viewerRef.current && !(viewerRef.current as any).isDestroyed?.()) {
+            try { viewerRef.current.scene.primitives.remove(tilesetRef.current); } catch (_) {}
+          }
+        } catch (_) {}
+        try {
+          if (typeof (tilesetRef.current as any).isDestroyed === 'function') {
+            if (!(tilesetRef.current as any).isDestroyed()) {
+              tilesetRef.current.destroy();
+            }
+          } else {
+            (tilesetRef.current as any).destroy?.();
+          }
+        } catch (_) {}
       }
       tilesetRef.current = null;
 
-      // Finally destroy the viewer
-      if (viewerRef.current && typeof (viewerRef.current as any).isDestroyed === 'function') {
-        if (!(viewerRef.current as any).isDestroyed()) {
-          viewerRef.current.destroy();
-        }
-      } else if (viewerRef.current) {
-        try { viewerRef.current.destroy(); } catch (_) {}
+      // Finally destroy the viewer (after clearing tweens/datasources)
+      if (viewerRef.current) {
+        try { (viewerRef.current as any).scene?.tweens?.removeAll?.(); } catch (_) {}
+        try { (viewerRef.current as any).dataSources?.removeAll?.(); } catch (_) {}
+        try { (viewerRef.current as any).entities?.removeAll?.(); } catch (_) {}
+        try {
+          if (typeof (viewerRef.current as any).isDestroyed === 'function') {
+            if (!(viewerRef.current as any).isDestroyed()) {
+              viewerRef.current.destroy();
+            }
+          } else {
+            (viewerRef.current as any).destroy?.();
+          }
+        } catch (_) {}
       }
       viewerRef.current = null;
 
