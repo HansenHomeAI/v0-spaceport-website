@@ -605,31 +605,50 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     return () => {
       cancelled = true;
+      
+      // Clear hover state BEFORE destroying Cesium objects
+      if (hoverRef.current) {
+        onWaypointHover(hoverRef.current.flightId, null);
+        hoverRef.current = null;
+      }
+      
+      // Remove entities BEFORE destroying viewer
+      if (viewerRef.current && !viewerRef.current.isDestroyed()) {
+        flightEntitiesRef.current.forEach(entity => {
+          try {
+            viewerRef.current?.entities.remove(entity);
+          } catch (e) {
+            // Silently catch if entity already removed
+          }
+        });
+      }
+      flightEntitiesRef.current = [];
+      waypointEntityMapRef.current.clear();
+      
+      // Disconnect resize observer
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
         resizeObserverRef.current = null;
       }
-      if (handlerRef.current) {
+      
+      // Destroy event handler
+      if (handlerRef.current && !handlerRef.current.isDestroyed()) {
         handlerRef.current.destroy();
         handlerRef.current = null;
       }
-      flightEntitiesRef.current.forEach(entity => viewerRef.current?.entities.remove(entity));
-      flightEntitiesRef.current = [];
-      if (tilesetRef.current) {
+      
+      // Destroy tileset
+      if (tilesetRef.current && !tilesetRef.current.isDestroyed()) {
         tilesetRef.current.destroy();
         tilesetRef.current = null;
       }
-      if (viewerRef.current) {
+      
+      // Destroy viewer last
+      if (viewerRef.current && !viewerRef.current.isDestroyed()) {
         viewerRef.current.destroy();
         viewerRef.current = null;
       }
-      if (hoverRef.current) {
-        const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
-        setPointPixelSize(cesiumRef.current, previousEntity, 6);
-        onWaypointHover(hoverRef.current.flightId, null);
-        hoverRef.current = null;
-      }
-      waypointEntityMapRef.current.clear();
+      
       setViewerReady(false);
     };
   }, [apiKey, onWaypointHover]);
