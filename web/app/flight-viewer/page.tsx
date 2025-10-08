@@ -388,6 +388,35 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
+  // Fetch terrain elevation for first waypoint using Google Elevation API
+  const fetchTerrainElevation = useCallback(async (lat: number, lon: number): Promise<number> => {
+    if (!apiKey) return 0;
+    
+    try {
+      const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lon}&key=${apiKey}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error('[FlightViewer] Elevation API HTTP error:', response.status);
+        return 0;
+      }
+      
+      const data = await response.json();
+      if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+        console.error('[FlightViewer] Elevation API error:', data.status);
+        return 0;
+      }
+      
+      const elevationMeters = data.results[0].elevation;
+      const elevationFeet = elevationMeters * 3.28084;
+      console.log(`[FlightViewer] Terrain elevation at first waypoint: ${elevationFeet.toFixed(1)}ft`);
+      return elevationMeters; // Return in meters for Cesium
+    } catch (error) {
+      console.error('[FlightViewer] Elevation API error:', error);
+      return 0;
+    }
+  }, [apiKey]);
+
   useEffect(() => {
     if (!apiKey) {
       setInitError("missing-key");
@@ -621,32 +650,31 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     const positionsForFit: import("cesium").Cartesian3[] = [];
 
-    // Process each flight's terrain sampling separately for better reliability
-    flights.forEach(flight => {
-      const flightCartographics = flight.samples.map(sample =>
-        Cesium.Cartographic.fromDegrees(sample.longitude, sample.latitude)
-      );
+    // Use Google Elevation API to get terrain height at first waypoint only
+    // Then apply that offset to all waypoints (they're already AGL-relative to each other)
+    if (flights.length > 0 && flights[0].samples.length > 0) {
+      const firstWaypoint = flights[0].samples[0];
+      
+      fetchTerrainElevation(firstWaypoint.latitude, firstWaypoint.longitude)
+        .then((terrainElevationMeters) => {
+          console.log(`[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`);
+          
+          flights.forEach(flight => {
+            const positions: import("cesium").Cartesian3[] = [];
 
-      // Sample terrain for this flight's waypoints
-      Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, flightCartographics)
-        .then(() => {
-          console.log(`[FlightPathScene] Processing flight ${flight.id} with terrain sampling completed`);
+            flight.samples.forEach((sample) => {
+              const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS; // Flight altitude AGL
+              const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters; // MSL = terrain + AGL
 
-          // Convert AGL to MSL using sampled terrain
-          const positions = flight.samples.map((sample, index) => {
-            const cartographic = flightCartographics[index];
-            const terrainHeightMeters = cartographic.height || 0; // Terrain elevation MSL
-            const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS; // Flight altitude AGL
-            const absoluteHeightMSL = terrainHeightMeters + aglHeightMeters; // MSL = terrain + AGL
+              const position = Cesium.Cartesian3.fromDegrees(
+                sample.longitude,
+                sample.latitude,
+                absoluteHeightMSL
+              );
+              positions.push(position);
+            });
 
-            return Cesium.Cartesian3.fromRadians(
-              cartographic.longitude,
-              cartographic.latitude,
-              absoluteHeightMSL
-            );
-          });
-
-          // Render flight path with terrain-corrected positions
+            // Render using terrain-corrected positions
           if (positions.length >= 2) {
             const path = viewer.entities.add({
               polyline: {
@@ -659,7 +687,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(path);
           }
 
-          // Render waypoints with terrain-corrected positions
           positions.forEach((position, index) => {
             const waypointEntity = viewer.entities.add({
               position,
@@ -677,7 +704,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(waypointEntity);
             waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
 
-            // Render camera frustum with terrain-corrected target
             const headingDeg = flight.samples[index].headingDeg ?? 0;
             const pitchDeg = flight.samples[index].gimbalPitchAngle ?? -45;
             const forwardDistance = forwardDistanceBase;
@@ -690,13 +716,12 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               horizontalDistance,
             );
 
-            const targetCartographic = flightCartographics[index];
-            const targetTerrainHeight = targetCartographic.height || 0;
-            const targetAbsoluteHeight = targetTerrainHeight + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
+            // Use same terrain offset for frustum target
+            const targetAbsoluteHeight = terrainElevationMeters + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
 
-            const target = Cesium.Cartesian3.fromRadians(
-              Cesium.Math.toRadians(destination.lon),
-              Cesium.Math.toRadians(destination.lat),
+            const target = Cesium.Cartesian3.fromDegrees(
+              destination.lon,
+              destination.lat,
               targetAbsoluteHeight,
             );
 
@@ -714,92 +739,62 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(frustumLine);
           });
 
-          // Handle POI with terrain sampling
           if (flight.poi) {
-            const poiCartographic = Cesium.Cartographic.fromDegrees(flight.poi.longitude, flight.poi.latitude);
-            Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [poiCartographic]).then(() => {
-              const poiTerrainHeight = poiCartographic.height || 0;
-              const poiAltitudeFt = flight.poi!.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
-              const poiAbsoluteHeight = poiTerrainHeight + (poiAltitudeFt * FEET_TO_METERS);
+            // Use same terrain offset for POI
+            const poiAltitudeFt = flight.poi.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
+            const poiAbsoluteHeight = terrainElevationMeters + (poiAltitudeFt * FEET_TO_METERS);
 
-              const poiEntity = viewer.entities.add({
-                position: Cesium.Cartesian3.fromRadians(
-                  poiCartographic.longitude,
-                  poiCartographic.latitude,
-                  poiAbsoluteHeight,
-                ),
-                point: {
-                  pixelSize: 10,
-                  color: Cesium.Color.fromCssColorString("#ffbb00"),
-                  outlineColor: Cesium.Color.fromCssColorString("#0b0e24"),
-                  outlineWidth: 2,
-                },
-                label: {
-                  text: "POI",
-                  font: "14px 'Inter', sans-serif",
-                  fillColor: Cesium.Color.WHITE,
-                  outlineColor: Cesium.Color.fromCssColorString("#1b1f3b"),
-                  outlineWidth: 3,
-                  pixelOffset: new Cesium.Cartesian2(0, -20),
-                  disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                },
-              });
-              flightEntitiesRef.current.push(poiEntity);
-              viewer.scene.requestRender();
-            }).catch(() => {
-              // Fallback for POI
-              const poiAltitudeFt = flight.poi!.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
-              const poiEntity = viewer.entities.add({
-                position: Cesium.Cartesian3.fromDegrees(
-                  flight.poi!.longitude,
-                  flight.poi!.latitude,
-                  poiAltitudeFt * FEET_TO_METERS,
-                ),
-                point: {
-                  pixelSize: 10,
-                  color: Cesium.Color.fromCssColorString("#ffbb00"),
-                  outlineColor: Cesium.Color.fromCssColorString("#0b0e24"),
-                  outlineWidth: 2,
-                },
-                label: {
-                  text: "POI",
-                  font: "14px 'Inter', sans-serif",
-                  fillColor: Cesium.Color.WHITE,
-                  outlineColor: Cesium.Color.fromCssColorString("#1b1f3b"),
-                  outlineWidth: 3,
-                  pixelOffset: new Cesium.Cartesian2(0, -20),
-                  disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                },
-              });
-              flightEntitiesRef.current.push(poiEntity);
-              viewer.scene.requestRender();
+            const poiEntity = viewer.entities.add({
+              position: Cesium.Cartesian3.fromDegrees(
+                flight.poi.longitude,
+                flight.poi.latitude,
+                poiAbsoluteHeight,
+              ),
+              point: {
+                pixelSize: 10,
+                color: Cesium.Color.fromCssColorString("#ffbb00"),
+                outlineColor: Cesium.Color.fromCssColorString("#0b0e24"),
+                outlineWidth: 2,
+              },
+              label: {
+                text: "POI",
+                font: "14px 'Inter', sans-serif",
+                fillColor: Cesium.Color.WHITE,
+                outlineColor: Cesium.Color.fromCssColorString("#1b1f3b"),
+                outlineWidth: 3,
+                pixelOffset: new Cesium.Cartesian2(0, -20),
+                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+              },
             });
+            flightEntitiesRef.current.push(poiEntity);
           }
 
           positionsForFit.push(...positions);
+        });
 
-          // Update camera view after all flights are processed
-          if (positionsForFit.length) {
-            const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
-            const expandedRadius = boundingSphere.radius * 2.5;
-            const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+        if (positionsForFit.length) {
+          const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
 
-            viewer.camera.flyToBoundingSphere(expandedSphere, {
-              duration: 1.5,
-              offset: new Cesium.HeadingPitchRange(
-                0,
-                Cesium.Math.toRadians(-45),
-                expandedRadius
-              ),
-            });
-          }
+          // Add buffer to the bounding sphere for better view
+          const expandedRadius = boundingSphere.radius * 2.5;
+          const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
-          viewer.scene.requestRender();
-        })
-        .catch((error: Error) => {
-          console.error(`[FlightPathScene] Terrain sampling failed for flight ${flight.id}, using fallback:`, error);
+          viewer.camera.flyToBoundingSphere(expandedSphere, {
+            duration: 1.5,
+            offset: new Cesium.HeadingPitchRange(
+              0,
+              Cesium.Math.toRadians(-45), // Look down at 45 degrees
+              expandedRadius
+            ),
+          });
+        }
 
-          // Fallback: render without terrain correction (old behavior)
+        viewer.scene.requestRender();
+      })
+      .catch((error: Error) => {
+        console.error('[FlightViewer] Google Elevation API failed, rendering without terrain correction:', error);
+        // Fallback: render without terrain correction (AGL as MSL)
+        flights.forEach(flight => {
           const positions = flight.samples.map(sample =>
             Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, sample.altitudeFt * FEET_TO_METERS)
           );
@@ -835,10 +830,27 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           });
 
           positionsForFit.push(...positions);
-          viewer.scene.requestRender();
         });
-    });
-  }, [flights, selectedLens, viewerReady]);
+
+        if (positionsForFit.length) {
+          const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+          const expandedRadius = boundingSphere.radius * 2.5;
+          const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+
+          viewer.camera.flyToBoundingSphere(expandedSphere, {
+            duration: 1.5,
+            offset: new Cesium.HeadingPitchRange(
+              0,
+              Cesium.Math.toRadians(-45),
+              expandedRadius
+            ),
+          });
+        }
+
+        viewer.scene.requestRender();
+      });
+    }
+  }, [flights, selectedLens, viewerReady, fetchTerrainElevation]);
 
   if (!apiKey) {
     return (
