@@ -5,6 +5,7 @@ import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
 import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
+import { buildApiUrl } from "../api-config";
 
 type RawFlightRow = Record<string, unknown>;
 
@@ -388,13 +389,15 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
-  // Fetch terrain elevation for first waypoint using Google Elevation API
+  // Fetch terrain elevation for first waypoint via our backend (avoids CORS)
   const fetchTerrainElevation = useCallback(async (lat: number, lon: number): Promise<number> => {
-    if (!apiKey) return 0;
-    
     try {
-      const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lon}&key=${apiKey}`;
-      const response = await fetch(url);
+      const elevationUrl = buildApiUrl.dronePath.elevation();
+      const response = await fetch(elevationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ center: `${lat}, ${lon}` }),
+      });
       
       if (!response.ok) {
         console.error('[FlightViewer] Elevation API HTTP error:', response.status);
@@ -402,20 +405,20 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       }
       
       const data = await response.json();
-      if (data.status !== 'OK' || !data.results || data.results.length === 0) {
-        console.error('[FlightViewer] Elevation API error:', data.status);
+      if (!data.elevation_meters) {
+        console.error('[FlightViewer] Elevation API missing data:', data);
         return 0;
       }
       
-      const elevationMeters = data.results[0].elevation;
-      const elevationFeet = elevationMeters * 3.28084;
-      console.log(`[FlightViewer] Terrain elevation at first waypoint: ${elevationFeet.toFixed(1)}ft`);
+      const elevationMeters = data.elevation_meters;
+      const elevationFeet = data.elevation_feet;
+      console.log(`[FlightViewer] Terrain elevation at first waypoint: ${elevationFeet.toFixed(1)}ft (${elevationMeters.toFixed(1)}m)`);
       return elevationMeters; // Return in meters for Cesium
     } catch (error) {
       console.error('[FlightViewer] Elevation API error:', error);
       return 0;
     }
-  }, [apiKey]);
+  }, []);
 
   useEffect(() => {
     if (!apiKey) {
