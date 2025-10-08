@@ -393,11 +393,13 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   // and via local Next API proxy in dev (avoids CORS in both cases)
   const fetchTerrainElevation = useCallback(async (lat: number, lon: number): Promise<number> => {
     try {
-      // Prefer backend elevation endpoint if configured
-      let elevationUrl = buildApiUrl.dronePath.elevation();
-      if (!elevationUrl || elevationUrl === 'undefined' || elevationUrl.endsWith('undefined')) {
-        // Local dev fallback: use Next.js API route
+      // Use local proxy in dev to avoid CORS; otherwise use configured backend
+      let elevationUrl: string;
+      const isLocalHost = typeof window !== 'undefined' && (/^(localhost|127\.0\.0\.1)$/).test(window.location.hostname);
+      if (isLocalHost) {
         elevationUrl = '/api/elevation-proxy';
+      } else {
+        elevationUrl = buildApiUrl.dronePath.elevation();
       }
       const response = await fetch(elevationUrl, {
         method: 'POST',
