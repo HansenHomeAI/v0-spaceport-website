@@ -1,10 +1,6 @@
 "use client";
 
 import React, { ChangeEvent, useCallback, useMemo, useState, useEffect, useRef } from "react";
-import Papa from "papaparse";
-import JSZip from "jszip";
-import { XMLParser } from "fast-xml-parser";
-import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
 import { buildApiUrl } from "../api-config";
 import "./styles.css";
 
@@ -81,6 +77,38 @@ const FLIGHT_COLORS = [
   "#00ffaa",
   "#ffcc66",
 ];
+
+type PapaParseModule = typeof import("papaparse");
+type JSZipModule = typeof import("jszip");
+type FastXmlParserModule = typeof import("fast-xml-parser");
+
+let papaparseModule: Promise<PapaParseModule> | null = null;
+let jszipModule: Promise<JSZipModule> | null = null;
+let fastXmlParserModule: Promise<FastXmlParserModule> | null = null;
+
+async function loadPapaParse(): Promise<PapaParseModule> {
+  if (!papaparseModule) {
+    papaparseModule = import("papaparse").then(mod => (mod as unknown as { default?: PapaParseModule }).default ?? mod) as Promise<PapaParseModule>;
+  }
+  const module = await papaparseModule;
+  return module;
+}
+
+async function loadJSZip(): Promise<JSZipModule> {
+  if (!jszipModule) {
+    jszipModule = import("jszip").then(mod => (mod as unknown as { default?: JSZipModule }).default ?? mod) as Promise<JSZipModule>;
+  }
+  const module = await jszipModule;
+  return module;
+}
+
+async function loadXMLParser(): Promise<FastXmlParserModule["XMLParser"]> {
+  if (!fastXmlParserModule) {
+    fastXmlParserModule = import("fast-xml-parser");
+  }
+  const module = await fastXmlParserModule;
+  return module.XMLParser;
+}
 
 function degreesToRadians(value: number): number {
   return (value * Math.PI) / 180;
@@ -225,6 +253,9 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
 }
 
 async function parseKMZFile(file: File): Promise<PreparedRow[]> {
+  const JSZip = await loadJSZip();
+  const XMLParser = await loadXMLParser();
+
   const zip = await JSZip.loadAsync(file);
   const wpmlFile = zip.file("wpmz/waylines.wpml");
   if (!wpmlFile) {
@@ -322,6 +353,30 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
   }
 
   return rows;
+}
+
+async function parseCSVFile(file: File): Promise<PreparedRow[]> {
+  const Papa = await loadPapaParse();
+
+  return new Promise((resolve, reject) => {
+    Papa.parse<RawFlightRow>(file, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      worker: true,
+      complete: result => {
+        if (result.errors.length) {
+          reject(new Error(`CSV parse error: ${result.errors[0].message}`));
+          return;
+        }
+        const prepared = result.data
+          .map(sanitizeRow)
+          .filter((value): value is PreparedRow => value !== null);
+        resolve(prepared);
+      },
+      error: err => reject(err),
+    });
+  });
 }
 
 function computeStats(flight: FlightData | null) {
@@ -545,7 +600,25 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         
         // Enable depth testing for proper 3D rendering
         viewer.scene.globe.depthTestAgainstTerrain = false;
-        
+
+        try {
+          viewer.scene.postProcessStages.fxaa.enabled = true;
+        } catch (_) {
+          // Ignore if FXAA is unavailable
+        }
+        if (typeof viewer.scene.msaaSamples === "number") {
+          viewer.scene.msaaSamples = Math.max(viewer.scene.msaaSamples ?? 1, 4);
+        }
+        if (typeof window !== "undefined") {
+          const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+          viewer.resolutionScale = pixelRatio;
+        }
+        try {
+          viewer.scene.requestRender();
+        } catch (_) {
+          // Ignore requestRender issues during bootstrap
+        }
+
         viewerRef.current = viewer;
         
         // Force initial resize to fill container and set up resize observer
@@ -560,55 +633,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           });
           resizeObserverRef.current.observe(containerRef.current);
         }
-
-        try {
-          // Load Google Photorealistic 3D Tiles
-          const tileset = await Cesium.Cesium3DTileset.fromUrl(
-            `https://tile.googleapis.com/v1/3dtiles/root.json?key=${apiKey}`,
-            {
-              // Enable screen space error for better quality
-              maximumScreenSpaceError: 16,
-              // Don't show credits on screen (we'll handle attribution separately)
-              showCreditsOnScreen: false,
-              // Optimize loading
-              skipLevelOfDetail: false,
-              baseScreenSpaceError: 1024,
-              skipScreenSpaceErrorFactor: 16,
-              skipLevels: 1,
-              immediatelyLoadDesiredLevelOfDetail: false,
-              loadSiblings: false,
-              cullWithChildrenBounds: true,
-            }
-          );
-          
-          if (cancelled) {
-            tileset.destroy();
-            return;
-          }
-
-          viewer.scene.primitives.add(tileset);
-          tilesetRef.current = tileset;
-
-          // Wait for initial tiles to load
-          tileset.initialTilesLoaded.addEventListener(() => {
-            if (!cancelled && viewerRef.current) {
-              viewerRef.current.scene.requestRender();
-              setViewerReady(true);
-            }
-          });
-
-          // Handle tileset errors
-          tileset.tileFailed.addEventListener((error: any) => {
-            console.error("[FlightPathScene] Tile failed to load", error);
-          });
-
-        } catch (tilesetErr) {
-          console.error("[FlightPathScene] Photorealistic tiles failed", tilesetErr);
-          const message = tilesetErr instanceof Error ? tilesetErr.message : "";
-          setInitError(message ? `tileset:${message}` : "tileset");
-          // Still set viewer ready so we can show flight paths even without terrain
-          setViewerReady(true);
-        }
+        setViewerReady(true);
 
         // Set up mouse interaction for waypoint hover
         handlerRef.current = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
@@ -745,6 +770,73 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   }, [apiKey, onWaypointHover]);
 
   useEffect(() => {
+    if (!apiKey || !flights.length || tilesetRef.current) {
+      return;
+    }
+
+    const viewer = viewerRef.current;
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium || !viewerReady) {
+      return;
+    }
+
+    let cancelled = false;
+    let initialTilesListener: (() => void) | null = null;
+
+    (async () => {
+      try {
+        const tileset = await Cesium.Cesium3DTileset.fromUrl(tilesetUrl(apiKey), {
+          maximumScreenSpaceError: 12,
+          showCreditsOnScreen: false,
+          skipLevelOfDetail: false,
+          baseScreenSpaceError: 768,
+          skipScreenSpaceErrorFactor: 16,
+          skipLevels: 1,
+          immediatelyLoadDesiredLevelOfDetail: false,
+          loadSiblings: false,
+          cullWithChildrenBounds: true,
+        });
+
+        if (cancelled) {
+          tileset.destroy();
+          return;
+        }
+
+        viewer.scene.primitives.add(tileset);
+        tilesetRef.current = tileset;
+
+        initialTilesListener = () => {
+          if (!cancelled && viewerRef.current) {
+            viewerRef.current.scene.requestRender();
+          }
+        };
+        tileset.initialTilesLoaded.addEventListener(initialTilesListener);
+
+        tileset.tileFailed.addEventListener((error: any) => {
+          console.error("[FlightPathScene] Tile failed to load", error);
+        });
+      } catch (tilesetErr) {
+        console.error("[FlightPathScene] Photorealistic tiles failed", tilesetErr);
+        const message = tilesetErr instanceof Error ? tilesetErr.message : "";
+        if (!cancelled) {
+          setInitError(message ? `tileset:${message}` : "tileset");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (tilesetRef.current && initialTilesListener) {
+        try {
+          tilesetRef.current.initialTilesLoaded.removeEventListener(initialTilesListener);
+        } catch (_) {
+          // ignore cleanup errors
+        }
+      }
+    };
+  }, [apiKey, flights, viewerReady]);
+
+  useEffect(() => {
     const initialViewer = viewerRef.current;
     const Cesium = cesiumRef.current;
     if (!initialViewer || !Cesium || !viewerReady) {
@@ -780,36 +872,50 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
     // Then apply that offset to all waypoints (they're already AGL-relative to each other)
     if (flights.length > 0 && flights[0].samples.length > 0) {
       const firstWaypoint = flights[0].samples[0];
-      
-      fetchTerrainElevation(firstWaypoint.latitude, firstWaypoint.longitude)
-        .then((terrainElevationMeters) => {
-          if (disposed) return;
-          const viewer = viewerRef.current as any;
-          if (!viewer || viewer.isDestroyed?.()) return;
-          console.log(`[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`);
-          
-          flights.forEach(flight => {
-            const positions: import("cesium").Cartesian3[] = [];
 
-            flight.samples.forEach((sample) => {
-              const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS; // Flight altitude AGL
-              const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters; // MSL = terrain + AGL
+      const viewer = viewerRef.current as any;
+      if (!viewer || viewer.isDestroyed?.()) {
+        return;
+      }
 
-              const position = Cesium.Cartesian3.fromDegrees(
+      const renderFlightsWithElevation = (terrainElevationMeters: number | null) => {
+        positionsForFit.length = 0;
+        flights.forEach(flight => {
+          const accentColor = Cesium.Color.fromCssColorString(flight.color);
+          const pathMaterial = new Cesium.PolylineGlowMaterialProperty({
+            color: accentColor.withAlpha(0.95),
+            glowPower: 0.08,
+            taperPower: 0.25,
+          });
+          const frustumMaterial = new Cesium.PolylineGlowMaterialProperty({
+            color: accentColor.withAlpha(0.65),
+            glowPower: 0.2,
+            taperPower: 0.3,
+          });
+
+          const positions: import("cesium").Cartesian3[] = [];
+
+          flight.samples.forEach(sample => {
+            const altitudeMeters = sample.altitudeFt * FEET_TO_METERS;
+            const absoluteHeight = terrainElevationMeters !== null
+              ? terrainElevationMeters + altitudeMeters
+              : altitudeMeters;
+
+            positions.push(
+              Cesium.Cartesian3.fromDegrees(
                 sample.longitude,
                 sample.latitude,
-                absoluteHeightMSL
-              );
-              positions.push(position);
-            });
+                absoluteHeight,
+              ),
+            );
+          });
 
-            // Render using terrain-corrected positions
           if (positions.length >= 2) {
             const path = viewer.entities.add({
               polyline: {
                 positions,
-                width: 2.2,
-                material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
+                width: 3.2,
+                material: pathMaterial,
                 arcType: Cesium.ArcType.GEODESIC,
               },
             });
@@ -821,7 +927,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               position,
               point: {
                 pixelSize: 6,
-                color: Cesium.Color.fromCssColorString(flight.color),
+                color: accentColor.clone(),
                 outlineColor: Cesium.Color.fromCssColorString("#182036"),
                 outlineWidth: 1,
               },
@@ -845,8 +951,11 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               horizontalDistance,
             );
 
-            // Use same terrain offset for frustum target
-            const targetAbsoluteHeight = terrainElevationMeters + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
+            const altitudeMeters = flight.samples[index].altitudeFt * FEET_TO_METERS;
+            const baseHeight = terrainElevationMeters !== null
+              ? terrainElevationMeters + altitudeMeters
+              : altitudeMeters;
+            const targetAbsoluteHeight = baseHeight + verticalOffset;
 
             const target = Cesium.Cartesian3.fromDegrees(
               destination.lon,
@@ -857,8 +966,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             const frustumLine = viewer.entities.add({
               polyline: {
                 positions: [position, target],
-                width: 1.4,
-                material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.55),
+                width: 2,
+                material: frustumMaterial,
               },
               properties: {
                 flightId: flight.id,
@@ -869,15 +978,17 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           });
 
           if (flight.poi) {
-            // Use same terrain offset for POI
             const poiAltitudeFt = flight.poi.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
-            const poiAbsoluteHeight = terrainElevationMeters + (poiAltitudeFt * FEET_TO_METERS);
+            const poiAltitudeMeters = poiAltitudeFt * FEET_TO_METERS;
+            const poiHeight = terrainElevationMeters !== null
+              ? terrainElevationMeters + poiAltitudeMeters
+              : poiAltitudeMeters;
 
             const poiEntity = viewer.entities.add({
               position: Cesium.Cartesian3.fromDegrees(
                 flight.poi.longitude,
                 flight.poi.latitude,
-                poiAbsoluteHeight,
+                poiHeight,
               ),
               point: {
                 pixelSize: 10,
@@ -901,71 +1012,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           positionsForFit.push(...positions);
         });
 
-          if (positionsForFit.length) {
-          const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
-
-          // Add buffer to the bounding sphere for better view
-          const expandedRadius = boundingSphere.radius * 2.5;
-          const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
-
-          try {
-            viewer.camera.flyToBoundingSphere(expandedSphere, {
-              duration: 1.5,
-              offset: new Cesium.HeadingPitchRange(
-                0,
-                Cesium.Math.toRadians(-45), // Look down at 45 degrees
-                expandedRadius
-              ),
-            });
-          } catch {}
-        }
-
-          try { viewer.scene.requestRender(); } catch {}
-      })
-      .catch((error: Error) => {
-        console.error('[FlightViewer] Google Elevation API failed, rendering without terrain correction:', error);
-          if (disposed) return;
-          const viewer = viewerRef.current as any;
-          if (!viewer || viewer.isDestroyed?.()) return;
-        // Fallback: render without terrain correction (AGL as MSL)
-        flights.forEach(flight => {
-          const positions = flight.samples.map(sample =>
-            Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, sample.altitudeFt * FEET_TO_METERS)
-          );
-
-          if (positions.length >= 2) {
-            const path = viewer.entities.add({
-              polyline: {
-                positions,
-                width: 2.2,
-                material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
-                arcType: Cesium.ArcType.GEODESIC,
-              },
-            });
-            flightEntitiesRef.current.push(path);
-          }
-
-          positions.forEach((position, index) => {
-            const waypointEntity = viewer.entities.add({
-              position,
-              point: {
-                pixelSize: 6,
-                color: Cesium.Color.fromCssColorString(flight.color),
-                outlineColor: Cesium.Color.fromCssColorString("#182036"),
-                outlineWidth: 1,
-              },
-              properties: {
-                flightId: flight.id,
-                index,
-              },
-            });
-            flightEntitiesRef.current.push(waypointEntity);
-            waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
-          });
-
-          positionsForFit.push(...positions);
-        });
-
         if (positionsForFit.length) {
           const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
           const expandedRadius = boundingSphere.radius * 2.5;
@@ -977,14 +1023,37 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               offset: new Cesium.HeadingPitchRange(
                 0,
                 Cesium.Math.toRadians(-45),
-                expandedRadius
+                expandedRadius,
               ),
             });
-          } catch {}
+          } catch (_) {
+            // Ignore camera animation errors
+          }
         }
 
-        try { viewer.scene.requestRender(); } catch {}
-      });
+        try {
+          viewer.scene.requestRender();
+        } catch (_) {
+          // Ignore render requests during disposal
+        }
+      };
+
+      fetchTerrainElevation(firstWaypoint.latitude, firstWaypoint.longitude)
+        .then(terrainElevationMeters => {
+          if (disposed) return;
+          console.log(
+            `[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`,
+          );
+          renderFlightsWithElevation(terrainElevationMeters);
+        })
+        .catch((error: Error) => {
+          console.error(
+            '[FlightViewer] Google Elevation API failed, rendering without terrain correction:',
+            error,
+          );
+          if (disposed) return;
+          renderFlightsWithElevation(null);
+        });
     }
     return () => { disposed = true; };
   }, [flights, selectedLens, viewerReady, fetchTerrainElevation]);
@@ -1057,24 +1126,7 @@ export default function FlightViewerPage(): JSX.Element {
         if (extension === "kmz") {
           prepared = await parseKMZFile(file);
         } else if (extension === "csv") {
-          await new Promise<void>((resolve, reject) => {
-            Papa.parse<RawFlightRow>(file, {
-              header: true,
-              skipEmptyLines: true,
-              dynamicTyping: true,
-              complete: result => {
-                if (result.errors.length) {
-                  reject(new Error(`CSV parse error: ${result.errors[0].message}`));
-                  return;
-                }
-                prepared = result.data
-                  .map(sanitizeRow)
-                  .filter((value): value is PreparedRow => value !== null);
-                resolve();
-              },
-              error: err => reject(err),
-            });
-          });
+          prepared = await parseCSVFile(file);
         } else {
           errors.push(`${file.name}: Unsupported format (use .csv or .kmz)`);
           continue;
@@ -1148,6 +1200,7 @@ export default function FlightViewerPage(): JSX.Element {
 
     try {
       const csvContent = await converterFile.text();
+      const { convertLitchiCSVToKMZ, downloadBlob } = await import("../../lib/flightConverter");
       const kmzBlob = await convertLitchiCSVToKMZ(
         csvContent,
         converterFile.name,

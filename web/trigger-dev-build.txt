@@ -1,2 +1,2 @@
-Cesium integration trigger 2025-10-06T17:09:32Z
-12:09pm
+2025-10-06T17:09:32Z Cesium integration trigger
+2025-10-09T11:50:50Z Flight viewer optimizations
