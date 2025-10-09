@@ -1,3 +1,5 @@
+const path = require('path');
+const webpack = require('webpack');
 const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
@@ -9,6 +11,34 @@ const nextConfig = {
   // Do not use static export; we deploy with @cloudflare/next-on-pages to enable Pages Functions.
   basePath,
   assetPrefix: basePath ? `${basePath}/` : undefined,
+  webpack: (config) => {
+    config.plugins = config.plugins || [];
+
+    const cesiumBaseUrl = `${basePath || ''}/cesium`;
+
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        CESIUM_BASE_URL: JSON.stringify(cesiumBaseUrl),
+      }),
+      new webpack.NormalModuleReplacementPlugin(
+        /^@zip\.js\/zip\.js\/lib\/zip-no-worker\.js$/,
+        path.join(__dirname, 'lib/zip-no-worker.js')
+      )
+    );
+
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@zip.js/zip.js/lib/zip-no-worker.js$': path.join(__dirname, 'lib/zip-no-worker.js'),
+    };
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      fs: false,
+      path: false,
+    };
+
+    return config;
+  },
 };
 
 // Sentry configuration

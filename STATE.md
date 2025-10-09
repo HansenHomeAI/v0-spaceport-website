@@ -1,5 +1,5 @@
-reason: none
-last_step: granted staging+production delivery permissions for gabriel@spcprt.com and ethan@spcprt.com
-next_unblocked_step: package changes and open PR once preview + tests reviewed
+reason: integrating cesium viewer for flight planner
+last_step: local build + docs refreshed after swapping to Cesium entities
+next_unblocked_step: validate viewer in GPU-capable browser, then push branch and follow CI loop
 owner_action_needed: none
-updated: 2025-09-25T16:42:49Z
+updated: 2025-10-06T17:09:22Z
