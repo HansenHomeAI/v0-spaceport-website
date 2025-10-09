@@ -6,6 +6,7 @@ import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
 import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
 import { buildApiUrl } from "../api-config";
+import "./styles.css";
 
 type RawFlightRow = Record<string, unknown>;
 
@@ -110,6 +111,26 @@ function toOptionalNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * Calculate bearing (heading) from point1 to point2 in degrees (0-360)
+ * Uses the Haversine formula for accuracy over long distances
+ */
+function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const lat1Rad = (lat1 * Math.PI) / 180;
+  const lat2Rad = (lat2 * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const y = Math.sin(dLon) * Math.cos(lat2Rad);
+  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+  
+  let bearing = Math.atan2(y, x);
+  bearing = (bearing * 180) / Math.PI;
+  bearing = (bearing + 360) % 360; // Normalize to 0-360
+  
+  return bearing;
+}
+
 function sanitizeRow(row: RawFlightRow): PreparedRow | null {
   const latitude = toNumber(row.latitude);
   const longitude = toNumber(row.longitude);
@@ -144,10 +165,46 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
     return { samples: [], poi: null };
   }
 
+  // First pass: create samples with indices
   const processedSamples: ProcessedSample[] = samples.map((sample, index) => ({
     ...sample,
     index,
   }));
+
+  // Second pass: calculate heading angles from path when missing or zero
+  for (let i = 0; i < processedSamples.length; i++) {
+    const sample = processedSamples[i];
+    
+    // If heading is missing, null, or zero, calculate it from the flight path
+    if (!sample.headingDeg || sample.headingDeg === 0) {
+      let calculatedHeading: number | null = null;
+      
+      if (i < processedSamples.length - 1) {
+        // For all points except the last, calculate bearing to next point
+        const nextSample = processedSamples[i + 1];
+        calculatedHeading = calculateBearing(
+          sample.latitude,
+          sample.longitude,
+          nextSample.latitude,
+          nextSample.longitude
+        );
+      } else if (i > 0) {
+        // For the last point, use the bearing from the previous point
+        const prevSample = processedSamples[i - 1];
+        calculatedHeading = calculateBearing(
+          prevSample.latitude,
+          prevSample.longitude,
+          sample.latitude,
+          sample.longitude
+        );
+      }
+      
+      // Update the heading with calculated value
+      if (calculatedHeading !== null) {
+        sample.headingDeg = calculatedHeading;
+      }
+    }
+  }
 
   const firstPoiSource = samples.find(entry =>
     Number.isFinite(entry.poiLatitude ?? Number.NaN) && Number.isFinite(entry.poiLongitude ?? Number.NaN),
