@@ -73,3 +73,6 @@ tests/pipeline/*.log
 web/.next/
 web/.vercel/
 .env
+
+# Cesium static assets copied at build time
+web/public/cesium/

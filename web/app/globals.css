@@ -1,1 +1,12 @@
 /* global styles */
+
+/* Load Cesium widget styles globally so internal canvas fills its container */
+@import url('/cesium/Widgets/widgets.css');
+
+/* Hard guarantee the Cesium canvas expands to the container */
+.cesium-widget,
+.cesium-widget canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
