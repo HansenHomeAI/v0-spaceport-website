@@ -78,6 +78,9 @@ const FLIGHT_COLORS = [
   "#ffcc66",
 ];
 
+const PATH_LINE_WIDTH = 4.2;
+const FRUSTUM_LINE_WIDTH = 2.4;
+
 type PapaParseModule = typeof import("papaparse");
 type JSZipModule = typeof import("jszip");
 type FastXmlParserModule = typeof import("fast-xml-parser");
@@ -914,7 +917,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             const path = viewer.entities.add({
               polyline: {
                 positions,
-                width: 3.2,
+                width: PATH_LINE_WIDTH,
                 material: pathMaterial,
                 arcType: Cesium.ArcType.GEODESIC,
               },
@@ -966,7 +969,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             const frustumLine = viewer.entities.add({
               polyline: {
                 positions: [position, target],
-                width: 2,
+                width: FRUSTUM_LINE_WIDTH,
                 material: frustumMaterial,
               },
               properties: {
