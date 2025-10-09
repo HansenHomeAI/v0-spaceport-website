@@ -548,6 +548,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         
         viewerRef.current = viewer;
         
+        // Set initial camera position to show Earth
+        viewer.camera.setView({
+          destination: Cesium.Cartesian3.fromDegrees(-122.4194, 37.7749, 15000000), // High above Earth
+          orientation: {
+            heading: 0,
+            pitch: Cesium.Math.toRadians(-90), // Looking straight down
+            roll: 0
+          }
+        });
+        
         // Force initial resize to fill container and set up resize observer
         if (containerRef.current) {
           viewer.resize();
