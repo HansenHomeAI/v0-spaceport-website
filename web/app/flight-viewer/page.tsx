@@ -1,6 +1,13 @@
 "use client";
 
-import React, { ChangeEvent, useCallback, useMemo, useState, useEffect, useRef } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
@@ -54,6 +61,7 @@ interface FlightPathSceneProps {
   flights: FlightData[];
   selectedLens: string;
   onWaypointHover: (flightId: string, waypointIndex: number | null) => void;
+  debugCesium: boolean;
 }
 
 type CesiumModule = typeof import("cesium");
@@ -431,7 +439,7 @@ function setPointPixelSize(
   }
 }
 
-function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathSceneProps): JSX.Element {
+function FlightPathScene({ flights, selectedLens, onWaypointHover, debugCesium }: FlightPathSceneProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<import("cesium").Viewer | null>(null);
   const cesiumRef = useRef<CesiumModule | null>(null);
@@ -496,6 +504,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     let cancelled = false;
 
+    let publishTilesetDebug: (() => void) | null = null;
+
     (async () => {
       try {
         const Cesium = await import("cesium");
@@ -547,6 +557,26 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         viewer.scene.globe.depthTestAgainstTerrain = false;
         
         viewerRef.current = viewer;
+
+        if (debugCesium) {
+          try {
+            (viewer as any).__spaceportCesium = Cesium;
+            (viewer as any).__spaceportDebugMeta = {
+              createdAt: Date.now(),
+              source: 'flight-viewer/page.tsx',
+            };
+            if (typeof window !== 'undefined') {
+              (window as any).__spaceportCesium = Cesium;
+              (window as any).__spaceportFlightViewer = viewer;
+              (window as any).__spaceportDebugMeta = (viewer as any).__spaceportDebugMeta;
+            }
+            if (containerRef.current) {
+              (containerRef.current as any).__spaceportFlightViewer = viewer;
+            }
+          } catch (_) {
+            // Debug instrumentation only; ignore if assignment fails
+          }
+        }
         
         // Force initial resize to fill container and set up resize observer
         if (containerRef.current) {
@@ -589,17 +619,70 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           viewer.scene.primitives.add(tileset);
           tilesetRef.current = tileset;
 
+          publishTilesetDebug = () => {
+            if (!debugCesium) {
+              return;
+            }
+            try {
+              const bs = tileset.boundingSphere;
+              const stats: Record<string, unknown> = {};
+              const maybeStats = (tileset as any).statistics;
+              if (maybeStats) {
+                stats.numberOfCommands = maybeStats.numberOfCommands;
+                stats.numberOfTilesLoaded = maybeStats.numberOfTilesLoaded;
+                stats.numberOfTilesTotal = maybeStats.numberOfTilesTotal;
+              }
+              const summary = {
+                timestamp: Date.now(),
+                ready: Boolean((tileset as any).ready),
+                root: (tileset.root as any)?.url ?? null,
+                totalMemoryUsage: (tileset as any).totalMemoryUsageInBytes ?? (maybeStats?.totalMemoryUsageInBytes ?? null),
+                stats,
+                boundingSphere: bs
+                  ? {
+                      radius: bs.radius,
+                      center: { x: bs.center.x, y: bs.center.y, z: bs.center.z },
+                    }
+                  : null,
+              };
+              (viewer as any).__spaceportTilesetDebug = summary;
+              if (typeof window !== 'undefined') {
+                (window as any).__spaceportTilesetDebug = summary;
+              }
+            } catch (_) {
+              // Debug publishing best-effort only
+            }
+          };
+
           // Wait for initial tiles to load
           tileset.initialTilesLoaded.addEventListener(() => {
             if (!cancelled && viewerRef.current) {
               viewerRef.current.scene.requestRender();
               setViewerReady(true);
+              publishTilesetDebug?.();
             }
           });
+
+          const readyPromise = (tileset as any).readyPromise;
+          if (readyPromise?.then) {
+            readyPromise
+              .then(() => {
+              publishTilesetDebug?.();
+              })
+              .catch(() => {
+                // ignore debug update failure
+              });
+          }
+
+          if (publishTilesetDebug) {
+            tileset.tileLoad.addEventListener(publishTilesetDebug);
+            tileset.tileUnload.addEventListener(publishTilesetDebug);
+          }
 
           // Handle tileset errors
           tileset.tileFailed.addEventListener((error: any) => {
             console.error("[FlightPathScene] Tile failed to load", error);
+            publishTilesetDebug?.();
           });
 
         } catch (tilesetErr) {
@@ -712,6 +795,12 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           }
         } catch (_) {}
         try {
+          if (publishTilesetDebug) {
+            tilesetRef.current.tileLoad?.removeEventListener?.(publishTilesetDebug);
+            tilesetRef.current.tileUnload?.removeEventListener?.(publishTilesetDebug);
+          }
+        } catch (_) {}
+        try {
           if (typeof (tilesetRef.current as any).isDestroyed === 'function') {
             if (!(tilesetRef.current as any).isDestroyed()) {
               tilesetRef.current.destroy();
@@ -742,7 +831,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
       setViewerReady(false);
     };
-  }, [apiKey, onWaypointHover]);
+  }, [apiKey, onWaypointHover, debugCesium]);
 
   useEffect(() => {
     const initialViewer = viewerRef.current;
@@ -908,6 +997,26 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           const expandedRadius = boundingSphere.radius * 2.5;
           const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
+          if (debugCesium) {
+            const fitDebug = {
+              timestamp: Date.now(),
+              positionsCount: positionsForFit.length,
+              centerCartesian: {
+                x: boundingSphere.center.x,
+                y: boundingSphere.center.y,
+                z: boundingSphere.center.z,
+              },
+              radius: boundingSphere.radius,
+              expandedRadius,
+            };
+            try {
+              (viewer as any).__spaceportLastFit = fitDebug;
+              if (typeof window !== 'undefined') {
+                (window as any).__spaceportLastFit = fitDebug;
+              }
+            } catch (_) {}
+          }
+
           try {
             viewer.camera.flyToBoundingSphere(expandedSphere, {
               duration: 1.5,
@@ -970,6 +1079,27 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
           const expandedRadius = boundingSphere.radius * 2.5;
           const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+
+          if (debugCesium) {
+            const fitDebug = {
+              timestamp: Date.now(),
+              positionsCount: positionsForFit.length,
+              centerCartesian: {
+                x: boundingSphere.center.x,
+                y: boundingSphere.center.y,
+                z: boundingSphere.center.z,
+              },
+              radius: boundingSphere.radius,
+              expandedRadius,
+              fallback: true,
+            };
+            try {
+              (viewer as any).__spaceportLastFit = fitDebug;
+              if (typeof window !== 'undefined') {
+                (window as any).__spaceportLastFit = fitDebug;
+              }
+            } catch (_) {}
+          }
 
           try {
             viewer.camera.flyToBoundingSphere(expandedSphere, {
@@ -1034,6 +1164,52 @@ export default function FlightViewerPage(): JSX.Element {
     headingMode: "poi_or_interpolate" as "poi_or_interpolate" | "follow_wayline" | "manual",
     allowStraightLines: false,
   });
+  const [debugCesium, setDebugCesium] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const raw = new URLSearchParams(window.location.search).get("debugCesium");
+    const normalized = (raw ?? "").toLowerCase();
+    const enabled = normalized === "1" || normalized === "true";
+    if (typeof window !== "undefined") {
+      try {
+        const win = window as any;
+        win.__spaceportDebugEffectCount = (win.__spaceportDebugEffectCount ?? 0) + 1;
+        win.__spaceportDebugLastEnabled = enabled;
+      } catch (_) {}
+    }
+    setDebugCesium(enabled);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (debugCesium) {
+      try {
+        (window as any).__spaceportFlights = flights;
+      } catch (_) {}
+    } else {
+      try {
+        delete (window as any).__spaceportFlights;
+      } catch (_) {}
+    }
+  }, [flights, debugCesium]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      if (debugCesium) {
+        (window as any).__spaceportDebugEnabled = true;
+      } else {
+        delete (window as any).__spaceportDebugEnabled;
+      }
+    } catch (_) {}
+  }, [debugCesium]);
 
   const onFilesSelected = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;
@@ -1302,6 +1478,7 @@ export default function FlightViewerPage(): JSX.Element {
             <FlightPathScene
               flights={flights}
               selectedLens={selectedLens}
+              debugCesium={debugCesium}
               onWaypointHover={handleWaypointHover}
             />
           ) : (
