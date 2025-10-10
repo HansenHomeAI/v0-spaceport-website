@@ -303,7 +303,7 @@ export default function ShapeLabPage() {
         
         // Position camera for perspective view from above and to the side
         camera.position.set(2000, 1500, 2000);
-        camera.lookAt(0, 200, 0);
+        camera.lookAt(0, 0, 0); // Focus on true origin
         
         // Generate flight path
         const N = mapBatteryToBounces(params.batteryDurationMinutes);
@@ -348,13 +348,19 @@ export default function ShapeLabPage() {
           group.position.copy(pos);
           
           // Calculate heading from this waypoint to next (if exists)
+          // Note: We need to use Three.js coordinate system for rotation
           let heading = 0;
           if (wpIndex < waypointsWithZ.length - 1) {
             const next = waypointsWithZ[wpIndex + 1];
-            heading = Math.atan2(next.y - wp.y, next.x - wp.x);
+            const nextPos = toThreeJS(next);
+            const currentPos = toThreeJS(wp);
+            // In Three.js: X and Z are horizontal, Y is vertical
+            heading = Math.atan2(nextPos.x - currentPos.x, nextPos.z - currentPos.z);
           } else if (wpIndex > 0) {
             const prev = waypointsWithZ[wpIndex - 1];
-            heading = Math.atan2(wp.y - prev.y, wp.x - prev.x);
+            const prevPos = toThreeJS(prev);
+            const currentPos = toThreeJS(wp);
+            heading = Math.atan2(currentPos.x - prevPos.x, currentPos.z - prevPos.z);
           }
           
           // Create frustum pyramid
@@ -395,15 +401,20 @@ export default function ShapeLabPage() {
           frustum.rotation.y = heading;
           frustum.rotation.x = (gimbalPitch * Math.PI) / 180;
           
+          // Debug: Log heading for first few waypoints
+          if (wpIndex < 3) {
+            console.log(`Waypoint ${wpIndex}: heading=${(heading * 180 / Math.PI).toFixed(1)}°, gimbal=${gimbalPitch}°`);
+          }
+          
           group.add(frustum);
           
           // Add small direction indicator
           const arrowGeometry = new THREE.ConeGeometry(2, 8, 8);
           const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0x8e8e93, transparent: true, opacity: 0.4 });
           const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
-          arrow.rotation.x = Math.PI; // Point down
-          arrow.rotation.y = heading;
-          arrow.rotation.x += (gimbalPitch * Math.PI) / 180;
+          arrow.rotation.x = Math.PI; // Point down initially
+          arrow.rotation.y = heading; // Rotate to heading
+          arrow.rotation.x += (gimbalPitch * Math.PI) / 180; // Apply gimbal pitch
           arrow.position.y = -frustumLength / 2;
           group.add(arrow);
           
@@ -450,7 +461,7 @@ export default function ShapeLabPage() {
           camera.position.x = radius * Math.sin(phi) * Math.sin(theta);
           camera.position.y = radius * Math.cos(phi);
           camera.position.z = radius * Math.sin(phi) * Math.cos(theta);
-          camera.lookAt(0, 200, 0); // Look slightly above center to see altitude changes
+          camera.lookAt(0, 0, 0); // Always focus on true origin
         };
         
         canvas.addEventListener('mousedown', (e) => {
@@ -493,7 +504,7 @@ export default function ShapeLabPage() {
         
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
-          const zoomSpeed = 1.1;
+          const zoomSpeed = 1.05; // Much less sensitive
           radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
           radius = Math.max(100, Math.min(10000, radius)); // Clamp zoom
           updateCameraPosition();
