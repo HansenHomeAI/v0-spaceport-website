@@ -280,14 +280,14 @@ export default function ShapeLabPage() {
         });
         
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-        renderer.setClearColor(0x000000);
+        renderer.setClearColor(0x0a0a0a);
         renderer.setPixelRatio(window.devicePixelRatio);
         
-        // Add grid helper
+        // Add grid helper on XZ plane (Three.js standard: Y is up)
         const gridHelper = new THREE.GridHelper(10000, 40, 0x333333, 0x222222);
         scene.add(gridHelper);
         
-        // Add axes helper
+        // Add axes helper (X=red, Y=green/up, Z=blue)
         const axesHelper = new THREE.AxesHelper(500);
         scene.add(axesHelper);
         
@@ -297,18 +297,24 @@ export default function ShapeLabPage() {
         const centerSphere = new THREE.Mesh(centerGeometry, centerMaterial);
         scene.add(centerSphere);
         
-        // Position camera for top-down view
-        camera.position.set(0, -2500, 1200);
-        camera.lookAt(0, 0, 0);
+        // Position camera for perspective view from above and to the side
+        camera.position.set(2000, 1500, 2000);
+        camera.lookAt(0, 200, 0);
         
         // Generate flight path
         const N = mapBatteryToBounces(params.batteryDurationMinutes);
         const { waypoints } = buildSlice(sliceIndex, params.slices, N);
         const waypointsWithZ = applyAltitudeAGL(waypoints, params.minHeight, params.maxHeight);
         
+        // Coordinate transform: Our (x,y,z) -> Three.js (x,y,z) where our z=altitude becomes Three.js y
+        // Our system: x=horizontal1, y=horizontal2, z=altitude
+        // Three.js: x=horizontal1, y=altitude, z=horizontal2
+        const toThreeJS = (wp: { x: number; y: number; z: number }) => 
+          new THREE.Vector3(wp.x, wp.z, wp.y);
+        
         // Create flight path line
         if (waypointsWithZ.length >= 2) {
-          const points = waypointsWithZ.map(wp => new THREE.Vector3(wp.x, wp.y, wp.z));
+          const points = waypointsWithZ.map(wp => toThreeJS(wp));
           const geometry = new THREE.BufferGeometry().setFromPoints(points);
           const material = new THREE.LineBasicMaterial({ color: 0x00ff88, linewidth: 2 });
           const line = new THREE.Line(geometry, material);
@@ -330,43 +336,73 @@ export default function ShapeLabPage() {
           const geometry = new THREE.SphereGeometry(size, 16, 16);
           const material = new THREE.MeshBasicMaterial({ color });
           const sphere = new THREE.Mesh(geometry, material);
-          sphere.position.set(wp.x, wp.y, wp.z);
+          const pos = toThreeJS(wp);
+          sphere.position.copy(pos);
           scene.add(sphere);
         });
         
-        // Simple orbit controls
-        let mouseDown = false;
-        let mouseX = 0, mouseY = 0;
+        // Proper orbit controls
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        const rotationSpeed = 0.005;
+        const panSpeed = 2;
+        
+        // Spherical coordinates for orbit (Y-up system)
+        let theta = Math.atan2(camera.position.x, camera.position.z); // horizontal angle
+        let phi = Math.acos(camera.position.y / Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2)); // vertical angle from Y axis
+        let radius = Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2);
+        
+        const updateCameraPosition = () => {
+          camera.position.x = radius * Math.sin(phi) * Math.sin(theta);
+          camera.position.y = radius * Math.cos(phi);
+          camera.position.z = radius * Math.sin(phi) * Math.cos(theta);
+          camera.lookAt(0, 200, 0); // Look slightly above center to see altitude changes
+        };
         
         canvas.addEventListener('mousedown', (e) => {
-          mouseDown = true;
-          mouseX = e.clientX;
-          mouseY = e.clientY;
+          isDragging = true;
+          previousMousePosition = { x: e.clientX, y: e.clientY };
         });
         
         canvas.addEventListener('mouseup', () => {
-          mouseDown = false;
+          isDragging = false;
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+          isDragging = false;
         });
         
         canvas.addEventListener('mousemove', (e) => {
-          if (!mouseDown) return;
+          if (!isDragging) return;
           
-          const deltaX = e.clientX - mouseX;
-          const deltaY = e.clientY - mouseY;
+          const deltaX = e.clientX - previousMousePosition.x;
+          const deltaY = e.clientY - previousMousePosition.y;
           
-          camera.position.x += deltaX * 2;
-          camera.position.y += deltaY * 2;
-          camera.lookAt(0, 0, 0);
+          if (e.shiftKey || e.ctrlKey) {
+            // Pan mode with shift or ctrl
+            const panVector = new THREE.Vector3(-deltaX * panSpeed, deltaY * panSpeed, 0);
+            panVector.applyQuaternion(camera.quaternion);
+            camera.position.add(panVector);
+          } else {
+            // Orbit mode (default)
+            theta += deltaX * rotationSpeed;
+            phi += deltaY * rotationSpeed;
+            
+            // Clamp phi to prevent camera from flipping
+            phi = Math.max(0.1, Math.min(Math.PI - 0.1, phi));
+            
+            updateCameraPosition();
+          }
           
-          mouseX = e.clientX;
-          mouseY = e.clientY;
+          previousMousePosition = { x: e.clientX, y: e.clientY };
         });
         
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
-          const scale = e.deltaY > 0 ? 1.1 : 0.9;
-          camera.position.multiplyScalar(scale);
-          camera.lookAt(0, 0, 0);
+          const zoomSpeed = 1.1;
+          radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
+          radius = Math.max(100, Math.min(10000, radius)); // Clamp zoom
+          updateCameraPosition();
         });
         
         const animate = () => {
@@ -538,11 +574,16 @@ export default function ShapeLabPage() {
         </div>
 
         <div style={{
-          position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.7)', color: 'white',
-          padding: '10px 15px', borderRadius: 8, fontSize: 12, fontFamily: 'monospace'
+          position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.85)', color: 'white',
+          padding: '12px 16px', borderRadius: 8, fontSize: 12, fontFamily: 'monospace', lineHeight: '1.6'
         }}>
-          <div>3D View: Drag to orbit/pan, Scroll to zoom</div>
-          <div style={{ marginTop: 5, opacity: 0.7 }}>Units in feet. Z shows AGL altitude.</div>
+          <div style={{ fontWeight: 'bold', marginBottom: 6, color: '#00ff88' }}>Controls</div>
+          <div>• Drag: Rotate view around center</div>
+          <div>• Shift+Drag: Pan view</div>
+          <div>• Scroll: Zoom in/out</div>
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #333', opacity: 0.7 }}>
+            Units in feet. Green (Y) axis = altitude (AGL)
+          </div>
         </div>
       </div>
     </div>
