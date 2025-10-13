@@ -445,7 +445,7 @@ export default function ShapeLabPage() {
         const projectionLength = 375; // length of projection lines when hovering (reduced 50%)
         
         // Store frustum meshes for hover interaction
-        const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number; heading: number; gimbalPitch: number }> = [];
+        const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number; heading: number; gimbalPitch: number; curve: number }> = [];
         let hoveredFrustum: THREE.Group | null = null;
         const projectionLines: THREE.Line[] = [];
         
