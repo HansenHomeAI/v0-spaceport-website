@@ -11,6 +11,7 @@ type Waypoint = {
   z: number; // AGL in feet
   phase: string;
   index: number;
+  curve: number; // Turn radius in feet
 };
 
 type FlightParams = {
@@ -117,7 +118,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
       ? [1 / 3, 2 / 3]
       : [0.5];
 
-  const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
+  const sampleAt = (targetT: number, phase: string, index: number, isMidpoint: boolean = false): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
     const clampedIndex = Math.max(0, Math.min(spiralPts.length - 1, targetIndex));
     const pt = spiralPts[clampedIndex];
@@ -125,7 +126,27 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
     const rotX = pt.x * Math.cos(offset) - pt.y * Math.sin(offset);
     const rotY = pt.x * Math.sin(offset) + pt.y * Math.cos(offset);
 
-    return { x: rotX, y: rotY, phase, index } as Omit<Waypoint, 'z'>;
+    // Calculate curve radius (mirrors lambda logic)
+    const distanceFromCenter = Math.sqrt(rotX ** 2 + rotY ** 2);
+    let curveRadius: number;
+    
+    if (isMidpoint) {
+      // MIDPOINT CURVES: Ultra-smooth for seamless transitions
+      const baseCurve = 50;
+      const scaleFactor = 1.2;
+      const maxCurve = 1500;
+      curveRadius = Math.min(maxCurve, baseCurve + (distanceFromCenter * scaleFactor));
+    } else {
+      // NON-MIDPOINT CURVES: Doubled for smoother directional control
+      const baseCurve = 40;
+      const scaleFactor = 0.05;
+      const maxCurve = 160;
+      curveRadius = Math.min(maxCurve, baseCurve + (distanceFromCenter * scaleFactor));
+    }
+    
+    curveRadius = Math.round(curveRadius * 10) / 10; // Round to 1 decimal place
+
+    return { x: rotX, y: rotY, phase, index, curve: curveRadius } as Omit<Waypoint, 'z'>;
   };
 
   const labelFromFraction = (value: number) => Math.round((value + Number.EPSILON) * 100);
@@ -134,7 +155,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   let idx = 0;
 
   // outbound start
-  waypoints.push(sampleAt(0, 'outbound_start', idx++));
+  waypoints.push(sampleAt(0, 'outbound_start', idx++, false));
 
   // outbound mid + bounce for each bounce
   for (let b = 1; b <= N; b++) {
@@ -142,34 +163,34 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
       const tMid = (b - fraction) * dphi;
       const progressLabel = labelFromFraction(1 - fraction);
       const phase = isSingleSlice ? `outbound_mid_${b}_q${progressLabel}` : `outbound_mid_${b}`;
-      waypoints.push(sampleAt(tMid, phase, idx++));
+      waypoints.push(sampleAt(tMid, phase, idx++, true)); // midpoint = true
     });
     const tBounce = b * dphi;
-    waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++));
+    waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++, false));
   }
 
   // hold mid + end
   const tMidHold = tOut + tHold / 2;
   const tEndHold = tOut + tHold;
-  waypoints.push(sampleAt(tMidHold, 'hold_mid', idx++));
-  waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
+  waypoints.push(sampleAt(tMidHold, 'hold_mid', idx++, true)); // midpoint = true
+  waypoints.push(sampleAt(tEndHold, 'hold_end', idx++, false));
 
   // inbound first mid
   inboundMidFractions.forEach(fraction => {
     const tFirstInboundMid = tEndHold + fraction * dphi;
     const phase = isSingleSlice ? `inbound_mid_0_q${labelFromFraction(fraction)}` : 'inbound_mid_0';
-    waypoints.push(sampleAt(tFirstInboundMid, phase, idx++));
+    waypoints.push(sampleAt(tFirstInboundMid, phase, idx++, true)); // midpoint = true
   });
 
   // inbound bounce + midpoints
   for (let b = 1; b <= N; b++) {
     const tBounce = tEndHold + b * dphi;
-    waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++));
+    waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++, false));
     if (b < N) {
       inboundMidFractions.forEach(fraction => {
         const tMid = tEndHold + (b + fraction) * dphi;
         const phase = isSingleSlice ? `inbound_mid_${b}_q${labelFromFraction(fraction)}` : `inbound_mid_${b}`;
-        waypoints.push(sampleAt(tMid, phase, idx++));
+        waypoints.push(sampleAt(tMid, phase, idx++, true)); // midpoint = true
       });
     }
   }
@@ -238,10 +259,49 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
 
   const vectors = useMemo(() => waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z)), [waypoints]);
 
+  // Generate curved path segments respecting curve radii
+  const curvedPathPoints = useMemo(() => {
+    if (waypoints.length < 2) return [];
+    
+    const allPoints: THREE.Vector3[] = [];
+    
+    for (let i = 0; i < waypoints.length - 1; i++) {
+      const wp1 = waypoints[i];
+      const wp2 = waypoints[i + 1];
+      
+      const p1 = new THREE.Vector3(wp1.x, wp1.y, wp1.z);
+      const p2 = new THREE.Vector3(wp2.x, wp2.y, wp2.z);
+      
+      // Use the curve radius from the starting waypoint
+      const curveRadius = wp1.curve;
+      
+      // Calculate control point for bezier curve based on curve radius
+      const midPoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      const direction = new THREE.Vector3().subVectors(p2, p1);
+      const distance = direction.length();
+      
+      // Create perpendicular vector for control point offset
+      const perpendicular = new THREE.Vector3(-direction.y, direction.x, 0).normalize();
+      
+      // Scale the control point offset based on curve radius
+      // Larger curve radius = smoother, gentler curve
+      const curveStrength = Math.min(distance * 0.3, curveRadius * 0.5);
+      const controlPoint = midPoint.clone().add(perpendicular.multiplyScalar(curveStrength));
+      
+      // Generate curve points using quadratic bezier
+      const curve = new THREE.QuadraticBezierCurve3(p1, controlPoint, p2);
+      const segmentPoints = curve.getPoints(20); // 20 points per segment for smooth curves
+      
+      allPoints.push(...segmentPoints);
+    }
+    
+    return allPoints;
+  }, [waypoints]);
+
   return (
     <group>
-      {vectors.length >= 2 && (
-        <Line points={vectors} color="#00ff88" lineWidth={2.5} transparent opacity={0.95} />
+      {curvedPathPoints.length >= 2 && (
+        <Line points={curvedPathPoints} color="#00ff88" lineWidth={2.5} transparent opacity={0.95} />
       )}
 
       {/* Center reference */}
@@ -519,7 +579,7 @@ export default function ShapeLabPage() {
           // Add camera frustum
           const { group: frustum, heading, gimbalPitch } = createFrustum(wp, i);
           scene.add(frustum);
-          frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i, heading, gimbalPitch });
+          frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i, heading, gimbalPitch, curve: wp.curve });
         });
         
         // Proper orbit controls with dynamic orbit center
@@ -665,11 +725,13 @@ export default function ShapeLabPage() {
               // Show tooltip
               const headingDeg = (foundFrustum.heading * 180 / Math.PI).toFixed(1);
               const pitchDeg = foundFrustum.gimbalPitch.toFixed(1);
+              const curveRadius = foundFrustum.curve.toFixed(1);
               
               tooltipDiv.innerHTML = `
                 <div style="font-weight: 600; margin-bottom: 6px; color: #007AFF;">Waypoint ${foundFrustum.index}</div>
                 <div style="color: rgba(255, 255, 255, 0.9);">Heading: ${headingDeg}°</div>
                 <div style="color: rgba(255, 255, 255, 0.9);">Gimbal Pitch: ${pitchDeg}°</div>
+                <div style="color: rgba(255, 255, 255, 0.9);">Curve: ${curveRadius}ft</div>
               `;
               tooltipDiv.style.display = 'block';
               tooltipDiv.style.left = `${e.clientX + 15}px`;
