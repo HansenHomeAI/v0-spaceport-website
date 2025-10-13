@@ -105,17 +105,16 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
   const isSingleSlice = slices === 1;
+  const isDoubleSlice = slices === 2;
   // Shape the path based on slice count: single slice gets sixth-interval samples, two slices use thirds, otherwise keep halves
-  const outboundMidFractions = isSingleSlice
-    ? [5 / 6, 4 / 6, 3 / 6, 2 / 6, 1 / 6]
-    : slices === 2
-      ? [2 / 3, 1 / 3]
-      : [0.5];
-  const inboundMidFractions = isSingleSlice
+  const sharedMidFractions = isSingleSlice
     ? [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6]
-    : slices === 2
+    : isDoubleSlice
       ? [1 / 3, 2 / 3]
       : [0.5];
+  const outboundMidFractions = isSingleSlice || isDoubleSlice ? [...sharedMidFractions].reverse() : [0.5];
+  const inboundMidFractions = sharedMidFractions;
+  const holdMidFractions = sharedMidFractions;
 
   const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
@@ -141,7 +140,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
     outboundMidFractions.forEach(fraction => {
       const tMid = (b - fraction) * dphi;
       const progressLabel = labelFromFraction(1 - fraction);
-      const phase = isSingleSlice ? `outbound_mid_${b}_q${progressLabel}` : `outbound_mid_${b}`;
+      const phase = (isSingleSlice || isDoubleSlice) ? `outbound_mid_${b}_q${progressLabel}` : `outbound_mid_${b}`;
       waypoints.push(sampleAt(tMid, phase, idx++));
     });
     const tBounce = b * dphi;
@@ -149,15 +148,19 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   }
 
   // hold mid + end
-  const tMidHold = tOut + tHold / 2;
   const tEndHold = tOut + tHold;
-  waypoints.push(sampleAt(tMidHold, 'hold_mid', idx++));
+  const customHoldPhases = isSingleSlice || isDoubleSlice;
+  holdMidFractions.forEach(fraction => {
+    const tHoldPoint = tOut + fraction * tHold;
+    const phase = customHoldPhases ? `hold_mid_q${labelFromFraction(fraction)}` : 'hold_mid';
+    waypoints.push(sampleAt(tHoldPoint, phase, idx++));
+  });
   waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
 
   // inbound first mid
   inboundMidFractions.forEach(fraction => {
     const tFirstInboundMid = tEndHold + fraction * dphi;
-    const phase = isSingleSlice ? `inbound_mid_0_q${labelFromFraction(fraction)}` : 'inbound_mid_0';
+    const phase = (isSingleSlice || isDoubleSlice) ? `inbound_mid_0_q${labelFromFraction(fraction)}` : 'inbound_mid_0';
     waypoints.push(sampleAt(tFirstInboundMid, phase, idx++));
   });
 
@@ -168,7 +171,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
     if (b < N) {
       inboundMidFractions.forEach(fraction => {
         const tMid = tEndHold + (b + fraction) * dphi;
-        const phase = isSingleSlice ? `inbound_mid_${b}_q${labelFromFraction(fraction)}` : `inbound_mid_${b}`;
+        const phase = (isSingleSlice || isDoubleSlice) ? `inbound_mid_${b}_q${labelFromFraction(fraction)}` : `inbound_mid_${b}`;
         waypoints.push(sampleAt(tMid, phase, idx++));
       });
     }
