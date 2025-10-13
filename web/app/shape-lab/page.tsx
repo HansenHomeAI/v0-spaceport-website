@@ -199,7 +199,7 @@ function applyAltitudeAGL(waypoints: Omit<Waypoint, 'z'>[], minHeight: number, m
       maxOutboundDistance = distFromCenter;
     } else if (wp.phase.includes('outbound') || wp.phase.includes('hold')) {
       const additionalDistance = Math.max(0, distFromCenter - firstDist);
-      const aglIncrement = additionalDistance * 0.37; // outbound climb
+      const aglIncrement = additionalDistance * 0.20; // outbound climb - 20% grade
       desiredAgl = minHeight + aglIncrement;
       if (desiredAgl > maxOutboundAltitude) {
         maxOutboundAltitude = desiredAgl;
@@ -207,12 +207,12 @@ function applyAltitudeAGL(waypoints: Omit<Waypoint, 'z'>[], minHeight: number, m
       }
     } else if (wp.phase.includes('inbound')) {
       const distFromMax = Math.max(0, maxOutboundDistance - distFromCenter);
-      const altitudeDecrease = distFromMax * 0.1; // inbound descent
-      desiredAgl = maxOutboundAltitude - altitudeDecrease;
+      const altitudeIncrease = distFromMax * 0.10; // inbound climb - 10% grade
+      desiredAgl = maxOutboundAltitude + altitudeIncrease;
       desiredAgl = Math.max(minHeight, desiredAgl);
     } else {
       const additionalDistance = Math.max(0, distFromCenter - firstDist);
-      const aglIncrement = additionalDistance * 0.37;
+      const aglIncrement = additionalDistance * 0.20;
       desiredAgl = minHeight + aglIncrement;
     }
 
