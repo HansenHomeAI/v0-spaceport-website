@@ -259,98 +259,134 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
 
   const vectors = useMemo(() => waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z)), [waypoints]);
 
-  // Generate curved path segments respecting turn radii
+  // Generate curved path segments using true circular arcs from waypoint curve radii
   const curvedPathPoints = useMemo(() => {
-    if (waypoints.length < 3) {
-      // Not enough waypoints for curves, just connect with straight lines
+    if (waypoints.length < 2) {
       return waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z));
     }
     
-    const allPoints: THREE.Vector3[] = [];
+    const points: THREE.Vector3[] = [];
     
-    // Add first waypoint
-    allPoints.push(new THREE.Vector3(waypoints[0].x, waypoints[0].y, waypoints[0].z));
+    const v2 = (v: THREE.Vector3) => new THREE.Vector2(v.x, v.y);
+    const line = (a: THREE.Vector3, b: THREE.Vector3, n: number) => {
+      for (let i = 1; i <= n; i++) {
+        const t = i / n;
+        points.push(new THREE.Vector3().lerpVectors(a, b, t));
+      }
+    };
     
-    // Process each waypoint (except first and last) with curve transitions
+    // Start at first waypoint
+    let last = new THREE.Vector3(waypoints[0].x, waypoints[0].y, waypoints[0].z);
+    points.push(last.clone());
+    
     for (let i = 1; i < waypoints.length - 1; i++) {
-      const wpPrev = waypoints[i - 1];
-      const wpCurr = waypoints[i];
-      const wpNext = waypoints[i + 1];
+      const wp0 = waypoints[i - 1];
+      const wp1 = waypoints[i];
+      const wp2 = waypoints[i + 1];
       
-      const pPrev = new THREE.Vector3(wpPrev.x, wpPrev.y, wpPrev.z);
-      const pCurr = new THREE.Vector3(wpCurr.x, wpCurr.y, wpCurr.z);
-      const pNext = new THREE.Vector3(wpNext.x, wpNext.y, wpNext.z);
+      const P0 = new THREE.Vector3(wp0.x, wp0.y, wp0.z);
+      const P1 = new THREE.Vector3(wp1.x, wp1.y, wp1.z);
+      const P2 = new THREE.Vector3(wp2.x, wp2.y, wp2.z);
       
-      // Vectors from current waypoint to neighbors
-      const toPrev = new THREE.Vector3().subVectors(pPrev, pCurr).normalize();
-      const toNext = new THREE.Vector3().subVectors(pNext, pCurr).normalize();
+      const A = new THREE.Vector2().subVectors(v2(P1), v2(P0)); // P0 -> P1
+      const B = new THREE.Vector2().subVectors(v2(P2), v2(P1)); // P1 -> P2
+      const L0 = A.length();
+      const L1 = B.length();
+      if (L0 < 1e-3 || L1 < 1e-3) {
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
+      }
+      A.normalize();
+      B.normalize();
       
-      // Calculate turn angle
-      const dotProduct = toPrev.dot(toNext);
-      const turnAngle = Math.acos(Math.max(-1, Math.min(1, dotProduct)));
+      // Interior turn angle between segments
+      const cosPhi = Math.max(-1, Math.min(1, A.dot(B)));
+      const phi = Math.acos(cosPhi);
       
-      // Use curve radius from current waypoint
-      const curveRadius = wpCurr.curve;
-      
-      // If turn angle is very small, just add straight line
-      if (turnAngle < 0.01) {
-        allPoints.push(pCurr.clone());
+      // If nearly straight or degenerate, draw straight
+      if (!Number.isFinite(phi) || phi < 1e-3 || Math.abs(Math.PI - phi) < 1e-3) {
+        line(last, P1, 6);
+        last = P1.clone();
         continue;
       }
       
-      // Calculate arc length along each segment before curve starts
-      const arcOffset = Math.min(
-        curveRadius * Math.tan(turnAngle / 2),
-        new THREE.Vector3().subVectors(pCurr, pPrev).length() * 0.4,
-        new THREE.Vector3().subVectors(pNext, pCurr).length() * 0.4
-      );
-      
-      // Points where the curve arc begins and ends
-      const arcStart = pCurr.clone().add(toPrev.clone().multiplyScalar(arcOffset));
-      const arcEnd = pCurr.clone().add(toNext.clone().multiplyScalar(arcOffset));
-      
-      // Add straight segment to arc start
-      const straightPoints = 5;
-      const prevPoint = allPoints[allPoints.length - 1];
-      for (let j = 1; j <= straightPoints; j++) {
-        const t = j / straightPoints;
-        allPoints.push(new THREE.Vector3().lerpVectors(prevPoint, arcStart, t));
+      const R = Math.max(0, wp1.curve || 0);
+      if (R < 1e-3) {
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
       }
       
-      // Generate circular arc
-      const arcCenter = pCurr.clone();
-      const arcPoints = 12;
+      // Offset distance along each segment to tangent points
+      let t = R * Math.tan(phi / 2);
+      const tMax = Math.min(L0, L1) * 0.49; // keep arc within segments
+      t = Math.min(t, tMax);
       
-      for (let j = 0; j <= arcPoints; j++) {
-        const t = j / arcPoints;
-        const point = new THREE.Vector3().lerpVectors(arcStart, arcEnd, t);
-        
-        // Bias toward circular arc using the curve radius
-        const toCenter = new THREE.Vector3().subVectors(pCurr, point);
-        const distToCenter = toCenter.length();
-        
-        if (distToCenter > 0.01) {
-          const idealDist = arcOffset;
-          const adjustment = (idealDist - distToCenter) * 0.3;
-          point.add(toCenter.normalize().multiplyScalar(adjustment));
-        }
-        
-        allPoints.push(point);
+      // Tangent points T0 on segment P0->P1 and T1 on P1->P2
+      const T0 = P1.clone().sub(new THREE.Vector3(A.x, A.y, 0).multiplyScalar(t));
+      const T1 = P1.clone().add(new THREE.Vector3(B.x, B.y, 0).multiplyScalar(t));
+      
+      // Interpolate altitude for tangent points
+      const zT0 = P1.z - (P1.z - P0.z) * (t / L0);
+      const zT1 = P1.z + (P2.z - P1.z) * (t / L1);
+      T0.z = zT0;
+      T1.z = zT1;
+      
+      // Center of circular arc along internal angle bisector
+      const W0 = A.clone().multiplyScalar(-1); // outward from P1 toward P0
+      const W1 = B.clone();                   // outward from P1 toward P2
+      const bis = new THREE.Vector2().addVectors(W0, W1);
+      if (bis.length() < 1e-6) {
+        // Opposite directions - draw straight
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
       }
+      bis.normalize();
+      const distToCenter = R / Math.sin(phi / 2);
+      const Cxy = v2(P1).add(bis.multiplyScalar(distToCenter));
+      
+      // Arc direction (left/right turn)
+      const cross = W0.x * W1.y - W0.y * W1.x; // >0 => CCW (left)
+      
+      // Angles for start/end around center
+      const a0 = Math.atan2(T0.y - Cxy.y, T0.x - Cxy.x);
+      const a1 = Math.atan2(T1.y - Cxy.y, T1.x - Cxy.x);
+      let startAng = a0;
+      let endAng = a1;
+      if (cross > 0) {
+        if (endAng < startAng) endAng += 2 * Math.PI;
+      } else {
+        if (endAng > startAng) endAng -= 2 * Math.PI;
+      }
+      
+      // Add straight segment up to T0
+      line(last, T0, 6);
+      
+      // Sample the circular arc from T0 to T1
+      const arcSteps = Math.max(10, Math.min(36, Math.ceil(Math.abs(endAng - startAng) / (Math.PI / 18))));
+      for (let k = 0; k <= arcSteps; k++) {
+        const tt = k / arcSteps;
+        const ang = startAng + (endAng - startAng) * tt;
+        const x = Cxy.x + R * Math.cos(ang);
+        const y = Cxy.y + R * Math.sin(ang);
+        const z = zT0 + (zT1 - zT0) * tt;
+        points.push(new THREE.Vector3(x, y, z));
+      }
+      
+      last = points[points.length - 1].clone();
     }
     
-    // Add straight segments to last waypoint
-    const lastWp = waypoints[waypoints.length - 1];
-    const pLast = new THREE.Vector3(lastWp.x, lastWp.y, lastWp.z);
-    const straightPoints = 5;
-    const prevPoint = allPoints[allPoints.length - 1];
+    // Connect to final waypoint
+    const Pend = new THREE.Vector3(
+      waypoints[waypoints.length - 1].x,
+      waypoints[waypoints.length - 1].y,
+      waypoints[waypoints.length - 1].z
+    );
+    line(last, Pend, 10);
     
-    for (let j = 1; j <= straightPoints; j++) {
-      const t = j / straightPoints;
-      allPoints.push(new THREE.Vector3().lerpVectors(prevPoint, pLast, t));
-    }
-    
-    return allPoints;
+    return points;
   }, [waypoints]);
 
   return (
