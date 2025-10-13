@@ -26,7 +26,14 @@ class SpiralGenerator {
   private FT2M = 0.3048;
   private EARTH_R = 6371000;
   
-  makeSpiral(dphi: number, N: number, r0: number, r_hold: number, steps: number = 1200): { x: number; y: number }[] {
+  makeSpiral(
+    dphi: number,
+    N: number,
+    r0: number,
+    r_hold: number,
+    steps: number = 1200,
+    monotonicPhi: boolean = false
+  ): { x: number; y: number }[] {
     const base_alpha = Math.log(r_hold / r0) / (N * dphi);
     const radius_ratio = r_hold / r0;
     
@@ -72,8 +79,12 @@ class SpiralGenerator {
         r = actual_max_radius * Math.exp(-alpha_late * inbound_t);
       }
       
-      const phase = ((th / dphi) % 2 + 2) % 2;
-      const phi = phase <= 1 ? phase * dphi : (2 - phase) * dphi;
+      const phi = monotonicPhi
+        ? th // continuous rotation for single-slice to avoid bow-tie reversals
+        : (() => {
+            const phase = ((th / dphi) % 2 + 2) % 2;
+            return phase <= 1 ? phase * dphi : (2 - phase) * dphi;
+          })();
       
       spiral_points.push({
         x: r * Math.cos(phi),
@@ -88,7 +99,7 @@ class SpiralGenerator {
     const dphi = 2 * Math.PI / params.slices;
     const offset = Math.PI / 2 + slice_idx * dphi;
     
-    const spiral_pts = this.makeSpiral(dphi, params.N, params.r0, params.rHold);
+    const spiral_pts = this.makeSpiral(dphi, params.N, params.r0, params.rHold, 1200, params.slices === 1);
     const t_out = params.N * dphi;
     const t_hold = dphi;
     const t_total = 2 * t_out + t_hold;

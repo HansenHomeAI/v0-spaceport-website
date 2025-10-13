@@ -39,7 +39,14 @@ function calculateHoldRadius(batteryMinutes: number): number {
 }
 
 // Core spiral generator (ported from production logic, elevation-agnostic)
-function makeSpiral(dphi: number, N: number, r0: number, rHold: number, steps: number = 1200): { x: number; y: number }[] {
+function makeSpiral(
+  dphi: number,
+  N: number,
+  r0: number,
+  rHold: number,
+  steps: number = 1200,
+  monotonicPhi: boolean = false
+): { x: number; y: number }[] {
   const baseAlpha = Math.log(rHold / r0) / (N * dphi);
   const radiusRatio = rHold / r0;
 
@@ -86,8 +93,12 @@ function makeSpiral(dphi: number, N: number, r0: number, rHold: number, steps: n
       r = actualMaxRadius * Math.exp(-alphaLate * inboundT);
     }
 
-    const phaseVal = ((th / dphi) % 2 + 2) % 2;
-    const phi = phaseVal <= 1 ? phaseVal * dphi : (2 - phaseVal) * dphi;
+    const phi = monotonicPhi
+      ? th // continuous rotation for single-slice to avoid bow-tie reversals
+      : (() => {
+          const phaseVal = ((th / dphi) % 2 + 2) % 2;
+          return phaseVal <= 1 ? phaseVal * dphi : (2 - phaseVal) * dphi;
+        })();
 
     spiralPoints.push({ x: r * Math.cos(phi), y: r * Math.sin(phi) });
   }
@@ -100,7 +111,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const offset = Math.PI / 2 + sliceIdx * dphi;
 
   const rHold = calculateHoldRadius(batteryMinutes);
-  const spiralPts = makeSpiral(dphi, N, R0_FT, rHold);
+  const spiralPts = makeSpiral(dphi, N, R0_FT, rHold, 1200, slices === 1);
   const tOut = N * dphi;
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
