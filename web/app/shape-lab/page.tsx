@@ -284,15 +284,16 @@ export default function ShapeLabPage() {
         renderer.setPixelRatio(window.devicePixelRatio);
         
         // Add grid helper on XZ plane (Three.js standard: Y is up)
-        const gridHelper = new THREE.GridHelper(10000, 40, 0x3a3a3c, 0x1c1c1e);
+        // Scaled 1.5x for better visual presence
+        const gridHelper = new THREE.GridHelper(15000, 40, 0x3a3a3c, 0x1c1c1e);
         scene.add(gridHelper);
         
         // Add axes helper (Apple colors: X=red, Y=green/up, Z=blue)
-        const axesHelper = new THREE.AxesHelper(500);
+        const axesHelper = new THREE.AxesHelper(750);
         scene.add(axesHelper);
         
         // Center reference sphere (subtle)
-        const centerGeometry = new THREE.SphereGeometry(8, 16, 16);
+        const centerGeometry = new THREE.SphereGeometry(12, 16, 16);
         const centerMaterial = new THREE.MeshBasicMaterial({ 
           color: 0x8e8e93,
           transparent: true,
@@ -302,7 +303,8 @@ export default function ShapeLabPage() {
         scene.add(centerSphere);
         
         // Position camera for perspective view from above and to the side
-        camera.position.set(2000, 1500, 2000);
+        // Scaled 1.5x for larger visualization
+        camera.position.set(3000, 2250, 3000);
         camera.lookAt(0, 0, 0); // Focus on true origin
         
         // Generate flight path
@@ -313,8 +315,10 @@ export default function ShapeLabPage() {
         // Coordinate transform: Our (x,y,z) -> Three.js (x,y,z) where our z=altitude becomes Three.js y
         // Our system: x=horizontal1, y=horizontal2, z=altitude
         // Three.js: x=horizontal1, y=altitude, z=horizontal2
+        // Scaled 1.5x for better visual presence (doesn't change actual flight path data)
+        const VISUAL_SCALE = 1.5;
         const toThreeJS = (wp: { x: number; y: number; z: number }) => 
-          new THREE.Vector3(wp.x, wp.z, wp.y);
+          new THREE.Vector3(wp.x * VISUAL_SCALE, wp.z * VISUAL_SCALE, wp.y * VISUAL_SCALE);
         
         // Create flight path line (Apple blue)
         if (waypointsWithZ.length >= 2) {
@@ -332,8 +336,8 @@ export default function ShapeLabPage() {
         
         // Camera/gimbal parameters (typical drone specs)
         const cameraFOV = 84; // degrees (DJI typical wide FOV)
-        const frustumLength = 100; // visual length of frustum
-        const projectionLength = 500; // length of projection lines when hovering
+        const frustumLength = 150; // visual length of frustum (scaled 1.5x)
+        const projectionLength = 750; // length of projection lines when hovering (scaled 1.5x)
         
         // Store frustum meshes for hover interaction
         const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number }> = [];
@@ -413,7 +417,7 @@ export default function ShapeLabPage() {
           group.add(frustum);
           
           // Add small direction indicator
-          const arrowGeometry = new THREE.ConeGeometry(2, 8, 8);
+          const arrowGeometry = new THREE.ConeGeometry(3, 12, 8); // scaled 1.5x
           const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0x8e8e93, transparent: true, opacity: 0.4 });
           const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
           arrow.rotation.order = 'YXZ';
@@ -433,10 +437,10 @@ export default function ShapeLabPage() {
           const isHold = wp.phase.includes('hold');
           
           let color = 0x8e8e93;
-          let size = 3;
-          if (isStart) { color = 0xff3b30; size = 6; }
-          else if (isBounce) { color = 0xff9500; size = 4; }
-          else if (isHold) { color = 0x007aff; size = 4; }
+          let size = 4.5; // scaled 1.5x
+          if (isStart) { color = 0xff3b30; size = 9; } // scaled 1.5x
+          else if (isBounce) { color = 0xff9500; size = 6; } // scaled 1.5x
+          else if (isHold) { color = 0x007aff; size = 6; } // scaled 1.5x
           
           const geometry = new THREE.SphereGeometry(size, 16, 16);
           const material = new THREE.MeshBasicMaterial({ color });
@@ -456,13 +460,14 @@ export default function ShapeLabPage() {
         let mouseButton = 0; // Track which button is pressed (0=left, 2=right)
         let previousMousePosition = { x: 0, y: 0 };
         const rotationSpeed = 0.005;
-        const panSpeed = 2;
+        const panSpeed = 3; // Scaled for larger visualization
         
         // Orbit center point (can be moved with pan)
         const orbitCenter = new THREE.Vector3(0, 0, 0);
         
         // Spherical coordinates for orbit (Y-up system)
-        const initialOffset = new THREE.Vector3(2000, 1500, 2000);
+        // Scaled 1.5x to match larger visualization
+        const initialOffset = new THREE.Vector3(3000, 2250, 3000);
         let theta = Math.atan2(initialOffset.x, initialOffset.z); // horizontal angle
         let phi = Math.acos(initialOffset.y / initialOffset.length()); // vertical angle from Y axis
         let radius = initialOffset.length();
@@ -527,9 +532,9 @@ export default function ShapeLabPage() {
         
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
-          const zoomSpeed = 1.05; // Much less sensitive
+          const zoomSpeed = 1.02; // Reduced sensitivity for smoother zoom
           radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
-          radius = Math.max(100, Math.min(10000, radius)); // Clamp zoom
+          radius = Math.max(100, Math.min(15000, radius)); // Clamp zoom (adjusted for larger scale)
           updateCameraPosition();
         });
         
