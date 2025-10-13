@@ -377,12 +377,34 @@ export default function ShapeLabPage() {
         const projectionLength = 375; // length of projection lines when hovering (reduced 50%)
         
         // Store frustum meshes for hover interaction
-        const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number }> = [];
+        const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number; heading: number; gimbalPitch: number }> = [];
         let hoveredFrustum: THREE.Group | null = null;
         const projectionLines: THREE.Line[] = [];
         
+        // Tooltip element
+        const tooltipDiv = document.createElement('div');
+        tooltipDiv.style.position = 'absolute';
+        tooltipDiv.style.display = 'none';
+        tooltipDiv.style.background = 'rgba(28, 28, 30, 0.95)';
+        tooltipDiv.style.backdropFilter = 'blur(20px)';
+        tooltipDiv.style.color = 'white';
+        tooltipDiv.style.padding = '12px 16px';
+        tooltipDiv.style.borderRadius = '8px';
+        tooltipDiv.style.fontSize = '13px';
+        tooltipDiv.style.fontFamily = '-apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+        tooltipDiv.style.pointerEvents = 'none';
+        tooltipDiv.style.zIndex = '1000';
+        tooltipDiv.style.border = '0.5px solid rgba(255, 255, 255, 0.2)';
+        tooltipDiv.style.lineHeight = '1.5';
+        document.body.appendChild(tooltipDiv);
+        
+        // Raycaster for hover detection
+        const raycaster = new THREE.Raycaster();
+        raycaster.params.Line = { threshold: 10 }; // Increase threshold for easier hover detection
+        const mouse = new THREE.Vector2();
+        
         // Function to create camera frustum
-        const createFrustum = (wp: typeof waypointsWithZ[0], wpIndex: number) => {
+        const createFrustum = (wp: typeof waypointsWithZ[0], wpIndex: number): { group: THREE.Group; heading: number; gimbalPitch: number } => {
           const group = new THREE.Group();
           const pos = toThreeJS(wp);
           group.position.copy(pos);
@@ -464,7 +486,7 @@ export default function ShapeLabPage() {
           arrow.position.y = -frustumLength / 2;
           group.add(arrow);
           
-          return group;
+          return { group, heading, gimbalPitch };
         };
         
         // Add waypoint markers and frustums
@@ -487,9 +509,9 @@ export default function ShapeLabPage() {
           scene.add(sphere);
           
           // Add camera frustum
-          const frustum = createFrustum(wp, i);
+          const { group: frustum, heading, gimbalPitch } = createFrustum(wp, i);
           scene.add(frustum);
-          frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i });
+          frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i, heading, gimbalPitch });
         });
         
         // Proper orbit controls with dynamic orbit center
@@ -591,6 +613,66 @@ export default function ShapeLabPage() {
           updateCameraPosition();
         });
         
+        // Hover detection for frustums
+        canvas.addEventListener('mousemove', (e) => {
+          // Update mouse position for raycasting
+          const rect = canvas.getBoundingClientRect();
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          
+          // Update raycaster
+          raycaster.setFromCamera(mouse, camera);
+          
+          // Check intersections with all frustum meshes
+          const allFrustumObjects: THREE.Object3D[] = [];
+          frustumMeshes.forEach(fm => {
+            fm.mesh.traverse((child) => {
+              if (child instanceof THREE.Mesh || child instanceof THREE.LineSegments) {
+                allFrustumObjects.push(child);
+              }
+            });
+          });
+          
+          const intersects = raycaster.intersectObjects(allFrustumObjects, false);
+          
+          if (intersects.length > 0) {
+            // Find which frustum was intersected
+            const intersectedObject = intersects[0].object;
+            let foundFrustum = null;
+            
+            for (const fm of frustumMeshes) {
+              let found = false;
+              fm.mesh.traverse((child) => {
+                if (child === intersectedObject) {
+                  found = true;
+                }
+              });
+              if (found) {
+                foundFrustum = fm;
+                break;
+              }
+            }
+            
+            if (foundFrustum) {
+              // Show tooltip
+              const headingDeg = (foundFrustum.heading * 180 / Math.PI).toFixed(1);
+              const pitchDeg = foundFrustum.gimbalPitch.toFixed(1);
+              
+              tooltipDiv.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 6px; color: #007AFF;">Waypoint ${foundFrustum.index}</div>
+                <div style="color: rgba(255, 255, 255, 0.9);">Heading: ${headingDeg}°</div>
+                <div style="color: rgba(255, 255, 255, 0.9);">Gimbal Pitch: ${pitchDeg}°</div>
+              `;
+              tooltipDiv.style.display = 'block';
+              tooltipDiv.style.left = `${e.clientX + 15}px`;
+              tooltipDiv.style.top = `${e.clientY + 15}px`;
+            }
+          } else {
+            // Hide tooltip
+            tooltipDiv.style.display = 'none';
+          }
+        });
+        
         const animate = () => {
           requestAnimationFrame(animate);
           renderer.render(scene, camera);
@@ -607,6 +689,10 @@ export default function ShapeLabPage() {
             phi: cameraState.phi,
             radius: cameraState.radius,
           };
+          // Remove tooltip from DOM
+          if (tooltipDiv.parentNode) {
+            tooltipDiv.parentNode.removeChild(tooltipDiv);
+          }
           renderer.dispose();
         };
       } catch (error) {
