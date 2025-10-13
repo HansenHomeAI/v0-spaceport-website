@@ -917,7 +917,7 @@ export default function ShapeLabPage() {
         }}>
           <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
           <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
-          <div style={{ marginBottom: 4 }}>• Right Drag / ⌘+Drag: Move focus point</div>
+          <div style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</div>
           <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
           <div style={{ 
             marginTop: 8, 
