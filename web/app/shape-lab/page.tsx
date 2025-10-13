@@ -332,7 +332,6 @@ export default function ShapeLabPage() {
         
         // Camera/gimbal parameters (typical drone specs)
         const cameraFOV = 84; // degrees (DJI typical wide FOV)
-        const gimbalPitch = -90; // degrees (pointing straight down for nadir shots)
         const frustumLength = 100; // visual length of frustum
         const projectionLength = 500; // length of projection lines when hovering
         
@@ -347,20 +346,22 @@ export default function ShapeLabPage() {
           const pos = toThreeJS(wp);
           group.position.copy(pos);
           
-          // Calculate heading from this waypoint to next (if exists)
-          // Note: We need to use Three.js coordinate system for rotation
+          // For photogrammetry spiral: camera aims at center (0,0,0)
+          // Calculate heading: angle from waypoint to center in XZ plane
+          const horizontalDist = Math.hypot(wp.x, wp.y);
           let heading = 0;
-          if (wpIndex < waypointsWithZ.length - 1) {
-            const next = waypointsWithZ[wpIndex + 1];
-            const nextPos = toThreeJS(next);
-            const currentPos = toThreeJS(wp);
+          if (horizontalDist > 0.1) {
             // In Three.js: X and Z are horizontal, Y is vertical
-            heading = Math.atan2(nextPos.x - currentPos.x, nextPos.z - currentPos.z);
-          } else if (wpIndex > 0) {
-            const prev = waypointsWithZ[wpIndex - 1];
-            const prevPos = toThreeJS(prev);
-            const currentPos = toThreeJS(wp);
-            heading = Math.atan2(currentPos.x - prevPos.x, currentPos.z - prevPos.z);
+            // atan2(x, z) gives angle toward center
+            heading = Math.atan2(-wp.x, -wp.y);
+          }
+          
+          // Calculate gimbal pitch: angle to look down at center
+          // Pitch = atan2(altitude, horizontal_distance)
+          let gimbalPitch = -90; // default nadir
+          if (horizontalDist > 0.1) {
+            const pitchAngle = Math.atan2(wp.z, horizontalDist);
+            gimbalPitch = -(90 - (pitchAngle * 180 / Math.PI)); // convert to gimbal convention
           }
           
           // Create frustum pyramid
@@ -397,13 +398,16 @@ export default function ShapeLabPage() {
           });
           const frustum = new THREE.LineSegments(geometry, material);
           
-          // Orient frustum: rotate to heading, then apply gimbal pitch
+          // Orient frustum: YXZ rotation order to prevent roll
+          // Y rotation (heading) first, then X rotation (pitch)
+          frustum.rotation.order = 'YXZ';
           frustum.rotation.y = heading;
           frustum.rotation.x = (gimbalPitch * Math.PI) / 180;
+          frustum.rotation.z = 0; // explicitly no roll
           
-          // Debug: Log heading for first few waypoints
-          if (wpIndex < 3) {
-            console.log(`Waypoint ${wpIndex}: heading=${(heading * 180 / Math.PI).toFixed(1)}°, gimbal=${gimbalPitch}°`);
+          // Debug: Log heading and pitch for first few waypoints
+          if (wpIndex < 5) {
+            console.log(`WP ${wpIndex}: heading=${(heading * 180 / Math.PI).toFixed(1)}°, pitch=${gimbalPitch.toFixed(1)}°, dist=${horizontalDist.toFixed(0)}ft, alt=${wp.z.toFixed(0)}ft`);
           }
           
           group.add(frustum);
@@ -412,9 +416,10 @@ export default function ShapeLabPage() {
           const arrowGeometry = new THREE.ConeGeometry(2, 8, 8);
           const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0x8e8e93, transparent: true, opacity: 0.4 });
           const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
-          arrow.rotation.x = Math.PI; // Point down initially
-          arrow.rotation.y = heading; // Rotate to heading
-          arrow.rotation.x += (gimbalPitch * Math.PI) / 180; // Apply gimbal pitch
+          arrow.rotation.order = 'YXZ';
+          arrow.rotation.y = heading;
+          arrow.rotation.x = Math.PI + (gimbalPitch * Math.PI) / 180; // point down + pitch
+          arrow.rotation.z = 0; // no roll
           arrow.position.y = -frustumLength / 2;
           group.add(arrow);
           
@@ -446,22 +451,29 @@ export default function ShapeLabPage() {
           frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i });
         });
         
-        // Proper orbit controls
+        // Proper orbit controls with dynamic orbit center
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
         const rotationSpeed = 0.005;
         const panSpeed = 2;
         
+        // Orbit center point (can be moved with pan)
+        const orbitCenter = new THREE.Vector3(0, 0, 0);
+        
         // Spherical coordinates for orbit (Y-up system)
-        let theta = Math.atan2(camera.position.x, camera.position.z); // horizontal angle
-        let phi = Math.acos(camera.position.y / Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2)); // vertical angle from Y axis
-        let radius = Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2);
+        const initialOffset = new THREE.Vector3(2000, 1500, 2000);
+        let theta = Math.atan2(initialOffset.x, initialOffset.z); // horizontal angle
+        let phi = Math.acos(initialOffset.y / initialOffset.length()); // vertical angle from Y axis
+        let radius = initialOffset.length();
         
         const updateCameraPosition = () => {
-          camera.position.x = radius * Math.sin(phi) * Math.sin(theta);
-          camera.position.y = radius * Math.cos(phi);
-          camera.position.z = radius * Math.sin(phi) * Math.cos(theta);
-          camera.lookAt(0, 0, 0); // Always focus on true origin
+          const offset = new THREE.Vector3(
+            radius * Math.sin(phi) * Math.sin(theta),
+            radius * Math.cos(phi),
+            radius * Math.sin(phi) * Math.cos(theta)
+          );
+          camera.position.copy(orbitCenter).add(offset);
+          camera.lookAt(orbitCenter);
         };
         
         canvas.addEventListener('mousedown', (e) => {
@@ -484,10 +496,11 @@ export default function ShapeLabPage() {
           const deltaY = e.clientY - previousMousePosition.y;
           
           if (e.shiftKey || e.ctrlKey) {
-            // Pan mode with shift or ctrl
+            // Pan mode with shift or ctrl - move the orbit center
             const panVector = new THREE.Vector3(-deltaX * panSpeed, deltaY * panSpeed, 0);
             panVector.applyQuaternion(camera.quaternion);
-            camera.position.add(panVector);
+            orbitCenter.add(panVector);
+            updateCameraPosition();
           } else {
             // Orbit mode (default) - reversed for natural feel
             theta -= deltaX * rotationSpeed;
@@ -893,8 +906,8 @@ export default function ShapeLabPage() {
           border: '0.5px solid rgba(255, 255, 255, 0.1)'
         }}>
           <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
-          <div style={{ marginBottom: 4 }}>• Drag: Rotate view around center</div>
-          <div style={{ marginBottom: 4 }}>• Shift+Drag: Pan view</div>
+          <div style={{ marginBottom: 4 }}>• Drag: Orbit around focus point</div>
+          <div style={{ marginBottom: 4 }}>• Shift+Drag: Move focus point</div>
           <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
           <div style={{ 
             marginTop: 8, 
