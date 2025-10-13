@@ -360,7 +360,22 @@ export default function ShapeLabPage() {
         
         // Create flight path line (Apple blue)
         if (waypointsWithZ.length >= 2) {
-          const points = waypointsWithZ.map(wp => toThreeJS(wp));
+          let points: THREE.Vector3[];
+          if (params.slices === 1) {
+            // For single-slice, render a dense continuous spiral to avoid bow-tie from sparse waypoints
+            const dphiLocal = (2 * Math.PI) / params.slices;
+            const offsetLocal = Math.PI / 2 + sliceIndex * dphiLocal;
+            const rHoldLocal = calculateHoldRadius(params.batteryDurationMinutes);
+            const spiralDense = makeSpiral(dphiLocal, N, R0_FT, rHoldLocal, 2400, true);
+            points = spiralDense.map(p => {
+              const rx = p.x * Math.cos(offsetLocal) - p.y * Math.sin(offsetLocal);
+              const ry = p.x * Math.sin(offsetLocal) + p.y * Math.cos(offsetLocal);
+              return toThreeJS({ x: rx, y: ry, z: params.minHeight });
+            });
+          } else {
+            points = waypointsWithZ.map(wp => toThreeJS(wp));
+          }
+
           const geometry = new THREE.BufferGeometry().setFromPoints(points);
           const material = new THREE.LineBasicMaterial({ 
             color: 0x007AFF, 
