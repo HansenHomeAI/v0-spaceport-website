@@ -105,9 +105,17 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
   const isSingleSlice = slices === 1;
-  // When only one slice (single battery) keep the path curving by sampling at quarter-step offsets
-  const outboundMidFractions = isSingleSlice ? [0.75, 0.5, 0.25] : [0.5];
-  const inboundMidFractions = isSingleSlice ? [0.25, 0.5, 0.75] : [0.5];
+  // Shape the path based on slice count: single slice gets sixth-interval samples, two slices use thirds, otherwise keep halves
+  const outboundMidFractions = isSingleSlice
+    ? [5 / 6, 4 / 6, 3 / 6, 2 / 6, 1 / 6]
+    : slices === 2
+      ? [2 / 3, 1 / 3]
+      : [0.5];
+  const inboundMidFractions = isSingleSlice
+    ? [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6]
+    : slices === 2
+      ? [1 / 3, 2 / 3]
+      : [0.5];
 
   const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
