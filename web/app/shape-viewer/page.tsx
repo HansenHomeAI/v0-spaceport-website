@@ -135,15 +135,15 @@ class SpiralGenerator {
     waypoints.push(findSpiralPoint(t_mid_hold, 'hold_mid', index++));
     waypoints.push(findSpiralPoint(t_end_hold, 'hold_end', index++));
     
-    const t_first_inbound_mid = t_end_hold + 0.5 * dphi;
+    const t_first_inbound_mid = t_end_hold + 0.5 * dphi + single_slice_jitter;
     waypoints.push(findSpiralPoint(t_first_inbound_mid, 'inbound_mid_0', index++));
     
     for (let bounce = 1; bounce <= params.N; bounce++) {
-      const t_bounce = t_end_hold + bounce * dphi;
+      const t_bounce = t_end_hold + bounce * dphi + single_slice_jitter;
       waypoints.push(findSpiralPoint(t_bounce, `inbound_bounce_${bounce}`, index++));
       
       if (bounce < params.N) {
-        const t_mid = t_end_hold + (bounce + 0.5) * dphi;
+        const t_mid = t_end_hold + (bounce + 0.5) * dphi + single_slice_jitter;
         waypoints.push(findSpiralPoint(t_mid, `inbound_mid_${bounce}`, index++));
       }
     }

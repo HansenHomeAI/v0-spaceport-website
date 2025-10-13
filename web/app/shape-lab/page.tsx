@@ -143,15 +143,15 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
 
   // inbound first mid
-  const tFirstInboundMid = tEndHold + 0.5 * dphi;
+  const tFirstInboundMid = tEndHold + 0.5 * dphi + singleSliceJitter;
   waypoints.push(sampleAt(tFirstInboundMid, 'inbound_mid_0', idx++));
 
   // inbound bounce + midpoints
   for (let b = 1; b <= N; b++) {
-    const tBounce = tEndHold + b * dphi;
+    const tBounce = tEndHold + b * dphi + singleSliceJitter;
     waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++));
     if (b < N) {
-      const tMid = tEndHold + (b + 0.5) * dphi;
+      const tMid = tEndHold + (b + 0.5) * dphi + singleSliceJitter;
       waypoints.push(sampleAt(tMid, `inbound_mid_${b}`, idx++));
     }
   }
