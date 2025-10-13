@@ -453,6 +453,7 @@ export default function ShapeLabPage() {
         
         // Proper orbit controls with dynamic orbit center
         let isDragging = false;
+        let mouseButton = 0; // Track which button is pressed (0=left, 2=right)
         let previousMousePosition = { x: 0, y: 0 };
         const rotationSpeed = 0.005;
         const panSpeed = 2;
@@ -478,7 +479,9 @@ export default function ShapeLabPage() {
         
         canvas.addEventListener('mousedown', (e) => {
           isDragging = true;
+          mouseButton = e.button; // 0=left, 1=middle, 2=right
           previousMousePosition = { x: e.clientX, y: e.clientY };
+          e.preventDefault(); // Prevent context menu on right click
         });
         
         canvas.addEventListener('mouseup', () => {
@@ -489,14 +492,21 @@ export default function ShapeLabPage() {
           isDragging = false;
         });
         
+        canvas.addEventListener('contextmenu', (e) => {
+          e.preventDefault(); // Prevent context menu on right click
+        });
+        
         canvas.addEventListener('mousemove', (e) => {
           if (!isDragging) return;
           
           const deltaX = e.clientX - previousMousePosition.x;
           const deltaY = e.clientY - previousMousePosition.y;
           
-          if (e.shiftKey || e.ctrlKey) {
-            // Pan mode with shift or ctrl - move the orbit center
+          // Pan mode: right mouse button (2) OR ctrl/cmd key
+          const isPanMode = mouseButton === 2 || e.ctrlKey || e.metaKey;
+          
+          if (isPanMode) {
+            // Pan mode - move the orbit center
             const panVector = new THREE.Vector3(-deltaX * panSpeed, deltaY * panSpeed, 0);
             panVector.applyQuaternion(camera.quaternion);
             orbitCenter.add(panVector);
@@ -906,8 +916,8 @@ export default function ShapeLabPage() {
           border: '0.5px solid rgba(255, 255, 255, 0.1)'
         }}>
           <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
-          <div style={{ marginBottom: 4 }}>• Drag: Orbit around focus point</div>
-          <div style={{ marginBottom: 4 }}>• Shift+Drag: Move focus point</div>
+          <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
+          <div style={{ marginBottom: 4 }}>• Right Drag / ⌘+Drag: Move focus point</div>
           <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
           <div style={{ 
             marginTop: 8, 
