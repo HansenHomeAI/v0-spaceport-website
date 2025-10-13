@@ -259,40 +259,95 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
 
   const vectors = useMemo(() => waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z)), [waypoints]);
 
-  // Generate curved path segments respecting curve radii
+  // Generate curved path segments respecting turn radii
   const curvedPathPoints = useMemo(() => {
-    if (waypoints.length < 2) return [];
+    if (waypoints.length < 3) {
+      // Not enough waypoints for curves, just connect with straight lines
+      return waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z));
+    }
     
     const allPoints: THREE.Vector3[] = [];
     
-    for (let i = 0; i < waypoints.length - 1; i++) {
-      const wp1 = waypoints[i];
-      const wp2 = waypoints[i + 1];
+    // Add first waypoint
+    allPoints.push(new THREE.Vector3(waypoints[0].x, waypoints[0].y, waypoints[0].z));
+    
+    // Process each waypoint (except first and last) with curve transitions
+    for (let i = 1; i < waypoints.length - 1; i++) {
+      const wpPrev = waypoints[i - 1];
+      const wpCurr = waypoints[i];
+      const wpNext = waypoints[i + 1];
       
-      const p1 = new THREE.Vector3(wp1.x, wp1.y, wp1.z);
-      const p2 = new THREE.Vector3(wp2.x, wp2.y, wp2.z);
+      const pPrev = new THREE.Vector3(wpPrev.x, wpPrev.y, wpPrev.z);
+      const pCurr = new THREE.Vector3(wpCurr.x, wpCurr.y, wpCurr.z);
+      const pNext = new THREE.Vector3(wpNext.x, wpNext.y, wpNext.z);
       
-      // Use the curve radius from the starting waypoint
-      const curveRadius = wp1.curve;
+      // Vectors from current waypoint to neighbors
+      const toPrev = new THREE.Vector3().subVectors(pPrev, pCurr).normalize();
+      const toNext = new THREE.Vector3().subVectors(pNext, pCurr).normalize();
       
-      // Calculate control point for bezier curve based on curve radius
-      const midPoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-      const direction = new THREE.Vector3().subVectors(p2, p1);
-      const distance = direction.length();
+      // Calculate turn angle
+      const dotProduct = toPrev.dot(toNext);
+      const turnAngle = Math.acos(Math.max(-1, Math.min(1, dotProduct)));
       
-      // Create perpendicular vector for control point offset
-      const perpendicular = new THREE.Vector3(-direction.y, direction.x, 0).normalize();
+      // Use curve radius from current waypoint
+      const curveRadius = wpCurr.curve;
       
-      // Scale the control point offset based on curve radius
-      // Larger curve radius = smoother, gentler curve
-      const curveStrength = Math.min(distance * 0.3, curveRadius * 0.5);
-      const controlPoint = midPoint.clone().add(perpendicular.multiplyScalar(curveStrength));
+      // If turn angle is very small, just add straight line
+      if (turnAngle < 0.01) {
+        allPoints.push(pCurr.clone());
+        continue;
+      }
       
-      // Generate curve points using quadratic bezier
-      const curve = new THREE.QuadraticBezierCurve3(p1, controlPoint, p2);
-      const segmentPoints = curve.getPoints(20); // 20 points per segment for smooth curves
+      // Calculate arc length along each segment before curve starts
+      const arcOffset = Math.min(
+        curveRadius * Math.tan(turnAngle / 2),
+        new THREE.Vector3().subVectors(pCurr, pPrev).length() * 0.4,
+        new THREE.Vector3().subVectors(pNext, pCurr).length() * 0.4
+      );
       
-      allPoints.push(...segmentPoints);
+      // Points where the curve arc begins and ends
+      const arcStart = pCurr.clone().add(toPrev.clone().multiplyScalar(arcOffset));
+      const arcEnd = pCurr.clone().add(toNext.clone().multiplyScalar(arcOffset));
+      
+      // Add straight segment to arc start
+      const straightPoints = 5;
+      const prevPoint = allPoints[allPoints.length - 1];
+      for (let j = 1; j <= straightPoints; j++) {
+        const t = j / straightPoints;
+        allPoints.push(new THREE.Vector3().lerpVectors(prevPoint, arcStart, t));
+      }
+      
+      // Generate circular arc
+      const arcCenter = pCurr.clone();
+      const arcPoints = 12;
+      
+      for (let j = 0; j <= arcPoints; j++) {
+        const t = j / arcPoints;
+        const point = new THREE.Vector3().lerpVectors(arcStart, arcEnd, t);
+        
+        // Bias toward circular arc using the curve radius
+        const toCenter = new THREE.Vector3().subVectors(pCurr, point);
+        const distToCenter = toCenter.length();
+        
+        if (distToCenter > 0.01) {
+          const idealDist = arcOffset;
+          const adjustment = (idealDist - distToCenter) * 0.3;
+          point.add(toCenter.normalize().multiplyScalar(adjustment));
+        }
+        
+        allPoints.push(point);
+      }
+    }
+    
+    // Add straight segments to last waypoint
+    const lastWp = waypoints[waypoints.length - 1];
+    const pLast = new THREE.Vector3(lastWp.x, lastWp.y, lastWp.z);
+    const straightPoints = 5;
+    const prevPoint = allPoints[allPoints.length - 1];
+    
+    for (let j = 1; j <= straightPoints; j++) {
+      const t = j / straightPoints;
+      allPoints.push(new THREE.Vector3().lerpVectors(prevPoint, pLast, t));
     }
     
     return allPoints;
