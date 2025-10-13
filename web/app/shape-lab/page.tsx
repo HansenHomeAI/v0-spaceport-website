@@ -348,8 +348,8 @@ export default function ShapeLabPage() {
         
         // Camera/gimbal parameters (typical drone specs)
         const cameraFOV = 84; // degrees (DJI typical wide FOV)
-        const frustumLength = 150; // visual length of frustum (scaled 1.5x)
-        const projectionLength = 750; // length of projection lines when hovering (scaled 1.5x)
+        const frustumLength = 75; // visual length of frustum (reduced 50% for cleaner view)
+        const projectionLength = 375; // length of projection lines when hovering (reduced 50%)
         
         // Store frustum meshes for hover interaction
         const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number }> = [];
@@ -429,7 +429,7 @@ export default function ShapeLabPage() {
           group.add(frustum);
           
           // Add small direction indicator
-          const arrowGeometry = new THREE.ConeGeometry(3, 12, 8); // scaled 1.5x
+          const arrowGeometry = new THREE.ConeGeometry(1.5, 6, 8); // reduced 50% for cleaner view
           const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0x8e8e93, transparent: true, opacity: 0.4 });
           const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
           arrow.rotation.order = 'YXZ';
