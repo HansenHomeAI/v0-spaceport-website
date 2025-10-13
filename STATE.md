@@ -1,5 +1,5 @@
 reason: hold segment fractions aligned with slice rules
-last_step: extended sixth/third increments to hold arc and verified via next build
-next_unblocked_step: push branch, confirm workflows, and smoke preview for hold transition
+last_step: deployed slice-aware hold increments and verified Pages+CDK workflows green
+next_unblocked_step: spot-check preview hold arc to confirm waypoint spacing
 owner_action_needed: none
-updated: 2025-10-13T22:33:24Z
+updated: 2025-10-13T22:40:39Z
