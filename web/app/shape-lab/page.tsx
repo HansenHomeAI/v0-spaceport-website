@@ -262,6 +262,14 @@ export default function ShapeLabPage() {
   const [sliceIndex, setSliceIndex] = useState(0);
   const [showLabels, setShowLabels] = useState(false);
 
+  // Preserve camera state across parameter changes
+  const cameraStateRef = React.useRef<{
+    orbitCenter: { x: number; y: number; z: number };
+    theta: number;
+    phi: number;
+    radius: number;
+  } | null>(null);
+
   // Three.js setup with flight path visualization
   useEffect(() => {
     const canvas = document.getElementById('shape-lab-canvas') as HTMLCanvasElement;
@@ -463,20 +471,31 @@ export default function ShapeLabPage() {
         const panSpeed = 3; // Scaled for larger visualization
         
         // Orbit center point (can be moved with pan)
-        const orbitCenter = new THREE.Vector3(0, 0, 0);
+        // Restore from saved state if available
+        const orbitCenter = cameraStateRef.current 
+          ? new THREE.Vector3(
+              cameraStateRef.current.orbitCenter.x,
+              cameraStateRef.current.orbitCenter.y,
+              cameraStateRef.current.orbitCenter.z
+            )
+          : new THREE.Vector3(0, 0, 0);
         
         // Spherical coordinates for orbit (Y-up system)
-        // Scaled 1.5x to match larger visualization
+        // Restore from saved state or use default (scaled 1.5x for larger visualization)
         const initialOffset = new THREE.Vector3(3000, 2250, 3000);
-        let theta = Math.atan2(initialOffset.x, initialOffset.z); // horizontal angle
-        let phi = Math.acos(initialOffset.y / initialOffset.length()); // vertical angle from Y axis
-        let radius = initialOffset.length();
+        
+        // Use an object to store camera state so we can always access latest values
+        const cameraState = {
+          theta: cameraStateRef.current?.theta ?? Math.atan2(initialOffset.x, initialOffset.z),
+          phi: cameraStateRef.current?.phi ?? Math.acos(initialOffset.y / initialOffset.length()),
+          radius: cameraStateRef.current?.radius ?? initialOffset.length(),
+        };
         
         const updateCameraPosition = () => {
           const offset = new THREE.Vector3(
-            radius * Math.sin(phi) * Math.sin(theta),
-            radius * Math.cos(phi),
-            radius * Math.sin(phi) * Math.cos(theta)
+            cameraState.radius * Math.sin(cameraState.phi) * Math.sin(cameraState.theta),
+            cameraState.radius * Math.cos(cameraState.phi),
+            cameraState.radius * Math.sin(cameraState.phi) * Math.cos(cameraState.theta)
           );
           camera.position.copy(orbitCenter).add(offset);
           camera.lookAt(orbitCenter);
@@ -518,11 +537,11 @@ export default function ShapeLabPage() {
             updateCameraPosition();
           } else {
             // Orbit mode (default) - reversed for natural feel
-            theta -= deltaX * rotationSpeed;
-            phi -= deltaY * rotationSpeed;
+            cameraState.theta -= deltaX * rotationSpeed;
+            cameraState.phi -= deltaY * rotationSpeed;
             
             // Clamp phi to prevent camera from flipping
-            phi = Math.max(0.1, Math.min(Math.PI - 0.1, phi));
+            cameraState.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraState.phi));
             
             updateCameraPosition();
           }
@@ -533,8 +552,8 @@ export default function ShapeLabPage() {
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
           const zoomSpeed = 1.02; // Reduced sensitivity for smoother zoom
-          radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
-          radius = Math.max(100, Math.min(15000, radius)); // Clamp zoom (adjusted for larger scale)
+          cameraState.radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
+          cameraState.radius = Math.max(100, Math.min(15000, cameraState.radius)); // Clamp zoom (adjusted for larger scale)
           updateCameraPosition();
         });
         
@@ -545,8 +564,15 @@ export default function ShapeLabPage() {
         
         animate();
         
-        // Store cleanup function
+        // Store cleanup function and camera state
         (window as any).shapeLabCleanup = () => {
+          // Save camera state before cleanup
+          cameraStateRef.current = {
+            orbitCenter: { x: orbitCenter.x, y: orbitCenter.y, z: orbitCenter.z },
+            theta: cameraState.theta,
+            phi: cameraState.phi,
+            radius: cameraState.radius,
+          };
           renderer.dispose();
         };
       } catch (error) {
