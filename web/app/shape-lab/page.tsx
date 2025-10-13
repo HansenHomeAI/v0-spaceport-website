@@ -22,12 +22,20 @@ type FlightParams = {
 
 // Internal constants (mirrors production defaults)
 const R0_FT = 150; // starting radius (ft)
-const RHOLD_FT = 1595; // target hold radius (ft) used for alpha calc
+const BASE_RHOLD_FT = 1595; // base hold radius for 10min battery
+const BASE_BATTERY_MINUTES = 10; // reference battery duration
 
 // Map battery minutes to bounce count N (10min→5, 20min→8; clamped [3,12])
 function mapBatteryToBounces(minutes: number): number {
   const n = Math.round(5 + 0.3 * (minutes - 10));
   return Math.max(3, Math.min(12, n));
+}
+
+// Calculate hold radius based on battery duration (longer flight = larger radius)
+function calculateHoldRadius(batteryMinutes: number): number {
+  // Scale linearly with battery duration
+  // 10min → 1595ft, 20min → 3190ft, 30min → 4785ft, etc.
+  return BASE_RHOLD_FT * (batteryMinutes / BASE_BATTERY_MINUTES);
 }
 
 // Core spiral generator (ported from production logic, elevation-agnostic)
@@ -87,11 +95,12 @@ function makeSpiral(dphi: number, N: number, r0: number, rHold: number, steps: n
   return spiralPoints;
 }
 
-function buildSlice(sliceIdx: number, slices: number, N: number): { waypoints: Omit<Waypoint, 'z'>[]; tTotal: number; dphi: number; } {
+function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes: number): { waypoints: Omit<Waypoint, 'z'>[]; tTotal: number; dphi: number; } {
   const dphi = (2 * Math.PI) / slices;
   const offset = Math.PI / 2 + sliceIdx * dphi;
 
-  const spiralPts = makeSpiral(dphi, N, R0_FT, RHOLD_FT);
+  const rHold = calculateHoldRadius(batteryMinutes);
+  const spiralPts = makeSpiral(dphi, N, R0_FT, rHold);
   const tOut = N * dphi;
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
@@ -199,9 +208,9 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
   const N = useMemo(() => mapBatteryToBounces(params.batteryDurationMinutes), [params.batteryDurationMinutes]);
 
   const waypoints = useMemo(() => {
-    const { waypoints } = buildSlice(sliceIndex, params.slices, N);
+    const { waypoints } = buildSlice(sliceIndex, params.slices, N, params.batteryDurationMinutes);
     return applyAltitudeAGL(waypoints, params.minHeight, params.maxHeight);
-  }, [params.slices, params.minHeight, params.maxHeight, sliceIndex, N]);
+  }, [params.slices, params.minHeight, params.maxHeight, sliceIndex, N, params.batteryDurationMinutes]);
 
   const vectors = useMemo(() => waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z)), [waypoints]);
 
@@ -261,6 +270,7 @@ export default function ShapeLabPage() {
   });
   const [sliceIndex, setSliceIndex] = useState(0);
   const [showLabels, setShowLabels] = useState(false);
+  const [showControls, setShowControls] = useState(true); // Auto-hide after first interaction
 
   // Preserve camera state across parameter changes
   const cameraStateRef = React.useRef<{
@@ -320,7 +330,7 @@ export default function ShapeLabPage() {
         
         // Generate flight path
         const N = mapBatteryToBounces(params.batteryDurationMinutes);
-        const { waypoints } = buildSlice(sliceIndex, params.slices, N);
+        const { waypoints } = buildSlice(sliceIndex, params.slices, N, params.batteryDurationMinutes);
         const waypointsWithZ = applyAltitudeAGL(waypoints, params.minHeight, params.maxHeight);
         
         // Coordinate transform: Our (x,y,z) -> Three.js (x,y,z) where our z=altitude becomes Three.js y
@@ -347,8 +357,8 @@ export default function ShapeLabPage() {
         
         // Camera/gimbal parameters (typical drone specs)
         const cameraFOV = 84; // degrees (DJI typical wide FOV)
-        const frustumLength = 150; // visual length of frustum (scaled 1.5x)
-        const projectionLength = 750; // length of projection lines when hovering (scaled 1.5x)
+        const frustumLength = 75; // visual length of frustum (reduced 50% for cleaner view)
+        const projectionLength = 375; // length of projection lines when hovering (reduced 50%)
         
         // Store frustum meshes for hover interaction
         const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number }> = [];
@@ -428,7 +438,7 @@ export default function ShapeLabPage() {
           group.add(frustum);
           
           // Add small direction indicator
-          const arrowGeometry = new THREE.ConeGeometry(3, 12, 8); // scaled 1.5x
+          const arrowGeometry = new THREE.ConeGeometry(1.5, 6, 8); // reduced 50% for cleaner view
           const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0x8e8e93, transparent: true, opacity: 0.4 });
           const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
           arrow.rotation.order = 'YXZ';
@@ -512,6 +522,7 @@ export default function ShapeLabPage() {
           mouseButton = e.button; // 0=left, 1=middle, 2=right
           previousMousePosition = { x: e.clientX, y: e.clientY };
           e.preventDefault(); // Prevent context menu on right click
+          setShowControls(false); // Hide controls on first interaction
         });
         
         canvas.addEventListener('mouseup', () => {
@@ -557,6 +568,7 @@ export default function ShapeLabPage() {
         
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
+          setShowControls(false); // Hide controls on first interaction
           const zoomSpeed = 1.02; // Reduced sensitivity for smoother zoom
           cameraState.radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
           cameraState.radius = Math.max(100, Math.min(15000, cameraState.radius)); // Clamp zoom (adjusted for larger scale)
@@ -941,32 +953,34 @@ export default function ShapeLabPage() {
           />
         </div>
 
-        <div style={{
-          position: 'absolute', top: 76, left: 20, 
-          background: 'rgba(28, 28, 30, 0.95)', 
-          backdropFilter: 'blur(20px)',
-          color: 'white',
-          padding: '16px 20px', 
-          borderRadius: 12, 
-          fontSize: 13, 
-          fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-          lineHeight: '1.5',
-          border: '0.5px solid rgba(255, 255, 255, 0.1)'
-        }}>
-          <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
-          <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
-          <div style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</div>
-          <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
-          <div style={{ 
-            marginTop: 8, 
-            paddingTop: 8, 
-            borderTop: '0.5px solid rgba(255, 255, 255, 0.2)', 
-            opacity: 0.7,
-            fontSize: 12
+        {showControls && (
+          <div style={{
+            position: 'absolute', top: 76, left: 20, 
+            background: 'rgba(28, 28, 30, 0.95)', 
+            backdropFilter: 'blur(20px)',
+            color: 'white',
+            padding: '16px 20px', 
+            borderRadius: 12, 
+            fontSize: 13, 
+            fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+            lineHeight: '1.5',
+            border: '0.5px solid rgba(255, 255, 255, 0.1)'
           }}>
-            Units in feet. Green (Y) axis = altitude (AGL)
+            <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
+            <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
+            <div style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</div>
+            <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
+            <div style={{ 
+              marginTop: 8, 
+              paddingTop: 8, 
+              borderTop: '0.5px solid rgba(255, 255, 255, 0.2)', 
+              opacity: 0.7,
+              fontSize: 12
+            }}>
+              Units in feet. Green (Y) axis = altitude (AGL)
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
