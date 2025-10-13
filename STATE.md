@@ -1,5 +1,5 @@
 reason: analyzing single-battery spiral distortion in shape viewer
-last_step: inspected SpiralGenerator logic and confirmed sparse waypoint sampling when slices=1 collapses the rendered path into a line
-next_unblocked_step: design and implement generator adjustments on agent-62058317-single-battery-spiral to restore spiral fidelity for single-battery flights
+last_step: confirmed waypoint sampling hits half-wedge intervals so phi folds to 0/π when slices=1, and documented fix options
+next_unblocked_step: choose and implement guard in SpiralGenerator so single-slice flights use a monotonic angular sweep (or comparable approach) before regenerating visuals
 owner_action_needed: none
-updated: 2025-10-13T15:43:15Z
+updated: 2025-10-13T16:12:45Z
