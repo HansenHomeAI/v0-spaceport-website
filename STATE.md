@@ -1,5 +1,5 @@
-reason: analyzing single-battery spiral distortion in shape viewer
-last_step: confirmed waypoint sampling hits half-wedge intervals so phi folds to 0/π when slices=1, and documented fix options
-next_unblocked_step: choose and implement guard in SpiralGenerator so single-slice flights use a monotonic angular sweep (or comparable approach) before regenerating visuals
+reason: verifying single-slice waypoint densification for spiral viewer
+last_step: added single-slice support waypoints and ran npm run build (warnings only)
+next_unblocked_step: push branch and monitor Cloudflare Pages + CDK workflows for the updated shape viewer
 owner_action_needed: none
-updated: 2025-10-13T16:12:45Z
+updated: 2025-10-13T16:41:23Z
