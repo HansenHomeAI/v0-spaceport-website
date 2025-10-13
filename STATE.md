@@ -1,5 +1,5 @@
-reason: analyzing single-battery spiral distortion in shape viewer
-last_step: confirmed waypoint sampling hits half-wedge intervals so phi folds to 0/π when slices=1, and documented fix options
-next_unblocked_step: choose and implement guard in SpiralGenerator so single-slice flights use a monotonic angular sweep (or comparable approach) before regenerating visuals
+reason: single-slice spiral midpoints adjusted for shape-lab
+last_step: updated waypoints to use quarter-step sampling when slices=1 and confirmed next build succeeds locally
+next_unblocked_step: push branch, trigger preview build, watch GitHub workflows, and validate the updated path visualization
 owner_action_needed: none
-updated: 2025-10-13T16:12:45Z
+updated: 2025-10-13T21:15:11Z

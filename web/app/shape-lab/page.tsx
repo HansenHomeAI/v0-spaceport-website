@@ -104,6 +104,10 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const tOut = N * dphi;
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
+  const isSingleSlice = slices === 1;
+  // When only one slice (single battery) keep the path curving by sampling at quarter-step offsets
+  const outboundMidScalar = isSingleSlice ? 0.75 : 0.5;
+  const inboundMidScalar = isSingleSlice ? 0.25 : 0.5;
 
   const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
@@ -124,7 +128,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
 
   // outbound mid + bounce for each bounce
   for (let b = 1; b <= N; b++) {
-    const tMid = (b - 0.5) * dphi;
+    const tMid = (b - outboundMidScalar) * dphi;
     waypoints.push(sampleAt(tMid, `outbound_mid_${b}`, idx++));
     const tBounce = b * dphi;
     waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++));
@@ -137,7 +141,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
 
   // inbound first mid
-  const tFirstInboundMid = tEndHold + 0.5 * dphi;
+  const tFirstInboundMid = tEndHold + inboundMidScalar * dphi;
   waypoints.push(sampleAt(tFirstInboundMid, 'inbound_mid_0', idx++));
 
   // inbound bounce + midpoints
@@ -145,7 +149,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
     const tBounce = tEndHold + b * dphi;
     waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++));
     if (b < N) {
-      const tMid = tEndHold + (b + 0.5) * dphi;
+      const tMid = tEndHold + (b + inboundMidScalar) * dphi;
       waypoints.push(sampleAt(tMid, `inbound_mid_${b}`, idx++));
     }
   }
@@ -985,5 +989,3 @@ export default function ShapeLabPage() {
     </div>
   );
 }
-
-
