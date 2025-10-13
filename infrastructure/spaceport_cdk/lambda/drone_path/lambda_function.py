@@ -36,9 +36,9 @@ class SpiralDesigner:
     ===================================== 
     
     Differentiated Altitude Logic:
-    - OUTBOUND: 0.37 feet per foot of distance (detail capture at lower altitudes)
-    - INBOUND: 0.1 feet per foot descent (context capture at higher altitudes)
-    - RESULT: Up to 135ft altitude difference at same locations for diverse training data
+    - OUTBOUND: 0.20 feet per foot of distance (balanced climb rate for optimal coverage)
+    - INBOUND: 0.1 feet per foot ascent (continued climb for comprehensive altitude diversity)
+    - RESULT: Progressive altitude increase throughout flight for varied training data
     
     Reduced Expansion Rate:
     - Alpha coefficient reduced by 14% (× 0.86) for denser coverage
@@ -449,6 +449,28 @@ class SpiralDesigner:
         
         waypoints = []
         
+        # Slice-aware waypoint density (ported from ShapeLab)
+        is_single_slice = params['slices'] == 1
+        is_double_slice = params['slices'] == 2
+        
+        # Define midpoint fractions based on slice count
+        if is_single_slice:
+            shared_mid_fractions = [1/6, 2/6, 3/6, 4/6, 5/6]  # 5 midpoints per segment
+        elif is_double_slice:
+            shared_mid_fractions = [1/3, 2/3]  # 2 midpoints per segment
+        else:
+            shared_mid_fractions = [0.5]  # 1 midpoint per segment (standard)
+        
+        # Use reversed order for outbound (approaching bounce), normal order for inbound
+        outbound_mid_fractions = list(reversed(shared_mid_fractions))
+        inbound_mid_fractions = shared_mid_fractions
+        hold_mid_fractions = shared_mid_fractions
+        
+        # Helper to generate progress labels for single/double slice flights
+        def label_from_fraction(value: float) -> int:
+            """Convert fraction to percentage label (e.g., 0.5 -> 50, 1/6 -> 17)"""
+            return round((value + 1e-9) * 100)  # epsilon prevents floating point issues
+        
         def find_spiral_point(target_t: float, is_midpoint: bool = False, phase: str = 'unknown') -> Dict:
             """
             Sample spiral point at given parameter t with dynamic curve radius calculation.
@@ -508,34 +530,72 @@ class SpiralDesigner:
         waypoints.append(find_spiral_point(0, False, 'outbound_start'))
         
         for bounce in range(1, params['N'] + 1):
-            # Add midpoint before each bounce for smooth flight
-            t_mid = (bounce - 0.5) * dphi
-            waypoints.append(find_spiral_point(t_mid, True, f'outbound_mid_{bounce}'))
+            # Add midpoints before each bounce (slice-aware density)
+            for fraction in outbound_mid_fractions:
+                t_mid = (bounce - fraction) * dphi
+                progress_label = label_from_fraction(1 - fraction)
+                
+                # Add progress labels for single/double slice flights for better tracking
+                if is_single_slice or is_double_slice:
+                    phase = f'outbound_mid_{bounce}_q{progress_label}'
+                else:
+                    phase = f'outbound_mid_{bounce}'
+                
+                waypoints.append(find_spiral_point(t_mid, True, phase))
             
             # Add bounce point (direction change)
             t_bounce = bounce * dphi
             waypoints.append(find_spiral_point(t_bounce, False, f'outbound_bounce_{bounce}'))
         
         # PHASE 2: HOLD PATTERN - Circular flight at maximum radius
-        t_mid_hold = t_out + t_hold / 2
         t_end_hold = t_out + t_hold
+        custom_hold_phases = is_single_slice or is_double_slice
         
-        waypoints.append(find_spiral_point(t_mid_hold, True, 'hold_mid'))
+        # Add hold midpoints (slice-aware density)
+        for fraction in hold_mid_fractions:
+            t_hold_point = t_out + fraction * t_hold
+            
+            # Add progress labels for single/double slice flights
+            if custom_hold_phases:
+                phase = f'hold_mid_q{label_from_fraction(fraction)}'
+            else:
+                phase = 'hold_mid'
+            
+            waypoints.append(find_spiral_point(t_hold_point, True, phase))
+        
         waypoints.append(find_spiral_point(t_end_hold, False, 'hold_end'))
         
         # PHASE 3: INBOUND SPIRAL - Exponential contraction with direction changes
-        t_first_inbound_mid = t_end_hold + 0.5 * dphi
-        waypoints.append(find_spiral_point(t_first_inbound_mid, True, 'inbound_mid_0'))
+        
+        # Add first inbound midpoints (slice-aware density)
+        for fraction in inbound_mid_fractions:
+            t_first_inbound_mid = t_end_hold + fraction * dphi
+            
+            # Add progress labels for single/double slice flights
+            if is_single_slice or is_double_slice:
+                phase = f'inbound_mid_0_q{label_from_fraction(fraction)}'
+            else:
+                phase = 'inbound_mid_0'
+            
+            waypoints.append(find_spiral_point(t_first_inbound_mid, True, phase))
         
         for bounce in range(1, params['N'] + 1):
             # Add bounce point (direction change)
             t_bounce = t_end_hold + bounce * dphi
             waypoints.append(find_spiral_point(t_bounce, False, f'inbound_bounce_{bounce}'))
             
-            # Add midpoint after bounce (except after final bounce)
+            # Add midpoints after bounce (except after final bounce)
             if bounce < params['N']:
-                t_mid = t_end_hold + (bounce + 0.5) * dphi
-                waypoints.append(find_spiral_point(t_mid, True, f'inbound_mid_{bounce}'))
+                for fraction in inbound_mid_fractions:
+                    t_mid = t_end_hold + (bounce + fraction) * dphi
+                    
+                    # Add progress labels for single/double slice flights
+                    if is_single_slice or is_double_slice:
+                        phase = f'inbound_mid_{bounce}_q{label_from_fraction(fraction)}'
+                    else:
+                        phase = f'inbound_mid_{bounce}'
+                    
+                    waypoints.append(find_spiral_point(t_mid, True, phase))
         
         return waypoints
     
@@ -766,8 +826,8 @@ class SpiralDesigner:
         ==========================================
         
         DIFFERENTIATED ALTITUDE LOGIC:
-        1. OUTBOUND waypoints: 0.37ft per foot climb rate (detail capture)
-        2. INBOUND waypoints: 0.1ft per foot descent rate (context capture)
+        1. OUTBOUND waypoints: 0.20ft per foot climb rate (balanced coverage)
+        2. INBOUND waypoints: 0.1ft per foot ascent rate (continued altitude gain)
         3. HOLD waypoints: Use outbound logic for consistency
         
         FIRST WAYPOINT SPECIAL CASE:
@@ -966,24 +1026,24 @@ class SpiralDesigner:
                     max_outbound_altitude = min_height
                     max_outbound_distance = dist_from_center
                 elif 'outbound' in phase or 'hold' in phase:
-                    # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
+                    # OUTBOUND & HOLD: Balanced climb with 0.20ft per foot climb rate
                     additional_distance = dist_from_center - first_waypoint_distance
                     if additional_distance < 0:
                         additional_distance = 0
-                    agl_increment = additional_distance * 0.37  # Neural network optimization rate
+                    agl_increment = additional_distance * 0.20  # ShapeLab optimized rate
                     desired_agl = min_height + agl_increment
                     
-                    # Track maximum for inbound descent calculations
+                    # Track maximum for inbound ascent calculations
                     if desired_agl > max_outbound_altitude:
                         max_outbound_altitude = desired_agl
                         max_outbound_distance = dist_from_center
                 elif 'inbound' in phase:
-                    # INBOUND: Context capture with 0.1ft per foot descent rate
+                    # INBOUND: Continued climb with 0.1ft per foot ascent rate
                     distance_from_max = max_outbound_distance - dist_from_center
                     if distance_from_max < 0:
                         distance_from_max = 0
-                    altitude_decrease = distance_from_max * 0.1  # Slow descent for context
-                    desired_agl = max_outbound_altitude - altitude_decrease
+                    altitude_increase = distance_from_max * 0.1  # Gentle continued ascent
+                    desired_agl = max_outbound_altitude + altitude_increase
                     
                     # Safety floor: never below min_height
                     if desired_agl < min_height:
@@ -993,7 +1053,7 @@ class SpiralDesigner:
                     additional_distance = dist_from_center - first_waypoint_distance
                     if additional_distance < 0:
                         additional_distance = 0
-                    agl_increment = additional_distance * 0.37
+                    agl_increment = additional_distance * 0.20
                     desired_agl = min_height + agl_increment
                 
                 # Calculate final MSL altitude (terrain following)
@@ -1218,24 +1278,24 @@ class SpiralDesigner:
                 max_outbound_altitude = min_height
                 max_outbound_distance = dist_from_center
             elif 'outbound' in phase or 'hold' in phase:
-                # OUTBOUND & HOLD: Detail capture with 0.37ft per foot climb rate
+                # OUTBOUND & HOLD: Balanced climb with 0.20ft per foot climb rate
                 additional_distance = dist_from_center - first_waypoint_distance
                 if additional_distance < 0:
                     additional_distance = 0
-                agl_increment = additional_distance * 0.37
+                agl_increment = additional_distance * 0.20  # ShapeLab optimized rate
                 desired_agl = min_height + agl_increment
                 
-                # Track maximum for inbound descent calculations
+                # Track maximum for inbound ascent calculations
                 if desired_agl > max_outbound_altitude:
                     max_outbound_altitude = desired_agl
                     max_outbound_distance = dist_from_center
             elif 'inbound' in phase:
-                # INBOUND: Context capture with 0.1ft per foot descent rate
+                # INBOUND: Continued climb with 0.1ft per foot ascent rate
                 distance_from_max = max_outbound_distance - dist_from_center
                 if distance_from_max < 0:
                     distance_from_max = 0
-                altitude_decrease = distance_from_max * 0.1
-                desired_agl = max_outbound_altitude - altitude_decrease
+                altitude_increase = distance_from_max * 0.1  # Gentle continued ascent
+                desired_agl = max_outbound_altitude + altitude_increase
                 
                 # Safety floor: never below min_height
                 if desired_agl < min_height:
@@ -1245,7 +1305,7 @@ class SpiralDesigner:
                 additional_distance = dist_from_center - first_waypoint_distance
                 if additional_distance < 0:
                     additional_distance = 0
-                agl_increment = additional_distance * 0.37
+                agl_increment = additional_distance * 0.20
                 desired_agl = min_height + agl_increment
             
             # Calculate final MSL altitude (terrain following)

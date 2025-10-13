@@ -1,5 +1,5 @@
-reason: working favicon 404 fix
-last_step: verified /assets/SpaceportIcons/Favicon.png now serves 200 via local dev server
-next_unblocked_step: push agent-59384712-favicon-fix and monitor deploy workflows
+reason: hold segment fractions aligned with slice rules
+last_step: deployed slice-aware hold increments and verified Pages+CDK workflows green
+next_unblocked_step: spot-check preview hold arc to confirm waypoint spacing
 owner_action_needed: none
-updated: 2025-10-09T16:09:46Z
+updated: 2025-10-13T22:40:39Z
