@@ -261,6 +261,7 @@ export default function ShapeLabPage() {
   });
   const [sliceIndex, setSliceIndex] = useState(0);
   const [showLabels, setShowLabels] = useState(false);
+  const [showControls, setShowControls] = useState(true); // Auto-hide after first interaction
 
   // Preserve camera state across parameter changes
   const cameraStateRef = React.useRef<{
@@ -512,6 +513,7 @@ export default function ShapeLabPage() {
           mouseButton = e.button; // 0=left, 1=middle, 2=right
           previousMousePosition = { x: e.clientX, y: e.clientY };
           e.preventDefault(); // Prevent context menu on right click
+          setShowControls(false); // Hide controls on first interaction
         });
         
         canvas.addEventListener('mouseup', () => {
@@ -557,6 +559,7 @@ export default function ShapeLabPage() {
         
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
+          setShowControls(false); // Hide controls on first interaction
           const zoomSpeed = 1.02; // Reduced sensitivity for smoother zoom
           cameraState.radius *= e.deltaY > 0 ? zoomSpeed : 1 / zoomSpeed;
           cameraState.radius = Math.max(100, Math.min(15000, cameraState.radius)); // Clamp zoom (adjusted for larger scale)
@@ -941,32 +944,34 @@ export default function ShapeLabPage() {
           />
         </div>
 
-        <div style={{
-          position: 'absolute', top: 76, left: 20, 
-          background: 'rgba(28, 28, 30, 0.95)', 
-          backdropFilter: 'blur(20px)',
-          color: 'white',
-          padding: '16px 20px', 
-          borderRadius: 12, 
-          fontSize: 13, 
-          fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-          lineHeight: '1.5',
-          border: '0.5px solid rgba(255, 255, 255, 0.1)'
-        }}>
-          <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
-          <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
-          <div style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</div>
-          <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
-          <div style={{ 
-            marginTop: 8, 
-            paddingTop: 8, 
-            borderTop: '0.5px solid rgba(255, 255, 255, 0.2)', 
-            opacity: 0.7,
-            fontSize: 12
+        {showControls && (
+          <div style={{
+            position: 'absolute', top: 76, left: 20, 
+            background: 'rgba(28, 28, 30, 0.95)', 
+            backdropFilter: 'blur(20px)',
+            color: 'white',
+            padding: '16px 20px', 
+            borderRadius: 12, 
+            fontSize: 13, 
+            fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+            lineHeight: '1.5',
+            border: '0.5px solid rgba(255, 255, 255, 0.1)'
           }}>
-            Units in feet. Green (Y) axis = altitude (AGL)
+            <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
+            <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
+            <div style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</div>
+            <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
+            <div style={{ 
+              marginTop: 8, 
+              paddingTop: 8, 
+              borderTop: '0.5px solid rgba(255, 255, 255, 0.2)', 
+              opacity: 0.7,
+              fontSize: 12
+            }}>
+              Units in feet. Green (Y) axis = altitude (AGL)
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
