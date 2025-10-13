@@ -11,6 +11,7 @@ type Waypoint = {
   z: number; // AGL in feet
   phase: string;
   index: number;
+  curve: number; // Turn radius in feet
 };
 
 type FlightParams = {
@@ -116,7 +117,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const inboundMidFractions = sharedMidFractions;
   const holdMidFractions = sharedMidFractions;
 
-  const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
+  const sampleAt = (targetT: number, phase: string, index: number, isMidpoint: boolean = false): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
     const clampedIndex = Math.max(0, Math.min(spiralPts.length - 1, targetIndex));
     const pt = spiralPts[clampedIndex];
@@ -124,7 +125,27 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
     const rotX = pt.x * Math.cos(offset) - pt.y * Math.sin(offset);
     const rotY = pt.x * Math.sin(offset) + pt.y * Math.cos(offset);
 
-    return { x: rotX, y: rotY, phase, index } as Omit<Waypoint, 'z'>;
+    // Calculate curve radius (mirrors lambda logic)
+    const distanceFromCenter = Math.sqrt(rotX ** 2 + rotY ** 2);
+    let curveRadius: number;
+    
+    if (isMidpoint) {
+      // MIDPOINT CURVES: Ultra-smooth for seamless transitions
+      const baseCurve = 50;
+      const scaleFactor = 1.2;
+      const maxCurve = 1500;
+      curveRadius = Math.min(maxCurve, baseCurve + (distanceFromCenter * scaleFactor));
+    } else {
+      // NON-MIDPOINT CURVES: Doubled for smoother directional control
+      const baseCurve = 40;
+      const scaleFactor = 0.05;
+      const maxCurve = 160;
+      curveRadius = Math.min(maxCurve, baseCurve + (distanceFromCenter * scaleFactor));
+    }
+    
+    curveRadius = Math.round(curveRadius * 10) / 10; // Round to 1 decimal place
+
+    return { x: rotX, y: rotY, phase, index, curve: curveRadius } as Omit<Waypoint, 'z'>;
   };
 
   const labelFromFraction = (value: number) => Math.round((value + Number.EPSILON) * 100);
@@ -133,7 +154,7 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   let idx = 0;
 
   // outbound start
-  waypoints.push(sampleAt(0, 'outbound_start', idx++));
+  waypoints.push(sampleAt(0, 'outbound_start', idx++, false));
 
   // outbound mid + bounce for each bounce
   for (let b = 1; b <= N; b++) {
@@ -141,10 +162,10 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
       const tMid = (b - fraction) * dphi;
       const progressLabel = labelFromFraction(1 - fraction);
       const phase = (isSingleSlice || isDoubleSlice) ? `outbound_mid_${b}_q${progressLabel}` : `outbound_mid_${b}`;
-      waypoints.push(sampleAt(tMid, phase, idx++));
+      waypoints.push(sampleAt(tMid, phase, idx++, true)); // midpoint = true for ultra-smooth curves
     });
     const tBounce = b * dphi;
-    waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++));
+    waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++, false));
   }
 
   // hold mid + end
@@ -153,26 +174,26 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   holdMidFractions.forEach(fraction => {
     const tHoldPoint = tOut + fraction * tHold;
     const phase = customHoldPhases ? `hold_mid_q${labelFromFraction(fraction)}` : 'hold_mid';
-    waypoints.push(sampleAt(tHoldPoint, phase, idx++));
+    waypoints.push(sampleAt(tHoldPoint, phase, idx++, true)); // midpoint = true for hold transitions
   });
-  waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
+  waypoints.push(sampleAt(tEndHold, 'hold_end', idx++, false));
 
   // inbound first mid
   inboundMidFractions.forEach(fraction => {
     const tFirstInboundMid = tEndHold + fraction * dphi;
     const phase = (isSingleSlice || isDoubleSlice) ? `inbound_mid_0_q${labelFromFraction(fraction)}` : 'inbound_mid_0';
-    waypoints.push(sampleAt(tFirstInboundMid, phase, idx++));
+    waypoints.push(sampleAt(tFirstInboundMid, phase, idx++, true)); // midpoint = true
   });
 
   // inbound bounce + midpoints
   for (let b = 1; b <= N; b++) {
     const tBounce = tEndHold + b * dphi;
-    waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++));
+    waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++, false));
     if (b < N) {
       inboundMidFractions.forEach(fraction => {
         const tMid = tEndHold + (b + fraction) * dphi;
         const phase = (isSingleSlice || isDoubleSlice) ? `inbound_mid_${b}_q${labelFromFraction(fraction)}` : `inbound_mid_${b}`;
-        waypoints.push(sampleAt(tMid, phase, idx++));
+        waypoints.push(sampleAt(tMid, phase, idx++, true)); // midpoint = true
       });
     }
   }
@@ -241,10 +262,140 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
 
   const vectors = useMemo(() => waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z)), [waypoints]);
 
+  // Generate curved path segments using true circular arcs from waypoint curve radii
+  const curvedPathPoints = useMemo(() => {
+    if (waypoints.length < 2) {
+      return waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z));
+    }
+    
+    const points: THREE.Vector3[] = [];
+    
+    const v2 = (v: THREE.Vector3) => new THREE.Vector2(v.x, v.y);
+    const line = (a: THREE.Vector3, b: THREE.Vector3, n: number) => {
+      for (let i = 1; i <= n; i++) {
+        const t = i / n;
+        points.push(new THREE.Vector3().lerpVectors(a, b, t));
+      }
+    };
+    
+    // Start at first waypoint
+    let last = new THREE.Vector3(waypoints[0].x, waypoints[0].y, waypoints[0].z);
+    points.push(last.clone());
+    
+    for (let i = 1; i < waypoints.length - 1; i++) {
+      const wp0 = waypoints[i - 1];
+      const wp1 = waypoints[i];
+      const wp2 = waypoints[i + 1];
+      
+      const P0 = new THREE.Vector3(wp0.x, wp0.y, wp0.z);
+      const P1 = new THREE.Vector3(wp1.x, wp1.y, wp1.z);
+      const P2 = new THREE.Vector3(wp2.x, wp2.y, wp2.z);
+      
+      const A = new THREE.Vector2().subVectors(v2(P1), v2(P0)); // P0 -> P1
+      const B = new THREE.Vector2().subVectors(v2(P2), v2(P1)); // P1 -> P2
+      const L0 = A.length();
+      const L1 = B.length();
+      if (L0 < 1e-3 || L1 < 1e-3) {
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
+      }
+      A.normalize();
+      B.normalize();
+      
+      // Interior turn angle between segments
+      const cosPhi = Math.max(-1, Math.min(1, A.dot(B)));
+      const phi = Math.acos(cosPhi);
+      
+      // If nearly straight or degenerate, draw straight
+      if (!Number.isFinite(phi) || phi < 1e-3 || Math.abs(Math.PI - phi) < 1e-3) {
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
+      }
+      
+      const R = Math.max(0, wp1.curve || 0);
+      if (R < 1e-3) {
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
+      }
+      
+      // Offset distance along each segment to tangent points
+      let t = R * Math.tan(phi / 2);
+      const tMax = Math.min(L0, L1) * 0.49; // keep arc within segments
+      t = Math.min(t, tMax);
+      
+      // Tangent points T0 on segment P0->P1 and T1 on P1->P2
+      const T0 = P1.clone().sub(new THREE.Vector3(A.x, A.y, 0).multiplyScalar(t));
+      const T1 = P1.clone().add(new THREE.Vector3(B.x, B.y, 0).multiplyScalar(t));
+      
+      // Interpolate altitude for tangent points
+      const zT0 = P1.z - (P1.z - P0.z) * (t / L0);
+      const zT1 = P1.z + (P2.z - P1.z) * (t / L1);
+      T0.z = zT0;
+      T1.z = zT1;
+      
+      // Center of circular arc along internal angle bisector
+      const W0 = A.clone().multiplyScalar(-1); // outward from P1 toward P0
+      const W1 = B.clone();                   // outward from P1 toward P2
+      const bis = new THREE.Vector2().addVectors(W0, W1);
+      if (bis.length() < 1e-6) {
+        // Opposite directions - draw straight
+        line(last, P1, 6);
+        last = P1.clone();
+        continue;
+      }
+      bis.normalize();
+      const distToCenter = R / Math.sin(phi / 2);
+      const Cxy = v2(P1).add(bis.multiplyScalar(distToCenter));
+      
+      // Arc direction (left/right turn)
+      const cross = W0.x * W1.y - W0.y * W1.x; // >0 => CCW (left)
+      
+      // Angles for start/end around center
+      const a0 = Math.atan2(T0.y - Cxy.y, T0.x - Cxy.x);
+      const a1 = Math.atan2(T1.y - Cxy.y, T1.x - Cxy.x);
+      let startAng = a0;
+      let endAng = a1;
+      if (cross > 0) {
+        if (endAng < startAng) endAng += 2 * Math.PI;
+      } else {
+        if (endAng > startAng) endAng -= 2 * Math.PI;
+      }
+      
+      // Add straight segment up to T0
+      line(last, T0, 6);
+      
+      // Sample the circular arc from T0 to T1
+      const arcSteps = Math.max(10, Math.min(36, Math.ceil(Math.abs(endAng - startAng) / (Math.PI / 18))));
+      for (let k = 0; k <= arcSteps; k++) {
+        const tt = k / arcSteps;
+        const ang = startAng + (endAng - startAng) * tt;
+        const x = Cxy.x + R * Math.cos(ang);
+        const y = Cxy.y + R * Math.sin(ang);
+        const z = zT0 + (zT1 - zT0) * tt;
+        points.push(new THREE.Vector3(x, y, z));
+      }
+      
+      last = points[points.length - 1].clone();
+    }
+    
+    // Connect to final waypoint
+    const Pend = new THREE.Vector3(
+      waypoints[waypoints.length - 1].x,
+      waypoints[waypoints.length - 1].y,
+      waypoints[waypoints.length - 1].z
+    );
+    line(last, Pend, 10);
+    
+    return points;
+  }, [waypoints]);
+
   return (
     <group>
-      {vectors.length >= 2 && (
-        <Line points={vectors} color="#00ff88" lineWidth={2.5} transparent opacity={0.95} />
+      {curvedPathPoints.length >= 2 && (
+        <Line points={curvedPathPoints} color="#00ff88" lineWidth={2.5} transparent opacity={0.95} />
       )}
 
       {/* Center reference */}
@@ -388,7 +539,7 @@ export default function ShapeLabPage() {
         const projectionLength = 375; // length of projection lines when hovering (reduced 50%)
         
         // Store frustum meshes for hover interaction
-        const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number; heading: number; gimbalPitch: number }> = [];
+        const frustumMeshes: Array<{ mesh: THREE.Group; waypoint: typeof waypointsWithZ[0]; index: number; heading: number; gimbalPitch: number; curve: number }> = [];
         let hoveredFrustum: THREE.Group | null = null;
         const projectionLines: THREE.Line[] = [];
         
@@ -522,7 +673,7 @@ export default function ShapeLabPage() {
           // Add camera frustum
           const { group: frustum, heading, gimbalPitch } = createFrustum(wp, i);
           scene.add(frustum);
-          frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i, heading, gimbalPitch });
+          frustumMeshes.push({ mesh: frustum, waypoint: wp, index: i, heading, gimbalPitch, curve: wp.curve });
         });
         
         // Proper orbit controls with dynamic orbit center
@@ -668,11 +819,13 @@ export default function ShapeLabPage() {
               // Show tooltip
               const headingDeg = (foundFrustum.heading * 180 / Math.PI).toFixed(1);
               const pitchDeg = foundFrustum.gimbalPitch.toFixed(1);
+              const curveRadius = foundFrustum.curve.toFixed(1);
               
               tooltipDiv.innerHTML = `
                 <div style="font-weight: 600; margin-bottom: 6px; color: #007AFF;">Waypoint ${foundFrustum.index}</div>
                 <div style="color: rgba(255, 255, 255, 0.9);">Heading: ${headingDeg}°</div>
                 <div style="color: rgba(255, 255, 255, 0.9);">Gimbal Pitch: ${pitchDeg}°</div>
+                <div style="color: rgba(255, 255, 255, 0.9);">Curve: ${curveRadius}ft</div>
               `;
               tooltipDiv.style.display = 'block';
               tooltipDiv.style.left = `${e.clientX + 15}px`;
