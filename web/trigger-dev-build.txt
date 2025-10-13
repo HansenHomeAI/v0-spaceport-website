@@ -1,2 +1,3 @@
 Cesium integration trigger 2025-10-06T17:09:32Z
 1:32pm
+Updated for single-slice spiral fix 2025-10-13T16:41:12Z

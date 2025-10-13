@@ -87,19 +87,69 @@ class SpiralGenerator {
   buildSlice(slice_idx: number, params: FlightParams): Waypoint[] {
     const dphi = 2 * Math.PI / params.slices;
     const offset = Math.PI / 2 + slice_idx * dphi;
+    const singleSlice = params.slices === 1;
     
     const spiral_pts = this.makeSpiral(dphi, params.N, params.r0, params.rHold);
     const t_out = params.N * dphi;
     const t_hold = dphi;
     const t_total = 2 * t_out + t_hold;
+    const t_mid_hold = t_out + t_hold / 2;
+    const t_end_hold = t_out + t_hold;
+    const t_first_inbound_mid = t_end_hold + 0.5 * dphi;
     
-    const waypoints: Waypoint[] = [];
+    const schedule: { time: number; phase: string }[] = [];
+    schedule.push({ time: 0, phase: 'outbound_start' });
+    
+    for (let bounce = 1; bounce <= params.N; bounce++) {
+      const segment_start = (bounce - 1) * dphi;
+      if (singleSlice) {
+        schedule.push({ time: segment_start + 0.25 * dphi, phase: `outbound_support_${bounce}_pre` });
+      }
+      schedule.push({ time: segment_start + 0.5 * dphi, phase: `outbound_mid_${bounce}` });
+      if (singleSlice) {
+        schedule.push({ time: segment_start + 0.75 * dphi, phase: `outbound_support_${bounce}_post` });
+      }
+      schedule.push({ time: bounce * dphi, phase: `outbound_bounce_${bounce}` });
+    }
+    
+    if (singleSlice) {
+      schedule.push({ time: t_out + 0.25 * dphi, phase: 'hold_support_pre' });
+    }
+    schedule.push({ time: t_mid_hold, phase: 'hold_mid' });
+    if (singleSlice) {
+      schedule.push({ time: t_out + 0.75 * dphi, phase: 'hold_support_post' });
+    }
+    schedule.push({ time: t_end_hold, phase: 'hold_end' });
+    if (singleSlice) {
+      schedule.push({ time: t_end_hold + 0.25 * dphi, phase: 'inbound_support_entry_pre' });
+    }
+    schedule.push({ time: t_first_inbound_mid, phase: 'inbound_mid_0' });
+    
+    for (let bounce = 1; bounce <= params.N; bounce++) {
+      if (singleSlice) {
+        schedule.push({
+          time: t_end_hold + (bounce - 0.25) * dphi,
+          phase: `inbound_support_${bounce}_pre`
+        });
+      }
+      const bounce_time = t_end_hold + bounce * dphi;
+      schedule.push({ time: bounce_time, phase: `inbound_bounce_${bounce}` });
+      if (singleSlice && bounce < params.N) {
+        schedule.push({
+          time: t_end_hold + (bounce + 0.25) * dphi,
+          phase: `inbound_support_${bounce}_post`
+        });
+      }
+      if (bounce < params.N) {
+        const mid_time = t_end_hold + (bounce + 0.5) * dphi;
+        schedule.push({ time: mid_time, phase: `inbound_mid_${bounce}` });
+      }
+    }
     
     const findSpiralPoint = (target_t: number, phase: string, index: number): Waypoint => {
-      const target_index = Math.round(target_t * (spiral_pts.length - 1) / t_total);
-      const clamped_index = Math.max(0, Math.min(spiral_pts.length - 1, target_index));
-      const pt = spiral_pts[clamped_index];
-      
+      const normalized = Math.max(0, Math.min(t_total, target_t));
+      const target_index = Math.round(normalized * (spiral_pts.length - 1) / t_total);
+      const pt = spiral_pts[target_index];
       const rot_x = pt.x * Math.cos(offset) - pt.y * Math.sin(offset);
       const rot_y = pt.x * Math.sin(offset) + pt.y * Math.cos(offset);
       
@@ -112,34 +162,10 @@ class SpiralGenerator {
       };
     };
     
+    const waypoints: Waypoint[] = [];
     let index = 0;
-    waypoints.push(findSpiralPoint(0, 'outbound_start', index++));
-    
-    for (let bounce = 1; bounce <= params.N; bounce++) {
-      const t_mid = (bounce - 0.5) * dphi;
-      waypoints.push(findSpiralPoint(t_mid, `outbound_mid_${bounce}`, index++));
-      
-      const t_bounce = bounce * dphi;
-      waypoints.push(findSpiralPoint(t_bounce, `outbound_bounce_${bounce}`, index++));
-    }
-    
-    const t_mid_hold = t_out + t_hold / 2;
-    const t_end_hold = t_out + t_hold;
-    
-    waypoints.push(findSpiralPoint(t_mid_hold, 'hold_mid', index++));
-    waypoints.push(findSpiralPoint(t_end_hold, 'hold_end', index++));
-    
-    const t_first_inbound_mid = t_end_hold + 0.5 * dphi;
-    waypoints.push(findSpiralPoint(t_first_inbound_mid, 'inbound_mid_0', index++));
-    
-    for (let bounce = 1; bounce <= params.N; bounce++) {
-      const t_bounce = t_end_hold + bounce * dphi;
-      waypoints.push(findSpiralPoint(t_bounce, `inbound_bounce_${bounce}`, index++));
-      
-      if (bounce < params.N) {
-        const t_mid = t_end_hold + (bounce + 0.5) * dphi;
-        waypoints.push(findSpiralPoint(t_mid, `inbound_mid_${bounce}`, index++));
-      }
+    for (const entry of schedule) {
+      waypoints.push(findSpiralPoint(entry.time, entry.phase, index++));
     }
     
     return waypoints;
@@ -483,4 +509,3 @@ export default function ShapeViewerPage() {
     </div>
   );
 }
-
