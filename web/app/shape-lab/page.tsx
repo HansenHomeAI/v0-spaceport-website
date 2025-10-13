@@ -310,10 +310,13 @@ export default function ShapeLabPage() {
         const centerSphere = new THREE.Mesh(centerGeometry, centerMaterial);
         scene.add(centerSphere);
         
-        // Position camera for perspective view from above and to the side
-        // Scaled 1.5x for larger visualization
-        camera.position.set(3000, 2250, 3000);
-        camera.lookAt(0, 0, 0); // Focus on true origin
+        // Position camera for perspective view
+        // If we have a previous camera state, we will restore it later via updateCameraPosition()
+        // Otherwise defaults will be applied by initialOffset below
+        if (!cameraStateRef.current) {
+          camera.position.set(3000, 2250, 3000);
+          camera.lookAt(0, 0, 0);
+        }
         
         // Generate flight path
         const N = mapBatteryToBounces(params.batteryDurationMinutes);
@@ -500,6 +503,9 @@ export default function ShapeLabPage() {
           camera.position.copy(orbitCenter).add(offset);
           camera.lookAt(orbitCenter);
         };
+
+        // Apply saved (or default) camera state immediately on scene creation
+        updateCameraPosition();
         
         canvas.addEventListener('mousedown', (e) => {
           isDragging = true;
@@ -927,7 +933,8 @@ export default function ShapeLabPage() {
 
       {/* 3D Viewer */}
       <div style={{ flex: 1, position: 'relative' }}>
-        <div style={{ width: '100%', height: '100%', background: '#000' }}>
+        {/* Add top padding to avoid navbar overlay */}
+        <div style={{ width: '100%', height: '100%', background: '#000', paddingTop: 56 }}>
           <canvas 
             id="shape-lab-canvas"
             style={{ width: '100%', height: '100%', display: 'block' }}
@@ -935,7 +942,7 @@ export default function ShapeLabPage() {
         </div>
 
         <div style={{
-          position: 'absolute', top: 20, left: 20, 
+          position: 'absolute', top: 76, left: 20, 
           background: 'rgba(28, 28, 30, 0.95)', 
           backdropFilter: 'blur(20px)',
           color: 'white',
