@@ -11,9 +11,6 @@ interface Waypoint {
   z: number;
   phase: string;
   index: number;
-  curve: number;
-  heading: number;
-  gimbalPitch: number;
 }
 
 interface FlightParams {
@@ -98,7 +95,7 @@ class SpiralGenerator {
     
     const waypoints: Waypoint[] = [];
     
-    const findSpiralPoint = (target_t: number, phase: string, index: number, is_midpoint: boolean = false): Waypoint => {
+    const findSpiralPoint = (target_t: number, phase: string, index: number): Waypoint => {
       const target_index = Math.round(target_t * (spiral_pts.length - 1) / t_total);
       const clamped_index = Math.max(0, Math.min(spiral_pts.length - 1, target_index));
       const pt = spiral_pts[clamped_index];
@@ -106,71 +103,42 @@ class SpiralGenerator {
       const rot_x = pt.x * Math.cos(offset) - pt.y * Math.sin(offset);
       const rot_y = pt.x * Math.sin(offset) + pt.y * Math.cos(offset);
       
-      // Calculate distance from center for curve calculation
-      const distance_from_center = Math.sqrt(rot_x * rot_x + rot_y * rot_y);
-      
-      // Curve calculation matching Lambda logic
-      let curve_radius: number;
-      if (is_midpoint) {
-        // MIDPOINT CURVES: Ultra-smooth for seamless transitions
-        const base_curve = 50;
-        const scale_factor = 1.2;
-        const max_curve = 1500;
-        curve_radius = Math.min(max_curve, base_curve + (distance_from_center * scale_factor));
-      } else {
-        // NON-MIDPOINT CURVES: Doubled for smoother directional control
-        const base_curve = 40;
-        const scale_factor = 0.05;
-        const max_curve = 160;
-        curve_radius = Math.min(max_curve, base_curve + (distance_from_center * scale_factor));
-      }
-      curve_radius = Math.round(curve_radius * 10) / 10; // Round to 1 decimal
-      
-      // Calculate heading (direction of travel)
-      const heading = (Math.atan2(rot_y, rot_x) * 180 / Math.PI + 360) % 360;
-      
-      // Calculate gimbal pitch (camera angle) - default -45° for real estate
-      const gimbal_pitch = -45;
-      
       return {
         x: rot_x,
         y: rot_y,
         z: 0,
         phase,
-        index,
-        curve: curve_radius,
-        heading: Math.round(heading * 10) / 10,
-        gimbalPitch: gimbal_pitch
+        index
       };
     };
     
     let index = 0;
-    waypoints.push(findSpiralPoint(0, 'outbound_start', index++, false));
+    waypoints.push(findSpiralPoint(0, 'outbound_start', index++));
     
     for (let bounce = 1; bounce <= params.N; bounce++) {
       const t_mid = (bounce - 0.5) * dphi;
-      waypoints.push(findSpiralPoint(t_mid, `outbound_mid_${bounce}`, index++, true));
+      waypoints.push(findSpiralPoint(t_mid, `outbound_mid_${bounce}`, index++));
       
       const t_bounce = bounce * dphi;
-      waypoints.push(findSpiralPoint(t_bounce, `outbound_bounce_${bounce}`, index++, false));
+      waypoints.push(findSpiralPoint(t_bounce, `outbound_bounce_${bounce}`, index++));
     }
     
     const t_mid_hold = t_out + t_hold / 2;
     const t_end_hold = t_out + t_hold;
     
-    waypoints.push(findSpiralPoint(t_mid_hold, 'hold_mid', index++, true));
-    waypoints.push(findSpiralPoint(t_end_hold, 'hold_end', index++, false));
+    waypoints.push(findSpiralPoint(t_mid_hold, 'hold_mid', index++));
+    waypoints.push(findSpiralPoint(t_end_hold, 'hold_end', index++));
     
     const t_first_inbound_mid = t_end_hold + 0.5 * dphi;
-    waypoints.push(findSpiralPoint(t_first_inbound_mid, 'inbound_mid_0', index++, true));
+    waypoints.push(findSpiralPoint(t_first_inbound_mid, 'inbound_mid_0', index++));
     
     for (let bounce = 1; bounce <= params.N; bounce++) {
       const t_bounce = t_end_hold + bounce * dphi;
-      waypoints.push(findSpiralPoint(t_bounce, `inbound_bounce_${bounce}`, index++, false));
+      waypoints.push(findSpiralPoint(t_bounce, `inbound_bounce_${bounce}`, index++));
       
       if (bounce < params.N) {
         const t_mid = t_end_hold + (bounce + 0.5) * dphi;
-        waypoints.push(findSpiralPoint(t_mid, `inbound_mid_${bounce}`, index++, true));
+        waypoints.push(findSpiralPoint(t_mid, `inbound_mid_${bounce}`, index++));
       }
     }
     
@@ -183,49 +151,14 @@ class SpiralGenerator {
 }
 
 function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoint[]; showLabels: boolean }) {
-  // Generate curved path using quadratic bezier curves based on curve radius
-  const curvedPathPoints: THREE.Vector3[] = [];
-  
-  for (let i = 0; i < waypoints.length - 1; i++) {
-    const wp1 = waypoints[i];
-    const wp2 = waypoints[i + 1];
-    
-    const p1 = new THREE.Vector3(wp1.x, wp1.y, 0);
-    const p2 = new THREE.Vector3(wp2.x, wp2.y, 0);
-    
-    // Use the average curve radius for this segment
-    const avgCurve = (wp1.curve + wp2.curve) / 2;
-    
-    // Generate curved segment using quadratic bezier
-    const segmentPoints = 10; // Points per segment for smooth curves
-    for (let j = 0; j <= segmentPoints; j++) {
-      const t = j / segmentPoints;
-      
-      // Simple quadratic bezier with control point offset perpendicular to segment
-      const midPoint = new THREE.Vector3().lerpVectors(p1, p2, 0.5);
-      const direction = new THREE.Vector3().subVectors(p2, p1).normalize();
-      const perpendicular = new THREE.Vector3(-direction.y, direction.x, 0);
-      
-      // Offset control point by curve radius (scaled for visual effect)
-      const curveOffset = avgCurve * 0.05; // Scale factor for visual representation
-      const controlPoint = midPoint.clone().add(perpendicular.multiplyScalar(curveOffset));
-      
-      // Quadratic bezier formula: B(t) = (1-t)²P1 + 2(1-t)tC + t²P2
-      const point = new THREE.Vector3()
-        .addScaledVector(p1, (1 - t) * (1 - t))
-        .addScaledVector(controlPoint, 2 * (1 - t) * t)
-        .addScaledVector(p2, t * t);
-      
-      curvedPathPoints.push(point);
-    }
-  }
+  const vectors = waypoints.map(wp => new THREE.Vector3(wp.x, wp.y, 0));
   
   return (
     <group>
-      {/* Curved path line */}
-      {curvedPathPoints.length >= 2 && (
+      {/* Smooth path line */}
+      {vectors.length >= 2 && (
         <Line
-          points={curvedPathPoints}
+          points={vectors}
           color="#00ff88"
           lineWidth={2.5}
           transparent
@@ -289,28 +222,15 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
             {showLabels && (
               <Html distanceFactor={100} center>
                 <div style={{
-                  background: 'rgba(0,0,0,0.9)',
+                  background: 'rgba(0,0,0,0.85)',
                   color: 'white',
-                  padding: '6px 10px',
-                  borderRadius: '6px',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
                   fontSize: '11px',
                   whiteSpace: 'nowrap',
-                  transform: 'translateY(-35px)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  fontFamily: 'monospace'
+                  transform: 'translateY(-25px)'
                 }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '3px', color: '#00ff88' }}>
-                    WP {wp.index}: {wp.phase}
-                  </div>
-                  <div style={{ fontSize: '10px', opacity: 0.9 }}>
-                    Heading: {wp.heading.toFixed(1)}°
-                  </div>
-                  <div style={{ fontSize: '10px', opacity: 0.9 }}>
-                    Gimbal: {wp.gimbalPitch}°
-                  </div>
-                  <div style={{ fontSize: '10px', opacity: 0.9 }}>
-                    Curve: {wp.curve.toFixed(1)}ft
-                  </div>
+                  {wp.index}: {wp.phase}
                 </div>
               </Html>
             )}
