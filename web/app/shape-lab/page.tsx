@@ -22,12 +22,20 @@ type FlightParams = {
 
 // Internal constants (mirrors production defaults)
 const R0_FT = 150; // starting radius (ft)
-const RHOLD_FT = 1595; // target hold radius (ft) used for alpha calc
+const BASE_RHOLD_FT = 1595; // base hold radius for 10min battery
+const BASE_BATTERY_MINUTES = 10; // reference battery duration
 
 // Map battery minutes to bounce count N (10min→5, 20min→8; clamped [3,12])
 function mapBatteryToBounces(minutes: number): number {
   const n = Math.round(5 + 0.3 * (minutes - 10));
   return Math.max(3, Math.min(12, n));
+}
+
+// Calculate hold radius based on battery duration (longer flight = larger radius)
+function calculateHoldRadius(batteryMinutes: number): number {
+  // Scale linearly with battery duration
+  // 10min → 1595ft, 20min → 3190ft, 30min → 4785ft, etc.
+  return BASE_RHOLD_FT * (batteryMinutes / BASE_BATTERY_MINUTES);
 }
 
 // Core spiral generator (ported from production logic, elevation-agnostic)
@@ -87,11 +95,12 @@ function makeSpiral(dphi: number, N: number, r0: number, rHold: number, steps: n
   return spiralPoints;
 }
 
-function buildSlice(sliceIdx: number, slices: number, N: number): { waypoints: Omit<Waypoint, 'z'>[]; tTotal: number; dphi: number; } {
+function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes: number): { waypoints: Omit<Waypoint, 'z'>[]; tTotal: number; dphi: number; } {
   const dphi = (2 * Math.PI) / slices;
   const offset = Math.PI / 2 + sliceIdx * dphi;
 
-  const spiralPts = makeSpiral(dphi, N, R0_FT, RHOLD_FT);
+  const rHold = calculateHoldRadius(batteryMinutes);
+  const spiralPts = makeSpiral(dphi, N, R0_FT, rHold);
   const tOut = N * dphi;
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
@@ -199,9 +208,9 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
   const N = useMemo(() => mapBatteryToBounces(params.batteryDurationMinutes), [params.batteryDurationMinutes]);
 
   const waypoints = useMemo(() => {
-    const { waypoints } = buildSlice(sliceIndex, params.slices, N);
+    const { waypoints } = buildSlice(sliceIndex, params.slices, N, params.batteryDurationMinutes);
     return applyAltitudeAGL(waypoints, params.minHeight, params.maxHeight);
-  }, [params.slices, params.minHeight, params.maxHeight, sliceIndex, N]);
+  }, [params.slices, params.minHeight, params.maxHeight, sliceIndex, N, params.batteryDurationMinutes]);
 
   const vectors = useMemo(() => waypoints.map(w => new THREE.Vector3(w.x, w.y, w.z)), [waypoints]);
 
@@ -321,7 +330,7 @@ export default function ShapeLabPage() {
         
         // Generate flight path
         const N = mapBatteryToBounces(params.batteryDurationMinutes);
-        const { waypoints } = buildSlice(sliceIndex, params.slices, N);
+        const { waypoints } = buildSlice(sliceIndex, params.slices, N, params.batteryDurationMinutes);
         const waypointsWithZ = applyAltitudeAGL(waypoints, params.minHeight, params.maxHeight);
         
         // Coordinate transform: Our (x,y,z) -> Three.js (x,y,z) where our z=altitude becomes Three.js y
