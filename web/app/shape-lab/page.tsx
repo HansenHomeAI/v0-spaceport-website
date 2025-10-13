@@ -106,8 +106,8 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const tTotal = 2 * tOut + tHold;
   const isSingleSlice = slices === 1;
   // When only one slice (single battery) keep the path curving by sampling at quarter-step offsets
-  const outboundMidScalar = isSingleSlice ? 0.75 : 0.5;
-  const inboundMidScalar = isSingleSlice ? 0.25 : 0.5;
+  const outboundMidFractions = isSingleSlice ? [0.75, 0.5, 0.25] : [0.5];
+  const inboundMidFractions = isSingleSlice ? [0.25, 0.5, 0.75] : [0.5];
 
   const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
@@ -120,6 +120,8 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
     return { x: rotX, y: rotY, phase, index } as Omit<Waypoint, 'z'>;
   };
 
+  const labelFromFraction = (value: number) => Math.round((value + Number.EPSILON) * 100);
+
   const waypoints: Omit<Waypoint, 'z'>[] = [];
   let idx = 0;
 
@@ -128,8 +130,12 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
 
   // outbound mid + bounce for each bounce
   for (let b = 1; b <= N; b++) {
-    const tMid = (b - outboundMidScalar) * dphi;
-    waypoints.push(sampleAt(tMid, `outbound_mid_${b}`, idx++));
+    outboundMidFractions.forEach(fraction => {
+      const tMid = (b - fraction) * dphi;
+      const progressLabel = labelFromFraction(1 - fraction);
+      const phase = isSingleSlice ? `outbound_mid_${b}_q${progressLabel}` : `outbound_mid_${b}`;
+      waypoints.push(sampleAt(tMid, phase, idx++));
+    });
     const tBounce = b * dphi;
     waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++));
   }
@@ -141,16 +147,22 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
 
   // inbound first mid
-  const tFirstInboundMid = tEndHold + inboundMidScalar * dphi;
-  waypoints.push(sampleAt(tFirstInboundMid, 'inbound_mid_0', idx++));
+  inboundMidFractions.forEach(fraction => {
+    const tFirstInboundMid = tEndHold + fraction * dphi;
+    const phase = isSingleSlice ? `inbound_mid_0_q${labelFromFraction(fraction)}` : 'inbound_mid_0';
+    waypoints.push(sampleAt(tFirstInboundMid, phase, idx++));
+  });
 
   // inbound bounce + midpoints
   for (let b = 1; b <= N; b++) {
     const tBounce = tEndHold + b * dphi;
     waypoints.push(sampleAt(tBounce, `inbound_bounce_${b}`, idx++));
     if (b < N) {
-      const tMid = tEndHold + (b + inboundMidScalar) * dphi;
-      waypoints.push(sampleAt(tMid, `inbound_mid_${b}`, idx++));
+      inboundMidFractions.forEach(fraction => {
+        const tMid = tEndHold + (b + fraction) * dphi;
+        const phase = isSingleSlice ? `inbound_mid_${b}_q${labelFromFraction(fraction)}` : `inbound_mid_${b}`;
+        waypoints.push(sampleAt(tMid, phase, idx++));
+      });
     }
   }
 
