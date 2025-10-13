@@ -105,6 +105,12 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   const tHold = dphi;
   const tTotal = 2 * tOut + tHold;
 
+  // Fix for slices=1: Add angular jitter to prevent colinear waypoints
+  // When dphi=2π, bounce/mid samples at integer/half-integer multiples
+  // land on same headings (0 or π), collapsing to a line.
+  // Solution: offset sampling times by a fraction of dphi to rotate headings.
+  const singleSliceJitter = (slices === 1) ? 0.125 * dphi : 0;
+
   const sampleAt = (targetT: number, phase: string, index: number): Omit<Waypoint, 'z'> => {
     const targetIndex = Math.round((targetT * (spiralPts.length - 1)) / tTotal);
     const clampedIndex = Math.max(0, Math.min(spiralPts.length - 1, targetIndex));
@@ -120,19 +126,19 @@ function buildSlice(sliceIdx: number, slices: number, N: number, batteryMinutes:
   let idx = 0;
 
   // outbound start
-  waypoints.push(sampleAt(0, 'outbound_start', idx++));
+  waypoints.push(sampleAt(singleSliceJitter, 'outbound_start', idx++));
 
   // outbound mid + bounce for each bounce
   for (let b = 1; b <= N; b++) {
-    const tMid = (b - 0.5) * dphi;
+    const tMid = (b - 0.5) * dphi + singleSliceJitter;
     waypoints.push(sampleAt(tMid, `outbound_mid_${b}`, idx++));
-    const tBounce = b * dphi;
+    const tBounce = b * dphi + singleSliceJitter;
     waypoints.push(sampleAt(tBounce, `outbound_bounce_${b}`, idx++));
   }
 
   // hold mid + end
-  const tMidHold = tOut + tHold / 2;
-  const tEndHold = tOut + tHold;
+  const tMidHold = tOut + tHold / 2 + singleSliceJitter;
+  const tEndHold = tOut + tHold + singleSliceJitter;
   waypoints.push(sampleAt(tMidHold, 'hold_mid', idx++));
   waypoints.push(sampleAt(tEndHold, 'hold_end', idx++));
 

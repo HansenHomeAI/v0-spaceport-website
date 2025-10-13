@@ -93,6 +93,12 @@ class SpiralGenerator {
     const t_hold = dphi;
     const t_total = 2 * t_out + t_hold;
     
+    // Fix for slices=1: Add angular jitter to prevent colinear waypoints
+    // When dphi=2π, bounce/mid samples at integer/half-integer multiples
+    // land on same headings (0 or π), collapsing to a line.
+    // Solution: offset sampling times by a fraction of dphi to rotate headings.
+    const single_slice_jitter = (params.slices === 1) ? 0.125 * dphi : 0;
+    
     const waypoints: Waypoint[] = [];
     
     const findSpiralPoint = (target_t: number, phase: string, index: number): Waypoint => {
@@ -113,18 +119,18 @@ class SpiralGenerator {
     };
     
     let index = 0;
-    waypoints.push(findSpiralPoint(0, 'outbound_start', index++));
+    waypoints.push(findSpiralPoint(single_slice_jitter, 'outbound_start', index++));
     
     for (let bounce = 1; bounce <= params.N; bounce++) {
-      const t_mid = (bounce - 0.5) * dphi;
+      const t_mid = (bounce - 0.5) * dphi + single_slice_jitter;
       waypoints.push(findSpiralPoint(t_mid, `outbound_mid_${bounce}`, index++));
       
-      const t_bounce = bounce * dphi;
+      const t_bounce = bounce * dphi + single_slice_jitter;
       waypoints.push(findSpiralPoint(t_bounce, `outbound_bounce_${bounce}`, index++));
     }
     
-    const t_mid_hold = t_out + t_hold / 2;
-    const t_end_hold = t_out + t_hold;
+    const t_mid_hold = t_out + t_hold / 2 + single_slice_jitter;
+    const t_end_hold = t_out + t_hold + single_slice_jitter;
     
     waypoints.push(findSpiralPoint(t_mid_hold, 'hold_mid', index++));
     waypoints.push(findSpiralPoint(t_end_hold, 'hold_end', index++));
@@ -445,14 +451,14 @@ export default function ShapeViewerPage() {
         <div style={{ 
           marginTop: '15px', 
           padding: '15px', 
-          background: '#331a1a', 
+          background: '#1a331a', 
           borderRadius: '8px',
           fontSize: '11px',
           lineHeight: '1.6',
-          border: '1px solid #ff4444'
+          border: '1px solid #44ff44'
         }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#ff6666' }}>Bug Description:</div>
-          <div>At slices=1, dphi=2π causes phase oscillation to span full circle, collapsing all waypoints onto same radial line.</div>
+          <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#66ff66' }}>Single Battery Fix:</div>
+          <div>Slices=1 now applies 0.125×dphi jitter to sampling times, rotating headings to produce a proper spiral instead of a colinear line.</div>
         </div>
       </div>
       
