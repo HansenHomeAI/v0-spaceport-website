@@ -206,7 +206,13 @@ export default function FlightPathScene({ flights, selectedLens, onWaypointHover
           }
         }
 
-        viewer.scene.globe.show = false;
+        // Show globe to avoid empty black background before tiles/paths load
+        // We keep imagery layers empty to retain our visual style
+        viewer.scene.globe.show = true;
+        try {
+          // Subtle dark globe so it matches app styling
+          (viewer.scene.globe as any).baseColor = Cesium.Color.fromCssColorString("#0b0e24");
+        } catch {}
         viewer.scene.skyAtmosphere.show = false;
         viewer.scene.skyBox.show = false;
         viewer.scene.backgroundColor = Cesium.Color.BLACK;
@@ -225,6 +231,13 @@ export default function FlightPathScene({ flights, selectedLens, onWaypointHover
           });
           resizeObserverRef.current.observe(containerRef.current);
         }
+
+        // Provide a sensible initial camera so the user doesn't see a black screen
+        try {
+          const start = Cesium.Cartesian3.fromDegrees(-98.5795, 39.8283, 5000000); // CONUS overview
+          viewer.camera.setView({ destination: start });
+          viewer.scene.requestRender();
+        } catch {}
 
         try {
           const tileset = await Cesium.Cesium3DTileset.fromUrl(
@@ -252,10 +265,25 @@ export default function FlightPathScene({ flights, selectedLens, onWaypointHover
 
           tileset.initialTilesLoaded.addEventListener(() => {
             if (!cancelled && viewerRef.current) {
+              // Nudge camera to tileset bounds for immediate feedback
+              try {
+                const sphere = tileset.boundingSphere;
+                viewerRef.current.camera.flyToBoundingSphere(sphere, {
+                  duration: 0.8,
+                  offset: new Cesium.HeadingPitchRange(0, Cesium.Math.toRadians(-40), sphere.radius * 2.0),
+                });
+              } catch {}
               viewerRef.current.scene.requestRender();
               setViewerReady(true);
             }
           });
+
+          // Ensure renders while tiles stream in
+          try {
+            (tileset as any).tileLoadProgressEvent?.addEventListener?.(() => {
+              viewer.scene.requestRender();
+            });
+          } catch {}
 
           tileset.tileFailed.addEventListener((error: any) => {
             console.error("[FlightPathScene] Tile failed to load", error);
@@ -312,15 +340,20 @@ export default function FlightPathScene({ flights, selectedLens, onWaypointHover
         // Double-click to place pin
         if (onDoubleClick) {
           handlerRef.current.setInputAction((click: any) => {
-            const ray = viewer.camera.getPickRay(click.position);
-            if (ray) {
-              const cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-              if (cartesian) {
-                const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-                const lat = Cesium.Math.toDegrees(cartographic.latitude);
-                const lng = Cesium.Math.toDegrees(cartographic.longitude);
-                onDoubleClick(lat, lng);
+            let cartesian: any = null;
+            try {
+              // Prefer ellipsoid picking (works even without terrain)
+              cartesian = viewer.camera.pickEllipsoid(click.position);
+              if (!cartesian) {
+                const ray = viewer.camera.getPickRay(click.position);
+                if (ray) cartesian = viewer.scene.globe.pick(ray, viewer.scene);
               }
+            } catch {}
+            if (cartesian) {
+              const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+              const lat = Cesium.Math.toDegrees(cartographic.latitude);
+              const lng = Cesium.Math.toDegrees(cartographic.longitude);
+              onDoubleClick(lat, lng);
             }
           }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
         }
