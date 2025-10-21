@@ -44,7 +44,6 @@ You need a Google Maps API key for the flight-viewer feature:
 3. **Add to `.env.local`**:
    ```env
    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIza...your-key-here
-   NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=your-map-id (optional)
    ```
 
 ### 4. Run Development Server
@@ -117,4 +116,3 @@ For reference, here's how the production build gets its env vars:
 5. Deploys to Cloudflare Pages
 
 You're replicating step 3 locally by creating `.env.local`.
-

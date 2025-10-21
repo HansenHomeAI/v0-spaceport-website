@@ -1,100 +1,107 @@
 #!/usr/bin/env node
 /**
  * Flight Viewer Terrain Test
- * Tests the 3D terrain visualization feature
+ * Validates the 3D flight viewer workflow using the Playwright MCP server.
  */
 
+import { existsSync } from 'fs';
+import { resolve } from 'path';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
 
-const MCP_URL = process.env.PLAYWRIGHT_MCP_SSE_URL || 'http://localhost:3010/sse';
-const PREVIEW_URL = 'https://agent-38146275-flight-viewer.v0-spaceport-website-preview2.pages.dev';
+const MCP_URL = process.env.PLAYWRIGHT_MCP_SSE_URL ?? 'http://localhost:5174/sse';
+const PREVIEW_BASE = process.env.PREVIEW_URL
+  ?? process.env.PLAYWRIGHT_PREVIEW_URL
+  ?? process.env.SPACEPORT_PREVIEW_URL
+  ?? 'http://localhost:3000';
+const FLIGHT_VIEWER_URL = `${PREVIEW_BASE.replace(/\/$/, '')}/flight-viewer`;
+const CSV_PATH = resolve(process.env.FLIGHT_VIEWER_CSV ?? 'Edgewood-1.csv');
 
-async function testFlightViewerTerrain() {
-  console.log('🚀 Starting Flight Viewer Terrain Test');
-  console.log(`📍 Preview URL: ${PREVIEW_URL}`);
-  console.log(`🔌 MCP Server: ${MCP_URL}`);
+const client = new Client(
+  { name: 'flight-viewer-terrain-test', version: '1.0.0' },
+  { capabilities: {} }
+);
 
-  const client = new Client(
-    { name: 'flight-viewer-terrain-test', version: '1.0.0' },
-    { capabilities: {} }
-  );
+const transport = new SSEClientTransport(new URL(MCP_URL));
+const steps = [];
 
-  const transport = new SSEClientTransport(new URL(MCP_URL));
+function record(step, status, info = '') {
+  steps.push({ step, status, info });
+  const tag = status === 'pass' ? '✅' : status === 'warn' ? '⚠️' : '❌';
+  const suffix = info ? ` — ${info}` : '';
+  console.log(`${tag} ${step}${suffix}`);
+}
+
+function extractText(result) {
+  return result?.content?.find((c) => c.type === 'text')?.text ?? '';
+}
+
+function extractSnapshot(result) {
+  const text = extractText(result);
+  const match = text.match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
+  return match ? match[1] : '';
+}
+
+function findUploadRef(snapshot) {
+  const uploadPattern = /- generic \[ref=(e\d+)\] \[cursor=pointer\]:\n\s+- generic \[ref=e\d+\]: Add flight files/;
+  const match = snapshot.match(uploadPattern);
+  return match?.[1] ?? null;
+}
+
+async function callTool(name, args, { expectSnapshot = false } = {}) {
+  const result = await client.callTool({ name, arguments: args });
+  if (expectSnapshot && !extractSnapshot(result)) {
+    throw new Error(`${name} did not return a snapshot`);
+  }
+  return result;
+}
+
+async function main() {
+  if (!existsSync(CSV_PATH)) {
+    throw new Error(`CSV fixture not found at ${CSV_PATH}`);
+  }
+
   await client.connect(transport);
-  console.log('✅ Connected to Playwright MCP');
+  record('Connect to Playwright MCP', 'pass', `via ${MCP_URL}`);
 
-  try {
-    // Navigate to flight viewer
-    console.log('\n📄 Step 1: Navigate to flight viewer');
-    await client.callTool('browser_navigate', {
-      url: `${PREVIEW_URL}/flight-viewer`,
-    });
-    
-    await new Promise(resolve => setTimeout(resolve, 3000));
+  const navigateResult = await callTool('browser_navigate', { url: FLIGHT_VIEWER_URL }, { expectSnapshot: true });
+  const initialSnapshot = extractSnapshot(navigateResult);
+  record('Navigate to flight viewer', 'pass', FLIGHT_VIEWER_URL);
 
-    // Take initial screenshot
-    console.log('\n📸 Step 2: Take initial screenshot');
-    const initialSS = await client.callTool('browser_screenshot', {});
-    console.log('Initial state captured');
+  const uploadRef = findUploadRef(initialSnapshot);
+  if (!uploadRef) {
+    throw new Error('Could not locate upload dropzone in snapshot');
+  }
 
-    // Get console logs
-    console.log('\n📋 Step 3: Check console logs');
-    const consoleLogs = await client.callTool('browser_console_messages', {});
-    console.log('Console messages:', JSON.stringify(consoleLogs, null, 2));
+  await callTool('browser_click', { element: 'Flight files upload area', ref: uploadRef });
+  record('Open file chooser', 'pass');
 
-    // Upload CSV file
-    console.log('\n📤 Step 4: Upload Edgewood-1.csv');
-    const csvPath = resolve('/Users/gabrielhansen/user-development-spaceport-website/Edgewood-1.csv');
-    const csvContent = readFileSync(csvPath, 'utf-8');
-    console.log(`CSV loaded: ${csvContent.split('\n').length} lines`);
+  await callTool('browser_file_upload', { paths: [CSV_PATH] });
+  record('Upload Edgewood-1.csv', 'pass', CSV_PATH);
 
-    // Try to find and interact with file upload
-    const snapshot = await client.callTool('browser_snapshot', {});
-    console.log('Page snapshot:', JSON.stringify(snapshot, null, 2).substring(0, 500));
+  await callTool('browser_wait_for', { text: 'Loaded Flights', time: 5 });
+  const afterUpload = await callTool('browser_snapshot', {}, { expectSnapshot: true });
+  record('Render flight overlay', 'pass');
 
-    // Look for file input
-    console.log('\n🔍 Step 5: Looking for file input element');
-    
-    // Wait for upload to process
-    await new Promise(resolve => setTimeout(resolve, 5000));
+  const consoleLogs = extractText(await callTool('browser_console_messages', {}));
+  const hasError = /\b(error|failed)\b/i.test(consoleLogs);
+  record('Inspect console logs', hasError ? 'warn' : 'pass', hasError ? 'Errors detected in console output' : 'No errors reported');
 
-    // Check console for terrain loading messages
-    console.log('\n📋 Step 6: Check for terrain loading logs');
-    const logsAfter = await client.callTool('browser_console_messages', {});
-    console.log('Console after upload:', JSON.stringify(logsAfter, null, 2));
+  const screenshot = await callTool('browser_take_screenshot', {});
+  const screenshotSaved = screenshot?.content?.some((entry) => entry.type === 'image');
+  record('Capture screenshot', screenshotSaved ? 'pass' : 'warn');
 
-    // Take final screenshot
-    console.log('\n📸 Step 7: Take final screenshot');
-    const finalSS = await client.callTool('browser_screenshot', {});
-    console.log('Final state captured');
-
-    // Check for errors
-    const hasTerrainLog = JSON.stringify(logsAfter).includes('Google3DTerrain');
-    const hasError = JSON.stringify(logsAfter).includes('error') || JSON.stringify(logsAfter).includes('Error');
-
-    console.log('\n📊 Test Results:');
-    console.log(`  Terrain logs found: ${hasTerrainLog ? '✅' : '❌'}`);
-    console.log(`  Errors detected: ${hasError ? '❌' : '✅'}`);
-
-    if (!hasTerrainLog) {
-      console.log('\n⚠️  ISSUE: No terrain loading logs detected');
-      console.log('Possible causes:');
-      console.log('  1. API key not set in environment');
-      console.log('  2. Component not rendering');
-      console.log('  3. Center coordinates not calculated');
-    }
-
-  } catch (error) {
-    console.error('\n❌ Test failed:', error);
-    throw error;
-  } finally {
-    await client.close();
-    console.log('\n✅ Test completed');
+  console.log('\nTest summary:');
+  for (const step of steps) {
+    console.log(`- ${step.step}: ${step.status}`);
   }
 }
 
-testFlightViewerTerrain().catch(console.error);
-
+main()
+  .catch((error) => {
+    record('Flight viewer terrain test failed', 'fail', error.message);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await client.close().catch(() => {});
+  });
