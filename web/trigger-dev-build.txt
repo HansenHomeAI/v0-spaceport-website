@@ -1,13 +1,8 @@
-2025-09-22 3:26pm - subscription badge routing update
-2025-09-23 11:34AM MDT - invite reset fix
-2025-09-23 12:56PM MDT - invite playwright test
-2025-09-23 - increased auth modal border radius to 40px
-2025-09-23 14:10 MDT - waitlist endpoint normalization
-2025-09-24 17:20 UTC - redeploy subscription api authorizer
-2025-09-24 11:53 MDT - add project model link UI display
-Sept 24th, 12:01PM
-2025-09-24 12:47 MDT - employee model delivery flow
-2025-09-25 16:14 UTC - auth fallback + model delivery fixes
-Sep 25th 10:57am
-2025-09-25 17:04 UTC - remove Amplify fallback, add env guard
-Sep 25th 1:39PMTrigger build after environment fix
+Cesium integration trigger 2025-10-06T17:09:32Z
+1:32pm
+Dynamic path radius scaling 2025-10-13T16:25:00Z
+Single-slice quarter midpoints 2025-10-13T21:14:45Z
+Single-slice triple midpoints 2025-10-13T21:28:59Z
+Single-slice sixth midpoints 2025-10-13T22:17:54Z
+Hold mid adjustments 2025-10-13T22:33:19Z
+Production Lambda sync 2025-10-13T23:53:00Z

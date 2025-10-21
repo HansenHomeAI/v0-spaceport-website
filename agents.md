@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Agentic Dev Loop SOP
-1. **Branch**: from `development` create `agent-12345678-task-name` (unique eight-digit ID plus slug, e.g. `agent-74120953-update-web-copy`).
+1. **Branch**: from whichever branch you're currently tasked to extend (often `development`, but honor any provided base) create `agent-12345678-task-name` (unique eight-digit ID plus slug, e.g. `agent-74120953-update-web-copy`).
 2. **Baseline**: push your task branch to trigger the Cloudflare Pages workflow, then monitor *every* GitHub Actions run kicked off by the push until they finish successfully (use `gh run list --branch <branch>` to enumerate, and `gh run watch <id> --exit-status` on each run). At minimum, confirm both the Pages deploy and the "CDK Deploy" workflow are green before moving on, capturing failing logs immediately if either stops early.
  - Push the branch upstream as soon as there is meaningful work (`git push origin agent-…`) so deploy workflows and reviewers can see your changes.
  - If a deployment is rejected, immediately check environment protection rules: `gh api repos/$OWNER/$REPO/environments/<env>/deployment-branch-policies` and adjust with `gh api ... --field name="agent-*" --field type="branch"` (or coordinate with the maintainer) before retrying. The same expectation applies to infrastructure runs—never continue while "CDK Deploy" is red.
