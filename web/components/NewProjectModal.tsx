@@ -1,6 +1,10 @@
 "use client";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Papa from "papaparse";
+import JSZip from "jszip";
+import { XMLParser } from "fast-xml-parser";
 import { buildApiUrl } from '../app/api-config';
+import FlightPathScene from './FlightPathScene';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -16,6 +20,307 @@ type OptimizedParams = {
   maxHeight: number | null;
   elevationFeet: number | null;
 };
+
+// Flight viewer types
+type RawFlightRow = Record<string, unknown>;
+
+interface PreparedRow {
+  latitude: number;
+  longitude: number;
+  altitudeFt: number;
+  headingDeg: number | null;
+  curveSizeFt: number | null;
+  rotationDir: number | null;
+  gimbalMode: number | null;
+  gimbalPitchAngle: number | null;
+  altitudeMode: number | null;
+  speedMs: number | null;
+  poiLatitude: number | null;
+  poiLongitude: number | null;
+  poiAltitudeFt: number | null;
+  poiAltitudeMode: number | null;
+  photoTimeInterval: number | null;
+  photoDistInterval: number | null;
+}
+
+interface ProcessedSample extends PreparedRow {
+  index: number;
+}
+
+interface PoiData {
+  latitude: number;
+  longitude: number;
+  altitudeFt: number;
+  altitudeMode: number | null;
+}
+
+interface FlightData {
+  id: string;
+  name: string;
+  color: string;
+  samples: ProcessedSample[];
+  poi: PoiData | null;
+}
+
+interface FlightPathSceneProps {
+  flights: FlightData[];
+  selectedLens: string;
+  onWaypointHover: (flightId: string, waypointIndex: number | null) => void;
+  onDoubleClick?: (lat: number, lng: number) => void;
+}
+
+type CesiumModule = typeof import("cesium");
+
+declare const CESIUM_BASE_URL: string | undefined;
+
+declare global {
+  interface Window {
+    CESIUM_BASE_URL?: string;
+  }
+}
+
+const EARTH_RADIUS_METERS = 6_378_137;
+const FEET_TO_METERS = 0.3048;
+
+const FLIGHT_COLORS = [
+  "#4f83ff",
+  "#ff7a18",
+  "#00d9ff",
+  "#ff4d94",
+  "#7aff7a",
+  "#ffbb00",
+  "#bb7aff",
+  "#ff5757",
+  "#00ffaa",
+  "#ffcc66",
+];
+
+const DRONE_LENSES: Record<string, { name: string; fov: number; aspectRatio: number }> = {
+  mavic3_wide: { name: "Mavic 3 Wide (24mm)", fov: 84, aspectRatio: 4 / 3 },
+  mavic3_tele: { name: "Mavic 3 Tele (162mm)", fov: 15, aspectRatio: 4 / 3 },
+  air3_wide: { name: "Air 3 Wide (24mm)", fov: 82, aspectRatio: 4 / 3 },
+  mini4_wide: { name: "Mini 4 Pro (24mm)", fov: 82.1, aspectRatio: 4 / 3 },
+  phantom4: { name: "Phantom 4 Pro (24mm)", fov: 73.7, aspectRatio: 3 / 2 },
+};
+
+function degreesToRadians(value: number): number {
+  return (value * Math.PI) / 180;
+}
+
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : Number.NaN;
+  }
+  return Number.NaN;
+}
+
+function toOptionalNumber(value: unknown): number | null {
+  const parsed = toNumber(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const lat1Rad = (lat1 * Math.PI) / 180;
+  const lat2Rad = (lat2 * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const y = Math.sin(dLon) * Math.cos(lat2Rad);
+  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+  
+  let bearing = Math.atan2(y, x);
+  bearing = (bearing * 180) / Math.PI;
+  bearing = (bearing + 360) % 360;
+  
+  return bearing;
+}
+
+function sanitizeRow(row: RawFlightRow): PreparedRow | null {
+  const latitude = toNumber(row.latitude);
+  const longitude = toNumber(row.longitude);
+  const altitudeFt = toNumber(row["altitude(ft)"] ?? row.altitudeft ?? row.altitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isFinite(altitudeFt)) {
+    return null;
+  }
+
+  return {
+    latitude,
+    longitude,
+    altitudeFt,
+    headingDeg: toOptionalNumber(row["heading(deg)"] ?? row.headingdeg ?? row.heading),
+    curveSizeFt: toOptionalNumber(row["curvesize(ft)"] ?? row.curvesizeft),
+    rotationDir: toOptionalNumber(row.rotationdir),
+    gimbalMode: toOptionalNumber(row.gimbalmode),
+    gimbalPitchAngle: toOptionalNumber(row["gimbalpitchangle"] ?? row.gimbalpitch),
+    altitudeMode: toOptionalNumber(row.altitudemode),
+    speedMs: toOptionalNumber(row["speed(m/s)"] ?? row.speedms ?? row.speed),
+    poiLatitude: toOptionalNumber(row.poi_latitude ?? row.poilatitude),
+    poiLongitude: toOptionalNumber(row.poi_longitude ?? row.poilongitude),
+    poiAltitudeFt: toOptionalNumber(row["poi_altitude(ft)"] ?? row.poialtitudeft ?? row.poialtitude),
+    poiAltitudeMode: toOptionalNumber(row.poi_altitudemode ?? row.poialtmode),
+    photoTimeInterval: toOptionalNumber(row.phototimeinterval ?? row.photo_time),
+    photoDistInterval: toOptionalNumber(row.photodistinterval ?? row.photo_dist),
+  };
+}
+
+function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi: PoiData | null } {
+  if (!samples.length) {
+    return { samples: [], poi: null };
+  }
+
+  const processedSamples: ProcessedSample[] = samples.map((sample, index) => ({
+    ...sample,
+    index,
+  }));
+
+  for (let i = 0; i < processedSamples.length; i++) {
+    const sample = processedSamples[i];
+    
+    if (!sample.headingDeg || sample.headingDeg === 0) {
+      let calculatedHeading: number | null = null;
+      
+      if (i < processedSamples.length - 1) {
+        const nextSample = processedSamples[i + 1];
+        calculatedHeading = calculateBearing(
+          sample.latitude,
+          sample.longitude,
+          nextSample.latitude,
+          nextSample.longitude
+        );
+      } else if (i > 0) {
+        const prevSample = processedSamples[i - 1];
+        calculatedHeading = calculateBearing(
+          prevSample.latitude,
+          prevSample.longitude,
+          sample.latitude,
+          sample.longitude
+        );
+      }
+      
+      if (calculatedHeading !== null) {
+        sample.headingDeg = calculatedHeading;
+      }
+    }
+  }
+
+  const firstPoiSource = samples.find(entry =>
+    Number.isFinite(entry.poiLatitude ?? Number.NaN) && Number.isFinite(entry.poiLongitude ?? Number.NaN),
+  );
+
+  let poi: PoiData | null = null;
+  if (firstPoiSource && firstPoiSource.poiLatitude !== null && firstPoiSource.poiLongitude !== null) {
+    const poiAltitudeFt = firstPoiSource.poiAltitudeFt ?? samples[0].altitudeFt;
+    poi = {
+      latitude: firstPoiSource.poiLatitude,
+      longitude: firstPoiSource.poiLongitude,
+      altitudeFt: poiAltitudeFt,
+      altitudeMode: firstPoiSource.poiAltitudeMode,
+    };
+  }
+
+  return { samples: processedSamples, poi };
+}
+
+async function parseKMZFile(file: File): Promise<PreparedRow[]> {
+  const zip = await JSZip.loadAsync(file);
+  const wpmlFile = zip.file("wpmz/waylines.wpml");
+  if (!wpmlFile) {
+    throw new Error("No waylines.wpml found in KMZ");
+  }
+
+  const xmlContent = await wpmlFile.async("string");
+  const parser = new XMLParser({ ignoreAttributes: false });
+  const parsed = parser.parse(xmlContent);
+
+  const placemarks = parsed?.kml?.Document?.Folder?.Placemark;
+  if (!placemarks) {
+    throw new Error("No waypoints found in KMZ");
+  }
+
+  const waypointArray = Array.isArray(placemarks) ? placemarks : [placemarks];
+  const rows: PreparedRow[] = [];
+
+  for (const mark of waypointArray) {
+    const coords = mark?.Point?.coordinates;
+    const executeHeight = mark?.["wpml:executeHeight"];
+    const speed = mark?.["wpml:waypointSpeed"];
+    const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
+    const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+
+    let gimbalPitch: number | null = null;
+    const actionGroups = mark?.["wpml:actionGroup"];
+    const groups = Array.isArray(actionGroups) ? actionGroups : actionGroups ? [actionGroups] : [];
+    for (const group of groups) {
+      const action = group?.["wpml:action"];
+      const actions = Array.isArray(action) ? action : action ? [action] : [];
+      for (const act of actions) {
+        const func = act?.["wpml:actionActuatorFunc"];
+        if (func === "gimbalRotate" || func === "gimbalEvenlyRotate") {
+          const pitch = act?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
+          if (pitch !== undefined && pitch !== null) {
+            gimbalPitch = Number(pitch);
+            break;
+          }
+        }
+      }
+      if (gimbalPitch !== null) {
+        break;
+      }
+    }
+
+    if (!coords || executeHeight === undefined || executeHeight === null) {
+      continue;
+    }
+
+    const [lon, lat] = String(coords)
+      .split(",")
+      .map(value => Number(value));
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      continue;
+    }
+
+    const altitudeMeters = Number(executeHeight);
+    const altitudeFt = altitudeMeters / FEET_TO_METERS;
+
+    let poiLat: number | null = null;
+    let poiLon: number | null = null;
+    let poiAltFt: number | null = null;
+    if (typeof poiPoint === "string") {
+      const poiParts = poiPoint.split(",").map(Number);
+      if (poiParts.length >= 3 && Number.isFinite(poiParts[0]) && Number.isFinite(poiParts[1])) {
+        poiLat = poiParts[0];
+        poiLon = poiParts[1];
+        poiAltFt = poiParts[2] / FEET_TO_METERS;
+      }
+    }
+
+    rows.push({
+      latitude: lat,
+      longitude: lon,
+      altitudeFt,
+      headingDeg: toOptionalNumber(heading),
+      curveSizeFt: null,
+      rotationDir: null,
+      gimbalMode: null,
+      gimbalPitchAngle: gimbalPitch,
+      altitudeMode: null,
+      speedMs: toOptionalNumber(speed),
+      poiLatitude: poiLat,
+      poiLongitude: poiLon,
+      poiAltitudeFt: poiAltFt,
+      poiAltitudeMode: null,
+      photoTimeInterval: null,
+      photoDistInterval: null,
+    });
+  }
+
+  return rows;
+}
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
@@ -88,6 +393,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Flight viewer state
+  const [flights, setFlights] = useState<FlightData[]>([]);
+  const [selectedLens, setSelectedLens] = useState("mavic3_wide");
+  const [isParsing, setIsParsing] = useState(false);
 
   // Center-screen modal popup system (replacing Safari notifications)
   const [modalPopup, setModalPopup] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -261,135 +571,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
   }, [open, project]);
 
-  // Initialize Mapbox on open
-  useEffect(() => {
-    let isCancelled = false;
-    async function initMap() {
-      if (!open) return;
-      if (!mapContainerRef.current) return;
-      try {
-        const mapboxgl = await import('mapbox-gl');
-        mapboxgl.default.accessToken = MAPBOX_TOKEN;
-        if (isCancelled) return;
-        const map = new mapboxgl.default.Map({
-          container: mapContainerRef.current,
-          style: 'mapbox://styles/mapbox/satellite-v9',
-          center: [-98.5795, 39.8283],
-          zoom: 4,
-          attributionControl: false,
-        });
-        
-        map.on('click', (e: any) => {
-          const { lng, lat } = e.lngLat;
-          selectedCoordsRef.current = { lat, lng };
-          // place marker
-          if (markerRef.current) {
-            markerRef.current.remove();
-          }
-          
-          // Create custom teardrop pin element with inline SVG
-          const pinElement = document.createElement('div');
-          pinElement.className = 'custom-teardrop-pin';
-          pinElement.innerHTML = `
-            <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-            </svg>
-          `;
-          
-          markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
-            .setLngLat([lng, lat])
-            .addTo(map);
-          
-          // Fill address input with coordinates formatted
-          setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-          // Invalidate previous optimization
-          setOptimizedParamsWithLogging(null, 'Map coordinates changed');
-          // Hide instructions after first click
-          const inst = document.getElementById('map-instructions');
-          if (inst) inst.style.display = 'none';
-        });
-        
-        mapRef.current = map;
-        
-        // CRITICAL FIX: Restore saved location marker if editing existing project
-        if (project) {
-          // Check if we have saved coordinates to restore
-          const params = project.params || {};
-          if (params.latitude && params.longitude) {
-            const coords = { 
-              lat: parseFloat(params.latitude), 
-              lng: parseFloat(params.longitude) 
-            };
-            
-            // Wait a bit longer for map to be fully ready, then restore coordinates
-            setTimeout(async () => {
-              await restoreSavedLocation(map, coords);
-            }, 1000); // Increased delay to ensure map is fully ready
-          }
-        }
-      } catch (err: any) {
-        console.error('Map init failed', err);
-      }
-    }
-    initMap();
-    return () => {
-      isCancelled = true;
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-        markerRef.current = null;
-        selectedCoordsRef.current = null;
-      }
-    };
-  }, [open, project]);
-
-  // Helper function to place marker at coordinates
-  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
-    if (!mapRef.current) return;
-    
-    mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
-    
-    // Update both ref and state for coordinates
-    const coords = { lat, lng };
-    selectedCoordsRef.current = coords;
-    setSelectedCoords(coords); // This will trigger autosave
-    
-    // Place marker
-    const mapboxgl = await import('mapbox-gl');
-    if (markerRef.current) markerRef.current.remove();
-    
-    const pinElement = document.createElement('div');
-    pinElement.className = 'custom-teardrop-pin';
-    pinElement.innerHTML = `
-      <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-      </svg>
-    `;
-    
-    markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
-      .setLngLat([lng, lat])
-      .addTo(mapRef.current);
-    
-    // Invalidate previous optimization since coordinates changed
-    setOptimizedParamsWithLogging(null, 'Address search coordinates changed');
-    
-    // Hide instructions
-    const inst = document.getElementById('map-instructions');
-    if (inst) inst.style.display = 'none';
-    
-    // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, []);
-
-  // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
-  const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
-    if (!map || !coords) return;
-    
-    // Use the same function as user interaction to ensure consistency
-    await placeMarkerAtCoords(coords.lat, coords.lng);
-    
-    // Update the address search field to show the coordinates
-    setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
-  }, [placeMarkerAtCoords]);
+  // No longer need Mapbox initialization - using Cesium 3D viewer instead
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
@@ -415,28 +597,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       mapWrapper.classList.remove('fullscreen');
     }
     
-    // Force Mapbox to recalculate after DOM move
-    setTimeout(() => {
-      if (mapRef.current) {
-        mapRef.current.resize();
-        // Force coordinate system recalculation
-        const currentCenter = mapRef.current.getCenter();
-        const currentZoom = mapRef.current.getZoom();
-        mapRef.current.jumpTo({
-          center: [currentCenter.lng + 0.0000001, currentCenter.lat + 0.0000001],
-          zoom: currentZoom
-        });
-        setTimeout(() => {
-          if (mapRef.current) {
-            mapRef.current.jumpTo({
-              center: currentCenter,
-              zoom: currentZoom
-            });
-            mapRef.current.resize();
-          }
-        }, 100);
-      }
-    }, 300);
+    // Cesium will auto-resize via ResizeObserver in FlightPathScene
   }, [isFullscreen]);
 
   // ESC key to exit fullscreen
@@ -589,6 +750,100 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     "Finalizing flight path"
   ];
 
+  // File upload handler for flight paths
+  const onFlightFilesSelected = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (!fileList || fileList.length === 0) {
+      return;
+    }
+
+    setIsParsing(true);
+
+    const newFlights: FlightData[] = [];
+    const errors: string[] = [];
+
+    for (let i = 0; i < fileList.length; i += 1) {
+      const file = fileList[i];
+      const extension = file.name.toLowerCase().split(".").pop();
+
+      try {
+        let prepared: PreparedRow[] = [];
+
+        if (extension === "kmz") {
+          prepared = await parseKMZFile(file);
+        } else if (extension === "csv") {
+          await new Promise<void>((resolve, reject) => {
+            Papa.parse<RawFlightRow>(file, {
+              header: true,
+              skipEmptyLines: true,
+              dynamicTyping: true,
+              complete: result => {
+                if (result.errors.length) {
+                  reject(new Error(`CSV parse error: ${result.errors[0].message}`));
+                  return;
+                }
+                prepared = result.data
+                  .map(sanitizeRow)
+                  .filter((value): value is PreparedRow => value !== null);
+                resolve();
+              },
+              error: err => reject(err),
+            });
+          });
+        } else {
+          errors.push(`${file.name}: Unsupported format (use .csv or .kmz)`);
+          continue;
+        }
+
+        if (!prepared.length) {
+          errors.push(`${file.name}: No valid waypoints found`);
+          continue;
+        }
+
+        const { samples, poi } = buildSamples(prepared);
+
+        const flightId = `${Date.now()}-${i}`;
+        const colorIndex = (flights.length + newFlights.length) % FLIGHT_COLORS.length;
+
+        newFlights.push({
+          id: flightId,
+          name: file.name,
+          color: FLIGHT_COLORS[colorIndex],
+          samples,
+          poi,
+        });
+      } catch (err) {
+        errors.push(`${file.name}: ${err instanceof Error ? err.message : "Unknown error"}`);
+      }
+    }
+
+    setIsParsing(false);
+
+    if (newFlights.length > 0) {
+      setFlights(prev => [...prev, ...newFlights]);
+    }
+
+    if (errors.length > 0 && newFlights.length === 0) {
+      showSystemNotification('error', errors.join("; "));
+    }
+  }, [flights.length]);
+
+  const removeFlight = useCallback((id: string) => {
+    setFlights(prev => prev.filter(f => f.id !== id));
+  }, []);
+
+  // Handle double-click pin placement from 3D viewer
+  const handleDoubleClickPin = useCallback((lat: number, lng: number) => {
+    selectedCoordsRef.current = { lat, lng };
+    setSelectedCoords({ lat, lng });
+    setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+    setOptimizedParamsWithLogging(null, 'Map coordinates changed via double-click');
+    
+    // Hide instructions after first click
+    const inst = document.getElementById('map-instructions');
+    if (inst) inst.style.display = 'none';
+  }, [setOptimizedParamsWithLogging]);
+
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     // Check if already downloading this battery
     if (downloadingBatteries.has(batteryIndex1)) {
@@ -647,6 +902,28 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
+      // AUTO-LOAD to 3D viewer: Parse and add to flights
+      try {
+        const parsed = Papa.parse<RawFlightRow>(csvText, { header: true, skipEmptyLines: true, dynamicTyping: true });
+        const preparedRows = parsed.data
+          .map(sanitizeRow)
+          .filter((value): value is PreparedRow => value !== null);
+        
+        if (preparedRows.length > 0) {
+          const { samples, poi } = buildSamples(preparedRows);
+          const flightData: FlightData = {
+            id: `battery-${batteryIndex1}-${Date.now()}`,
+            name: filename,
+            color: FLIGHT_COLORS[flights.length % FLIGHT_COLORS.length],
+            samples,
+            poi
+          };
+          setFlights(prev => [...prev, flightData]);
+        }
+      } catch (parseErr) {
+        console.warn('Failed to auto-load CSV to 3D viewer:', parseErr);
+      }
+      
       // Update project status to indicate drone path has been downloaded
       if (status === 'draft') {
         setStatus('path_downloaded');
@@ -667,7 +944,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, flights.length]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -827,7 +1104,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (e.key !== 'Enter') return;
     e.preventDefault();
     const query = addressSearch.trim();
-    if (!query || !mapRef.current) return;
+    if (!query) return;
     
     // Check if input looks like coordinates (lat, lng)
     const coordsMatch = query.match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
@@ -838,7 +1115,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const lng = parseFloat(coordsMatch[2]);
       
       if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        await placeMarkerAtCoords(lat, lng);
+        handleDoubleClickPin(lat, lng);
         return;
       }
     }
@@ -849,12 +1126,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const data = await res.json();
       if (data?.features?.length) {
         const [lng, lat] = data.features[0].center;
-        await placeMarkerAtCoords(lat, lng);
+        handleDoubleClickPin(lat, lng);
       }
     } catch (err) {
       console.warn('Geocoding failed:', err);
     }
-  }, [addressSearch, MAPBOX_TOKEN]);
+  }, [addressSearch, MAPBOX_TOKEN, handleDoubleClickPin]);
 
   // Upload flow
   const onFileChosen = useCallback((file: File | null) => {
@@ -1141,8 +1418,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           <div className="accordion-content">
             <div className="popup-map-section">
                             <div className="map-wrapper">
-                {/* Empty map container for Mapbox - avoids the warning */}
-                <div id="map-container" className="map-container" ref={mapContainerRef}></div>
+                {/* Cesium 3D Flight Viewer */}
+                <div id="map-container" className="map-container" ref={mapContainerRef}>
+                  {open && <FlightPathScene 
+                    flights={flights}
+                    selectedLens={selectedLens}
+                    onWaypointHover={() => {}}
+                    onDoubleClick={handleDoubleClickPin}
+                  />}
+                </div>
                 
                 {/* Map overlays and controls as siblings */}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
@@ -1364,6 +1648,80 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   </button>
                 ))}
                 </div>
+              </div>
+            </div>
+
+            {/* 3D Flight Path Viewer */}
+            <div className="category-outline">
+              <div className="popup-section">
+                <h4>3D Flight Path Viewer</h4>
+                <label style={{
+                  display: 'block',
+                  padding: '16px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '2px dashed rgba(255, 255, 255, 0.2)',
+                  borderRadius: '25px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center'
+                }}>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.95rem' }}>
+                    {isParsing ? 'Parsing files...' : 'Upload flight files (CSV or KMZ)'}
+                  </span>
+                  <input
+                    type="file"
+                    accept=".csv,text/csv,.kmz,application/vnd.google-earth.kmz"
+                    multiple
+                    onChange={onFlightFilesSelected}
+                    disabled={isParsing}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                {flights.length > 0 && (
+                  <div style={{
+                    marginTop: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    {flights.map(flight => (
+                      <div key={flight.id} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '20px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{
+                            width: '12px',
+                            height: '12px',
+                            borderRadius: '50%',
+                            background: flight.color
+                          }} />
+                          <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+                            {flight.name}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => removeFlight(flight.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            cursor: 'pointer',
+                            fontSize: '1.2rem',
+                            lineHeight: 1,
+                            padding: '0 4px'
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
