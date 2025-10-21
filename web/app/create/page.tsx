@@ -271,20 +271,6 @@ export default function Create(): JSX.Element {
                   <span className="sign-out-icon"></span>
                   Sign Out
                 </button>
-                {hasModelDeliveryPermission && (
-                  <button
-                    className="model-delivery-trigger"
-                    onClick={() => setModelDeliveryOpen(true)}
-                    disabled={modelDeliveryLoading || !modelDeliveryApiConfigured}
-                  >
-                    Send Model Link
-                  </button>
-                )}
-                {hasModelDeliveryPermission && modelDeliveryError && (
-                  <p className="model-delivery-banner-error" role="status">
-                    {modelDeliveryError}
-                  </p>
-                )}
               </div>
             </div>
             
@@ -325,6 +311,28 @@ export default function Create(): JSX.Element {
             
             {/* Beta Access Management - Only shown to authorized employees */}
             <BetaAccessInvite />
+
+            {/* Model Delivery - Only shown to authorized employees */}
+            {hasModelDeliveryPermission && (
+              <div className="project-box model-delivery-card">
+                <h4>Model Delivery</h4>
+                <p>Send a final model link to a client and attach it to their project.</p>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    className="model-delivery-primary"
+                    onClick={() => setModelDeliveryOpen(true)}
+                    disabled={modelDeliveryLoading || !modelDeliveryApiConfigured}
+                  >
+                    Send Model Link
+                  </button>
+                  {modelDeliveryError && (
+                    <p className="model-delivery-banner-error" role="status" style={{ margin: 0 }}>
+                      {modelDeliveryError}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
@@ -472,13 +480,13 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
     if (modelLink) return '';
 
     // Friendly, stage-based guidance
+    if (isDelivered) return 'Model link not delivered yet';
     if (!s && p <= 0) return 'Plan drone flight';
     if (/new|created|draft/.test(s) || p === 0) return 'Plan drone flight';
     if (/upload|pending_upload/.test(s) || (p > 0 && p < 15)) return 'Upload photos';
     if (/processing|reconstruct|colmap|sfm|dense/.test(s) || (p >= 15 && p < 60)) return 'Reconstructing scene';
     if (/training|3dgs|render/.test(s) || (p >= 60 && p < 90)) return 'Training model';
     if (/compress|optimiz|sogs/.test(s) || (p >= 90 && p < 100)) return 'Optimizing web';
-    if (isDelivered) return 'Finalizing delivery';
     return 'Preparing model';
   };
 
