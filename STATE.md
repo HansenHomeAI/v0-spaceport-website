@@ -1,5 +1,5 @@
-reason: instrumenting flight viewer observability for local black-screen debugging
-last_step: added verbose logging + pixel sampler and confirmed local env key presence snapshot
-next_unblocked_step: run npm run dev on agent-58210476-flight-viewer-logging branch and watch console logs for tileset requests and pixel sampler output
-owner_action_needed: user to start dev server and review new logs with valid localhost-enabled maps key
-updated: 2025-10-22T17:58:10Z
+reason: flight viewer instrumentation branch ready for local validation
+last_step: added verbose logging/pixel sampling, resolved next build issues, and confirmed pages + cdk workflows green (https://agent-58210476-flight-viewer.v0-spaceport-website-preview2.pages.dev)
+next_unblocked_step: run npm run dev locally, reproduce the blank viewer, and inspect new console output + pixel sampler metrics
+owner_action_needed: user to launch dev server with localhost-enabled maps key and share findings if further fixes needed
+updated: 2025-10-22T18:28:30Z
