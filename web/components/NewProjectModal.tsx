@@ -1,5 +1,8 @@
 "use client";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Papa from "papaparse";
+import JSZip from "jszip";
+import { XMLParser } from "fast-xml-parser";
 import { buildApiUrl } from '../app/api-config';
 
 type NewProjectModalProps = {
@@ -16,6 +19,852 @@ type OptimizedParams = {
   maxHeight: number | null;
   elevationFeet: number | null;
 };
+
+// Flight viewer types
+type RawFlightRow = Record<string, unknown>;
+
+interface PreparedRow {
+  latitude: number;
+  longitude: number;
+  altitudeFt: number;
+  headingDeg: number | null;
+  curveSizeFt: number | null;
+  rotationDir: number | null;
+  gimbalMode: number | null;
+  gimbalPitchAngle: number | null;
+  altitudeMode: number | null;
+  speedMs: number | null;
+  poiLatitude: number | null;
+  poiLongitude: number | null;
+  poiAltitudeFt: number | null;
+  poiAltitudeMode: number | null;
+  photoTimeInterval: number | null;
+  photoDistInterval: number | null;
+}
+
+interface ProcessedSample extends PreparedRow {
+  index: number;
+}
+
+interface PoiData {
+  latitude: number;
+  longitude: number;
+  altitudeFt: number;
+  altitudeMode: number | null;
+}
+
+interface FlightData {
+  id: string;
+  name: string;
+  color: string;
+  samples: ProcessedSample[];
+  poi: PoiData | null;
+}
+
+interface FlightPathSceneProps {
+  flights: FlightData[];
+  selectedLens: string;
+  onWaypointHover: (flightId: string, waypointIndex: number | null) => void;
+  onDoubleClick?: (lat: number, lng: number) => void;
+  markerPosition?: { lat: number; lng: number } | null;
+}
+
+type CesiumModule = typeof import("cesium");
+
+declare const CESIUM_BASE_URL: string | undefined;
+
+declare global {
+  interface Window {
+    CESIUM_BASE_URL?: string;
+  }
+}
+
+const EARTH_RADIUS_METERS = 6_378_137;
+const FEET_TO_METERS = 0.3048;
+
+const FLIGHT_COLORS = [
+  "#4f83ff",
+  "#ff7a18",
+  "#00d9ff",
+  "#ff4d94",
+  "#7aff7a",
+  "#ffbb00",
+  "#bb7aff",
+  "#ff5757",
+  "#00ffaa",
+  "#ffcc66",
+];
+
+function degreesToRadians(value: number): number {
+  return (value * Math.PI) / 180;
+}
+
+const DRONE_LENSES: Record<string, { name: string; fov: number; aspectRatio: number }> = {
+  mavic3_wide: { name: "Mavic 3 Wide (24mm)", fov: 84, aspectRatio: 4 / 3 },
+  mavic3_tele: { name: "Mavic 3 Tele (162mm)", fov: 15, aspectRatio: 4 / 3 },
+  air3_wide: { name: "Air 3 Wide (24mm)", fov: 82, aspectRatio: 4 / 3 },
+  mini4_wide: { name: "Mini 4 Pro (24mm)", fov: 82.1, aspectRatio: 4 / 3 },
+  phantom4: { name: "Phantom 4 Pro (24mm)", fov: 73.7, aspectRatio: 3 / 2 },
+};
+
+// Helper functions for parsing
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : Number.NaN;
+  }
+  return Number.NaN;
+}
+
+function toOptionalNumber(value: unknown): number | null {
+  const parsed = toNumber(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const lat1Rad = (lat1 * Math.PI) / 180;
+  const lat2Rad = (lat2 * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const y = Math.sin(dLon) * Math.cos(lat2Rad);
+  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+  
+  let bearing = Math.atan2(y, x);
+  bearing = (bearing * 180) / Math.PI;
+  bearing = (bearing + 360) % 360;
+  
+  return bearing;
+}
+
+function sanitizeRow(row: RawFlightRow): PreparedRow | null {
+  const latitude = toNumber(row.latitude);
+  const longitude = toNumber(row.longitude);
+  const altitudeFt = toNumber(row["altitude(ft)"] ?? row.altitudeft ?? row.altitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isFinite(altitudeFt)) {
+    return null;
+  }
+
+  return {
+    latitude,
+    longitude,
+    altitudeFt,
+    headingDeg: toOptionalNumber(row["heading(deg)"] ?? row.headingdeg ?? row.heading),
+    curveSizeFt: toOptionalNumber(row["curvesize(ft)"] ?? row.curvesizeft),
+    rotationDir: toOptionalNumber(row.rotationdir),
+    gimbalMode: toOptionalNumber(row.gimbalmode),
+    gimbalPitchAngle: toOptionalNumber(row["gimbalpitchangle"] ?? row.gimbalpitch),
+    altitudeMode: toOptionalNumber(row.altitudemode),
+    speedMs: toOptionalNumber(row["speed(m/s)"] ?? row.speedms),
+    poiLatitude: toOptionalNumber(row.poi_latitude ?? row.poilatitude),
+    poiLongitude: toOptionalNumber(row.poi_longitude ?? row.poilongitude),
+    poiAltitudeFt: toOptionalNumber(row["poi_altitude(ft)"] ?? row.poialtitudeft),
+    poiAltitudeMode: toOptionalNumber(row.poi_altitudemode),
+    photoTimeInterval: toOptionalNumber(row.phototimeinterval),
+    photoDistInterval: toOptionalNumber(row.photodistinterval),
+  };
+}
+
+function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi: PoiData | null } {
+  if (!samples.length) {
+    return { samples: [], poi: null };
+  }
+
+  const processedSamples: ProcessedSample[] = samples.map((sample, index) => ({
+    ...sample,
+    index,
+  }));
+
+  for (let i = 0; i < processedSamples.length; i++) {
+    const sample = processedSamples[i];
+    
+    if (!sample.headingDeg || sample.headingDeg === 0) {
+      let calculatedHeading: number | null = null;
+      
+      if (i < processedSamples.length - 1) {
+        const nextSample = processedSamples[i + 1];
+        calculatedHeading = calculateBearing(
+          sample.latitude,
+          sample.longitude,
+          nextSample.latitude,
+          nextSample.longitude
+        );
+      } else if (i > 0) {
+        const prevSample = processedSamples[i - 1];
+        calculatedHeading = calculateBearing(
+          prevSample.latitude,
+          prevSample.longitude,
+          sample.latitude,
+          sample.longitude
+        );
+      }
+      
+      if (calculatedHeading !== null) {
+        sample.headingDeg = calculatedHeading;
+      }
+    }
+  }
+
+  const firstPoiSource = samples.find(entry =>
+    Number.isFinite(entry.poiLatitude ?? Number.NaN) && Number.isFinite(entry.poiLongitude ?? Number.NaN),
+  );
+
+  let poi: PoiData | null = null;
+  if (firstPoiSource && firstPoiSource.poiLatitude !== null && firstPoiSource.poiLongitude !== null) {
+    const poiAltitudeFt = firstPoiSource.poiAltitudeFt ?? samples[0].altitudeFt;
+    poi = {
+      latitude: firstPoiSource.poiLatitude,
+      longitude: firstPoiSource.poiLongitude,
+      altitudeFt: poiAltitudeFt,
+      altitudeMode: firstPoiSource.poiAltitudeMode,
+    };
+  }
+
+  return { samples: processedSamples, poi };
+}
+
+async function parseKMZFile(file: File): Promise<PreparedRow[]> {
+  const zip = await JSZip.loadAsync(file);
+  const wpmlFile = zip.file("wpmz/waylines.wpml");
+  if (!wpmlFile) {
+    throw new Error("No waylines.wpml found in KMZ");
+  }
+
+  const xmlContent = await wpmlFile.async("string");
+  const parser = new XMLParser({ ignoreAttributes: false });
+  const parsed = parser.parse(xmlContent);
+
+  const placemarks = parsed?.kml?.Document?.Folder?.Placemark;
+  if (!placemarks) {
+    throw new Error("No waypoints found in KMZ");
+  }
+
+  const waypointArray = Array.isArray(placemarks) ? placemarks : [placemarks];
+  const rows: PreparedRow[] = [];
+
+  for (const mark of waypointArray) {
+    const coords = mark?.Point?.coordinates;
+    const executeHeight = mark?.["wpml:executeHeight"];
+    const speed = mark?.["wpml:waypointSpeed"];
+    const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
+    const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+
+    let gimbalPitch: number | null = null;
+    const actionGroups = mark?.["wpml:actionGroup"];
+    const groups = Array.isArray(actionGroups) ? actionGroups : actionGroups ? [actionGroups] : [];
+    for (const group of groups) {
+      const action = group?.["wpml:action"];
+      const actions = Array.isArray(action) ? action : action ? [action] : [];
+      for (const act of actions) {
+        const func = act?.["wpml:actionActuatorFunc"];
+        if (func === "gimbalRotate" || func === "gimbalEvenlyRotate") {
+          const pitch = act?.["wpml:actionActuatorFuncParam"]?.["wpml:gimbalPitchRotateAngle"];
+          if (pitch !== undefined && pitch !== null) {
+            gimbalPitch = Number(pitch);
+            break;
+          }
+        }
+      }
+      if (gimbalPitch !== null) {
+        break;
+      }
+    }
+
+    if (!coords || executeHeight === undefined || executeHeight === null) {
+      continue;
+    }
+
+    const [lon, lat] = String(coords)
+      .split(",")
+      .map(value => Number(value));
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      continue;
+    }
+
+    const altitudeMeters = Number(executeHeight);
+    const altitudeFt = altitudeMeters / FEET_TO_METERS;
+
+    let poiLat: number | null = null;
+    let poiLon: number | null = null;
+    let poiAltFt: number | null = null;
+    if (typeof poiPoint === "string") {
+      const poiParts = poiPoint.split(",").map(Number);
+      if (poiParts.length >= 3 && Number.isFinite(poiParts[0]) && Number.isFinite(poiParts[1])) {
+        poiLat = poiParts[0];
+        poiLon = poiParts[1];
+        poiAltFt = poiParts[2] / FEET_TO_METERS;
+      }
+    }
+
+    rows.push({
+      latitude: lat,
+      longitude: lon,
+      altitudeFt,
+      headingDeg: heading !== undefined && heading !== null ? Number(heading) : null,
+      curveSizeFt: null,
+      rotationDir: null,
+      gimbalMode: null,
+      gimbalPitchAngle: gimbalPitch,
+      altitudeMode: null,
+      speedMs: speed !== undefined && speed !== null ? Number(speed) : null,
+      poiLatitude: poiLat,
+      poiLongitude: poiLon,
+      poiAltitudeFt: poiAltFt,
+      poiAltitudeMode: null,
+      photoTimeInterval: null,
+      photoDistInterval: null,
+    });
+  }
+
+  return rows;
+}
+
+// Helper functions for flight rendering
+function destinationLatLon(
+  lat: number,
+  lon: number,
+  bearing: number,
+  distanceMeters: number
+): { lat: number; lon: number } {
+  const angularDistance = distanceMeters / EARTH_RADIUS_METERS;
+  const bearingRad = degreesToRadians(bearing);
+  const latRad = degreesToRadians(lat);
+  const lonRad = degreesToRadians(lon);
+
+  const latResult = Math.asin(
+    Math.sin(latRad) * Math.cos(angularDistance) +
+    Math.cos(latRad) * Math.sin(angularDistance) * Math.cos(bearingRad)
+  );
+
+  const lonResult = lonRad + Math.atan2(
+    Math.sin(bearingRad) * Math.sin(angularDistance) * Math.cos(latRad),
+    Math.cos(angularDistance) - Math.sin(latRad) * Math.sin(latResult)
+  );
+
+  return {
+    lat: (latResult * 180) / Math.PI,
+    lon: (lonResult * 180) / Math.PI,
+  };
+}
+
+function setPointPixelSize(Cesium: CesiumModule | null, entity: any, size: number) {
+  if (!Cesium || !entity?.point) return;
+  entity.point.pixelSize = new Cesium.ConstantProperty(size);
+}
+
+// Cesium Flight Path Scene Component
+function FlightPathScene({ flights, selectedLens, onWaypointHover, onDoubleClick, markerPosition }: FlightPathSceneProps): JSX.Element {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const viewerRef = useRef<import("cesium").Viewer | null>(null);
+  const cesiumRef = useRef<CesiumModule | null>(null);
+  const tilesetRef = useRef<import("cesium").Cesium3DTileset | null>(null);
+  const flightEntitiesRef = useRef<import("cesium").Entity[]>([]);
+  const markerEntityRef = useRef<import("cesium").Entity | null>(null);
+  const handlerRef = useRef<import("cesium").ScreenSpaceEventHandler | null>(null);
+  const hoverRef = useRef<{ flightId: string; index: number; key: string } | null>(null);
+  const waypointEntityMapRef = useRef<Map<string, import("cesium").Entity>>(new Map());
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const [initError, setInitError] = useState<string | null>(null);
+  const [viewerReady, setViewerReady] = useState(false);
+
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+
+  const fetchTerrainElevation = useCallback(async (lat: number, lon: number): Promise<number> => {
+    try {
+      let elevationUrl: string;
+      const isLocalHost = typeof window !== 'undefined' && (/^(localhost|127\.0\.0\.1)$/).test(window.location.hostname);
+      if (isLocalHost) {
+        elevationUrl = '/api/elevation-proxy';
+      } else {
+        elevationUrl = buildApiUrl.dronePath.elevation();
+      }
+      const response = await fetch(elevationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ center: `${lat}, ${lon}` }),
+      });
+      
+      if (!response.ok) {
+        return 0;
+      }
+      
+      const data = await response.json();
+      if (!data.elevation_meters) {
+        return 0;
+      }
+      
+      return data.elevation_meters;
+    } catch (error) {
+      console.error('Elevation API error:', error);
+      return 0;
+    }
+  }, []);
+
+  // Initialize Cesium viewer
+  useEffect(() => {
+    if (!apiKey) {
+      setInitError("missing-key");
+      return;
+    }
+    if (!containerRef.current || viewerRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const Cesium = await import("cesium");
+        cesiumRef.current = Cesium;
+        
+        Cesium.Ion.defaultAccessToken = "";
+        
+        if (typeof window !== "undefined") {
+          window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
+        }
+
+        const viewer = new Cesium.Viewer(containerRef.current, {
+          imageryProvider: false as any,
+          baseLayerPicker: false,
+          geocoder: false,
+          timeline: false,
+          animation: false,
+          navigationHelpButton: false,
+          homeButton: false,
+          infoBox: false,
+          selectionIndicator: false,
+          sceneModePicker: false,
+          fullscreenButton: false,
+          vrButton: false,
+          navigationInstructionsInitiallyVisible: false,
+          requestRenderMode: true,
+          maximumRenderTimeChange: Infinity,
+        } as any);
+        
+        if (viewer.cesiumWidget?.creditContainer) {
+          const container = viewer.cesiumWidget.creditContainer as HTMLElement;
+          if (container.style) {
+            container.style.display = "none";
+          }
+        }
+
+        viewer.scene.globe.show = false;
+        viewer.scene.skyAtmosphere.show = false;
+        viewer.scene.skyBox.show = false;
+        viewer.scene.backgroundColor = Cesium.Color.BLACK;
+        viewer.scene.fog.enabled = false;
+        viewer.imageryLayers.removeAll();
+        viewer.scene.globe.depthTestAgainstTerrain = false;
+        
+        viewerRef.current = viewer;
+        
+        if (containerRef.current) {
+          viewer.resize();
+          
+          resizeObserverRef.current = new ResizeObserver(() => {
+            if (viewerRef.current) {
+              viewerRef.current.resize();
+            }
+          });
+          resizeObserverRef.current.observe(containerRef.current);
+        }
+
+        try {
+          const tileset = await Cesium.Cesium3DTileset.fromUrl(
+            `https://tile.googleapis.com/v1/3dtiles/root.json?key=${apiKey}`,
+            {
+              maximumScreenSpaceError: 16,
+              showCreditsOnScreen: false,
+              skipLevelOfDetail: false,
+              baseScreenSpaceError: 1024,
+              skipScreenSpaceErrorFactor: 16,
+              skipLevels: 1,
+              immediatelyLoadDesiredLevelOfDetail: false,
+              loadSiblings: false,
+              cullWithChildrenBounds: true,
+            }
+          );
+          
+          if (cancelled) {
+            tileset.destroy();
+            return;
+          }
+
+          viewer.scene.primitives.add(tileset);
+          tilesetRef.current = tileset;
+
+          tileset.initialTilesLoaded.addEventListener(() => {
+            if (!cancelled && viewerRef.current) {
+              viewerRef.current.scene.requestRender();
+              setViewerReady(true);
+            }
+          });
+
+          tileset.tileFailed.addEventListener((error: any) => {
+            console.error("Tile failed to load", error);
+          });
+
+        } catch (tilesetErr) {
+          console.error("Photorealistic tiles failed", tilesetErr);
+          const message = tilesetErr instanceof Error ? tilesetErr.message : "";
+          setInitError(message ? `tileset:${message}` : "tileset");
+          setViewerReady(true);
+        }
+
+        // Set up double-click handler for pin placement
+        handlerRef.current = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        
+        if (onDoubleClick) {
+          handlerRef.current.setInputAction((click: any) => {
+            if (!viewerRef.current || !cesiumRef.current) return;
+            
+            const ray = viewer.camera.getPickRay(click.position);
+            if (!ray) return;
+            
+            const cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+            if (cartesian) {
+              const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+              const lat = Cesium.Math.toDegrees(cartographic.latitude);
+              const lng = Cesium.Math.toDegrees(cartographic.longitude);
+              onDoubleClick(lat, lng);
+            }
+          }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+        }
+
+        // Set up mouse interaction for waypoint hover
+        handlerRef.current.setInputAction((movement: any) => {
+          if (!viewerRef.current || !cesiumRef.current) return;
+          
+          const Cesium = cesiumRef.current;
+          const picked = viewerRef.current.scene.pick(movement.endPosition);
+          
+          if (Cesium.defined(picked) && picked.id?.properties) {
+            const props = picked.id.properties;
+            const timestamp = Cesium.JulianDate.now();
+            const flightId = props.flightId?.getValue?.(timestamp) ?? props.flightId;
+            const index = props.index?.getValue?.(timestamp) ?? props.index;
+            
+            if (typeof flightId === "string" && typeof index === "number") {
+              const key = `${flightId}:${index}`;
+              if (!hoverRef.current || hoverRef.current.key !== key) {
+                if (hoverRef.current) {
+                  const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+                  setPointPixelSize(Cesium, previousEntity, 6);
+                }
+                const currentEntity = waypointEntityMapRef.current.get(key);
+                setPointPixelSize(Cesium, currentEntity, 9);
+                viewerRef.current?.scene.requestRender();
+                onWaypointHover(flightId, index);
+                hoverRef.current = { flightId, index, key };
+              }
+              return;
+            }
+          }
+
+          if (hoverRef.current) {
+            const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+            setPointPixelSize(Cesium, previousEntity, 6);
+            onWaypointHover(hoverRef.current.flightId, null);
+            hoverRef.current = null;
+            viewerRef.current?.scene.requestRender();
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+        
+      } catch (err) {
+        console.error("Cesium initialization failed", err);
+        setInitError("init");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+
+      if (hoverRef.current) {
+        const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+        setPointPixelSize(cesiumRef.current, previousEntity, 6);
+        onWaypointHover(hoverRef.current.flightId, null);
+        hoverRef.current = null;
+      }
+
+      if (viewerRef.current) {
+        try {
+          flightEntitiesRef.current.forEach((entity) => {
+            try {
+              viewerRef.current?.entities.remove(entity);
+            } catch (_) {}
+          });
+        } finally {
+          flightEntitiesRef.current = [];
+        }
+      } else {
+        flightEntitiesRef.current = [];
+      }
+      waypointEntityMapRef.current.clear();
+
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
+      if (handlerRef.current && typeof (handlerRef.current as any).isDestroyed === 'function') {
+        if (!(handlerRef.current as any).isDestroyed()) {
+          handlerRef.current.destroy();
+        }
+      } else if (handlerRef.current) {
+        try { handlerRef.current.destroy(); } catch (_) {}
+      }
+      handlerRef.current = null;
+
+      if (tilesetRef.current) {
+        try {
+          if (viewerRef.current && !(viewerRef.current as any).isDestroyed?.()) {
+            try { viewerRef.current.scene.primitives.remove(tilesetRef.current); } catch (_) {}
+          }
+        } catch (_) {}
+        try {
+          if (typeof (tilesetRef.current as any).isDestroyed === 'function') {
+            if (!(tilesetRef.current as any).isDestroyed()) {
+              tilesetRef.current.destroy();
+            }
+          } else {
+            (tilesetRef.current as any).destroy?.();
+          }
+        } catch (_) {}
+      }
+      tilesetRef.current = null;
+
+      if (viewerRef.current) {
+        try { (viewerRef.current as any).scene?.tweens?.removeAll?.(); } catch (_) {}
+        try { (viewerRef.current as any).dataSources?.removeAll?.(); } catch (_) {}
+        try { (viewerRef.current as any).entities?.removeAll?.(); } catch (_) {}
+        try {
+          if (typeof (viewerRef.current as any).isDestroyed === 'function') {
+            if (!(viewerRef.current as any).isDestroyed()) {
+              viewerRef.current.destroy();
+            }
+          } else {
+            (viewerRef.current as any).destroy?.();
+          }
+        } catch (_) {}
+      }
+      viewerRef.current = null;
+
+      setViewerReady(false);
+    };
+  }, [apiKey, onWaypointHover, onDoubleClick]);
+
+  // Render marker
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium || !viewerReady) return;
+
+    // Remove old marker
+    if (markerEntityRef.current) {
+      viewer.entities.remove(markerEntityRef.current);
+      markerEntityRef.current = null;
+    }
+
+    // Add new marker if position provided
+    if (markerPosition) {
+      markerEntityRef.current = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(markerPosition.lng, markerPosition.lat, 100),
+        billboard: {
+          image: 'data:image/svg+xml;base64,' + btoa(`
+            <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
+            </svg>
+          `),
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          scale: 1.0,
+        },
+      });
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(markerPosition.lng, markerPosition.lat, 2000),
+        duration: 1.5,
+      });
+    }
+
+    viewer.scene.requestRender();
+  }, [markerPosition, viewerReady]);
+
+  // Render flights (simplified version)
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium || !viewerReady) return;
+
+    let disposed = false;
+
+    flightEntitiesRef.current.forEach(entity => viewer.entities.remove(entity));
+    flightEntitiesRef.current = [];
+    if (hoverRef.current) {
+      const previousEntity = waypointEntityMapRef.current.get(hoverRef.current.key);
+      setPointPixelSize(Cesium, previousEntity, 6);
+      onWaypointHover(hoverRef.current.flightId, null);
+      hoverRef.current = null;
+    }
+    waypointEntityMapRef.current.clear();
+
+    if (!flights.length) {
+      viewer.scene.requestRender();
+      return;
+    }
+
+    const lensSpec = DRONE_LENSES[selectedLens] ?? DRONE_LENSES.mavic3_wide;
+    const forwardDistanceBase = Math.max(20, 40 - lensSpec.fov * 0.2);
+    const positionsForFit: import("cesium").Cartesian3[] = [];
+
+    if (flights.length > 0 && flights[0].samples.length > 0) {
+      const firstWaypoint = flights[0].samples[0];
+      
+      fetchTerrainElevation(firstWaypoint.latitude, firstWaypoint.longitude)
+        .then((terrainElevationMeters) => {
+          if (disposed) return;
+          if (!(viewer as any) || (viewer as any).isDestroyed?.()) return;
+          
+          flights.forEach(flight => {
+            const positions: import("cesium").Cartesian3[] = [];
+
+            flight.samples.forEach((sample) => {
+              const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS;
+              const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters;
+
+              const position = Cesium.Cartesian3.fromDegrees(
+                sample.longitude,
+                sample.latitude,
+                absoluteHeightMSL
+              );
+              positions.push(position);
+            });
+
+            if (positions.length >= 2) {
+              const path = viewer.entities.add({
+                polyline: {
+                  positions,
+                  width: 2.2,
+                  material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
+                  arcType: Cesium.ArcType.GEODESIC,
+                },
+              });
+              flightEntitiesRef.current.push(path);
+            }
+
+            positions.forEach((position, index) => {
+              const waypointEntity = viewer.entities.add({
+                position,
+                point: {
+                  pixelSize: 6,
+                  color: Cesium.Color.fromCssColorString(flight.color),
+                  outlineColor: Cesium.Color.fromCssColorString("#182036"),
+                  outlineWidth: 1,
+                },
+                properties: {
+                  flightId: flight.id,
+                  index,
+                },
+              });
+              flightEntitiesRef.current.push(waypointEntity);
+              waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
+            });
+
+            positionsForFit.push(...positions);
+          });
+
+          if (positionsForFit.length) {
+            const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+            const expandedRadius = boundingSphere.radius * 2.5;
+            const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+
+            try {
+              viewer.camera.flyToBoundingSphere(expandedSphere, {
+                duration: 1.5,
+                offset: new Cesium.HeadingPitchRange(
+                  0,
+                  Cesium.Math.toRadians(-45),
+                  expandedRadius
+                ),
+              });
+            } catch {}
+          }
+
+          try { viewer.scene.requestRender(); } catch {}
+        })
+        .catch(() => {
+          if (disposed) return;
+          
+          flights.forEach(flight => {
+            const positions = flight.samples.map(sample =>
+              Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, sample.altitudeFt * FEET_TO_METERS)
+            );
+
+            if (positions.length >= 2) {
+              const path = viewer.entities.add({
+                polyline: {
+                  positions,
+                  width: 2.2,
+                  material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
+                  arcType: Cesium.ArcType.GEODESIC,
+                },
+              });
+              flightEntitiesRef.current.push(path);
+            }
+
+            positionsForFit.push(...positions);
+          });
+
+          if (positionsForFit.length) {
+            const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+            const expandedRadius = boundingSphere.radius * 2.5;
+            const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
+
+            try {
+              viewer.camera.flyToBoundingSphere(expandedSphere, {
+                duration: 1.5,
+                offset: new Cesium.HeadingPitchRange(
+                  0,
+                  Cesium.Math.toRadians(-45),
+                  expandedRadius
+                ),
+              });
+            } catch {}
+          }
+
+          try { viewer.scene.requestRender(); } catch {}
+        });
+    }
+    
+    return () => { disposed = true; };
+  }, [flights, selectedLens, viewerReady, fetchTerrainElevation, onWaypointHover]);
+
+  if (!apiKey) {
+    return (
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', padding: '20px', textAlign: 'center' }}>
+        <p>Google Maps API key missing. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable 3D terrain.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      {initError && (
+        <div style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px', background: 'rgba(255,165,0,0.9)', color: '#000', padding: '10px', borderRadius: '8px', fontSize: '14px' }}>
+          <strong>3D view unavailable.</strong>
+          {" "}
+          {initError === "missing-key"
+            ? "Add a Google Maps API key to render photorealistic terrain."
+            : initError.startsWith("tileset")
+            ? `Photorealistic tiles failed to load.`
+            : "WebGL initialization failed."}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
@@ -85,6 +934,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [downloadingBatteries, setDownloadingBatteries] = useState<Set<number>>(new Set());
   const [processingMessage, setProcessingMessage] = useState<string>('');
+
+  // Flight viewer state
+  const [flights, setFlights] = useState<FlightData[]>([]);
+  const [selectedLens, setSelectedLens] = useState("mavic3_wide");
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -261,182 +1114,62 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
   }, [open, project]);
 
-  // Initialize Mapbox on open
+  // No longer using Mapbox - Cesium is now rendered directly in JSX
+  // Restore saved coordinates on open
   useEffect(() => {
-    let isCancelled = false;
-    async function initMap() {
-      if (!open) return;
-      if (!mapContainerRef.current) return;
-      try {
-        const mapboxgl = await import('mapbox-gl');
-        mapboxgl.default.accessToken = MAPBOX_TOKEN;
-        if (isCancelled) return;
-        const map = new mapboxgl.default.Map({
-          container: mapContainerRef.current,
-          style: 'mapbox://styles/mapbox/satellite-v9',
-          center: [-98.5795, 39.8283],
-          zoom: 4,
-          attributionControl: false,
-        });
-        
-        map.on('click', (e: any) => {
-          const { lng, lat } = e.lngLat;
-          selectedCoordsRef.current = { lat, lng };
-          // place marker
-          if (markerRef.current) {
-            markerRef.current.remove();
-          }
-          
-          // Create custom teardrop pin element with inline SVG
-          const pinElement = document.createElement('div');
-          pinElement.className = 'custom-teardrop-pin';
-          pinElement.innerHTML = `
-            <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-            </svg>
-          `;
-          
-          markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
-            .setLngLat([lng, lat])
-            .addTo(map);
-          
-          // Fill address input with coordinates formatted
-          setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-          // Invalidate previous optimization
-          setOptimizedParamsWithLogging(null, 'Map coordinates changed');
-          // Hide instructions after first click
-          const inst = document.getElementById('map-instructions');
-          if (inst) inst.style.display = 'none';
-        });
-        
-        mapRef.current = map;
-        
-        // CRITICAL FIX: Restore saved location marker if editing existing project
-        if (project) {
-          // Check if we have saved coordinates to restore
-          const params = project.params || {};
-          if (params.latitude && params.longitude) {
-            const coords = { 
-              lat: parseFloat(params.latitude), 
-              lng: parseFloat(params.longitude) 
-            };
-            
-            // Wait a bit longer for map to be fully ready, then restore coordinates
-            setTimeout(async () => {
-              await restoreSavedLocation(map, coords);
-            }, 1000); // Increased delay to ensure map is fully ready
-          }
-        }
-      } catch (err: any) {
-        console.error('Map init failed', err);
+    if (!open) return;
+    
+    if (project) {
+      const params = project.params || {};
+      if (params.latitude && params.longitude) {
+        const coords = { 
+          lat: parseFloat(params.latitude), 
+          lng: parseFloat(params.longitude) 
+        };
+        selectedCoordsRef.current = coords;
+        setSelectedCoords(coords);
       }
     }
-    initMap();
-    return () => {
-      isCancelled = true;
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-        markerRef.current = null;
-        selectedCoordsRef.current = null;
-      }
-    };
   }, [open, project]);
 
-  // Helper function to place marker at coordinates
+  // Helper function to place marker at coordinates (for Cesium 3D viewer)
   const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
-    if (!mapRef.current) return;
-    
-    mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
-    
     // Update both ref and state for coordinates
     const coords = { lat, lng };
     selectedCoordsRef.current = coords;
-    setSelectedCoords(coords); // This will trigger autosave
+    setSelectedCoords(coords); // This will trigger autosave and marker render in Cesium
     
-    // Place marker
-    const mapboxgl = await import('mapbox-gl');
-    if (markerRef.current) markerRef.current.remove();
-    
-    const pinElement = document.createElement('div');
-    pinElement.className = 'custom-teardrop-pin';
-    pinElement.innerHTML = `
-      <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-      </svg>
-    `;
-    
-    markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
-      .setLngLat([lng, lat])
-      .addTo(mapRef.current);
+    // Update address search
+    setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
     
     // Invalidate previous optimization since coordinates changed
-    setOptimizedParamsWithLogging(null, 'Address search coordinates changed');
+    setOptimizedParamsWithLogging(null, 'Coordinates changed');
     
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
-    
-    // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, []);
+  }, [setOptimizedParamsWithLogging]);
 
-  // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
-  const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
-    if (!map || !coords) return;
-    
-    // Use the same function as user interaction to ensure consistency
-    await placeMarkerAtCoords(coords.lat, coords.lng);
-    
-    // Update the address search field to show the coordinates
-    setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
-  }, [placeMarkerAtCoords]);
-
-  // Fullscreen toggle handler
+  // Fullscreen toggle handler (Cesium handles resize automatically via ResizeObserver)
   const toggleFullscreen = useCallback(() => {
     if (!mapContainerRef.current) return;
     
     const newFullscreen = !isFullscreen;
     setIsFullscreen(newFullscreen);
     
-    // Find the map-wrapper (parent of map-container)
     const mapWrapper = mapContainerRef.current.parentElement;
     if (!mapWrapper) return;
     
     if (newFullscreen) {
-      // Enter fullscreen - move wrapper to body
       document.body.appendChild(mapWrapper);
       mapWrapper.classList.add('fullscreen');
     } else {
-      // Exit fullscreen - move wrapper back to original parent
       const mapSection = document.querySelector('.popup-map-section');
       if (mapSection) {
         mapSection.appendChild(mapWrapper);
       }
       mapWrapper.classList.remove('fullscreen');
     }
-    
-    // Force Mapbox to recalculate after DOM move
-    setTimeout(() => {
-      if (mapRef.current) {
-        mapRef.current.resize();
-        // Force coordinate system recalculation
-        const currentCenter = mapRef.current.getCenter();
-        const currentZoom = mapRef.current.getZoom();
-        mapRef.current.jumpTo({
-          center: [currentCenter.lng + 0.0000001, currentCenter.lat + 0.0000001],
-          zoom: currentZoom
-        });
-        setTimeout(() => {
-          if (mapRef.current) {
-            mapRef.current.jumpTo({
-              center: currentCenter,
-              zoom: currentZoom
-            });
-            mapRef.current.resize();
-          }
-        }, 100);
-      }
-    }, 300);
   }, [isFullscreen]);
 
   // ESC key to exit fullscreen
@@ -647,6 +1380,32 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
+      // Auto-load CSV into 3D viewer
+      try {
+        const parsed = Papa.parse<RawFlightRow>(csvText, { 
+          header: true, 
+          dynamicTyping: true,
+          skipEmptyLines: true 
+        });
+        const preparedRows = parsed.data
+          .map(sanitizeRow)
+          .filter((row): row is PreparedRow => row !== null);
+        
+        if (preparedRows.length > 0) {
+          const { samples, poi } = buildSamples(preparedRows);
+          const flightData: FlightData = {
+            id: `battery-${batteryIndex1}-${Date.now()}`,
+            name: filename,
+            color: FLIGHT_COLORS[flights.length % FLIGHT_COLORS.length],
+            samples,
+            poi
+          };
+          setFlights(prev => [...prev, flightData]);
+        }
+      } catch (parseErr) {
+        console.error('Failed to parse CSV for 3D viewer:', parseErr);
+      }
+      
       // Update project status to indicate drone path has been downloaded
       if (status === 'draft') {
         setStatus('path_downloaded');
@@ -667,7 +1426,84 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, flights]);
+
+  // Flight file upload handler
+  const onFlightFilesSelected = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+
+    const newFlights: FlightData[] = [];
+    const errors: string[] = [];
+
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const extension = file.name.toLowerCase().split(".").pop();
+
+      try {
+        let prepared: PreparedRow[] = [];
+
+        if (extension === "kmz") {
+          prepared = await parseKMZFile(file);
+        } else if (extension === "csv") {
+          await new Promise<void>((resolve, reject) => {
+            Papa.parse<RawFlightRow>(file, {
+              header: true,
+              skipEmptyLines: true,
+              dynamicTyping: true,
+              complete: result => {
+                if (result.errors.length) {
+                  reject(new Error(`CSV parse error: ${result.errors[0].message}`));
+                  return;
+                }
+                prepared = result.data
+                  .map(sanitizeRow)
+                  .filter((value): value is PreparedRow => value !== null);
+                resolve();
+              },
+              error: err => reject(err),
+            });
+          });
+        } else {
+          errors.push(`${file.name}: Unsupported format (use .csv or .kmz)`);
+          continue;
+        }
+
+        if (!prepared.length) {
+          errors.push(`${file.name}: No valid waypoints found`);
+          continue;
+        }
+
+        const { samples, poi } = buildSamples(prepared);
+
+        const flightId = `${Date.now()}-${i}`;
+        const colorIndex = (flights.length + newFlights.length) % FLIGHT_COLORS.length;
+
+        newFlights.push({
+          id: flightId,
+          name: file.name,
+          color: FLIGHT_COLORS[colorIndex],
+          samples,
+          poi,
+        });
+      } catch (err) {
+        errors.push(`${file.name}: ${err instanceof Error ? err.message : "Unknown error"}`);
+      }
+    }
+
+    if (newFlights.length > 0) {
+      setFlights(prev => [...prev, ...newFlights]);
+    }
+
+    if (errors.length > 0 && newFlights.length === 0) {
+      showSystemNotification('error', errors.join("; "));
+    }
+  }, [flights.length, showSystemNotification]);
+
+  // Remove flight from 3D viewer
+  const removeFlight = useCallback((id: string) => {
+    setFlights(prev => prev.filter(f => f.id !== id));
+  }, []);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1141,8 +1977,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           <div className="accordion-content">
             <div className="popup-map-section">
                             <div className="map-wrapper">
-                {/* Empty map container for Mapbox - avoids the warning */}
-                <div id="map-container" className="map-container" ref={mapContainerRef}></div>
+                {/* Cesium 3D Flight Viewer */}
+                <div id="map-container" className="map-container" ref={mapContainerRef}>
+                  <FlightPathScene 
+                    flights={flights}
+                    selectedLens={selectedLens}
+                    onWaypointHover={() => {}}
+                    onDoubleClick={placeMarkerAtCoords}
+                    markerPosition={selectedCoords}
+                  />
+                </div>
                 
                 {/* Map overlays and controls as siblings */}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
@@ -1364,6 +2208,82 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   </button>
                 ))}
                 </div>
+              </div>
+            </div>
+
+            {/* 3D Flight Path Viewer */}
+            <div className="category-outline">
+              <div className="popup-section">
+                <h4>3D Flight Path Viewer</h4>
+                <label className="flight-path-upload" style={{
+                  display: 'block',
+                  padding: '12px 16px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1.5px dashed rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center',
+                  marginBottom: flights.length > 0 ? '12px' : '0'
+                }}>
+                  <span style={{ color: '#fff', fontSize: '0.95rem' }}>Upload flight files (CSV or KMZ)</span>
+                  <input 
+                    type="file" 
+                    accept=".csv,.kmz" 
+                    multiple 
+                    onChange={onFlightFilesSelected}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                {flights.length > 0 && (
+                  <div className="loaded-flights-list" style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    {flights.map(flight => (
+                      <div key={flight.id} className="flight-item" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        borderRadius: '8px',
+                        border: `1px solid ${flight.color}40`
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            width: '12px',
+                            height: '12px',
+                            borderRadius: '50%',
+                            background: flight.color,
+                            flexShrink: 0
+                          }} />
+                          <span style={{ 
+                            color: '#fff', 
+                            fontSize: '0.9rem',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}>{flight.name}</span>
+                        </div>
+                        <button 
+                          onClick={() => removeFlight(flight.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            fontSize: '1.2rem',
+                            cursor: 'pointer',
+                            padding: '0 4px',
+                            lineHeight: 1,
+                            flexShrink: 0
+                          }}
+                        >×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
