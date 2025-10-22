@@ -697,7 +697,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           viewer.scene.primitives.add(tileset);
           tilesetRef.current = tileset;
 
-          tileset.tileLoadProgressEvent.addEventListener((pending: number) => {
+          const tileLoadProgressEvent = (tileset as unknown as { tileLoadProgressEvent?: { addEventListener?: (cb: (pending: number) => void) => void } }).tileLoadProgressEvent;
+          tileLoadProgressEvent?.addEventListener?.((pending: number) => {
             log("debug", "[Tiles] Load progress", { pending });
           });
 
