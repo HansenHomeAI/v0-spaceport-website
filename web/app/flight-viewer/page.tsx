@@ -97,7 +97,10 @@ function attachPixelSampler(
 ): () => void {
   const scene = viewer.scene;
   const canvas = scene.canvas;
-  const gl = scene.context?.gl;
+  const approxScene = scene as unknown as { context?: { gl?: WebGLRenderingContext | null } };
+  const gl = approxScene.context?.gl ??
+    (canvas.getContext('webgl2') as WebGLRenderingContext | null) ??
+    (canvas.getContext('webgl') as WebGLRenderingContext | null);
 
   if (!gl) {
     log("warn", "[PixelSampler] WebGL context unavailable; skipping pixel sampling");
