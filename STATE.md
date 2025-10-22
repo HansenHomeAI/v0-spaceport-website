@@ -1,5 +1,5 @@
-reason: hold segment fractions aligned with slice rules
-last_step: deployed slice-aware hold increments and verified Pages+CDK workflows green
-next_unblocked_step: spot-check preview hold arc to confirm waypoint spacing
-owner_action_needed: none
-updated: 2025-10-13T22:40:39Z
+reason: instrumenting flight viewer observability for local black-screen debugging
+last_step: added verbose logging + pixel sampler and confirmed local env key presence snapshot
+next_unblocked_step: run npm run dev on agent-58210476-flight-viewer-logging branch and watch console logs for tileset requests and pixel sampler output
+owner_action_needed: user to start dev server and review new logs with valid localhost-enabled maps key
+updated: 2025-10-22T17:58:10Z

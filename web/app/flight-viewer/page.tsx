@@ -68,6 +68,83 @@ declare global {
 
 const EARTH_RADIUS_METERS = 6_378_137;
 const FEET_TO_METERS = 0.3048;
+const LOG_PREFIX = "[FlightViewer]";
+
+type LogLevel = "log" | "info" | "warn" | "error" | "debug";
+
+function log(level: LogLevel, ...args: unknown[]): void {
+  const fn = (console[level] as (...logArgs: unknown[]) => void) ?? console.log;
+  fn(LOG_PREFIX, ...args);
+}
+
+function summarizeKey(key: string | undefined): string {
+  if (!key) {
+    return "<absent>";
+  }
+  const trimmed = key.trim();
+  if (!trimmed) {
+    return "<empty-string>";
+  }
+  if (trimmed.length <= 10) {
+    return `${trimmed} (len=${trimmed.length})`;
+  }
+  return `${trimmed.slice(0, 6)}…${trimmed.slice(-4)} (len=${trimmed.length})`;
+}
+
+function attachPixelSampler(
+  viewer: import("cesium").Viewer,
+  Cesium: CesiumModule,
+): () => void {
+  const scene = viewer.scene;
+  const canvas = scene.canvas;
+  const gl = scene.context?.gl;
+
+  if (!gl) {
+    log("warn", "[PixelSampler] WebGL context unavailable; skipping pixel sampling");
+    return () => {};
+  }
+
+  const pixelBuffer = new Uint8Array(4);
+  let lastLogTs = 0;
+
+  const handler = () => {
+    const now = performance.now();
+    if (now - lastLogTs < 1_000) {
+      return;
+    }
+    lastLogTs = now;
+
+    try {
+      gl.readPixels(
+        Math.max(0, Math.floor(canvas.width / 2)),
+        Math.max(0, Math.floor(canvas.height / 2)),
+        1,
+        1,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        pixelBuffer,
+      );
+      const [r, g, b, a] = pixelBuffer;
+      const brightness = Math.round((r + g + b) / 3);
+      log("debug", "[PixelSampler] center RGBA", { r, g, b, a, brightness, canvas: { width: canvas.width, height: canvas.height } });
+    } catch (error) {
+      log("warn", "[PixelSampler] readPixels failed", error);
+      scene.postRender.removeEventListener(handler);
+    }
+  };
+
+  scene.postRender.addEventListener(handler);
+  log("info", "[PixelSampler] attached postRender sampler");
+
+  return () => {
+    try {
+      scene.postRender.removeEventListener(handler);
+    } catch (error) {
+      log("warn", "[PixelSampler] failed to remove sampler", error);
+    }
+    log("info", "[PixelSampler] detached");
+  };
+}
 
 const FLIGHT_COLORS = [
   "#4f83ff",
@@ -441,10 +518,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   const hoverRef = useRef<{ flightId: string; index: number; key: string } | null>(null);
   const waypointEntityMapRef = useRef<Map<string, import("cesium").Entity>>(new Map());
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const pixelSamplerCleanupRef = useRef<(() => void) | null>(null);
   const [initError, setInitError] = useState<string | null>(null);
   const [viewerReady, setViewerReady] = useState(false);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+  const keySummary = useMemo(() => summarizeKey(apiKey), [apiKey]);
+
+  useEffect(() => {
+    log("info", "[Init] API key detected", { present: Boolean(apiKey), summary: keySummary });
+  }, [apiKey, keySummary]);
 
   // Fetch terrain elevation for first waypoint via backend in prod/preview,
   // and via local Next API proxy in dev (avoids CORS in both cases)
@@ -458,35 +541,42 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       } else {
         elevationUrl = buildApiUrl.dronePath.elevation();
       }
+      log("debug", "[Elevation] Fetching terrain elevation", { lat, lon, elevationUrl, isLocalHost });
       const response = await fetch(elevationUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ center: `${lat}, ${lon}` }),
       });
-      
+
       if (!response.ok) {
-        console.error('[FlightViewer] Elevation API HTTP error:', response.status);
+        log("error", "[Elevation] HTTP error", { status: response.status, statusText: response.statusText });
         return 0;
       }
-      
+
       const data = await response.json();
       if (!data.elevation_meters) {
-        console.error('[FlightViewer] Elevation API missing data:', data);
+        log("error", "[Elevation] Missing response data", data);
         return 0;
       }
-      
+
       const elevationMeters = data.elevation_meters;
       const elevationFeet = data.elevation_feet;
-      console.log(`[FlightViewer] Terrain elevation at first waypoint: ${elevationFeet.toFixed(1)}ft (${elevationMeters.toFixed(1)}m)`);
+      log("info", "[Elevation] Terrain sample retrieved", {
+        lat,
+        lon,
+        elevationMeters,
+        elevationFeet,
+      });
       return elevationMeters; // Return in meters for Cesium
     } catch (error) {
-      console.error('[FlightViewer] Elevation API error:', error);
+      log("error", "[Elevation] Fetch failed", error);
       return 0;
     }
   }, []);
 
   useEffect(() => {
     if (!apiKey) {
+      log("error", "[Init] Missing Google Maps API key; photorealistic tiles cannot load");
       setInitError("missing-key");
       return;
     }
@@ -498,16 +588,22 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     (async () => {
       try {
+        log("info", "[Init] Importing Cesium");
         const Cesium = await import("cesium");
         cesiumRef.current = Cesium;
-        
+
         // Disable Cesium Ion
         Cesium.Ion.defaultAccessToken = "";
-        
+
         // Set Cesium base URL
         if (typeof window !== "undefined") {
           window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
         }
+
+        log("info", "[Init] Creating viewer", {
+          cesiumBaseUrl: window?.CESIUM_BASE_URL,
+          containerReady: Boolean(containerRef.current),
+        });
 
         const viewer = new Cesium.Viewer(containerRef.current, {
           imageryProvider: false as any,
@@ -534,6 +630,11 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             container.style.display = "none";
           }
         }
+
+        pixelSamplerCleanupRef.current?.();
+        pixelSamplerCleanupRef.current = attachPixelSampler(viewer, Cesium);
+
+        log("info", "[Init] Viewer ready, configuring scene overrides");
 
         // Configure scene for photorealistic tiles only
         viewer.scene.globe.show = false;
@@ -563,6 +664,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
         try {
           // Load Google Photorealistic 3D Tiles
+          log("info", "[Tiles] Loading Google Photorealistic 3D Tiles", {
+            tilesetUrl: tilesetUrl("<redacted>"),
+            keySummary,
+          });
           const tileset = await Cesium.Cesium3DTileset.fromUrl(
             `https://tile.googleapis.com/v1/3dtiles/root.json?key=${apiKey}`,
             {
@@ -589,25 +694,33 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           viewer.scene.primitives.add(tileset);
           tilesetRef.current = tileset;
 
+          tileset.tileLoadProgressEvent.addEventListener((pending: number) => {
+            log("debug", "[Tiles] Load progress", { pending });
+          });
+
           // Wait for initial tiles to load
           tileset.initialTilesLoaded.addEventListener(() => {
             if (!cancelled && viewerRef.current) {
               viewerRef.current.scene.requestRender();
               setViewerReady(true);
+              log("info", "[Tiles] Initial tiles loaded; viewer ready for rendering");
             }
           });
 
           // Handle tileset errors
           tileset.tileFailed.addEventListener((error: any) => {
-            console.error("[FlightPathScene] Tile failed to load", error);
+            log("error", "[Tiles] Tile failed to load", error);
           });
 
         } catch (tilesetErr) {
-          console.error("[FlightPathScene] Photorealistic tiles failed", tilesetErr);
+          log("error", "[Tiles] Photorealistic tiles failed", tilesetErr);
           const message = tilesetErr instanceof Error ? tilesetErr.message : "";
           setInitError(message ? `tileset:${message}` : "tileset");
           // Still set viewer ready so we can show flight paths even without terrain
           setViewerReady(true);
+          log("warn", "[Tiles] Using fallback rendering without photorealistic terrain", {
+            errorMessage: tilesetErr instanceof Error ? tilesetErr.message : tilesetErr,
+          });
         }
 
         // Set up mouse interaction for waypoint hover
@@ -655,13 +768,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
         
       } catch (err) {
-        console.error("[FlightPathScene] Cesium initialization failed", err);
+        log("error", "[Init] Cesium initialization failed", err);
         setInitError("init");
       }
     })();
 
     return () => {
       cancelled = true;
+
+      pixelSamplerCleanupRef.current?.();
+      pixelSamplerCleanupRef.current = null;
 
       // Clear hover highlight BEFORE destroying Cesium objects
       if (hoverRef.current) {
@@ -776,6 +892,13 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
     const positionsForFit: import("cesium").Cartesian3[] = [];
 
+    log("info", "[Render] Preparing scene entities", {
+      flights: flights.length,
+      totalSamples: flights.reduce((acc, f) => acc + f.samples.length, 0),
+      selectedLens,
+      forwardDistanceBase,
+    });
+
     // Use Google Elevation API to get terrain height at first waypoint only
     // Then apply that offset to all waypoints (they're already AGL-relative to each other)
     if (flights.length > 0 && flights[0].samples.length > 0) {
@@ -786,8 +909,12 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           if (disposed) return;
           const viewer = viewerRef.current as any;
           if (!viewer || viewer.isDestroyed?.()) return;
-          console.log(`[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`);
-          
+          log("info", "[Render] Applying terrain offset", {
+            terrainElevationMeters,
+            terrainElevationFeet: terrainElevationMeters * 3.28084,
+            flights: flights.length,
+          });
+
           flights.forEach(flight => {
             const positions: import("cesium").Cartesian3[] = [];
 
@@ -804,126 +931,131 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             });
 
             // Render using terrain-corrected positions
-          if (positions.length >= 2) {
-            const path = viewer.entities.add({
-              polyline: {
-                positions,
-                width: 2.2,
-                material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
-                arcType: Cesium.ArcType.GEODESIC,
-              },
+            if (positions.length >= 2) {
+              const path = viewer.entities.add({
+                polyline: {
+                  positions,
+                  width: 2.2,
+                  material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
+                  arcType: Cesium.ArcType.GEODESIC,
+                },
+              });
+              flightEntitiesRef.current.push(path);
+            }
+
+            positions.forEach((position, index) => {
+              const waypointEntity = viewer.entities.add({
+                position,
+                point: {
+                  pixelSize: 6,
+                  color: Cesium.Color.fromCssColorString(flight.color),
+                  outlineColor: Cesium.Color.fromCssColorString("#182036"),
+                  outlineWidth: 1,
+                },
+                properties: {
+                  flightId: flight.id,
+                  index,
+                },
+              });
+              flightEntitiesRef.current.push(waypointEntity);
+              waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
+
+              const headingDeg = flight.samples[index].headingDeg ?? 0;
+              const pitchDeg = flight.samples[index].gimbalPitchAngle ?? -45;
+              const forwardDistance = forwardDistanceBase;
+              const horizontalDistance = forwardDistance * Math.cos(degreesToRadians(pitchDeg));
+              const verticalOffset = forwardDistance * Math.sin(degreesToRadians(pitchDeg));
+              const destination = destinationLatLon(
+                flight.samples[index].latitude,
+                flight.samples[index].longitude,
+                headingDeg,
+                horizontalDistance,
+              );
+
+              // Use same terrain offset for frustum target
+              const targetAbsoluteHeight = terrainElevationMeters + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
+
+              const target = Cesium.Cartesian3.fromDegrees(
+                destination.lon,
+                destination.lat,
+                targetAbsoluteHeight,
+              );
+
+              const frustumLine = viewer.entities.add({
+                polyline: {
+                  positions: [position, target],
+                  width: 1.4,
+                  material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.55),
+                },
+                properties: {
+                  flightId: flight.id,
+                  index,
+                },
+              });
+              flightEntitiesRef.current.push(frustumLine);
             });
-            flightEntitiesRef.current.push(path);
-          }
 
-          positions.forEach((position, index) => {
-            const waypointEntity = viewer.entities.add({
-              position,
-              point: {
-                pixelSize: 6,
-                color: Cesium.Color.fromCssColorString(flight.color),
-                outlineColor: Cesium.Color.fromCssColorString("#182036"),
-                outlineWidth: 1,
-              },
-              properties: {
-                flightId: flight.id,
-                index,
-              },
-            });
-            flightEntitiesRef.current.push(waypointEntity);
-            waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
+            if (flight.poi) {
+              // Use same terrain offset for POI
+              const poiAltitudeFt = flight.poi.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
+              const poiAbsoluteHeight = terrainElevationMeters + (poiAltitudeFt * FEET_TO_METERS);
 
-            const headingDeg = flight.samples[index].headingDeg ?? 0;
-            const pitchDeg = flight.samples[index].gimbalPitchAngle ?? -45;
-            const forwardDistance = forwardDistanceBase;
-            const horizontalDistance = forwardDistance * Math.cos(degreesToRadians(pitchDeg));
-            const verticalOffset = forwardDistance * Math.sin(degreesToRadians(pitchDeg));
-            const destination = destinationLatLon(
-              flight.samples[index].latitude,
-              flight.samples[index].longitude,
-              headingDeg,
-              horizontalDistance,
-            );
+              const poiEntity = viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(
+                  flight.poi.longitude,
+                  flight.poi.latitude,
+                  poiAbsoluteHeight,
+                ),
+                point: {
+                  pixelSize: 10,
+                  color: Cesium.Color.fromCssColorString("#ffbb00"),
+                  outlineColor: Cesium.Color.fromCssColorString("#0b0e24"),
+                  outlineWidth: 2,
+                },
+                label: {
+                  text: "POI",
+                  font: "14px 'Inter', sans-serif",
+                  fillColor: Cesium.Color.WHITE,
+                  outlineColor: Cesium.Color.fromCssColorString("#1b1f3b"),
+                  outlineWidth: 3,
+                  pixelOffset: new Cesium.Cartesian2(0, -20),
+                  disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                },
+              });
+              flightEntitiesRef.current.push(poiEntity);
+            }
 
-            // Use same terrain offset for frustum target
-            const targetAbsoluteHeight = terrainElevationMeters + (flight.samples[index].altitudeFt * FEET_TO_METERS) + verticalOffset;
-
-            const target = Cesium.Cartesian3.fromDegrees(
-              destination.lon,
-              destination.lat,
-              targetAbsoluteHeight,
-            );
-
-            const frustumLine = viewer.entities.add({
-              polyline: {
-                positions: [position, target],
-                width: 1.4,
-                material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.55),
-              },
-              properties: {
-                flightId: flight.id,
-                index,
-              },
-            });
-            flightEntitiesRef.current.push(frustumLine);
+            positionsForFit.push(...positions);
           });
 
-          if (flight.poi) {
-            // Use same terrain offset for POI
-            const poiAltitudeFt = flight.poi.altitudeFt ?? flight.samples[0]?.altitudeFt ?? 0;
-            const poiAbsoluteHeight = terrainElevationMeters + (poiAltitudeFt * FEET_TO_METERS);
-
-            const poiEntity = viewer.entities.add({
-              position: Cesium.Cartesian3.fromDegrees(
-                flight.poi.longitude,
-                flight.poi.latitude,
-                poiAbsoluteHeight,
-              ),
-              point: {
-                pixelSize: 10,
-                color: Cesium.Color.fromCssColorString("#ffbb00"),
-                outlineColor: Cesium.Color.fromCssColorString("#0b0e24"),
-                outlineWidth: 2,
-              },
-              label: {
-                text: "POI",
-                font: "14px 'Inter', sans-serif",
-                fillColor: Cesium.Color.WHITE,
-                outlineColor: Cesium.Color.fromCssColorString("#1b1f3b"),
-                outlineWidth: 3,
-                pixelOffset: new Cesium.Cartesian2(0, -20),
-                disableDepthTestDistance: Number.POSITIVE_INFINITY,
-              },
-            });
-            flightEntitiesRef.current.push(poiEntity);
-          }
-
-          positionsForFit.push(...positions);
-        });
-
           if (positionsForFit.length) {
-          const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+            const boundingSphere = Cesium.BoundingSphere.fromPoints(positionsForFit);
+            const expandedRadius = boundingSphere.radius * 2.5;
+            const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
-          // Add buffer to the bounding sphere for better view
-          const expandedRadius = boundingSphere.radius * 2.5;
-          const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
-
-          try {
-            viewer.camera.flyToBoundingSphere(expandedSphere, {
-              duration: 1.5,
-              offset: new Cesium.HeadingPitchRange(
-                0,
-                Cesium.Math.toRadians(-45), // Look down at 45 degrees
-                expandedRadius
-              ),
+            log("debug", "[Render] Flying camera to bounding sphere", {
+              radius: boundingSphere.radius,
+              expandedRadius,
             });
-          } catch {}
-        }
+
+            try {
+              viewer.camera.flyToBoundingSphere(expandedSphere, {
+                duration: 1.5,
+                offset: new Cesium.HeadingPitchRange(
+                  0,
+                  Cesium.Math.toRadians(-45), // Look down at 45 degrees
+                  expandedRadius
+                ),
+              });
+            } catch (error) {
+              log("warn", "[Render] Failed to move camera to bounding sphere", error);
+            }
+          }
 
           try { viewer.scene.requestRender(); } catch {}
       })
       .catch((error: Error) => {
-        console.error('[FlightViewer] Google Elevation API failed, rendering without terrain correction:', error);
+        log("error", "[Render] Elevation lookup failed; rendering without terrain correction", error);
           if (disposed) return;
           const viewer = viewerRef.current as any;
           if (!viewer || viewer.isDestroyed?.()) return;
@@ -971,6 +1103,11 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           const expandedRadius = boundingSphere.radius * 2.5;
           const expandedSphere = new Cesium.BoundingSphere(boundingSphere.center, expandedRadius);
 
+          log("debug", "[Render] Fallback camera flyTo bounding sphere", {
+            radius: boundingSphere.radius,
+            expandedRadius,
+          });
+
           try {
             viewer.camera.flyToBoundingSphere(expandedSphere, {
               duration: 1.5,
@@ -980,7 +1117,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
                 expandedRadius
               ),
             });
-          } catch {}
+          } catch (error) {
+            log("warn", "[Render] Fallback camera movement failed", error);
+          }
         }
 
         try { viewer.scene.requestRender(); } catch {}
