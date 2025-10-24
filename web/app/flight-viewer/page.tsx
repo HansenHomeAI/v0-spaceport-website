@@ -716,8 +716,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             log("debug", "[Tiles] Load progress", { pending });
           });
 
-          tileset.readyPromise
-            .then(() => {
+          const readyPromise: Promise<unknown> | undefined = (tileset as any)?.readyPromise;
+          readyPromise
+            ?.then(() => {
               const tilesetAny = tileset as any;
               log("info", "[Tiles] readyPromise resolved", {
                 boundingSphereRadius: tileset.boundingSphere?.radius,
@@ -725,7 +726,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               });
               viewer.scene.requestRender();
             })
-            .catch((err: unknown) => {
+            ?.catch((err: unknown) => {
               log("error", "[Tiles] readyPromise rejected", err);
             });
 
