@@ -69,6 +69,7 @@ declare global {
 const EARTH_RADIUS_METERS = 6_378_137;
 const FEET_TO_METERS = 0.3048;
 const LOG_PREFIX = "[FlightViewer]";
+const SAMPLE_LOG_INTERVAL_MS = 1_000;
 
 type LogLevel = "log" | "info" | "warn" | "error" | "debug";
 
@@ -109,10 +110,11 @@ function attachPixelSampler(
 
   const pixelBuffer = new Uint8Array(4);
   let lastLogTs = 0;
+  let consecutiveLowLuma = 0;
 
   const handler = () => {
     const now = performance.now();
-    if (now - lastLogTs < 1_000) {
+    if (now - lastLogTs < SAMPLE_LOG_INTERVAL_MS) {
       return;
     }
     lastLogTs = now;
@@ -129,7 +131,17 @@ function attachPixelSampler(
       );
       const [r, g, b, a] = pixelBuffer;
       const brightness = Math.round((r + g + b) / 3);
-      log("debug", "[PixelSampler] center RGBA", { r, g, b, a, brightness, canvas: { width: canvas.width, height: canvas.height } });
+      const detail = { r, g, b, a, brightness, canvas: { width: canvas.width, height: canvas.height } };
+      if (brightness < 8) {
+        consecutiveLowLuma += 1;
+        log("warn", "[PixelSampler] center RGBA below visibility threshold", { ...detail, consecutiveLowLuma });
+      } else {
+        if (consecutiveLowLuma > 0) {
+          log("info", "[PixelSampler] brightness recovered", { brightness, consecutiveLowLuma });
+          consecutiveLowLuma = 0;
+        }
+        log("info", "[PixelSampler] center RGBA", detail);
+      }
     } catch (error) {
       log("warn", "[PixelSampler] readPixels failed", error);
       scene.postRender.removeEventListener(handler);
@@ -697,10 +709,25 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           viewer.scene.primitives.add(tileset);
           tilesetRef.current = tileset;
 
-          const tileLoadProgressEvent = (tileset as unknown as { tileLoadProgressEvent?: { addEventListener?: (cb: (pending: number) => void) => void } }).tileLoadProgressEvent;
+          const tileLoadProgressEvent = (tileset as unknown as {
+            tileLoadProgressEvent?: { addEventListener?: (cb: (pending: number) => void) => void };
+          }).tileLoadProgressEvent;
           tileLoadProgressEvent?.addEventListener?.((pending: number) => {
             log("debug", "[Tiles] Load progress", { pending });
           });
+
+          tileset.readyPromise
+            .then(() => {
+              const tilesetAny = tileset as any;
+              log("info", "[Tiles] readyPromise resolved", {
+                boundingSphereRadius: tileset.boundingSphere?.radius,
+                memoryUsageInBytes: tilesetAny?.totalMemoryUsageInBytes ?? tilesetAny?.memoryUsageInBytes ?? null,
+              });
+              viewer.scene.requestRender();
+            })
+            .catch((err: unknown) => {
+              log("error", "[Tiles] readyPromise rejected", err);
+            });
 
           // Wait for initial tiles to load
           tileset.initialTilesLoaded.addEventListener(() => {
@@ -1042,6 +1069,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               expandedRadius,
             });
 
+            const onMoveEnd = () => {
+              log("info", "[Render] Camera moved to bounding sphere", {
+                expandedRadius,
+                cameraPosition: viewer.camera.position,
+              });
+              viewer.camera.moveEnd.removeEventListener(onMoveEnd);
+            };
+            viewer.camera.moveEnd.addEventListener(onMoveEnd);
             try {
               viewer.camera.flyToBoundingSphere(expandedSphere, {
                 duration: 1.5,
@@ -1053,6 +1088,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               });
             } catch (error) {
               log("warn", "[Render] Failed to move camera to bounding sphere", error);
+              viewer.camera.moveEnd.removeEventListener(onMoveEnd);
             }
           }
 
@@ -1112,6 +1148,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             expandedRadius,
           });
 
+          const onMoveEnd = () => {
+            log("info", "[Render] Fallback camera move complete", {
+              expandedRadius,
+              cameraPosition: viewer.camera.position,
+            });
+            viewer.camera.moveEnd.removeEventListener(onMoveEnd);
+          };
+          viewer.camera.moveEnd.addEventListener(onMoveEnd);
           try {
             viewer.camera.flyToBoundingSphere(expandedSphere, {
               duration: 1.5,
@@ -1123,6 +1167,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             });
           } catch (error) {
             log("warn", "[Render] Fallback camera movement failed", error);
+            viewer.camera.moveEnd.removeEventListener(onMoveEnd);
           }
         }
 
