@@ -1186,7 +1186,75 @@ export default function FlightViewerPage(): JSX.Element {
       </div>
 
       <section className="flight-viewer__content">
-        <aside className="flight-viewer__sidebar">
+        <div className="flight-viewer__visualizer-card" aria-live="polite">
+          <div className="flight-viewer__visualizer">
+            {hoveredData && (
+              <div className="flight-viewer__tooltip">
+                <div className="flight-viewer__tooltip-header">
+                  <span className="flight-viewer__tooltip-marker" style={{ background: hoveredData.flight.color }} />
+                  <strong>{hoveredData.flight.name}</strong> - Waypoint {hoveredData.sample.index + 1}
+                </div>
+                <div className="flight-viewer__tooltip-body">
+                  <div className="flight-viewer__tooltip-row">
+                    <span>Heading:</span>
+                    <span>{hoveredData.sample.headingDeg?.toFixed(1) || "--"}deg</span>
+                  </div>
+                  <div className="flight-viewer__tooltip-row">
+                    <span>Gimbal Pitch:</span>
+                    <span>{hoveredData.sample.gimbalPitchAngle?.toFixed(1) || "--"}deg</span>
+                  </div>
+                  <div className="flight-viewer__tooltip-row">
+                    <span>Altitude:</span>
+                    <span>{hoveredData.sample.altitudeFt.toFixed(1)} ft</span>
+                  </div>
+                  <div className="flight-viewer__tooltip-row">
+                    <span>Speed:</span>
+                    <span>{hoveredData.sample.speedMs?.toFixed(1) || "--"} m/s</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {flights.length > 0 ? (
+              <FlightPathScene
+                flights={flights}
+                selectedLens={selectedLens}
+                onWaypointHover={handleWaypointHover}
+              />
+            ) : (
+              <div className="flight-viewer__placeholder">
+                <div className="flight-viewer__placeholder-inner">
+                  <p>Select flight files to render their 3D trajectories.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flight-viewer__panel">
+          {flights.length > 0 ? (
+            <div className="flight-viewer__control-row">
+              <label className="flight-viewer__lens-select">
+                <span>Camera Lens</span>
+                <select value={selectedLens} onChange={(e) => setSelectedLens(e.target.value)}>
+                  {Object.entries(DRONE_LENSES).map(([key, lens]) => (
+                    <option key={key} value={key}>
+                      {lens.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button onClick={clearAll} className="flight-viewer__clear-btn">
+                Clear All
+              </button>
+            </div>
+          ) : (
+            <div className="flight-viewer__panel-hint">
+              <h2>Upload a flight plan to get started</h2>
+              <p>Drop CSV or KMZ missions below to render them in the 3D viewer.</p>
+            </div>
+          )}
+
           <label className="flight-viewer__upload">
             <span className="flight-viewer__upload-title">Add flight files</span>
             <span className="flight-viewer__upload-hint">Support for CSV (Litchi/DJI) and KMZ (DJI WPML) formats. Select multiple files to overlay paths.</span>
@@ -1203,112 +1271,51 @@ export default function FlightViewerPage(): JSX.Element {
           {status && !isParsing && <p className="flight-viewer__status flight-viewer__status--error">{status}</p>}
 
           {flights.length > 0 && (
-            <>
-              <div className="flight-viewer__flight-list">
-                <div className="flight-viewer__flight-list-header">
-                  <h3>Loaded Flights ({flights.length})</h3>
-                  <button onClick={clearAll} className="flight-viewer__clear-btn">Clear All</button>
-                </div>
-                {flights.map(flight => {
-                  const stats = computeStats(flight);
-                  return (
-                    <div key={flight.id} className="flight-viewer__flight-item">
-                      <div className="flight-viewer__flight-item-header">
-                        <div className="flight-viewer__flight-color" style={{ backgroundColor: flight.color }} />
-                        <span className="flight-viewer__flight-name">{flight.name}</span>
-                        <button 
-                          onClick={() => removeFlight(flight.id)} 
-                          className="flight-viewer__remove-btn"
-                          aria-label={`Remove ${flight.name}`}
-                        >
-                          x
-                        </button>
-                      </div>
-                      <div className="flight-viewer__flight-stats">
-                        <span>{flight.samples.length} pts</span>
-                        {stats && (
-                          <>
-                            <span>-</span>
-                            <span>{formatNumber(stats.totalDistanceMeters, 0)}m</span>
-                            <span>-</span>
-                            <span>{formatNumber(stats.minAltitudeFt, 0)}-{formatNumber(stats.maxAltitudeFt, 0)}ft</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+            <div className="flight-viewer__flight-list">
+              <div className="flight-viewer__flight-list-header">
+                <h3>Loaded Flights ({flights.length})</h3>
               </div>
-            </>
+              {flights.map(flight => {
+                const stats = computeStats(flight);
+                return (
+                  <div key={flight.id} className="flight-viewer__flight-item">
+                    <div className="flight-viewer__flight-item-header">
+                      <div className="flight-viewer__flight-color" style={{ backgroundColor: flight.color }} />
+                      <span className="flight-viewer__flight-name">{flight.name}</span>
+                      <button 
+                        onClick={() => removeFlight(flight.id)} 
+                        className="flight-viewer__remove-btn"
+                        aria-label={`Remove ${flight.name}`}
+                      >
+                        x
+                      </button>
+                    </div>
+                    <div className="flight-viewer__flight-stats">
+                      <span>{flight.samples.length} pts</span>
+                      {stats && (
+                        <>
+                          <span>-</span>
+                          <span>{formatNumber(stats.totalDistanceMeters, 0)}m</span>
+                          <span>-</span>
+                          <span>{formatNumber(stats.minAltitudeFt, 0)}-{formatNumber(stats.maxAltitudeFt, 0)}ft</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
 
           {flights.length === 0 && !isParsing && (
             <div className="flight-viewer__details flight-viewer__details--placeholder">
-              <h2>How it works</h2>
+              <h3>How it works</h3>
               <ul>
                 <li>Upload CSV (Litchi/DJI) or KMZ (DJI WPML) flight plans.</li>
                 <li>All paths share a common reference point for accurate overlays.</li>
                 <li>Metric and imperial units are automatically converted.</li>
                 <li>Each flight gets a unique color for easy comparison.</li>
               </ul>
-            </div>
-          )}
-        </aside>
-
-        <div className="flight-viewer__visualizer" aria-live="polite">
-          {flights.length > 0 && (
-            <div className="flight-viewer__controls">
-              <label className="flight-viewer__lens-select">
-                <span>Camera Lens:</span>
-                <select value={selectedLens} onChange={(e) => setSelectedLens(e.target.value)}>
-                  {Object.entries(DRONE_LENSES).map(([key, lens]) => (
-                    <option key={key} value={key}>
-                      {lens.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          )}
-          
-          {hoveredData && (
-            <div className="flight-viewer__tooltip">
-              <div className="flight-viewer__tooltip-header">
-                <span className="flight-viewer__tooltip-marker" style={{ background: hoveredData.flight.color }} />
-                <strong>{hoveredData.flight.name}</strong> - Waypoint {hoveredData.sample.index + 1}
-              </div>
-              <div className="flight-viewer__tooltip-body">
-                <div className="flight-viewer__tooltip-row">
-                  <span>Heading:</span>
-                  <span>{hoveredData.sample.headingDeg?.toFixed(1) || "--"}deg</span>
-                </div>
-                <div className="flight-viewer__tooltip-row">
-                  <span>Gimbal Pitch:</span>
-                  <span>{hoveredData.sample.gimbalPitchAngle?.toFixed(1) || "--"}deg</span>
-                </div>
-                <div className="flight-viewer__tooltip-row">
-                  <span>Altitude:</span>
-                  <span>{hoveredData.sample.altitudeFt.toFixed(1)} ft</span>
-                </div>
-                <div className="flight-viewer__tooltip-row">
-                  <span>Speed:</span>
-                  <span>{hoveredData.sample.speedMs?.toFixed(1) || "--"} m/s</span>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {flights.length > 0 ? (
-            <FlightPathScene
-              flights={flights}
-              selectedLens={selectedLens}
-              onWaypointHover={handleWaypointHover}
-            />
-          ) : (
-            <div className="flight-viewer__placeholder">
-              <div className="flight-viewer__placeholder-inner">
-                <p>Select flight files to render their 3D trajectories.</p>
-              </div>
             </div>
           )}
         </div>
