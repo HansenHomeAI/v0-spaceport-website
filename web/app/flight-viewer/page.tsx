@@ -534,6 +534,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   const waypointEntityMapRef = useRef<Map<string, import("cesium").Entity>>(new Map());
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const pixelSamplerCleanupRef = useRef<(() => void) | null>(null);
+  const tileVisibleCleanupRef = useRef<(() => void) | null>(null);
+  const tileVisibleLoggedRef = useRef(0);
+  const statisticsIntervalRef = useRef<number | null>(null);
   const [initError, setInitError] = useState<string | null>(null);
   const [viewerReady, setViewerReady] = useState(false);
 
@@ -605,6 +608,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       try {
         log("info", "[Init] Importing Cesium");
         const Cesium = await import("cesium");
+        if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+          (window as any).Cesium = Cesium;
+        }
         cesiumRef.current = Cesium;
 
         // Disable Cesium Ion
@@ -708,6 +714,9 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
           viewer.scene.primitives.add(tileset);
           tilesetRef.current = tileset;
+          log("info", "[Tiles] primitives count after add", {
+            primitiveCount: viewer.scene.primitives.length,
+          });
 
           const tileLoadProgressEvent = (tileset as unknown as {
             tileLoadProgressEvent?: { addEventListener?: (cb: (pending: number) => void) => void };
@@ -716,19 +725,106 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             log("debug", "[Tiles] Load progress", { pending });
           });
 
+          const tilesetAny = tileset as any;
+          tileVisibleCleanupRef.current?.();
+          tileVisibleCleanupRef.current = null;
+          tileVisibleLoggedRef.current = 0;
+          if (tilesetAny?.tileVisible?.addEventListener) {
+            const tileVisibleHandler = (tile: any) => {
+              if (tileVisibleLoggedRef.current < 10) {
+                tileVisibleLoggedRef.current += 1;
+                log("info", "[Tiles] tile visible", {
+                  index: tileVisibleLoggedRef.current,
+                  level: tile?.level ?? null,
+                  hasContent: !!tile?.content,
+                  geometricError: tile?.geometricError ?? null,
+                });
+              } else if (tileVisibleLoggedRef.current === 10) {
+                tileVisibleLoggedRef.current += 1;
+                log("info", "[Tiles] tile visible logging suppressed", {});
+              }
+            };
+            tilesetAny.tileVisible.addEventListener(tileVisibleHandler);
+            tileVisibleCleanupRef.current = () => {
+              try {
+                tilesetAny.tileVisible.removeEventListener(tileVisibleHandler);
+              } catch (error) {
+                log("warn", "[Tiles] failed to remove tileVisible handler", error);
+              }
+              tileVisibleLoggedRef.current = 0;
+            };
+          }
+
           const readyPromise: Promise<unknown> | undefined = (tileset as any)?.readyPromise;
           readyPromise
             ?.then(() => {
-              const tilesetAny = tileset as any;
+              let centerCartographic: { latitude: number; longitude: number; height: number } | null = null;
+              try {
+                if (Cesium && tileset.boundingSphere?.center) {
+                  const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
+                  if (cartographic) {
+                    centerCartographic = {
+                      latitude: Cesium.Math.toDegrees(cartographic.latitude),
+                      longitude: Cesium.Math.toDegrees(cartographic.longitude),
+                      height: cartographic.height,
+                    };
+                  }
+                }
+              } catch (error) {
+                log("warn", "[Tiles] failed to compute bounding sphere cartographic center", error);
+              }
               log("info", "[Tiles] readyPromise resolved", {
                 boundingSphereRadius: tileset.boundingSphere?.radius,
                 memoryUsageInBytes: tilesetAny?.totalMemoryUsageInBytes ?? tilesetAny?.memoryUsageInBytes ?? null,
+                boundingSphereCenterCartographic: centerCartographic,
+                totalPrimitives: viewer.scene.primitives.length,
               });
               viewer.scene.requestRender();
             })
             ?.catch((err: unknown) => {
               log("error", "[Tiles] readyPromise rejected", err);
             });
+
+          if (typeof window !== "undefined") {
+            let statsIterations = 0;
+            const intervalId = window.setInterval(() => {
+              statsIterations += 1;
+              const stats = tileset.statistics;
+              if (stats) {
+                let centerCartographic: { latitude: number; longitude: number; height: number } | null = null;
+                try {
+                  if (Cesium && tileset.boundingSphere?.center) {
+                    const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
+                    if (cartographic) {
+                      centerCartographic = {
+                        latitude: Cesium.Math.toDegrees(cartographic.latitude),
+                        longitude: Cesium.Math.toDegrees(cartographic.longitude),
+                        height: cartographic.height,
+                      };
+                    }
+                  }
+                } catch (error) {
+                  log("warn", "[Tiles] statistics cartographic conversion failed", { iteration: statsIterations, error });
+                }
+                log("info", "[Tiles] statistics", {
+                  iteration: statsIterations,
+                  pendingRequests: stats.numberOfPendingRequests,
+                  tilesProcessing: stats.numberOfTilesProcessing,
+                  tilesWithContentReady: stats.numberOfTilesWithContentReady,
+                  tilesWithRenderableContent: stats.numberOfTilesWithRenderableContent,
+                  boundingSphereCenterCartographic: centerCartographic,
+                  totalMemoryUsageInBytes: (tileset as any)?.totalMemoryUsageInBytes ?? null,
+                });
+              } else {
+                log("warn", "[Tiles] statistics unavailable", { iteration: statsIterations });
+              }
+              if (statsIterations >= 10 || !viewerRef.current) {
+                window.clearInterval(intervalId);
+                statisticsIntervalRef.current = null;
+              }
+            }, 2_000);
+            statisticsIntervalRef.current = intervalId;
+          }
 
           // Wait for initial tiles to load
           tileset.initialTilesLoaded.addEventListener(() => {
@@ -854,6 +950,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
       // Remove/destroy tileset before destroying the viewer
       if (tilesetRef.current) {
+        tileVisibleCleanupRef.current?.();
+        tileVisibleCleanupRef.current = null;
         try {
           if (viewerRef.current && !(viewerRef.current as any).isDestroyed?.()) {
             try { viewerRef.current.scene.primitives.remove(tilesetRef.current); } catch (_) {}
@@ -870,6 +968,11 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         } catch (_) {}
       }
       tilesetRef.current = null;
+
+      if (typeof window !== "undefined" && statisticsIntervalRef.current !== null) {
+        window.clearInterval(statisticsIntervalRef.current);
+        statisticsIntervalRef.current = null;
+      }
 
       // Finally destroy the viewer (after clearing tweens/datasources)
       if (viewerRef.current) {
@@ -891,6 +994,23 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
       setViewerReady(false);
     };
   }, [apiKey, onWaypointHover]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+      (window as any).__flightViewerDiagnostics = {
+        get viewer() {
+          return viewerRef.current;
+        },
+        get tileset() {
+          return tilesetRef.current;
+        },
+      };
+      return () => {
+        delete (window as any).__flightViewerDiagnostics;
+      };
+    }
+    return () => {};
+  }, [viewerReady]);
 
   useEffect(() => {
     const initialViewer = viewerRef.current;
@@ -1070,11 +1190,27 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
               expandedRadius,
             });
 
-            const onMoveEnd = () => {
-              log("info", "[Render] Camera moved to bounding sphere", {
-                expandedRadius,
-                cameraPosition: viewer.camera.position,
-              });
+          const onMoveEnd = () => {
+            let cameraCartographic: { latitude: number; longitude: number; height: number } | null = null;
+            try {
+              if (Cesium) {
+                const cartographic = Cesium.Cartographic.fromCartesian(viewer.camera.positionWC);
+                if (cartographic) {
+                  cameraCartographic = {
+                    latitude: Cesium.Math.toDegrees(cartographic.latitude),
+                    longitude: Cesium.Math.toDegrees(cartographic.longitude),
+                    height: cartographic.height,
+                  };
+                }
+              }
+            } catch (error) {
+              log("warn", "[Render] camera cartographic conversion failed", error);
+            }
+            log("info", "[Render] Camera moved to bounding sphere", {
+              expandedRadius,
+              cameraPosition: viewer.camera.position,
+              cameraCartographic,
+            });
               viewer.camera.moveEnd.removeEventListener(onMoveEnd);
             };
             viewer.camera.moveEnd.addEventListener(onMoveEnd);
@@ -1150,9 +1286,25 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           });
 
           const onMoveEnd = () => {
+            let cameraCartographic: { latitude: number; longitude: number; height: number } | null = null;
+            try {
+              if (Cesium) {
+                const cartographic = Cesium.Cartographic.fromCartesian(viewer.camera.positionWC);
+                if (cartographic) {
+                  cameraCartographic = {
+                    latitude: Cesium.Math.toDegrees(cartographic.latitude),
+                    longitude: Cesium.Math.toDegrees(cartographic.longitude),
+                    height: cartographic.height,
+                  };
+                }
+              }
+            } catch (error) {
+              log("warn", "[Render] fallback camera cartographic conversion failed", error);
+            }
             log("info", "[Render] Fallback camera move complete", {
               expandedRadius,
               cameraPosition: viewer.camera.position,
+              cameraCartographic,
             });
             viewer.camera.moveEnd.removeEventListener(onMoveEnd);
           };
