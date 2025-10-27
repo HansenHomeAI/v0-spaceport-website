@@ -51,9 +51,13 @@ Spaceport AI is a comprehensive web application with integrated ML pipeline for 
 
 ### **For Developers:**
 1. **Clone**: `git clone https://github.com/HansenHomeAI/v0-spaceport-website.git`
-2. **Install**: `cd web && npm install`
-3. **Configure**: Set up environment variables
-4. **Run**: `npm run dev`
+2. **Install dependencies**: `cd web && npm install`
+3. **Install local TLS tools** (one-time): `brew install mkcert nss`
+4. **Trust the mkcert CA** (prompts for password): `mkcert -install`
+5. **Generate localhost certs**: run from repo root `mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost.pem localhost 127.0.0.1 ::1`
+6. **Configure environment**: set project env vars as needed
+7. **Run dev server**: `npm run dev` → browse to `https://localhost:3000` (use `npm run dev:http` for plain HTTP)
+   - Certs live under `certs/` (gitignored). Override paths with `DEV_HTTPS_CERT_DIR`, `DEV_HTTPS_CERT_FILE`, and `DEV_HTTPS_KEY_FILE` if needed.
 
 ---
 
