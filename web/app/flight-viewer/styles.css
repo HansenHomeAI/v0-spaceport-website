@@ -403,11 +403,47 @@
   position: relative;
 }
 
-/* Ensure Cesium's internal canvas fills properly */
-.flight-viewer__cesium-canvas > div,
+/* Ensure Cesium viewer fills container without creating duplicate rows */
+.flight-viewer__cesium-canvas {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flight-viewer__cesium-canvas > .cesium-viewer {
+  flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+.flight-viewer__cesium-canvas .cesium-viewer-cesiumWidgetContainer {
+  flex: 1 !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  position: relative !important;
+}
+
+.flight-viewer__cesium-canvas .cesium-widget {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
 .flight-viewer__cesium-canvas canvas {
   width: 100% !important;
   height: 100% !important;
+  display: block !important;
+}
+
+/* Prevent Cesium UI elements from creating extra height */
+.flight-viewer__cesium-canvas .cesium-viewer-bottom,
+.flight-viewer__cesium-canvas .cesium-viewer-animationContainer,
+.flight-viewer__cesium-canvas .cesium-viewer-timelineContainer {
+  display: none !important;
 }
 
 .flight-viewer__map-placeholder,
