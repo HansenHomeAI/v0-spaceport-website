@@ -550,12 +550,22 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         
         // Force initial resize to fill container and set up resize observer
         if (containerRef.current) {
-          viewer.resize();
+          // Use requestAnimationFrame to ensure layout has settled before first resize
+          requestAnimationFrame(() => {
+            if (!cancelled && viewerRef.current && containerRef.current) {
+              viewerRef.current.resize();
+            }
+          });
           
           // Set up resize observer to handle container size changes
           resizeObserverRef.current = new ResizeObserver(() => {
             if (viewerRef.current) {
-              viewerRef.current.resize();
+              // Debounce resize to avoid layout thrashing
+              requestAnimationFrame(() => {
+                if (viewerRef.current) {
+                  viewerRef.current.resize();
+                }
+              });
             }
           });
           resizeObserverRef.current.observe(containerRef.current);

@@ -252,7 +252,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(0, 0, 0, 0.48);
   width: 100%;
-  min-height: clamp(420px, 65vh, 780px);
+  height: clamp(420px, 65vh, 780px);
   display: flex;
   flex-direction: column;
 }
@@ -386,19 +386,17 @@
 
 /* Map Container - CRITICAL: This must fill remaining space */
 .flight-viewer__map-container {
-  flex: 1;
+  flex: 1 1 0;
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 420px;
+  min-height: 0;
   overflow: hidden;
   display: flex;
 }
 
 .flight-viewer__cesium-canvas {
-  flex: 1;
+  flex: 1 1 0;
   width: 100%;
-  height: 100%;
   min-height: 0;
   position: relative;
 }
