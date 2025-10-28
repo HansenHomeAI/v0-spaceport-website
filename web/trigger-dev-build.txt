@@ -9,3 +9,4 @@ Production Lambda sync 2025-10-13T23:53:00Z
 Oct 28th 10:36am
 Flight viewer positioning fix 2025-10-28T19:45:00Z
 Flight viewer duplicate row fix 2025-10-28T20:35:00Z
+Flight viewer flex height conflict fix 2025-10-28T21:00:00Z
