@@ -567,12 +567,33 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         
         // Force initial resize to fill container and set up resize observer
         if (containerRef.current) {
+          // Helper to hard-set heights to avoid half-height canvas in dev
+          const forceViewerFill = () => {
+            try {
+              const root = containerRef.current as HTMLElement;
+              const viewerEl = root.querySelector('.cesium-viewer') as HTMLElement | null;
+              const widgetContainerEl = root.querySelector('.cesium-viewer-cesiumWidgetContainer') as HTMLElement | null;
+              const widgetEl = root.querySelector('.cesium-widget') as HTMLElement | null;
+              if (viewerEl) {
+                viewerEl.style.height = `${root.clientHeight}px`;
+              }
+              if (widgetContainerEl) {
+                widgetContainerEl.style.height = '100%';
+              }
+              if (widgetEl) {
+                widgetEl.style.height = '100%';
+              }
+            } catch {}
+          };
+
           viewer.resize();
-          
+          forceViewerFill();
+
           // Set up resize observer to handle container size changes
           resizeObserverRef.current = new ResizeObserver(() => {
-            if (viewerRef.current) {
+            if (viewerRef.current && containerRef.current) {
               viewerRef.current.resize();
+              forceViewerFill();
             }
           });
           resizeObserverRef.current.observe(containerRef.current);
