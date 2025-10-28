@@ -920,6 +920,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           } catch {}
         }
 
+          // Force viewer to resize to fill container after flights are rendered
+          try { viewer.resize(); } catch {}
           try { viewer.scene.requestRender(); } catch {}
       })
       .catch((error: Error) => {
@@ -983,6 +985,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           } catch {}
         }
 
+        // Force viewer to resize to fill container after flights are rendered
+        try { viewer.resize(); } catch {}
         try { viewer.scene.requestRender(); } catch {}
       });
     }
