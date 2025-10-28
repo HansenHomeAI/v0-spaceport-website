@@ -509,6 +509,23 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
         }
 
+        // Wait for container to settle to its final computed size. In dev builds
+        // flex layouts may report a smaller height for the first few frames,
+        // which can cause Cesium to lock onto a half-height canvas.
+        const waitForStableContainerSize = async (el: HTMLElement, maxFrames = 20): Promise<void> => {
+          let previous = -1;
+          for (let i = 0; i < maxFrames; i += 1) {
+            const current = el.clientHeight;
+            if (current > 0 && current === previous) {
+              break;
+            }
+            previous = current;
+            await new Promise(requestAnimationFrame);
+          }
+        };
+
+        await waitForStableContainerSize(containerRef.current);
+
         const viewer = new Cesium.Viewer(containerRef.current, {
           imageryProvider: false as any,
           baseLayerPicker: false,
