@@ -389,6 +389,7 @@
   flex: 1;
   position: relative;
   width: 100%;
+  height: 100%;
   min-height: 420px;
   overflow: hidden;
   display: flex;
@@ -397,24 +398,47 @@
 .flight-viewer__cesium-canvas {
   flex: 1;
   width: 100%;
+  height: 100%;
   min-height: 0;
   position: relative;
 }
 
-/* Ensure Cesium viewer fills container without duplicating layout rows */
-.flight-viewer__cesium-canvas > .cesium-viewer,
-.flight-viewer__cesium-canvas .cesium-viewer-cesiumWidgetContainer,
-.flight-viewer__cesium-canvas .cesium-widget,
+/* Force Cesium viewer to fill container - override Cesium's default CSS */
+.flight-viewer__cesium-canvas > .cesium-viewer {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+}
+
+.flight-viewer__cesium-canvas .cesium-viewer-cesiumWidgetContainer {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+.flight-viewer__cesium-canvas .cesium-widget {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
+
 .flight-viewer__cesium-canvas canvas {
   width: 100% !important;
   height: 100% !important;
+  max-height: none !important;
 }
 
+/* Keep bottom UI elements from expanding */
 .flight-viewer__cesium-canvas .cesium-viewer-bottom,
-.flight-viewer__cesium-canvas .cesium-viewer-animationContainer,
-.flight-viewer__cesium-canvas .cesium-viewer-timelineContainer {
-  height: auto !important;
-  flex: 0 0 auto;
+.flight-viewer__cesium-canvas .cesium-viewer-toolbar {
+  flex: 0 0 auto !important;
 }
 
 .flight-viewer__map-placeholder,
