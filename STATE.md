@@ -1,5 +1,5 @@
-reason: hold segment fractions aligned with slice rules
-last_step: deployed slice-aware hold increments and verified Pages+CDK workflows green
-next_unblocked_step: spot-check preview hold arc to confirm waypoint spacing
-owner_action_needed: none
-updated: 2025-10-13T22:40:39Z
+reason: CDK Deploy workflow failed with invalid AWS security token after branch push
+last_step: pushed agent-48291736-fix-flight-curvature, Cloudflare Pages preview green
+next_unblocked_step: rerun CDK Deploy after AWS credentials are refreshed
+owner_action_needed: maintainer to update CDK deploy AWS credentials/secrets
+updated: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
