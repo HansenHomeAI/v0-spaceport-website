@@ -131,6 +131,228 @@ function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number
   return bearing;
 }
 
+function generateCurvedPathPoints(
+  Cesium: CesiumModule,
+  samples: ProcessedSample[],
+  absoluteHeightMeters: (sample: ProcessedSample) => number,
+): import("cesium").Cartesian3[] {
+  if (!samples.length) {
+    return [];
+  }
+
+  if (samples.length === 1) {
+    const altitude = absoluteHeightMeters(samples[0]);
+    return [
+      Cesium.Cartesian3.fromDegrees(
+        samples[0].longitude,
+        samples[0].latitude,
+        altitude,
+      ),
+    ];
+  }
+
+  const ellipsoid = Cesium.Ellipsoid.WGS84;
+  const firstSample = samples[0];
+  const firstHeight = absoluteHeightMeters(firstSample);
+  const referenceCartographic = Cesium.Cartographic.fromDegrees(
+    firstSample.longitude,
+    firstSample.latitude,
+    firstHeight,
+  );
+  const referenceCartesian = ellipsoid.cartographicToCartesian(referenceCartographic);
+  const enuTransform = Cesium.Transforms.eastNorthUpToFixedFrame(referenceCartesian);
+  const inverseTransform =
+    Cesium.Matrix4.inverseTransformation(enuTransform, new Cesium.Matrix4()) ??
+    Cesium.Matrix4.inverse(enuTransform, new Cesium.Matrix4());
+
+  if (!inverseTransform) {
+    // Fallback: return straight segments if we cannot build the local frame
+    return samples.map(sample =>
+      Cesium.Cartesian3.fromDegrees(
+        sample.longitude,
+        sample.latitude,
+        absoluteHeightMeters(sample),
+      ),
+    );
+  }
+
+  const toLocal = (sample: ProcessedSample, altitude: number) => {
+    const cartographic = Cesium.Cartographic.fromDegrees(
+      sample.longitude,
+      sample.latitude,
+      altitude,
+    );
+    const cartesian = ellipsoid.cartographicToCartesian(cartographic);
+    return Cesium.Matrix4.multiplyByPoint(
+      inverseTransform,
+      cartesian,
+      new Cesium.Cartesian3(),
+    );
+  };
+
+  const localPoints = samples.map(sample => {
+    const altitude = absoluteHeightMeters(sample);
+    return {
+      sample,
+      local: toLocal(sample, altitude),
+    };
+  });
+
+  const worldPoints: import("cesium").Cartesian3[] = [];
+  const lastLocal = new Cesium.Cartesian3();
+
+  const toWorld = (localPoint: import("cesium").Cartesian3) =>
+    Cesium.Matrix4.multiplyByPoint(
+      enuTransform,
+      localPoint,
+      new Cesium.Cartesian3(),
+    );
+
+  const pushLocalPoint = (localPoint: import("cesium").Cartesian3) => {
+    worldPoints.push(toWorld(localPoint));
+    Cesium.Cartesian3.clone(localPoint, lastLocal);
+  };
+
+  pushLocalPoint(localPoints[0].local);
+
+  const pushInterpolatedPoints = (
+    target: import("cesium").Cartesian3,
+    segments = 6,
+  ) => {
+    const start = Cesium.Cartesian3.clone(lastLocal, new Cesium.Cartesian3());
+    for (let step = 1; step <= segments; step += 1) {
+      const intermediate = Cesium.Cartesian3.lerp(
+        start,
+        target,
+        step / segments,
+        new Cesium.Cartesian3(),
+      );
+      pushLocalPoint(intermediate);
+    }
+  };
+
+  for (let i = 1; i < localPoints.length - 1; i += 1) {
+    const prevLocal = localPoints[i - 1].local;
+    const currentLocal = localPoints[i].local;
+    const nextLocal = localPoints[i + 1].local;
+
+    const segmentA = {
+      x: currentLocal.x - prevLocal.x,
+      y: currentLocal.y - prevLocal.y,
+    };
+    const segmentB = {
+      x: nextLocal.x - currentLocal.x,
+      y: nextLocal.y - currentLocal.y,
+    };
+
+    const lengthA = Math.hypot(segmentA.x, segmentA.y);
+    const lengthB = Math.hypot(segmentB.x, segmentB.y);
+
+    if (lengthA < 1e-3 || lengthB < 1e-3) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+
+    segmentA.x /= lengthA;
+    segmentA.y /= lengthA;
+    segmentB.x /= lengthB;
+    segmentB.y /= lengthB;
+
+    const cosPhi = Math.max(-1, Math.min(1, segmentA.x * segmentB.x + segmentA.y * segmentB.y));
+    const phi = Math.acos(cosPhi);
+
+    if (!Number.isFinite(phi) || phi < 1e-3 || Math.abs(Math.PI - phi) < 1e-3) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+
+    const radiusMeters = Math.max(0, (samples[i].curveSizeFt ?? 0) * FEET_TO_METERS);
+    if (radiusMeters < 1e-3) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+
+    let tangentDistance = radiusMeters * Math.tan(phi / 2);
+    const tangentMax = Math.min(lengthA, lengthB) * 0.49;
+    if (!Number.isFinite(tangentDistance) || tangentDistance <= 0) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+    tangentDistance = Math.min(tangentDistance, tangentMax);
+    if (tangentDistance <= 1e-3) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+
+    const tangent0 = new Cesium.Cartesian3(
+      currentLocal.x - segmentA.x * tangentDistance,
+      currentLocal.y - segmentA.y * tangentDistance,
+      currentLocal.z - ((currentLocal.z - prevLocal.z) * (tangentDistance / lengthA)),
+    );
+    const tangent1 = new Cesium.Cartesian3(
+      currentLocal.x + segmentB.x * tangentDistance,
+      currentLocal.y + segmentB.y * tangentDistance,
+      currentLocal.z + ((nextLocal.z - currentLocal.z) * (tangentDistance / lengthB)),
+    );
+
+    const outward0 = { x: -segmentA.x, y: -segmentA.y };
+    const outward1 = { x: segmentB.x, y: segmentB.y };
+    const bisector = {
+      x: outward0.x + outward1.x,
+      y: outward0.y + outward1.y,
+    };
+    const bisectorLength = Math.hypot(bisector.x, bisector.y);
+    if (bisectorLength < 1e-6) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+    bisector.x /= bisectorLength;
+    bisector.y /= bisectorLength;
+
+    const sinHalf = Math.sin(phi / 2);
+    if (Math.abs(sinHalf) < 1e-6) {
+      pushInterpolatedPoints(currentLocal, 6);
+      continue;
+    }
+
+    const center = {
+      x: currentLocal.x + bisector.x * (radiusMeters / sinHalf),
+      y: currentLocal.y + bisector.y * (radiusMeters / sinHalf),
+    };
+
+    const cross = outward0.x * outward1.y - outward0.y * outward1.x;
+    const startAngle = Math.atan2(tangent0.y - center.y, tangent0.x - center.x);
+    let endAngle = Math.atan2(tangent1.y - center.y, tangent1.x - center.x);
+    let finalStart = startAngle;
+    let finalEnd = endAngle;
+    if (cross > 0) {
+      if (finalEnd < finalStart) {
+        finalEnd += 2 * Math.PI;
+      }
+    } else if (finalEnd > finalStart) {
+      finalEnd -= 2 * Math.PI;
+    }
+
+    pushInterpolatedPoints(tangent0, 6);
+
+    const arcSweep = Math.abs(finalEnd - finalStart);
+    const arcSteps = Math.max(10, Math.min(36, Math.ceil(arcSweep / (Math.PI / 18))));
+    for (let step = 1; step <= arcSteps; step += 1) {
+      const t = step / arcSteps;
+      const angle = finalStart + (finalEnd - finalStart) * t;
+      const x = center.x + radiusMeters * Math.cos(angle);
+      const y = center.y + radiusMeters * Math.sin(angle);
+      const z = tangent0.z + (tangent1.z - tangent0.z) * t;
+      pushLocalPoint(new Cesium.Cartesian3(x, y, z));
+    }
+  }
+
+  const lastLocalPoint = localPoints[localPoints.length - 1].local;
+  pushInterpolatedPoints(lastLocalPoint, 10);
+
+  return worldPoints;
+}
+
 function sanitizeRow(row: RawFlightRow): PreparedRow | null {
   const latitude = toNumber(row.latitude);
   const longitude = toNumber(row.longitude);
@@ -249,6 +471,8 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
     const speed = mark?.["wpml:waypointSpeed"];
     const heading = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointHeadingAngle"];
     const poiPoint = mark?.["wpml:waypointHeadingParam"]?.["wpml:waypointPoiPoint"];
+    const turnParam = mark?.["wpml:waypointTurnParam"];
+    const dampingDistMeters = toOptionalNumber(turnParam?.["wpml:waypointTurnDampingDist"]);
 
     let gimbalPitch: number | null = null;
     const actionGroups = mark?.["wpml:actionGroup"];
@@ -302,7 +526,10 @@ async function parseKMZFile(file: File): Promise<PreparedRow[]> {
       longitude: lon,
       altitudeFt,
       headingDeg: toOptionalNumber(heading),
-      curveSizeFt: null,
+      curveSizeFt:
+        dampingDistMeters !== null
+          ? Number((dampingDistMeters / FEET_TO_METERS).toFixed(3))
+          : null,
       rotationDir: null,
       gimbalMode: null,
       gimbalPitchAngle: gimbalPitch,
@@ -793,39 +1020,43 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           console.log(`[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`);
           
           flights.forEach(flight => {
-            const positions: import("cesium").Cartesian3[] = [];
+            const altitudeForSample = (sample: ProcessedSample) =>
+              terrainElevationMeters + sample.altitudeFt * FEET_TO_METERS;
 
-            flight.samples.forEach((sample) => {
-              const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS; // Flight altitude AGL
-              const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters; // MSL = terrain + AGL
-
-              const position = Cesium.Cartesian3.fromDegrees(
+            const waypointPositions = flight.samples.map(sample =>
+              Cesium.Cartesian3.fromDegrees(
                 sample.longitude,
                 sample.latitude,
-                absoluteHeightMSL
-              );
-              positions.push(position);
-            });
+                altitudeForSample(sample),
+              ),
+            );
 
-            // Render using terrain-corrected positions
-          if (positions.length >= 2) {
-            const path = viewer.entities.add({
-              polyline: {
-                positions,
-                width: 2.2,
-                material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
-                arcType: Cesium.ArcType.GEODESIC,
-              },
-            });
-            flightEntitiesRef.current.push(path);
-          }
+            const curvedPositions = generateCurvedPathPoints(
+              Cesium,
+              flight.samples,
+              altitudeForSample,
+            );
 
-          positions.forEach((position, index) => {
-            const waypointEntity = viewer.entities.add({
-              position,
-              point: {
-                pixelSize: 6,
-                color: Cesium.Color.fromCssColorString(flight.color),
+            const pathPositions = (curvedPositions.length >= 2 ? curvedPositions : waypointPositions);
+
+            if (pathPositions.length >= 2) {
+              const path = viewer.entities.add({
+                polyline: {
+                  positions: pathPositions,
+                  width: 2.2,
+                  material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
+                  arcType: Cesium.ArcType.NONE,
+                },
+              });
+              flightEntitiesRef.current.push(path);
+            }
+
+            waypointPositions.forEach((position, index) => {
+              const waypointEntity = viewer.entities.add({
+                position,
+                point: {
+                  pixelSize: 6,
+                  color: Cesium.Color.fromCssColorString(flight.color),
                 outlineColor: Cesium.Color.fromCssColorString("#182036"),
                 outlineWidth: 1,
               },
@@ -902,7 +1133,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(poiEntity);
           }
 
-          positionsForFit.push(...positions);
+          positionsForFit.push(...pathPositions);
         });
 
           if (positionsForFit.length) {
@@ -933,23 +1164,30 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           if (!viewer || viewer.isDestroyed?.()) return;
         // Fallback: render without terrain correction (AGL as MSL)
         flights.forEach(flight => {
-          const positions = flight.samples.map(sample =>
-            Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, sample.altitudeFt * FEET_TO_METERS)
+          const altitudeForSample = (sample: ProcessedSample) => sample.altitudeFt * FEET_TO_METERS;
+          const waypointPositions = flight.samples.map(sample =>
+            Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, altitudeForSample(sample))
           );
+          const curvedPositions = generateCurvedPathPoints(
+            Cesium,
+            flight.samples,
+            altitudeForSample,
+          );
+          const pathPositions = (curvedPositions.length >= 2 ? curvedPositions : waypointPositions);
 
-          if (positions.length >= 2) {
+          if (pathPositions.length >= 2) {
             const path = viewer.entities.add({
               polyline: {
-                positions,
+                positions: pathPositions,
                 width: 2.2,
                 material: Cesium.Color.fromCssColorString(flight.color).withAlpha(0.95),
-                arcType: Cesium.ArcType.GEODESIC,
+                arcType: Cesium.ArcType.NONE,
               },
             });
             flightEntitiesRef.current.push(path);
           }
 
-          positions.forEach((position, index) => {
+          waypointPositions.forEach((position, index) => {
             const waypointEntity = viewer.entities.add({
               position,
               point: {
@@ -967,7 +1205,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             waypointEntityMapRef.current.set(`${flight.id}:${index}`, waypointEntity);
           });
 
-          positionsForFit.push(...positions);
+          positionsForFit.push(...pathPositions);
         });
 
         if (positionsForFit.length) {

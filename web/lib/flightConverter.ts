@@ -285,6 +285,10 @@ function generateWaylinesWPML(waypoints: LitchiWaypoint[], options: ConversionOp
       ? "toPointAndStopWithContinuityCurvature"
       : "toPointAndPassWithContinuityCurvature";
 
+    const dampingMeters = Number.isFinite(wp.curvesize_ft)
+      ? Math.max(0, wp.curvesize_ft * FEET_TO_METERS)
+      : 0;
+
     const placemark: any = {
       Point: {
         coordinates: `${wp.longitude},${wp.latitude}`,
@@ -301,7 +305,7 @@ function generateWaylinesWPML(waypoints: LitchiWaypoint[], options: ConversionOp
       },
       "wpml:waypointTurnParam": {
         "wpml:waypointTurnMode": turnMode,
-        "wpml:waypointTurnDampingDist": 0,
+        "wpml:waypointTurnDampingDist": Number.isFinite(dampingMeters) ? Number(dampingMeters.toFixed(3)) : 0,
       },
       "wpml:useStraightLine": options.allowStraightLines ? 1 : 0,
     };
@@ -367,4 +371,3 @@ export function downloadBlob(blob: Blob, filename: string): void {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
-
