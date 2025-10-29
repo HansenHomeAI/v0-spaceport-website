@@ -509,6 +509,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           window.CESIUM_BASE_URL = (window.CESIUM_BASE_URL ?? (typeof CESIUM_BASE_URL !== 'undefined' ? CESIUM_BASE_URL : "/cesium"));
         }
 
+        if (cancelled || !containerRef.current) {
+          return;
+        }
+
         const viewer = new Cesium.Viewer(containerRef.current, {
           imageryProvider: false as any,
           baseLayerPicker: false,

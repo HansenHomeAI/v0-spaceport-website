@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-10-28T19:26:12.869Z",
+  "containerClientHeight": 778,
+  "containerBoundingHeight": 778,
+  "viewerClientHeight": 778,
+  "viewerInlineHeight": "",
+  "widgetClientHeight": 778,
+  "widgetInlineHeight": "",
+  "canvasClientHeights": [
+    778
+  ],
+  "canvasHeightsAttr": [
+    778
+  ],
+  "canvasStyles": [
+    "image-rendering: pixelated;"
+  ],
+  "notes": "Baseline measurement prior to fix"
+}
