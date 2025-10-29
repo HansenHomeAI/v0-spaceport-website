@@ -415,6 +415,269 @@ function destinationLatLon(
   };
 }
 
+/**
+ * Convert geodetic coordinates (lat/lon/alt) to local ENU (East-North-Up) coordinates
+ * using the origin as reference point
+ */
+function latLonAltToENU(
+  lat: number,
+  lon: number,
+  alt: number,
+  originLat: number,
+  originLon: number,
+): { east: number; north: number; up: number } {
+  const latRad = degreesToRadians(lat);
+  const lonRad = degreesToRadians(lon);
+  const originLatRad = degreesToRadians(originLat);
+  const originLonRad = degreesToRadians(originLon);
+
+  const dLat = latRad - originLatRad;
+  const dLon = lonRad - originLonRad;
+
+  // Local tangent plane approximation (accurate for small distances)
+  const sinLat = Math.sin(originLatRad);
+  const cosLat = Math.cos(originLatRad);
+
+  const east = dLon * EARTH_RADIUS_METERS * cosLat;
+  const north = dLat * EARTH_RADIUS_METERS;
+  const up = alt;
+
+  return { east, north, up };
+}
+
+/**
+ * Convert local ENU (East-North-Up) coordinates back to geodetic (lat/lon/alt)
+ */
+function enuToLatLonAlt(
+  east: number,
+  north: number,
+  up: number,
+  originLat: number,
+  originLon: number,
+): { lat: number; lon: number; alt: number } {
+  const originLatRad = degreesToRadians(originLat);
+  const originLonRad = degreesToRadians(originLon);
+
+  const sinLat = Math.sin(originLatRad);
+  const cosLat = Math.cos(originLatRad);
+
+  const dLat = north / EARTH_RADIUS_METERS;
+  const dLon = east / (EARTH_RADIUS_METERS * cosLat);
+
+  const lat = originLat + (dLat * 180) / Math.PI;
+  const lon = originLon + (dLon * 180) / Math.PI;
+  const alt = up;
+
+  return { lat, lon, alt };
+}
+
+/**
+ * Generate curved flight path with interpolation based on curveSizeFt values
+ * Returns array of Cesium.Cartesian3 positions for polyline rendering
+ */
+function generateCurvedPath(
+  samples: ProcessedSample[],
+  terrainElevationMeters: number,
+  Cesium: CesiumModule,
+): import("cesium").Cartesian3[] {
+  if (samples.length < 2) {
+    return samples.map(sample => {
+      const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS;
+      const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters;
+      return Cesium.Cartesian3.fromDegrees(
+        sample.longitude,
+        sample.latitude,
+        absoluteHeightMSL,
+      );
+    });
+  }
+
+  const positions: import("cesium").Cartesian3[] = [];
+  
+  // Use first waypoint as origin for ENU conversions (accurate for local flight paths)
+  const originLat = samples[0].latitude;
+  const originLon = samples[0].longitude;
+
+  // Helper to convert sample to ENU
+  const toENU = (sample: ProcessedSample) => {
+    const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS;
+    const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters;
+    return latLonAltToENU(
+      sample.latitude,
+      sample.longitude,
+      absoluteHeightMSL,
+      originLat,
+      originLon,
+    );
+  };
+
+  // Helper to convert ENU back to Cesium Cartesian3
+  const toCartesian = (enu: { east: number; north: number; up: number }) => {
+    const { lat, lon, alt } = enuToLatLonAlt(enu.east, enu.north, enu.up, originLat, originLon);
+    return Cesium.Cartesian3.fromDegrees(lon, lat, alt);
+  };
+
+  // Helper to interpolate between two ENU points
+  const interpolateStraight = (
+    p0: { east: number; north: number; up: number },
+    p1: { east: number; north: number; up: number },
+    steps: number,
+  ) => {
+    const points: import("cesium").Cartesian3[] = [];
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      const interp = {
+        east: p0.east + (p1.east - p0.east) * t,
+        north: p0.north + (p1.north - p0.north) * t,
+        up: p0.up + (p1.up - p0.up) * t,
+      };
+      points.push(toCartesian(interp));
+    }
+    return points;
+  };
+
+  // Convert all samples to ENU
+  const enuPoints = samples.map(toENU);
+
+  // Start at first waypoint
+  let lastENU = enuPoints[0];
+  positions.push(toCartesian(lastENU));
+
+  // Process each waypoint segment with curvature
+  for (let i = 1; i < enuPoints.length; i++) {
+    const wp0 = i > 0 ? enuPoints[i - 1] : lastENU;
+    const wp1 = enuPoints[i];
+    
+    // If this is the last waypoint, just connect straight
+    if (i === enuPoints.length - 1) {
+      const straightPoints = interpolateStraight(lastENU, wp1, 10);
+      positions.push(...straightPoints);
+      break;
+    }
+
+    const wp2 = enuPoints[i + 1];
+    const sample1 = samples[i];
+
+    // Vector from wp0 to wp1 and wp1 to wp2 (in ENU plane)
+    const A = { east: wp1.east - wp0.east, north: wp1.north - wp0.north };
+    const B = { east: wp2.east - wp1.east, north: wp2.north - wp1.north };
+
+    const L0 = Math.sqrt(A.east ** 2 + A.north ** 2);
+    const L1 = Math.sqrt(B.east ** 2 + B.north ** 2);
+
+    // If segments are too short, draw straight
+    if (L0 < 1e-3 || L1 < 1e-3) {
+      const straightPoints = interpolateStraight(lastENU, wp1, 6);
+      positions.push(...straightPoints);
+      lastENU = wp1;
+      continue;
+    }
+
+    // Normalize direction vectors
+    const A_norm = { east: A.east / L0, north: A.north / L0 };
+    const B_norm = { east: B.east / L1, north: B.north / L1 };
+
+    // Calculate interior turn angle
+    const cosPhi = Math.max(-1, Math.min(1, A_norm.east * B_norm.east + A_norm.north * B_norm.north));
+    const phi = Math.acos(cosPhi);
+
+    // Get curve radius (convert feet to meters)
+    const curveRadiusMeters = sample1.curveSizeFt !== null && sample1.curveSizeFt > 0
+      ? sample1.curveSizeFt * FEET_TO_METERS
+      : 0;
+
+    // Handle nearly straight angles or no curvature
+    if (!Number.isFinite(phi) || phi < 1e-3 || Math.abs(Math.PI - phi) < 1e-3 || curveRadiusMeters < 1e-3) {
+      const straightPoints = interpolateStraight(lastENU, wp1, 6);
+      positions.push(...straightPoints);
+      lastENU = wp1;
+      continue;
+    }
+
+    // Calculate tangent offset distance
+    let t = curveRadiusMeters * Math.tan(phi / 2);
+    const tMax = Math.min(L0, L1) * 0.49; // Keep arc within segments
+    t = Math.min(t, tMax);
+
+    // Tangent points on each segment
+    const T0 = {
+      east: wp1.east - A_norm.east * t,
+      north: wp1.north - A_norm.north * t,
+      up: wp1.up - (wp1.up - wp0.up) * (t / L0),
+    };
+    const T1 = {
+      east: wp1.east + B_norm.east * t,
+      north: wp1.north + B_norm.north * t,
+      up: wp1.up + (wp2.up - wp1.up) * (t / L1),
+    };
+
+    // Draw straight segment from last point to T0
+    const toT0Points = interpolateStraight(lastENU, T0, 6);
+    positions.push(...toT0Points);
+
+    // Calculate arc center (on angle bisector)
+    const W0 = { east: -A_norm.east, north: -A_norm.north }; // Outward from wp1 toward wp0
+    const W1 = B_norm; // Outward from wp1 toward wp2
+    const bis = {
+      east: W0.east + W1.east,
+      north: W0.north + W1.north,
+    };
+    const bisLen = Math.sqrt(bis.east ** 2 + bis.north ** 2);
+
+    if (bisLen < 1e-6) {
+      // Opposite directions - draw straight
+      const straightPoints = interpolateStraight(T0, wp1, 6);
+      positions.push(...straightPoints);
+      lastENU = wp1;
+      continue;
+    }
+
+    bis.east /= bisLen;
+    bis.north /= bisLen;
+
+    const distToCenter = curveRadiusMeters / Math.sin(phi / 2);
+    const centerENU = {
+      east: wp1.east + bis.east * distToCenter,
+      north: wp1.north + bis.north * distToCenter,
+      up: wp1.up, // Center at waypoint altitude
+    };
+
+    // Determine arc direction (left/right turn)
+    const cross = W0.east * W1.north - W0.north * W1.east; // >0 => CCW (left)
+
+    // Calculate angles for start/end around center
+    const a0 = Math.atan2(T0.north - centerENU.north, T0.east - centerENU.east);
+    const a1 = Math.atan2(T1.north - centerENU.north, T1.east - centerENU.east);
+    let startAng = a0;
+    let endAng = a1;
+
+    // Adjust angles for proper arc direction
+    if (cross > 0) {
+      if (endAng < startAng) endAng += 2 * Math.PI;
+    } else {
+      if (endAng > startAng) endAng -= 2 * Math.PI;
+    }
+
+    // Sample the circular arc from T0 to T1
+    const arcSteps = Math.max(10, Math.min(36, Math.ceil(Math.abs(endAng - startAng) / (Math.PI / 18))));
+    for (let k = 0; k <= arcSteps; k++) {
+      const tt = k / arcSteps;
+      const ang = startAng + (endAng - startAng) * tt;
+      const arcENU = {
+        east: centerENU.east + curveRadiusMeters * Math.cos(ang),
+        north: centerENU.north + curveRadiusMeters * Math.sin(ang),
+        up: T0.up + (T1.up - T0.up) * tt, // Linear altitude interpolation
+      };
+      positions.push(toCartesian(arcENU));
+    }
+
+    // Update last position to T1 (where arc ends)
+    lastENU = T1;
+  }
+
+  return positions;
+}
+
 function setPointPixelSize(
   Cesium: CesiumModule | null,
   entity: import("cesium").Entity | undefined,
@@ -793,21 +1056,10 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           console.log(`[FlightViewer] Applying terrain offset: ${(terrainElevationMeters * 3.28084).toFixed(1)}ft to all waypoints`);
           
           flights.forEach(flight => {
-            const positions: import("cesium").Cartesian3[] = [];
+            // Generate curved path with terrain correction
+            const positions = generateCurvedPath(flight.samples, terrainElevationMeters, Cesium);
 
-            flight.samples.forEach((sample) => {
-              const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS; // Flight altitude AGL
-              const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters; // MSL = terrain + AGL
-
-              const position = Cesium.Cartesian3.fromDegrees(
-                sample.longitude,
-                sample.latitude,
-                absoluteHeightMSL
-              );
-              positions.push(position);
-            });
-
-            // Render using terrain-corrected positions
+            // Render using terrain-corrected curved positions
           if (positions.length >= 2) {
             const path = viewer.entities.add({
               polyline: {
@@ -820,7 +1072,16 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(path);
           }
 
-          positions.forEach((position, index) => {
+          // Add waypoint markers at original sample positions
+          flight.samples.forEach((sample, index) => {
+            const aglHeightMeters = sample.altitudeFt * FEET_TO_METERS;
+            const absoluteHeightMSL = terrainElevationMeters + aglHeightMeters;
+            const position = Cesium.Cartesian3.fromDegrees(
+              sample.longitude,
+              sample.latitude,
+              absoluteHeightMSL,
+            );
+
             const waypointEntity = viewer.entities.add({
               position,
               point: {
@@ -933,9 +1194,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           if (!viewer || viewer.isDestroyed?.()) return;
         // Fallback: render without terrain correction (AGL as MSL)
         flights.forEach(flight => {
-          const positions = flight.samples.map(sample =>
-            Cesium.Cartesian3.fromDegrees(sample.longitude, sample.latitude, sample.altitudeFt * FEET_TO_METERS)
-          );
+          // Generate curved path without terrain correction (0 terrain elevation)
+          const positions = generateCurvedPath(flight.samples, 0, Cesium);
 
           if (positions.length >= 2) {
             const path = viewer.entities.add({
@@ -949,7 +1209,14 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
             flightEntitiesRef.current.push(path);
           }
 
-          positions.forEach((position, index) => {
+          // Add waypoint markers at original sample positions
+          flight.samples.forEach((sample, index) => {
+            const position = Cesium.Cartesian3.fromDegrees(
+              sample.longitude,
+              sample.latitude,
+              sample.altitudeFt * FEET_TO_METERS,
+            );
+
             const waypointEntity = viewer.entities.add({
               position,
               point: {
