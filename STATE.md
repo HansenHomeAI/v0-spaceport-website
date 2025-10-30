@@ -1,5 +1,5 @@
-reason: hold segment fractions aligned with slice rules
-last_step: deployed slice-aware hold increments and verified Pages+CDK workflows green
-next_unblocked_step: spot-check preview hold arc to confirm waypoint spacing
+reason: implementing curved flight path rendering
+last_step: captured Playwright MCP baseline after curved-path integration
+next_unblocked_step: prepare branch push and monitor CI workflows
 owner_action_needed: none
-updated: 2025-10-13T22:40:39Z
+updated: 2025-10-29T18:04:16Z
