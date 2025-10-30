@@ -18,7 +18,7 @@ AglConstraints = getattr(_lambda_module, 'AglConstraints')
 
 
 def main() -> None:
-    dem_ids = ['flat', 'sinusoid', 'ridge', 'mountain', 'cliff', 'mixed', 'dunes', 'volcano', 'canyon', 'plateau']
+    dem_ids = ['flat', 'sinusoid', 'ridge', 'mountain', 'cliff', 'mixed', 'dunes', 'volcano', 'canyon', 'plateau', 'sawtooth', 'buttes', 'glacier', 'karst']
     config = build_sampler_config_from_env()
     agl = AglConstraints(min_agl_ft=120.0, max_agl_ft=400.0)
     report = {
@@ -33,13 +33,12 @@ def main() -> None:
         },
         'results': [],
         'violations': 0,
-        'point_budget': 120,
     }
     for dem_id in dem_ids:
         dataset = load_dem_dataset(dem_id)
         provider = SyntheticDemProvider(dataset)
         path = build_path_for_dataset(dataset, slices=3, battery_minutes=18.0, min_agl=120.0, max_agl=400.0)
-        result, agl_summary = run_sampler(path, provider, config, agl, 120)
+        result, agl_summary = run_sampler(path, provider, config, agl)
         report['results'].append({
             'dem': dem_id,
             'total_points_used': result.metrics['total_points_used'],

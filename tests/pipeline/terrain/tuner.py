@@ -41,10 +41,9 @@ def run_sampler(
   provider: SyntheticDemProvider,
   config: SamplerConfig,
   agl: AglConstraints,
-  point_budget: int,
 ) -> tuple[dict, dict[str, float]]:
   path_latlon = path_xy_to_latlon(path_ft, provider.anchor_lat, provider.anchor_lon)
-  result = two_pass_adaptive_sampling(path_latlon, provider, config, agl, point_budget)
+  result = two_pass_adaptive_sampling(path_latlon, provider, config, agl)
   agl_summary = check_agl_bounds(
     [(path_ft[i][0], path_ft[i][1], path_ft[i][2]) for i in range(len(path_ft))],
     provider.dataset,
@@ -59,14 +58,13 @@ def grid_search(
   provider: SyntheticDemProvider,
   base_config: SamplerConfig,
   agl: AglConstraints,
-  point_budget: int,
   discovery_intervals: Iterable[float],
   dense_intervals: Iterable[float],
 ) -> list[TuningResult]:
   results: list[TuningResult] = []
   for discovery, dense in itertools.product(discovery_intervals, dense_intervals):
     cfg = replace(base_config, discovery_interval_ft=discovery, dense_interval_ft=dense)
-    result, agl_summary = run_sampler(path_ft, provider, cfg, agl, point_budget)
+    result, agl_summary = run_sampler(path_ft, provider, cfg, agl)
     results.append(TuningResult(config=cfg, metrics=result.metrics, agl_summary=agl_summary))
   return results
 

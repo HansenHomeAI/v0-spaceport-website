@@ -1,0 +1,109 @@
+{
+  "timestamp": "2025-10-30T18:46:58.021424Z",
+  "config": {
+    "discovery_interval_ft": 450.0,
+    "dense_interval_ft": 30.0,
+    "medium_interval_ft": 140.0,
+    "sparse_interval_ft": 300.0,
+    "grad_medium_ft_per_100": 10.0,
+    "grad_high_ft_per_100": 20.0,
+    "grad_critical_ft_per_100": 40.0,
+    "discovery_fraction": 0.25,
+    "refinement_fraction": 0.75,
+    "min_safety_spacing_ft": 50.0,
+    "safety_buffer_ft": 100.0
+  },
+  "score": 545.3571428571429,
+  "metrics": {
+    "avg_total_points": 428.35714285714283,
+    "avg_hazards": 234.0,
+    "per_dem": [
+      {
+        "dem": "flat",
+        "total_points": 219,
+        "hazards": 0
+      },
+      {
+        "dem": "sinusoid",
+        "total_points": 436,
+        "hazards": 217
+      },
+      {
+        "dem": "ridge",
+        "total_points": 436,
+        "hazards": 240
+      },
+      {
+        "dem": "mountain",
+        "total_points": 450,
+        "hazards": 272
+      },
+      {
+        "dem": "cliff",
+        "total_points": 468,
+        "hazards": 276
+      },
+      {
+        "dem": "mixed",
+        "total_points": 436,
+        "hazards": 232
+      },
+      {
+        "dem": "dunes",
+        "total_points": 436,
+        "hazards": 217
+      },
+      {
+        "dem": "volcano",
+        "total_points": 436,
+        "hazards": 275
+      },
+      {
+        "dem": "canyon",
+        "total_points": 450,
+        "hazards": 270
+      },
+      {
+        "dem": "plateau",
+        "total_points": 444,
+        "hazards": 253
+      },
+      {
+        "dem": "sawtooth",
+        "total_points": 450,
+        "hazards": 271
+      },
+      {
+        "dem": "buttes",
+        "total_points": 446,
+        "hazards": 242
+      },
+      {
+        "dem": "glacier",
+        "total_points": 454,
+        "hazards": 294
+      },
+      {
+        "dem": "karst",
+        "total_points": 436,
+        "hazards": 217
+      }
+    ]
+  },
+  "dems": [
+    "flat",
+    "sinusoid",
+    "ridge",
+    "mountain",
+    "cliff",
+    "mixed",
+    "dunes",
+    "volcano",
+    "canyon",
+    "plateau",
+    "sawtooth",
+    "buttes",
+    "glacier",
+    "karst"
+  ]
+}

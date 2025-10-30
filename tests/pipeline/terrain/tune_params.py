@@ -125,7 +125,7 @@ def iter_configs(base: SamplerConfig) -> Iterable[SamplerConfig]:
 
 
 def tune_for_dems(dem_ids: Sequence[str], slices: int = 3, battery_minutes: float = 18.0,
-                  min_agl: float = 120.0, max_agl: float | None = 400.0, point_budget: int = 120) -> dict:
+                  min_agl: float = 120.0, max_agl: float | None = 400.0) -> dict:
     base_config = getattr(_lambda_module, 'build_sampler_config_from_env')()
     agl = AglConstraints(min_agl_ft=min_agl, max_agl_ft=max_agl)
     best_config: SamplerConfig | None = None
@@ -140,7 +140,7 @@ def tune_for_dems(dem_ids: Sequence[str], slices: int = 3, battery_minutes: floa
             dataset = load_dem_dataset(dem_id)
             provider = SyntheticDemProvider(dataset)
             path = build_path_for_dataset(dataset, slices, battery_minutes, min_agl, max_agl)
-            result, agl_summary = run_sampler(path, provider, candidate, agl, point_budget)
+            result, agl_summary = run_sampler(path, provider, candidate, agl)
             if agl_summary['violations'] > 0:
                 violations += agl_summary['violations']
                 break
@@ -164,14 +164,13 @@ def tune_for_dems(dem_ids: Sequence[str], slices: int = 3, battery_minutes: floa
         'score': best_score,
         'metrics': best_metrics,
         'dems': list(dem_ids),
-        'point_budget': point_budget,
         'min_agl': min_agl,
         'max_agl': max_agl,
     }
 
 
 def main() -> None:
-    dem_ids = ['flat', 'sinusoid', 'ridge', 'mountain', 'cliff', 'mixed', 'dunes', 'volcano', 'canyon', 'plateau']
+    dem_ids = ['flat', 'sinusoid', 'ridge', 'mountain', 'cliff', 'mixed', 'dunes', 'volcano', 'canyon', 'plateau', 'sawtooth', 'buttes', 'glacier', 'karst']
     result = tune_for_dems(dem_ids)
     config: SamplerConfig = result['config']
     payload = {

@@ -12,7 +12,7 @@ def enforce_spacing(points: Sequence[tuple[float, float]], min_spacing_ft: float
     for j in range(i + 1, len(points)):
       dx = points[i][0] - points[j][0]
       dy = points[i][1] - points[j][1]
-      if dx * dx + dy * dy < min_sq:
+      if dx * dx + dy * dy + 1e-6 < min_sq:
         return False
   return True
 

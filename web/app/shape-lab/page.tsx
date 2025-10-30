@@ -273,7 +273,6 @@ export default function ShapeLabPage() {
   const [demError, setDemError] = useState<string | null>(null);
 
   const [samplerConfig, setSamplerConfig] = useState<SamplerConfig>(() => buildSamplerConfig());
-  const [pointBudget, setPointBudget] = useState(120);
   const [aglConstraints, setAglConstraints] = useState<{ minAgl: number; maxAgl: number | null }>({
     minAgl: 120,
     maxAgl: 400,
@@ -325,10 +324,9 @@ export default function ShapeLabPage() {
         minAglFt: aglConstraints.minAgl,
         maxAglFt: aglConstraints.maxAgl ?? undefined,
       },
-      pointBudget,
     );
     return result;
-  }, [dem, missionPath, samplerConfig, aglConstraints, pointBudget]);
+  }, [dem, missionPath, samplerConfig, aglConstraints]);
 
   return (
     <div className="px-6 py-8 text-slate-100">
@@ -362,13 +360,11 @@ export default function ShapeLabPage() {
         <ParamsPanel
           minAgl={aglConstraints.minAgl}
           maxAgl={aglConstraints.maxAgl}
-          pointBudget={pointBudget}
           config={samplerConfig}
           onAglChange={({ minAgl, maxAgl }) => {
             setAglConstraints({ minAgl, maxAgl });
           }}
           onConfigChange={(next) => setSamplerConfig((prev) => buildSamplerConfig({ ...prev, ...next }))}
-          onPointBudgetChange={setPointBudget}
         />
 
         <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-[#0b1118] p-4">
@@ -406,7 +402,7 @@ export default function ShapeLabPage() {
           </label>
 
           <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-3 text-xs text-slate-400">
-            <div>Samplers tuned for {pointBudget} total elevation samples per run.</div>
+            <div>Adaptive sampler auto-balances discovery and refinement without a hard cap.</div>
             <div className="mt-1">
               Current N (bounces) = {mapBatteryToBounces(flightParams.batteryDurationMinutes)} · Hold radius ≈
               {Math.round(calculateHoldRadius(flightParams.batteryDurationMinutes))} ft

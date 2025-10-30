@@ -1,5 +1,5 @@
-reason: terrain avoidance sampler v2 tuning + validation complete
-last_step: tuned parameters across 10 DEMs, validated 0 AGL violations, ran npm build
-next_unblocked_step: push branch, trigger deploy workflows, capture MCP baseline on preview URL
+reason: adaptive terrain sampler tuned for unlimited safety-first refinement
+last_step: ran expanded DEM tuning/validation, Playwright MCP smoke test, npm build
+next_unblocked_step: push branch updates (already on agent branch), monitor workflows, capture MCP baseline on preview
 owner_action_needed: none
-updated: 2025-10-30T18:00:03Z
+updated: 2025-10-30T18:52:40Z

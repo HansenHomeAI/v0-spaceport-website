@@ -1751,13 +1751,12 @@ class SpiralDesigner:
         
         return expected_elevation
     
-    def adaptive_terrain_sampling(self, waypoints_with_coords: List[Dict], *, min_agl_ft: Optional[float] = None, max_agl_ft: Optional[float] = None, point_budget: Optional[int] = None) -> List[Dict]:
+    def adaptive_terrain_sampling(self, waypoints_with_coords: List[Dict], *, min_agl_ft: Optional[float] = None, max_agl_ft: Optional[float] = None) -> List[Dict]:
         """Proxy to the v2 terrain sampler for backwards compatibility."""
         provider = DesignerElevationProvider(self)
         cfg = build_sampler_config_from_env()
         constraints = AglConstraints(min_agl_ft=min_agl_ft, max_agl_ft=max_agl_ft)
-        budget = point_budget or int(os.getenv('TERRAIN_SAMPLER_POINT_BUDGET', '90'))
-        result = two_pass_adaptive_sampling(waypoints_with_coords, provider, cfg, constraints, budget)
+        result = two_pass_adaptive_sampling(waypoints_with_coords, provider, cfg, constraints)
         self._last_sampling_metrics = result.metrics
         self._last_sampling_hazards = result.hazards
         return result.safety_waypoints
@@ -2399,10 +2398,10 @@ def _env_int(name: str, default: int) -> int:
 
 
 def build_sampler_config_from_env() -> SamplerConfig:
-    discovery_interval = _env_float('SPARSE_DISCOVERY_INTERVAL', 360.0)
+    discovery_interval = _env_float('SPARSE_DISCOVERY_INTERVAL', 450.0)
     dense_interval = _env_float('DENSE', 30.0)
-    medium_interval = _env_float('MEDIUM', 100.0)
-    sparse_interval = _env_float('SPARSE', 260.0)
+    medium_interval = _env_float('MEDIUM', 140.0)
+    sparse_interval = _env_float('SPARSE', 300.0)
     grad_medium = _env_float('GRADIENT_MEDIUM', 10.0)
     grad_high = _env_float('GRADIENT_HIGH', 20.0)
     grad_critical = _env_float('GRADIENT_CRITICAL', 40.0)
@@ -2490,17 +2489,17 @@ def _smooth_series(values: List[float], window: int = 5) -> List[float]:
     return smoothed
 
 
-def sparse_discovery_scan(path_ll: List[Dict[str, Any]], provider: ElevationProvider, cfg: SamplerConfig, budget_points: int) -> Tuple[List[SampledPoint], int]:
-    if len(path_ll) < 2 or budget_points <= 0:
+def sparse_discovery_scan(path_ll: List[Dict[str, Any]], provider: ElevationProvider, cfg: SamplerConfig) -> Tuple[List[SampledPoint], int]:
+    if len(path_ll) < 2:
         return [], 0
     distances = compute_path_distances(path_ll)
     total_length = distances[-1]
     if total_length <= 0:
         return [], 0
-    interval = max(cfg.discovery_interval_ft, total_length / max(budget_points - 1, 1))
+    interval = max(cfg.discovery_interval_ft, 1.0)
     targets = [0.0]
     current = interval
-    while current < total_length and len(targets) < budget_points - 1:
+    while current < total_length:
         targets.append(current)
         current += interval
     if targets[-1] != total_length:
@@ -2588,17 +2587,13 @@ def choose_interval(max_gradient: float, cfg: SamplerConfig) -> float:
     return cfg.discovery_interval_ft * 1.5
 
 
-def detect_peak_elevation(segment: SegmentRisk, path_ll: List[Dict[str, Any]], distances: List[float], provider: ElevationProvider, budget_left: int) -> Tuple[Optional[SampledPoint], int]:
-    if budget_left <= 0:
-        return None, 0
+def detect_peak_elevation(segment: SegmentRisk, path_ll: List[Dict[str, Any]], distances: List[float], provider: ElevationProvider) -> Tuple[Optional[SampledPoint], int]:
     left = segment.start_distance_ft
     right = segment.end_distance_ft
     best_sample: Optional[SampledPoint] = None
     points_used = 0
-    iterations = min(4, max(1, budget_left // 2))
+    iterations = 4
     for _ in range(iterations):
-        if budget_left - points_used < 2:
-            break
         l_mid = left + (right - left) / 3.0
         r_mid = right - (right - left) / 3.0
         coords = [interpolate_along_path(path_ll, distances, l_mid), interpolate_along_path(path_ll, distances, r_mid)]
@@ -2639,20 +2634,18 @@ def adaptive_refinement_sampling(
     distances: List[float],
     provider: ElevationProvider,
     cfg: SamplerConfig,
-    budget_points: int,
 ) -> Tuple[List[SampledPoint], List[Hazard], int, Dict[str, Any]]:
     refined_samples: List[SampledPoint] = []
     hazards: List[Hazard] = []
     points_used = 0
     segments_considered = 0
-    while segment_queue and points_used < budget_points:
+    while segment_queue:
         segment = heapq.heappop(segment_queue)
         severity = -segment.priority
         segment_length = max(segment.end_distance_ft - segment.start_distance_ft, 1.0)
         segments_considered += 1
-        budget_left = budget_points - points_used
         if segment.max_gradient >= cfg.grad_critical_ft_per_100:
-            peak_sample, used = detect_peak_elevation(segment, path_ll, distances, provider, budget_left)
+            peak_sample, used = detect_peak_elevation(segment, path_ll, distances, provider)
             points_used += used
             if peak_sample:
                 refined_samples.append(peak_sample)
@@ -2670,20 +2663,15 @@ def adaptive_refinement_sampling(
             continue
         interval = choose_interval(segment.max_gradient, cfg)
         targets: List[float] = []
-        current = segment.start_distance_ft + interval
-        while current < segment.end_distance_ft and len(targets) < budget_left:
+        current = segment.start_distance_ft + interval / 2.0
+        while current < segment.end_distance_ft - 1e-6:
             targets.append(current)
             current += interval
-        if not targets:
-            # Ensure at least one midpoint sample when budget allows
-            midpoint = segment.start_distance_ft + segment_length / 2.0
-            if budget_left > 0:
-                targets.append(midpoint)
         if not targets:
             continue
         latlons: List[LatLon] = []
         samples: List[SampledPoint] = []
-        for target in targets[:budget_left]:
+        for target in targets:
             lat, lon, segment_index, _ = interpolate_along_path(path_ll, distances, target)
             phase = path_ll[segment_index].get('phase') if 0 <= segment_index < len(path_ll) else None
             samples.append(SampledPoint(
@@ -2706,23 +2694,19 @@ def adaptive_refinement_sampling(
             for elevation_m in elevations_m:
                 samples[sample_idx].elevation_ft = elevation_m * FT_PER_METER
                 sample_idx += 1
-            if points_used >= budget_points:
-                break
         refined_samples.extend(samples[:sample_idx])
-        if samples:
-            hazard_source = max(samples[:sample_idx], key=lambda s: s.elevation_ft, default=None)
-            if hazard_source:
-                hazards.append(Hazard(
-                    lat=hazard_source.lat,
-                    lon=hazard_source.lon,
-                    distance_ft=hazard_source.distance_ft,
-                    ground_ft=hazard_source.elevation_ft,
-                    severity=severity,
-                    gradient_ft_per_100=segment.max_gradient,
-                    curvature_ft_per_100=segment.max_curvature,
-                    segment_index=segment.segment_index,
-                    description='High-risk terrain refinement sample',
-                ))
+        for sample in samples[:sample_idx]:
+            hazards.append(Hazard(
+                lat=sample.lat,
+                lon=sample.lon,
+                distance_ft=sample.distance_ft,
+                ground_ft=sample.elevation_ft,
+                severity=severity,
+                gradient_ft_per_100=segment.max_gradient,
+                curvature_ft_per_100=segment.max_curvature,
+                segment_index=segment.segment_index,
+                description='Risk-weighted refinement sample',
+            ))
     metrics = {
         'segments_considered': segments_considered,
     }
@@ -2759,6 +2743,7 @@ def generate_terrain_feature_waypoints(hazards: List[Hazard], agl: AglConstraint
     for hazard in sorted_hazards:
         too_close = any(
             haversine_ft(hazard.lat, hazard.lon, existing.lat, existing.lon) < cfg.min_safety_spacing_ft
+            or abs(hazard.distance_ft - existing.distance_ft) < cfg.min_safety_spacing_ft
             for existing in accepted
         )
         if too_close:
@@ -2789,12 +2774,10 @@ def two_pass_adaptive_sampling(
     provider: ElevationProvider,
     cfg: SamplerConfig,
     agl: AglConstraints,
-    point_budget: int,
 ) -> TerrainSamplingResult:
-    if len(path_ll) < 2 or point_budget <= 0:
+    if len(path_ll) < 2:
         return TerrainSamplingResult()
-    discovery_budget = max(2, int(point_budget * cfg.discovery_fraction))
-    discovery_samples, discovery_used = sparse_discovery_scan(path_ll, provider, cfg, discovery_budget)
+    discovery_samples, discovery_used = sparse_discovery_scan(path_ll, provider, cfg)
     if not discovery_samples:
         return TerrainSamplingResult()
     distances = [sample.distance_ft for sample in discovery_samples]
@@ -2807,7 +2790,6 @@ def two_pass_adaptive_sampling(
         sample.gradient_ft_per_100 = grad
         sample.curvature_ft_per_100 = curv
     segment_queue = rank_segments_by_risk(discovery_samples)
-    refinement_budget = max(0, point_budget - discovery_used)
     distances_exact = compute_path_distances(path_ll)
     refinement_samples, refinement_hazards, refinement_used, refinement_metrics = adaptive_refinement_sampling(
         segment_queue,
@@ -2815,7 +2797,6 @@ def two_pass_adaptive_sampling(
         distances_exact,
         provider,
         cfg,
-        refinement_budget,
     )
     hazards = _hazards_from_discovery(discovery_samples, cfg) + refinement_hazards
     safety_waypoints = generate_terrain_feature_waypoints(hazards, agl, cfg)

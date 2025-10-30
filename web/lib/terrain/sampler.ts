@@ -12,10 +12,10 @@ import type {
 } from './types';
 
 const DEFAULT_CONFIG: SamplerConfig = {
-  discoveryIntervalFt: 360,
+  discoveryIntervalFt: 450,
   denseIntervalFt: 30,
-  mediumIntervalFt: 100,
-  sparseIntervalFt: 260,
+  mediumIntervalFt: 140,
+  sparseIntervalFt: 300,
   gradMediumFtPer100: 10,
   gradHighFtPer100: 20,
   gradCriticalFtPer100: 40,
@@ -122,16 +122,15 @@ function sparseDiscoveryScan(
   path: PathVertex[],
   dem: DemDataset,
   cfg: SamplerConfig,
-  budget: number,
 ): { samples: SampledPoint[]; used: number } {
-  if (path.length < 2 || budget <= 0) return { samples: [], used: 0 };
+  if (path.length < 2) return { samples: [], used: 0 };
   const distances = computePathDistances(path);
   const totalLength = distances[distances.length - 1];
   if (totalLength <= 0) return { samples: [], used: 0 };
-  const interval = Math.max(cfg.discoveryIntervalFt, totalLength / Math.max(budget - 1, 1));
+  const interval = Math.max(cfg.discoveryIntervalFt, 1);
   const targets: number[] = [0];
   let cursor = interval;
-  while (cursor < totalLength && targets.length < budget - 1) {
+  while (cursor < totalLength) {
     targets.push(cursor);
     cursor += interval;
   }
@@ -212,53 +211,73 @@ function hazardsFromDiscovery(samples: SampledPoint[], cfg: SamplerConfig): Haza
     }));
 }
 
+function detectPeakElevation(
+  risk: SegmentRisk,
+  path: PathVertex[],
+  distances: number[],
+  dem: DemDataset,
+): { sample: SampledPoint | null; used: number } {
+  let left = risk.startDistanceFt;
+  let right = risk.endDistanceFt;
+  let best: SampledPoint | null = null;
+  let used = 0;
+  for (let i = 0; i < 4; i += 1) {
+    const lMid = left + (right - left) / 3;
+    const rMid = right - (right - left) / 3;
+    const probes = [lMid, rMid].map((distanceFt) => {
+      const pos = interpolateAlongPath(path, distances, distanceFt);
+      const groundFt = sampleDemElevation(dem, pos.x, pos.y);
+      const sample: SampledPoint = {
+        x: pos.x,
+        y: pos.y,
+        distanceFt,
+        groundFt,
+        source: 'refinement',
+        gradientFtPer100: risk.maxGradient,
+        curvatureFtPer100: risk.maxCurvature,
+        segmentIndex: risk.segmentIndex,
+      };
+      return sample;
+    });
+    used += probes.length;
+    for (const sample of probes) {
+      if (!best || sample.groundFt > best.groundFt) {
+        best = sample;
+      }
+    }
+    if (probes[0].groundFt > probes[1].groundFt) {
+      right = rMid;
+    } else {
+      left = lMid;
+    }
+  }
+  return { sample: best, used };
+}
+
 function refineSegments(
   risks: SegmentRisk[],
   path: PathVertex[],
   dem: DemDataset,
   cfg: SamplerConfig,
-  budget: number,
 ): { samples: SampledPoint[]; hazards: Hazard[]; used: number } {
-  if (budget <= 0) return { samples: [], hazards: [], used: 0 };
   const distances = computePathDistances(path);
   const refinementSamples: SampledPoint[] = [];
   const hazards: Hazard[] = [];
   let used = 0;
 
-  const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
-
   for (const risk of risks) {
-    if (used >= budget) break;
     const segmentLength = Math.max(risk.endDistanceFt - risk.startDistanceFt, 1);
-    const budgetLeft = budget - used;
 
     if (risk.maxGradient >= cfg.gradCriticalFtPer100) {
-      const midLeft = risk.startDistanceFt + segmentLength / 3;
-      const midRight = risk.endDistanceFt - segmentLength / 3;
-      const candidates = [midLeft, (midLeft + midRight) / 2, midRight]
-        .map((target) => {
-          const pos = interpolateAlongPath(path, distances, clamp(target, risk.startDistanceFt, risk.endDistanceFt));
-          const groundFt = sampleDemElevation(dem, pos.x, pos.y);
-          return {
-            x: pos.x,
-            y: pos.y,
-            distanceFt: target,
-            groundFt,
-            source: 'refinement' as const,
-            gradientFtPer100: risk.maxGradient,
-            curvatureFtPer100: risk.maxCurvature,
-            segmentIndex: risk.segmentIndex,
-          };
-        })
-        .sort((a, b) => b.groundFt - a.groundFt);
-      if (candidates.length && used < budget) {
-        refinementSamples.push(candidates[0]);
-        used += 1;
+      const { sample, used: peakUsed } = detectPeakElevation(risk, path, distances, dem);
+      used += peakUsed;
+      if (sample) {
+        refinementSamples.push(sample);
         hazards.push({
-          x: candidates[0].x,
-          y: candidates[0].y,
-          distanceFt: candidates[0].distanceFt,
-          groundFt: candidates[0].groundFt,
+          x: sample.x,
+          y: sample.y,
+          distanceFt: sample.distanceFt,
+          groundFt: sample.groundFt,
           severity: risk.severity,
           gradientFtPer100: risk.maxGradient,
           curvatureFtPer100: risk.maxCurvature,
@@ -271,17 +290,16 @@ function refineSegments(
 
     const interval = chooseInterval(risk.maxGradient, cfg);
     const targets: number[] = [];
-    let cursor = risk.startDistanceFt + interval;
-    while (cursor < risk.endDistanceFt && targets.length < budgetLeft) {
+    let cursor = risk.startDistanceFt + interval / 2;
+    while (cursor < risk.endDistanceFt - 1e-6) {
       targets.push(cursor);
       cursor += interval;
     }
-    if (!targets.length && budgetLeft > 0) {
-      targets.push(risk.startDistanceFt + segmentLength / 2);
+    if (!targets.length) {
+      continue;
     }
     for (const target of targets) {
-      if (used >= budget) break;
-      const pos = interpolateAlongPath(path, distances, clamp(target, risk.startDistanceFt, risk.endDistanceFt));
+      const pos = interpolateAlongPath(path, distances, target);
       const groundFt = sampleDemElevation(dem, pos.x, pos.y);
       const sample: SampledPoint = {
         x: pos.x,
@@ -304,7 +322,7 @@ function refineSegments(
         gradientFtPer100: risk.maxGradient,
         curvatureFtPer100: risk.maxCurvature,
         segmentIndex: risk.segmentIndex,
-        description: 'High-risk refinement sample',
+        description: 'Risk-weighted refinement sample',
       });
     }
   }
@@ -328,7 +346,13 @@ function generateSafetyWaypoints(
   const sqrDist = (a: Hazard, b: Hazard) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
 
   for (const hazard of sorted) {
-    if (accepted.some((existing) => sqrDist(existing, hazard) < spacingSq)) {
+    if (
+      accepted.some(
+        (existing) =>
+          sqrDist(existing, hazard) < spacingSq ||
+          Math.abs(hazard.distanceFt - existing.distanceFt) < cfg.minSafetySpacingFt,
+      )
+    ) {
       continue;
     }
     const targetAgl = Math.max(minAgl, cfg.safetyBufferFt);
@@ -362,9 +386,8 @@ export function twoPassAdaptiveSampling(
   dem: DemDataset,
   cfg: SamplerConfig,
   agl: AglConstraints,
-  pointBudget: number,
 ): TerrainSamplingResult {
-  if (path.length < 2 || pointBudget <= 0) {
+  if (path.length < 2) {
     return {
       samples: [],
       refinementSamples: [],
@@ -381,8 +404,7 @@ export function twoPassAdaptiveSampling(
   }
 
   const distances = computePathDistances(path);
-  const discoveryBudget = Math.max(2, Math.floor(pointBudget * cfg.discoveryFraction));
-  const { samples: discoverySamples, used: discoveryUsed } = sparseDiscoveryScan(path, dem, cfg, discoveryBudget);
+  const { samples: discoverySamples, used: discoveryUsed } = sparseDiscoveryScan(path, dem, cfg);
   if (!discoverySamples.length) {
     return {
       samples: [],
@@ -409,9 +431,8 @@ export function twoPassAdaptiveSampling(
   });
 
   const risks = rankSegments(discoverySamples, cfg);
-  const refinementBudget = Math.max(0, pointBudget - discoveryUsed);
   const { samples: refinementSamples, hazards: refinementHazards, used: refinementUsed } =
-    refineSegments(risks, path, dem, cfg, refinementBudget);
+    refineSegments(risks, path, dem, cfg);
 
   const hazardList = [...hazardsFromDiscovery(discoverySamples, cfg), ...refinementHazards];
   const safetyWaypoints = generateSafetyWaypoints(hazardList, agl, cfg);

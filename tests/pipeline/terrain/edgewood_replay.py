@@ -24,12 +24,12 @@ def load_edgewood_path() -> list[tuple[float, float, float]]:
   return points
 
 
-def replay_edgewood(dem_id: str = 'mixed', point_budget: int = 140) -> dict:
+def replay_edgewood(dem_id: str = 'mixed') -> dict:
   dataset = load_dem_dataset(dem_id, repo_root=Path(__file__).resolve().parents[2])
   provider = SyntheticDemProvider(dataset)
   path_ft = load_edgewood_path()
   config = build_sampler_config_from_env()
-  metrics, agl_summary = run_sampler(path_ft, provider, config, AglConstraints(min_agl_ft=120.0, max_agl_ft=400.0), point_budget)
+  metrics, agl_summary = run_sampler(path_ft, provider, config, AglConstraints(min_agl_ft=120.0, max_agl_ft=400.0))
   return {'metrics': metrics, 'agl': agl_summary}
 
 

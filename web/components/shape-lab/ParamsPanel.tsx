@@ -6,11 +6,9 @@ import type { SamplerConfig } from '@/lib/terrain/types';
 interface ParamsPanelProps {
   minAgl: number;
   maxAgl: number | null;
-  pointBudget: number;
   config: SamplerConfig;
   onAglChange: (next: { minAgl: number; maxAgl: number | null }) => void;
   onConfigChange: (next: Partial<SamplerConfig>) => void;
-  onPointBudgetChange: (value: number) => void;
 }
 
 function numeric(value: string, fallback: number): number {
@@ -21,11 +19,9 @@ function numeric(value: string, fallback: number): number {
 export function ParamsPanel({
   minAgl,
   maxAgl,
-  pointBudget,
   config,
   onAglChange,
   onConfigChange,
-  onPointBudgetChange,
 }: ParamsPanelProps) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-[#0b1018] p-4 text-slate-200 shadow-lg">
@@ -62,20 +58,10 @@ export function ParamsPanel({
       </div>
 
       <div>
-        <h3 className="text-sm font-semibold tracking-wide text-slate-300">Sampler Budget</h3>
-        <div className="mt-2 flex items-center gap-3">
-          <input
-            type="range"
-            min={20}
-            max={240}
-            step={5}
-            value={pointBudget}
-            onChange={(event) => onPointBudgetChange(numeric(event.target.value, pointBudget))}
-            className="flex-1"
-          />
-          <span className="w-16 text-right text-sm font-medium text-sky-300">{pointBudget}</span>
-        </div>
-        <p className="mt-1 text-xs text-slate-500">Discovery share {Math.round(config.discoveryFraction * 100)}% · refinement {Math.round((1 - config.discoveryFraction) * 100)}%</p>
+        <h3 className="text-sm font-semibold tracking-wide text-slate-300">Sampler Strategy</h3>
+        <p className="mt-2 text-xs text-slate-400">
+          Discovery share {Math.round(config.discoveryFraction * 100)}% · refinement {Math.round((1 - config.discoveryFraction) * 100)}%
+        </p>
         <div className="mt-2 flex items-center gap-3 text-xs text-slate-400">
           <span className="uppercase tracking-wide">Discovery Fraction</span>
           <input

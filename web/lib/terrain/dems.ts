@@ -17,6 +17,10 @@ export const DEM_CATALOG: DemDescriptor[] = [
   { id: 'volcano', name: 'Caldera Volcano', description: 'Steep-sided cone with central bowl.' },
   { id: 'canyon', name: 'Slot Canyon', description: 'Meandering canyon with sheer walls.' },
   { id: 'plateau', name: 'Stepped Plateau', description: 'Tiered mesas with gully cuts.' },
+  { id: 'sawtooth', name: 'Sawtooth Ridges', description: 'Alternating sharp ridges and valleys.' },
+  { id: 'buttes', name: 'Stacked Buttes', description: 'Discrete buttes separated by washes.' },
+  { id: 'glacier', name: 'Glacial Valley', description: 'Deep trough with moraines and headwall.' },
+  { id: 'karst', name: 'Karst Spires', description: 'Dense spire field with sinkholes.' },
 ];
 
 export async function loadDem(id: string): Promise<DemDataset> {
