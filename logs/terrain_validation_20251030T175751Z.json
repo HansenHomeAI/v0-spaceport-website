@@ -1,0 +1,115 @@
+{
+  "timestamp": "2025-10-30T17:57:51.030721Z",
+  "config": {
+    "discovery_interval_ft": 360.0,
+    "dense_interval_ft": 30.0,
+    "medium_interval_ft": 100.0,
+    "sparse_interval_ft": 260.0,
+    "discovery_fraction": 0.25,
+    "refinement_fraction": 0.75
+  },
+  "results": [
+    {
+      "dem": "flat",
+      "total_points_used": 30,
+      "discovery_points_used": 30,
+      "refinement_points_used": 0,
+      "hazards": 0,
+      "safety_waypoints": 0,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "sinusoid",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "ridge",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 14,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "mountain",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "cliff",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "mixed",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "dunes",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "volcano",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "canyon",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    },
+    {
+      "dem": "plateau",
+      "total_points_used": 120,
+      "discovery_points_used": 30,
+      "refinement_points_used": 90,
+      "hazards": 15,
+      "safety_waypoints": 15,
+      "agl_violations": 0,
+      "max_deficit_ft": 0.0
+    }
+  ],
+  "violations": 0,
+  "point_budget": 120
+}

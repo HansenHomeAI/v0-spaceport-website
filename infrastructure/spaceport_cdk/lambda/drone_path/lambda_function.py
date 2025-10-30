@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import json
 import csv
@@ -5,7 +7,17 @@ import io
 import os
 import requests
 import time
-from typing import List, Dict, Tuple, Optional
+import heapq
+from dataclasses import dataclass, field
+from typing import Any, List, Dict, Tuple, Optional
+
+FT_PER_METER = 3.28084
+M_PER_FT = 0.3048
+
+try:
+    from .elevation_provider import ElevationProvider, LatLon
+except ImportError:  # pragma: no cover - fallback for local execution
+    from elevation_provider import ElevationProvider, LatLon
 
 class SpiralDesigner:
     """
@@ -85,7 +97,9 @@ class SpiralDesigner:
         """
         self.waypoint_cache = []
         self.elevation_cache = {}  # Cache for elevation data with coordinate keys
-        
+        self._last_sampling_metrics: Dict[str, Any] = {}
+        self._last_sampling_hazards: List[Hazard] = []
+
         # DEVELOPMENT API KEY - Replace with environment variable for production
         # This key is rate-limited and for development/testing only
         dev_api_key = "AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU"
@@ -919,7 +933,11 @@ class SpiralDesigner:
         
         # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
         print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        safety_waypoints = self.adaptive_terrain_sampling(
+            waypoints_with_coords,
+            min_agl_ft=min_height,
+            max_agl_ft=max_height,
+        )
         
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into complete mission flight path")
@@ -1192,7 +1210,11 @@ class SpiralDesigner:
         
         # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
         print(f"🛡️  Starting adaptive terrain sampling for mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        safety_waypoints = self.adaptive_terrain_sampling(
+            waypoints_with_coords,
+            min_agl_ft=min_height,
+            max_agl_ft=max_height,
+        )
         
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
@@ -1729,288 +1751,16 @@ class SpiralDesigner:
         
         return expected_elevation
     
-    def adaptive_terrain_sampling(self, waypoints_with_coords: List[Dict]) -> List[Dict]:
-        """
-        Adaptive terrain anomaly detection system for drone safety.
-        
-        SAFETY ALGORITHM:
-        1. Analyze segments between consecutive waypoints
-        2. Skip short segments (< SAFE_DISTANCE_FT)
-        3. Sample terrain at regular intervals on long segments
-        4. Compare actual vs expected elevation (linear interpolation)
-        5. Detect anomalies above threshold
-        6. Add safety waypoints for significant terrain features
-        7. Respect waypoint budget (99 total limit)
-        
-        COST OPTIMIZATION:
-        - Strategic sampling intervals based on segment length
-        - Proximity caching for nearby elevation requests
-        - Batch processing of elevation queries
-        - Early termination if waypoint budget exhausted
-        
-        Args:
-            waypoints_with_coords: List of waypoints with lat/lon/elevation data
-            
-        Returns:
-            List of safety waypoints to insert into flight path
-        """
-        safety_waypoints = []
-        total_api_calls = 0
-        max_api_calls = self.MAX_API_CALLS_PER_REQUEST
-        segments_processed = 0
-        
-        print(f"🔍 Starting smart terrain sampling for {len(waypoints_with_coords)} waypoints")
-        print(f"   • Safe distance threshold: {self.SAFE_DISTANCE_FT}ft")
-        print(f"   • API call budget: {max_api_calls} calls")
-        
-        for i in range(len(waypoints_with_coords) - 1):
-            # Check waypoint budget
-            if len(safety_waypoints) >= 20:  # Reserve waypoints for other uses
-                print(f"⚠️  Waypoint budget limit reached, stopping terrain sampling")
-                break
-            
-            # Check API call budget
-            if total_api_calls >= max_api_calls:
-                print(f"⚠️  API call budget limit reached, stopping terrain sampling")
-                break
-            
-            current_wp = waypoints_with_coords[i]
-            next_wp = waypoints_with_coords[i + 1]
-            
-            # Calculate segment distance
-            segment_distance_ft = self.haversine_distance(
-                current_wp['lat'], current_wp['lon'],
-                next_wp['lat'], next_wp['lon']
-            ) * 3.28084
-            
-            # Skip short segments - they're inherently safe (key optimization)
-            if segment_distance_ft <= self.SAFE_DISTANCE_FT:
-                print(f"   ✓ Segment {i+1}: {segment_distance_ft:.0f}ft - SAFE (< {self.SAFE_DISTANCE_FT}ft)")
-                continue
-            
-            print(f"📏 Analyzing segment {i+1}: {segment_distance_ft:.0f}ft")
-            
-            # Generate sample points along the segment
-            sample_points = self.generate_intermediate_points(
-                current_wp['lat'], current_wp['lon'],
-                next_wp['lat'], next_wp['lon'],
-                self.INITIAL_SAMPLE_INTERVAL
-            )
-            
-            if not sample_points:
-                continue
-            
-            # Batch sample elevations for efficiency
-            sample_locations = [(p['lat'], p['lon']) for p in sample_points]
-            sample_elevations = self.get_elevations_feet_optimized(sample_locations)
-            total_api_calls += len(sample_elevations)
-            
-            # Analyze each sample point for anomalies
-            segment_anomalies = []
-            
-            for j, (sample_point, actual_elevation) in enumerate(zip(sample_points, sample_elevations)):
-                expected_elevation = self.linear_interpolate_elevation(
-                    current_wp['lat'], current_wp['lon'], current_wp['elevation'],
-                    next_wp['lat'], next_wp['lon'], next_wp['elevation'],
-                    sample_point['lat'], sample_point['lon']
-                )
-                
-                deviation = actual_elevation - expected_elevation
-                abs_deviation = abs(deviation)
-                
-                if abs_deviation > self.ANOMALY_THRESHOLD:
-                    segment_anomalies.append({
-                        'point': sample_point,
-                        'actual_elevation': actual_elevation,
-                        'expected_elevation': expected_elevation,
-                        'deviation': deviation,
-                        'abs_deviation': abs_deviation,
-                        'risk_level': 'critical' if abs_deviation > self.CRITICAL_THRESHOLD else 'moderate'
-                    })
-                    
-                    print(f"⚠️  Anomaly detected: {deviation:+.1f}ft deviation at {sample_point['distance_from_start']:.0f}ft")
-            
-            # Process anomalies and create safety waypoints
-            segment_safety_waypoints = self.process_segment_anomalies(
-                segment_anomalies, current_wp, next_wp, i
-            )
-            
-            # Limit safety waypoints per segment
-            if len(segment_safety_waypoints) > self.MAX_SAFETY_WAYPOINTS_PER_SEGMENT:
-                # Keep only the most critical anomalies
-                segment_safety_waypoints.sort(key=lambda x: x['abs_deviation'], reverse=True)
-                segment_safety_waypoints = segment_safety_waypoints[:self.MAX_SAFETY_WAYPOINTS_PER_SEGMENT]
-                print(f"🔄 Limited to {self.MAX_SAFETY_WAYPOINTS_PER_SEGMENT} safety waypoints for segment {i+1}")
-            
-            safety_waypoints.extend(segment_safety_waypoints)
-        
-        segments_analyzed = sum(1 for i in range(len(waypoints_with_coords) - 1) 
-                               if self.haversine_distance(waypoints_with_coords[i]['lat'], waypoints_with_coords[i]['lon'],
-                                                         waypoints_with_coords[i+1]['lat'], waypoints_with_coords[i+1]['lon']) * 3.28084 > self.SAFE_DISTANCE_FT)
-        
-        print(f"✅ Smart terrain sampling complete:")
-        print(f"   • {len(safety_waypoints)} safety waypoints created")
-        print(f"   • {total_api_calls}/{max_api_calls} API calls used ({total_api_calls/max_api_calls*100:.1f}%)")
-        print(f"   • {segments_analyzed} segments analyzed (>{self.SAFE_DISTANCE_FT}ft)")
-        print(f"   • {len(waypoints_with_coords)-1-segments_analyzed} segments skipped (<{self.SAFE_DISTANCE_FT}ft)")
-        
-        return safety_waypoints
-    
-    def process_segment_anomalies(self, anomalies: List[Dict], current_wp: Dict, next_wp: Dict, segment_idx: int) -> List[Dict]:
-        """
-        Process detected anomalies and create appropriate safety waypoints.
-        
-        SAFETY LOGIC:
-        - Critical anomalies (>60ft): Immediate safety waypoint
-        - Moderate anomalies (35-60ft): Dense sampling for verification
-        - Positive deviations (hills): Fly over with safety buffer
-        - Negative deviations (valleys): Maintain minimum altitude
-        
-        Args:
-            anomalies: List of detected terrain anomalies
-            current_wp: Current waypoint for context
-            next_wp: Next waypoint for context
-            segment_idx: Segment index for logging
-            
-        Returns:
-            List of safety waypoints for this segment
-        """
-        safety_waypoints = []
-        
-        for anomaly in anomalies:
-            point = anomaly['point']
-            actual_elevation = anomaly['actual_elevation']
-            deviation = anomaly['deviation']
-            risk_level = anomaly['risk_level']
-            
-            if risk_level == 'critical':
-                # Critical anomaly - immediate safety waypoint
-                if deviation > 0:
-                    # Positive deviation (hill/obstacle) - enhanced ridge mapping
-                    print(f"🚨 Critical anomaly detected: +{deviation:.1f}ft - performing enhanced ridge sampling")
-                    
-                    # Perform enhanced dense sampling around the anomaly
-                    enhanced_samples = self.enhanced_ridge_sampling(
-                        anomaly, current_wp['lat'], current_wp['lon'], 
-                        next_wp['lat'], next_wp['lon']
-                    )
-                    
-                    if enhanced_samples:
-                        # Choose sample with the GREATEST POSITIVE DEVIATION (ridge-lip) instead of simply highest elevation.
-                        best_sample = None
-                        best_dev = -float('inf')
-                        for es in enhanced_samples:
-                            expected_elev = self.linear_interpolate_elevation(
-                                current_wp['lat'], current_wp['lon'], current_wp['elevation'],
-                                next_wp['lat'], next_wp['lon'], next_wp['elevation'],
-                                es['lat'], es['lon']
-                            )
-                            sample_dev = es['elevation'] - expected_elev
-                            if sample_dev > best_dev:
-                                best_dev = sample_dev
-                                best_sample = es
-
-                        if best_sample is None:
-                            # Fallback to highest elevation sample
-                            best_sample = max(enhanced_samples, key=lambda x: x['elevation'])
-                            best_dev = best_sample['elevation'] - expected_elev
-
-                        safety_altitude = best_sample['elevation'] + self.SAFETY_BUFFER_FT
-
-                        safety_waypoints.append({
-                            'lat': best_sample['lat'],
-                            'lon': best_sample['lon'],
-                            'altitude': safety_altitude,
-                            'elevation': best_sample['elevation'],
-                            'reason': f"Enhanced ridge mapping: +{best_dev:.1f}ft deviation",
-                            'abs_deviation': anomaly['abs_deviation'],
-                            'segment_idx': segment_idx,
-                            'type': 'critical_safety_enhanced',
-                            'distance_from_start': self.calculate_distance_along_segment(
-                                current_wp['lat'], current_wp['lon'], 
-                                next_wp['lat'], next_wp['lon'], 
-                                best_sample['lat'], best_sample['lon']
-                            )
-                        })
-                        print(f"✅ Enhanced safety waypoint placed at ridge-lip (+{best_dev:.1f}ft dev)")
-                else:
-                    # Negative deviation (valley) - ignored per new policy (no descent)
-                    print(f"ℹ️  Skipping valley deviation {deviation:.1f}ft (no safety waypoint needed)")
-            
-            elif risk_level == 'moderate' and deviation > 0:
-                # Moderate positive deviation - verify with dense sampling
-                dense_points = self.verify_moderate_anomaly(point, actual_elevation)
-                
-                if dense_points:
-                    max_elevation = max(p['elevation'] for p in dense_points)
-                    safety_altitude = max_elevation + (self.SAFETY_BUFFER_FT * 0.7)  # Slightly less buffer for verified moderate
-                    
-                    safety_waypoints.append({
-                        'lat': point['lat'],
-                        'lon': point['lon'],
-                        'altitude': safety_altitude,
-                        'elevation': max_elevation,
-                        'reason': f"Verified terrain feature: +{deviation:.1f}ft",
-                        'abs_deviation': anomaly['abs_deviation'],
-                        'segment_idx': segment_idx,
-                        'type': 'moderate_safety',
-                        'distance_from_start': self.calculate_distance_along_segment(
-                            current_wp['lat'], current_wp['lon'], 
-                            next_wp['lat'], next_wp['lon'], 
-                            point['lat'], point['lon']
-                        )
-                    })
-                    
-                    print(f"⚠️  Moderate safety waypoint: Verified terrain feature +{deviation:.1f}ft")
-        
-        return safety_waypoints
-    
-    def verify_moderate_anomaly(self, center_point: Dict, center_elevation: float) -> List[Dict]:
-        """
-        Verify moderate anomalies with dense sampling around the detected point.
-        
-        VERIFICATION ALGORITHM:
-        1. Create sampling points in a cross pattern around the anomaly
-        2. Sample elevation at each verification point
-        3. If multiple points confirm the anomaly, it's real terrain
-        4. If isolated, it might be noise - ignore it
-        
-        Args:
-            center_point: GPS coordinates of the detected anomaly
-            center_elevation: Elevation at the anomaly point
-            
-        Returns:
-            List of verification points if anomaly is confirmed, empty list otherwise
-        """
-        # Create verification points in a cross pattern (N, S, E, W)
-        offset_degrees = self.DENSE_SAMPLE_INTERVAL / 364000  # Approximate conversion
-        
-        verification_points = [
-            {'lat': center_point['lat'] + offset_degrees, 'lon': center_point['lon']},     # North
-            {'lat': center_point['lat'] - offset_degrees, 'lon': center_point['lon']},     # South
-            {'lat': center_point['lat'], 'lon': center_point['lon'] + offset_degrees},     # East
-            {'lat': center_point['lat'], 'lon': center_point['lon'] - offset_degrees},     # West
-        ]
-        
-        # Sample elevations at verification points
-        verification_locations = [(p['lat'], p['lon']) for p in verification_points]
-        verification_elevations = self.get_elevations_feet_optimized(verification_locations)
-        
-        # Add elevations to points
-        for point, elevation in zip(verification_points, verification_elevations):
-            point['elevation'] = elevation
-        
-        # Check if anomaly is confirmed by surrounding terrain
-        confirmed_points = []
-        for point in verification_points:
-            if abs(point['elevation'] - center_elevation) <= 15:  # Within 15ft of center
-                confirmed_points.append(point)
-        
-        # Require at least 2 confirmation points to verify the anomaly
-        if len(confirmed_points) >= 2:
-            return confirmed_points + [{'lat': center_point['lat'], 'lon': center_point['lon'], 'elevation': center_elevation}]
-        else:
-            return []  # Anomaly not confirmed - likely noise
+    def adaptive_terrain_sampling(self, waypoints_with_coords: List[Dict], *, min_agl_ft: Optional[float] = None, max_agl_ft: Optional[float] = None, point_budget: Optional[int] = None) -> List[Dict]:
+        """Proxy to the v2 terrain sampler for backwards compatibility."""
+        provider = DesignerElevationProvider(self)
+        cfg = build_sampler_config_from_env()
+        constraints = AglConstraints(min_agl_ft=min_agl_ft, max_agl_ft=max_agl_ft)
+        budget = point_budget or int(os.getenv('TERRAIN_SAMPLER_POINT_BUDGET', '90'))
+        result = two_pass_adaptive_sampling(waypoints_with_coords, provider, cfg, constraints, budget)
+        self._last_sampling_metrics = result.metrics
+        self._last_sampling_hazards = result.hazards
+        return result.safety_waypoints
 
     def insert_safety_waypoints(self, original_waypoints: List[Dict], safety_waypoints: List[Dict]) -> List[Dict]:
         """
@@ -2032,7 +1782,22 @@ class SpiralDesigner:
         """
         if not safety_waypoints:
             return original_waypoints
-        
+
+        spacing_ft = _env_float('MIN_SAFETY_WAYPOINT_SPACING', 50.0)
+        deduped: List[Dict[str, Any]] = []
+        for candidate in sorted(safety_waypoints, key=lambda x: x.get('distance_from_start', 0.0)):
+            too_close = any(
+                self.haversine_distance(candidate['lat'], candidate['lon'], existing['lat'], existing['lon']) * FT_PER_METER < spacing_ft
+                for existing in deduped
+            )
+            if too_close:
+                continue
+            if 'agl_target_ft' in candidate:
+                candidate['altitude'] = candidate['elevation'] + candidate['agl_target_ft']
+            deduped.append(candidate)
+
+        safety_waypoints = deduped
+
         # Group safety waypoints by segment
         safety_by_segment = {}
         for safety_wp in safety_waypoints:
@@ -2545,6 +2310,548 @@ def handle_legacy_drone_path(designer, body, cors_headers):
             'headers': cors_headers,
             'body': json.dumps({'error': f'Legacy endpoint error: {str(e)}'})
         }
+
+
+@dataclass
+class SamplerConfig:
+    discovery_interval_ft: float
+    dense_interval_ft: float
+    medium_interval_ft: float
+    sparse_interval_ft: float
+    grad_medium_ft_per_100: float
+    grad_high_ft_per_100: float
+    grad_critical_ft_per_100: float
+    discovery_fraction: float
+    refinement_fraction: float
+    min_safety_spacing_ft: float
+    safety_buffer_ft: float
+
+
+@dataclass
+class AglConstraints:
+    min_agl_ft: Optional[float] = None
+    max_agl_ft: Optional[float] = None
+
+
+@dataclass
+class SampledPoint:
+    lat: float
+    lon: float
+    distance_ft: float
+    elevation_ft: float
+    phase: Optional[str] = None
+    source: str = "discovery"
+    gradient_ft_per_100: float = 0.0
+    curvature_ft_per_100: float = 0.0
+    segment_index: int = 0
+
+
+@dataclass(order=True)
+class SegmentRisk:
+    priority: float
+    segment_index: int
+    start_distance_ft: float
+    end_distance_ft: float
+    max_gradient: float
+    max_curvature: float
+
+
+@dataclass
+class Hazard:
+    lat: float
+    lon: float
+    distance_ft: float
+    ground_ft: float
+    severity: float
+    gradient_ft_per_100: float
+    curvature_ft_per_100: float
+    segment_index: int
+    description: str
+
+
+@dataclass
+class TerrainSamplingResult:
+    discovery_points: List[SampledPoint] = field(default_factory=list)
+    refinement_points: List[SampledPoint] = field(default_factory=list)
+    hazards: List[Hazard] = field(default_factory=list)
+    safety_waypoints: List[Dict[str, Any]] = field(default_factory=list)
+    metrics: Dict[str, Any] = field(default_factory=dict)
+
+
+def _env_float(name: str, default: float) -> float:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except ValueError:
+        return default
+
+
+def _env_int(name: str, default: int) -> int:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
+def build_sampler_config_from_env() -> SamplerConfig:
+    discovery_interval = _env_float('SPARSE_DISCOVERY_INTERVAL', 360.0)
+    dense_interval = _env_float('DENSE', 30.0)
+    medium_interval = _env_float('MEDIUM', 100.0)
+    sparse_interval = _env_float('SPARSE', 260.0)
+    grad_medium = _env_float('GRADIENT_MEDIUM', 10.0)
+    grad_high = _env_float('GRADIENT_HIGH', 20.0)
+    grad_critical = _env_float('GRADIENT_CRITICAL', 40.0)
+    discovery_fraction = _env_float('TERRAIN_DISCOVERY_FRACTION', 0.25)
+    discovery_fraction = max(0.05, min(discovery_fraction, 0.9))
+    refinement_fraction = max(0.0, min(1.0, 1.0 - discovery_fraction))
+    min_spacing = _env_float('MIN_SAFETY_WAYPOINT_SPACING', 50.0)
+    safety_buffer = _env_float('TERRAIN_SAFETY_BUFFER_FT', 100.0)
+    return SamplerConfig(
+        discovery_interval_ft=discovery_interval,
+        dense_interval_ft=dense_interval,
+        medium_interval_ft=medium_interval,
+        sparse_interval_ft=sparse_interval,
+        grad_medium_ft_per_100=grad_medium,
+        grad_high_ft_per_100=grad_high,
+        grad_critical_ft_per_100=grad_critical,
+        discovery_fraction=discovery_fraction,
+        refinement_fraction=refinement_fraction,
+        min_safety_spacing_ft=min_spacing,
+        safety_buffer_ft=safety_buffer,
+    )
+
+
+def haversine_ft(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    radius_m = 6371000.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return radius_m * c * FT_PER_METER
+
+
+def compute_path_distances(path_ll: List[Dict[str, Any]]) -> List[float]:
+    if not path_ll:
+        return [0.0]
+    distances = [0.0]
+    for idx in range(1, len(path_ll)):
+        prev = path_ll[idx - 1]
+        curr = path_ll[idx]
+        seg = haversine_ft(prev['lat'], prev['lon'], curr['lat'], curr['lon'])
+        distances.append(distances[-1] + seg)
+    return distances
+
+
+def interpolate_along_path(path_ll: List[Dict[str, Any]], distances: List[float], target_distance: float) -> Tuple[float, float, int, float]:
+    if not path_ll:
+        raise ValueError('Path cannot be empty')
+    if target_distance <= 0:
+        return path_ll[0]['lat'], path_ll[0]['lon'], 0, 0.0
+    if target_distance >= distances[-1]:
+        return path_ll[-1]['lat'], path_ll[-1]['lon'], len(path_ll) - 2, 1.0
+    for idx in range(1, len(distances)):
+        if target_distance <= distances[idx]:
+            start_distance = distances[idx - 1]
+            seg_length = max(distances[idx] - start_distance, 1e-6)
+            fraction = (target_distance - start_distance) / seg_length
+            start = path_ll[idx - 1]
+            end = path_ll[idx]
+            lat = start['lat'] + fraction * (end['lat'] - start['lat'])
+            lon = start['lon'] + fraction * (end['lon'] - start['lon'])
+            return lat, lon, idx - 1, fraction
+    last = path_ll[-1]
+    return last['lat'], last['lon'], len(path_ll) - 2, 1.0
+
+
+def _batched(points: List[LatLon], size: int) -> List[List[LatLon]]:
+    return [points[i:i + size] for i in range(0, len(points), size)]
+
+
+def _smooth_series(values: List[float], window: int = 5) -> List[float]:
+    if len(values) < 3:
+        return values[:]
+    if window % 2 == 0:
+        window += 1
+    window = max(3, window)
+    radius = window // 2
+    smoothed: List[float] = []
+    for idx in range(len(values)):
+        start = max(0, idx - radius)
+        end = min(len(values), idx + radius + 1)
+        window_vals = values[start:end]
+        median_val = sorted(window_vals)[len(window_vals) // 2]
+        mean_val = sum(window_vals) / len(window_vals)
+        smoothed.append((median_val + mean_val) / 2.0)
+    return smoothed
+
+
+def sparse_discovery_scan(path_ll: List[Dict[str, Any]], provider: ElevationProvider, cfg: SamplerConfig, budget_points: int) -> Tuple[List[SampledPoint], int]:
+    if len(path_ll) < 2 or budget_points <= 0:
+        return [], 0
+    distances = compute_path_distances(path_ll)
+    total_length = distances[-1]
+    if total_length <= 0:
+        return [], 0
+    interval = max(cfg.discovery_interval_ft, total_length / max(budget_points - 1, 1))
+    targets = [0.0]
+    current = interval
+    while current < total_length and len(targets) < budget_points - 1:
+        targets.append(current)
+        current += interval
+    if targets[-1] != total_length:
+        targets.append(total_length)
+    latlons: List[LatLon] = []
+    samples: List[SampledPoint] = []
+    for target in targets:
+        lat, lon, segment_index, _ = interpolate_along_path(path_ll, distances, target)
+        phase = path_ll[segment_index].get('phase') if 0 <= segment_index < len(path_ll) else None
+        samples.append(SampledPoint(lat=lat, lon=lon, distance_ft=target, elevation_ft=0.0, phase=phase, source='discovery', segment_index=segment_index))
+        latlons.append((lat, lon))
+    batch_size = max(1, provider.max_batch_size())
+    points_used = 0
+    sample_idx = 0
+    for chunk in _batched(latlons, batch_size):
+        elevations_m = provider.sample(chunk)
+        points_used += len(elevations_m)
+        for elevation_m in elevations_m:
+            samples[sample_idx].elevation_ft = elevation_m * FT_PER_METER
+            sample_idx += 1
+    return samples, points_used
+
+
+def calculate_elevation_gradient(amls_ft: List[float], distances_ft: List[float], window_ft: float) -> List[float]:
+    gradients: List[float] = []
+    window_ft = max(window_ft, 1.0)
+    for idx in range(len(amls_ft)):
+        left = idx
+        while left > 0 and distances_ft[idx] - distances_ft[left] < window_ft:
+            left -= 1
+        right = idx
+        while right < len(amls_ft) - 1 and distances_ft[right] - distances_ft[idx] < window_ft:
+            right += 1
+        if left == idx or right == idx:
+            gradients.append(0.0)
+            continue
+        rise = amls_ft[right] - amls_ft[left]
+        run = max(distances_ft[right] - distances_ft[left], 1.0)
+        gradients.append((rise / run) * 100.0)
+    return gradients
+
+
+def calculate_terrain_curvature(amls_ft: List[float], distances_ft: List[float], window_ft: float) -> List[float]:
+    gradients = calculate_elevation_gradient(amls_ft, distances_ft, max(window_ft / 2.0, 1.0))
+    curvatures: List[float] = []
+    for idx in range(len(gradients)):
+        if idx == 0 or idx == len(gradients) - 1:
+            curvatures.append(0.0)
+            continue
+        delta_distance = max(distances_ft[idx + 1] - distances_ft[idx - 1], 1.0)
+        curvature = (gradients[idx + 1] - gradients[idx - 1]) / delta_distance * 100.0
+        curvatures.append(curvature)
+    return curvatures
+
+
+def rank_segments_by_risk(samples: List[SampledPoint]) -> List[SegmentRisk]:
+    queue: List[SegmentRisk] = []
+    for idx in range(len(samples) - 1):
+        grad = max(abs(samples[idx].gradient_ft_per_100), abs(samples[idx + 1].gradient_ft_per_100))
+        curv = max(abs(samples[idx].curvature_ft_per_100), abs(samples[idx + 1].curvature_ft_per_100))
+        segment_length = samples[idx + 1].distance_ft - samples[idx].distance_ft
+        if segment_length <= 0:
+            continue
+        severity = grad * 0.7 + curv * 0.3
+        if severity <= 0:
+            continue
+        heapq.heappush(queue, SegmentRisk(
+            priority=-severity,
+            segment_index=idx,
+            start_distance_ft=samples[idx].distance_ft,
+            end_distance_ft=samples[idx + 1].distance_ft,
+            max_gradient=grad,
+            max_curvature=curv,
+        ))
+    return queue
+
+
+def choose_interval(max_gradient: float, cfg: SamplerConfig) -> float:
+    if max_gradient >= cfg.grad_critical_ft_per_100:
+        return cfg.dense_interval_ft
+    if max_gradient >= cfg.grad_high_ft_per_100:
+        return cfg.medium_interval_ft
+    if max_gradient >= cfg.grad_medium_ft_per_100:
+        return cfg.sparse_interval_ft
+    return cfg.discovery_interval_ft * 1.5
+
+
+def detect_peak_elevation(segment: SegmentRisk, path_ll: List[Dict[str, Any]], distances: List[float], provider: ElevationProvider, budget_left: int) -> Tuple[Optional[SampledPoint], int]:
+    if budget_left <= 0:
+        return None, 0
+    left = segment.start_distance_ft
+    right = segment.end_distance_ft
+    best_sample: Optional[SampledPoint] = None
+    points_used = 0
+    iterations = min(4, max(1, budget_left // 2))
+    for _ in range(iterations):
+        if budget_left - points_used < 2:
+            break
+        l_mid = left + (right - left) / 3.0
+        r_mid = right - (right - left) / 3.0
+        coords = [interpolate_along_path(path_ll, distances, l_mid), interpolate_along_path(path_ll, distances, r_mid)]
+        latlons = [(coords[0][0], coords[0][1]), (coords[1][0], coords[1][1])]
+        elevations_m = provider.sample(latlons)
+        points_used += len(elevations_m)
+        samples = []
+        for (lat, lon, segment_index, _), elevation_m in zip(coords, elevations_m):
+            phase = path_ll[segment_index].get('phase') if 0 <= segment_index < len(path_ll) else None
+            samples.append(SampledPoint(
+                lat=lat,
+                lon=lon,
+                distance_ft=l_mid if len(samples) == 0 else r_mid,
+                elevation_ft=elevation_m * FT_PER_METER,
+                phase=phase,
+                source='refinement',
+                gradient_ft_per_100=segment.max_gradient,
+                curvature_ft_per_100=segment.max_curvature,
+                segment_index=segment.segment_index,
+            ))
+        if not samples:
+            break
+        left_sample, right_sample = samples
+        if best_sample is None or left_sample.elevation_ft > best_sample.elevation_ft:
+            best_sample = left_sample
+        if right_sample.elevation_ft > (best_sample.elevation_ft if best_sample else -float('inf')):
+            best_sample = right_sample
+        if left_sample.elevation_ft > right_sample.elevation_ft:
+            right = r_mid
+        else:
+            left = l_mid
+    return best_sample, points_used
+
+
+def adaptive_refinement_sampling(
+    segment_queue: List[SegmentRisk],
+    path_ll: List[Dict[str, Any]],
+    distances: List[float],
+    provider: ElevationProvider,
+    cfg: SamplerConfig,
+    budget_points: int,
+) -> Tuple[List[SampledPoint], List[Hazard], int, Dict[str, Any]]:
+    refined_samples: List[SampledPoint] = []
+    hazards: List[Hazard] = []
+    points_used = 0
+    segments_considered = 0
+    while segment_queue and points_used < budget_points:
+        segment = heapq.heappop(segment_queue)
+        severity = -segment.priority
+        segment_length = max(segment.end_distance_ft - segment.start_distance_ft, 1.0)
+        segments_considered += 1
+        budget_left = budget_points - points_used
+        if segment.max_gradient >= cfg.grad_critical_ft_per_100:
+            peak_sample, used = detect_peak_elevation(segment, path_ll, distances, provider, budget_left)
+            points_used += used
+            if peak_sample:
+                refined_samples.append(peak_sample)
+                hazards.append(Hazard(
+                    lat=peak_sample.lat,
+                    lon=peak_sample.lon,
+                    distance_ft=peak_sample.distance_ft,
+                    ground_ft=peak_sample.elevation_ft,
+                    severity=severity,
+                    gradient_ft_per_100=segment.max_gradient,
+                    curvature_ft_per_100=segment.max_curvature,
+                    segment_index=segment.segment_index,
+                    description='Critical gradient peak located via ternary search',
+                ))
+            continue
+        interval = choose_interval(segment.max_gradient, cfg)
+        targets: List[float] = []
+        current = segment.start_distance_ft + interval
+        while current < segment.end_distance_ft and len(targets) < budget_left:
+            targets.append(current)
+            current += interval
+        if not targets:
+            # Ensure at least one midpoint sample when budget allows
+            midpoint = segment.start_distance_ft + segment_length / 2.0
+            if budget_left > 0:
+                targets.append(midpoint)
+        if not targets:
+            continue
+        latlons: List[LatLon] = []
+        samples: List[SampledPoint] = []
+        for target in targets[:budget_left]:
+            lat, lon, segment_index, _ = interpolate_along_path(path_ll, distances, target)
+            phase = path_ll[segment_index].get('phase') if 0 <= segment_index < len(path_ll) else None
+            samples.append(SampledPoint(
+                lat=lat,
+                lon=lon,
+                distance_ft=target,
+                elevation_ft=0.0,
+                phase=phase,
+                source='refinement',
+                gradient_ft_per_100=segment.max_gradient,
+                curvature_ft_per_100=segment.max_curvature,
+                segment_index=segment_index,
+            ))
+            latlons.append((lat, lon))
+        batch_size = max(1, provider.max_batch_size())
+        sample_idx = 0
+        for chunk in _batched(latlons, batch_size):
+            elevations_m = provider.sample(chunk)
+            points_used += len(elevations_m)
+            for elevation_m in elevations_m:
+                samples[sample_idx].elevation_ft = elevation_m * FT_PER_METER
+                sample_idx += 1
+            if points_used >= budget_points:
+                break
+        refined_samples.extend(samples[:sample_idx])
+        if samples:
+            hazard_source = max(samples[:sample_idx], key=lambda s: s.elevation_ft, default=None)
+            if hazard_source:
+                hazards.append(Hazard(
+                    lat=hazard_source.lat,
+                    lon=hazard_source.lon,
+                    distance_ft=hazard_source.distance_ft,
+                    ground_ft=hazard_source.elevation_ft,
+                    severity=severity,
+                    gradient_ft_per_100=segment.max_gradient,
+                    curvature_ft_per_100=segment.max_curvature,
+                    segment_index=segment.segment_index,
+                    description='High-risk terrain refinement sample',
+                ))
+    metrics = {
+        'segments_considered': segments_considered,
+    }
+    return refined_samples, hazards, points_used, metrics
+
+
+def _hazards_from_discovery(samples: List[SampledPoint], cfg: SamplerConfig) -> List[Hazard]:
+    hazards: List[Hazard] = []
+    for sample in samples:
+        severity = max(0.0, abs(sample.gradient_ft_per_100) - cfg.grad_medium_ft_per_100)
+        if severity <= 0 and abs(sample.curvature_ft_per_100) <= cfg.grad_medium_ft_per_100:
+            continue
+        hazards.append(Hazard(
+            lat=sample.lat,
+            lon=sample.lon,
+            distance_ft=sample.distance_ft,
+            ground_ft=sample.elevation_ft,
+            severity=max(severity, abs(sample.curvature_ft_per_100)),
+            gradient_ft_per_100=sample.gradient_ft_per_100,
+            curvature_ft_per_100=sample.curvature_ft_per_100,
+            segment_index=sample.segment_index,
+            description='Discovery gradient alert',
+        ))
+    return hazards
+
+
+def generate_terrain_feature_waypoints(hazards: List[Hazard], agl: AglConstraints, cfg: SamplerConfig) -> List[Dict[str, Any]]:
+    if not hazards:
+        return []
+    min_agl = agl.min_agl_ft if agl.min_agl_ft is not None else 120.0
+    safety_waypoints: List[Dict[str, Any]] = []
+    accepted: List[Hazard] = []
+    sorted_hazards = sorted(hazards, key=lambda h: h.severity, reverse=True)
+    for hazard in sorted_hazards:
+        too_close = any(
+            haversine_ft(hazard.lat, hazard.lon, existing.lat, existing.lon) < cfg.min_safety_spacing_ft
+            for existing in accepted
+        )
+        if too_close:
+            continue
+        target_agl = max(min_agl, cfg.safety_buffer_ft)
+        altitude = hazard.ground_ft + target_agl
+        if agl.max_agl_ft is not None:
+            altitude = min(altitude, hazard.ground_ft + agl.max_agl_ft)
+            target_agl = altitude - hazard.ground_ft
+        safety_waypoints.append({
+            'lat': hazard.lat,
+            'lon': hazard.lon,
+            'altitude': altitude,
+            'elevation': hazard.ground_ft,
+            'reason': hazard.description,
+            'segment_idx': hazard.segment_index,
+            'type': 'terrain_safety',
+            'distance_from_start': hazard.distance_ft,
+            'severity': hazard.severity,
+            'agl_target_ft': target_agl,
+        })
+        accepted.append(hazard)
+    return safety_waypoints
+
+
+def two_pass_adaptive_sampling(
+    path_ll: List[Dict[str, Any]],
+    provider: ElevationProvider,
+    cfg: SamplerConfig,
+    agl: AglConstraints,
+    point_budget: int,
+) -> TerrainSamplingResult:
+    if len(path_ll) < 2 or point_budget <= 0:
+        return TerrainSamplingResult()
+    discovery_budget = max(2, int(point_budget * cfg.discovery_fraction))
+    discovery_samples, discovery_used = sparse_discovery_scan(path_ll, provider, cfg, discovery_budget)
+    if not discovery_samples:
+        return TerrainSamplingResult()
+    distances = [sample.distance_ft for sample in discovery_samples]
+    elevations = [sample.elevation_ft for sample in discovery_samples]
+    smooth_window = max(3, int(cfg.discovery_interval_ft // 50) | 1)
+    smoothed = _smooth_series(elevations, smooth_window)
+    gradients = calculate_elevation_gradient(smoothed, distances, max(cfg.discovery_interval_ft * 2.0, 100.0))
+    curvatures = calculate_terrain_curvature(smoothed, distances, max(cfg.discovery_interval_ft * 3.0, 150.0))
+    for sample, grad, curv in zip(discovery_samples, gradients, curvatures):
+        sample.gradient_ft_per_100 = grad
+        sample.curvature_ft_per_100 = curv
+    segment_queue = rank_segments_by_risk(discovery_samples)
+    refinement_budget = max(0, point_budget - discovery_used)
+    distances_exact = compute_path_distances(path_ll)
+    refinement_samples, refinement_hazards, refinement_used, refinement_metrics = adaptive_refinement_sampling(
+        segment_queue,
+        path_ll,
+        distances_exact,
+        provider,
+        cfg,
+        refinement_budget,
+    )
+    hazards = _hazards_from_discovery(discovery_samples, cfg) + refinement_hazards
+    safety_waypoints = generate_terrain_feature_waypoints(hazards, agl, cfg)
+    metrics = {
+        'discovery_points_used': discovery_used,
+        'refinement_points_used': refinement_used,
+        'total_points_used': discovery_used + refinement_used,
+        'hazards_detected': len(hazards),
+        'safety_waypoints': len(safety_waypoints),
+    }
+    metrics.update(refinement_metrics)
+    print(
+        f"Terrain sampler v2 → discovery: {discovery_used} pts, refinement: {refinement_used} pts, hazards: {len(hazards)}, safety waypoints: {len(safety_waypoints)}"
+    )
+    return TerrainSamplingResult(
+        discovery_points=discovery_samples,
+        refinement_points=refinement_samples,
+        hazards=hazards,
+        safety_waypoints=safety_waypoints,
+        metrics=metrics,
+    )
+
+
+class DesignerElevationProvider(ElevationProvider):
+    def __init__(self, designer: 'SpiralDesigner') -> None:
+        self.designer = designer
+
+    def sample(self, points: List[LatLon]) -> List[float]:
+        if not points:
+            return []
+        elevations_ft = self.designer.get_elevations_feet_optimized(points)
+        return [elevation * M_PER_FT for elevation in elevations_ft]
+
+    def max_batch_size(self) -> int:
+        return getattr(self.designer, 'MAX_API_CALLS_PER_REQUEST', 25)
+
 
 # Example usage and testing
 if __name__ == "__main__":
