@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Setup local environment variables for development
 # This script creates web/.env.local by prompting for the Google Maps API key
+# or copying from a canonical master file for consistency across worktrees
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WEB_DIR="$SCRIPT_DIR/../web"
 ENV_LOCAL="$WEB_DIR/.env.local"
+CANONICAL_DIR="$HOME/.spaceport/envs"
+CANONICAL_ENV="$CANONICAL_DIR/spaceport.web.env.local"
 
 echo "================================================"
 echo "Spaceport Local Environment Setup"
@@ -15,12 +18,62 @@ echo ""
 echo "This script will create web/.env.local for local development."
 echo ""
 
-# Check if .env.local already exists
+# Check for canonical master env file (shared across all worktrees)
+if [ -f "$CANONICAL_ENV" ]; then
+  echo "✅ Found canonical environment file at: $CANONICAL_ENV"
+  echo ""
+  
+  # Check if local env already exists and differs
+  if [ -f "$ENV_LOCAL" ]; then
+    if ! diff -q "$CANONICAL_ENV" "$ENV_LOCAL" > /dev/null 2>&1; then
+      echo "⚠️  $ENV_LOCAL already exists and differs from canonical."
+      echo "    Canonical: $CANONICAL_ENV"
+      read -p "Copy from canonical? (Y/n): " -n 1 -r
+      echo ""
+      if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+        cp "$CANONICAL_ENV" "$ENV_LOCAL"
+        chmod 600 "$ENV_LOCAL"
+        echo "✅ Copied canonical env to $ENV_LOCAL"
+        echo ""
+        echo "Your local dev server will use the same environment as other worktrees."
+        echo "Run 'npm run dev' in the web/ directory to test."
+        echo "================================================"
+        exit 0
+      fi
+    else
+      echo "✅ $ENV_LOCAL matches canonical (already in sync)."
+      exit 0
+    fi
+  else
+    # Local doesn't exist, copy from canonical
+    cp "$CANONICAL_ENV" "$ENV_LOCAL"
+    chmod 600 "$ENV_LOCAL"
+    echo "✅ Copied canonical env to $ENV_LOCAL"
+    echo ""
+    echo "Your local dev server will use the same environment as other worktrees."
+    echo "Run 'npm run dev' in the web/ directory to test."
+    echo "================================================"
+    exit 0
+  fi
+fi
+
+# No canonical found - check if local exists and offer to save as canonical
 if [ -f "$ENV_LOCAL" ]; then
   echo "⚠️  $ENV_LOCAL already exists."
+  echo ""
   read -p "Overwrite it? (y/N): " -n 1 -r
   echo ""
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo ""
+    read -p "Save current $ENV_LOCAL as canonical for future worktrees? (Y/n): " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+      mkdir -p "$CANONICAL_DIR"
+      cp "$ENV_LOCAL" "$CANONICAL_ENV"
+      chmod 600 "$CANONICAL_ENV"
+      echo "✅ Saved canonical env at: $CANONICAL_ENV"
+      echo "   Future worktrees will automatically use this file."
+    fi
     echo "Aborted. Existing .env.local preserved."
     exit 0
   fi
@@ -78,6 +131,21 @@ EOF
 
 echo ""
 echo "✅ Created $ENV_LOCAL"
+chmod 600 "$ENV_LOCAL"
+echo ""
+
+# Offer to save as canonical for future worktrees
+echo ""
+read -p "Save this as canonical for all future worktrees? (Y/n): " -n 1 -r
+echo ""
+if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+  mkdir -p "$CANONICAL_DIR"
+  cp "$ENV_LOCAL" "$CANONICAL_ENV"
+  chmod 600 "$CANONICAL_ENV"
+  echo "✅ Saved canonical env at: $CANONICAL_ENV"
+  echo "   Future worktrees will automatically use this file."
+fi
+
 echo ""
 echo "Your local dev server will now have access to:"
 echo "  - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
