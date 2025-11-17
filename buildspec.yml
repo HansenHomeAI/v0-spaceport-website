@@ -4,6 +4,7 @@ env:
   variables:
     AWS_REGION: "us-west-2"
     CONTAINERS_TO_BUILD: "all"
+    BRANCH_SUFFIX: ""  # Branch suffix for branch-specific ECR repos (set by GitHub Actions)
     # Enable Docker BuildKit for better caching
     DOCKER_BUILDKIT: "1"
     BUILDKIT_PROGRESS: "plain"
@@ -38,6 +39,8 @@ phases:
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
+      - 'echo "Branch suffix: ${BRANCH_SUFFIX:-<none>}"'
+      - export BRANCH_SUFFIX
       # Pre-pull base images for caching
       - echo "Pre-pulling base images for caching..."
       - docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true

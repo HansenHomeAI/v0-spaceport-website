@@ -8,6 +8,7 @@ import boto3
 import json
 import time
 import logging
+from urllib.parse import urlparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -18,17 +19,51 @@ def test_full_pipeline():
     
     region = 'us-west-2'
     account_id = '975050048887'
+    ml_bucket = 'spaceport-ml-processing'
+    dataset_uri = "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip"
     
     stepfunctions = boto3.client('stepfunctions', region_name=region)
     
+    job_timestamp = int(time.time())
+    job_id = f"full-pipeline-test-{job_timestamp}"
+    job_name = f"{job_id}-run"
+    
+    parsed = urlparse(dataset_uri)
+    bucket_name = parsed.netloc
+    object_key = parsed.path.lstrip('/')
+    
+    sfm_processing_inputs = [{
+        "InputName": "input-data",
+        "AppManaged": False,
+        "S3Input": {
+            "S3Uri": dataset_uri,
+            "LocalPath": "/opt/ml/processing/input",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File"
+        }
+    }]
+    
     # Complete pipeline input - let it run from SfM → 3DGS → Compression
     test_input = {
-        "jobName": f"full-pipeline-test-{int(time.time())}",
-        "s3Url": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip",
-        "sfmImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:real-colmap-fixed-final",
-        "trainImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",  # OUR OPTIMIZED CONTAINER
-        "compressImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest",
-        "inputS3Uri": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip",
+        "jobId": job_id,
+        "jobName": job_name,
+        "email": "ml-tests@spaceport.com",
+        "s3Url": dataset_uri,
+        "sfmImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:latest",
+        "gaussianImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",  # OUR OPTIMIZED CONTAINER
+        "compressorImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest",
+        "inputS3Uri": dataset_uri,
+        "pipelineStep": "sfm",
+        "colmapOutputS3Uri": f"s3://{ml_bucket}/colmap/{job_id}/",
+        "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",
+        "compressedOutputS3Uri": f"s3://{ml_bucket}/compressed/{job_id}/",
+        "sfmProcessingInputs": sfm_processing_inputs,
+        "sfmArgs": ["--input", "/opt/ml/processing/input", "--output", "/opt/ml/processing/output"],
+        "compressionArgs": ["--input", "/opt/ml/processing/input", "--output", "/opt/ml/processing/output"],
+        "hasGpsData": False,
+        "csvS3Uri": None,
+        "pipelineType": "standard",
+        "sfmMethod": "opensfm_standard",
 
         # Hyperparameters expected by the Step Functions state machine
         "MAX_ITERATIONS": "30000",

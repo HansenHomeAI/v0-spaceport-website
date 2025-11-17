@@ -20,6 +20,7 @@ from constructs import Construct
 import os
 import json
 import boto3
+from .branch_utils import sanitize_branch_name, get_resource_suffix
 
 
 class MLPipelineStack(Stack):
@@ -47,11 +48,22 @@ class MLPipelineStack(Stack):
 
         # ========== S3 BUCKETS ==========
         # ML bucket - this stack owns this bucket
-        ml_bucket = self._get_or_create_s3_bucket(
-            construct_id="SpaceportMLBucket",
-            preferred_name=f"spaceport-ml-processing-{suffix}",
-            fallback_name="spaceport-ml-processing"
-        )
+        # For agent branches, try branch-specific bucket first, then staging/prod as fallbacks
+        # For standard branches, use standard naming
+        if suffix not in ['prod', 'staging']:
+            # Agent branch - try branch-specific, then staging, then prod
+            ml_bucket = self._get_or_create_s3_bucket_with_fallbacks(
+                construct_id="SpaceportMLBucket",
+                preferred_name=f"spaceport-ml-processing-{suffix}",
+                fallback_names=["spaceport-ml-processing-staging", "spaceport-ml-processing-prod", "spaceport-ml-processing"]
+            )
+        else:
+            # Standard branch - use existing logic
+            ml_bucket = self._get_or_create_s3_bucket(
+                construct_id="SpaceportMLBucket",
+                preferred_name=f"spaceport-ml-processing-{suffix}",
+                fallback_name="spaceport-ml-processing"
+            )
         print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
 
         # Import upload bucket from main Spaceport stack - DO NOT CREATE
@@ -85,6 +97,7 @@ class MLPipelineStack(Stack):
 
         # ========== IAM ROLES ==========
         # SageMaker execution role with environment-specific naming
+        # Add cross-bucket permissions for staging/prod ML buckets to enable flexible testing
         sagemaker_role = iam.Role(
             self, "SageMakerExecutionRole",
             role_name=f"Spaceport-SageMaker-Role-{suffix}",
@@ -94,7 +107,37 @@ class MLPipelineStack(Stack):
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2ContainerRegistryReadOnly"),
                 iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess")
-            ]
+            ],
+            inline_policies={
+                "CrossBucketAccess": iam.PolicyDocument(
+                    statements=[
+                        # Allow reading from staging ML bucket
+                        iam.PolicyStatement(
+                            actions=[
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:HeadObject"
+                            ],
+                            resources=[
+                                f"arn:aws:s3:::spaceport-ml-processing-staging",
+                                f"arn:aws:s3:::spaceport-ml-processing-staging/*"
+                            ]
+                        ),
+                        # Allow reading from prod ML bucket
+                        iam.PolicyStatement(
+                            actions=[
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:HeadObject"
+                            ],
+                            resources=[
+                                f"arn:aws:s3:::spaceport-ml-processing-prod",
+                                f"arn:aws:s3:::spaceport-ml-processing-prod/*"
+                            ]
+                        )
+                    ]
+                )
+            }
         )
 
         # Step Functions execution role with environment-specific naming
@@ -230,6 +273,16 @@ class MLPipelineStack(Stack):
         # Create Lambda functions with environment-specific naming
 
         # Create Lambda for starting ML jobs (will update environment after Step Function creation)
+        # Get ECR repository names for Lambda environment variables
+        sfm_repo_name = sfm_repo.repository_name
+        gaussian_repo_name = gaussian_repo.repository_name
+        compressor_repo_name = compressor_repo.repository_name
+        
+        # Fallback repo names (shared repos without suffix)
+        sfm_repo_fallback_name = "spaceport/sfm"
+        gaussian_repo_fallback_name = "spaceport/3dgs"
+        compressor_repo_fallback_name = "spaceport/compressor"
+        
         start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
             function_name=f"Spaceport-StartMLJob-{suffix}",
@@ -240,6 +293,14 @@ class MLPipelineStack(Stack):
             memory_size=512,
             environment={
                 "ML_BUCKET": ml_bucket.bucket_name,
+                # ECR repository names - Lambda will try branch-specific first, fallback to shared
+                "SFM_ECR_REPO": sfm_repo_name,
+                "GAUSSIAN_ECR_REPO": gaussian_repo_name,
+                "COMPRESSOR_ECR_REPO": compressor_repo_name,
+                # Fallback repo names (shared repos)
+                "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
+                "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
+                "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
             }
         )
 
@@ -815,6 +876,42 @@ class MLPipelineStack(Stack):
         
         # Create new bucket with preferred name
         print(f"🆕 Creating new S3 bucket: {preferred_name}")
+        bucket = s3.Bucket(
+            self, construct_id,
+            bucket_name=preferred_name,
+            removal_policy=RemovalPolicy.RETAIN,
+            auto_delete_objects=False,
+            versioned=True,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+        )
+        self._created_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "created"})
+        return bucket
+
+    def _get_or_create_s3_bucket_with_fallbacks(self, construct_id: str, preferred_name: str, fallback_names: list) -> s3.IBucket:
+        """Get existing S3 bucket or create new one with multiple fallback options"""
+        
+        # Validate preferred name
+        self._validate_s3_bucket_name(preferred_name, "preferred")
+        
+        # Try preferred name first (branch-specific bucket)
+        if self._bucket_exists(preferred_name):
+            print(f"✅ Importing existing branch-specific S3 bucket: {preferred_name}")
+            bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
+            return bucket
+        
+        # Try fallback names in order
+        for fallback_name in fallback_names:
+            self._validate_s3_bucket_name(fallback_name, "fallback")
+            if self._bucket_exists(fallback_name):
+                print(f"✅ Importing existing S3 bucket (fallback): {fallback_name}")
+                bucket = s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+                self._imported_resources.append({"type": "S3::Bucket", "name": fallback_name, "action": "imported_as_fallback"})
+                return bucket
+        
+        # Create new bucket with preferred name if none exist
+        print(f"🆕 Creating new branch-specific S3 bucket: {preferred_name}")
         bucket = s3.Bucket(
             self, construct_id,
             bucket_name=preferred_name,

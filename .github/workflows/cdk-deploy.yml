@@ -212,21 +212,49 @@ jobs:
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        BRANCH_NAME="${GITHUB_REF_NAME}"
         
-        # Determine environment based on branch
-        if [ "${GITHUB_REF_NAME}" = "main" ]; then
-          ENVIRONMENT="production"
-          echo "Deploying to production environment"
-        else
-          ENVIRONMENT="staging"
-          echo "Deploying to staging environment"
+        # Detect Lambda function changes
+        LAMBDA_CHANGED="false"
+        if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          # Check if any Lambda files changed
+          if git diff --name-only HEAD~1 HEAD | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
+            LAMBDA_CHANGED="true"
+            echo "Lambda functions changed - will deploy branch-specific Lambda versions"
+          fi
         fi
         
-        # Deploy all stacks with environment context
+        # Determine environment based on branch
+        if [ "${BRANCH_NAME}" = "main" ]; then
+          ENVIRONMENT="production"
+          echo "Deploying to production environment"
+        elif [ "${BRANCH_NAME}" = "development" ]; then
+          ENVIRONMENT="staging"
+          echo "Deploying to staging environment"
+        else
+          # For agent/feature branches, use staging as base but with branch-specific suffix
+          ENVIRONMENT="staging"
+          echo "Deploying agent branch: ${BRANCH_NAME} (using staging environment with branch-specific resources)"
+        fi
+        
+        # Sanitize branch name for AWS resource naming (remove invalid chars, lowercase)
+        # This matches the Python sanitize_branch_name function logic
+        BRANCH_SANITIZED=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g' | cut -c1-50)
+        if [ -z "${BRANCH_SANITIZED}" ]; then
+          BRANCH_SANITIZED="default"
+        fi
+        
+        echo "Branch name: ${BRANCH_NAME}"
+        echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
+        echo "Lambda changed: ${LAMBDA_CHANGED}"
+        
+        # Deploy all stacks with environment context and branch name
         cdk deploy --all \
           --require-approval never \
           --no-fail-on-empty-changeset \
           --context environment=$ENVIRONMENT \
+          --context branch="${BRANCH_NAME}" \
+          --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
           --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
