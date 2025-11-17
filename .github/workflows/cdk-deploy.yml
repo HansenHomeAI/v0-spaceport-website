@@ -84,38 +84,43 @@ jobs:
         BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
         BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
         
+        BOOTSTRAP_REQUIRED=0
+        
         # Check if CDK is bootstrapped with default qualifier
         if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
           echo "CDK already bootstrapped with default qualifier for account $ACCOUNT (SSM parameter present)"
         else
           echo "Default qualifier parameter missing or inaccessible for account $ACCOUNT."
+          BOOTSTRAP_REQUIRED=1
           
           if aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
             echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET already exists."
-            echo "Assuming environment already bootstrapped; skipping re-bootstrap to avoid bucket name collision."
+            echo "Removing legacy bootstrap bucket so CloudFormation can recreate it cleanly..."
+            aws s3 rb "s3://$BOOTSTRAP_BUCKET" --force
           else
-            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found. Proceeding with bootstrap."
-            
-            # Clean up any existing non-standard bootstrap first
-            echo "Checking for existing CDK bootstrap stack..."
-            if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
-              echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
-              aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2
-              echo "Waiting for stack deletion to complete..."
-              aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2
-              echo "Existing CDK bootstrap stack deleted successfully"
-            fi
-            
-            # Bootstrap with default qualifier for consistency between dev and prod
-            if [ "${GITHUB_REF_NAME}" = "main" ]; then
-              echo "Production bootstrap with OIDC role trust and default qualifier"
-              cdk bootstrap aws://$ACCOUNT/us-west-2 \
-                --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
-                --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole
-            else
-              echo "Development bootstrap with default qualifier"
-              cdk bootstrap aws://$ACCOUNT/us-west-2
-            fi
+            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found."
+          fi
+          
+          echo "Checking for existing CDK bootstrap stack..."
+          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
+            echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
+            aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2
+            echo "Waiting for stack deletion to complete..."
+            aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2
+            echo "Existing CDK bootstrap stack deleted successfully"
+          fi
+        fi
+        
+        if [ "$BOOTSTRAP_REQUIRED" -eq 1 ]; then
+          echo "Bootstrapping environment $ACCOUNT/us-west-2 with default qualifier resources..."
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "Production bootstrap with OIDC role trust and default qualifier"
+            cdk bootstrap aws://$ACCOUNT/us-west-2 \
+              --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+              --trust arn:aws:iam::$ACCOUNT:role/GithubActionsProdRole
+          else
+            echo "Development bootstrap with default qualifier"
+            cdk bootstrap aws://$ACCOUNT/us-west-2
           fi
         fi
 
