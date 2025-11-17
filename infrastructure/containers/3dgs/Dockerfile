@@ -2,6 +2,7 @@
 # AWS SageMaker 3D Gaussian Splatting Training Container
 # Vincent Woo's Sutro Tower Methodology - JIT Compilation Approach
 # =================================================================
+# Branch-specific build verification marker - safe to remove or update during tests
 
 FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
