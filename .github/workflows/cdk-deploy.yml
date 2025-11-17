@@ -95,8 +95,45 @@ jobs:
           
           if aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
             echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET already exists."
-            echo "Removing legacy bootstrap bucket so CloudFormation can recreate it cleanly..."
-            aws s3 rb "s3://$BOOTSTRAP_BUCKET" --force
+            echo "Removing all object versions from bootstrap bucket before deletion..."
+            
+            KEY_MARKER=""
+            VERSION_MARKER=""
+            while true; do
+              if [ -n "$KEY_MARKER" ]; then
+                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET" --key-marker "$KEY_MARKER" --version-id-marker "$VERSION_MARKER")
+              else
+                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET")
+              fi
+              
+              OBJECTS_JSON=$(echo "$RESPONSE" | jq -c '{
+                Objects: (
+                  ((.Versions // []) + (.DeleteMarkers // []))
+                  | map({Key: .Key, VersionId: .VersionId})
+                )
+              }')
+              
+              COUNT=$(echo "$OBJECTS_JSON" | jq '.Objects | length')
+              if [ "$COUNT" -gt 0 ]; then
+                echo "$OBJECTS_JSON" > /tmp/delete-bootstrap-objects.json
+                aws s3api delete-objects --bucket "$BOOTSTRAP_BUCKET" --delete file:///tmp/delete-bootstrap-objects.json >/dev/null
+              fi
+              
+              if [ "$(echo "$RESPONSE" | jq -r '.IsTruncated')" != "true" ]; then
+                break
+              fi
+              
+              KEY_MARKER=$(echo "$RESPONSE" | jq -r '.NextKeyMarker // empty')
+              VERSION_MARKER=$(echo "$RESPONSE" | jq -r '.NextVersionIdMarker // empty')
+              
+              if [ -z "$KEY_MARKER" ]; then
+                break
+              fi
+            done
+            rm -f /tmp/delete-bootstrap-objects.json
+            
+            echo "Deleting bootstrap bucket $BOOTSTRAP_BUCKET..."
+            aws s3api delete-bucket --bucket "$BOOTSTRAP_BUCKET" --region us-west-2
           else
             echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found."
           fi
