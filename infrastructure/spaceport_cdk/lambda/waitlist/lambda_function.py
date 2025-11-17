@@ -1,19 +1,69 @@
 import json
 import boto3
 import os
+import resend
 from datetime import datetime
 from botocore.exceptions import ClientError
+
+# Initialize Resend
+resend.api_key = os.environ.get('RESEND_API_KEY')
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 table_name = os.environ['WAITLIST_TABLE_NAME']
 table = dynamodb.Table(table_name)
 
+def _detect_invocation_source(event: dict) -> dict:
+    """Best-effort detection of how this Lambda was invoked for auditability."""
+    source: str = "unknown"
+    details: dict = {}
+    try:
+        # API Gateway REST (v1) adds requestContext with identity
+        if isinstance(event, dict) and 'requestContext' in event:
+            rc = event.get('requestContext', {}) or {}
+            if 'stage' in rc or 'identity' in rc:
+                source = 'apigw-rest-v1'
+                details = {
+                    'httpMethod': event.get('httpMethod'),
+                    'path': event.get('path'),
+                    'stage': rc.get('stage'),
+                    'sourceIp': (rc.get('identity') or {}).get('sourceIp'),
+                    'userAgent': (rc.get('identity') or {}).get('userAgent'),
+                }
+        # API Gateway HTTP (v2) style
+        elif isinstance(event, dict) and 'requestContext' in event and 'http' in event['requestContext']:
+            http = event['requestContext'].get('http', {})
+            source = 'apigw-http-v2'
+            details = {
+                'method': http.get('method'),
+                'path': http.get('path'),
+                'sourceIp': event['requestContext'].get('http', {}).get('sourceIp')
+            }
+        # Lambda Function URL adds requestContext with domainName starting with lambda-url
+        elif isinstance(event, dict) and 'requestContext' in event and str(event['requestContext'].get('domainName','')).endswith('.lambda-url.us-west-2.on.aws'):
+            source = 'lambda-function-url'
+        # Console test or direct invoke usually lacks requestContext and httpMethod
+        elif isinstance(event, dict) and 'httpMethod' not in event and 'requestContext' not in event:
+            source = 'direct-invoke-or-console-test'
+        # Fallback
+        else:
+            source = 'unknown'
+    except Exception as _:
+        source = 'unknown'
+    return {'source': source, 'details': details}
+
 def lambda_handler(event, context):
     """
     Handle waitlist submissions and store them in DynamoDB
     """
     
+    # Trace invocation source for forensic evidence
+    try:
+        src = _detect_invocation_source(event)
+        print(f"InvocationSource: {json.dumps(src)}")
+    except Exception as e:
+        print(f"InvocationSource detection error: {e}")
+
     # Handle OPTIONS request for CORS preflight
     if event.get('httpMethod') == 'OPTIONS':
         return {
@@ -109,9 +159,11 @@ def lambda_handler(event, context):
         
         # Send confirmation email to the user
         try:
-            send_confirmation_email(name, email)
+            confirmation_email_id = send_confirmation_email(name, email)
+            print(f"USER_EMAIL_STATUS: Confirmation email queued with ID: {confirmation_email_id}")
         except Exception as e:
-            print(f"Failed to send confirmation email: {e}")
+            print(f"USER_EMAIL_ERROR: Failed to send confirmation email: {e}")
+            print(f"USER_EMAIL_ERROR_TYPE: {type(e).__name__}")
             # Don't fail the request if confirmation email fails
         
         # Optional: Send notification email to admin
@@ -154,7 +206,6 @@ def send_confirmation_email(name, email):
     """
     Send confirmation email to new waitlist signup
     """
-    ses = boto3.client('ses')
     
     subject = 'Welcome to Spaceport AI - You\'re on the Waitlist!'
     
@@ -250,35 +301,35 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
 </html>"""
 
     try:
-        response = ses.send_email(
-            Source='gabriel@spcprt.com',
-            Destination={
-                'ToAddresses': [email]
-            },
-            Message={
-                'Subject': {
-                    'Data': subject
-                },
-                'Body': {
-                    'Text': {
-                        'Data': body_text
-                    },
-                    'Html': {
-                        'Data': body_html
-                    }
-                }
-            }
-        )
-        print(f"Confirmation email sent to {email}: {response['MessageId']}")
-    except ClientError as e:
-        print(f"Failed to send confirmation email to {email}: {e}")
+        # Send via Resend
+        params = {
+            "from": "Gabriel Hansen <gabriel@spcprt.com>",
+            "to": [email],
+            "subject": subject,
+            "html": body_html,
+            "text": body_text,
+        }
+        
+        print(f"RESEND_REQUEST: Sending confirmation email to {email}")
+        print(f"RESEND_PARAMS: {json.dumps(params, indent=2)}")
+        
+        response = resend.Emails.send(params)
+        print(f"RESEND_RESPONSE: Confirmation email response: {response}")
+        
+        # Extract email ID for tracking
+        email_id = response.get('id') if isinstance(response, dict) else None
+        print(f"RESEND_EMAIL_ID: {email_id}")
+        
+        return email_id
+    except Exception as e:
+        print(f"RESEND_ERROR: Failed to send confirmation email to {email}: {e}")
+        print(f"RESEND_ERROR_TYPE: {type(e).__name__}")
         raise
 
 def send_admin_notification(name, email):
     """
     Send notification email to admin about new waitlist signup
     """
-    ses = boto3.client('ses')
     
     subject = 'New Waitlist Signup - Spaceport AI'
     body_text = f"""New waitlist signup:
@@ -301,26 +352,17 @@ This person will be notified when Spaceport AI launches."""
 </html>"""
 
     try:
-        response = ses.send_email(
-            Source='gabriel@spcprt.com',  # Your preferred email address
-            Destination={
-                'ToAddresses': ['gabriel@spcprt.com', 'ethan@spcprt.com']
-            },
-            Message={
-                'Subject': {
-                    'Data': subject
-                },
-                'Body': {
-                    'Text': {
-                        'Data': body_text
-                    },
-                    'Html': {
-                        'Data': body_html
-                    }
-                }
-            }
-        )
-        print(f"Admin notification sent: {response['MessageId']}")
-    except ClientError as e:
+        # Send via Resend
+        params = {
+            "from": "Spaceport AI <hello@spcprt.com>",
+            "to": ['gabriel@spcprt.com', 'ethan@spcprt.com'],
+            "subject": subject,
+            "html": body_html,
+            "text": body_text,
+        }
+        
+        response = resend.Emails.send(params)
+        print(f"Admin notification sent via Resend: {response}")
+    except Exception as e:
         print(f"Failed to send admin notification: {e}")
         raise 

@@ -14,6 +14,7 @@ import '../public/styles.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AnalyticsProvider from '../components/AnalyticsProvider';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#000000" />
       </head>
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <AnalyticsProvider>
+          <Header />
+          {children}
+          <Footer />
+        </AnalyticsProvider>
       </body>
     </html>
   );

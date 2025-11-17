@@ -10,7 +10,7 @@ from aws_cdk import (
     Duration,
     CfnOutput,
     CfnParameter,
-    # BundlingOptions,  # Not needed since we're importing existing Lambda functions
+    BundlingOptions,  # For installing Python dependencies
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
     aws_stepfunctions as sfn,
@@ -136,16 +136,7 @@ class SpaceportStack(Stack):
         self.drone_path_table.grant_read_write_data(self.lambda_role)
         self.waitlist_table.grant_read_write_data(self.lambda_role)
         
-        # Add SES permissions for sending emails
-        self.lambda_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "ses:SendEmail",
-                    "ses:SendRawEmail"
-                ],
-                resources=["*"]
-            )
-        )
+        # Note: SES permissions removed - now using Resend for all email functionality
         
         # Create Lambda functions with environment-specific naming
         self.drone_path_lambda = lambda_.Function(
@@ -154,7 +145,16 @@ class SpaceportStack(Stack):
             function_name=f"Spaceport-DronePathFunction-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/drone_path"),
+            code=lambda_.Code.from_asset(
+                "lambda/drone_path",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
@@ -170,15 +170,25 @@ class SpaceportStack(Stack):
             self, 
             "SpaceportFileUploadFunction",
             function_name=f"Spaceport-FileUploadFunction-{suffix}",
-            runtime=lambda_.Runtime.NODEJS_18_X,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda/file_upload"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "lambda/file_upload",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
             environment={
                 "UPLOAD_BUCKET": self.upload_bucket.bucket_name,
-                "FILE_METADATA_TABLE": self.file_metadata_table.table_name
+                "FILE_METADATA_TABLE": self.file_metadata_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", "")
             }
         )
         
@@ -203,13 +213,58 @@ class SpaceportStack(Stack):
             function_name=f"Spaceport-WaitlistFunction-{suffix}",
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset("lambda/waitlist"),
+            code=lambda_.Code.from_asset(
+                "lambda/waitlist",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
             role=self.lambda_role,
             timeout=Duration.seconds(30),
             memory_size=512,
             environment={
-                "WAITLIST_TABLE": self.waitlist_table.table_name
+                "WAITLIST_TABLE_NAME": self.waitlist_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
             }
+        )
+
+        feedback_allowed_origin = env_config.get("feedbackAllowedOrigin", "*")
+        self.feedback_lambda = lambda_.Function(
+            self,
+            "SpaceportFeedbackFunction",
+            function_name=f"Spaceport-FeedbackFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "lambda/feedback",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash",
+                        "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output",
+                    ],
+                ),
+            ),
+            role=self.lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+                "FEEDBACK_RECIPIENTS": os.environ.get(
+                    "FEEDBACK_RECIPIENTS",
+                    "gabriel@spcprt.com,ethan@spcprt.com,hello@spcprt.com",
+                ),
+                "FEEDBACK_FROM_ADDRESS": os.environ.get(
+                    "FEEDBACK_FROM_ADDRESS",
+                    "Spaceport AI <hello@spcprt.com>",
+                ),
+                "ALLOWED_ORIGINS": feedback_allowed_origin,
+            },
         )
         
         # ========== API GATEWAY CONFIGURATION ==========
@@ -238,9 +293,36 @@ class SpaceportStack(Stack):
             )
         )
         
+        # Create Waitlist API Gateway
+        self.waitlist_api = apigw.RestApi(
+            self,
+            "SpaceportWaitlistApi",
+            rest_api_name=f"spaceport-waitlist-api-{suffix}",
+            description=f"Spaceport Waitlist API for {env_config['domain']}",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"]
+            )
+        )
+
+        self.feedback_api = apigw.RestApi(
+            self,
+            "SpaceportFeedbackApi",
+            rest_api_name=f"spaceport-feedback-api-{suffix}",
+            description=f"Spaceport Feedback API for {env_config['domain']}",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"]
+            )
+        )
+        
         # Create API Gateway resources and methods
         self._create_drone_path_endpoints()
         self._create_file_upload_endpoints()
+        self._create_waitlist_endpoints()
+        self._create_feedback_endpoints()
         
         # ========== OUTPUTS ==========
         CfnOutput(
@@ -255,6 +337,20 @@ class SpaceportStack(Stack):
             "FileUploadApiUrl",
             value=f"https://{self.file_upload_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
             description=f"File Upload API Gateway URL for {suffix}"
+        )
+        
+        CfnOutput(
+            self,
+            "WaitlistApiUrl",
+            value=f"https://{self.waitlist_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
+            description=f"Waitlist API Gateway URL for {suffix}"
+        )
+
+        CfnOutput(
+            self,
+            "FeedbackApiUrl",
+            value=f"https://{self.feedback_api.rest_api_id}.execute-api.{region}.amazonaws.com/prod",
+            description=f"Feedback API Gateway URL for {suffix}"
         )
         
         CfnOutput(
@@ -290,7 +386,7 @@ class SpaceportStack(Stack):
         
         # Battery CSV endpoint
         battery_csv_resource = csv_resource.add_resource("battery").add_resource("{id}")
-        battery_csv_resource.add_method("GET", apigw.LambdaIntegration(self.drone_path_lambda))
+        battery_csv_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))
         
         # Legacy endpoint
         legacy_resource = self.drone_path_api.root.add_resource("DronePathREST")
@@ -313,6 +409,26 @@ class SpaceportStack(Stack):
         # Save submission
         save_resource = self.file_upload_api.root.add_resource("save-submission")
         save_resource.add_method("POST", apigw.LambdaIntegration(self.file_upload_lambda))
+
+    def _create_waitlist_endpoints(self):
+        """Create waitlist API endpoints"""
+        # Add waitlist endpoint
+        waitlist_resource = self.waitlist_api.root.add_resource("waitlist")
+        waitlist_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                self.waitlist_lambda,
+                proxy=True
+            )
+        )
+
+    def _create_feedback_endpoints(self):
+        """Create feedback API endpoints"""
+        feedback_resource = self.feedback_api.root.add_resource("feedback")
+        feedback_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(self.feedback_lambda)
+        )
 
     def _bucket_exists(self, bucket_name: str) -> bool:
         """Check if an S3 bucket exists"""

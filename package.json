@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "@playwright/test": "^1.55.1"
+  }
+}

@@ -106,7 +106,7 @@ REFERRAL_DURATION_MONTHS=6
 COFOUNDER_USER_ID=your_cofounder_username
 
 # Frontend URL
-FRONTEND_URL=https://spaceport.ai
+FRONTEND_URL=https://spcprt.com
 ```
 
 ### 3.2 Frontend Environment Variables

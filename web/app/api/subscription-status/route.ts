@@ -1,56 +1,85 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Auth } from 'aws-amplify';
+import { resolveSubscriptionApiUrl } from 'lib/subscriptionApi';
 
-export async function GET(request: NextRequest) {
+export const runtime = 'edge';
+
+export async function GET(request: Request): Promise<Response> {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+    const target = resolveSubscriptionApiUrl('/subscription-status');
+
+    if (target.kind === 'error') {
+      return new Response(
+        JSON.stringify({ error: target.error }),
+        { 
+          status: 500,
+          headers: { 'content-type': 'application/json; charset=utf-8' }
+        }
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    
-    // Verify JWT token with Cognito
-    try {
-      await Auth.currentSession();
-    } catch (error) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
+    const authorization =
+      request.headers.get('authorization') || request.headers.get('Authorization') || '';
+
+    if (!authorization) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization token' }),
+        {
+          status: 401,
+          headers: { 'content-type': 'application/json; charset=utf-8' }
+        }
       );
     }
 
-    // Forward request to Lambda function
-    const lambdaResponse = await fetch(
-      `${process.env.SUBSCRIPTION_API_URL}/subscription-status`,
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+    const response = await fetch(target.url, {
+      method: 'GET',
+      headers: {
+        Authorization: authorization,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const raw = await response.text();
+    let payload = raw;
+
+    if (!raw) {
+      payload = '{}';
+    } else {
+      try {
+        JSON.parse(raw);
+      } catch (parseError) {
+        console.error('Failed to parse subscription status response', parseError);
+        payload = JSON.stringify({ error: 'Invalid response from subscription service' });
       }
-    );
-
-    if (!lambdaResponse.ok) {
-      const errorData = await lambdaResponse.json();
-      return NextResponse.json(
-        { error: errorData.error || 'Failed to get subscription status' },
-        { status: lambdaResponse.status }
-      );
     }
-
-    const data = await lambdaResponse.json();
-    return NextResponse.json(data);
+    
+    return new Response(payload, {
+      status: response.status,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
 
   } catch (error) {
-    console.error('Error in subscription-status:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+    console.error('Error proxying subscription status request:', error);
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch subscription status' }),
+      { 
+        status: 500,
+        headers: { 'content-type': 'application/json; charset=utf-8' }
+      }
     );
   }
+}
+
+export async function OPTIONS(): Promise<Response> {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

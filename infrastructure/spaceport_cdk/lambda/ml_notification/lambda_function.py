@@ -1,10 +1,11 @@
 import json
 import boto3
 import os
+import resend
 from datetime import datetime
 
-# Initialize AWS clients
-ses = boto3.client('ses')
+# Initialize Resend
+resend.api_key = os.environ.get('RESEND_API_KEY')
 
 def lambda_handler(event, context):
     """
@@ -14,7 +15,7 @@ def lambda_handler(event, context):
     try:
         # Extract data from Step Functions payload
         job_id = event.get('jobId')
-        email = event.get('email', 'gabriel@spcprt.com')
+        email = event.get('email', 'hello@spcprt.com')
         s3_url = event.get('s3Url')
         status = event.get('status')  # 'completed' or 'failed'
         compressed_output_uri = event.get('compressedOutputS3Uri')
@@ -63,37 +64,23 @@ def lambda_handler(event, context):
         else:
             raise ValueError(f"Unknown status: {status}")
         
-        # Send email via SES
-        response = ses.send_email(
-            Source='gabriel@spcprt.com',  # Using the verified email address
-            Destination={
-                'ToAddresses': [email]
-            },
-            Message={
-                'Subject': {
-                    'Data': subject,
-                    'Charset': 'UTF-8'
-                },
-                'Body': {
-                    'Text': {
-                        'Data': body_text,
-                        'Charset': 'UTF-8'
-                    },
-                    'Html': {
-                        'Data': body_html,
-                        'Charset': 'UTF-8'
-                    }
-                }
-            }
-        )
+        # Send email via Resend
+        params = {
+            "from": "Spaceport AI <hello@spcprt.com>",
+            "to": [email],
+            "subject": subject,
+            "html": body_html,
+            "text": body_text,
+        }
         
-        print(f"Email sent successfully. MessageId: {response['MessageId']}")
+        response = resend.Emails.send(params)
+        print(f"Email sent successfully via Resend: {response}")
         
         return {
             'statusCode': 200,
             'body': json.dumps({
                 'message': 'Notification sent successfully',
-                'messageId': response['MessageId']
+                'messageId': response.get('id', 'unknown')
             })
         }
         
@@ -130,7 +117,7 @@ If you have any questions or need assistance, please don't hesitate to reach out
 
 Best regards,
 The Spaceport Team
-gabriel@spcprt.com
+hello@spcprt.com
 """
 
     body_html = f"""
@@ -179,7 +166,7 @@ gabriel@spcprt.com
             <div class="footer">
                 <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team.</p>
                 <p><strong>The Spaceport Team</strong><br>
-                <a href="mailto:gabriel@spcprt.com">gabriel@spcprt.com</a></p>
+                <a href="mailto:hello@spcprt.com">hello@spcprt.com</a></p>
             </div>
         </div>
     </div>
@@ -213,7 +200,7 @@ If you continue to experience issues, please contact our support team with your 
 
 Best regards,
 The Spaceport Team
-gabriel@spcprt.com
+hello@spcprt.com
 """
 
     body_html = f"""
@@ -267,12 +254,12 @@ gabriel@spcprt.com
             
             <p>Our team has been automatically notified of this issue. We'll investigate and reach out to you with next steps.</p>
             
-            <a href="mailto:gabriel@spcprt.com?subject=Processing%20Failed%20-%20Job%20{job_id}" class="contact-button">Contact Support</a>
+            <a href="mailto:hello@spcprt.com?subject=Processing%20Failed%20-%20Job%20{job_id}" class="contact-button">Contact Support</a>
             
             <div class="footer">
                 <p>If you continue to experience issues, please contact our support team with your Job ID.</p>
                 <p><strong>The Spaceport Team</strong><br>
-                <a href="mailto:gabriel@spcprt.com">gabriel@spcprt.com</a></p>
+                <a href="mailto:hello@spcprt.com">hello@spcprt.com</a></p>
             </div>
         </div>
     </div>
