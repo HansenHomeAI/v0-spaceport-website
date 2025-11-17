@@ -390,14 +390,15 @@ class MLPipelineStack(Stack):
                     
                     # Vincent Woo's NerfStudio Methodology - Core Parameters
                     # Note: All values must be strings for SageMaker environment variables
-                    "MAX_ITERATIONS": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MAX_ITERATIONS")),
-                    "TARGET_PSNR": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.TARGET_PSNR")),
-                    "LOG_INTERVAL": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.LOG_INTERVAL")),
+                    # Using JsonPath.string_at() directly - CDK will convert to Step Functions intrinsic functions
+                    "MAX_ITERATIONS": sfn.JsonPath.string_at("$.MAX_ITERATIONS"),
+                    "TARGET_PSNR": sfn.JsonPath.string_at("$.TARGET_PSNR"),
+                    "LOG_INTERVAL": sfn.JsonPath.string_at("$.LOG_INTERVAL"),
                     
                     # Vincent Woo's Key Features
-                    "MODEL_VARIANT": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.MODEL_VARIANT")),  # splatfacto vs splatfacto-big
-                    "SH_DEGREE": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.SH_DEGREE")),          # Industry standard: 3
-                    "BILATERAL_PROCESSING": sfn.JsonPath.format("{}", sfn.JsonPath.string_at("$.BILATERAL_PROCESSING")),  # Vincent's innovation
+                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),  # splatfacto vs splatfacto-big
+                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),          # Industry standard: 3
+                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),  # Vincent's innovation
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",
@@ -407,7 +408,10 @@ class MLPipelineStack(Stack):
                     # Quality and Performance Settings
                     "OUTPUT_FORMAT": "ply",
                     "SOGS_COMPATIBLE": "true",
-                    "COMMERCIAL_LICENSE": "true"
+                    "COMMERCIAL_LICENSE": "true",
+
+                    # CUDA arch control to avoid cooperative_groups::labeled_partition errors
+                    "TORCH_CUDA_ARCH_LIST": sfn.JsonPath.string_at("$.TORCH_CUDA_ARCH_LIST")
                 }
             },
             iam_resources=[
