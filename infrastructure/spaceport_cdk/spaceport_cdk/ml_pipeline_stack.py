@@ -409,6 +409,9 @@ class MLPipelineStack(Stack):
                     "OUTPUT_FORMAT": "ply",
                     "SOGS_COMPATIBLE": "true",
                     "COMMERCIAL_LICENSE": "true",
+                    "CUDA_HOME": "/usr/local/cuda",
+                    "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+                    "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
 
                     # CUDA arch control to avoid cooperative_groups::labeled_partition errors
                     "TORCH_CUDA_ARCH_LIST": sfn.JsonPath.string_at("$.TORCH_CUDA_ARCH_LIST")

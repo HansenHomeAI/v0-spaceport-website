@@ -71,6 +71,10 @@ def test_3dgs_only():
             'AWS_DEFAULT_REGION': 'us-west-2',
             'PYTHONUNBUFFERED': '1',
             'SAGEMAKER_PROGRAM': 'train.py',
+            'TORCH_CUDA_ARCH_LIST': '8.0 8.6',
+            'CUDA_HOME': '/usr/local/cuda',
+            'LD_LIBRARY_PATH': '/usr/local/cuda/lib64:/usr/local/cuda/lib',
+            'LIBRARY_PATH': '/usr/local/cuda/lib64:/usr/local/cuda/lib',
             
             # Vincent Woo's methodology parameters
             'MAX_ITERATIONS': '30000',

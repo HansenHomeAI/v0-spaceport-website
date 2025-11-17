@@ -28,7 +28,24 @@ def test_full_pipeline():
         "sfmImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:real-colmap-fixed-final",
         "trainImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",  # OUR OPTIMIZED CONTAINER
         "compressImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest",
-        "inputS3Uri": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip"
+        "inputS3Uri": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip",
+
+        # Hyperparameters expected by the Step Functions state machine
+        "MAX_ITERATIONS": "30000",
+        "TARGET_PSNR": "35.0",
+        "MODEL_VARIANT": "splatfacto-big",
+        "SH_DEGREE": "3",
+        "BILATERAL_PROCESSING": "true",
+        "LOG_INTERVAL": "100",
+        "FRAMEWORK": "nerfstudio",
+        "METHODOLOGY": "vincent_woo_sutro_tower",
+        "LICENSE": "apache_2_0",
+        "COMMERCIAL_LICENSE": "true",
+        "OUTPUT_FORMAT": "ply",
+        "SOGS_COMPATIBLE": "true",
+        "MAX_NUM_GAUSSIANS": "1500000",
+        "MEMORY_OPTIMIZATION": "true",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6"
         # NOTE: Removed "pipelineStep" - let it run the full pipeline
     }
     

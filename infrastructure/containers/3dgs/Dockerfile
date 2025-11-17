@@ -16,10 +16,20 @@ WORKDIR /opt/ml/code
 # 1. Install System Dependencies
 # ---------------------------------------------------------------
 
-# Install COLMAP for model conversion (required by training script)
-RUN apt-get update && apt-get install -y \
-    colmap \
+# Install COLMAP and CUDA developer toolchain (nvcc + libcudart)
+RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb && \
+    apt-get update && apt-get install -y --no-install-recommends \
+        colmap \
+        cuda-nvcc-11-8 \
+        cuda-cudart-dev-11-8 \
     && rm -rf /var/lib/apt/lists/*
+
+ENV CUDA_HOME=/usr/local/cuda
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
+ENV LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
+ENV PATH=/usr/local/cuda/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # ---------------------------------------------------------------
 # 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)

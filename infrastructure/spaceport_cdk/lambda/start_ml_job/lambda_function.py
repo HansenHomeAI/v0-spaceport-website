@@ -187,6 +187,7 @@ def lambda_handler(event, context):
             # GPU Optimization for A10G (16GB)
             "MAX_NUM_GAUSSIANS": "1500000",     # Conservative limit for A10G
             "MEMORY_OPTIMIZATION": "true",      # Enable memory optimization
+            "TORCH_CUDA_ARCH_LIST": "8.0 8.6",  # Limit gsplat JIT targets to Ampere+
             
             # Legacy G-Splat parameters for backward compatibility (will be ignored by NerfStudio)
             "max_iterations": 30000,
