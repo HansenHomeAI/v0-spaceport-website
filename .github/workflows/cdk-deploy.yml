@@ -159,6 +159,7 @@ jobs:
         STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
         STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
         STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
+        CDK_DISABLE_BOOTSTRAP_VERSION_CHECK: "1"
         # Referral system configuration - using CDK defaults (Option A)
         # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
         # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
