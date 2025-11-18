@@ -174,14 +174,21 @@ jobs:
             --description "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA" \
             --source type=GITHUB,location=https://github.com/HansenHomeAI/v0-spaceport-website.git,buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
             --artifacts type=NO_ARTIFACTS \
-            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
             --service-role "$ROLE_ARN" \
             --timeout-in-minutes 120 \
             --queued-timeout-in-minutes 30 \
             --tags key=Project,value=Spaceport key=Purpose,value=ML-Container-Build
           echo "Created CodeBuild project."
         else
-          echo "CodeBuild project already exists."
+          echo "CodeBuild project already exists. Updating compute type to BUILD_GENERAL1_2XLARGE..."
+          aws codebuild update-project \
+            --name spaceport-ml-containers \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
+            --service-role "$ROLE_ARN" \
+            --timeout-in-minutes 120 \
+            --queued-timeout-in-minutes 30
+          echo "Updated CodeBuild project."
         fi
 
     - name: Trigger CodeBuild for container builds
