@@ -12,7 +12,8 @@ on:
 jobs:
   trigger-codebuild:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    # Container builds don't need environment protection - they're just building Docker images
+    # Environment protection is only for deployments (CDK), not builds
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
