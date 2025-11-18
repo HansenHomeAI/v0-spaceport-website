@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '../../node_modules/@playwright/test';
 
 const baseURL = process.env.PREVIEW_URL || 'http://localhost:3000';
 

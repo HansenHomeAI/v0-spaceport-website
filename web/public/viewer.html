@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spaceport Gaussian Viewer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --panel-bg: rgba(6, 8, 15, 0.82);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --accent: #4cd6ff;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #05070f;
+      color: #f5f7ff;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background: radial-gradient(circle at 30% 30%, #0a1024, #01030a);
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      width: min(365px, calc(100vw - 2rem));
+      padding: 1.25rem;
+      border-radius: 18px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(14px);
+      z-index: 10;
+    }
+
+    .panel-header {
+      margin-bottom: 1rem;
+    }
+
+    .panel-header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+      margin-bottom: 0.4rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(6, 8, 15, 0.65);
+      color: inherit;
+      font-size: 0.95rem;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.55rem 0.75rem;
+      border-radius: 999px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      color: #04060e;
+      background: var(--accent);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f5f7ff;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .panel-status {
+      margin-top: 0.9rem;
+      font-size: 0.95rem;
+    }
+
+    .panel-status.error {
+      color: var(--danger);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .stat {
+      padding: 0.6rem;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      line-height: 1.35;
+    }
+
+    .stat span {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.65;
+      margin-bottom: 0.2rem;
+    }
+
+    .helper {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      opacity: 0.65;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 640px) {
+      .control-panel {
+        width: calc(100vw - 1.5rem);
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      canvas {
+        height: calc(100vh + 140px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="viewerCanvas" role="img" aria-label="Gaussian splat preview"></canvas>
+
+  <section class="control-panel" aria-live="polite">
+    <div class="panel-header">
+      <h1>Gaussian Splat Viewer</h1>
+      <p style="margin:0;opacity:0.65;font-size:0.88rem;">Loads PlayCanvas SOGS output (meta + WebP bundle)</p>
+    </div>
+
+    <label for="bundleInput">Bundle URL</label>
+    <input id="bundleInput" name="bundle" placeholder="https://bucket.s3.amazonaws.com/public-viewer/job/" autocomplete="off">
+
+    <div class="panel-actions">
+      <button id="loadButton" type="button">Load bundle</button>
+      <button id="sampleButton" type="button" class="secondary">Sample data</button>
+    </div>
+
+    <div id="statusMessage" class="panel-status">Paste a public S3 or HTTPS bundle URL.</div>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <span>Total splats</span>
+        <strong id="statSplats">0</strong>
+      </div>
+      <div class="stat">
+        <span>Displayed</span>
+        <strong id="statRendered">0</strong>
+      </div>
+      <div class="stat">
+        <span>Bundle path</span>
+        <strong id="statBundle">—</strong>
+      </div>
+      <div class="stat">
+        <span>Bounding box</span>
+        <strong id="statBounds">—</strong>
+      </div>
+    </div>
+
+    <div class="helper">
+      Works with folders that contain <code>meta.json</code>, <code>means_l.webp</code>, <code>means_u.webp</code>, <code>scales.webp</code>, <code>quats.webp</code>, <code>sh0.webp</code>, and <code>shN_*.webp</code>. Use the "Sample data" button to verify connectivity to <code>spaceport-ml-processing</code>.
+    </div>
+  </section>
+
+  <script>
+    (() => {
+      const SAMPLE_BUNDLE = 'https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/public-viewer/sogs-test-1753999934/';
+      const MAX_RENDER_SPLATS = 120000;
+      const canvas = document.getElementById('viewerCanvas');
+      const statusMessage = document.getElementById('statusMessage');
+      const bundleInput = document.getElementById('bundleInput');
+      const statSplats = document.getElementById('statSplats');
+      const statRendered = document.getElementById('statRendered');
+      const statBundle = document.getElementById('statBundle');
+      const statBounds = document.getElementById('statBounds');
+
+      function setStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        statusMessage.classList.toggle('error', Boolean(isError));
+      }
+
+      function resolveBundleUrl(rawInput) {
+        if (!rawInput || !rawInput.trim()) {
+          throw new Error('Provide an S3 or HTTPS URL to the bundle');
+        }
+        let url = rawInput.trim();
+        if (url.startsWith('s3://')) {
+          const withoutScheme = url.slice(5);
+          const slashIndex = withoutScheme.indexOf('/');
+          if (slashIndex === -1) {
+            throw new Error('S3 URL must include a bucket and prefix');
+          }
+          const bucket = withoutScheme.slice(0, slashIndex);
+          const key = withoutScheme.slice(slashIndex + 1);
+          url = `https://${bucket}.s3.us-west-2.amazonaws.com/${key}`;
+        }
+        if (!/^https?:\/\//i.test(url)) {
+          throw new Error('Viewer only supports https:// or s3:// URLs');
+        }
+        if (url.toLowerCase().endsWith('meta.json')) {
+          url = url.slice(0, url.toLowerCase().lastIndexOf('meta.json'));
+        }
+        if (!url.endsWith('/')) {
+          url += '/';
+        }
+        return url;
+      }
+
+      function rememberBundle(url) {
+        try {
+          window.localStorage.setItem('spaceport.viewer.bundle', url);
+        } catch (_) {
+          /* ignore */
+        }
+        const next = new URL(window.location.href);
+        next.searchParams.set('bundle', encodeURIComponent(url));
+        window.history.replaceState({}, '', next);
+      }
+
+      function restoreBundleFromMemory() {
+        const params = new URLSearchParams(window.location.search);
+        const fromQuery = params.get('bundle') || params.get('model');
+        if (fromQuery) {
+          return decodeURIComponent(fromQuery);
+        }
+        try {
+          return window.localStorage.getItem('spaceport.viewer.bundle') || '';
+        } catch (_) {
+          return '';
+        }
+      }
+
+      function updateStats({ total, rendered, bundle, bounds }) {
+        statSplats.textContent = total ? total.toLocaleString() : '0';
+        statRendered.textContent = rendered ? rendered.toLocaleString() : '0';
+        statBundle.textContent = bundle || '—';
+        statBounds.textContent = bounds ? bounds.map(v => v.toFixed(2)).join(' × ') : '—';
+      }
+
+      async function handleLoad(requestedUrl) {
+        try {
+          const cleaned = resolveBundleUrl(requestedUrl || bundleInput.value);
+          rememberBundle(cleaned);
+          setStatus('Fetching metadata…');
+          const result = await viewer.loadBundle(cleaned, setStatus);
+          updateStats(result);
+          bundleInput.value = cleaned;
+          setStatus(`Loaded ${result.total.toLocaleString()} splats (${result.rendered.toLocaleString()} shown). Drag to orbit, scroll to zoom.`);
+        } catch (error) {
+          console.error('Failed to load bundle', error);
+          updateStats({ total: 0, rendered: 0, bundle: '', bounds: null });
+          setStatus(error.message || 'Unable to load bundle', true);
+        }
+      }
+
+      /**
+       * Lightweight canvas renderer for SOGS metadata output.
+       */
+      function makeImageBitmapFallback(blob) {
+        if (window.createImageBitmap) {
+          return createImageBitmap(blob);
+        }
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            resolve(img);
+            URL.revokeObjectURL(img.src);
+          };
+          img.onerror = reject;
+          img.src = URL.createObjectURL(blob);
+        });
+      }
+
+      function readImageData(source, size) {
+        const offscreen = document.createElement('canvas');
+        offscreen.width = size;
+        offscreen.height = size;
+        const ctx = offscreen.getContext('2d');
+        ctx.drawImage(source, 0, 0, size, size);
+        return ctx.getImageData(0, 0, size, size);
+      }
+
+      class SimpleSOGSViewer {
+        constructor(el) {
+          this.canvas = el;
+          this.ctx = el.getContext('2d');
+          this.splats = [];
+          this.renderSplats = [];
+          this.camera = { z: 5 };
+          this.rotation = { x: 0, y: 0 };
+          this.activeBundle = '';
+          this.bounds = null;
+          this._setupCanvas();
+          this._setupControls();
+        }
+
+        _setupCanvas() {
+          const resize = () => {
+            const dpr = window.devicePixelRatio || 1;
+            this.canvas.width = window.innerWidth * dpr;
+            this.canvas.height = window.innerHeight * dpr;
+            this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            this.render();
+          };
+          window.addEventListener('resize', resize);
+          resize();
+        }
+
+        _setupControls() {
+          let isDragging = false;
+          let lastPoint = { x: 0, y: 0 };
+
+          const startDrag = (x, y) => {
+            isDragging = true;
+            lastPoint = { x, y };
+          };
+
+          const moveDrag = (x, y) => {
+            if (!isDragging) return;
+            const deltaX = x - lastPoint.x;
+            const deltaY = y - lastPoint.y;
+            this.rotation.y += deltaX * 0.01;
+            this.rotation.x += deltaY * 0.01;
+            lastPoint = { x, y };
+            this.render();
+          };
+
+          const endDrag = () => {
+            isDragging = false;
+          };
+
+          this.canvas.addEventListener('mousedown', (event) => startDrag(event.clientX, event.clientY));
+          this.canvas.addEventListener('mousemove', (event) => moveDrag(event.clientX, event.clientY));
+          window.addEventListener('mouseup', endDrag);
+
+          this.canvas.addEventListener('touchstart', (event) => {
+            if (event.touches.length) {
+              const touch = event.touches[0];
+              startDrag(touch.clientX, touch.clientY);
+            }
+          }, { passive: false });
+
+          this.canvas.addEventListener('touchmove', (event) => {
+            if (event.touches.length) {
+              event.preventDefault();
+              const touch = event.touches[0];
+              moveDrag(touch.clientX, touch.clientY);
+            }
+          }, { passive: false });
+
+          window.addEventListener('touchend', endDrag);
+
+          this.canvas.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            this.camera.z += event.deltaY * 0.003;
+            this.camera.z = Math.max(1.5, Math.min(18, this.camera.z));
+            this.render();
+          }, { passive: false });
+        }
+
+        async loadBundle(bundleUrl, notify) {
+          this.activeBundle = bundleUrl;
+          notify?.('Downloading textures…');
+          const metadata = await this._fetchJson(`${bundleUrl}meta.json`);
+          this.bounds = metadata.means?.mins && metadata.means?.maxs
+            ? [
+              metadata.means.maxs[0] - metadata.means.mins[0],
+              metadata.means.maxs[1] - metadata.means.mins[1],
+              metadata.means.maxs[2] - metadata.means.mins[2]
+            ]
+            : null;
+          const textures = await this._loadTextures(metadata, bundleUrl);
+          notify?.('Decoding Gaussian data…');
+          this.splats = await this._decompress(metadata, textures);
+          this.renderSplats = this._downsample(this.splats);
+          this.render();
+          return {
+            total: this.splats.length,
+            rendered: this.renderSplats.length,
+            bundle: bundleUrl,
+            bounds: this.bounds,
+          };
+        }
+
+        async _fetchJson(url) {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch ${url} (${response.status})`);
+          }
+          return response.json();
+        }
+
+        async _loadTextures(metadata, bundleUrl) {
+          const required = new Set();
+          Object.values(metadata).forEach((entry) => {
+            if (entry && entry.files) {
+              entry.files.forEach((name) => required.add(name));
+            }
+          });
+
+          const textures = {};
+          for (const file of required) {
+            const response = await fetch(`${bundleUrl}${file}`);
+            if (!response.ok) {
+              throw new Error(`Missing bundle asset ${file}`);
+            }
+            const blob = await response.blob();
+            textures[file] = await makeImageBitmapFallback(blob);
+          }
+          return textures;
+        }
+
+        async _decompress(metadata, textures) {
+          const count = metadata.means.shape[0];
+          const grid = Math.round(Math.sqrt(count));
+          const positions = this._decompressMeans(metadata.means, textures, grid);
+          const scales = this._decompressScales(metadata.scales, textures, grid);
+          const colors = this._decompressColors(metadata.sh0, textures, grid);
+
+          const splats = [];
+          for (let i = 0; i < count; i += 1) {
+            splats.push({
+              x: positions[i * 3],
+              y: positions[i * 3 + 1],
+              z: positions[i * 3 + 2],
+              scale: Math.exp(scales[i * 3]),
+              r: colors[i * 4],
+              g: colors[i * 4 + 1],
+              b: colors[i * 4 + 2],
+              a: colors[i * 4 + 3],
+            });
+          }
+          return splats;
+        }
+
+        _decompressMeans(info, textures, n) {
+          const { mins, maxs } = info;
+          const buffer = new Float32Array(n * n * 3);
+          const lower = readImageData(textures['means_l.webp'], n);
+          const upper = readImageData(textures['means_u.webp'], n);
+          for (let idx = 0; idx < n * n; idx += 1) {
+            const pixel = idx * 4;
+            const x16 = (upper.data[pixel] << 8) | lower.data[pixel];
+            const y16 = (upper.data[pixel + 1] << 8) | lower.data[pixel + 1];
+            const z16 = (upper.data[pixel + 2] << 8) | lower.data[pixel + 2];
+            buffer[idx * 3] = (x16 / 65535) * (maxs[0] - mins[0]) + mins[0];
+            buffer[idx * 3 + 1] = (y16 / 65535) * (maxs[1] - mins[1]) + mins[1];
+            buffer[idx * 3 + 2] = (z16 / 65535) * (maxs[2] - mins[2]) + mins[2];
+          }
+          return buffer;
+        }
+
+        _decompressScales(info, textures, n) {
+          const { mins, maxs } = info;
+          const buffer = new Float32Array(n * n * 3);
+          const data = readImageData(textures['scales.webp'], n);
+          for (let idx = 0; idx < n * n; idx += 1) {
+            const pixel = idx * 4;
+            buffer[idx * 3] = (data.data[pixel] / 255) * (maxs[0] - mins[0]) + mins[0];
+            buffer[idx * 3 + 1] = (data.data[pixel + 1] / 255) * (maxs[1] - mins[1]) + mins[1];
+            buffer[idx * 3 + 2] = (data.data[pixel + 2] / 255) * (maxs[2] - mins[2]) + mins[2];
+          }
+          return buffer;
+        }
+
+        _decompressColors(info, textures, n) {
+          const { mins, maxs } = info;
+          const buffer = new Float32Array(n * n * 4);
+          const data = readImageData(textures['sh0.webp'], n);
+          for (let idx = 0; idx < n * n; idx += 1) {
+            const pixel = idx * 4;
+            buffer[idx * 4] = (data.data[pixel] / 255) * (maxs[0] - mins[0]) + mins[0];
+            buffer[idx * 4 + 1] = (data.data[pixel + 1] / 255) * (maxs[1] - mins[1]) + mins[1];
+            buffer[idx * 4 + 2] = (data.data[pixel + 2] / 255) * (maxs[2] - mins[2]) + mins[2];
+            buffer[idx * 4 + 3] = (data.data[pixel + 3] / 255) * (maxs[3] - mins[3]) + mins[3];
+          }
+          return buffer;
+        }
+
+        _downsample(list) {
+          if (list.length <= MAX_RENDER_SPLATS) {
+            return list;
+          }
+          const stride = Math.ceil(list.length / MAX_RENDER_SPLATS);
+          const sampled = [];
+          for (let i = 0; i < list.length; i += stride) {
+            sampled.push(list[i]);
+          }
+          return sampled;
+        }
+
+        render() {
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          if (!this.renderSplats.length) return;
+          const width = this.canvas.width / (window.devicePixelRatio || 1);
+          const height = this.canvas.height / (window.devicePixelRatio || 1);
+          const centerX = width / 2;
+          const centerY = height / 2;
+          const depthScale = 120;
+          const cosY = Math.cos(this.rotation.y);
+          const sinY = Math.sin(this.rotation.y);
+          const cosX = Math.cos(this.rotation.x);
+          const sinX = Math.sin(this.rotation.x);
+
+          const sorted = [...this.renderSplats].sort((a, b) => {
+            const az = a.z * Math.cos(this.rotation.x) + a.y * Math.sin(this.rotation.x);
+            const bz = b.z * Math.cos(this.rotation.x) + b.y * Math.sin(this.rotation.x);
+            return bz - az;
+          });
+
+          for (const splat of sorted) {
+            let { x, y, z } = splat;
+            const rotX = x * cosY - z * sinY;
+            const rotZ = x * sinY + z * cosY;
+            x = rotX;
+            z = rotZ;
+            const rotY = y * cosX - z * sinX;
+            const rotZ2 = y * sinX + z * cosX;
+            y = rotY;
+            z = rotZ2 + this.camera.z;
+            if (z <= 0) continue;
+
+            const screenX = centerX + (x / z) * depthScale;
+            const screenY = centerY + (y / z) * depthScale;
+            const radius = (splat.scale / z) * 14;
+
+            this.ctx.beginPath();
+            this.ctx.arc(screenX, screenY, Math.max(radius, 0.35), 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(${Math.floor(splat.r * 255)}, ${Math.floor(splat.g * 255)}, ${Math.floor(splat.b * 255)}, ${splat.a})`;
+            this.ctx.fill();
+          }
+        }
+      }
+
+      const viewer = new SimpleSOGSViewer(canvas);
+
+      document.getElementById('loadButton').addEventListener('click', () => handleLoad());
+      document.getElementById('sampleButton').addEventListener('click', () => handleLoad(SAMPLE_BUNDLE));
+
+      const cached = restoreBundleFromMemory();
+      if (cached) {
+        bundleInput.value = cached;
+        handleLoad(cached);
+      } else {
+        bundleInput.value = SAMPLE_BUNDLE;
+      }
+    })();
+  </script>
+</body>
+</html>
