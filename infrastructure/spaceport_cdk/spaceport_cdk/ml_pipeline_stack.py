@@ -15,6 +15,7 @@ from aws_cdk import (
     CfnOutput,
     BundlingOptions,  # For installing Python dependencies
     aws_ec2 as ec2,
+    custom_resources as cr,
 )
 from constructs import Construct
 import os
@@ -65,6 +66,62 @@ class MLPipelineStack(Stack):
                 fallback_name="spaceport-ml-processing"
             )
         print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
+
+        # Apply generous CORS defaults so bundle URLs can be fetched from the app and preview domains
+        viewer_allowed_origins = sorted(set([
+            "https://spcprt.com",
+            "https://www.spcprt.com",
+            "https://staging.spcprt.com",
+            "https://development.spcprt.com",
+            f"https://{env_config.get('domain', 'spcprt.com')}",
+            "https://*.spcprt.com",
+            "https://dev.hansentour.com",
+            "https://hansentour.com",
+            "https://www.hansentour.com",
+            "https://*.v0-spaceport-website-preview2.pages.dev",
+            "https://v0-spaceport-website-preview2.pages.dev",
+            "http://localhost:3000",
+            "http://localhost:8080",
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:8080",
+            "file://*",
+        ]))
+
+        cors_rule = {
+            "AllowedHeaders": ["*"],
+            "AllowedMethods": ["GET", "HEAD"],
+            "AllowedOrigins": viewer_allowed_origins,
+            "ExposeHeaders": ["ETag"],
+            "MaxAgeSeconds": 3000,
+        }
+
+        cr.AwsCustomResource(
+            self,
+            f"MLBucketCors{suffix}",
+            on_create=cr.AwsSdkCall(
+                service="S3",
+                action="putBucketCors",
+                parameters={
+                    "Bucket": ml_bucket.bucket_name,
+                    "CORSConfiguration": {"CORSRules": [cors_rule]},
+                },
+                physical_resource_id=cr.PhysicalResourceId.of(f"{ml_bucket.bucket_name}-cors"),
+            ),
+            on_update=cr.AwsSdkCall(
+                service="S3",
+                action="putBucketCors",
+                parameters={
+                    "Bucket": ml_bucket.bucket_name,
+                    "CORSConfiguration": {"CORSRules": [cors_rule]},
+                },
+                physical_resource_id=cr.PhysicalResourceId.of(f"{ml_bucket.bucket_name}-cors"),
+            ),
+            policy=cr.AwsCustomResourcePolicy.from_sdk_calls(
+                resources=cr.AwsCustomResourcePolicy.ANY_RESOURCE
+            ),
+        )
 
         # Import upload bucket from main Spaceport stack - DO NOT CREATE
         # This bucket is owned by the main Spaceport stack, we just reference it
@@ -305,6 +362,8 @@ class MLPipelineStack(Stack):
         )
 
         # Create Notification Lambda
+        viewer_base_url = f"https://{env_config.get('domain', 'spcprt.com').rstrip('/')}/viewer"
+
         notification_lambda = lambda_.Function(
             self, "NotificationFunction",
             function_name=f"Spaceport-MLNotification-{suffix}",
@@ -325,6 +384,8 @@ class MLPipelineStack(Stack):
             environment={
                 "ML_BUCKET": ml_bucket.bucket_name,
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+                "PUBLIC_VIEWER_PREFIX": os.environ.get("PUBLIC_VIEWER_PREFIX", "public-viewer"),
+                "VIEWER_BASE_URL": viewer_base_url,
             }
         )
 

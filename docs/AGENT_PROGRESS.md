@@ -33,6 +33,17 @@
   - Passes hyperparameters + CUDA env values to Step Functions.
 - Added env propagation for CUDA variables in `lambda/start_ml_job`.
 
+### 4. Public Gaussian Viewer + Auto-Publish Flow
+- **Problem**: Completed SOGS bundles lived in private prefixes, forcing manual downloads and making it impossible to share a simple viewer URL.
+- **Frontend Fix**:
+  - Added `web/public/viewer.html`, a lightweight canvas-based viewer that decodes the official PlayCanvas SOGS bundle (meta + WebP textures) directly in the browser.
+  - Accepts `?bundle=` or `?model=` query parameters, supports raw `s3://` inputs, and exposes live stats for splat counts and bounds.
+  - Added Playwright coverage (`tests/playwright/viewer.spec.ts`) to load the public reference bundle and verify stats render.
+- **Backend Fix**:
+  - `Spaceport-MLNotification` now copies the generated bundle to `s3://spaceport-ml-processing/public-viewer/<jobId>/` and returns both the public S3 URL and the canonical viewer link (e.g. `https://spcprt.com/viewer?bundle=…`).
+  - Email receipts include both the raw artifact download link and an “Open Interactive Viewer” button.
+  - Applied a CDK-managed CORS configuration on the ML bucket so `spcprt.com`, staging, preview (`*.v0-spaceport-website-preview2.pages.dev`), and localhost origins can fetch bundle assets without manual S3 tweaks.
+
 ---
 
 ## Current Test Status
@@ -41,6 +52,7 @@
 |------|--------|-------|
 | `tests/pipeline/test_3dgs_only.py` | ✅ Pass | Verified multiple iterations, final run 4 succeeded on ml.g5.2xlarge. |
 | `tests/pipeline/test_full_pipeline.py` | ❌ Blocked | Fails early because Lambda `Spaceport-MLNotification` is missing (`ResourceNotFoundException`), preventing pipeline completion despite SfM starting. |
+| `tests/playwright/viewer.spec.ts` | ✅ Pass | Confirms the new viewer streams the reference bundle via Cloudflare preview/local dev. |
 
 Artifacts & logs parked under `logs/`:
 - `test_3dgs_only_run4.log` – console output for the successful SageMaker run.
@@ -54,7 +66,7 @@ Artifacts & logs parked under `logs/`:
 1. **Full Pipeline Completion** – blocked by missing `Spaceport-MLNotification` Lambda. Need owner to redeploy or adjust state machine to skip notifications for test executions.
 2. **Compression Stage** – not reached due to pipeline abort; once Lambda restored, rerun `tests/pipeline/test_full_pipeline.py`.
 3. **Automated Quality Assertions** – PSNR/gaussian-count thresholds currently logged but not enforced. Could parse `logs/sagemaker-ml-job-...` to assert `target_psnr` reached and gaussian counts (~1.5M cap).
-4. **Playwright MCP / CF Preview Validation** – not triggered; focus was backend pipeline.
+4. **Playwright MCP / CF Preview Validation** – viewer spec now covers bundle rendering; still need MCP coverage for Create flow once preview stabilizes.
 
 ---
 

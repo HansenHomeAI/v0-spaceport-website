@@ -3,9 +3,16 @@ import boto3
 import os
 import resend
 from datetime import datetime
+from urllib.parse import quote_plus
 
-# Initialize Resend
+# Initialize Resend and AWS clients
 resend.api_key = os.environ.get('RESEND_API_KEY')
+s3 = boto3.client('s3')
+
+ML_BUCKET = os.environ.get('ML_BUCKET')
+PUBLIC_VIEWER_PREFIX = os.environ.get('PUBLIC_VIEWER_PREFIX', 'public-viewer')
+VIEWER_BASE_URL = os.environ.get('VIEWER_BASE_URL', 'https://spcprt.com/viewer')
+AWS_REGION = os.environ.get('AWS_REGION', 'us-west-2')
 
 def lambda_handler(event, context):
     """
@@ -54,10 +61,16 @@ def lambda_handler(event, context):
         if not actual_error:
             actual_error = 'Unknown error occurred during processing'
         
+        viewer_url = None
+        public_bundle_url = None
+
+        if status == 'completed' and compressed_output_uri:
+            public_bundle_url, viewer_url = publish_viewer_bundle(job_id, compressed_output_uri)
+
         # Prepare email content based on status
         if status == 'completed':
             subject = "🎉 Your 3D Model is Ready!"
-            body_text, body_html = create_success_email(job_id, s3_url, compressed_output_uri)
+            body_text, body_html = create_success_email(job_id, s3_url, compressed_output_uri, viewer_url)
         elif status == 'failed':
             subject = "❌ 3D Model Processing Failed"
             body_text, body_html = create_failure_email(job_id, s3_url, actual_error)
@@ -80,7 +93,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': json.dumps({
                 'message': 'Notification sent successfully',
-                'messageId': response.get('id', 'unknown')
+                'messageId': response.get('id', 'unknown'),
+                'viewerUrl': viewer_url,
+                'publicBundleUrl': public_bundle_url,
             })
         }
         
@@ -94,7 +109,7 @@ def lambda_handler(event, context):
         }
 
 
-def create_success_email(job_id, s3_url, compressed_output_uri):
+def create_success_email(job_id, s3_url, compressed_output_uri, viewer_url=None):
     """Create email content for successful processing"""
     
     body_text = f"""
@@ -106,12 +121,14 @@ Job ID: {job_id}
 Original Upload: {s3_url}
 Processed Model: {compressed_output_uri}
 
+{f"Interactive Viewer: {viewer_url}" if viewer_url else ""}
+
 Your model has been processed through our advanced pipeline:
 1. ✅ Structure from Motion (SfM) processing with COLMAP
 2. ✅ 3D Gaussian Splatting training
 3. ✅ Model compression for optimal viewing
 
-You can now download your compressed 3D model from the link above. The model is optimized for web viewing and can be embedded in your website or shared with clients.
+You can download your compressed 3D model from the link above{" and open it in the interactive viewer" if viewer_url else ""}. The model is optimized for web viewing and can be embedded in your website or shared with clients.
 
 If you have any questions or need assistance, please don't hesitate to reach out to our support team.
 
@@ -152,6 +169,7 @@ hello@spcprt.com
                 <p><strong>Job ID:</strong> {job_id}</p>
                 <p><strong>Original Upload:</strong> <a href="{s3_url}">{s3_url}</a></p>
                 <p><strong>Processed Model:</strong> <a href="{compressed_output_uri}">{compressed_output_uri}</a></p>
+                {f'<p><strong>Interactive Viewer:</strong> <a href="{viewer_url}">{viewer_url}</a></p>' if viewer_url else ''}
             </div>
             
             <h3>Processing Pipeline Completed:</h3>
@@ -159,7 +177,8 @@ hello@spcprt.com
             <div class="step"><span class="step-icon">✅</span> 3D Gaussian Splatting training</div>
             <div class="step"><span class="step-icon">✅</span> Model compression for optimal viewing</div>
             
-            <a href="{compressed_output_uri}" class="download-link">Download Your 3D Model</a>
+            <a href="{compressed_output_uri}" class="download-link">Download Assets</a>
+            {'<a href="' + viewer_url + '" class="download-link" style="margin-left:12px;background:#ffffff;color:#050505;">Open Interactive Viewer</a>' if viewer_url else ''}
             
             <p>Your model has been optimized for web viewing and can be embedded in your website or shared with clients.</p>
             
@@ -267,4 +286,84 @@ hello@spcprt.com
 </html>
 """
     
-    return body_text, body_html 
+    return body_text, body_html
+
+
+def publish_viewer_bundle(job_id: str, compressed_uri: str):
+    """Copy the generated bundle into the public-viewer prefix and return URLs."""
+    try:
+        bucket, prefix = parse_s3_uri(compressed_uri)
+    except ValueError:
+        print(f"⚠️ Invalid compressedOutputS3Uri: {compressed_uri}")
+        return None, None
+
+    bundle_prefix = discover_bundle_prefix(bucket, prefix)
+    if not bundle_prefix:
+        print(f"⚠️ Unable to locate bundle assets under {compressed_uri}")
+        return None, None
+
+    target_prefix = f"{PUBLIC_VIEWER_PREFIX.rstrip('/')}/{job_id}/"
+    try:
+        copy_prefix(bucket, bundle_prefix, target_prefix)
+    except Exception as exc:
+        print(f"⚠️ Failed to publish viewer bundle: {exc}")
+        return None, None
+
+    public_url = build_public_url(bucket, target_prefix)
+    viewer_url = build_viewer_url(public_url)
+    return public_url, viewer_url
+
+
+def parse_s3_uri(uri: str):
+    if not uri or not uri.startswith('s3://'):
+        raise ValueError("S3 URI must start with s3://")
+    remainder = uri[5:]
+    parts = remainder.split('/', 1)
+    bucket = parts[0]
+    prefix = parts[1] if len(parts) > 1 else ''
+    if prefix and not prefix.endswith('/'):
+        prefix += '/'
+    return bucket, prefix
+
+
+def discover_bundle_prefix(bucket: str, prefix: str):
+    """Find the directory that contains meta.json for the latest job."""
+    paginator = s3.get_paginator('list_objects_v2')
+    candidate = None
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get('Contents', []):
+            key = obj['Key']
+            if key.endswith('meta.json'):
+                bundle = key[:key.rfind('/') + 1]
+                if 'supersplat_bundle' in bundle:
+                    return bundle
+                if not candidate:
+                    candidate = bundle
+    return candidate
+
+
+def copy_prefix(bucket: str, source_prefix: str, dest_prefix: str):
+    paginator = s3.get_paginator('list_objects_v2')
+    for page in paginator.paginate(Bucket=bucket, Prefix=source_prefix):
+        for obj in page.get('Contents', []):
+            key = obj['Key']
+            relative_key = key[len(source_prefix):]
+            target_key = f"{dest_prefix}{relative_key}"
+            s3.copy_object(
+                Bucket=bucket,
+                CopySource={'Bucket': bucket, 'Key': key},
+                Key=target_key
+            )
+
+
+def build_public_url(bucket: str, prefix: str):
+    base = f"https://{bucket}.s3.{AWS_REGION}.amazonaws.com/{prefix}"
+    return base if base.endswith('/') else f"{base}/"
+
+
+def build_viewer_url(public_bundle_url: str):
+    if not VIEWER_BASE_URL:
+        return None
+    encoded = quote_plus(public_bundle_url)
+    separator = '&' if '?' in VIEWER_BASE_URL else '?'
+    return f"{VIEWER_BASE_URL}{separator}bundle={encoded}"
