@@ -12,10 +12,11 @@ on:
 jobs:
   trigger-codebuild:
     runs-on: ubuntu-latest
-    # Container builds don't need environment protection - they're just building Docker images
-    # Environment protection is only for deployments (CDK), not builds
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    # Container builds need access to environment-scoped secrets for AWS credentials
+    # Environment branch policies already allow agent-* branches, so builds won't be blocked
     permissions:
-      id-token: write   # for GitHub OIDC
+      id-token: write
       contents: read
     
     steps:
