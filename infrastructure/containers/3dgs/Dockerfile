@@ -39,6 +39,12 @@ ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
 ENV LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
 ENV PATH=/usr/local/cuda/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+# CRITICAL: Limit build parallelism globally to prevent OOM during pip installs
+# BUILD_GENERAL1_LARGE has 15GB RAM, parallel builds (cmake/ninja) need ~8-12GB each
+# Set globally so all build systems respect these limits
+ENV MAX_JOBS=1
+ENV CMAKE_BUILD_PARALLEL_LEVEL=1
+
 # ---------------------------------------------------------------
 # 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
 # ---------------------------------------------------------------
@@ -52,11 +58,9 @@ RUN pip install --no-cache-dir \
 
 # Install NerfStudio - this automatically includes gsplat as a dependency
 # gsplat will use JIT (Just-In-Time) compilation on first execution
-# CRITICAL: Limit build parallelism to prevent OOM during wheel building
-# BUILD_GENERAL1_LARGE has 15GB RAM, parallel builds (cmake/ninja) need ~8-12GB each
-# Limit all build systems to 1 job: ninja (MAX_JOBS), cmake (CMAKE_BUILD_PARALLEL_LEVEL)
+# Build parallelism is limited globally via MAX_JOBS and CMAKE_BUILD_PARALLEL_LEVEL env vars
 # This matches the past fix for gsplat compilation (commit 5c864e1a)
-RUN MAX_JOBS=1 CMAKE_BUILD_PARALLEL_LEVEL=1 pip install --no-cache-dir "nerfstudio[all]>=1.0.0"
+RUN pip install --no-cache-dir "nerfstudio[all]>=1.0.0"
 
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
