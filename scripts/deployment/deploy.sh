@@ -75,13 +75,25 @@ login_ecr() {
 }
 
 # Function to get repository name for a container
+# Accepts optional branch suffix for branch-specific repos
 get_repo_name() {
-    case "$1" in
-        "sfm") echo "spaceport/sfm";;
-        "3dgs") echo "spaceport/3dgs";;
-        "compressor") echo "spaceport/compressor";;
-        *) error "Invalid container name provided to get_repo_name: $1";;
+    local container_name=$1
+    local branch_suffix=${BRANCH_SUFFIX:-""}
+    
+    local base_repo
+    case "$container_name" in
+        "sfm") base_repo="spaceport/sfm";;
+        "3dgs") base_repo="spaceport/3dgs";;
+        "compressor") base_repo="spaceport/compressor";;
+        *) error "Invalid container name provided to get_repo_name: $container_name";;
     esac
+    
+    # If branch suffix exists, append it to repo name
+    if [ -n "$branch_suffix" ]; then
+        echo "${base_repo}-${branch_suffix}"
+    else
+        echo "$base_repo"
+    fi
 }
 
 # Function to build and push a single container with caching

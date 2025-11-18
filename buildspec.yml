@@ -4,6 +4,7 @@ env:
   variables:
     AWS_REGION: "us-west-2"
     CONTAINERS_TO_BUILD: "all"
+    BRANCH_SUFFIX: ""  # Branch suffix for branch-specific ECR repos (set by GitHub Actions)
     # Enable Docker BuildKit for better caching
     DOCKER_BUILDKIT: "1"
     BUILDKIT_PROGRESS: "plain"
@@ -28,11 +29,18 @@ phases:
       - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-      - echo "Logging in to Docker Hub..."
-      - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - |
+        if [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
+          echo "Logging in to Docker Hub..."
+          echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+        else
+          echo "Skipping Docker Hub login (credentials not provided)"
+        fi
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
+      - 'echo "Branch suffix: ${BRANCH_SUFFIX:-<none>}"'
+      - export BRANCH_SUFFIX
       # Pre-pull base images for caching
       - echo "Pre-pulling base images for caching..."
       - docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true
