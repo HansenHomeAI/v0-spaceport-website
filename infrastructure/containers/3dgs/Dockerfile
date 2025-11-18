@@ -4,6 +4,7 @@
 # =================================================================
 # Branch-specific build verification marker - safe to remove or update during tests
 # Test build with upgraded BUILD_GENERAL1_2XLARGE instance (30GB RAM) to verify OOM fix
+# Removed environment protection - any branch can build containers
 
 FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
 
