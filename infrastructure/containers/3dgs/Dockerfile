@@ -20,6 +20,7 @@ WORKDIR /opt/ml/code
 # Install COLMAP, CUDA developer toolchain, and build dependencies
 # CUDA packages are needed so gsplat's JIT compilation can link libcudart
 # Build tools (cmake, g++, etc.) are needed for fpsample and other compiled dependencies
+# Ninja is required by scikit-build-core when building pybind11 extensions
 RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb && \
     dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb && \
@@ -29,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
         cuda-cudart-dev-11-8 \
         build-essential \
         cmake \
+        ninja-build \
         git \
     && rm -rf /var/lib/apt/lists/*
 
@@ -41,9 +43,16 @@ ENV PATH=/usr/local/cuda/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/
 # 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
 # ---------------------------------------------------------------
 
+# Ensure modern pybind11/ninja versions before installing NerfStudio dependencies
+# Newer NerfStudio releases use pybind11 module attributes that require >=2.13
+RUN pip install --no-cache-dir \
+    "pybind11>=2.13.4" \
+    "ninja>=1.11.1" \
+    "scikit-build-core>=0.11.6"
+
 # Install NerfStudio - this automatically includes gsplat as a dependency
 # gsplat will use JIT (Just-In-Time) compilation on first execution
-RUN pip install --no-cache-dir nerfstudio[all]>=1.0.0
+RUN pip install --no-cache-dir "nerfstudio[all]>=1.0.0"
 
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
