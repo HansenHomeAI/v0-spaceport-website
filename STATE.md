@@ -1,5 +1,5 @@
-reason: hold segment fractions aligned with slice rules
-last_step: deployed slice-aware hold increments and verified Pages+CDK workflows green
-next_unblocked_step: spot-check preview hold arc to confirm waypoint spacing
-owner_action_needed: none
-updated: 2025-10-13T22:40:39Z
+reason: gaussian viewer + auto-publish rollout
+last_step: shipped /viewer.html with SOGS decoding, added Playwright coverage, and taught MLNotification/CDK to copy bundles into the public-viewer prefix with viewer links
+next_unblocked_step: run a full pipeline job after deployment to confirm the new viewer link shows up in notification emails + Dynamo records
+owner_action_needed: deploy updated CDK stacks (ml-pipeline + auth) so the Lambda/env vars + CORS policy take effect
+updated: 2025-11-18T21:03:36Z
