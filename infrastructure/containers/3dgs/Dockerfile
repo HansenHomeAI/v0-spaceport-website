@@ -52,7 +52,11 @@ RUN pip install --no-cache-dir \
 
 # Install NerfStudio - this automatically includes gsplat as a dependency
 # gsplat will use JIT (Just-In-Time) compilation on first execution
-RUN pip install --no-cache-dir "nerfstudio[all]>=1.0.0"
+# CRITICAL: Limit build parallelism to prevent OOM during wheel building
+# BUILD_GENERAL1_LARGE has 15GB RAM, parallel builds (cmake/ninja) need ~8-12GB each
+# Limit all build systems to 1 job: ninja (MAX_JOBS), cmake (CMAKE_BUILD_PARALLEL_LEVEL)
+# This matches the past fix for gsplat compilation (commit 5c864e1a)
+RUN MAX_JOBS=1 CMAKE_BUILD_PARALLEL_LEVEL=1 pip install --no-cache-dir "nerfstudio[all]>=1.0.0"
 
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
