@@ -38,8 +38,8 @@ jobs:
           BRANCH_SUFFIX="default"
         fi
         
-        # For main/development branches, use empty suffix (shared repos)
-        if [ "${BRANCH_NAME}" = "main" ] || [ "${BRANCH_NAME}" = "development" ]; then
+        # For main/development/ml-development branches, use empty suffix (shared repos)
+        if [ "${BRANCH_NAME}" = "main" ] || [ "${BRANCH_NAME}" = "development" ] || [ "${BRANCH_NAME}" = "ml-development" ]; then
           BRANCH_SUFFIX=""
           echo "Using shared ECR repos for branch: ${BRANCH_NAME}"
         else

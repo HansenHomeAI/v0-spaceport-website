@@ -17,8 +17,9 @@ WORKDIR /opt/ml/code
 # 1. Install System Dependencies
 # ---------------------------------------------------------------
 
-# Install COLMAP and CUDA developer toolchain (nvcc + libcudart)
+# Install COLMAP, CUDA developer toolchain, and build dependencies
 # CUDA packages are needed so gsplat's JIT compilation can link libcudart
+# Build tools (cmake, g++, etc.) are needed for fpsample and other compiled dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb && \
     dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb && \
@@ -26,6 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
         colmap \
         cuda-nvcc-11-8 \
         cuda-cudart-dev-11-8 \
+        build-essential \
+        cmake \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CUDA_HOME=/usr/local/cuda
