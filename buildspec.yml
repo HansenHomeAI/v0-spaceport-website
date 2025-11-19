@@ -28,8 +28,13 @@ phases:
       - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-      - echo "Logging in to Docker Hub..."
-      - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - |
+        if [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
+          echo "Logging in to Docker Hub..."
+          echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+        else
+          echo "Skipping Docker Hub login (credentials not provided)"
+        fi
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
