@@ -263,27 +263,46 @@ jobs:
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
         
-        if ! aws ecr help | grep -q "copy-image"; then
-          echo "Updating AWS CLI to enable copy-image..."
-          curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip -q awscliv2.zip
-          sudo ./aws/install --update
-          rm -rf awscliv2.zip aws
-        fi
-        
         import_container() {
           local container_name="$1"
           local source_repo="spaceport/${container_name}"
           local target_repo="spaceport/${container_name}-${BRANCH_SUFFIX}"
+          local manifest_file
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
           
-          aws ecr copy-image \
-            --source-repository-name "$source_repo" \
-            --source-image-tag latest \
-            --destination-repository-name "$target_repo" \
-            --destination-image-tag latest \
-            --region "$AWS_REGION"
+          manifest_file=$(mktemp)
+          
+          # Fetch image manifest from shared repo
+          if ! aws ecr batch-get-image \
+            --repository-name "$source_repo" \
+            --image-ids imageTag=latest \
+            --region "$AWS_REGION" \
+            --query 'images[0].imageManifest' \
+            --output text > "$manifest_file"; then
+            echo "Error: Failed to fetch image manifest from $source_repo"
+            rm -f "$manifest_file"
+            return 1
+          fi
+          
+          if [ ! -s "$manifest_file" ]; then
+            echo "Error: Empty manifest returned from $source_repo"
+            rm -f "$manifest_file"
+            return 1
+          fi
+          
+          # Push manifest into branch-specific repo
+          if ! aws ecr batch-put-image \
+            --repository-name "$target_repo" \
+            --image-manifest "file://$manifest_file" \
+            --image-tag latest \
+            --region "$AWS_REGION"; then
+            echo "Error: Failed to push manifest to $target_repo"
+            rm -f "$manifest_file"
+            return 1
+          fi
+          
+          rm -f "$manifest_file"
           
           echo "Successfully imported ${container_name} to spaceport/${container_name}-${BRANCH_SUFFIX}:latest"
         }
