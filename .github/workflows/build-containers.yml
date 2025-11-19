@@ -292,7 +292,7 @@ jobs:
           fi
           
           # Push manifest into branch-specific repo
-          if ! aws ecr batch-put-image \
+          if ! aws ecr put-image \
             --repository-name "$target_repo" \
             --image-manifest "file://$manifest_file" \
             --image-tag latest \
