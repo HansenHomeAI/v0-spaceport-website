@@ -25,6 +25,9 @@ RUN apt-get update && apt-get install -y \
 # 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
 # ---------------------------------------------------------------
 
+# Ensure latest pybind11 to satisfy fpsample build requirements
+RUN pip install --no-cache-dir "pybind11>=2.13.0"
+
 # Install NerfStudio - this automatically includes gsplat as a dependency
 # gsplat will use JIT (Just-In-Time) compilation on first execution
 RUN pip install --no-cache-dir nerfstudio[all]>=1.0.0
