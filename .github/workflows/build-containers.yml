@@ -348,7 +348,7 @@ def copy_layer_blob(source_repo: str, target_repo: str, digest: str) -> None:
                 uploadId=upload_id,
                 partFirstByte=first,
                 partLastByte=last,
-                layerPart=chunk,
+                layerPartBlob=chunk,
             )
             first = last + 1
 
