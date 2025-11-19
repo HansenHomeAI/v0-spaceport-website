@@ -270,24 +270,11 @@ jobs:
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
           
-          # Get image manifest from source repo
-          IMAGE_MANIFEST=$(aws ecr batch-get-image \
-            --repository-name "$source_repo" \
-            --image-ids imageTag=latest \
-            --region "$AWS_REGION" \
-            --query 'images[0].imageManifest' \
-            --output text)
-          
-          if [ -z "$IMAGE_MANIFEST" ] || [ "$IMAGE_MANIFEST" = "null" ]; then
-            echo "Error: Could not retrieve image manifest from $source_repo"
-            return 1
-          fi
-          
-          # Put image into target repo
-          aws ecr put-image \
-            --repository-name "$target_repo" \
-            --image-manifest "$IMAGE_MANIFEST" \
-            --image-tag latest \
+          aws ecr copy-image \
+            --source-repository-name "$source_repo" \
+            --source-image-tag latest \
+            --destination-repository-name "$target_repo" \
+            --destination-image-tag latest \
             --region "$AWS_REGION"
           
           echo "Successfully imported ${container_name} to ${target_repo}:latest"
