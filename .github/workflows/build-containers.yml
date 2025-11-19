@@ -236,7 +236,7 @@ jobs:
         
         wait_for_capacity() {
           while true; do
-            ACTIVE_IDS=$(aws codebuild list-builds-for-project --project-name spaceport-ml-containers --max-items 5 --sort-order DESC --query 'ids' --output text || echo "")
+            ACTIVE_IDS=$(aws codebuild list-builds-for-project --project-name spaceport-ml-containers --max-items 5 --sort-order DESCENDING --query 'ids' --output text || echo "")
             if [ -z "$ACTIVE_IDS" ]; then
               break
             fi
