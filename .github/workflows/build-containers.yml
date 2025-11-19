@@ -259,7 +259,6 @@ jobs:
         
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
-        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         AWS_REGION="us-west-2"
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
@@ -276,7 +275,8 @@ jobs:
             --repository-name "$source_repo" \
             --image-ids imageTag=latest \
             --region "$AWS_REGION" \
-            --output json | jq -r '.images[0].imageManifest')
+            --query 'images[0].imageManifest' \
+            --output text)
           
           if [ -z "$IMAGE_MANIFEST" ] || [ "$IMAGE_MANIFEST" = "null" ]; then
             echo "Error: Could not retrieve image manifest from $source_repo"
@@ -284,7 +284,7 @@ jobs:
           fi
           
           # Put image into target repo
-          aws ecr batch-put-image \
+          aws ecr put-image \
             --repository-name "$target_repo" \
             --image-manifest "$IMAGE_MANIFEST" \
             --image-tag latest \
