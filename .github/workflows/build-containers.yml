@@ -259,17 +259,10 @@ jobs:
         
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
+        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         AWS_REGION="us-west-2"
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
-        
-        if ! aws ecr help | grep -q "copy-image"; then
-          echo "Updating AWS CLI to enable copy-image..."
-          curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip -q awscliv2.zip
-          sudo ./aws/install --update
-          rm -rf awscliv2.zip aws
-        fi
         
         import_container() {
           local container_name="$1"
@@ -278,14 +271,26 @@ jobs:
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
           
-          aws ecr copy-image \
-            --source-repository-name "$source_repo" \
-            --source-image-tag latest \
-            --destination-repository-name "$target_repo" \
-            --destination-image-tag latest \
+          # Get image manifest from source repo
+          IMAGE_MANIFEST=$(aws ecr batch-get-image \
+            --repository-name "$source_repo" \
+            --image-ids imageTag=latest \
+            --region "$AWS_REGION" \
+            --output json | jq -r '.images[0].imageManifest')
+          
+          if [ -z "$IMAGE_MANIFEST" ] || [ "$IMAGE_MANIFEST" = "null" ]; then
+            echo "Error: Could not retrieve image manifest from $source_repo"
+            return 1
+          fi
+          
+          # Put image into target repo
+          aws ecr batch-put-image \
+            --repository-name "$target_repo" \
+            --image-manifest "$IMAGE_MANIFEST" \
+            --image-tag latest \
             --region "$AWS_REGION"
           
-          echo "Successfully imported ${container_name} to spaceport/${container_name}-${BRANCH_SUFFIX}:latest"
+          echo "Successfully imported ${container_name} to ${target_repo}:latest"
         }
         
         # Import each container
