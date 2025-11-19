@@ -156,14 +156,10 @@ jobs:
             return
           fi
 
-          local latest_count
-          latest_count=$(aws ecr describe-images \
+          if ! aws ecr describe-images \
             --region us-west-2 \
             --repository-name "$repo_name" \
-            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
-            --output text 2>/dev/null || echo 0)
-
-          if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
+            --image-ids imageTag=latest >/dev/null 2>&1; then
             if [ "$is_branch_specific" = "true" ]; then
               # Branch-specific repo exists but no latest - check if we can import from shared
               if check_shared_repo_has_latest "$container_name"; then
