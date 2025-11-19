@@ -260,13 +260,16 @@ jobs:
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
         AWS_REGION="us-west-2"
-        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
-        echo "Logging in to ECR registry ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com..."
-        aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        echo "Pruning Docker environment before imports..."
-        docker system prune -af --volumes || true
+        
+        if ! aws ecr help | grep -q "copy-image"; then
+          echo "Updating AWS CLI to enable copy-image..."
+          curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          sudo ./aws/install --update
+          rm -rf awscliv2.zip aws
+        fi
         
         import_container() {
           local container_name="$1"
@@ -274,18 +277,15 @@ jobs:
           local target_repo="spaceport/${container_name}-${BRANCH_SUFFIX}"
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
-          local source_uri="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${source_repo}:latest"
-          local target_uri="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${target_repo}:latest"
-
-          docker pull "$source_uri"
-          docker tag "$source_uri" "$target_uri"
-          docker push "$target_uri"
-
-          # Cleanup local images to save disk space
-          docker rmi "$target_uri" "$source_uri" || true
-          docker system prune -af --volumes || true
-
-          echo "Successfully imported ${container_name} to ${target_uri}"
+          
+          aws ecr copy-image \
+            --source-repository-name "$source_repo" \
+            --source-image-tag latest \
+            --destination-repository-name "$target_repo" \
+            --destination-image-tag latest \
+            --region "$AWS_REGION"
+          
+          echo "Successfully imported ${container_name} to spaceport/${container_name}-${BRANCH_SUFFIX}:latest"
         }
         
         # Import each container
