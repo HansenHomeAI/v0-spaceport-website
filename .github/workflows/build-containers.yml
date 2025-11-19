@@ -264,6 +264,27 @@ jobs:
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
         
+        put_image_with_metadata() {
+          local target_repo="$1"
+          local manifest="$2"
+          local media_type="${3:-}"
+          local tag="${4:-}"
+          local digest="${5:-}"
+
+          local cmd=(aws ecr put-image --repository-name "$target_repo" --image-manifest "$manifest" --region "$AWS_REGION")
+          if [ -n "$media_type" ] && [ "$media_type" != "null" ]; then
+            cmd+=(--image-manifest-media-type "$media_type")
+          fi
+          if [ -n "$tag" ]; then
+            cmd+=(--image-tag "$tag")
+          fi
+          if [ -n "$digest" ]; then
+            cmd+=(--image-digest "$digest")
+          fi
+
+          "${cmd[@]}"
+        }
+
         import_container() {
           local container_name="$1"
           local source_repo="spaceport/${container_name}"
@@ -271,24 +292,48 @@ jobs:
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
           
-          # Get image manifest from source repo
-          IMAGE_MANIFEST=$(aws ecr batch-get-image \
+          # Get image manifest and metadata from source repo
+          IMAGE_INFO=$(aws ecr batch-get-image \
             --repository-name "$source_repo" \
             --image-ids imageTag=latest \
             --region "$AWS_REGION" \
-            --output json | jq -r '.images[0].imageManifest')
+            --output json | jq -r '.images[0]')
+          
+          IMAGE_MANIFEST=$(echo "$IMAGE_INFO" | jq -r '.imageManifest')
+          MANIFEST_MEDIA_TYPE=$(echo "$IMAGE_INFO" | jq -r '.imageManifestMediaType // empty')
           
           if [ -z "$IMAGE_MANIFEST" ] || [ "$IMAGE_MANIFEST" = "null" ]; then
             echo "Error: Could not retrieve image manifest from $source_repo"
             return 1
           fi
           
-          # Put image into target repo
-          aws ecr put-image \
-            --repository-name "$target_repo" \
-            --image-manifest "$IMAGE_MANIFEST" \
-            --image-tag latest \
-            --region "$AWS_REGION"
+          MANIFEST_TYPE=$(echo "$IMAGE_MANIFEST" | jq -r '.mediaType // empty')
+          if [ -z "$MANIFEST_MEDIA_TYPE" ] || [ "$MANIFEST_MEDIA_TYPE" = "null" ]; then
+            MANIFEST_MEDIA_TYPE="$MANIFEST_TYPE"
+          fi
+
+          if [ "$MANIFEST_TYPE" = "application/vnd.docker.distribution.manifest.list.v2+json" ] || \
+             [ "$MANIFEST_TYPE" = "application/vnd.oci.image.index.v1+json" ]; then
+            echo "  Detected manifest list, importing child manifests first..."
+            CHILD_DIGESTS=$(echo "$IMAGE_MANIFEST" | jq -r '.manifests[].digest')
+            for child_digest in $CHILD_DIGESTS; do
+              echo "  Importing child manifest $child_digest"
+              CHILD_INFO=$(aws ecr batch-get-image \
+                --repository-name "$source_repo" \
+                --image-ids imageDigest="$child_digest" \
+                --region "$AWS_REGION" \
+                --output json | jq -r '.images[0]')
+              CHILD_MANIFEST=$(echo "$CHILD_INFO" | jq -r '.imageManifest')
+              CHILD_MEDIA_TYPE=$(echo "$CHILD_INFO" | jq -r '.imageManifestMediaType // empty')
+              if [ -z "$CHILD_MEDIA_TYPE" ] || [ "$CHILD_MEDIA_TYPE" = "null" ]; then
+                CHILD_MEDIA_TYPE=$(echo "$CHILD_MANIFEST" | jq -r '.mediaType // empty')
+              fi
+              put_image_with_metadata "$target_repo" "$CHILD_MANIFEST" "$CHILD_MEDIA_TYPE" "" "$child_digest"
+            done
+          fi
+          
+          # Put image into target repo with latest tag
+          put_image_with_metadata "$target_repo" "$IMAGE_MANIFEST" "$MANIFEST_MEDIA_TYPE" "latest"
           
           echo "Successfully imported ${container_name} to ${target_repo}:latest"
         }
