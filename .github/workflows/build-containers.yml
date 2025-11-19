@@ -57,6 +57,7 @@ jobs:
 
         CONTAINERS_TO_BUILD=""
 
+        # Only detect containers that have actual file changes
         for container in sfm 3dgs compressor; do
           if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/${container}/"; then
             CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container"
@@ -64,10 +65,8 @@ jobs:
           fi
         done
 
-        if echo "$CHANGED_FILES" | grep -q -E "(scripts/deployment/deploy.sh|buildspec.yml)"; then
-          CONTAINERS_TO_BUILD="sfm 3dgs compressor"
-          echo "Build tooling changed - rebuilding all containers"
-        fi
+        # Note: deploy.sh and buildspec.yml changes don't require container rebuilds
+        # They only affect the build process, not the container contents
 
         CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs 2>/dev/null || true)
         echo "changed_containers=${CONTAINERS_TO_BUILD:-}" >> $GITHUB_OUTPUT
@@ -101,36 +100,39 @@ jobs:
           CONTAINERS_TO_BUILD="$CHANGED"
         fi
 
-        ensure_repo_ready() {
-          local container_name="$1"
-          local repo_name="$2"
+        # Only check ECR repos for containers that actually changed
+        # This ensures missing repos/images are built, but doesn't rebuild everything unnecessarily
+        if [ -n "$CHANGED" ]; then
+          ensure_repo_ready() {
+            local container_name="$1"
+            local repo_name="$2"
 
-          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
-            echo "Repository $repo_name missing - scheduling build for $container_name"
-            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-            return
-          fi
+            if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
+              echo "Repository $repo_name missing - scheduling build for $container_name"
+              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+              return
+            fi
 
-          local latest_count
-          latest_count=$(aws ecr describe-images \
-            --region us-west-2 \
-            --repository-name "$repo_name" \
-            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
-            --output text 2>/dev/null || echo 0)
+            local latest_count
+            latest_count=$(aws ecr describe-images \
+              --region us-west-2 \
+              --repository-name "$repo_name" \
+              --query "length(imageDetails[?contains(imageTags, 'latest')])" \
+              --output text 2>/dev/null || echo 0)
 
-          if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
-            echo "Repository $repo_name exists but lacks a 'latest' tag - scheduling build for $container_name"
-            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-          fi
-        }
+            if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
+              echo "Repository $repo_name exists but lacks a 'latest' tag - scheduling build for $container_name"
+              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            fi
+          }
 
-        if [ -n "$BRANCH_SUFFIX" ]; then
-          for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}"
-          done
-        else
-          for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}"
+          # Check ECR for each changed container
+          for container in $CHANGED; do
+            if [ -n "$BRANCH_SUFFIX" ]; then
+              ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}"
+            else
+              ensure_repo_ready "$container" "spaceport/${container}"
+            fi
           done
         fi
 
