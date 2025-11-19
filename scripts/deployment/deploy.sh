@@ -94,12 +94,6 @@ get_repo_name() {
         echo "${base_repo}-${branch_suffix}"
     else
         echo "$base_repo"
-
-    if [[ -n "$BRANCH_SUFFIX" ]]; then
-      echo "${base}-${BRANCH_SUFFIX}"
-    else
-      echo "$base"
->>>>>>> agent-59384751-dynamic-branch-ci
     fi
 }
 
