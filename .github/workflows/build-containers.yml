@@ -236,16 +236,21 @@ jobs:
         
         wait_for_capacity() {
           while true; do
-            ACTIVE_IDS=$(aws codebuild list-builds-for-project \
+            ACTIVE_IDS_RAW=$(aws codebuild list-builds-for-project \
               --project-name spaceport-ml-containers \
               --max-items 5 \
               --sort-order DESCENDING \
               --query "ids[?@ != null]" \
-              --output text | tr '\t' ' ' | tr '\n' ' ' | xargs 2>/dev/null || echo "")
+              --output text || echo "")
+            if [ -z "$ACTIVE_IDS_RAW" ] || [ "$ACTIVE_IDS_RAW" = "None" ]; then
+              break
+            fi
+            ACTIVE_IDS=$(echo "$ACTIVE_IDS_RAW" | tr '\t' '\n' | grep -v '^None$' | paste -sd' ' -)
             if [ -z "$ACTIVE_IDS" ]; then
               break
             fi
-            BUSY_IDS=$(aws codebuild batch-get-builds --ids $ACTIVE_IDS --query "builds[?buildStatus=='IN_PROGRESS' || buildStatus=='QUEUED'].id" --output text | tr '\t' ' ' | xargs 2>/dev/null || echo "")
+            BUSY_IDS_RAW=$(aws codebuild batch-get-builds --ids $ACTIVE_IDS --query "builds[?buildStatus=='IN_PROGRESS' || buildStatus=='QUEUED'].id" --output text || echo "")
+            BUSY_IDS=$(echo "$BUSY_IDS_RAW" | tr '\t' '\n' | grep -v '^None$' | paste -sd' ' -)
             if [ -z "$BUSY_IDS" ]; then
               break
             fi
