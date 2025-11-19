@@ -1,5 +1,5 @@
-reason: harden agent-branch CI so ML containers/CDK resources provision automatically
-last_step: added shared branch suffix utilities, updated build-containers workflow, and shortened Lambda naming to satisfy AWS limits
-next_unblocked_step: push agent-59384751-dynamic-branch-ci, monitor build-containers + CDK workflows, then rerun ML compression flow in preview
+reason: verify container import/build workflow logic on new agent branch
+last_step: created agent-27461835-test-container-imports from ml-development and pushed baseline branch
+next_unblocked_step: trigger build-containers workflow for scenario C (no container changes) and capture import results
 owner_action_needed: none
-updated: 2025-11-19T14:22:45Z
+updated: 2025-11-19T20:29:14Z

@@ -284,7 +284,7 @@ jobs:
           fi
           
           # Put image into target repo
-          aws ecr batch-put-image \
+          aws ecr put-image \
             --repository-name "$target_repo" \
             --image-manifest "$IMAGE_MANIFEST" \
             --image-tag latest \
