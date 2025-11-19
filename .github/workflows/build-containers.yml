@@ -94,22 +94,65 @@ jobs:
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CHANGED="${{ steps.branch.outputs.changed_containers }}"
         CONTAINERS_TO_BUILD=""
+        CONTAINERS_TO_IMPORT=""
 
         if [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
           CONTAINERS_TO_BUILD="$CHANGED"
         fi
 
+        # Check if shared repo has latest tag
+        check_shared_repo_has_latest() {
+          local container_name="$1"
+          local shared_repo="spaceport/${container_name}"
+          
+          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$shared_repo" >/dev/null 2>&1; then
+            return 1
+          fi
+          
+          local latest_count
+          latest_count=$(aws ecr describe-images \
+            --region us-west-2 \
+            --repository-name "$shared_repo" \
+            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
+            --output text 2>/dev/null || echo 0)
+          
+          if [ "$latest_count" != "0" ] && [ "$latest_count" != "None" ]; then
+            return 0
+          fi
+          return 1
+        }
+
         # Check ECR repos to ensure they exist and have latest tags
-        # This handles: new branches, deleted repos, missing images
-        # We check all containers because any could be missing, not just changed ones
+        # For branch-specific repos: try importing from shared repo first
+        # For shared repos: check if they exist and have latest tags
         ensure_repo_ready() {
           local container_name="$1"
           local repo_name="$2"
+          local is_branch_specific="$3"
 
-          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
-            echo "Repository $repo_name missing - scheduling build for $container_name"
+          # If container files changed, always build (don't import)
+          if echo "$CHANGED" | grep -q "$container_name"; then
+            echo "Container $container_name has file changes - will build"
             CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
+
+          # Check if branch-specific repo exists and has latest
+          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
+            if [ "$is_branch_specific" = "true" ]; then
+              # Branch-specific repo missing - check if we can import from shared
+              if check_shared_repo_has_latest "$container_name"; then
+                echo "Branch-specific repo $repo_name missing, but shared repo has latest - will import"
+                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
+              else
+                echo "Both branch-specific and shared repos missing - will build $container_name"
+                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+              fi
+            else
+              echo "Shared repo $repo_name missing - will build $container_name"
+              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            fi
             return
           fi
 
@@ -121,74 +164,141 @@ jobs:
             --output text 2>/dev/null || echo 0)
 
           if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
-            echo "Repository $repo_name exists but lacks a 'latest' tag - scheduling build for $container_name"
-            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            if [ "$is_branch_specific" = "true" ]; then
+              # Branch-specific repo exists but no latest - check if we can import from shared
+              if check_shared_repo_has_latest "$container_name"; then
+                echo "Branch-specific repo $repo_name lacks latest tag, but shared repo has latest - will import"
+                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
+              else
+                echo "Branch-specific repo $repo_name lacks latest tag and shared repo also missing - will build $container_name"
+                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+              fi
+            else
+              echo "Shared repo $repo_name exists but lacks a 'latest' tag - will build $container_name"
+              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            fi
           fi
         }
 
         # Check ECR for all containers (handles new branches, deletions, missing images)
         if [ -n "$BRANCH_SUFFIX" ]; then
+          # Branch-specific repos: check branch repo, fallback to shared for import
           for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}"
+            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}" "true"
           done
         else
+          # Shared repos: just check if they exist
           for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}"
+            ensure_repo_ready "$container" "spaceport/${container}" "false"
           done
         fi
 
-        UNIQUE_CONTAINERS=$(echo "$CONTAINERS_TO_BUILD" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
+        UNIQUE_CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
+        UNIQUE_CONTAINERS_TO_IMPORT=$(echo "$CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
 
-        if [ -z "$UNIQUE_CONTAINERS" ]; then
-          echo "No container build required for this branch"
+        if [ -z "$UNIQUE_CONTAINERS_TO_BUILD" ] && [ -z "$UNIQUE_CONTAINERS_TO_IMPORT" ]; then
+          echo "No container build or import required for this branch"
           echo "containers=none" >> $GITHUB_OUTPUT
+          echo "containers_to_build=" >> $GITHUB_OUTPUT
+          echo "containers_to_import=" >> $GITHUB_OUTPUT
           echo "build_required=false" >> $GITHUB_OUTPUT
+          echo "import_required=false" >> $GITHUB_OUTPUT
         else
-          echo "Containers to build: $UNIQUE_CONTAINERS"
-          echo "containers=$UNIQUE_CONTAINERS" >> $GITHUB_OUTPUT
-          echo "build_required=true" >> $GITHUB_OUTPUT
+          if [ -n "$UNIQUE_CONTAINERS_TO_BUILD" ]; then
+            echo "Containers to build: $UNIQUE_CONTAINERS_TO_BUILD"
+            echo "containers=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+            echo "containers_to_build=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+            echo "build_required=true" >> $GITHUB_OUTPUT
+          else
+            echo "containers=none" >> $GITHUB_OUTPUT
+            echo "containers_to_build=" >> $GITHUB_OUTPUT
+            echo "build_required=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ -n "$UNIQUE_CONTAINERS_TO_IMPORT" ]; then
+            echo "Containers to import: $UNIQUE_CONTAINERS_TO_IMPORT"
+            echo "containers_to_import=$UNIQUE_CONTAINERS_TO_IMPORT" >> $GITHUB_OUTPUT
+            echo "import_required=true" >> $GITHUB_OUTPUT
+          else
+            echo "containers_to_import=" >> $GITHUB_OUTPUT
+            echo "import_required=false" >> $GITHUB_OUTPUT
+          fi
         fi
 
     - name: Create ECR repositories if they don't exist
-      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
+      if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
       run: |
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
-        CONTAINERS="${{ steps.build_plan.outputs.containers }}"
+        CONTAINERS_TO_BUILD="${{ steps.build_plan.outputs.containers_to_build }}"
+        CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
+        
+        # Always ensure shared repos exist
         for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
           echo "Ensuring shared ECR repository exists: $repo"
           aws ecr describe-repositories --region us-west-2 --repository-names "$repo" >/dev/null 2>&1 || \
           aws ecr create-repository --region us-west-2 --repository-name "$repo" --image-scanning-configuration scanOnPush=true
         done
         
-        # If branch suffix exists, also create branch-specific repos
+        # Create branch-specific repos for containers that need building or importing
         if [ -n "${BRANCH_SUFFIX}" ]; then
-          if [ "${CONTAINERS}" = "all" ]; then
-            TARGET_CONTAINERS="sfm 3dgs compressor"
-          else
-            TARGET_CONTAINERS="${CONTAINERS}"
+          ALL_CONTAINERS=$(echo "$CONTAINERS_TO_BUILD $CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
+          if [ -n "$ALL_CONTAINERS" ]; then
+            for container in $ALL_CONTAINERS; do
+              BRANCH_REPO="spaceport/${container}-${BRANCH_SUFFIX}"
+              echo "Ensuring branch-specific ECR repository exists: $BRANCH_REPO"
+              aws ecr describe-repositories --region us-west-2 --repository-names "$BRANCH_REPO" >/dev/null 2>&1 || \
+              aws ecr create-repository --region us-west-2 --repository-name "$BRANCH_REPO" --image-scanning-configuration scanOnPush=true
+            done
           fi
-          for container in $TARGET_CONTAINERS; do
-            BRANCH_REPO="spaceport/${container}-${BRANCH_SUFFIX}"
-            echo "Ensuring branch-specific ECR repository exists: $BRANCH_REPO"
-            aws ecr describe-repositories --region us-west-2 --repository-names "$BRANCH_REPO" || \
-            aws ecr create-repository --region us-west-2 --repository-name "$BRANCH_REPO" --image-scanning-configuration scanOnPush=true
-          done
         fi
 
-        # If branch suffix exists, also create branch-specific repos
-        if [ -n "${BRANCH_SUFFIX}" ]; then
-          if [ "${CONTAINERS}" = "all" ]; then
-            TARGET_CONTAINERS="sfm 3dgs compressor"
-          else
-            TARGET_CONTAINERS="${CONTAINERS}"
+    - name: Import containers from shared repos
+      if: ${{ steps.build_plan.outputs.import_required == 'true' && steps.branch.outputs.ecr_suffix != '' }}
+      run: |
+        set -euo pipefail
+        
+        BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
+        CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
+        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        AWS_REGION="us-west-2"
+        
+        echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
+        
+        import_container() {
+          local container_name="$1"
+          local source_repo="spaceport/${container_name}"
+          local target_repo="spaceport/${container_name}-${BRANCH_SUFFIX}"
+          
+          echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
+          
+          # Get image manifest from source repo
+          IMAGE_MANIFEST=$(aws ecr batch-get-image \
+            --repository-name "$source_repo" \
+            --image-ids imageTag=latest \
+            --region "$AWS_REGION" \
+            --output json | jq -r '.images[0].imageManifest')
+          
+          if [ -z "$IMAGE_MANIFEST" ] || [ "$IMAGE_MANIFEST" = "null" ]; then
+            echo "Error: Could not retrieve image manifest from $source_repo"
+            return 1
           fi
-          for container in $TARGET_CONTAINERS; do
-            BRANCH_REPO="spaceport/${container}-${BRANCH_SUFFIX}"
-            echo "Ensuring branch-specific ECR repository exists: $BRANCH_REPO"
-            aws ecr describe-repositories --region us-west-2 --repository-names "$BRANCH_REPO" >/dev/null 2>&1 || \
-            aws ecr create-repository --region us-west-2 --repository-name "$BRANCH_REPO" --image-scanning-configuration scanOnPush=true
-          done
-        fi
+          
+          # Put image into target repo
+          aws ecr batch-put-image \
+            --repository-name "$target_repo" \
+            --image-manifest "$IMAGE_MANIFEST" \
+            --image-tag latest \
+            --region "$AWS_REGION"
+          
+          echo "Successfully imported ${container_name} to ${target_repo}:latest"
+        }
+        
+        # Import each container
+        for container in $CONTAINERS_TO_IMPORT; do
+          import_container "$container"
+        done
+        
+        echo "All containers imported successfully"
 
     - name: Ensure CodeBuild role and project exist (prod/staging)
       if: ${{ steps.build_plan.outputs.build_required == 'true' }}
@@ -254,7 +364,7 @@ jobs:
       if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
-        echo "Building containers: ${{ steps.build_plan.outputs.containers }}"
+        echo "Building containers: ${{ steps.build_plan.outputs.containers_to_build }}"
         SOURCE_REPO="https://github.com/${{ github.repository }}.git"
         
         wait_for_capacity() {
@@ -290,7 +400,7 @@ jobs:
           --source-type-override GITHUB \
           --source-location-override "${SOURCE_REPO}" \
           --environment-variables-override \
-            name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers }}" \
+            name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
             name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
           --query 'build.id' \
           --output text)
@@ -320,14 +430,20 @@ jobs:
         done
 
     - name: Output container URIs
-      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
+      if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
       run: |
-        echo "✅ ML Containers built and pushed via CodeBuild:"
-        echo "Built containers: ${{ steps.build_plan.outputs.containers }}"
+        if [ "${{ steps.build_plan.outputs.build_required }}" = "true" ]; then
+          echo "✅ ML Containers built and pushed via CodeBuild:"
+          echo "Built containers: ${{ steps.build_plan.outputs.containers_to_build }}"
+        fi
+        if [ "${{ steps.build_plan.outputs.import_required }}" = "true" ]; then
+          echo "✅ ML Containers imported from shared repos:"
+          echo "Imported containers: ${{ steps.build_plan.outputs.containers_to_import }}"
+        fi
         echo "Account: $(aws sts get-caller-identity --query Account --output text)"
         echo "Region: us-west-2"
 
-    - name: Skip notice when no containers require builds
-      if: ${{ steps.build_plan.outputs.build_required != 'true' }}
+    - name: Skip notice when no containers require builds or imports
+      if: ${{ steps.build_plan.outputs.build_required != 'true' && steps.build_plan.outputs.import_required != 'true' }}
       run: |
-        echo "ℹ️ Container build skipped (branch already has usable images)."
+        echo "ℹ️ Container build/import skipped (branch already has usable images)."
