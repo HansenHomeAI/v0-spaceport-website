@@ -224,15 +224,7 @@ jobs:
             --tags key=Project,value=Spaceport key=Purpose,value=ML-Container-Build
           echo "Created CodeBuild project."
         else
-          echo "CodeBuild project already exists. Ensuring configuration is up to date..."
-          aws codebuild update-project \
-            --name spaceport-ml-containers \
-            --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
-            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
-            --service-role "$ROLE_ARN" \
-            --timeout-in-minutes 120 \
-            --queued-timeout-in-minutes 30
-          echo "Updated CodeBuild project."
+          echo "CodeBuild project already exists. Reusing existing configuration."
         fi
 
     - name: Trigger CodeBuild for container builds
@@ -240,10 +232,13 @@ jobs:
       run: |
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
         echo "Building containers: ${{ steps.build_plan.outputs.containers }}"
+        SOURCE_REPO="https://github.com/${{ github.repository }}.git"
         
         BUILD_ID=$(aws codebuild start-build \
           --project-name spaceport-ml-containers \
           --source-version ${{ github.sha }} \
+          --source-type-override GITHUB \
+          --source-location-override "${SOURCE_REPO}" \
           --environment-variables-override \
             name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers }}" \
             name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
