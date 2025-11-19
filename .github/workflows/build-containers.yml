@@ -234,6 +234,23 @@ jobs:
         echo "Building containers: ${{ steps.build_plan.outputs.containers }}"
         SOURCE_REPO="https://github.com/${{ github.repository }}.git"
         
+        wait_for_capacity() {
+          while true; do
+            ACTIVE_IDS=$(aws codebuild list-builds-for-project --project-name spaceport-ml-containers --max-items 5 --sort-order DESC --query 'ids' --output text || echo "")
+            if [ -z "$ACTIVE_IDS" ]; then
+              break
+            fi
+            BUSY_IDS=$(aws codebuild batch-get-builds --ids $ACTIVE_IDS --query "builds[?buildStatus=='IN_PROGRESS' || buildStatus=='QUEUED'].id" --output text || echo "")
+            if [ -z "$BUSY_IDS" ]; then
+              break
+            fi
+            echo "Another CodeBuild job is still running ($BUSY_IDS). Waiting 30s for capacity..."
+            sleep 30
+          done
+        }
+
+        wait_for_capacity
+        
         BUILD_ID=$(aws codebuild start-build \
           --project-name spaceport-ml-containers \
           --source-version ${{ github.sha }} \
