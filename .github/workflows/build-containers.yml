@@ -265,6 +265,8 @@ jobs:
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
         echo "Logging in to ECR registry ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com..."
         aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        echo "Pruning Docker environment before imports..."
+        docker system prune -af --volumes || true
         
         import_container() {
           local container_name="$1"
@@ -281,6 +283,7 @@ jobs:
 
           # Cleanup local images to save disk space
           docker rmi "$target_uri" "$source_uri" || true
+          docker system prune -af --volumes || true
 
           echo "Successfully imported ${container_name} to ${target_uri}"
         }
