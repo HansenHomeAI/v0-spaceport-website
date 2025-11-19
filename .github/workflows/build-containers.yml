@@ -264,49 +264,35 @@ jobs:
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
         
+        # Ensure AWS CLI v2 with copy-image support is available
+        if ! aws ecr help | grep -q "copy-image"; then
+          echo "Installing AWS CLI v2 with copy-image support..."
+          curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          ./aws/install -i "$HOME/aws-cli" -b "$HOME/aws-cli/bin" --update
+          rm -rf awscliv2.zip aws
+          export PATH="$HOME/aws-cli/bin:$PATH"
+          aws --version
+        fi
+        
         import_container() {
           local container_name="$1"
           local source_repo="spaceport/${container_name}"
           local target_repo="spaceport/${container_name}-${BRANCH_SUFFIX}"
-          local manifest_file
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
           
-          manifest_file=$(mktemp)
-          
-          # Fetch image manifest from shared repo (force schema v2 manifest)
-          if ! aws ecr batch-get-image \
-            --registry-id "$AWS_ACCOUNT_ID" \
-            --repository-name "$source_repo" \
-            --image-ids imageTag=latest \
-            --accepted-media-types application/vnd.docker.distribution.manifest.v2+json \
-            --region "$AWS_REGION" \
-            --query 'images[0].imageManifest' \
-            --output text > "$manifest_file"; then
-            echo "Error: Failed to fetch image manifest from $source_repo"
-            rm -f "$manifest_file"
-            return 1
-          fi
-          
-          if [ ! -s "$manifest_file" ]; then
-            echo "Error: Empty manifest returned from $source_repo"
-            rm -f "$manifest_file"
-            return 1
-          fi
-          
-          # Push manifest into branch-specific repo
-          if ! aws ecr put-image \
-            --registry-id "$AWS_ACCOUNT_ID" \
-            --repository-name "$target_repo" \
-            --image-manifest "file://$manifest_file" \
-            --image-tag latest \
+          if ! aws ecr copy-image \
+            --source-registry-id "$AWS_ACCOUNT_ID" \
+            --source-repository-name "$source_repo" \
+            --source-image-tag latest \
+            --destination-registry-id "$AWS_ACCOUNT_ID" \
+            --destination-repository-name "$target_repo" \
+            --destination-image-tag latest \
             --region "$AWS_REGION"; then
-            echo "Error: Failed to push manifest to $target_repo"
-            rm -f "$manifest_file"
+            echo "Error: Failed to copy image into $target_repo"
             return 1
           fi
-          
-          rm -f "$manifest_file"
           
           echo "Successfully imported ${container_name} to spaceport/${container_name}-${BRANCH_SUFFIX}:latest"
         }
