@@ -43,6 +43,7 @@ phases:
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
       - 'echo "Branch suffix: ${BRANCH_SUFFIX:-<none>}"'
       - export BRANCH_SUFFIX
+      # If GitHub determined repos are missing images, re-tag shared containers via Docker.
       - |
         if [ -n "$CONTAINERS_TO_IMPORT" ]; then
           echo "Importing shared containers: $CONTAINERS_TO_IMPORT"
