@@ -64,6 +64,7 @@ phases:
     commands:
       - echo "Starting optimized container build process..."
       - 'echo "Building with caching enabled: $CONTAINERS_TO_BUILD"'
+      # Skip expensive work when GitHub determined no containers changed.
       - |
         if [ -z "$CONTAINERS_TO_BUILD" ]; then
           echo "No containers requested for build. Skipping build.sh."
