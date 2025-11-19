@@ -264,33 +264,149 @@ jobs:
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
         
-        ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        echo "Logging into ECR registry ${ECR_REGISTRY}"
-        aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+        python -m pip install --user --upgrade boto3 >/dev/null 2>&1
         
-        import_container() {
-          local container_name="$1"
-          local source_repo="spaceport/${container_name}"
-          local target_repo="spaceport/${container_name}-${BRANCH_SUFFIX}"
-          
-          local source_image="${ECR_REGISTRY}/${source_repo}:latest"
-          local target_image="${ECR_REGISTRY}/${target_repo}:latest"
+        export AWS_REGION
+        export AWS_ACCOUNT_ID
+        export BRANCH_SUFFIX
+        export CONTAINERS_TO_IMPORT
+        
+        python <<'PY'
+import json
+import os
+import sys
+from urllib import request
 
-          echo "Importing ${container_name} from ${source_image} to ${target_image}..."
-          
-          docker pull "$source_image"
-          docker tag "$source_image" "$target_image"
-          docker push "$target_image"
-          
-          echo "Successfully imported ${container_name} to ${target_repo}:latest"
-        }
-        
-        # Import each container
-        for container in $CONTAINERS_TO_IMPORT; do
-          import_container "$container"
-        done
-        
-        echo "All containers imported successfully"
+import boto3
+
+aws_region = os.environ["AWS_REGION"]
+account_id = os.environ["AWS_ACCOUNT_ID"]
+branch_suffix = os.environ["BRANCH_SUFFIX"]
+containers = [c for c in os.environ["CONTAINERS_TO_IMPORT"].split() if c]
+
+if not containers:
+    print("No containers provided for import")
+    sys.exit(0)
+
+ecr = boto3.client("ecr", region_name=aws_region)
+
+MANIFEST_LIST_TYPES = {
+    "application/vnd.docker.distribution.manifest.list.v2+json",
+    "application/vnd.oci.image.index.v1+json",
+}
+MANIFEST_TYPES = {
+    "application/vnd.docker.distribution.manifest.v2+json",
+    "application/vnd.oci.image.manifest.v1+json",
+}
+
+uploaded_layers = set()
+
+
+def ensure_layers(source_repo: str, target_repo: str, digests: list[str]) -> None:
+    """Ensure the target repo has all of the digests listed."""
+    pending = [d for d in digests if d]
+    if not pending:
+        return
+
+    resp = ecr.batch_check_layer_availability(
+        repositoryName=target_repo,
+        layerDigests=pending,
+    )
+    for layer in resp.get("layers", []):
+        if layer.get("layerAvailability") == "AVAILABLE":
+            digest = layer.get("layerDigest")
+            if digest in pending:
+                pending.remove(digest)
+
+    for digest in pending:
+        copy_layer_blob(source_repo, target_repo, digest)
+
+
+def copy_layer_blob(source_repo: str, target_repo: str, digest: str) -> None:
+    key = (target_repo, digest)
+    if key in uploaded_layers:
+        return
+
+    print(f"  ↳ Uploading blob {digest} to {target_repo}")
+    download = ecr.get_download_url_for_layer(
+        repositoryName=source_repo,
+        layerDigest=digest,
+    )
+    upload = ecr.initiate_layer_upload(repositoryName=target_repo)
+    upload_id = upload["uploadId"]
+    chunk_size = 10 * 1024 * 1024  # 10MB chunks (API max 20MB)
+    first = 0
+
+    with request.urlopen(download["downloadUrl"]) as resp:
+        while True:
+            chunk = resp.read(chunk_size)
+            if not chunk:
+                break
+            last = first + len(chunk) - 1
+            ecr.upload_layer_part(
+                repositoryName=target_repo,
+                uploadId=upload_id,
+                partFirstByte=first,
+                partLastByte=last,
+                layerPart=chunk,
+            )
+            first = last + 1
+
+    ecr.complete_layer_upload(
+        repositoryName=target_repo,
+        uploadId=upload_id,
+        layerDigest=digest,
+    )
+    uploaded_layers.add(key)
+
+
+def copy_manifest(source_repo: str, target_repo: str, image_id: dict, tag: str | None = None) -> None:
+    resp = ecr.batch_get_image(
+        repositoryName=source_repo,
+        imageIds=[image_id],
+        acceptedMediaTypes=list(MANIFEST_LIST_TYPES | MANIFEST_TYPES),
+    )
+    images = resp.get("images")
+    if not images:
+        raise RuntimeError(f"Unable to fetch image {image_id} from {source_repo}")
+    image = images[0]
+    manifest = image["imageManifest"]
+    manifest_doc = json.loads(manifest)
+    media_type = manifest_doc.get("mediaType") or image.get("imageManifestMediaType")
+
+    if media_type in MANIFEST_LIST_TYPES:
+        for child in manifest_doc.get("manifests", []):
+            child_digest = child.get("digest")
+            if child_digest:
+                copy_manifest(source_repo, target_repo, {"imageDigest": child_digest})
+    else:
+        config_digest = manifest_doc.get("config", {}).get("digest")
+        layer_digests = [layer.get("digest") for layer in manifest_doc.get("layers", [])]
+        ensure_layers(source_repo, target_repo, [config_digest, *layer_digests])
+
+    put_args = {
+        "repositoryName": target_repo,
+        "imageManifest": manifest,
+    }
+    if media_type:
+        put_args["imageManifestMediaType"] = media_type
+    if tag:
+        put_args["imageTag"] = tag
+    elif "imageDigest" in image_id:
+        put_args["imageDigest"] = image_id["imageDigest"]
+
+    ecr.put_image(**put_args)
+
+
+for container in containers:
+    source_repo = f"spaceport/{container}"
+    target_repo = f"{source_repo}-{branch_suffix}"
+    print(f"Importing {container} from {source_repo}:latest into {target_repo}")
+    copy_manifest(source_repo, target_repo, {"imageTag": "latest"}, tag="latest")
+    print(f"✔ Imported {container} into {target_repo}:latest")
+
+print("All containers imported successfully")
+PY
 
     - name: Ensure CodeBuild role and project exist (prod/staging)
       if: ${{ steps.build_plan.outputs.build_required == 'true' }}
