@@ -100,39 +100,40 @@ jobs:
           CONTAINERS_TO_BUILD="$CHANGED"
         fi
 
-        # Only check ECR repos for containers that actually changed
-        # This ensures missing repos/images are built, but doesn't rebuild everything unnecessarily
-        if [ -n "$CHANGED" ]; then
-          ensure_repo_ready() {
-            local container_name="$1"
-            local repo_name="$2"
+        # Check ECR repos to ensure they exist and have latest tags
+        # This handles: new branches, deleted repos, missing images
+        # We check all containers because any could be missing, not just changed ones
+        ensure_repo_ready() {
+          local container_name="$1"
+          local repo_name="$2"
 
-            if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
-              echo "Repository $repo_name missing - scheduling build for $container_name"
-              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-              return
-            fi
+          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
+            echo "Repository $repo_name missing - scheduling build for $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
 
-            local latest_count
-            latest_count=$(aws ecr describe-images \
-              --region us-west-2 \
-              --repository-name "$repo_name" \
-              --query "length(imageDetails[?contains(imageTags, 'latest')])" \
-              --output text 2>/dev/null || echo 0)
+          local latest_count
+          latest_count=$(aws ecr describe-images \
+            --region us-west-2 \
+            --repository-name "$repo_name" \
+            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
+            --output text 2>/dev/null || echo 0)
 
-            if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
-              echo "Repository $repo_name exists but lacks a 'latest' tag - scheduling build for $container_name"
-              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-            fi
-          }
+          if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
+            echo "Repository $repo_name exists but lacks a 'latest' tag - scheduling build for $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+          fi
+        }
 
-          # Check ECR for each changed container
-          for container in $CHANGED; do
-            if [ -n "$BRANCH_SUFFIX" ]; then
-              ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}"
-            else
-              ensure_repo_ready "$container" "spaceport/${container}"
-            fi
+        # Check ECR for all containers (handles new branches, deletions, missing images)
+        if [ -n "$BRANCH_SUFFIX" ]; then
+          for container in sfm 3dgs compressor; do
+            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}"
+          done
+        else
+          for container in sfm 3dgs compressor; do
+            ensure_repo_ready "$container" "spaceport/${container}"
           done
         fi
 
