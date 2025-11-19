@@ -261,41 +261,54 @@ jobs:
         CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
         AWS_REGION="us-west-2"
         AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-        ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         
         echo "Importing containers from shared repos: $CONTAINERS_TO_IMPORT"
         
-        # Login to ECR (required for docker pull/push)
-        aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
-        
         import_container() {
           local container_name="$1"
-          local source_repo="$ECR_REGISTRY/spaceport/${container_name}:latest"
-          local target_repo="$ECR_REGISTRY/spaceport/${container_name}-${BRANCH_SUFFIX}:latest"
+          local source_repo="spaceport/${container_name}"
+          local target_repo="spaceport/${container_name}-${BRANCH_SUFFIX}"
+          local manifest_file
           
           echo "Importing ${container_name} from ${source_repo} to ${target_repo}..."
           
-          if ! docker pull "$source_repo"; then
-            echo "Error: Failed to pull image from $source_repo"
+          manifest_file=$(mktemp)
+          
+          # Fetch image manifest from shared repo (force schema v2 manifest)
+          if ! aws ecr batch-get-image \
+            --registry-id "$AWS_ACCOUNT_ID" \
+            --repository-name "$source_repo" \
+            --image-ids imageTag=latest \
+            --accepted-media-types application/vnd.docker.distribution.manifest.v2+json \
+            --region "$AWS_REGION" \
+            --query 'images[0].imageManifest' \
+            --output text > "$manifest_file"; then
+            echo "Error: Failed to fetch image manifest from $source_repo"
+            rm -f "$manifest_file"
             return 1
           fi
           
-          if ! docker tag "$source_repo" "$target_repo"; then
-            echo "Error: Failed to tag image for $target_repo"
-            docker rmi "$source_repo" >/dev/null 2>&1 || true
+          if [ ! -s "$manifest_file" ]; then
+            echo "Error: Empty manifest returned from $source_repo"
+            rm -f "$manifest_file"
             return 1
           fi
           
-          if ! docker push "$target_repo"; then
-            echo "Error: Failed to push image to $target_repo"
-            docker rmi "$target_repo" "$source_repo" >/dev/null 2>&1 || true
+          # Push manifest into branch-specific repo
+          if ! aws ecr put-image \
+            --registry-id "$AWS_ACCOUNT_ID" \
+            --repository-name "$target_repo" \
+            --image-manifest "file://$manifest_file" \
+            --image-tag latest \
+            --region "$AWS_REGION"; then
+            echo "Error: Failed to push manifest to $target_repo"
+            rm -f "$manifest_file"
             return 1
           fi
           
-          # Clean up local images to keep workspace small
-          docker rmi "$target_repo" "$source_repo" >/dev/null 2>&1 || true
+          rm -f "$manifest_file"
           
-          echo "Successfully imported ${container_name} to ${target_repo}"
+          echo "Successfully imported ${container_name} to spaceport/${container_name}-${BRANCH_SUFFIX}:latest"
         }
         
         # Import each container
