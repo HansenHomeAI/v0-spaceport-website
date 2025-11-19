@@ -51,12 +51,8 @@ ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 # 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
 # ---------------------------------------------------------------
 
-# Ensure modern pybind11/ninja versions before installing NerfStudio dependencies
-# Newer NerfStudio releases use pybind11 module attributes that require >=2.13
-RUN pip install --no-cache-dir \
-    "pybind11>=2.13.4" \
-    "ninja>=1.11.1" \
-    "scikit-build-core>=0.11.6"
+# Ensure latest pybind11 to satisfy fpsample build requirements
+RUN pip install --no-cache-dir "pybind11>=2.13.0"
 
 # Install NerfStudio - this automatically includes gsplat as a dependency
 # gsplat will use JIT (Just-In-Time) compilation on first execution

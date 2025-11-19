@@ -15,6 +15,7 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import boto3
+from .branch_utils import build_scoped_name
 
 
 class AuthStack(Stack):
@@ -25,6 +26,9 @@ class AuthStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        
+        def scoped_name(prefix: str, max_total_length: int = 64) -> str:
+            return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
         # Initialize AWS clients for resource checking
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
@@ -96,7 +100,7 @@ class AuthStack(Stack):
         projects_lambda = lambda_.Function(
             self,
             "Spaceport-ProjectsFunction",
-            function_name=f"Spaceport-ProjectsFunction-{suffix}",
+            function_name=scoped_name("Spaceport-ProjectsFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -242,7 +246,7 @@ class AuthStack(Stack):
         subscription_lambda = lambda_.Function(
             self,
             "SubscriptionManagerLambda",  # Unique construct ID
-            function_name=f"Spaceport-SubscriptionManager-{suffix}",
+            function_name=scoped_name("Spaceport-SubscriptionManager-"),
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -445,7 +449,7 @@ class AuthStack(Stack):
 
         beta_access_lambda = lambda_.Function(
             self, "Spaceport-BetaAccessAdminFunction",
-            function_name=f"Spaceport-BetaAccessAdminFunction-{suffix}",
+            function_name=scoped_name("Spaceport-BetaAccessAdminFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -587,7 +591,7 @@ class AuthStack(Stack):
 
         model_delivery_lambda = lambda_.Function(
             self, "Spaceport-ModelDeliveryAdminFunction",
-            function_name=f"Spaceport-ModelDeliveryAdminFunction-{suffix}",
+            function_name=scoped_name("Spaceport-ModelDeliveryAdminFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -716,7 +720,7 @@ class AuthStack(Stack):
         # Create password reset Lambda function
         password_reset_lambda = lambda_.Function(
             self, "Spaceport-PasswordResetFunction",
-            function_name=f"Spaceport-PasswordResetFunction-{suffix}",
+            function_name=scoped_name("Spaceport-PasswordResetFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(

@@ -20,7 +20,7 @@ from constructs import Construct
 import os
 import json
 import boto3
-from .branch_utils import sanitize_branch_name, get_resource_suffix
+from .branch_utils import build_scoped_name
 
 
 class MLPipelineStack(Stack):
@@ -31,6 +31,9 @@ class MLPipelineStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+
+        def scoped_name(prefix: str, max_total_length: int = 64) -> str:
+            return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
@@ -100,7 +103,7 @@ class MLPipelineStack(Stack):
         # Add cross-bucket permissions for staging/prod ML buckets to enable flexible testing
         sagemaker_role = iam.Role(
             self, "SageMakerExecutionRole",
-            role_name=f"Spaceport-SageMaker-Role-{suffix}",
+            role_name=scoped_name("Spaceport-SageMaker-Role-"),
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
@@ -143,7 +146,7 @@ class MLPipelineStack(Stack):
         # Step Functions execution role with environment-specific naming
         step_functions_role = iam.Role(
             self, "StepFunctionsExecutionRole",
-            role_name=f"Spaceport-StepFunctions-Role-{suffix}",
+            role_name=scoped_name("Spaceport-StepFunctions-Role-"),
             assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
             inline_policies={
                 "SageMakerPolicy": iam.PolicyDocument(
@@ -188,7 +191,7 @@ class MLPipelineStack(Stack):
         # Lambda execution role for API with environment-specific naming
         lambda_role = iam.Role(
             self, "MLLambdaExecutionRole",
-            role_name=f"Spaceport-ML-Lambda-Role-{suffix}",
+            role_name=scoped_name("Spaceport-ML-Lambda-Role-"),
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -219,7 +222,7 @@ class MLPipelineStack(Stack):
         # Notification Lambda role with environment-specific naming
         notification_lambda_role = iam.Role(
             self, "NotificationLambdaRole",
-            role_name=f"Spaceport-Notification-Lambda-Role-{suffix}",
+            role_name=scoped_name("Spaceport-Notification-Lambda-Role-"),
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -285,7 +288,7 @@ class MLPipelineStack(Stack):
         
         start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
-            function_name=f"Spaceport-StartMLJob-{suffix}",
+            function_name=scoped_name("Spaceport-StartMLJob-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
@@ -307,7 +310,7 @@ class MLPipelineStack(Stack):
         # Create Notification Lambda
         notification_lambda = lambda_.Function(
             self, "NotificationFunction",
-            function_name=f"Spaceport-MLNotification-{suffix}",
+            function_name=scoped_name("Spaceport-MLNotification-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -734,7 +737,7 @@ class MLPipelineStack(Stack):
         # Create Lambda function for stopping jobs
         stop_job_lambda = lambda_.Function(
             self, "StopJobFunction",
-            function_name=f"Spaceport-StopJobFunction-{suffix}",
+            function_name=scoped_name("Spaceport-StopJobFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="stop_job.lambda_handler",
             code=lambda_.Code.from_asset("../lambda/stop_job"),
@@ -969,47 +972,40 @@ class MLPipelineStack(Stack):
     def _validate_resource_naming_conventions(self):
         """Validate all resource names follow proper conventions"""
         suffix = self.env_config['resourceSuffix']
-        
-        # Define expected resource names
+
         expected_names = {
             'iam_roles': [
-                f"Spaceport-SageMaker-Role-{suffix}",
-                f"Spaceport-StepFunctions-Role-{suffix}",
-                f"Spaceport-ML-Lambda-Role-{suffix}",
-                f"Spaceport-Notification-Lambda-Role-{suffix}"
+                ("Spaceport-SageMaker-Role-", 64),
+                ("Spaceport-StepFunctions-Role-", 64),
+                ("Spaceport-ML-Lambda-Role-", 64),
+                ("Spaceport-Notification-Lambda-Role-", 64)
             ],
             'lambda_functions': [
-                f"Spaceport-StartMLJob-{suffix}",
-                f"Spaceport-MLNotification-{suffix}",
-                f"Spaceport-StopJobFunction-{suffix}"
+                ("Spaceport-StartMLJob-", 64),
+                ("Spaceport-MLNotification-", 64),
+                ("Spaceport-StopJobFunction-", 64)
             ],
             'cloudwatch_alarms': [
-                f"SpaceportMLPipeline-Failures-{suffix}"
+                ("SpaceportMLPipeline-Failures-", 128)
             ]
         }
         
-        # Validate naming patterns
-        for resource_type, names in expected_names.items():
-            for name in names:
-                if not self._is_valid_resource_name(name, suffix):
-                    raise ValueError(f"Invalid {resource_type} name: {name}")
+        for resource_type, configs in expected_names.items():
+            for prefix, max_length in configs:
+                candidate = build_scoped_name(prefix, suffix, max_total_length=max_length)
+                if not self._is_valid_resource_name(candidate, prefix):
+                    raise ValueError(f"Invalid {resource_type} name: {candidate}")
         
         print(f"✅ Resource naming conventions validated for: {suffix}")
     
-    def _is_valid_resource_name(self, name: str, suffix: str) -> bool:
+    def _is_valid_resource_name(self, name: str, prefix: str) -> bool:
         """Check if resource name follows conventions"""
-        # Must contain the suffix
-        if not name.endswith(f"-{suffix}"):
+        if not name.startswith(prefix):
             return False
-        
-        # Must start with Spaceport
-        if not name.startswith("Spaceport"):
-            return False
-        
-        # No invalid characters
+
         if any(char in name for char in [' ', '_', '.']):
             return False
-        
+
         return True
     
     def _validate_s3_bucket_name(self, bucket_name: str, name_type: str):
