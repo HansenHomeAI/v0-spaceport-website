@@ -2,8 +2,8 @@
 # Official implementation using PlayCanvas SOGS package from:
 # https://github.com/playcanvas/sogs
 
-# Use Ubuntu base and install CUDA 12.4 from the official NVIDIA apt repository
-FROM ubuntu:22.04
+# Use Ubuntu LTS base from AWS Public ECR and install CUDA 12.4 from the official NVIDIA apt repository
+FROM public.ecr.aws/lts/ubuntu:22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
