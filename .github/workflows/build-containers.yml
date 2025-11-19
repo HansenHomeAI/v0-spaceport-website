@@ -240,31 +240,20 @@ jobs:
               --project-name spaceport-ml-containers \
               --max-items 5 \
               --sort-order DESCENDING \
-              --output json | python - <<'PY'
-import json, sys
-doc = json.load(sys.stdin)
-ids = doc.get("ids") or []
-print(" ".join([i for i in ids if i]), end="")
-PY
-)
+              --output json | jq -r '.ids[]?' | xargs 2>/dev/null || true)
+
             if [ -z "$ACTIVE_IDS" ]; then
               break
             fi
-            BUSY_IDS=$(aws codebuild batch-get-builds --ids $ACTIVE_IDS --output json | python - <<'PY'
-import json, sys
-doc = json.load(sys.stdin)
-builds = doc.get("builds") or []
-busy = [
-    b["id"]
-    for b in builds
-    if b.get("buildStatus") in ("IN_PROGRESS", "QUEUED")
-]
-print(" ".join(busy), end="")
-PY
-)
+
+            BUSY_IDS=$(aws codebuild batch-get-builds --ids $ACTIVE_IDS --output json \
+              | jq -r '.builds[]? | select(.buildStatus=="IN_PROGRESS" or .buildStatus=="QUEUED") | .id' \
+              | xargs 2>/dev/null || true)
+
             if [ -z "$BUSY_IDS" ]; then
               break
             fi
+
             echo "Another CodeBuild job is still running ($BUSY_IDS). Waiting 30s for capacity..."
             sleep 30
           done
