@@ -355,7 +355,7 @@ def copy_layer_blob(source_repo: str, target_repo: str, digest: str) -> None:
     ecr.complete_layer_upload(
         repositoryName=target_repo,
         uploadId=upload_id,
-        layerDigest=digest,
+        layerDigests=[digest],
     )
     uploaded_layers.add(key)
 
