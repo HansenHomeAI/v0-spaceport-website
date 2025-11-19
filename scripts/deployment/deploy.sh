@@ -8,6 +8,7 @@ set -e
 AWS_REGION="us-west-2"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+BRANCH_SUFFIX="${BRANCH_SUFFIX:-}"
 
 # Enable Docker BuildKit for better caching and performance
 export DOCKER_BUILDKIT=1
@@ -77,11 +78,17 @@ login_ecr() {
 # Function to get repository name for a container
 get_repo_name() {
     case "$1" in
-        "sfm") echo "spaceport/sfm";;
-        "3dgs") echo "spaceport/3dgs";;
-        "compressor") echo "spaceport/compressor";;
+        "sfm") base="spaceport/sfm";;
+        "3dgs") base="spaceport/3dgs";;
+        "compressor") base="spaceport/compressor";;
         *) error "Invalid container name provided to get_repo_name: $1";;
     esac
+
+    if [[ -n "$BRANCH_SUFFIX" ]]; then
+      echo "${base}-${BRANCH_SUFFIX}"
+    else
+      echo "$base"
+    fi
 }
 
 # Function to build and push a single container with caching

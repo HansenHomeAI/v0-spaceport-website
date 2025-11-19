@@ -28,6 +28,7 @@ from constructs import Construct
 import os
 import aws_cdk as cdk
 import boto3
+from .branch_utils import build_scoped_name
 
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
@@ -38,6 +39,9 @@ class SpaceportStack(Stack):
         suffix = env_config['resourceSuffix']
         region = env_config['region']
         # Account will be dynamically resolved from deployment context
+        
+        def scoped_name(prefix: str, max_total_length: int = 64) -> str:
+            return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
@@ -89,7 +93,7 @@ class SpaceportStack(Stack):
         self.lambda_role = iam.Role(
             self, 
             "SpaceportLambdaRole",
-            role_name=f"Spaceport-Lambda-Role-{suffix}",
+            role_name=scoped_name("Spaceport-Lambda-Role-"),
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -142,7 +146,7 @@ class SpaceportStack(Stack):
         self.drone_path_lambda = lambda_.Function(
             self, 
             "SpaceportDronePathFunction",
-            function_name=f"Spaceport-DronePathFunction-{suffix}",
+            function_name=scoped_name("Spaceport-DronePathFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -169,7 +173,7 @@ class SpaceportStack(Stack):
         self.file_upload_lambda = lambda_.Function(
             self, 
             "SpaceportFileUploadFunction",
-            function_name=f"Spaceport-FileUploadFunction-{suffix}",
+            function_name=scoped_name("Spaceport-FileUploadFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -195,7 +199,7 @@ class SpaceportStack(Stack):
         self.csv_upload_lambda = lambda_.Function(
             self, 
             "SpaceportCsvUploadFunction",
-            function_name=f"Spaceport-CsvUploadFunction-{suffix}",
+            function_name=scoped_name("Spaceport-CsvUploadFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/csv_upload_url"),
@@ -210,7 +214,7 @@ class SpaceportStack(Stack):
         self.waitlist_lambda = lambda_.Function(
             self, 
             "SpaceportWaitlistFunction",
-            function_name=f"Spaceport-WaitlistFunction-{suffix}",
+            function_name=scoped_name("Spaceport-WaitlistFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -236,7 +240,7 @@ class SpaceportStack(Stack):
         self.feedback_lambda = lambda_.Function(
             self,
             "SpaceportFeedbackFunction",
-            function_name=f"Spaceport-FeedbackFunction-{suffix}",
+            function_name=scoped_name("Spaceport-FeedbackFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(

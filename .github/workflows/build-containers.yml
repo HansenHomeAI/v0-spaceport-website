@@ -3,12 +3,11 @@ name: Trigger ML Container Build
 on:
   workflow_dispatch:  # Manual trigger
   push:
-    branches: [ main, development, ml-development ]
-    # container-only workflow; no change
-    paths:
-      - 'infrastructure/containers/**'
-      - 'scripts/deployment/deploy.sh'
-      - 'buildspec.yml'
+    branches:
+      - main
+      - development
+      - ml-development
+      - 'agent-*'
 
 jobs:
   trigger-codebuild:
@@ -22,47 +21,56 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        fetch-depth: 2  # Need previous commit to detect changes
+        fetch-depth: 0  # Needed for branch diffing
 
-    - name: Detect changed containers
-      id: changes
+    - name: Detect branch context and changed containers
+      id: branch
       run: |
-        # Get list of changed files
-        CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-        echo "Changed files: $CHANGED_FILES"
-        
-        # Check which containers have changes
+        set -euo pipefail
+
+        BRANCH_NAME="${GITHUB_REF_NAME}"
+        echo "Working branch: $BRANCH_NAME"
+
+        SANITIZED_SUFFIX=$(python scripts/get_branch_suffix.py "$BRANCH_NAME")
+        echo "Sanitized suffix: $SANITIZED_SUFFIX"
+        echo "branch_suffix=$SANITIZED_SUFFIX" >> $GITHUB_OUTPUT
+
+        ECR_SUFFIX=$(python scripts/get_branch_suffix.py "$BRANCH_NAME" --mode ecr)
+        echo "ECR suffix: ${ECR_SUFFIX:-<shared>}"
+        echo "ecr_suffix=$ECR_SUFFIX" >> $GITHUB_OUTPUT
+
+        if git rev-parse HEAD~1 >/dev/null 2>&1; then
+          DIFF_BASE="HEAD~1"
+        else
+          git fetch origin development --depth=1 || true
+          DIFF_BASE=$(git merge-base HEAD origin/development || echo "")
+        fi
+
+        if [ -n "$DIFF_BASE" ]; then
+          CHANGED_FILES=$(git diff --name-only "$DIFF_BASE"...HEAD || git diff --name-only "$DIFF_BASE" HEAD)
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD || true)
+        fi
+
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
         CONTAINERS_TO_BUILD=""
-        
-        if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/sfm/"; then
-          CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD sfm"
-          echo "SfM container changed"
-        fi
-        
-        if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/3dgs/"; then
-          CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD 3dgs"
-          echo "3DGS container changed"
-        fi
-        
-        if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/compressor/"; then
-          CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD compressor"
-          echo "Compressor container changed"
-        fi
-        
-        # If deployment script or buildspec changed, build all
+
+        for container in sfm 3dgs compressor; do
+          if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/${container}/"; then
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container"
+            echo "Detected change in ${container} container"
+          fi
+        done
+
         if echo "$CHANGED_FILES" | grep -q -E "(scripts/deployment/deploy.sh|buildspec.yml)"; then
-          CONTAINERS_TO_BUILD="all"
-          echo "Build infrastructure changed - building all containers"
+          CONTAINERS_TO_BUILD="sfm 3dgs compressor"
+          echo "Build tooling changed - rebuilding all containers"
         fi
-        
-        # Default to all if no specific containers detected (safety)
-        if [ -z "$CONTAINERS_TO_BUILD" ]; then
-          CONTAINERS_TO_BUILD="all"
-          echo "No specific container changes detected - building all for safety"
-        fi
-        
-        echo "containers=$CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
-        echo "Will build: $CONTAINERS_TO_BUILD"
+
+        CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs 2>/dev/null || true)
+        echo "changed_containers=${CONTAINERS_TO_BUILD:-}" >> $GITHUB_OUTPUT
 
     - name: Configure AWS credentials (production via OIDC)
       if: github.ref_name == 'main'
@@ -79,15 +87,88 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
 
-    - name: Create ECR repositories if they don't exist
+    - name: Determine container build requirements
+      id: build_plan
       run: |
+        set -euo pipefail
+
+        BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
+        CHANGED="${{ steps.branch.outputs.changed_containers }}"
+        CONTAINERS_TO_BUILD=""
+
+        if [ -n "$CHANGED" ]; then
+          echo "Containers changed in git diff: $CHANGED"
+          CONTAINERS_TO_BUILD="$CHANGED"
+        fi
+
+        ensure_repo_ready() {
+          local container_name="$1"
+          local repo_name="$2"
+
+          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
+            echo "Repository $repo_name missing - scheduling build for $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
+
+          local latest_count
+          latest_count=$(aws ecr describe-images \
+            --region us-west-2 \
+            --repository-name "$repo_name" \
+            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
+            --output text 2>/dev/null || echo 0)
+
+          if [ "$latest_count" = "0" ] || [ "$latest_count" = "None" ]; then
+            echo "Repository $repo_name exists but lacks a 'latest' tag - scheduling build for $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+          fi
+        }
+
+        if [ -n "$BRANCH_SUFFIX" ]; then
+          for container in sfm 3dgs compressor; do
+            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}"
+          done
+        else
+          for container in sfm 3dgs compressor; do
+            ensure_repo_ready "$container" "spaceport/${container}"
+          done
+        fi
+
+        UNIQUE_CONTAINERS=$(echo "$CONTAINERS_TO_BUILD" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
+
+        if [ -z "$UNIQUE_CONTAINERS" ]; then
+          echo "No container build required for this branch"
+          echo "containers=none" >> $GITHUB_OUTPUT
+          echo "build_required=false" >> $GITHUB_OUTPUT
+        else
+          echo "Containers to build: $UNIQUE_CONTAINERS"
+          echo "containers=$UNIQUE_CONTAINERS" >> $GITHUB_OUTPUT
+          echo "build_required=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create ECR repositories if they don't exist
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
+      run: |
+        BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
+        CONTAINERS="${{ steps.build_plan.outputs.containers }}"
+
         for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
-          echo "Ensuring ECR repository exists: $repo"
-          aws ecr describe-repositories --region us-west-2 --repository-names $repo || \
-          aws ecr create-repository --region us-west-2 --repository-name $repo --image-scanning-configuration scanOnPush=true
+          echo "Ensuring shared ECR repository exists: $repo"
+          aws ecr describe-repositories --region us-west-2 --repository-names "$repo" >/dev/null 2>&1 || \
+          aws ecr create-repository --region us-west-2 --repository-name "$repo" --image-scanning-configuration scanOnPush=true
         done
 
+        if [ -n "$BRANCH_SUFFIX" ]; then
+          for container in $CONTAINERS; do
+            BRANCH_REPO="spaceport/${container}-${BRANCH_SUFFIX}"
+            echo "Ensuring branch-specific ECR repository exists: $BRANCH_REPO"
+            aws ecr describe-repositories --region us-west-2 --repository-names "$BRANCH_REPO" >/dev/null 2>&1 || \
+            aws ecr create-repository --region us-west-2 --repository-name "$BRANCH_REPO" --image-scanning-configuration scanOnPush=true
+          done
+        fi
+
     - name: Ensure CodeBuild role and project exist (prod/staging)
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Using account: $ACCOUNT"
@@ -127,33 +208,45 @@ jobs:
         aws codebuild batch-get-projects --names spaceport-ml-containers --query 'projects[0].name' --output text | grep -q spaceport-ml-containers
         MISSING_PROJ=$?
         set -e
+        REPO_URL="https://github.com/${{ github.repository }}.git"
         if [ "$MISSING_PROJ" -ne 0 ]; then
           echo "Creating CodeBuild project spaceport-ml-containers..."
           # Create project directly with role ARN instead of REPLACE_ME logic
           aws codebuild create-project \
             --name spaceport-ml-containers \
             --description "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA" \
-            --source type=GITHUB,location=https://github.com/HansenHomeAI/v0-spaceport-website.git,buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
+            --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
             --artifacts type=NO_ARTIFACTS \
-            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
             --service-role "$ROLE_ARN" \
             --timeout-in-minutes 120 \
             --queued-timeout-in-minutes 30 \
             --tags key=Project,value=Spaceport key=Purpose,value=ML-Container-Build
           echo "Created CodeBuild project."
         else
-          echo "CodeBuild project already exists."
+          echo "CodeBuild project already exists. Ensuring configuration is up to date..."
+          aws codebuild update-project \
+            --name spaceport-ml-containers \
+            --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
+            --service-role "$ROLE_ARN" \
+            --timeout-in-minutes 120 \
+            --queued-timeout-in-minutes 30
+          echo "Updated CodeBuild project."
         fi
 
     - name: Trigger CodeBuild for container builds
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
-        echo "Building containers: ${{ steps.changes.outputs.containers }}"
+        echo "Building containers: ${{ steps.build_plan.outputs.containers }}"
         
         BUILD_ID=$(aws codebuild start-build \
           --project-name spaceport-ml-containers \
           --source-version ${{ github.sha }} \
-          --environment-variables-override name=CONTAINERS_TO_BUILD,value="${{ steps.changes.outputs.containers }}" \
+          --environment-variables-override \
+            name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers }}" \
+            name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
           --query 'build.id' \
           --output text)
         
@@ -182,8 +275,14 @@ jobs:
         done
 
     - name: Output container URIs
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         echo "✅ ML Containers built and pushed via CodeBuild:"
-        echo "Built containers: ${{ steps.changes.outputs.containers }}"
+        echo "Built containers: ${{ steps.build_plan.outputs.containers }}"
         echo "Account: $(aws sts get-caller-identity --query Account --output text)"
         echo "Region: us-west-2"
+
+    - name: Skip notice when no containers require builds
+      if: ${{ steps.build_plan.outputs.build_required != 'true' }}
+      run: |
+        echo "ℹ️ Container build skipped (branch already has usable images)."
