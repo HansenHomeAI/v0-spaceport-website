@@ -53,8 +53,8 @@ cache_base_images() {
   
   # Pull common base images in parallel
   {
-    docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
-    docker pull nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
+    docker pull public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
+    docker pull public.ecr.aws/nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
     docker pull python:3.9-slim || true &
     wait
   }

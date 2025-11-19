@@ -2,8 +2,8 @@
 # Official implementation using PlayCanvas SOGS package from:
 # https://github.com/playcanvas/sogs
 
-# Use NVIDIA CUDA 12.4 base image to match SageMaker host driver
-FROM nvidia/cuda:12.4.0-devel-ubuntu22.04
+# Use NVIDIA CUDA 12.4 base image from AWS Public ECR to avoid Docker Hub rate limits
+FROM public.ecr.aws/nvidia/cuda:12.4.0-devel-ubuntu22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
