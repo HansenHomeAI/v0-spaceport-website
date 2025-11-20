@@ -9,7 +9,8 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const logsDir = path.join(repoRoot, "logs");
 
 const DEFAULT_PREVIEW = "https://agent-48291037-sogs-viewer.v0-spaceport-website-preview2.pages.dev";
-const DEFAULT_BUNDLE = "/test-sogs-1763664401/meta.json";
+const DEFAULT_BUNDLE =
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 
 const previewUrl = process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW;
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;

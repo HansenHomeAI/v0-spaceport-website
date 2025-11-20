@@ -2,9 +2,10 @@
 
 import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-const DEFAULT_BUNDLE_URL = "/test-sogs-1763664401/meta.json";
 const REMOTE_S3_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+const LOCAL_MIRROR_BUNDLE = "/test-sogs-1763664401/meta.json";
+const DEFAULT_BUNDLE_URL = REMOTE_S3_BUNDLE;
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
@@ -12,12 +13,12 @@ const PROXY_HOSTS = new Set([
 ]);
 const SAMPLE_BUNDLES = [
   {
-    label: "Local copy · sogs-test-1763664401",
-    url: DEFAULT_BUNDLE_URL,
-  },
-  {
     label: "S3 proxy · sogs-test-1763664401",
     url: REMOTE_S3_BUNDLE,
+  },
+  {
+    label: "Local mirror · sogs-test-1763664401",
+    url: LOCAL_MIRROR_BUNDLE,
   },
   {
     label: "Legacy local demo",
@@ -370,8 +371,8 @@ export default function SogsViewerPage() {
           </p>
           <div style={samplesWrapStyles}>
             <p style={{ ...helperTextStyles, marginTop: 0 }}>
-              Quick samples (spaceport buckets are auto-routed through the proxy to bypass CORS; the direct S3
-              entry still requires AWS SigV4, so use the mirrored local copy if that bucket is locked down):
+              Quick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror
+              handy if you need an offline fallback):
             </p>
             <div style={samplesListStyles}>
               {SAMPLE_BUNDLES.map((sample) => (
