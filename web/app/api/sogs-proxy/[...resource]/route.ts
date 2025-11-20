@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 
+export const runtime = "edge";
+
 const ALLOWED_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
