@@ -1,5 +1,5 @@
-reason: implement the /sogs-viewer page and push it through lint/build plus pipeline deploys
-last_step: built the SOGS viewer route with PlayCanvas SuperSplat, added ESLint config + cleaned legacy lint errors, ran `npx next lint` + `npm run build`, started the Playwright MCP ensure task, and pushed agent-48291037-sogs-viewer with both Cloudflare Pages (https://agent-48291037-sogs-viewer.v0-spaceport-website-preview2.pages.dev) and CDK runs green
-next_unblocked_step: drive preview validation / Playwright MCP flow against the new viewer and prepare the PR summary once UI verification artifacts are captured
-owner_action_needed: none
-updated: 2025-11-20T14:07:39Z
+reason: unblock PlayCanvas SOGS viewer testing – CDN runtime missing
+last_step: built the /sogs-viewer route and tried to run Playwright validations, but `@playcanvas/supersplat` CDN returns 404 (so `window.SuperSplatViewer` is undefined) and no public package exists; hosted tests + logs under `logs/sogs-viewer-*.log/png` demonstrate the missing dependency
+next_unblocked_step: obtain an actual SuperSplat viewer bundle (or an approved alternative) that exposes `SuperSplatViewer.loadFromUrl` so we can finish wiring + testing against the S3 bundle
+owner_action_needed: provide a valid script source (or green-light for another rendering approach) for the SuperSplat viewer
+updated: 2025-11-20T16:25:00Z
