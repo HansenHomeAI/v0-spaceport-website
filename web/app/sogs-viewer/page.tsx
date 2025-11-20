@@ -1,21 +1,10 @@
 "use client";
 
 import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import Script from "next/script";
 
-type SuperSplatViewerInstance = {
-  loadFromUrl: (url: string) => Promise<void>;
-  destroy?: () => void;
-};
-
-declare global {
-  interface Window {
-    SuperSplatViewer?: new (canvas: HTMLCanvasElement) => SuperSplatViewerInstance;
-  }
-}
-
-const PLAYCANVAS_SCRIPT = "https://cdn.jsdelivr.net/npm/playcanvas@latest/build/playcanvas-stable.min.js";
-const SUPERSPLAT_SCRIPT = "https://cdn.jsdelivr.net/npm/@playcanvas/supersplat@latest/dist/bundle.min.js";
+const DEFAULT_BUNDLE_URL =
+  "https://spaceport-ml-processing.s3.amazonaws.com/public-viewer/sogs-test-1753999934/meta.json";
+const VIEWER_BASE = "/supersplat-viewer/index.html";
 
 const pillInputStyles: CSSProperties = {
   width: "100%",
@@ -81,28 +70,6 @@ const helperTextStyles: CSSProperties = {
   fontSize: "0.85rem",
 };
 
-const normalizeS3Url = (rawValue: string): string | null => {
-  const trimmed = rawValue.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol !== "https:") {
-      return null;
-    }
-
-    let normalized = parsed.toString();
-    if (!normalized.endsWith("/")) {
-      normalized = `${normalized}/`;
-    }
-    return normalized;
-  } catch (error) {
-    return null;
-  }
-};
-
 const viewerBackdropStyles: CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -120,114 +87,97 @@ const overlayWrapperStyles: CSSProperties = {
 };
 
 export default function SogsViewerPage() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const viewerRef = useRef<SuperSplatViewerInstance | null>(null);
-  const [s3Url, setS3Url] = useState("");
-  const [loading, setLoading] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const [inputUrl, setInputUrl] = useState(DEFAULT_BUNDLE_URL);
+  const [activeUrl, setActiveUrl] = useState(DEFAULT_BUNDLE_URL);
   const [statusMessage, setStatusMessage] = useState("Paste an S3 bundle URL to render your splats.");
   const [error, setError] = useState<string | null>(null);
-  const [scriptsLoaded, setScriptsLoaded] = useState({ playcanvas: false, supersplat: false });
-  const [viewerReady, setViewerReady] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
 
-  const scriptsReady = useMemo(
-    () => scriptsLoaded.playcanvas && scriptsLoaded.supersplat,
-    [scriptsLoaded]
-  );
-
-  useEffect(() => {
-    if (!canvasRef.current) {
-      return;
+  const normalizeBundleUrl = (rawValue: string): string | null => {
+    const trimmed = rawValue.trim();
+    if (!trimmed) {
+      return null;
     }
-
-    const handleResize = () => {
-      if (!canvasRef.current) {
-        return;
-      }
-      const deviceRatio = window.devicePixelRatio || 1;
-      const { clientWidth, clientHeight } = canvasRef.current;
-      canvasRef.current.width = clientWidth * deviceRatio;
-      canvasRef.current.height = clientHeight * deviceRatio;
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!scriptsReady || !canvasRef.current) {
-      return;
-    }
-
-    if (!viewerRef.current) {
-      if (!window.SuperSplatViewer) {
-        setError("SuperSplat viewer script is not available yet.");
-        setViewerReady(false);
-        return;
-      }
-
-      try {
-        viewerRef.current = new window.SuperSplatViewer(canvasRef.current);
-        setError(null);
-      } catch (viewerError) {
-        console.error("Failed to initialize SuperSplat viewer", viewerError);
-        setError("Failed to initialize viewer. Refresh and try again.");
-        setViewerReady(false);
-        return;
-      }
-    }
-
-    setViewerReady(true);
-
-    return () => {
-      viewerRef.current?.destroy?.();
-      viewerRef.current = null;
-      setViewerReady(false);
-    };
-  }, [scriptsReady]);
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
-
-    if (!viewerRef.current) {
-      setError("Viewer is still preparing. Please wait a moment.");
-      return;
-    }
-
-    const normalizedUrl = normalizeS3Url(s3Url);
-    if (!normalizedUrl) {
-      setError("Enter a valid HTTPS S3 URL ending with '/'.");
-      return;
-    }
-
-    setLoading(true);
-    setStatusMessage("Fetching SOGS bundle…");
 
     try {
-      await viewerRef.current.loadFromUrl(normalizedUrl);
-      setStatusMessage("SOGS bundle loaded.");
-    } catch (loadError) {
-      console.error("Failed to load SOGS bundle", loadError);
-      setError("Unable to load the SOGS bundle. Confirm the URL and S3 CORS settings.");
-      setStatusMessage("Waiting for a valid bundle URL.");
-    } finally {
-      setLoading(false);
+      const parsed = new URL(trimmed);
+      if (!parsed.protocol.startsWith("http")) {
+        return null;
+      }
+
+      if (!parsed.pathname.endsWith(".json")) {
+        parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
+      }
+      return parsed.toString();
+    } catch (normalizeError) {
+      return null;
     }
   };
 
-  const scriptLoadHandler =
-    (key: "playcanvas" | "supersplat") => () =>
-      setScriptsLoaded((prev) => ({ ...prev, [key]: true }));
+  const viewerSrc = useMemo(() => {
+    if (!activeUrl) {
+      return `${VIEWER_BASE}?settings=/supersplat-viewer/settings.json`;
+    }
 
-  const scriptErrorHandler = (label: string) => () => {
-    setError(`Failed to load the ${label} runtime.`);
+    const params = new URLSearchParams({
+      settings: "/supersplat-viewer/settings.json",
+      content: activeUrl,
+    });
+
+    return `${VIEWER_BASE}?${params.toString()}`;
+  }, [activeUrl, iframeKey]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    const normalized = normalizeBundleUrl(inputUrl);
+    if (!normalized) {
+      setError("Enter a valid HTTPS URL pointing to the SOGS bundle (folder or meta.json).");
+      return;
+    }
+
+    setStatusMessage("Loading viewer…");
+    setViewerState("loading");
+    setActiveUrl(normalized);
+    setIframeKey((prev) => prev + 1);
   };
 
-  const isSubmitDisabled = loading || !s3Url.trim();
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) {
+      return;
+    }
+
+    const poll = () => {
+      try {
+        const doc = iframe.contentDocument;
+        if (!doc) {
+          return;
+        }
+        const loadingWrap = doc.getElementById("loadingWrap");
+        if (loadingWrap?.classList.contains("hidden")) {
+          setViewerState("ready");
+          setStatusMessage("SOGS bundle loaded in the embedded viewer.");
+        }
+      } catch (pollError) {
+        // ignore cross-origin errors (should not happen since the viewer is same-origin)
+      }
+    };
+
+    const id = window.setInterval(poll, 1000);
+    return () => {
+      window.clearInterval(id);
+    };
+  }, [viewerSrc]);
+
+  useEffect(() => {
+    setViewerState("loading");
+    setStatusMessage("Loading viewer…");
+  }, []);
+
+  const isSubmitDisabled = !inputUrl.trim();
 
   return (
     <main
@@ -240,19 +190,6 @@ export default function SogsViewerPage() {
         fontFamily: "'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
-      <Script
-        src={PLAYCANVAS_SCRIPT}
-        strategy="afterInteractive"
-        onLoad={scriptLoadHandler("playcanvas")}
-        onError={scriptErrorHandler("PlayCanvas")}
-      />
-      <Script
-        src={SUPERSPLAT_SCRIPT}
-        strategy="afterInteractive"
-        onLoad={scriptLoadHandler("supersplat")}
-        onError={scriptErrorHandler("SuperSplat")}
-      />
-
       <div style={viewerBackdropStyles} />
 
       <div
@@ -261,23 +198,21 @@ export default function SogsViewerPage() {
           inset: 0,
         }}
       >
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-            background: "radial-gradient(circle at 25% 20%, rgba(255, 79, 0, 0.12), transparent 55%)",
-          }}
+        <iframe
+          key={iframeKey}
+          ref={iframeRef}
+          src={viewerSrc}
+          title="SuperSplat Viewer"
+          style={{ border: "none", width: "100%", height: "100%", display: "block" }}
+          allow="xr-spatial-tracking"
         />
       </div>
 
       <div style={overlayWrapperStyles}>
         <form style={formCardStyles} onSubmit={handleSubmit}>
           <p style={statusTextStyles}>
-            {viewerReady ? "Viewer ready" : "Initializing viewer"}
-            {" · "}
-            {scriptsReady ? "Runtime loaded" : "Loading runtime"}
+            {viewerState === "ready" ? "Viewer ready" : viewerState === "loading" ? "Loading viewer" : "Idle"}
+            {" · Bundle Source"}
           </p>
           <h1
             style={{
@@ -299,38 +234,36 @@ export default function SogsViewerPage() {
               alignItems: "center",
               flexWrap: "wrap",
             }}
-          >
-            <input
-              id="sogs-url-input"
-              type="url"
-              inputMode="url"
-              placeholder="https://bucket.s3.amazonaws.com/path/to/sogs/"
-              value={s3Url}
-              onChange={(event) => setS3Url(event.target.value)}
-              style={{
-                ...pillInputStyles,
-                borderColor: error ? "#FF7262" : "rgba(255, 255, 255, 0.2)",
-                boxShadow: viewerReady ? "0 0 0 1px rgba(255, 79, 0, 0.2)" : "none",
-                flex: 1,
-              }}
-              disabled={loading}
-            />
-            <button
-              type="submit"
-              style={{
-                ...buttonStyles,
-                opacity: isSubmitDisabled ? 0.6 : 1,
-                cursor: isSubmitDisabled ? "not-allowed" : "pointer",
-                transform: loading ? "scale(0.98)" : "none",
-              }}
-              disabled={isSubmitDisabled}
             >
-              {loading ? "Loading…" : "Load"}
-            </button>
+              <input
+                id="sogs-url-input"
+                type="url"
+                inputMode="url"
+                placeholder="https://bucket.s3.amazonaws.com/path/to/sogs/"
+                value={inputUrl}
+                onChange={(event) => setInputUrl(event.target.value)}
+                style={{
+                  ...pillInputStyles,
+                  borderColor: error ? "#FF7262" : "rgba(255, 255, 255, 0.2)",
+                  boxShadow: viewerState === "ready" ? "0 0 0 1px rgba(255, 79, 0, 0.2)" : "none",
+                  flex: 1,
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  ...buttonStyles,
+                  opacity: isSubmitDisabled ? 0.6 : 1,
+                  cursor: isSubmitDisabled ? "not-allowed" : "pointer",
+                }}
+                disabled={isSubmitDisabled}
+              >
+                {viewerState === "loading" ? "Loading…" : "Load"}
+              </button>
           </div>
           <p style={helperTextStyles}>
             Expecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g.{" "}
-            <code>manifest.json</code>, <code>data.bin</code>).
+            <code>meta.json</code>, <code>means_l.webp</code>, <code>shN_centroids.webp</code>).
           </p>
           <p style={{ ...helperTextStyles, marginTop: "6px" }}>{statusMessage}</p>
           {error && <p style={errorTextStyles}>{error}</p>}

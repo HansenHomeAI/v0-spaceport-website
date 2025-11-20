@@ -9,7 +9,8 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const logsDir = path.join(repoRoot, "logs");
 
 const DEFAULT_PREVIEW = "https://agent-48291037-sogs-viewer.v0-spaceport-website-preview2.pages.dev";
-const DEFAULT_BUNDLE = "https://spaceport-ml-processing.s3.amazonaws.com/public-viewer/sogs-test-1753999934/";
+const DEFAULT_BUNDLE =
+  "https://spaceport-ml-processing.s3.amazonaws.com/public-viewer/sogs-test-1753999934/meta.json";
 
 const previewUrl = process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW;
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
@@ -31,10 +32,9 @@ const scenarios = [
   },
 ];
 
-const statusSelector = "text=SOGS bundle loaded.";
-const readySelector = "text=Viewer ready";
 const inputSelector = "#sogs-url-input";
 const submitSelector = 'button[type="submit"]';
+const iframeSelector = 'iframe[title="SuperSplat Viewer"]';
 
 async function ensureLogsDir() {
   await fs.mkdir(logsDir, { recursive: true });
@@ -54,12 +54,22 @@ async function runScenario({ launcher, name, options }) {
   const consolePath = path.join(logsDir, `sogs-viewer-${name}-console.log`);
 
   try {
-    await page.goto(`${previewUrl}/sogs-viewer`, { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(readySelector, { timeout: 90000 });
+    await page.goto(`${previewUrl}/sogs-viewer`, { waitUntil: "domcontentloaded", timeout: 120000 });
     await page.waitForSelector(inputSelector, { timeout: 15000 });
+    await page.waitForFunction(
+      () => {
+        const input = document.querySelector("#sogs-url-input");
+        return input && !input.hasAttribute("disabled");
+      },
+      null,
+      { timeout: 180000 }
+    );
     await page.fill(inputSelector, bundleUrl);
     await page.click(submitSelector);
-    await page.waitForSelector(statusSelector, { timeout: 120000 });
+    await page.waitForSelector(iframeSelector, { timeout: 15000 });
+    const frameLocator = page.frameLocator(iframeSelector);
+    await frameLocator.locator("#loadingWrap.hidden").waitFor({ timeout: 360000 });
+    await page.waitForSelector('text=SOGS bundle loaded in the embedded viewer.', { timeout: 360000 });
 
     await page.screenshot({ path: screenshotPath, fullPage: true });
     await fs.writeFile(consolePath, consoleBuffer.join("\n"), "utf8");
