@@ -2,9 +2,28 @@
 
 import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-const DEFAULT_BUNDLE_URL =
-  "https://spaceport-ml-processing.s3.amazonaws.com/public-viewer/sogs-test-1753999934/meta.json";
+const DEFAULT_BUNDLE_URL = "/test-sogs-1763664401/meta.json";
+const REMOTE_S3_BUNDLE =
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 const VIEWER_BASE = "/supersplat-viewer/index.html";
+const PROXY_HOSTS = new Set([
+  "spaceport-ml-processing.s3.amazonaws.com",
+  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+]);
+const SAMPLE_BUNDLES = [
+  {
+    label: "Local copy · sogs-test-1763664401",
+    url: DEFAULT_BUNDLE_URL,
+  },
+  {
+    label: "S3 proxy · sogs-test-1763664401",
+    url: REMOTE_S3_BUNDLE,
+  },
+  {
+    label: "Legacy local demo",
+    url: "/test-sogs-bundle/meta.json",
+  },
+];
 
 const pillInputStyles: CSSProperties = {
   width: "100%",
@@ -70,6 +89,30 @@ const helperTextStyles: CSSProperties = {
   fontSize: "0.85rem",
 };
 
+const samplesWrapStyles: CSSProperties = {
+  marginTop: "16px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+};
+
+const samplesListStyles: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "8px",
+};
+
+const sampleButtonStyles: CSSProperties = {
+  borderRadius: "999px",
+  padding: "6px 14px",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  background: "rgba(255, 255, 255, 0.06)",
+  color: "#ffffff",
+  fontSize: "0.78rem",
+  letterSpacing: "0.02em",
+  cursor: "pointer",
+};
+
 const viewerBackdropStyles: CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -88,12 +131,41 @@ const overlayWrapperStyles: CSSProperties = {
 
 export default function SogsViewerPage() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const getBaseOrigin = () => {
+    return typeof window !== "undefined" ? window.location.origin : "https://spaceport.space";
+  };
+  const prettifySource = (rawValue: string) => {
+    const trimmed = rawValue.trim();
+    if (!trimmed) {
+      return "none";
+    }
+    try {
+      const parsed =
+        trimmed.startsWith("http://") || trimmed.startsWith("https://")
+          ? new URL(trimmed)
+          : new URL(trimmed, getBaseOrigin());
+      if (PROXY_HOSTS.has(parsed.host)) {
+        return `${parsed.host}${parsed.pathname}`;
+      }
+      return parsed.host ? `${parsed.host}${parsed.pathname}` : parsed.pathname || trimmed;
+    } catch {
+      return trimmed;
+    }
+  };
+
   const [inputUrl, setInputUrl] = useState(DEFAULT_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState(DEFAULT_BUNDLE_URL);
   const [statusMessage, setStatusMessage] = useState("Paste an S3 bundle URL to render your splats.");
+  const [sourceLabel, setSourceLabel] = useState(() => prettifySource(DEFAULT_BUNDLE_URL));
   const [error, setError] = useState<string | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
   const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
+
+  const convertToProxyPath = (url: URL) => {
+    const base = `${url.protocol}//${url.host}`;
+    const encodedBase = base.replace("://", ":/");
+    return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
+  };
 
   const normalizeBundleUrl = (rawValue: string): string | null => {
     const trimmed = rawValue.trim();
@@ -102,7 +174,11 @@ export default function SogsViewerPage() {
     }
 
     try {
-      const parsed = new URL(trimmed);
+      const parsed =
+        trimmed.startsWith("http://") || trimmed.startsWith("https://")
+          ? new URL(trimmed)
+          : new URL(trimmed, getBaseOrigin());
+
       if (!parsed.protocol.startsWith("http")) {
         return null;
       }
@@ -110,10 +186,31 @@ export default function SogsViewerPage() {
       if (!parsed.pathname.endsWith(".json")) {
         parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
       }
+
+      if (PROXY_HOSTS.has(parsed.host)) {
+        return convertToProxyPath(parsed);
+      }
+
       return parsed.toString();
-    } catch (normalizeError) {
+    } catch {
       return null;
     }
+  };
+
+  const attemptLoad = (rawValue: string) => {
+    setError(null);
+    const normalized = normalizeBundleUrl(rawValue);
+    if (!normalized) {
+      setError("Enter a valid HTTPS URL pointing to the SOGS bundle (folder or meta.json).");
+      return false;
+    }
+
+    setStatusMessage("Loading viewer…");
+    setViewerState("loading");
+    setSourceLabel(prettifySource(rawValue));
+    setActiveUrl(normalized);
+    setIframeKey((prev) => prev + 1);
+    return true;
   };
 
   const viewerSrc = useMemo(() => {
@@ -131,38 +228,39 @@ export default function SogsViewerPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-    const normalized = normalizeBundleUrl(inputUrl);
-    if (!normalized) {
-      setError("Enter a valid HTTPS URL pointing to the SOGS bundle (folder or meta.json).");
-      return;
-    }
-
-    setStatusMessage("Loading viewer…");
-    setViewerState("loading");
-    setActiveUrl(normalized);
-    setIframeKey((prev) => prev + 1);
+    attemptLoad(inputUrl);
   };
 
   useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) {
-      return;
-    }
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
+        console.info("[sogs-viewer] first frame event received");
+        setViewerState("ready");
+        setStatusMessage("SOGS bundle loaded in the embedded viewer.");
+      }
+    };
 
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
     const poll = () => {
+      const iframe = iframeRef.current;
       try {
-        const doc = iframe.contentDocument;
+        const doc = iframe?.contentDocument;
         if (!doc) {
           return;
         }
         const loadingWrap = doc.getElementById("loadingWrap");
         if (loadingWrap?.classList.contains("hidden")) {
-          setViewerState("ready");
+          setViewerState((prev) => (prev === "ready" ? prev : "ready"));
           setStatusMessage("SOGS bundle loaded in the embedded viewer.");
         }
-      } catch (pollError) {
-        // ignore cross-origin errors (should not happen since the viewer is same-origin)
+      } catch {
+        // ignore cross-origin access errors
       }
     };
 
@@ -175,6 +273,10 @@ export default function SogsViewerPage() {
   useEffect(() => {
     setViewerState("loading");
     setStatusMessage("Loading viewer…");
+    const normalizedDefault = normalizeBundleUrl(DEFAULT_BUNDLE_URL);
+    if (normalizedDefault && normalizedDefault !== DEFAULT_BUNDLE_URL) {
+      setActiveUrl(normalizedDefault);
+    }
   }, []);
 
   const isSubmitDisabled = !inputUrl.trim();
@@ -212,7 +314,8 @@ export default function SogsViewerPage() {
         <form style={formCardStyles} onSubmit={handleSubmit}>
           <p style={statusTextStyles}>
             {viewerState === "ready" ? "Viewer ready" : viewerState === "loading" ? "Loading viewer" : "Idle"}
-            {" · Bundle Source"}
+            {" · Source: "}
+            {sourceLabel}
           </p>
           <h1
             style={{
@@ -265,6 +368,27 @@ export default function SogsViewerPage() {
             Expecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g.{" "}
             <code>meta.json</code>, <code>means_l.webp</code>, <code>shN_centroids.webp</code>).
           </p>
+          <div style={samplesWrapStyles}>
+            <p style={{ ...helperTextStyles, marginTop: 0 }}>
+              Quick samples (spaceport buckets are auto-routed through the proxy to bypass CORS; the direct S3
+              entry still requires AWS SigV4, so use the mirrored local copy if that bucket is locked down):
+            </p>
+            <div style={samplesListStyles}>
+              {SAMPLE_BUNDLES.map((sample) => (
+                <button
+                  key={sample.url}
+                  type="button"
+                  style={sampleButtonStyles}
+                  onClick={() => {
+                    setInputUrl(sample.url);
+                    attemptLoad(sample.url);
+                  }}
+                >
+                  {sample.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <p style={{ ...helperTextStyles, marginTop: "6px" }}>{statusMessage}</p>
           {error && <p style={errorTextStyles}>{error}</p>}
         </form>

@@ -9,8 +9,7 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const logsDir = path.join(repoRoot, "logs");
 
 const DEFAULT_PREVIEW = "https://agent-48291037-sogs-viewer.v0-spaceport-website-preview2.pages.dev";
-const DEFAULT_BUNDLE =
-  "https://spaceport-ml-processing.s3.amazonaws.com/public-viewer/sogs-test-1753999934/meta.json";
+const DEFAULT_BUNDLE = "/test-sogs-1763664401/meta.json";
 
 const previewUrl = process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW;
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
@@ -31,6 +30,16 @@ const scenarios = [
     },
   },
 ];
+const requestedScenarios = process.env.SOGS_SCENARIOS
+  ? process.env.SOGS_SCENARIOS.split(",").map((s) => s.trim()).filter(Boolean)
+  : null;
+const activeScenarios = requestedScenarios?.length
+  ? scenarios.filter((scenario) => requestedScenarios.includes(scenario.name))
+  : scenarios;
+if (!activeScenarios.length) {
+  console.error("No matching scenarios to run.");
+  process.exit(1);
+}
 
 const inputSelector = "#sogs-url-input";
 const submitSelector = 'button[type="submit"]';
@@ -67,8 +76,7 @@ async function runScenario({ launcher, name, options }) {
     await page.fill(inputSelector, bundleUrl);
     await page.click(submitSelector);
     await page.waitForSelector(iframeSelector, { timeout: 15000 });
-    const frameLocator = page.frameLocator(iframeSelector);
-    await frameLocator.locator("#loadingWrap.hidden").waitFor({ timeout: 360000 });
+    await page.waitForSelector('text=Viewer ready', { timeout: 360000 });
     await page.waitForSelector('text=SOGS bundle loaded in the embedded viewer.', { timeout: 360000 });
 
     await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -88,7 +96,7 @@ async function runScenario({ launcher, name, options }) {
   await ensureLogsDir();
   const results = [];
 
-  for (const scenario of scenarios) {
+  for (const scenario of activeScenarios) {
     try {
       const result = await runScenario(scenario);
       results.push(result);

@@ -99647,7 +99647,7 @@ const migrateV2 = (v1) => {
                 intensity: 0.5
             }
         },
-        animTracks: v1.animTracks.map((animTrackV1) => {
+        animTracks: ((v1.animTracks) ? v1.animTracks : []).map((animTrackV1) => {
             return migrateAnimTrackV2(animTrackV1, v1.camera.fov || 60);
         }),
         cameras: [{
@@ -101634,7 +101634,7 @@ class Viewer {
                         app.once('frameend', () => {
                             events.fire('firstFrame');
                             // emit first frame event on window
-                            window.firstFrame?.();
+                            window.firstFrame?.();try{window.parent&&window.parent.postMessage({type:"supersplat:firstFrame"},"*");}catch(e){};
                         });
                     }
                 });
@@ -101644,7 +101644,7 @@ class Viewer {
                 // till then screenshots will likely not work correctly.
                 state.readyToRender = true;
                 events.fire('firstFrame');
-                window.firstFrame?.();
+                window.firstFrame?.();try{window.parent&&window.parent.postMessage({type:"supersplat:firstFrame"},"*");}catch(e){};
             }
         });
     }

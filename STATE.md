@@ -1,5 +1,5 @@
-reason: unblock PlayCanvas SOGS viewer testing – CDN runtime missing
-last_step: built the /sogs-viewer route and tried to run Playwright validations, but `@playcanvas/supersplat` CDN returns 404 (so `window.SuperSplatViewer` is undefined) and no public package exists; hosted tests + logs under `logs/sogs-viewer-*.log/png` demonstrate the missing dependency
-next_unblocked_step: obtain an actual SuperSplat viewer bundle (or an approved alternative) that exposes `SuperSplatViewer.loadFromUrl` so we can finish wiring + testing against the S3 bundle
-owner_action_needed: provide a valid script source (or green-light for another rendering approach) for the SuperSplat viewer
-updated: 2025-11-20T16:25:00Z
+reason: sogs-test-1763664401 renders locally via the embedded SuperSplat build, but the `spaceport-ml-processing` S3 bucket still requires SigV4/KMS so remote loads fail without AWS credentials
+last_step: mirrored the sogs-test-1763664401 supersplat_bundle into `web/public`, defaulted the `/sogs-viewer` UI to that copy, and ran chromium + webkit Playwright scenarios plus a fresh Next.js build to prove the viewer decompresses/renders the splat
+next_unblocked_step: once the bucket either allows unsigned GETs or we get deployable AWS creds for the proxy, repoint the default bundle to the S3 URL and repeat the verification loop against the Cloudflare preview alias
+owner_action_needed: relax the SSE-KMS policy on `s3://spaceport-ml-processing/compressed/sogs-test-1763664401/` (or share safe AWS credentials for Cloudflare) so `/api/sogs-proxy` can stream the remote assets
+updated: 2025-11-20T20:10:27Z
