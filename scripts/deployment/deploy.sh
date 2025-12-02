@@ -114,6 +114,26 @@ deploy_container() {
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
   docker pull "${base_image}" || log "No base image yet for ${container_name}"
   
+  # Build base image if missing
+  if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
+    local base_file="${container_dir}/Dockerfile.base"
+    if [[ -f "$base_file" ]]; then
+      log "Building base image for ${container_name}..."
+      docker buildx build \
+        --platform linux/amd64 \
+        --file "${base_file}" \
+        --tag "${repo_name}:base" \
+        --progress plain \
+        --load \
+        "${container_dir}"
+      docker tag "${repo_name}:base" "${base_image}"
+      docker push "${base_image}"
+      log "Base image built and pushed: ${base_image}"
+    else
+      log "No Dockerfile.base for ${container_name}; skipping base build."
+    fi
+  fi
+
   # Build with advanced caching options
   log "Building with Docker BuildKit and layer caching..."
   docker buildx build \

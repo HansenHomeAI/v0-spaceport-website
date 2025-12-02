@@ -142,6 +142,13 @@ jobs:
             return
           fi
 
+          # Base image missing -> build
+          if ! aws ecr describe-images --region us-west-2 --repository-name "$repo_name" --image-ids imageTag=base >/dev/null 2>&1; then
+            echo "Repo $repo_name missing 'base' tag - will build $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
+
           # Branch tag missing -> import (retag latest)
           if [ -n "$BRANCH_SUFFIX" ]; then
             if ! aws ecr describe-images --region us-west-2 --repository-name "$repo_name" --image-ids imageTag="$BRANCH_SUFFIX" >/dev/null 2>&1; then
