@@ -101,10 +101,12 @@ jobs:
         INPUT_CONTAINER="${{ inputs.container }}"
         CONTAINERS_TO_BUILD=""
         CONTAINERS_TO_IMPORT=""
+        CONTAINER_LIST="sfm 3dgs compressor"
 
         if [ -n "$INPUT_CONTAINER" ]; then
           echo "Container override provided: $INPUT_CONTAINER"
           CONTAINERS_TO_BUILD="$INPUT_CONTAINER"
+          CONTAINER_LIST="$INPUT_CONTAINER"
         fi
 
         if [ -n "$CHANGED" ]; then
@@ -170,7 +172,7 @@ jobs:
         }
 
         # Shared repos only; branch tags handled as retags
-        for container in sfm 3dgs compressor; do
+        for container in $CONTAINER_LIST; do
           ensure_repo_ready "$container"
         done
 
