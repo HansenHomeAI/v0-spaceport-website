@@ -197,8 +197,7 @@ jobs:
         
         apply_lifecycle() {
           local repo="$1"
-          cat > policy.json <<'EOF'
-          {
+          local policy='{
             "rules": [
               {
                 "rulePriority": 1,
@@ -224,10 +223,8 @@ jobs:
                 "action": {"type": "expire"}
               }
             ]
-          }
-          EOF
-          aws ecr put-lifecycle-policy --region us-west-2 --repository-name "$repo" --lifecycle-policy-text file://policy.json
-          rm -f policy.json
+          }'
+          aws ecr put-lifecycle-policy --region us-west-2 --repository-name "$repo" --lifecycle-policy-text "$policy"
         }
 
         for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
