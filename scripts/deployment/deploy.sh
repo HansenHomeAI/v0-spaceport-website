@@ -95,6 +95,7 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -111,6 +112,7 @@ deploy_container() {
   log "Pulling existing image and cache for layer reuse..."
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
+  docker pull "${base_image}" || log "No base image yet for ${container_name}"
   
   # Build with advanced caching options
   log "Building with Docker BuildKit and layer caching..."
@@ -121,6 +123,7 @@ deploy_container() {
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref}" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
+    --cache-from "${base_image}" \
     --cache-to "type=registry,mode=max,ref=${build_cache_ref}" \
     --progress plain \
     --load \
