@@ -2,7 +2,8 @@
 # Optimized for layer caching and build efficiency
 
 # Stage 1: Base system with dependencies  
-FROM python:3.9-slim-bullseye AS base
+ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:base
+FROM ${BASE_IMAGE} AS base
 
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive

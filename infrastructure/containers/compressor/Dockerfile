@@ -2,81 +2,14 @@
 # Official implementation using PlayCanvas SOGS package from:
 # https://github.com/playcanvas/sogs
 
-# Use Ubuntu LTS base from AWS Public ECR and install CUDA 12.4 from the official NVIDIA apt repository
-FROM public.ecr.aws/lts/ubuntu:22.04
+ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:base
+FROM ${BASE_IMAGE}
 
-# Prevent interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install CUDA 12.4 runtime/toolkit from NVIDIA apt repo to avoid Docker Hub rate limits
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    curl \
-    gnupg2 \
-    ca-certificates && \
-    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
-    dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends cuda-toolkit-12-4 && \
-    rm -rf /var/lib/apt/lists/*
-
-# Disable CUDA during build to avoid driver version issues
+# Base image already includes CUDA + python stack
 ARG DISABLE_CUDA=""
 ENV CUDA_VISIBLE_DEVICES=${DISABLE_CUDA}
 ENV CUDA_LAUNCH_BLOCKING=0
 ENV PYTHONUNBUFFERED=1
-
-# Set CUDA environment variables
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-dev \
-    python3-pip \
-    git \
-    build-essential \
-    cmake \
-    wget \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
-
-# Set working directory
-WORKDIR /opt/ml/code
-
-# Upgrade pip
-RUN pip3 install --no-cache-dir --upgrade pip
-
-# Install PyTorch with CUDA 12.1 support (compatible with CUDA 12.4 driver)
-RUN pip3 install --no-cache-dir \
-    torch==2.1.0+cu121 torchvision==0.16.0+cu121 torchaudio==2.1.0+cu121 \
-    --index-url https://download.pytorch.org/whl/cu121
-
-# Force install NumPy 1.24.4 AFTER PyTorch to override any newer version
-RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.24.4"
-
-# Install CUDA-specific dependencies for CUDA 12.x
-RUN pip3 install --no-cache-dir cupy-cuda12x
-
-# Install TorchPQ (required by SOGS)
-RUN pip3 install --no-cache-dir torchpq
-
-# Install PLAS (Parallel Linear Assignment Sorting) from GitHub
-RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git
-
-# Install official PlayCanvas SOGS package from GitHub
-RUN pip3 install --no-cache-dir git+https://github.com/playcanvas/sogs.git
-
-# Force reinstall NumPy 1.26.4 AFTER all packages (better compatibility with PyTorch 2.1.0)
-RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.26.4"
-
-# Install additional dependencies for our container
-RUN pip3 install --no-cache-dir \
-    boto3==1.34.69 \
-    pathlib
 
 # Copy application code
 COPY compress.py .

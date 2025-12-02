@@ -94,6 +94,7 @@ deploy_container() {
   local build_cache_ref
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
+  local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -116,6 +117,7 @@ deploy_container() {
   docker buildx build \
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
+    --build-arg BASE_IMAGE="${base_image}" \
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref}" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \

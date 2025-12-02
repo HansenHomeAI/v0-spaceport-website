@@ -1,0 +1,38 @@
+ARG BASE_IMAGE=763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
+FROM ${BASE_IMAGE}
+
+WORKDIR /opt/ml/code
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb && \
+    apt-get update && apt-get install -y --no-install-recommends \
+        colmap \
+        cuda-nvcc-11-8 \
+        cuda-cudart-dev-11-8 \
+        build-essential \
+        cmake \
+        ninja-build \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CUDA_HOME=/usr/local/cuda
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
+ENV LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
+ENV PATH=/usr/local/cuda/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Limit parallel builds for memory usage
+ENV MAX_JOBS=1
+ENV CMAKE_BUILD_PARALLEL_LEVEL=1
+
+# Python deps
+RUN pip install --no-cache-dir "pybind11>=2.13.0" && \
+    pip install --no-cache-dir "nerfstudio[all]>=1.0.0" && \
+    pip install --no-cache-dir \
+        boto3>=1.26.0 \
+        psutil>=5.9.0 \
+        plyfile>=0.7.4
+
+# Basic validation
+RUN python -c "import nerfstudio; import gsplat; print('base deps ok')"

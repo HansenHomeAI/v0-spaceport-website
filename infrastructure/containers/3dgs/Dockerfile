@@ -1,12 +1,5 @@
-# =================================================================
-# AWS SageMaker 3D Gaussian Splatting Training Container
-# Vincent Woo's Sutro Tower Methodology - JIT Compilation Approach
-# =================================================================
-# Branch-specific build verification marker - safe to remove or update during tests
-# Test: New branch container build verification - OOM fix validated
-# Second change to trigger container build workflow
-
-FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker
+ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:base
+FROM ${BASE_IMAGE}
 
 LABEL maintainer="Spaceport ML Team"
 LABEL version="3.0"
