@@ -181,7 +181,7 @@ export default function Pricing(): JSX.Element {
 
           <div className="pricing-card">
             <h2>Enterprise.</h2>
-            <p>High-volume or specialized projects? We'll tailor a plan for teams with larger model counts or specific needs.</p>
+            <p>High-volume or specialized projects? We&apos;ll tailor a plan for teams with larger model counts or specific needs.</p>
 
             <a href="mailto:gabriel@spcprt.com?subject=Enterprise%20Pricing%20Inquiry&body=Hello%2C%20I%27m%20interested%20in%20learning%20more%20about%20enterprise%20pricing%20at%20Spaceport." className="cta-button">Contact Us</a>
 
@@ -193,4 +193,3 @@ export default function Pricing(): JSX.Element {
     </>
   );
 }
-

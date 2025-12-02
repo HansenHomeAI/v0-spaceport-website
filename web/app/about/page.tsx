@@ -7,7 +7,7 @@ export default function About(): JSX.Element {
         <h1>About Spaceport AI.</h1>
         <p><span className="inline-white">Real estate is all about location—yet most listings fail to showcase it properly. Photos and 3D tours capture the inside of a home well, but they leave out what matters most: the context, the surroundings, the feel of the space.</span></p>
         <div className="right-col">
-          <p><span className="inline-white">That's where Spaceport AI comes in.</span></p>
+          <p><span className="inline-white">That&rsquo;s where Spaceport AI comes in.</span></p>
         </div>
       </section>
       <section className="section two-col-section" id="about-mission">
@@ -33,4 +33,3 @@ export default function About(): JSX.Element {
     </>
   );
 }
-
