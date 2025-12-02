@@ -51,11 +51,6 @@ phases:
         else
           echo "No containers require import."
         fi
-      # Pre-pull base images for caching
-      - echo "Pre-pulling base images for caching..."
-      - docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true
-      - docker pull nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true
-      - docker pull python:3.9-slim || true
       # Set up Docker layer caching
       - echo "Setting up Docker layer caching..."
       - mkdir -p /tmp/docker-cache
@@ -81,9 +76,7 @@ phases:
       - docker buildx prune -f || true
 
 artifacts:
-  files:
-    - '**/*'
-  discard-paths: yes
+  files: []
 
 cache:
   paths:
@@ -91,23 +84,3 @@ cache:
     - '/root/.cache/pip'
     - '/root/.cache/pipenv'
     - '/root/.local/share/virtualenvs'
-    
-    # Docker layer caching
-    - '/root/.docker/buildx'
-    - '/tmp/docker-cache/**/*'
-    - '/var/lib/docker/image'
-    - '/var/lib/docker/overlay2'
-    
-    # Build artifacts caching
-    - 'infrastructure/containers/**/node_modules'
-    - 'infrastructure/containers/**/.cache'
-    - 'infrastructure/containers/**/build'
-    - 'infrastructure/containers/**/dist'
-    
-    # AWS CLI and other tools
-    - '/root/.aws'
-    - '/usr/local/bin'
-    
-    # Git dependencies
-    - '/root/.gitconfig'
-    - '/tmp/git-cache' 

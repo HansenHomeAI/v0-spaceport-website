@@ -7,7 +7,6 @@ set -e
 # --- Configuration ---
 AWS_REGION="us-west-2"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BRANCH_SUFFIX="${BRANCH_SUFFIX:-}"
 
 # Enable Docker BuildKit for better caching and performance
@@ -102,6 +101,8 @@ deploy_container() {
   local container_name=$1
   local repo_name
   repo_name=$(get_repo_name "$container_name")
+  local build_cache_ref
+  build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -115,10 +116,9 @@ deploy_container() {
   log "Building container from: ${container_dir}"
   
   # Try to pull existing image for layer caching
-  log "Pulling existing image for layer caching..."
-  docker pull "${ecr_uri}:latest" || {
-    log "No existing image found, building from scratch..."
-  }
+  log "Pulling existing image and cache for layer reuse..."
+  docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
+  docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
   
   # Build with advanced caching options
   log "Building with Docker BuildKit and layer caching..."
@@ -126,10 +126,9 @@ deploy_container() {
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
     --tag "${repo_name}:latest" \
-    --cache-from "${ecr_uri}:latest" \
-    --cache-from "${ecr_uri}:cache" \
-    --cache-to "type=local,dest=/tmp/docker-cache/${container_name}" \
-    --cache-to "type=inline" \
+    --cache-from "type=registry,ref=${build_cache_ref}" \
+    --cache-from "type=registry,ref=${ecr_uri}:latest" \
+    --cache-to "type=registry,mode=max,ref=${build_cache_ref}" \
     --progress plain \
     --load \
     "${container_dir}"
@@ -138,27 +137,16 @@ deploy_container() {
 
   log "Tagging images..."
   docker tag "${repo_name}:latest" "${ecr_uri}:latest"
-  docker tag "${repo_name}:latest" "${ecr_uri}:${TIMESTAMP}"
-  docker tag "${repo_name}:latest" "${ecr_uri}:cache"
-  log "Tags created: latest, ${TIMESTAMP}, cache"
+  log "Tags created: latest"
 
   log "Pushing images to ECR..."
-  # Push in parallel for faster deployment
-  {
-    docker push "${ecr_uri}:latest" &
-    docker push "${ecr_uri}:${TIMESTAMP}" &
-    docker push "${ecr_uri}:cache" &
-    wait
-  }
-  
+  docker push "${ecr_uri}:latest"
   log "Successfully pushed to ${ecr_uri}"
   
   # Clean up local images to save space
   log "Cleaning up local images..."
   docker rmi "${repo_name}:latest" || true
   docker rmi "${ecr_uri}:latest" || true
-  docker rmi "${ecr_uri}:${TIMESTAMP}" || true
-  docker rmi "${ecr_uri}:cache" || true
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
   echo
