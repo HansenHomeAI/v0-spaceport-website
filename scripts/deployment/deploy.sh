@@ -75,25 +75,15 @@ login_ecr() {
 }
 
 # Function to get repository name for a container
-# Accepts optional branch suffix for branch-specific repos
 get_repo_name() {
     local container_name=$1
-    local branch_suffix=${BRANCH_SUFFIX:-""}
     
-    local base_repo
     case "$container_name" in
-        "sfm") base_repo="spaceport/sfm";;
-        "3dgs") base_repo="spaceport/3dgs";;
-        "compressor") base_repo="spaceport/compressor";;
+        "sfm") echo "spaceport/sfm";;
+        "3dgs") echo "spaceport/3dgs";;
+        "compressor") echo "spaceport/compressor";;
         *) error "Invalid container name provided to get_repo_name: $container_name";;
     esac
-    
-    # If branch suffix exists, append it to repo name
-    if [ -n "$branch_suffix" ]; then
-        echo "${base_repo}-${branch_suffix}"
-    else
-        echo "$base_repo"
-    fi
 }
 
 # Function to build and push a single container with caching
@@ -103,6 +93,7 @@ deploy_container() {
   repo_name=$(get_repo_name "$container_name")
   local build_cache_ref
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
+  local branch_tag="${BRANCH_SUFFIX:-}"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -137,16 +128,27 @@ deploy_container() {
 
   log "Tagging images..."
   docker tag "${repo_name}:latest" "${ecr_uri}:latest"
-  log "Tags created: latest"
+  if [ -n "$branch_tag" ]; then
+    docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
+    log "Tags created: latest, ${branch_tag}"
+  else
+    log "Tags created: latest"
+  fi
 
   log "Pushing images to ECR..."
   docker push "${ecr_uri}:latest"
+  if [ -n "$branch_tag" ]; then
+    docker push "${ecr_uri}:${branch_tag}"
+  fi
   log "Successfully pushed to ${ecr_uri}"
   
   # Clean up local images to save space
   log "Cleaning up local images..."
   docker rmi "${repo_name}:latest" || true
   docker rmi "${ecr_uri}:latest" || true
+  if [ -n "$branch_tag" ]; then
+    docker rmi "${ecr_uri}:${branch_tag}" || true
+  fi
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
   echo

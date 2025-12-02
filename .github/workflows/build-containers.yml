@@ -102,7 +102,7 @@ jobs:
         fi
 
         # Check if shared repo has latest tag
-        check_shared_repo_has_latest() {
+        check_repo_has_latest() {
           local container_name="$1"
           local shared_repo="spaceport/${container_name}"
           
@@ -110,26 +110,16 @@ jobs:
             return 1
           fi
           
-          local latest_count
-          latest_count=$(aws ecr describe-images \
+          aws ecr describe-images \
             --region us-west-2 \
             --repository-name "$shared_repo" \
-            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
-            --output text 2>/dev/null || echo 0)
-          
-          if [ "$latest_count" != "0" ] && [ "$latest_count" != "None" ]; then
-            return 0
-          fi
-          return 1
+            --image-ids imageTag=latest >/dev/null 2>&1
         }
 
-        # Check ECR repos to ensure they exist and have latest tags
-        # For branch-specific repos: try importing from shared repo first
-        # For shared repos: check if they exist and have latest tags
+        # Check shared repos and decide build/import using branch tags
         ensure_repo_ready() {
           local container_name="$1"
-          local repo_name="$2"
-          local is_branch_specific="$3"
+          local repo_name="spaceport/${container_name}"
 
           # If container files changed, always build (don't import)
           if echo "$CHANGED" | grep -q "$container_name"; then
@@ -138,56 +128,33 @@ jobs:
             return
           fi
 
-          # Check if branch-specific repo exists and has latest
+          # Repo missing -> build
           if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
-            if [ "$is_branch_specific" = "true" ]; then
-              # Branch-specific repo missing - check if we can import from shared
-              if check_shared_repo_has_latest "$container_name"; then
-                echo "Branch-specific repo $repo_name missing, but shared repo has latest - will import"
-                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
-              else
-                echo "Both branch-specific and shared repos missing - will build $container_name"
-                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-              fi
-            else
-              echo "Shared repo $repo_name missing - will build $container_name"
-              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-            fi
+            echo "Shared repo $repo_name missing - will build $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
             return
           fi
 
-          if ! aws ecr describe-images \
-            --region us-west-2 \
-            --repository-name "$repo_name" \
-            --image-ids imageTag=latest >/dev/null 2>&1; then
-            if [ "$is_branch_specific" = "true" ]; then
-              # Branch-specific repo exists but no latest - check if we can import from shared
-              if check_shared_repo_has_latest "$container_name"; then
-                echo "Branch-specific repo $repo_name lacks latest tag, but shared repo has latest - will import"
-                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
-              else
-                echo "Branch-specific repo $repo_name lacks latest tag and shared repo also missing - will build $container_name"
-                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-              fi
-            else
-              echo "Shared repo $repo_name exists but lacks a 'latest' tag - will build $container_name"
-              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+          # Latest missing -> build
+          if ! check_repo_has_latest "$container_name"; then
+            echo "Repo $repo_name missing 'latest' tag - will build $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
+
+          # Branch tag missing -> import (retag latest)
+          if [ -n "$BRANCH_SUFFIX" ]; then
+            if ! aws ecr describe-images --region us-west-2 --repository-name "$repo_name" --image-ids imageTag="$BRANCH_SUFFIX" >/dev/null 2>&1; then
+              echo "Repo $repo_name missing branch tag ${BRANCH_SUFFIX} - will import"
+              CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
             fi
           fi
         }
 
-        # Check ECR for all containers (handles new branches, deletions, missing images)
-        if [ -n "$BRANCH_SUFFIX" ]; then
-          # Branch-specific repos: check branch repo, fallback to shared for import
-          for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}" "true"
-          done
-        else
-          # Shared repos: just check if they exist
-          for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}" "false"
-          done
-        fi
+        # Shared repos only; branch tags handled as retags
+        for container in sfm 3dgs compressor; do
+          ensure_repo_ready "$container"
+        done
 
         UNIQUE_CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
         UNIQUE_CONTAINERS_TO_IMPORT=$(echo "$CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
@@ -228,25 +195,48 @@ jobs:
         CONTAINERS_TO_BUILD="${{ steps.build_plan.outputs.containers_to_build }}"
         CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
         
-        # Always ensure shared repos exist
+        apply_lifecycle() {
+          local repo="$1"
+          cat > policy.json <<'EOF'
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Expire untagged after 7d",
+      "selection": {
+        "tagStatus": "untagged",
+        "countType": "sinceImagePushed",
+        "countUnit": "days",
+        "countNumber": 7
+      },
+      "action": {"type": "expire"}
+    },
+    {
+      "rulePriority": 2,
+      "description": "Expire agent branch tags after 28d",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["agent-"],
+        "countType": "sinceImagePushed",
+        "countUnit": "days",
+        "countNumber": 28
+      },
+      "action": {"type": "expire"}
+    }
+  ]
+}
+EOF
+          aws ecr put-lifecycle-policy --region us-west-2 --repository-name "$repo" --lifecycle-policy-text file://policy.json
+          rm -f policy.json
+        }
+
         for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
           echo "Ensuring shared ECR repository exists: $repo"
-          aws ecr describe-repositories --region us-west-2 --repository-names "$repo" >/dev/null 2>&1 || \
-          aws ecr create-repository --region us-west-2 --repository-name "$repo" --image-scanning-configuration scanOnPush=true
-        done
-        
-        # Create branch-specific repos for containers that need building or importing
-        if [ -n "${BRANCH_SUFFIX}" ]; then
-          ALL_CONTAINERS=$(echo "$CONTAINERS_TO_BUILD $CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
-          if [ -n "$ALL_CONTAINERS" ]; then
-            for container in $ALL_CONTAINERS; do
-              BRANCH_REPO="spaceport/${container}-${BRANCH_SUFFIX}"
-              echo "Ensuring branch-specific ECR repository exists: $BRANCH_REPO"
-              aws ecr describe-repositories --region us-west-2 --repository-names "$BRANCH_REPO" >/dev/null 2>&1 || \
-              aws ecr create-repository --region us-west-2 --repository-name "$BRANCH_REPO" --image-scanning-configuration scanOnPush=true
-            done
+          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo" >/dev/null 2>&1; then
+            aws ecr create-repository --region us-west-2 --repository-name "$repo" --image-scanning-configuration scanOnPush=true
           fi
-        fi
+          apply_lifecycle "$repo"
+        done
 
     - name: Ensure CodeBuild role and project exist (prod/staging)
       if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
