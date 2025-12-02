@@ -2,6 +2,11 @@ name: Trigger ML Container Build
 
 on:
   workflow_dispatch:  # Manual trigger
+    inputs:
+      container:
+        description: "Limit build to a single container (sfm|3dgs|compressor)"
+        required: false
+        default: ""
   push:
     # Trigger on any branch when container files change
     paths:
@@ -93,8 +98,14 @@ jobs:
 
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CHANGED="${{ steps.branch.outputs.changed_containers }}"
+        INPUT_CONTAINER="${{ inputs.container }}"
         CONTAINERS_TO_BUILD=""
         CONTAINERS_TO_IMPORT=""
+
+        if [ -n "$INPUT_CONTAINER" ]; then
+          echo "Container override provided: $INPUT_CONTAINER"
+          CONTAINERS_TO_BUILD="$INPUT_CONTAINER"
+        fi
 
         if [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
@@ -174,11 +185,11 @@ jobs:
           echo "build_required=false" >> $GITHUB_OUTPUT
           echo "import_required=false" >> $GITHUB_OUTPUT
         else
-          if [ -n "$UNIQUE_CONTAINERS_TO_BUILD" ]; then
-            echo "Containers to build: $UNIQUE_CONTAINERS_TO_BUILD"
-            echo "containers=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
-            echo "containers_to_build=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
-            echo "build_required=true" >> $GITHUB_OUTPUT
+        if [ -n "$UNIQUE_CONTAINERS_TO_BUILD" ]; then
+          echo "Containers to build: $UNIQUE_CONTAINERS_TO_BUILD"
+          echo "containers=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+          echo "containers_to_build=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+          echo "build_required=true" >> $GITHUB_OUTPUT
           else
             echo "containers=none" >> $GITHUB_OUTPUT
             echo "containers_to_build=" >> $GITHUB_OUTPUT
@@ -327,6 +338,15 @@ jobs:
         else
           echo "CodeBuild project already exists. Reusing existing configuration."
         fi
+
+        echo "Ensuring CodeBuild timeout is 120 minutes..."
+        aws codebuild update-project \
+          --name spaceport-ml-containers \
+          --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
+          --timeout-in-minutes 120 \
+          --queued-timeout-in-minutes 30 \
+          --service-role "$ROLE_ARN" \
+          >/dev/null
 
     - name: Trigger CodeBuild for container builds/imports
       if: ${{ steps.build_plan.outputs.build_required == 'true' }}
