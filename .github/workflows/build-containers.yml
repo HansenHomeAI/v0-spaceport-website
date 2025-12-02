@@ -235,8 +235,34 @@ jobs:
           apply_lifecycle "$repo"
         done
 
+    - name: Retag latest to branch tag without CodeBuild
+      if: ${{ steps.build_plan.outputs.build_required != 'true' && steps.build_plan.outputs.import_required == 'true' }}
+      run: |
+        set -euo pipefail
+        BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
+        if [ -z "$BRANCH_SUFFIX" ]; then
+          echo "Branch suffix empty; nothing to retag."
+          exit 0
+        fi
+
+        retag() {
+          local container="$1"
+          local repo="spaceport/${container}"
+          echo "Retagging ${repo}:latest -> ${BRANCH_SUFFIX}"
+          manifest=$(aws ecr batch-get-image --region us-west-2 --repository-name "$repo" --image-ids imageTag=latest --query 'images[0].imageManifest' --output text)
+          if [ -z "$manifest" ] || [ "$manifest" = "None" ]; then
+            echo "No latest image found for $repo; cannot retag."
+            exit 1
+          fi
+          aws ecr put-image --region us-west-2 --repository-name "$repo" --image-tag "$BRANCH_SUFFIX" --image-manifest "$manifest"
+        }
+
+        for c in ${{ steps.build_plan.outputs.containers_to_import }}; do
+          retag "$c"
+        done
+
     - name: Ensure CodeBuild role and project exist (prod/staging)
-      if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Using account: $ACCOUNT"
@@ -296,7 +322,7 @@ jobs:
         fi
 
     - name: Trigger CodeBuild for container builds/imports
-      if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
         echo "Building containers: ${{ steps.build_plan.outputs.containers_to_build }}"
