@@ -198,34 +198,34 @@ jobs:
         apply_lifecycle() {
           local repo="$1"
           cat > policy.json <<'EOF'
-{
-  "rules": [
-    {
-      "rulePriority": 1,
-      "description": "Expire untagged after 7d",
-      "selection": {
-        "tagStatus": "untagged",
-        "countType": "sinceImagePushed",
-        "countUnit": "days",
-        "countNumber": 7
-      },
-      "action": {"type": "expire"}
-    },
-    {
-      "rulePriority": 2,
-      "description": "Expire agent branch tags after 28d",
-      "selection": {
-        "tagStatus": "tagged",
-        "tagPrefixList": ["agent-"],
-        "countType": "sinceImagePushed",
-        "countUnit": "days",
-        "countNumber": 28
-      },
-      "action": {"type": "expire"}
-    }
-  ]
-}
-EOF
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Expire untagged after 7d",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {"type": "expire"}
+              },
+              {
+                "rulePriority": 2,
+                "description": "Expire agent branch tags after 28d",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["agent-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 28
+                },
+                "action": {"type": "expire"}
+              }
+            ]
+          }
+          EOF
           aws ecr put-lifecycle-policy --region us-west-2 --repository-name "$repo" --lifecycle-policy-text file://policy.json
           rm -f policy.json
         }
