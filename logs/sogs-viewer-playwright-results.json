@@ -1,0 +1,16 @@
+{
+  "previewUrl": "https://agent-48291037-sogs-viewer.v0-spaceport-website-preview2.pages.dev",
+  "bundleUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+  "results": [
+    {
+      "name": "chromium-desktop",
+      "screenshotPath": "/Users/gabrielhansen/Spaceport-Website/logs/sogs-viewer-chromium-desktop.png",
+      "consolePath": "/Users/gabrielhansen/Spaceport-Website/logs/sogs-viewer-chromium-desktop-console.log"
+    },
+    {
+      "name": "webkit-mobile",
+      "screenshotPath": "/Users/gabrielhansen/Spaceport-Website/logs/sogs-viewer-webkit-mobile.png",
+      "consolePath": "/Users/gabrielhansen/Spaceport-Website/logs/sogs-viewer-webkit-mobile-console.log"
+    }
+  ]
+}
