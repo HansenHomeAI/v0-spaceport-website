@@ -73,7 +73,7 @@ RUN cd /opt && \
 # Stage 4: Application code
 FROM opensfm-build AS app-build
 
-# Base layers already include heavy deps; keep this layer minimal for fast rebuilds
+# Base layers already include heavy deps; keep this layer minimal for fast rebuilds (canary edit)
 # Copy processing scripts (most frequently changed)
 COPY run_sfm.sh /opt/ml/code/run_sfm.sh
 COPY run_opensfm_gps.py /opt/ml/code/run_opensfm_gps.py
