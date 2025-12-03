@@ -124,8 +124,13 @@ jobs:
         if [ -z "$INPUT_CONTAINER" ] && [ -n "$CHANGED" ]; then
           COUNT_CONTAINERS=$(echo "$CONTAINER_LIST" | wc -w | tr -d ' ')
           if [ "$COUNT_CONTAINERS" -gt 1 ]; then
-            echo "Multiple container directories changed ($CONTAINER_LIST). To avoid multi-container builds, re-run workflow_dispatch with container=<sfm|3dgs|compressor>."
-            exit 1
+            echo "Multiple container directories changed ($CONTAINER_LIST). Skipping auto-build to avoid multi-container builds."
+            echo "containers=none" >> $GITHUB_OUTPUT
+            echo "containers_to_build=" >> $GITHUB_OUTPUT
+            echo "containers_to_import=" >> $GITHUB_OUTPUT
+            echo "build_required=false" >> $GITHUB_OUTPUT
+            echo "import_required=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
         fi
 
