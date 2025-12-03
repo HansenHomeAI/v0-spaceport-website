@@ -337,7 +337,7 @@ jobs:
             --description "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA" \
             --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
             --artifacts type=NO_ARTIFACTS \
-            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
             --service-role "$ROLE_ARN" \
             --timeout-in-minutes 120 \
             --queued-timeout-in-minutes 30 \
@@ -350,7 +350,7 @@ jobs:
         echo "Ensuring CodeBuild timeout is 120 minutes..."
         aws codebuild update-project \
           --name spaceport-ml-containers \
-          --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
+          --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
           --timeout-in-minutes 120 \
           --queued-timeout-in-minutes 30 \
           --service-role "$ROLE_ARN" \
@@ -362,12 +362,19 @@ jobs:
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
         echo "Building containers: ${{ steps.build_plan.outputs.containers_to_build }}"
         SOURCE_REPO="https://github.com/${{ github.repository }}.git"
-        COMPUTE_TYPE="${{ inputs.compute_type }}"
-        if [ -n "$COMPUTE_TYPE" ]; then
-          echo "Compute override requested: $COMPUTE_TYPE"
-          COMPUTE_ARGS=(--compute-type-override "$COMPUTE_TYPE")
+        COMPUTE_TYPE_INPUT="${{ inputs.compute_type }}"
+        DEFAULT_COMPUTE="BUILD_GENERAL1_LARGE"
+        BASE_COMPUTE="BUILD_GENERAL1_2XLARGE"
+
+        if [ -n "$COMPUTE_TYPE_INPUT" ]; then
+          echo "Compute override requested: $COMPUTE_TYPE_INPUT"
+          COMPUTE_ARGS=(--compute-type-override "$COMPUTE_TYPE_INPUT")
+        elif [ "${{ inputs.base_only }}" = "true" ]; then
+          echo "Base-only build detected; using $BASE_COMPUTE for extra headroom"
+          COMPUTE_ARGS=(--compute-type-override "$BASE_COMPUTE")
         else
-          COMPUTE_ARGS=()
+          echo "Defaulting to $DEFAULT_COMPUTE for app-layer build (cheaper)"
+          COMPUTE_ARGS=(--compute-type-override "$DEFAULT_COMPUTE")
         fi
         
         wait_for_capacity() {
