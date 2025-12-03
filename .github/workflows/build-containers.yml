@@ -11,6 +11,10 @@ on:
         description: "Build only the base image for the specified container"
         required: false
         default: "false"
+      compute_type:
+        description: "Optional CodeBuild compute type override (e.g., BUILD_GENERAL1_LARGE, BUILD_GENERAL1_XLARGE, BUILD_GENERAL1_2XLARGE)"
+        required: false
+        default: ""
   push:
     # Trigger on any branch when container files change
     paths:
@@ -358,6 +362,13 @@ jobs:
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
         echo "Building containers: ${{ steps.build_plan.outputs.containers_to_build }}"
         SOURCE_REPO="https://github.com/${{ github.repository }}.git"
+        COMPUTE_TYPE="${{ inputs.compute_type }}"
+        if [ -n "$COMPUTE_TYPE" ]; then
+          echo "Compute override requested: $COMPUTE_TYPE"
+          COMPUTE_ARGS=(--compute-type-override "$COMPUTE_TYPE")
+        else
+          COMPUTE_ARGS=()
+        fi
         
         wait_for_capacity() {
           while true; do
@@ -392,6 +403,7 @@ jobs:
           --source-type-override GITHUB \
           --source-location-override "${SOURCE_REPO}" \
           --timeout-in-minutes-override 120 \
+          "${COMPUTE_ARGS[@]}" \
           --environment-variables-override \
             name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
             name=CONTAINERS_TO_IMPORT,value="${{ steps.build_plan.outputs.containers_to_import }}" \
