@@ -1,0 +1,34 @@
+# Exclude git and editor files
+.git
+.gitignore
+.DS_Store
+.vscode
+.idea
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Node/npm caches (if present)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build/test artifacts
+dist/
+build/
+.pytest_cache/
+coverage/
+
+# Logs and temp files
+*.log
+logs/
+tmp/
+*.swp
+*.swo
+
+# Not needed in container context
+README*
+docs/
+tests/

@@ -84,3 +84,6 @@ cache:
     - '/root/.cache/pip'
     - '/root/.cache/pipenv'
     - '/root/.local/share/virtualenvs'
+    # Docker/BuildKit cache data to reuse across builds
+    - '/tmp/docker-cache'
+    - '/root/.cache/buildx'

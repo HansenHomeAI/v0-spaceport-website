@@ -329,6 +329,7 @@ jobs:
         MISSING_PROJ=$?
         set -e
         REPO_URL="https://github.com/${{ github.repository }}.git"
+        CACHE_LOCATION="spaceport-build-cache/codebuild-cache"
         if [ "$MISSING_PROJ" -ne 0 ]; then
           echo "Creating CodeBuild project spaceport-ml-containers..."
           # Create project directly with role ARN instead of REPLACE_ME logic
@@ -338,6 +339,7 @@ jobs:
             --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
             --artifacts type=NO_ARTIFACTS \
             --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
+            --cache type=S3,location="${CACHE_LOCATION}" \
             --service-role "$ROLE_ARN" \
             --timeout-in-minutes 120 \
             --queued-timeout-in-minutes 30 \
@@ -351,6 +353,7 @@ jobs:
         aws codebuild update-project \
           --name spaceport-ml-containers \
           --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
+          --cache type=S3,location="${CACHE_LOCATION}" \
           --timeout-in-minutes 120 \
           --queued-timeout-in-minutes 30 \
           --service-role "$ROLE_ARN" \

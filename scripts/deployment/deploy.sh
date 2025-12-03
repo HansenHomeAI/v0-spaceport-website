@@ -144,11 +144,12 @@ deploy_container() {
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
     --build-arg BASE_IMAGE="${base_image}" \
+    --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
-    --cache-from "type=registry,ref=${build_cache_ref}" \
+    --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
     --cache-from "${base_image}" \
-    --cache-to "type=registry,mode=max,ref=${build_cache_ref}" \
+    --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \
     "${container_dir}"
