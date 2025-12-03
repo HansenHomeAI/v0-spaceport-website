@@ -393,6 +393,7 @@ jobs:
             name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
             name=CONTAINERS_TO_IMPORT,value="${{ steps.build_plan.outputs.containers_to_import }}" \
             name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
+            name=BUILD_BASE_ONLY,value="${{ inputs.container && '1' || '0' }}" \
           --query 'build.id' \
           --output text)
         

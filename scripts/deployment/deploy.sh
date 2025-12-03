@@ -129,6 +129,10 @@ deploy_container() {
       docker tag "${repo_name}:base" "${base_image}"
       docker push "${base_image}"
       log "Base image built and pushed: ${base_image}"
+      if [[ "${BUILD_BASE_ONLY:-0}" = "1" ]]; then
+        log "BUILD_BASE_ONLY=1 set; skipping app build for ${container_name}"
+        return
+      fi
     else
       log "No Dockerfile.base for ${container_name}; skipping base build."
     fi
