@@ -2,6 +2,19 @@ name: Trigger ML Container Build
 
 on:
   workflow_dispatch:  # Manual trigger
+    inputs:
+      container:
+        description: "Limit build to a single container (sfm|3dgs|compressor)"
+        required: false
+        default: ""
+      base_only:
+        description: "Build only the base image for the specified container"
+        required: false
+        default: "false"
+      compute_type:
+        description: "Optional CodeBuild compute type override (e.g., BUILD_GENERAL1_LARGE, BUILD_GENERAL1_XLARGE, BUILD_GENERAL1_2XLARGE)"
+        required: false
+        default: ""
   push:
     # Trigger on any branch when container files change
     paths:
@@ -93,16 +106,36 @@ jobs:
 
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CHANGED="${{ steps.branch.outputs.changed_containers }}"
+        INPUT_CONTAINER="${{ inputs.container }}"
         CONTAINERS_TO_BUILD=""
         CONTAINERS_TO_IMPORT=""
+        CONTAINER_LIST="sfm 3dgs compressor"
 
-        if [ -n "$CHANGED" ]; then
+        if [ -n "$INPUT_CONTAINER" ]; then
+          echo "Container override provided: $INPUT_CONTAINER"
+          CONTAINERS_TO_BUILD="$INPUT_CONTAINER"
+          CONTAINER_LIST="$INPUT_CONTAINER"
+        elif [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
-          CONTAINERS_TO_BUILD="$CHANGED"
+          CONTAINER_LIST="$CHANGED"
+        fi
+
+        # Guardrail: do not build multiple containers at once
+        if [ -z "$INPUT_CONTAINER" ] && [ -n "$CHANGED" ]; then
+          COUNT_CONTAINERS=$(echo "$CONTAINER_LIST" | wc -w | tr -d ' ')
+          if [ "$COUNT_CONTAINERS" -gt 1 ]; then
+            echo "Multiple container directories changed ($CONTAINER_LIST). Skipping auto-build to avoid multi-container builds."
+            echo "containers=none" >> $GITHUB_OUTPUT
+            echo "containers_to_build=" >> $GITHUB_OUTPUT
+            echo "containers_to_import=" >> $GITHUB_OUTPUT
+            echo "build_required=false" >> $GITHUB_OUTPUT
+            echo "import_required=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
         fi
 
         # Check if shared repo has latest tag
-        check_shared_repo_has_latest() {
+        check_repo_has_latest() {
           local container_name="$1"
           local shared_repo="spaceport/${container_name}"
           
@@ -110,26 +143,16 @@ jobs:
             return 1
           fi
           
-          local latest_count
-          latest_count=$(aws ecr describe-images \
+          aws ecr describe-images \
             --region us-west-2 \
             --repository-name "$shared_repo" \
-            --query "length(imageDetails[?contains(imageTags, 'latest')])" \
-            --output text 2>/dev/null || echo 0)
-          
-          if [ "$latest_count" != "0" ] && [ "$latest_count" != "None" ]; then
-            return 0
-          fi
-          return 1
+            --image-ids imageTag=latest >/dev/null 2>&1
         }
 
-        # Check ECR repos to ensure they exist and have latest tags
-        # For branch-specific repos: try importing from shared repo first
-        # For shared repos: check if they exist and have latest tags
+        # Check shared repos and decide build/import using branch tags
         ensure_repo_ready() {
           local container_name="$1"
-          local repo_name="$2"
-          local is_branch_specific="$3"
+          local repo_name="spaceport/${container_name}"
 
           # If container files changed, always build (don't import)
           if echo "$CHANGED" | grep -q "$container_name"; then
@@ -138,56 +161,40 @@ jobs:
             return
           fi
 
-          # Check if branch-specific repo exists and has latest
+          # Repo missing -> build
           if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo_name" >/dev/null 2>&1; then
-            if [ "$is_branch_specific" = "true" ]; then
-              # Branch-specific repo missing - check if we can import from shared
-              if check_shared_repo_has_latest "$container_name"; then
-                echo "Branch-specific repo $repo_name missing, but shared repo has latest - will import"
-                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
-              else
-                echo "Both branch-specific and shared repos missing - will build $container_name"
-                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-              fi
-            else
-              echo "Shared repo $repo_name missing - will build $container_name"
-              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-            fi
+            echo "Shared repo $repo_name missing - will build $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
             return
           fi
 
-          if ! aws ecr describe-images \
-            --region us-west-2 \
-            --repository-name "$repo_name" \
-            --image-ids imageTag=latest >/dev/null 2>&1; then
-            if [ "$is_branch_specific" = "true" ]; then
-              # Branch-specific repo exists but no latest - check if we can import from shared
-              if check_shared_repo_has_latest "$container_name"; then
-                echo "Branch-specific repo $repo_name lacks latest tag, but shared repo has latest - will import"
-                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
-              else
-                echo "Branch-specific repo $repo_name lacks latest tag and shared repo also missing - will build $container_name"
-                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
-              fi
-            else
-              echo "Shared repo $repo_name exists but lacks a 'latest' tag - will build $container_name"
-              CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+          # Latest missing -> build
+          if ! check_repo_has_latest "$container_name"; then
+            echo "Repo $repo_name missing 'latest' tag - will build $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
+
+          # Base image missing -> build
+          if ! aws ecr describe-images --region us-west-2 --repository-name "$repo_name" --image-ids imageTag=base >/dev/null 2>&1; then
+            echo "Repo $repo_name missing 'base' tag - will build $container_name"
+            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+            return
+          fi
+
+          # Branch tag missing -> import (retag latest)
+          if [ -n "$BRANCH_SUFFIX" ]; then
+            if ! aws ecr describe-images --region us-west-2 --repository-name "$repo_name" --image-ids imageTag="$BRANCH_SUFFIX" >/dev/null 2>&1; then
+              echo "Repo $repo_name missing branch tag ${BRANCH_SUFFIX} - will import"
+              CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
             fi
           fi
         }
 
-        # Check ECR for all containers (handles new branches, deletions, missing images)
-        if [ -n "$BRANCH_SUFFIX" ]; then
-          # Branch-specific repos: check branch repo, fallback to shared for import
-          for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}-${BRANCH_SUFFIX}" "true"
-          done
-        else
-          # Shared repos: just check if they exist
-          for container in sfm 3dgs compressor; do
-            ensure_repo_ready "$container" "spaceport/${container}" "false"
-          done
-        fi
+        # Shared repos only; branch tags handled as retags
+        for container in $CONTAINER_LIST; do
+          ensure_repo_ready "$container"
+        done
 
         UNIQUE_CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
         UNIQUE_CONTAINERS_TO_IMPORT=$(echo "$CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
@@ -200,11 +207,11 @@ jobs:
           echo "build_required=false" >> $GITHUB_OUTPUT
           echo "import_required=false" >> $GITHUB_OUTPUT
         else
-          if [ -n "$UNIQUE_CONTAINERS_TO_BUILD" ]; then
-            echo "Containers to build: $UNIQUE_CONTAINERS_TO_BUILD"
-            echo "containers=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
-            echo "containers_to_build=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
-            echo "build_required=true" >> $GITHUB_OUTPUT
+        if [ -n "$UNIQUE_CONTAINERS_TO_BUILD" ]; then
+          echo "Containers to build: $UNIQUE_CONTAINERS_TO_BUILD"
+          echo "containers=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+          echo "containers_to_build=$UNIQUE_CONTAINERS_TO_BUILD" >> $GITHUB_OUTPUT
+          echo "build_required=true" >> $GITHUB_OUTPUT
           else
             echo "containers=none" >> $GITHUB_OUTPUT
             echo "containers_to_build=" >> $GITHUB_OUTPUT
@@ -228,28 +235,74 @@ jobs:
         CONTAINERS_TO_BUILD="${{ steps.build_plan.outputs.containers_to_build }}"
         CONTAINERS_TO_IMPORT="${{ steps.build_plan.outputs.containers_to_import }}"
         
-        # Always ensure shared repos exist
+        apply_lifecycle() {
+          local repo="$1"
+          local policy='{
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Expire untagged after 7d",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {"type": "expire"}
+              },
+              {
+                "rulePriority": 2,
+                "description": "Expire agent branch tags after 28d",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["agent-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 28
+                },
+                "action": {"type": "expire"}
+              }
+            ]
+          }'
+          aws ecr put-lifecycle-policy --region us-west-2 --repository-name "$repo" --lifecycle-policy-text "$policy"
+        }
+
         for repo in spaceport/sfm spaceport/3dgs spaceport/compressor; do
           echo "Ensuring shared ECR repository exists: $repo"
-          aws ecr describe-repositories --region us-west-2 --repository-names "$repo" >/dev/null 2>&1 || \
-          aws ecr create-repository --region us-west-2 --repository-name "$repo" --image-scanning-configuration scanOnPush=true
-        done
-        
-        # Create branch-specific repos for containers that need building or importing
-        if [ -n "${BRANCH_SUFFIX}" ]; then
-          ALL_CONTAINERS=$(echo "$CONTAINERS_TO_BUILD $CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
-          if [ -n "$ALL_CONTAINERS" ]; then
-            for container in $ALL_CONTAINERS; do
-              BRANCH_REPO="spaceport/${container}-${BRANCH_SUFFIX}"
-              echo "Ensuring branch-specific ECR repository exists: $BRANCH_REPO"
-              aws ecr describe-repositories --region us-west-2 --repository-names "$BRANCH_REPO" >/dev/null 2>&1 || \
-              aws ecr create-repository --region us-west-2 --repository-name "$BRANCH_REPO" --image-scanning-configuration scanOnPush=true
-            done
+          if ! aws ecr describe-repositories --region us-west-2 --repository-names "$repo" >/dev/null 2>&1; then
+            aws ecr create-repository --region us-west-2 --repository-name "$repo" --image-scanning-configuration scanOnPush=true
           fi
+          apply_lifecycle "$repo"
+        done
+
+    - name: Retag latest to branch tag without CodeBuild
+      if: ${{ steps.build_plan.outputs.build_required != 'true' && steps.build_plan.outputs.import_required == 'true' }}
+      run: |
+        set -euo pipefail
+        BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
+        if [ -z "$BRANCH_SUFFIX" ]; then
+          echo "Branch suffix empty; nothing to retag."
+          exit 0
         fi
 
+        retag() {
+          local container="$1"
+          local repo="spaceport/${container}"
+          echo "Retagging ${repo}:latest -> ${BRANCH_SUFFIX}"
+          manifest=$(aws ecr batch-get-image --region us-west-2 --repository-name "$repo" --image-ids imageTag=latest --query 'images[0].imageManifest' --output text)
+          if [ -z "$manifest" ] || [ "$manifest" = "None" ]; then
+            echo "No latest image found for $repo; cannot retag."
+            exit 1
+          fi
+          aws ecr put-image --region us-west-2 --repository-name "$repo" --image-tag "$BRANCH_SUFFIX" --image-manifest "$manifest"
+        }
+
+        for c in ${{ steps.build_plan.outputs.containers_to_import }}; do
+          retag "$c"
+        done
+
     - name: Ensure CodeBuild role and project exist (prod/staging)
-      if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Using account: $ACCOUNT"
@@ -290,6 +343,7 @@ jobs:
         MISSING_PROJ=$?
         set -e
         REPO_URL="https://github.com/${{ github.repository }}.git"
+        CACHE_LOCATION="spaceport-build-cache/codebuild-cache"
         if [ "$MISSING_PROJ" -ne 0 ]; then
           echo "Creating CodeBuild project spaceport-ml-containers..."
           # Create project directly with role ARN instead of REPLACE_ME logic
@@ -298,7 +352,8 @@ jobs:
             --description "Build ML containers for Spaceport SOGS pipeline with PyTorch + CUDA" \
             --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
             --artifacts type=NO_ARTIFACTS \
-            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_2XLARGE,privilegedMode=true \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
+            --cache type=S3,location="${CACHE_LOCATION}" \
             --service-role "$ROLE_ARN" \
             --timeout-in-minutes 120 \
             --queued-timeout-in-minutes 30 \
@@ -308,12 +363,36 @@ jobs:
           echo "CodeBuild project already exists. Reusing existing configuration."
         fi
 
+        echo "Ensuring CodeBuild timeout is 120 minutes..."
+        aws codebuild update-project \
+          --name spaceport-ml-containers \
+          --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_LARGE,privilegedMode=true \
+          --cache type=S3,location="${CACHE_LOCATION}" \
+          --timeout-in-minutes 120 \
+          --queued-timeout-in-minutes 30 \
+          --service-role "$ROLE_ARN" \
+          >/dev/null
+
     - name: Trigger CodeBuild for container builds/imports
-      if: ${{ steps.build_plan.outputs.build_required == 'true' || steps.build_plan.outputs.import_required == 'true' }}
+      if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
         echo "Building containers: ${{ steps.build_plan.outputs.containers_to_build }}"
         SOURCE_REPO="https://github.com/${{ github.repository }}.git"
+        COMPUTE_TYPE_INPUT="${{ inputs.compute_type }}"
+        DEFAULT_COMPUTE="BUILD_GENERAL1_LARGE"
+        BASE_COMPUTE="BUILD_GENERAL1_2XLARGE"
+
+        if [ -n "$COMPUTE_TYPE_INPUT" ]; then
+          echo "Compute override requested: $COMPUTE_TYPE_INPUT"
+          COMPUTE_ARGS=(--compute-type-override "$COMPUTE_TYPE_INPUT")
+        elif [ "${{ inputs.base_only }}" = "true" ]; then
+          echo "Base-only build detected; using $BASE_COMPUTE for extra headroom"
+          COMPUTE_ARGS=(--compute-type-override "$BASE_COMPUTE")
+        else
+          echo "Defaulting to $DEFAULT_COMPUTE for app-layer build (cheaper)"
+          COMPUTE_ARGS=(--compute-type-override "$DEFAULT_COMPUTE")
+        fi
         
         wait_for_capacity() {
           while true; do
@@ -347,10 +426,13 @@ jobs:
           --source-version ${{ github.sha }} \
           --source-type-override GITHUB \
           --source-location-override "${SOURCE_REPO}" \
+          --timeout-in-minutes-override 120 \
+          "${COMPUTE_ARGS[@]}" \
           --environment-variables-override \
             name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
             name=CONTAINERS_TO_IMPORT,value="${{ steps.build_plan.outputs.containers_to_import }}" \
             name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
+            name=BUILD_BASE_ONLY,value="${{ inputs.base_only == 'true' && '1' || '0' }}" \
           --query 'build.id' \
           --output text)
         
