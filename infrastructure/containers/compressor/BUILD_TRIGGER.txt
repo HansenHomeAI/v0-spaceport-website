@@ -16,3 +16,5 @@ Previous fixes:
 This rebuild will fix the NumPy compatibility issue and enable GPU detection.
 
 Build timestamp: 2025-07-29 21:45:00 UTC
+
+Cache validation: safe no-op touchpoint to exercise app-layer rebuild timing.
