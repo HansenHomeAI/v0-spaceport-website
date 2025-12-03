@@ -120,6 +120,15 @@ jobs:
           CONTAINER_LIST="$CHANGED"
         fi
 
+        # Guardrail: do not build multiple containers at once
+        if [ -z "$INPUT_CONTAINER" ] && [ -n "$CHANGED" ]; then
+          COUNT_CONTAINERS=$(echo "$CONTAINER_LIST" | wc -w | tr -d ' ')
+          if [ "$COUNT_CONTAINERS" -gt 1 ]; then
+            echo "Multiple container directories changed ($CONTAINER_LIST). To avoid multi-container builds, re-run workflow_dispatch with container=<sfm|3dgs|compressor>."
+            exit 1
+          fi
+        fi
+
         # Check if shared repo has latest tag
         check_repo_has_latest() {
           local container_name="$1"
