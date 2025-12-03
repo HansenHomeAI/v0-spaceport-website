@@ -391,6 +391,7 @@ jobs:
           --source-version ${{ github.sha }} \
           --source-type-override GITHUB \
           --source-location-override "${SOURCE_REPO}" \
+          --timeout-in-minutes-override 120 \
           --environment-variables-override \
             name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
             name=CONTAINERS_TO_IMPORT,value="${{ steps.build_plan.outputs.containers_to_import }}" \
