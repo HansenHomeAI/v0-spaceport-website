@@ -105,11 +105,10 @@ jobs:
 
         if [ -n "$INPUT_CONTAINER" ]; then
           echo "Container override provided: $INPUT_CONTAINER"
-          CONTAINERS_TO_BUILD="$INPUT_CONTAINER"
           CONTAINER_LIST="$INPUT_CONTAINER"
         elif [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
-          CONTAINERS_TO_BUILD="$CHANGED"
+          CONTAINER_LIST="$CHANGED"
         fi
 
         # Check if shared repo has latest tag
