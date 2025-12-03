@@ -7,6 +7,10 @@ on:
         description: "Limit build to a single container (sfm|3dgs|compressor)"
         required: false
         default: ""
+      base_only:
+        description: "Build only the base image for the specified container"
+        required: false
+        default: "false"
   push:
     # Trigger on any branch when container files change
     paths:
@@ -105,6 +109,7 @@ jobs:
 
         if [ -n "$INPUT_CONTAINER" ]; then
           echo "Container override provided: $INPUT_CONTAINER"
+          CONTAINERS_TO_BUILD="$INPUT_CONTAINER"
           CONTAINER_LIST="$INPUT_CONTAINER"
         elif [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
@@ -390,7 +395,7 @@ jobs:
             name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
             name=CONTAINERS_TO_IMPORT,value="${{ steps.build_plan.outputs.containers_to_import }}" \
             name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
-            name=BUILD_BASE_ONLY,value="${{ inputs.container && '1' || '0' }}" \
+            name=BUILD_BASE_ONLY,value="${{ inputs.base_only == 'true' && '1' || '0' }}" \
           --query 'build.id' \
           --output text)
         
