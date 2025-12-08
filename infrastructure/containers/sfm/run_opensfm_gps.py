@@ -30,6 +30,47 @@ from gps_processor_3d import Advanced3DPathProcessor
 from colmap_converter import OpenSfMToCOLMAPConverter
 
 
+def log_memory_usage(stage: str) -> None:
+    """Log current process and system memory usage in MB."""
+    rss_mb = None
+    mem_total_mb = None
+    mem_avail_mb = None
+
+    try:
+        import resource
+
+        usage = resource.getrusage(resource.RUSAGE_SELF)
+        # ru_maxrss is kilobytes on Linux
+        rss_mb = usage.ru_maxrss / 1024.0
+    except Exception:
+        pass
+
+    try:
+        meminfo = {}
+        with open("/proc/meminfo", "r") as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) >= 2:
+                    meminfo[parts[0].rstrip(":")] = float(parts[1])
+        if "MemTotal" in meminfo:
+            mem_total_mb = meminfo["MemTotal"] / 1024.0
+        if "MemAvailable" in meminfo:
+            mem_avail_mb = meminfo["MemAvailable"] / 1024.0
+    except Exception:
+        pass
+
+    pieces = []
+    if rss_mb is not None:
+        pieces.append(f"rss={rss_mb:.1f} MB")
+    if mem_total_mb is not None:
+        pieces.append(f"total={mem_total_mb:.0f} MB")
+    if mem_avail_mb is not None:
+        pieces.append(f"available={mem_avail_mb:.0f} MB")
+
+    if pieces:
+        logger.info(f"🧠 Memory ({stage}): " + ", ".join(pieces))
+
+
 class OpenSfMGPSPipeline:
     """Main pipeline for GPS-enhanced OpenSfM processing"""
     
@@ -48,6 +89,8 @@ class OpenSfMGPSPipeline:
         self.work_dir = None
         self.images_dir = None
         self.opensfm_dir = None
+        self.has_gps_priors = False
+        self.image_count = 0
         
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -141,6 +184,7 @@ class OpenSfMGPSPipeline:
             logger.info(f"   Photo spacing: {summary['photo_spacing_m']}m")
             logger.info(f"   Confidence: {summary['confidence_stats']['mean']:.2f}")
             
+            self.has_gps_priors = True
             return True
             
         except Exception as e:
@@ -150,23 +194,23 @@ class OpenSfMGPSPipeline:
     
     def create_opensfm_config(self) -> None:
         """Create OpenSfM configuration file"""
-        config = {
+        base_config = {
             # Feature extraction
             'feature_type': 'SIFT',
-            'feature_process_size': 2048,          # High-res processing for drone images
-            'feature_max_num_features': 20000,     # Allow dense feature extraction
-            'feature_min_frames': 4000,            # Lower floor so images with fewer features are still accepted
-            'sift_peak_threshold': 0.006,          # Lower threshold → more features in low-texture areas
+            'feature_process_size': 2048,
+            'feature_max_num_features': 20000,
+            'feature_min_frames': 4000,
+            'sift_peak_threshold': 0.006,
             
             # Matching
-            'matching_gps_neighbors': 30,          # More temporal neighbors
-            'matching_gps_distance': 300,          # Allow matches up to 300 m apart
-            'matching_graph_rounds': 80,           # More graph refinement rounds
-            'robust_matching_min_match': 8,        # Relax minimum matches to keep difficult pairs
+            'matching_gps_neighbors': 30,
+            'matching_gps_distance': 300,
+            'matching_graph_rounds': 80,
+            'robust_matching_min_match': 8,
             
             # Reconstruction
-            'min_ray_angle_degrees': 1.0,          # Allow shallower angles → more points
-            'reconstruction_min_ratio': 0.6,       # Allow more images even with fewer inliers
+            'min_ray_angle_degrees': 1.0,
+            'reconstruction_min_ratio': 0.6,
             'triangulation_min_ray_angle_degrees': 1.0,
             
             # GPS integration
@@ -182,19 +226,44 @@ class OpenSfMGPSPipeline:
             'bundle_max_iterations': 100,
             
             # Output
-            'processes': 4,  # Parallelise where possible
+            'processes': 4,
             
-            # CRITICAL FIX: Enable train/test split for proper 3DGS training
-            'reconstruction_split_ratio': 0.8,     # 80% training, 20% validation
-            'reconstruction_split_method': 'sequential',  # Sequential split for temporal consistency
-            'save_partial_reconstructions': True,   # Save both train and test sets
+            # Train/test split for 3DGS
+            'reconstruction_split_ratio': 0.8,
+            'reconstruction_split_method': 'sequential',
+            'save_partial_reconstructions': True,
         }
+
+        conservative_overrides = {
+            'feature_process_size': 1400,
+            'feature_max_num_features': 8000,
+            'feature_min_frames': 2000,
+            'sift_peak_threshold': 0.01,  # reduce feature count
+            'matching_gps_neighbors': 12,
+            'matching_gps_distance': 120,
+            'matching_graph_rounds': 24,
+            'robust_matching_min_match': 12,
+            'processes': 2,
+        }
+
+        config = base_config.copy()
+        if not self.has_gps_priors:
+            config.update(conservative_overrides)
+            logger.info("🧭 Using conservative no-CSV profile for matching/features (lower memory).")
         
         config_path = self.opensfm_dir / "config.yaml"
         with open(config_path, 'w') as f:
             yaml.dump(config, f)
         
         logger.info(f"✅ Created OpenSfM config: {config_path}")
+
+        try:
+            image_count = self.image_count or len(list(self.images_dir.iterdir()))
+            neighbors = config.get('matching_gps_neighbors', 0)
+            estimated_pairs = image_count * neighbors
+            logger.info(f"📈 Matching plan: images={image_count}, neighbors≈{neighbors}, est. pairs≈{estimated_pairs}")
+        except Exception:
+            pass
     
     def copy_images_to_opensfm(self) -> None:
         """Copy images to OpenSfM directory structure"""
@@ -217,6 +286,7 @@ class OpenSfMGPSPipeline:
         
         for cmd, description in commands:
             logger.info(f"🔧 {description}...")
+            log_memory_usage(f"before_{cmd}")
             
             try:
                 result = subprocess.run(
@@ -226,6 +296,7 @@ class OpenSfMGPSPipeline:
                     check=True
                 )
                 logger.info(f"✅ {description} completed")
+                log_memory_usage(f"after_{cmd}")
                 
             except subprocess.CalledProcessError as e:
                 logger.error(f"❌ OpenSfM {cmd} failed:")
@@ -631,42 +702,53 @@ class OpenSfMGPSPipeline:
             
             # Set up workspace
             self.setup_workspace()
+            log_memory_usage("setup_workspace")
             
             # Extract images
             image_count = self.extract_images()
+            self.image_count = image_count
+            log_memory_usage("after_extract_images")
             if image_count == 0:
                 logger.error("❌ No images found to process")
                 return 1
             
             # Process GPS data (if available)
             has_gps = self.process_gps_data()
+            self.has_gps_priors = has_gps
+            log_memory_usage("after_gps_processing")
             
             # Create OpenSfM config
             self.create_opensfm_config()
+            log_memory_usage("after_config_creation")
             
             # Copy images
             self.copy_images_to_opensfm()
+            log_memory_usage("after_copy_images")
             
             # Run OpenSfM
             logger.info("🔄 Running OpenSfM reconstruction...")
             if not self.run_opensfm_commands():
                 logger.error("❌ OpenSfM reconstruction failed")
                 return 1
+            log_memory_usage("after_opensfm_commands")
             
             # Validate reconstruction
             if not self.validate_reconstruction():
                 return 1
+            log_memory_usage("after_reconstruction_validation")
             
             # Convert to COLMAP format
             logger.info("🔄 Converting to COLMAP format...")
             if not self.convert_to_colmap():
                 return 1
+            log_memory_usage("after_colmap_conversion")
             
             # Generate additional artifacts for 3DGS compatibility
             logger.info("🔄 Generating additional artifacts for 3DGS compatibility...")
             self.copy_images_for_3dgs()
             self.generate_metadata_json()
             self.create_stub_database()
+            log_memory_usage("after_artifact_generation")
             
             logger.info("✅ OpenSfM GPS pipeline completed successfully")
             return 0
