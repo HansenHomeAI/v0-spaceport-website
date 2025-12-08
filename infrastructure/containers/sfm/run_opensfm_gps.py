@@ -293,9 +293,9 @@ class OpenSfMGPSPipeline:
             log_memory_usage(f"before_{cmd}")
             
             try:
-                if cmd == "reconstruct":
+                if cmd in {"match_features", "reconstruct"}:
                     # Stream output and enforce a max duration for reconstruct to detect hangs
-                    max_seconds = 3600  # 60 minutes safety cap
+                    max_seconds = 3600 if cmd == "reconstruct" else 2400  # match_features up to 40m, reconstruct up to 60m
                     proc = subprocess.Popen(
                         ["opensfm", cmd, str(self.opensfm_dir)],
                         stdout=subprocess.PIPE,
@@ -308,14 +308,15 @@ class OpenSfMGPSPipeline:
                         line = proc.stdout.readline()
                         if line:
                             line = line.rstrip()
-                            print(f"OPENSFM_RECONSTRUCT: {line}", flush=True)
+                            tag = "RECONSTRUCT" if cmd == "reconstruct" else "MATCH"
+                            print(f"OPENSFM_{tag}: {line}", flush=True)
                         now = time.time()
                         if now - last_log > 300:  # heartbeat every 5 minutes
-                            log_memory_usage(f"reconstruct_heartbeat_{int(now-start)}s")
+                            log_memory_usage(f"{cmd}_heartbeat_{int(now-start)}s")
                             last_log = now
                         if now - start > max_seconds:
                             proc.kill()
-                            logger.error("❌ OpenSfM reconstruct timed out")
+                            logger.error(f"❌ OpenSfM {cmd} timed out")
                             return False
                         if line == '' and proc.poll() is not None:
                             break
