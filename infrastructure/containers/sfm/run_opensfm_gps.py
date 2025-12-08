@@ -94,7 +94,7 @@ class OpenSfMGPSPipeline:
         self.has_gps_priors = False
         self.image_count = 0
         self.feature_stats = {}
-        
+
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
     
@@ -293,12 +293,45 @@ class OpenSfMGPSPipeline:
             log_memory_usage(f"before_{cmd}")
             
             try:
-                result = subprocess.run(
-                    ["opensfm", cmd, str(self.opensfm_dir)],
-                    capture_output=True,
-                    text=True,
-                    check=True
-                )
+                if cmd == "reconstruct":
+                    # Stream output and enforce a max duration for reconstruct to detect hangs
+                    max_seconds = 3600  # 60 minutes safety cap
+                    proc = subprocess.Popen(
+                        ["opensfm", cmd, str(self.opensfm_dir)],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                    )
+                    start = time.time()
+                    last_log = start
+                    while True:
+                        line = proc.stdout.readline()
+                        if line:
+                            line = line.rstrip()
+                            print(f"OPENSFM_RECONSTRUCT: {line}", flush=True)
+                        now = time.time()
+                        if now - last_log > 300:  # heartbeat every 5 minutes
+                            log_memory_usage(f"reconstruct_heartbeat_{int(now-start)}s")
+                            last_log = now
+                        if now - start > max_seconds:
+                            proc.kill()
+                            logger.error("❌ OpenSfM reconstruct timed out")
+                            return False
+                        if line == '' and proc.poll() is not None:
+                            break
+                    ret = proc.wait()
+                    if ret != 0:
+                        logger.error(f"❌ OpenSfM {cmd} failed with code {ret}")
+                        return False
+                else:
+                    subprocess.run(
+                        ["opensfm", cmd, str(self.opensfm_dir)],
+                        check=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+
                 logger.info(f"✅ {description} completed")
                 log_memory_usage(f"after_{cmd}")
                 
