@@ -7,7 +7,7 @@
 set -e  # Exit on any error
 
 log_mem() {
-    echo "🧠 Memory (${1}):"
+    echo "MEMORY_PROBE [${1}]:"
     cat /proc/meminfo 2>/dev/null | head -n 3 || true
     free -h 2>/dev/null || true
 }

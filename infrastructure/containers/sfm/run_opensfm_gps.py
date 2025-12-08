@@ -61,14 +61,16 @@ def log_memory_usage(stage: str) -> None:
 
     pieces = []
     if rss_mb is not None:
-        pieces.append(f"rss={rss_mb:.1f} MB")
+        pieces.append(f"rss={rss_mb:.1f}MB")
     if mem_total_mb is not None:
-        pieces.append(f"total={mem_total_mb:.0f} MB")
+        pieces.append(f"total={mem_total_mb:.0f}MB")
     if mem_avail_mb is not None:
-        pieces.append(f"available={mem_avail_mb:.0f} MB")
+        pieces.append(f"avail={mem_avail_mb:.0f}MB")
 
     if pieces:
-        logger.info(f"🧠 Memory ({stage}): " + ", ".join(pieces))
+        msg = " | ".join(pieces)
+        print(f"MEMORY_PROBE [{stage}]: {msg}", flush=True)
+        logger.info(f"🧠 Memory ({stage}): {msg}")
 
 
 class OpenSfMGPSPipeline:
@@ -91,6 +93,7 @@ class OpenSfMGPSPipeline:
         self.opensfm_dir = None
         self.has_gps_priors = False
         self.image_count = 0
+        self.feature_stats = {}
         
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -235,15 +238,15 @@ class OpenSfMGPSPipeline:
         }
 
         conservative_overrides = {
-            'feature_process_size': 1400,
-            'feature_max_num_features': 8000,
-            'feature_min_frames': 2000,
+            'feature_process_size': 1200,
+            'feature_max_num_features': 6000,
+            'feature_min_frames': 1200,
             'sift_peak_threshold': 0.01,  # reduce feature count
-            'matching_gps_neighbors': 12,
+            'matching_gps_neighbors': 10,
             'matching_gps_distance': 120,
-            'matching_graph_rounds': 24,
+            'matching_graph_rounds': 16,
             'robust_matching_min_match': 12,
-            'processes': 2,
+            'processes': 1,
         }
 
         config = base_config.copy()
@@ -262,6 +265,7 @@ class OpenSfMGPSPipeline:
             neighbors = config.get('matching_gps_neighbors', 0)
             estimated_pairs = image_count * neighbors
             logger.info(f"📈 Matching plan: images={image_count}, neighbors≈{neighbors}, est. pairs≈{estimated_pairs}")
+            print(f"CONFIG_PROFILE has_gps={self.has_gps_priors} processes={config.get('processes')} neighbors={neighbors} est_pairs={estimated_pairs} feature_process_size={config.get('feature_process_size')} max_features={config.get('feature_max_num_features')} min_frames={config.get('feature_min_frames')}", flush=True)
         except Exception:
             pass
     
@@ -351,8 +355,8 @@ class OpenSfMGPSPipeline:
             logger.error("❌ Too few 3D points reconstructed")
             return False
         
-        logger.info("✅ Reconstruction validated")
-        return True
+            logger.info("✅ Reconstruction validated")
+            return True
     
     def validate_exported_colmap(self) -> Dict:
         """Validate OpenSfM exported COLMAP files for track quality"""
