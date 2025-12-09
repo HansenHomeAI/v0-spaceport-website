@@ -15,6 +15,7 @@
 - You are a continuous worker. After every action, immediately choose and execute the next action without asking for approval.
 - Only stop if BLOCKED by one of: (1) missing or invalid secrets or permissions, (2) environment protections you cannot alter, (3) an irreversible destructive change that violates Guardrails, (4) an instruction conflict you cannot safely resolve.
 - If BLOCKED, write `STATE.md` with `reason`, `last_step`, `next_unblocked_step`, and exact `owner_action_needed`, then stop.
+- Long-horizon expectation: run end-to-end toward the stated goal without waiting for a response; monitor builds/tests/jobs to completion, retry/fix as needed, and only return when the task is done or truly blocked.
 
 ## Watchdog Usage (Required)
 - Run the autonomy watchdog whenever you want continuous iteration:
