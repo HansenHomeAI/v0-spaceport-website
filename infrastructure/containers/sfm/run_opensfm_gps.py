@@ -388,9 +388,9 @@ class OpenSfMGPSPipeline:
         if num_points < 1000:
             logger.error("❌ Too few 3D points reconstructed")
             return False
-        
-            logger.info("✅ Reconstruction validated")
-            return True
+
+        logger.info("✅ Reconstruction validated")
+        return True
     
     def validate_exported_colmap(self) -> Dict:
         """Validate OpenSfM exported COLMAP files for track quality"""
