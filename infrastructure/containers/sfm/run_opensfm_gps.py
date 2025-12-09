@@ -295,7 +295,7 @@ class OpenSfMGPSPipeline:
             try:
                 if cmd in {"match_features", "reconstruct"}:
                     # Stream output and enforce a max duration for reconstruct to detect hangs
-                    max_seconds = 3600 if cmd == "reconstruct" else 2400  # match_features up to 40m, reconstruct up to 60m
+                    max_seconds = 7200 if cmd == "reconstruct" else 2400  # reconstruct up to 120m, match up to 40m
                     proc = subprocess.Popen(
                         ["opensfm", cmd, str(self.opensfm_dir)],
                         stdout=subprocess.PIPE,
