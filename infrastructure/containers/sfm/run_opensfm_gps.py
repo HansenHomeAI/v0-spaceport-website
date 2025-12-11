@@ -246,7 +246,8 @@ class OpenSfMGPSPipeline:
             'matching_gps_distance': 120,
             'matching_graph_rounds': 16,
             'robust_matching_min_match': 12,
-            'processes': 1,
+            # Use more CPU when running without GPS priors; c6i.4xlarge has 16 vCPUs.
+            'processes': 4,
         }
 
         config = base_config.copy()
