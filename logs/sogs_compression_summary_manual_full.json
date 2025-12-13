@@ -1,0 +1,49 @@
+{
+  "method": "playcanvas_sogs_official",
+  "version": "1.1.0",
+  "gpu_accelerated": true,
+  "input_files": [
+    "/opt/ml/processing/input/extracted/splat.ply"
+  ],
+  "compressed_outputs": [
+    {
+      "input_file": "/opt/ml/processing/input/extracted/splat.ply",
+      "output_dir": "/opt/ml/processing/output/compressed_splat",
+      "output_files": [
+        "/opt/ml/processing/output/compressed_splat/shN_centroids.webp",
+        "/opt/ml/processing/output/compressed_splat/means_u.webp",
+        "/opt/ml/processing/output/compressed_splat/means_l.webp",
+        "/opt/ml/processing/output/compressed_splat/meta.json",
+        "/opt/ml/processing/output/compressed_splat/sh0.webp",
+        "/opt/ml/processing/output/compressed_splat/shN_labels.webp",
+        "/opt/ml/processing/output/compressed_splat/quats.webp",
+        "/opt/ml/processing/output/compressed_splat/scales.webp"
+      ],
+      "original_size_mb": 367.3344440460205,
+      "compressed_size_mb": 22.160229682922363,
+      "compression_ratio": 16.57629227232714,
+      "webp_files": [
+        "/opt/ml/processing/output/compressed_splat/shN_centroids.webp",
+        "/opt/ml/processing/output/compressed_splat/means_u.webp",
+        "/opt/ml/processing/output/compressed_splat/means_l.webp",
+        "/opt/ml/processing/output/compressed_splat/sh0.webp",
+        "/opt/ml/processing/output/compressed_splat/shN_labels.webp",
+        "/opt/ml/processing/output/compressed_splat/quats.webp",
+        "/opt/ml/processing/output/compressed_splat/scales.webp"
+      ],
+      "metadata_file": "/opt/ml/processing/output/compressed_splat/meta.json"
+    }
+  ],
+  "compression_stats": {
+    "file_0": {
+      "original_size_mb": 367.3344440460205,
+      "compressed_size_mb": 22.160229682922363,
+      "compression_ratio": 16.57629227232714,
+      "webp_count": 7
+    }
+  },
+  "overall_compression_ratio": 16.57629227232714,
+  "total_original_mb": 367.3344440460205,
+  "total_compressed_mb": 22.160229682922363,
+  "total_webp_files": 7
+}
