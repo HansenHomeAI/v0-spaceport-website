@@ -246,8 +246,8 @@ class OpenSfMGPSPipeline:
             'matching_gps_distance': 120,
             'matching_graph_rounds': 16,
             'robust_matching_min_match': 12,
-            # Use more CPU when running without GPS priors; default up to 8 cores when available.
-            'processes': max(4, min(8, os.cpu_count() or 4)),
+            # Use more CPU when running without GPS priors; default up to 16 cores when available.
+            'processes': max(4, min(16, os.cpu_count() or 4)),
         }
 
         config = base_config.copy()
