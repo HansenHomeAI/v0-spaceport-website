@@ -64,6 +64,17 @@ def lambda_handler(event, context):
         else:
             raise ValueError(f"Unknown status: {status}")
         
+        if not resend.api_key:
+            print("RESEND_API_KEY missing; skipping email send.")
+            return {
+                'statusCode': 200,
+                'body': json.dumps({
+                    'message': 'Notification skipped (missing RESEND_API_KEY)',
+                    'jobId': job_id,
+                    'status': status
+                })
+            }
+
         # Send email via Resend
         params = {
             "from": "Spaceport AI <hello@spcprt.com>",
@@ -72,7 +83,7 @@ def lambda_handler(event, context):
             "html": body_html,
             "text": body_text,
         }
-        
+
         response = resend.Emails.send(params)
         print(f"Email sent successfully via Resend: {response}")
         

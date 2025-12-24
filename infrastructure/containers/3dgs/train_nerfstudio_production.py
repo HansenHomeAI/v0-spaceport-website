@@ -24,9 +24,14 @@ import logging
 import argparse
 import subprocess
 
+# Ensure critical CUDA/PyTorch env vars are set before torch/gsplat imports.
+os.environ.setdefault('TORCH_COMPILE_DISABLE', '1')
+os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '8.0 8.6')
+print(f"✅ TORCH_COMPILE_DISABLE={os.environ['TORCH_COMPILE_DISABLE']}")
+print(f"✅ TORCH_CUDA_ARCH_LIST={os.environ['TORCH_CUDA_ARCH_LIST']}")
+
 # Import torch and disable compilation backends for SageMaker compatibility
 import torch
-import os
 
 # CRITICAL: Disable PyTorch compilation backends that require CUDA development headers
 # PyTorch 2.0+ tries to use Triton/Inductor backends which need cuda.h at runtime
@@ -37,14 +42,8 @@ try:
 except AttributeError:
     print("✅ PyTorch version doesn't have dynamo module")
 
-# Also disable torch.compile entirely 
+# Also disable torch.compile entirely
 os.environ['TORCH_COMPILE_DISABLE'] = '1'
-print("✅ TORCH_COMPILE_DISABLE=1 set")
-
-# Limit CUDA arch targets so gsplat JIT skips older SM versions that lack
-# cooperative_groups::labeled_partition (prevents nvcc build failures).
-os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '8.0 8.6')
-print(f"✅ TORCH_CUDA_ARCH_LIST={os.environ['TORCH_CUDA_ARCH_LIST']}")
 
 # Ensure CUDA toolkit paths are exposed so nvcc/ninja can link libcudart
 cuda_home = os.environ.setdefault('CUDA_HOME', '/usr/local/cuda')

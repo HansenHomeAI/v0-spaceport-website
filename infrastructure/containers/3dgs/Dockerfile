@@ -89,6 +89,7 @@ ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
 # PyTorch 2.0+ tries to use Triton/Inductor backends which need cuda.h at runtime
 # SageMaker containers only have CUDA runtime, not development environment
 ENV TORCH_COMPILE_DISABLE=1
+ENV TORCH_CUDA_ARCH_LIST="8.0 8.6"
 
 # Create necessary directories
 RUN mkdir -p /opt/ml/model /opt/ml/input /opt/ml/output
