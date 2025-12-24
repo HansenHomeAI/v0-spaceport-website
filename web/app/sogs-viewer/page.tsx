@@ -10,6 +10,8 @@ const VIEWER_BASE = "/supersplat-viewer/index.html";
 const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com",
 ]);
 const SAMPLE_BUNDLES = [
   {
