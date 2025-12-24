@@ -1,5 +1,5 @@
-reason: Full SfM dataset pushed through 3DGS + SOGS manually (TORCH_CUDA_ARCH_LIST enforced) while Step Functions path still failing on gsplat compile and missing MLNotification Lambda
-last_step: Step Functions run with staging COLMAP output failed (gsplat build + missing notification Lambda); reran manually via SageMaker create_training_job/create_processing_job with TORCH_CUDA_ARCH_LIST=8.0 8.6, yielding completed 3DGS (model.tar.gz ~340 MB) and SOGS bundle in staging
-next_unblocked_step: align the state machine/3DGS container so TORCH_CUDA_ARCH_LIST is forced (and MLNotification restored) then rerun Step Functions end-to-end using the same staging COLMAP prefix
-owner_action_needed: restore arn:aws:lambda:us-west-2:975050048887:function:Spaceport-MLNotification or allow tests to bypass notification; confirm if we can update the state machine to set TORCH_CUDA_ARCH_LIST=8.0 8.6 (or rebuild 3dgs image to hardcode it)
-updated: 2025-12-13
+reason: Pipeline robustness fixes applied (3DGS env hardening, Start-ML-Job env/role fixes, notification resilience) and Edgewood dataset run completed end-to-end via Step Functions.
+last_step: Start-ML-Job invoked with s3://spaceport-ml-processing-staging/uploads/edgewood-archive-20251224.zip; Step Functions execution arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-agent83927415pipelinerobustness:execution-22f885c6-6661-4339-a0ed-8984c2bc81b1 succeeded in ~50 minutes (notification Lambda returned 200).
+next_unblocked_step: open PR to development once ready, or run additional regression suites if requested (tests/run_beta_readiness_suite.py, tests/pipeline/*).
+owner_action_needed: none
+updated: 2025-12-24
