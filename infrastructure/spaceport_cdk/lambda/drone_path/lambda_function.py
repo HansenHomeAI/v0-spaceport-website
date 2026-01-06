@@ -1081,7 +1081,7 @@ class SpiralDesigner:
             
             # Calculate sinusoidal gimbal pitch for varied photo angles
             progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))  # -35° to -21° range
+            gimbal_pitch = round(-35 + 20 * math.sin(progress * math.pi))  # -35° to -15° range
             
             # Calculate photo interval timing
             # Start photos at first waypoint, continue throughout flight, stop at last waypoint
@@ -1333,7 +1333,7 @@ class SpiralDesigner:
             
             # Calculate sinusoidal gimbal pitch for varied photo angles
             progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))
+            gimbal_pitch = round(-35 + 20 * math.sin(progress * math.pi))  # -35° to -15° range
             
             # Calculate photo interval timing
             # Start photos at first waypoint, continue throughout flight, stop at last waypoint
