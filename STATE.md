@@ -1,5 +1,5 @@
-reason: refresh pricing tiers for brokerage-focused offering
-last_step: opened PR #22 after Pages/CDK were green and MCP pricing smoke passed
-next_unblocked_step: address review feedback or merge PR when ready
+reason: preview login failing due to Cognito user pool/client mismatch in preview secrets
+last_step: verified preview env now points to staging Cognito pool/client (redacted) via /api/debug-auth
+next_unblocked_step: re-test login on preview URL
 owner_action_needed: none
-updated: 2026-01-06T04:36:44Z
+updated: 2026-01-06T19:10:20Z
