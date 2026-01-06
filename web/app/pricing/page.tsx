@@ -16,7 +16,7 @@ export default function Pricing(): JSX.Element {
         <div className="pricing-grid">
           <div className="pricing-card">
             <h2>Per model.</h2>
-            <div className="price">$599 upfront</div>
+            <div className="price">$599</div>
             <p>$29/mo hosting per model. First month free.</p>
           </div>
 
