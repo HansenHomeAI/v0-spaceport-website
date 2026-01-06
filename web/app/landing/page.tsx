@@ -46,7 +46,7 @@ export default function Landing(): JSX.Element {
         <div className="two-col-content">
           <h2>Show what matters most to buyers.</h2>
           <div className="right-col">
-            <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you're right there—feeling the neighborhood and natural flow around it.</p>
+            <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you&apos;re right there—feeling the neighborhood and natural flow around it.</p>
             <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
               <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
               View example
@@ -93,7 +93,7 @@ export default function Landing(): JSX.Element {
         <div className="two-col-content">
           <h2>Effortless creation with your drone.</h2>
           <div className="right-col">
-            <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you'll receive the completed model straight to your inbox.</p>
+            <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you&apos;ll receive the completed model straight to your inbox.</p>
             <a href="/create" className="cta-button2-fixed">Create your own</a>
           </div>
         </div>
@@ -103,4 +103,3 @@ export default function Landing(): JSX.Element {
     </>
   );
 }
-
