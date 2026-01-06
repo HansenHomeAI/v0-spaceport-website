@@ -4,7 +4,7 @@ SOGS Compression Only Test
 =========================
 
 Test script to validate PlayCanvas SOGS compression using the latest 3DGS training output.
-Uses the most recent successful 3DGS training run from July 31st with proper spherical harmonics.
+Uses the most recent successful 3DGS training run from November 17th with proper spherical harmonics.
 
 This test verifies:
 1. SOGS compression container is working
@@ -31,8 +31,8 @@ class SOGSCompressionTester:
         self.sagemaker = boto3.client('sagemaker', region_name=region)
         self.s3 = boto3.client('s3', region_name=region)
         
-        # Latest 3DGS training output (July 31st) - model.tar.gz contains the files with proper spherical harmonics
-        self.latest_3dgs_output = "s3://spaceport-ml-processing/3dgs/20f35078-d929-4f9f-9608-ad6235f713fe/ml-job-20250731-182052-20f35078-3dgs/output/model.tar.gz"
+        # Latest 3DGS training output (November 17th) - contains splat.ply and metadata
+        self.latest_3dgs_output = "s3://spaceport-ml-processing/3dgs/3dgs-test-1763406269/ml-job-20251117-120429-3dgs-tes-3dgs/output/model.tar.gz"
         
         # Configuration for SOGS compression test
         self.config = {
@@ -46,7 +46,7 @@ class SOGSCompressionTester:
         """Test SOGS compression with latest 3DGS output"""
         logger.info("🚀 STARTING SOGS COMPRESSION TEST")
         logger.info("=" * 60)
-        logger.info(f"Input: Latest 3DGS training output (July 31st) with proper spherical harmonics")
+        logger.info(f"Input: Latest 3DGS training output (November 17th) with proper spherical harmonics")
         logger.info(f"Source: {self.latest_3dgs_output}")
         logger.info(f"Container: PlayCanvas SOGS implementation")
         
@@ -142,23 +142,31 @@ class SOGSCompressionTester:
                 tar.extractall(temp_dir)
                 members = tar.getmembers()
                 
-                # Check for required files
-                required_files = ['final_model.ply', 'training_metadata.json']
-                found_files = []
+                # Discover files we care about
+                metadata_found = False
+                ply_path = None
                 
                 for member in members:
-                    if member.name in required_files:
-                        found_files.append(member.name)
+                    if member.name.endswith('.json') and member.name.split('/')[-1] == 'training_metadata.json':
+                        metadata_found = True
                         file_size_mb = member.size / (1024 * 1024)
                         logger.info(f"✅ Found {member.name} ({file_size_mb:.1f} MB)")
+                    if member.name.endswith('.ply'):
+                        file_size_mb = member.size / (1024 * 1024)
+                        logger.info(f"✅ Found {member.name} ({file_size_mb:.1f} MB)")
+                        # Choose the first ply (prefer splat/final_model naming)
+                        if ply_path is None or member.name.endswith('splat.ply'):
+                            ply_path = os.path.join(temp_dir, member.name)
                 
-                if len(found_files) < len(required_files):
-                    missing = set(required_files) - set(found_files)
-                    logger.error(f"❌ Missing required files in tar.gz: {missing}")
+                if not metadata_found:
+                    logger.error("❌ Missing training_metadata.json in tar.gz")
+                    return False
+                
+                if not ply_path:
+                    logger.error("❌ Missing .ply file (expected splat.ply or final_model.ply)")
                     return False
                 
                 # Verify PLY file has correct format for SOGS
-                ply_path = os.path.join(temp_dir, 'final_model.ply')
                 return self._verify_ply_format_local(ply_path)
             
         except Exception as e:

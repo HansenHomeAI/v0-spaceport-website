@@ -76,3 +76,6 @@ web/.vercel/
 
 # Cesium static assets copied at build time
 web/public/cesium/
+
+# 3D model files (large binary files)
+*.ply
