@@ -70,6 +70,10 @@ class SpiralDesigner:
     MAX_ERR = 0.2           # Maximum error tolerance for calculations
     EARTH_R = 6378137       # Earth radius in meters (WGS84)
     FT2M = 0.3048          # Feet to meters conversion factor
+    MPS_TO_MPH = 2.236936  # Meters/sec to miles/hour conversion factor
+    FLIGHT_SPEED_MPS = 8.85  # 19.8 mph (matches Litchi CSV speed)
+    FLIGHT_SPEED_MPH = FLIGHT_SPEED_MPS * MPS_TO_MPH
+    TAKEOFF_LANDING_OVERHEAD_MINUTES = 2.5  # Startup/landing + maneuver buffer
     
     def __init__(self):
         """
@@ -1103,7 +1107,7 @@ class SpiralDesigner:
                 2,                          # Gimbal mode (focus POI)
                 gimbal_pitch,               # Camera tilt angle 
                 0,                          # Altitude mode (AGL)
-                8.85,                       # Speed (19.8 mph = 8.85 m/s)
+                self.FLIGHT_SPEED_MPS,       # Speed (19.8 mph = 8.85 m/s)
                 center['lat'],              # POI latitude (spiral center)
                 center['lon'],              # POI longitude (spiral center)
                 -35,                        # POI altitude (-35ft AGL)
@@ -1355,7 +1359,7 @@ class SpiralDesigner:
                 2,                          # Gimbal mode (focus POI)
                 gimbal_pitch,               # Camera tilt angle 
                 0,                          # Altitude mode (AGL)
-                8.85,                       # Speed (19.8 mph = 8.85 m/s)
+                self.FLIGHT_SPEED_MPS,       # Speed (19.8 mph = 8.85 m/s)
                 center['lat'],              # POI latitude (spiral center)
                 center['lon'],              # POI longitude (spiral center)
                 -35,                        # POI altitude (-35ft AGL)
@@ -1375,7 +1379,7 @@ class SpiralDesigner:
         APPROACH:
         - Calculate actual spiral path length using mathematical integration
         - Account for all phases: outbound spiral, hold pattern, inbound spiral
-        - Use realistic drone speed (25 mph) and acceleration/deceleration
+        - Use planned mission speed (Litchi CSV) and acceleration/deceleration buffer
         - Add overhead for takeoff, landing, photos, hover time
         
         Args:
@@ -1446,14 +1450,14 @@ class SpiralDesigner:
         
         # Convert to miles and calculate flight time
         total_distance_miles = total_spiral_length_ft / 5280
-        flight_speed_mph = 25  # Realistic drone speed
+        flight_speed_mph = self.FLIGHT_SPEED_MPH  # Align with CSV speed
         
         # Base flight time
         flight_time_hours = total_distance_miles / flight_speed_mph
         flight_time_minutes = flight_time_hours * 60
         
         # Add overhead for takeoff, landing, photos, hover time, acceleration/deceleration
-        overhead_minutes = 1.5  # Reduced from 2.0 since we're more accurate now
+        overhead_minutes = self.TAKEOFF_LANDING_OVERHEAD_MINUTES
         
         return flight_time_minutes + overhead_minutes
 
