@@ -10,7 +10,7 @@ export default function Pricing(): JSX.Element {
     <>
       <section className="section" id="pricing-header">
         <h1>Pricing.</h1>
-        <p><span className="inline-white">Brokerage integration, priced per model.</span></p>
+        <p><span className="inline-white">Capture the imagination of your buyers.</span></p>
       </section>
       <section className="section" id="pricing">
         <div className="pricing-grid">
