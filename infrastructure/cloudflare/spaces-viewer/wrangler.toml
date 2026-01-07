@@ -1,8 +1,13 @@
 name = "spaces-viewer"
 main = "src/index.ts"
 compatibility_date = "2025-01-07"
+workers_dev = true
 
 r2_buckets = [{ binding = "SPACES_BUCKET", bucket_name = "spaces-viewers" }]
+
+routes = [
+  { pattern = "spaces.spcprt.com/*", zone_name = "spcprt.com" }
+]
 
 [vars]
 SPACES_HOST = "spaces.spcprt.com"
