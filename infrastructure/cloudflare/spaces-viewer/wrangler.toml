@@ -1,0 +1,9 @@
+name = "spaces-viewer"
+main = "src/index.ts"
+compatibility_date = "2025-01-07"
+
+r2_buckets = [{ binding = "SPACES_BUCKET", bucket_name = "spaces-viewers" }]
+
+[vars]
+SPACES_HOST = "spaces.spcprt.com"
+ADMIN_EMAIL_DOMAIN = "spcprt.com"

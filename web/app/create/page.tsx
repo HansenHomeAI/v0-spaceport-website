@@ -139,6 +139,7 @@ export default function Create(): JSX.Element {
     apiConfigured: modelDeliveryApiConfigured,
     resolveClient,
     sendDelivery,
+    publishViewer,
     checkPermission: refreshModelDeliveryPermission,
   } = useModelDeliveryAdmin();
 
@@ -350,6 +351,7 @@ export default function Create(): JSX.Element {
             onClose={() => setModelDeliveryOpen(false)}
             resolveClient={resolveClient}
             sendDelivery={sendDelivery}
+            publishViewer={publishViewer}
             onDelivered={handleDeliverySuccess}
           />
         )}

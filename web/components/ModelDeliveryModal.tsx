@@ -6,13 +6,15 @@ import type {
   ModelDeliveryClient,
   ModelDeliveryProject,
   ResolveClientResponse,
+  PublishViewerResponse,
 } from '../app/hooks/useModelDeliveryAdmin';
 
 interface ModelDeliveryModalProps {
   open: boolean;
   onClose: () => void;
   resolveClient: (email: string) => Promise<ResolveClientResponse>;
-  sendDelivery: (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string }) => Promise<any>;
+  sendDelivery: (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string }) => Promise<any>;
+  publishViewer: (payload: { title: string; file: File }) => Promise<PublishViewerResponse>;
   onDelivered: (project: Record<string, any>) => void;
 }
 
@@ -31,6 +33,7 @@ export default function ModelDeliveryModal({
   onClose,
   resolveClient,
   sendDelivery,
+  publishViewer,
   onDelivered,
 }: ModelDeliveryModalProps): JSX.Element | null {
   const headingId = useId();
@@ -40,11 +43,14 @@ export default function ModelDeliveryModal({
   const [projects, setProjects] = useState<ModelDeliveryProject[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [modelLink, setModelLink] = useState('');
+  const [preferredTitle, setPreferredTitle] = useState('');
+  const [viewerFile, setViewerFile] = useState<File | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [successState, setSuccessState] = useState<{ messageId: string } | null>(null);
   const [loadingClient, setLoadingClient] = useState(false);
   const [sending, setSending] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -53,6 +59,8 @@ export default function ModelDeliveryModal({
     setProjects([]);
     setSelectedProjectId('');
     setModelLink('');
+    setPreferredTitle('');
+    setViewerFile(null);
     setLookupError(null);
     setSubmissionError(null);
     setSuccessState(null);
@@ -93,8 +101,8 @@ export default function ModelDeliveryModal({
   }, [clientEmail, resolveClient]);
 
   const handleSubmit = useCallback(async () => {
-    if (!client || !selectedProjectId || !isValidUrl(modelLink)) {
-      setSubmissionError('Provide a valid link, client, and project.');
+    if (!client || !selectedProjectId) {
+      setSubmissionError('Provide a client and project.');
       return;
     }
 
@@ -103,11 +111,33 @@ export default function ModelDeliveryModal({
     setSuccessState(null);
 
     try {
+      let finalLink = modelLink.trim();
+      let viewerSlug: string | undefined;
+
+      if (viewerFile) {
+        if (!preferredTitle.trim()) {
+          throw new Error('Preferred URL title is required when uploading a viewer file.');
+        }
+
+        setPublishing(true);
+        const publishResult = await publishViewer({
+          title: preferredTitle.trim(),
+          file: viewerFile,
+        });
+        finalLink = publishResult.url;
+        viewerSlug = publishResult.slug;
+        setModelLink(finalLink);
+      } else if (!isValidUrl(finalLink)) {
+        throw new Error('Provide a valid model link URL.');
+      }
+
       const response = await sendDelivery({
         clientEmail: client.email,
         projectId: selectedProjectId,
-        modelLink: modelLink.trim(),
+        modelLink: finalLink,
         projectTitle: selectedProject?.title,
+        viewerSlug,
+        viewerTitle: preferredTitle.trim() || undefined,
       });
 
       const deliveredProject = response?.project as ModelDeliveryProject | undefined;
@@ -120,8 +150,9 @@ export default function ModelDeliveryModal({
       setSubmissionError(error?.message || 'Unable to send model link');
     } finally {
       setSending(false);
+      setPublishing(false);
     }
-  }, [client, modelLink, onDelivered, selectedProject, selectedProjectId, sendDelivery]);
+  }, [client, modelLink, onDelivered, preferredTitle, publishViewer, selectedProject, selectedProjectId, sendDelivery, viewerFile]);
 
   if (!open) return null;
 
@@ -213,10 +244,43 @@ export default function ModelDeliveryModal({
             onChange={(event) => setModelLink(event.target.value)}
             placeholder="https://viewer.spaceport.ai/..."
             className="model-delivery-input"
+            disabled={Boolean(viewerFile)}
             required
           />
           <p className="model-delivery-hint">
             URL must start with <code>https://</code>.
+          </p>
+
+          <label className="model-delivery-label" htmlFor="preferred-title-input">
+            Preferred URL Title
+          </label>
+          <input
+            id="preferred-title-input"
+            type="text"
+            value={preferredTitle}
+            onChange={(event) => setPreferredTitle(event.target.value)}
+            placeholder="123 Main Street"
+            className="model-delivery-input"
+          />
+          <p className="model-delivery-hint">
+            Used to generate the public link when you upload a viewer file.
+          </p>
+
+          <label className="model-delivery-label" htmlFor="viewer-file-input">
+            Upload Viewer File (HTML)
+          </label>
+          <input
+            id="viewer-file-input"
+            type="file"
+            accept=".html,text/html"
+            className="model-delivery-input"
+            onChange={(event) => {
+              const file = event.target.files?.[0] || null;
+              setViewerFile(file);
+            }}
+          />
+          <p className="model-delivery-hint">
+            Upload the prepared viewer HTML to auto-generate a branded link.
           </p>
 
           {submissionError && <p className="model-delivery-error" role="alert">{submissionError}</p>}
@@ -238,9 +302,9 @@ export default function ModelDeliveryModal({
             <button
               type="submit"
               className="model-delivery-primary"
-              disabled={sending || !client || !selectedProjectId || !isValidUrl(modelLink)}
+              disabled={sending || publishing || !client || !selectedProjectId || (!viewerFile && !isValidUrl(modelLink))}
             >
-              {sending ? 'Sending…' : 'Send to client'}
+              {sending ? 'Sending…' : publishing ? 'Publishing…' : 'Send to client'}
             </button>
           </div>
         </form>

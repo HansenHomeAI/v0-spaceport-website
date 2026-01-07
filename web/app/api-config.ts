@@ -52,6 +52,9 @@ export const API_CONFIG = {
 
   // Model Delivery Admin API - Employee model delivery workflow
   MODEL_DELIVERY_ADMIN_API_URL: process.env.NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL || '',
+
+  // Spaces Viewer base URL - Hosted viewer for delivered models
+  SPACES_VIEWER_BASE_URL: process.env.NEXT_PUBLIC_SPACES_VIEWER_BASE_URL || 'https://spaces.spcprt.com',
 } as const;
 
 // Individual API endpoint builders
@@ -103,6 +106,12 @@ export const buildApiUrl = {
     send: () => API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL
       ? `${API_CONFIG.MODEL_DELIVERY_ADMIN_API_URL}/admin/model-delivery/send`
       : '',
+  },
+
+  // Spaces Viewer endpoints
+  spacesViewer: {
+    base: () => API_CONFIG.SPACES_VIEWER_BASE_URL,
+    publish: () => `${API_CONFIG.SPACES_VIEWER_BASE_URL.replace(/\\/$/, '')}/publish`,
   },
 } as const;
 
