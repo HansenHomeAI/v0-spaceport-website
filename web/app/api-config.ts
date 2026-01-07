@@ -111,7 +111,7 @@ export const buildApiUrl = {
   // Spaces Viewer endpoints
   spacesViewer: {
     base: () => API_CONFIG.SPACES_VIEWER_BASE_URL,
-    publish: () => `${API_CONFIG.SPACES_VIEWER_BASE_URL.replace(/\\/$/, '')}/publish`,
+    publish: () => `${API_CONFIG.SPACES_VIEWER_BASE_URL.replace(/\/$/, '')}/publish`,
   },
 } as const;
 
