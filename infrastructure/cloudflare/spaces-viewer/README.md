@@ -3,9 +3,9 @@
 Hosts per-model HTML viewer files from Cloudflare R2 at branded URLs.
 
 ## Responsibilities
-- Accept HTML uploads at `POST /publish` (admin-only).
+- Accept HTML uploads at `POST /spaces/publish` (admin-only).
 - Store files in R2 under `models/{slug}/index.html`.
-- Serve viewer pages at `GET /{slug}`.
+- Serve viewer pages at `GET /spaces/{slug}`.
 
 ## Configuration
 - **R2 bucket**: `spaces-viewers` (binding `SPACES_BUCKET`)
@@ -27,5 +27,5 @@ wrangler deploy
 
 ## Test
 ```bash
-curl -s https://spaces.spcprt.com/health
+curl -s https://spcprt.com/spaces/health
 ```

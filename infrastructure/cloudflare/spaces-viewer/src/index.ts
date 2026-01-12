@@ -4,6 +4,7 @@ const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 interface Env {
   SPACES_BUCKET: R2Bucket;
   SPACES_HOST?: string;
+  SPACES_PATH_PREFIX?: string;
   ADMIN_EMAIL_DOMAIN?: string;
   ADMIN_EMAIL_ALLOWLIST?: string;
   SPACES_PUBLISH_TOKEN?: string;
@@ -84,6 +85,35 @@ async function findAvailableSlug(env: Env, baseSlug: string): Promise<string> {
 function getHost(env: Env, request: Request): string {
   if (env.SPACES_HOST) return env.SPACES_HOST;
   return new URL(request.url).host;
+}
+
+function normalizePrefix(prefix?: string): string {
+  if (!prefix) return '';
+  let normalized = prefix.trim();
+  if (!normalized) return '';
+  if (!normalized.startsWith('/')) {
+    normalized = `/${normalized}`;
+  }
+  normalized = normalized.replace(/\/+$/, '');
+  return normalized === '/' ? '' : normalized;
+}
+
+function stripPrefix(pathname: string, prefix: string): string {
+  if (!prefix) return pathname;
+  if (pathname === prefix) return '/';
+  if (pathname.startsWith(`${prefix}/`)) {
+    return pathname.slice(prefix.length);
+  }
+  return pathname;
+}
+
+function buildBaseUrl(env: Env, request: Request): string {
+  const host = getHost(env, request);
+  const prefix = normalizePrefix(env.SPACES_PATH_PREFIX);
+  if (!prefix) {
+    return `https://${host}`;
+  }
+  return `https://${host}${prefix}`;
 }
 
 function base64UrlToBytes(input: string): Uint8Array {
@@ -230,15 +260,14 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
     },
   });
 
-  const host = getHost(env, request);
-  const viewerUrl = `https://${host}/${slug}`;
+  const baseUrl = buildBaseUrl(env, request);
+  const viewerUrl = `${baseUrl}/${slug}`;
 
   return jsonResponse(200, { ok: true, slug, url: viewerUrl });
 }
 
-async function handleViewer(request: Request, env: Env): Promise<Response> {
-  const url = new URL(request.url);
-  const slug = url.pathname.replace(/^\/+/, '');
+async function handleViewer(request: Request, env: Env, pathname: string): Promise<Response> {
+  const slug = pathname.replace(/^\/+/, '').split('/')[0];
   if (!slug || slug === 'health') {
     return new Response('Not found', { status: 404 });
   }
@@ -265,12 +294,14 @@ export default {
     }
 
     const url = new URL(request.url);
+    const prefix = normalizePrefix(env.SPACES_PATH_PREFIX);
+    const pathname = stripPrefix(url.pathname, prefix);
 
-    if (url.pathname === '/health') {
+    if (pathname === '/health') {
       return new Response('ok', { status: 200, headers: corsHeaders });
     }
 
-    if (url.pathname === '/publish') {
+    if (pathname === '/publish') {
       if (request.method !== 'POST') {
         return jsonResponse(405, { error: 'Method not allowed' });
       }
@@ -278,7 +309,7 @@ export default {
     }
 
     if (request.method === 'GET' || request.method === 'HEAD') {
-      return handleViewer(request, env);
+      return handleViewer(request, env, pathname);
     }
 
     return jsonResponse(404, { error: 'Not found' });

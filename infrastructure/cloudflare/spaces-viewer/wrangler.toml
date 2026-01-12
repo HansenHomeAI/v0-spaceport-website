@@ -6,10 +6,12 @@ workers_dev = true
 r2_buckets = [{ binding = "SPACES_BUCKET", bucket_name = "spaces-viewers" }]
 
 routes = [
-  { pattern = "spaces.spcprt.com/*", zone_name = "spcprt.com" }
+  { pattern = "spcprt.com/spaces", zone_name = "spcprt.com" },
+  { pattern = "spcprt.com/spaces/*", zone_name = "spcprt.com" }
 ]
 
 [vars]
-SPACES_HOST = "spaces.spcprt.com"
+SPACES_HOST = "spcprt.com"
+SPACES_PATH_PREFIX = "/spaces"
 ADMIN_EMAIL_DOMAIN = "spcprt.com"
 ADMIN_EMAIL_ALLOWLIST = "gbhbyu@gmail.com"

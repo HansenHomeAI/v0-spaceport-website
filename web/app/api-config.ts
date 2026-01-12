@@ -54,7 +54,7 @@ export const API_CONFIG = {
   MODEL_DELIVERY_ADMIN_API_URL: process.env.NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL || '',
 
   // Spaces Viewer base URL - Hosted viewer for delivered models
-  SPACES_VIEWER_BASE_URL: process.env.NEXT_PUBLIC_SPACES_VIEWER_BASE_URL || 'https://spaces.spcprt.com',
+  SPACES_VIEWER_BASE_URL: process.env.NEXT_PUBLIC_SPACES_VIEWER_BASE_URL || 'https://spcprt.com/spaces',
 } as const;
 
 // Individual API endpoint builders
