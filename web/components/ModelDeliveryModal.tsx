@@ -18,16 +18,6 @@ interface ModelDeliveryModalProps {
   onDelivered: (project: Record<string, any>) => void;
 }
 
-function isValidUrl(link: string): boolean {
-  if (!link) return false;
-  try {
-    const url = new URL(link);
-    return url.protocol === 'https:' || url.protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
-
 export default function ModelDeliveryModal({
   open,
   onClose,
@@ -42,7 +32,6 @@ export default function ModelDeliveryModal({
   const [client, setClient] = useState<ModelDeliveryClient | null>(null);
   const [projects, setProjects] = useState<ModelDeliveryProject[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
-  const [modelLink, setModelLink] = useState('');
   const [preferredTitle, setPreferredTitle] = useState('');
   const [viewerFile, setViewerFile] = useState<File | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
@@ -58,7 +47,6 @@ export default function ModelDeliveryModal({
     setClient(null);
     setProjects([]);
     setSelectedProjectId('');
-    setModelLink('');
     setPreferredTitle('');
     setViewerFile(null);
     setLookupError(null);
@@ -106,30 +94,29 @@ export default function ModelDeliveryModal({
       return;
     }
 
+    if (!viewerFile) {
+      setSubmissionError('Upload a viewer HTML file to continue.');
+      return;
+    }
+
+    if (!preferredTitle.trim()) {
+      setSubmissionError('Preferred URL title is required.');
+      return;
+    }
+
     setSubmissionError(null);
     setSending(true);
     setSuccessState(null);
 
     try {
-      let finalLink = modelLink.trim();
       let viewerSlug: string | undefined;
-
-      if (viewerFile) {
-        if (!preferredTitle.trim()) {
-          throw new Error('Preferred URL title is required when uploading a viewer file.');
-        }
-
-        setPublishing(true);
-        const publishResult = await publishViewer({
-          title: preferredTitle.trim(),
-          file: viewerFile,
-        });
-        finalLink = publishResult.url;
-        viewerSlug = publishResult.slug;
-        setModelLink(finalLink);
-      } else if (!isValidUrl(finalLink)) {
-        throw new Error('Provide a valid model link URL.');
-      }
+      setPublishing(true);
+      const publishResult = await publishViewer({
+        title: preferredTitle.trim(),
+        file: viewerFile,
+      });
+      const finalLink = publishResult.url;
+      viewerSlug = publishResult.slug;
 
       const response = await sendDelivery({
         clientEmail: client.email,
@@ -152,7 +139,7 @@ export default function ModelDeliveryModal({
       setSending(false);
       setPublishing(false);
     }
-  }, [client, modelLink, onDelivered, preferredTitle, publishViewer, selectedProject, selectedProjectId, sendDelivery, viewerFile]);
+  }, [client, onDelivered, preferredTitle, publishViewer, selectedProject, selectedProjectId, sendDelivery, viewerFile]);
 
   if (!open) return null;
 
@@ -173,7 +160,7 @@ export default function ModelDeliveryModal({
         </div>
 
         <p className="model-delivery-description" id={descriptionId}>
-          Deliver the final 3D model to a client. The link is saved to their project and an email is sent instantly.
+          Upload the viewer HTML and choose a URL title. We host it, save the link to the project, and email the client.
         </p>
 
         <form
@@ -234,23 +221,6 @@ export default function ModelDeliveryModal({
             ))}
           </select>
 
-          <label className="model-delivery-label" htmlFor="model-link-input">
-            Model Link URL
-          </label>
-          <input
-            id="model-link-input"
-            type="url"
-            value={modelLink}
-            onChange={(event) => setModelLink(event.target.value)}
-            placeholder="https://viewer.spaceport.ai/..."
-            className="model-delivery-input"
-            disabled={Boolean(viewerFile)}
-            required
-          />
-          <p className="model-delivery-hint">
-            URL must start with <code>https://</code>.
-          </p>
-
           <label className="model-delivery-label" htmlFor="preferred-title-input">
             Preferred URL Title
           </label>
@@ -261,9 +231,10 @@ export default function ModelDeliveryModal({
             onChange={(event) => setPreferredTitle(event.target.value)}
             placeholder="123 Main Street"
             className="model-delivery-input"
+            required
           />
           <p className="model-delivery-hint">
-            Used to generate the public link when you upload a viewer file.
+            This becomes the public URL slug (we auto-suffix if needed).
           </p>
 
           <label className="model-delivery-label" htmlFor="viewer-file-input">
@@ -278,9 +249,10 @@ export default function ModelDeliveryModal({
               const file = event.target.files?.[0] || null;
               setViewerFile(file);
             }}
+            required
           />
           <p className="model-delivery-hint">
-            Upload the prepared viewer HTML to auto-generate a branded link.
+            Upload the viewer HTML to generate the hosted link automatically.
           </p>
 
           {submissionError && <p className="model-delivery-error" role="alert">{submissionError}</p>}
@@ -302,7 +274,7 @@ export default function ModelDeliveryModal({
             <button
               type="submit"
               className="model-delivery-primary"
-              disabled={sending || publishing || !client || !selectedProjectId || (!viewerFile && !isValidUrl(modelLink))}
+              disabled={sending || publishing || !client || !selectedProjectId || !viewerFile || !preferredTitle.trim()}
             >
               {sending ? 'Sending…' : publishing ? 'Publishing…' : 'Send to client'}
             </button>

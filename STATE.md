@@ -1,5 +1,5 @@
-reason: spaces.spcprt.com currently does not resolve (NXDOMAIN); need to create DNS record via Cloudflare API token (zone:DNS:Edit) or dashboard.
-last_step: validated worker.dev publish + serve with TLS; confirmed R2 writes; attempted to resolve spaces.spcprt.com and failed.
-next_unblocked_step: create DNS record for spaces.spcprt.com (CNAME to spaces-viewer.hello-462.workers.dev or proxied CNAME to spcprt.com) then re-run health/publish checks on spaces.spcprt.com.
-owner_action_needed: export CLOUDFLARE_API_TOKEN (zone:DNS:Edit) in the agent environment or create the DNS record manually in Cloudflare.
-updated: 2026-01-09T01:49:45Z
+reason: none (unblocked)
+last_step: granted beta_access_admin permissions to gbhbyu@gmail.com in Spaceport-BetaAccessPermissions-staging (user_id=c8011310-a081-70cb-e4c6-ee69dda9c370).
+next_unblocked_step: log into staging with gbhbyu@gmail.com and verify model delivery admin UI + send flow; confirm email delivery.
+owner_action_needed: confirm the UI now shows admin controls and run the delivery test from the UI.
+updated: 2026-01-12T17:22:40Z
