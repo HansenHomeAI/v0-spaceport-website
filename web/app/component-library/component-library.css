@@ -1,0 +1,326 @@
+.component-library {
+  padding: 140px 20px 120px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.component-library-intro {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.component-library-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 16px;
+}
+
+.component-library-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.component-library-note {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+}
+
+.component-library-section {
+  padding: 48px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.component-library-section:first-of-type {
+  border-top: none;
+}
+
+.component-library-section-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.component-library-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: start;
+}
+
+.component-library-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.component-library-card-wide {
+  grid-column: 1 / -1;
+}
+
+.component-library-card-spacer {
+  margin-top: 24px;
+}
+
+.component-library-label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 16px;
+}
+
+.component-library-h3 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.component-library-swatches {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.component-library-swatch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.component-library-swatch-chip {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.component-library-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.component-library-layouts {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.component-library-layout {
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.component-library-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  gap: 12px;
+}
+
+.component-library-list li {
+  color: #737373;
+  line-height: 1.5;
+}
+
+.component-library-auth {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.component-library-auth .auth-modal {
+  margin: 0;
+  max-width: none;
+}
+
+.component-library-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.component-library-progress-bar {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 999px;
+}
+
+.component-library .project-cards {
+  margin-top: 0;
+  max-width: 100%;
+}
+
+.component-library #landing {
+  height: 420px;
+  min-height: 0;
+}
+
+.component-library #landing.section {
+  height: 420px;
+}
+
+.component-library .component-library-hero-media {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 60%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.1), transparent 70%),
+    radial-gradient(circle at 70% 70%, rgba(63, 178, 127, 0.35), transparent 65%);
+}
+
+.component-library #landing .landing-content {
+  bottom: 36px;
+}
+
+.component-library #landing-carousel {
+  padding: 24px 20px;
+}
+
+.component-library #landing-stats {
+  padding: 60px 20px 40px;
+}
+
+.component-library #pricing-header {
+  padding: 60px 20px 20px;
+}
+
+.component-library #pricing {
+  padding: 20px 20px 40px;
+}
+
+.component-library .feedback-container {
+  width: 100%;
+}
+
+.component-library .feedback-form {
+  width: 100%;
+}
+
+.component-library .feedback-status {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Beta access preview styles (mirrors component styling) */
+.component-library .beta-access-invite {
+  margin-top: 8px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.component-library .beta-access-header h4 {
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.component-library .beta-access-header p {
+  margin: 0 0 20px 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+}
+
+.component-library .beta-access-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.component-library .beta-access-form .input-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.component-library .beta-access-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: #ffffff;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.component-library .beta-access-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.component-library .beta-access-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.component-library .beta-access-button {
+  padding: 16px 32px;
+  background: #ffffff;
+  border: none;
+  border-radius: 50px;
+  color: #000000;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.component-library .beta-access-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.component-library .beta-access-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.component-library .beta-access-message.success {
+  background: rgba(63, 178, 127, 0.2);
+  color: #3fb27f;
+  border: 1px solid rgba(63, 178, 127, 0.3);
+}
+
+@keyframes component-library-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .component-library {
+    padding-top: 120px;
+  }
+
+  .component-library-layout {
+    border-radius: 20px;
+  }
+}

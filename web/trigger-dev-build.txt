@@ -9,3 +9,5 @@ Production Lambda sync 2025-10-13T23:53:00Z
 
 2026-01-06T04:18:17Z pricing refresh2026-01-06T18:44:46Z battery estimator tune
 2026-01-06T19:04:31Z preview auth secrets refresh
+
+2026-01-12T18:02:46Z component-library page
