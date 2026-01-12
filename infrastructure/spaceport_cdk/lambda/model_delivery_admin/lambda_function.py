@@ -223,6 +223,8 @@ def _persist_delivery(
     message_id: str,
     employee: Dict[str, Any],
     recipient: Dict[str, Any],
+    viewer_slug: Optional[str] = None,
+    viewer_title: Optional[str] = None,
 ) -> Dict[str, Any]:
     user_sub = project['userSub']
     project_id = project['projectId']
@@ -244,6 +246,8 @@ def _persist_delivery(
         'recipientEmail': recipient['email'],
         'projectId': project_id,
         'projectTitle': project.get('title'),
+        'viewerSlug': viewer_slug,
+        'viewerTitle': viewer_title,
         'sentAt': now_iso,
         'messageId': message_id,
         'sentBy': {
@@ -264,6 +268,8 @@ def _persist_delivery(
         'sentBy': history_entry['sentBy'],
         'recipientEmail': recipient['email'],
         'messageId': message_id,
+        'viewerSlug': viewer_slug,
+        'viewerTitle': viewer_title,
     }
 
     new_status = project.get('status') or 'delivered'
@@ -357,6 +363,8 @@ def lambda_handler(event, context):
             client_email = (data.get('clientEmail') or '').strip().lower()
             project_id = (data.get('projectId') or '').strip()
             model_link = (data.get('modelLink') or '').strip()
+            viewer_slug = (data.get('viewerSlug') or '').strip() or None
+            viewer_title = (data.get('viewerTitle') or '').strip() or None
 
             if not client_email or not project_id or not model_link:
                 return _response(400, {'error': 'clientEmail, projectId, and modelLink are required'})
@@ -393,6 +401,8 @@ def lambda_handler(event, context):
                 message_id=str(message_id),
                 employee=employee,
                 recipient=client,
+                viewer_slug=viewer_slug,
+                viewer_title=viewer_title,
             )
 
             audit_log = {
