@@ -1,5 +1,5 @@
 reason: none (unblocked)
-last_step: granted beta_access_admin permissions to gbhbyu@gmail.com in Spaceport-BetaAccessPermissions-staging (user_id=c8011310-a081-70cb-e4c6-ee69dda9c370).
-next_unblocked_step: log into staging with gbhbyu@gmail.com and verify model delivery admin UI + send flow; confirm email delivery.
-owner_action_needed: confirm the UI now shows admin controls and run the delivery test from the UI.
-updated: 2026-01-12T17:22:40Z
+last_step: deployed spaces-viewer worker with ADMIN_EMAIL_ALLOWLIST including gbhbyu@gmail.com to allow publish auth for staging admin.
+next_unblocked_step: retry Send Model Link flow from staging UI; confirm /publish no longer returns 401 and email delivery succeeds.
+owner_action_needed: rerun the modal send flow and confirm result.
+updated: 2026-01-12T17:23:15Z

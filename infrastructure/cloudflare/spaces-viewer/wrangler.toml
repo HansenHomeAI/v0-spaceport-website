@@ -12,3 +12,4 @@ routes = [
 [vars]
 SPACES_HOST = "spaces.spcprt.com"
 ADMIN_EMAIL_DOMAIN = "spcprt.com"
+ADMIN_EMAIL_ALLOWLIST = "gbhbyu@gmail.com"
