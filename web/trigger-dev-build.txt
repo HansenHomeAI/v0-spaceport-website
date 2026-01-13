@@ -12,3 +12,5 @@ Production Lambda sync 2025-10-13T23:53:00Z
 2026-01-07T21:13:46Z model delivery viewer upload
 
 2026-01-12T17:25:30Z spaces path prefix update
+
+2026-01-12T18:05:00Z stripe model payment integration

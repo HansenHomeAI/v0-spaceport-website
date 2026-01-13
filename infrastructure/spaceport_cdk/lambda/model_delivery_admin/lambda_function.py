@@ -1,13 +1,15 @@
 import json
 import os
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 from decimal import Decimal
+from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
 
 import boto3
 from boto3.dynamodb.conditions import Key
 import resend
+import stripe
 
 
 logger = logging.getLogger()
@@ -18,6 +20,9 @@ USER_POOL_ID = os.environ.get('COGNITO_USER_POOL_ID')
 PROJECTS_TABLE_NAME = os.environ.get('PROJECTS_TABLE_NAME')
 PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_MODEL_TRAINING_PRICE = os.environ.get('STRIPE_MODEL_TRAINING_PRICE')
+STRIPE_MODEL_HOSTING_PRICE = os.environ.get('STRIPE_MODEL_HOSTING_PRICE')
 
 
 if not USER_POOL_ID or not PROJECTS_TABLE_NAME:
@@ -27,6 +32,7 @@ if not RESEND_API_KEY:
     logger.warning('RESEND_API_KEY is not configured; model delivery emails will fail')
 
 resend.api_key = RESEND_API_KEY
+stripe.api_key = STRIPE_SECRET_KEY
 
 
 # AWS clients/resources
@@ -168,11 +174,105 @@ def _fetch_projects_for_user(user_sub: str) -> List[Dict[str, Any]]:
     return projects
 
 
-def _send_delivery_email(recipient_email: str, project_title: str, model_link: str) -> Dict[str, Any]:
+def _append_query_params(url: str, params: Dict[str, str]) -> str:
+    parsed = urlparse(url)
+    query = dict(parse_qsl(parsed.query))
+    query.update(params)
+    new_query = urlencode(query)
+    return urlunparse(parsed._replace(query=new_query))
+
+
+def _create_payment_session(
+    project: Dict[str, Any],
+    client: Dict[str, Any],
+    model_link: str,
+    viewer_slug: Optional[str],
+    viewer_title: Optional[str],
+) -> Dict[str, Any]:
+    if not stripe.api_key:
+        raise RuntimeError('STRIPE_SECRET_KEY is not configured')
+    if not STRIPE_MODEL_TRAINING_PRICE or not STRIPE_MODEL_HOSTING_PRICE:
+        raise RuntimeError('Stripe price IDs for model training/hosting are not configured')
+
+    success_url = _append_query_params(model_link, {'payment': 'success'})
+    cancel_url = _append_query_params(model_link, {'payment': 'canceled'})
+
+    metadata = {
+        'projectId': project.get('projectId', ''),
+        'userSub': project.get('userSub', ''),
+        'clientEmail': client.get('email', ''),
+        'viewerSlug': viewer_slug or '',
+        'viewerTitle': viewer_title or '',
+        'projectTitle': project.get('title') or '',
+        'source': 'model_delivery',
+    }
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='subscription',
+        client_reference_id=project.get('projectId'),
+        customer_email=client.get('email'),
+        line_items=[
+            {
+                'price': STRIPE_MODEL_TRAINING_PRICE,
+                'quantity': 1,
+            },
+            {
+                'price': STRIPE_MODEL_HOSTING_PRICE,
+                'quantity': 1,
+            },
+        ],
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata=metadata,
+        subscription_data={
+            'trial_period_days': 30,
+            'metadata': metadata,
+        },
+    )
+
+    if not session or not getattr(session, 'url', None):
+        raise RuntimeError('Stripe checkout session is missing a payment URL')
+
+    return {
+        'id': session.id,
+        'url': session.url,
+    }
+
+
+def _send_delivery_email(
+    recipient_email: str,
+    project_title: str,
+    model_link: str,
+    payment_link: Optional[str] = None,
+) -> Dict[str, Any]:
     if not RESEND_API_KEY:
         raise RuntimeError('Resend API key is not configured')
 
     subject = f'Your 3D model is ready: {project_title or "Spaceport AI Project"}'
+
+    payment_section = ""
+    payment_text_section = ""
+    if payment_link:
+        payment_section = f"""
+        <hr style=\"border:none;border-top:1px solid rgba(255,255,255,0.1);margin:28px 0;\" />
+        <p style=\"font-size:16px;line-height:1.6;margin-bottom:18px;color:rgba(255,255,255,0.75);\">
+          To keep hosting active, complete the model training and hosting payment within 14 days.
+        </p>
+        <p style=\"text-align:center;margin:24px 0;\">
+          <a href=\"{payment_link}\" style=\"display:inline-flex;padding:14px 28px;border-radius:999px;background:#ffffff;color:#050505;font-weight:600;text-decoration:none;\">
+            Complete payment
+          </a>
+        </p>
+        <p style=\"font-size:14px;line-height:1.6;color:rgba(255,255,255,0.6);\">
+          If the button does not work, copy and paste this link into your browser:<br/>
+          <span style=\"color:#ffffff;\">{payment_link}</span>
+        </p>
+        """
+        payment_text_section = (
+            "\nComplete payment to keep hosting active:\n"
+            f"{payment_link}\n"
+        )
 
     html_body = f"""
     <html>
@@ -190,6 +290,7 @@ def _send_delivery_email(recipient_email: str, project_title: str, model_link: s
           If the button does not work, copy and paste this link into your browser:<br/>
           <span style=\"color:#ffffff;\">{model_link}</span>
         </p>
+        {payment_section}
         <p style=\"font-size:14px;margin-top:32px;color:rgba(255,255,255,0.6);\">— Spaceport AI</p>
       </body>
     </html>
@@ -199,6 +300,7 @@ def _send_delivery_email(recipient_email: str, project_title: str, model_link: s
         f"Your 3D model is ready.\n\n"
         f"Project: {project_title or 'Spaceport AI Project'}\n"
         f"Open the model: {model_link}\n\n"
+        f"{payment_text_section}\n"
         "If the link does not open, copy and paste it into your browser.\n\n"
         "— Spaceport AI"
     )
@@ -225,6 +327,7 @@ def _persist_delivery(
     recipient: Dict[str, Any],
     viewer_slug: Optional[str] = None,
     viewer_title: Optional[str] = None,
+    payment_state: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     user_sub = project['userSub']
     project_id = project['projectId']
@@ -278,13 +381,13 @@ def _persist_delivery(
 
     new_progress = max(int(project.get('progress') or 0), 100)
 
-    update_expression = (
-        'SET #delivery = :delivery, '
-        '#deliveryHistory = :history, '
-        '#status = :status, '
-        '#progress = :progress, '
-        '#updatedAt = :updatedAt'
-    )
+    update_expression_parts = [
+        'SET #delivery = :delivery',
+        '#deliveryHistory = :history',
+        '#status = :status',
+        '#progress = :progress',
+        '#updatedAt = :updatedAt',
+    ]
 
     expr_attr_names = {
         '#delivery': 'delivery',
@@ -294,13 +397,36 @@ def _persist_delivery(
         '#updatedAt': 'updatedAt',
     }
 
-    expr_attr_values = convert_floats_to_decimal({
+    expr_attr_values = {
         ':delivery': delivery_state,
         ':history': history,
         ':status': new_status,
         ':progress': new_progress,
         ':updatedAt': now_epoch,
-    })
+    }
+
+    if payment_state:
+        update_expression_parts.extend([
+            '#paymentSessionId = :paymentSessionId',
+            '#paymentLink = :paymentLink',
+            '#paymentDeadline = :paymentDeadline',
+            '#paymentStatus = :paymentStatus',
+        ])
+        expr_attr_names.update({
+            '#paymentSessionId': 'paymentSessionId',
+            '#paymentLink': 'paymentLink',
+            '#paymentDeadline': 'paymentDeadline',
+            '#paymentStatus': 'paymentStatus',
+        })
+        expr_attr_values.update({
+            ':paymentSessionId': payment_state.get('paymentSessionId'),
+            ':paymentLink': payment_state.get('paymentLink'),
+            ':paymentDeadline': payment_state.get('paymentDeadline'),
+            ':paymentStatus': payment_state.get('paymentStatus'),
+        })
+
+    update_expression = ', '.join(update_expression_parts)
+    expr_attr_values = convert_floats_to_decimal(expr_attr_values)
 
     projects_table.update_item(
         Key={'userSub': user_sub, 'projectId': project_id},
@@ -315,6 +441,8 @@ def _persist_delivery(
     project_copy['status'] = new_status
     project_copy['progress'] = new_progress
     project_copy['updatedAt'] = now_epoch
+    if payment_state:
+        project_copy.update(payment_state)
 
     return project_copy
 
@@ -383,10 +511,27 @@ def lambda_handler(event, context):
             if not project:
                 return _response(404, {'error': 'Project not found for client'})
 
+            payment_session = _create_payment_session(
+                project=project,
+                client=client,
+                model_link=model_link,
+                viewer_slug=viewer_slug,
+                viewer_title=viewer_title,
+            )
+
+            payment_deadline = int((datetime.now(timezone.utc) + timedelta(days=14)).timestamp())
+            payment_state = {
+                'paymentSessionId': payment_session['id'],
+                'paymentLink': payment_session['url'],
+                'paymentDeadline': payment_deadline,
+                'paymentStatus': 'pending',
+            }
+
             email_response = _send_delivery_email(
                 recipient_email=client['email'],
                 project_title=project.get('title') or data.get('projectTitle'),
                 model_link=model_link,
+                payment_link=payment_session['url'],
             )
 
             message_id = (
@@ -403,6 +548,7 @@ def lambda_handler(event, context):
                 recipient=client,
                 viewer_slug=viewer_slug,
                 viewer_title=viewer_title,
+                payment_state=payment_state,
             )
 
             audit_log = {
@@ -419,6 +565,7 @@ def lambda_handler(event, context):
                 'ok': True,
                 'messageId': message_id,
                 'project': updated_project,
+                'payment': payment_state,
             })
 
         return _response(404, {'error': 'Not found'})
