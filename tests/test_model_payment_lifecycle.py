@@ -11,6 +11,7 @@ import os
 import sys
 import time
 from typing import Dict, Any
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 import boto3
@@ -26,9 +27,13 @@ def _require_env(name: str) -> str:
 def _post_json(url: str, payload: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, Any]:
     body = json.dumps(payload).encode("utf-8")
     request = Request(url, data=body, headers=headers, method="POST")
-    with urlopen(request) as response:
-        data = response.read().decode("utf-8")
-        return {"status": response.status, "body": data}
+    try:
+        with urlopen(request) as response:
+            data = response.read().decode("utf-8")
+            return {"status": response.status, "body": data}
+    except HTTPError as exc:
+        data = exc.read().decode("utf-8")
+        return {"status": exc.code, "body": data}
 
 
 def _sign_stripe_payload(payload: str, secret: str) -> str:
