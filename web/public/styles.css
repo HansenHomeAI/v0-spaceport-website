@@ -468,28 +468,86 @@ html, body {
   border: 1px solid rgba(255,0,0,0); /* Temporary visual guide */
 }
 
+/* ============================================
+   UNIFIED TYPOGRAPHY SYSTEM - 6 STYLES ONLY
+   ============================================ */
+
+/* Style 1: Heading 1 */
+.text-h1,
 .section h1 {
-  font-weight: 500;
-  margin-bottom: 1rem;
   font-size: clamp(2.9rem, 8vw, 3.9rem);
-  max-width: 92%;
-  margin-left: auto;
-  margin-right: auto;
-}
-.section h2 {
   font-weight: 500;
-  margin-bottom: 1rem;
-  font-size: 2rem;
-}
-.section p {
-  line-height: 1.6;
-  font-weight: 400;
-  color: #737373;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 2rem 0;
   max-width: 92%;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Style 2: Heading 2 */
+.text-h2,
+.section h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Style 3: Heading 3 */
+.text-h3,
+.h3 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 0em;
+  line-height: 1.05;
+  margin: 0 0 1rem 0;
+}
+
+/* Style 4: Body Text */
+.text-body,
+.section p,
+.body-text {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;
+  max-width: 92%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Style 5: Small Text */
+.text-small {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;
+}
+
+/* Style 6: Emphasis Text */
+.text-emphasis,
+.body-text-highlight {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: 0em;
+  margin: 0 0 1rem 0;
 }
 
 /* TWO-COLUMN STRATEGY FOR WIDER SCREENS */

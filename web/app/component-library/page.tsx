@@ -97,19 +97,88 @@ export default function ComponentLibrary(): JSX.Element {
       <section className="component-library-section">
         <div className="component-library-section-header">
           <h2>Foundations</h2>
-          <p>Typography, color palette, and core text treatments used across the site.</p>
+          <p>Six unified text styles used throughout the entire web app.</p>
         </div>
         <div className="component-library-grid">
           <div className="component-library-card">
-            <p className="component-library-label">Typography</p>
-            <h1>Heading One</h1>
-            <h2>Heading Two</h2>
-            <h3 className="component-library-h3">Heading Three</h3>
-            <p>
-              Body copy with <span className="inline-white">inline emphasis</span> and supporting detail for longer
-              sentences.
+            <p className="component-library-label">Style 1: Heading 1</p>
+            <h1 className="text-h1">Heading 1</h1>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-h1<br />
+              Font-size: clamp(2.9rem, 8vw, 3.9rem)<br />
+              Font-weight: 500<br />
+              Color: rgba(255, 255, 255, 1)<br />
+              Line-height: 1.05
             </p>
           </div>
+
+          <div className="component-library-card">
+            <p className="component-library-label">Style 2: Heading 2</p>
+            <h2 className="text-h2">Heading 2</h2>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-h2<br />
+              Font-size: 2rem<br />
+              Font-weight: 500<br />
+              Color: rgba(255, 255, 255, 1)<br />
+              Line-height: 1.05
+            </p>
+          </div>
+
+          <div className="component-library-card">
+            <p className="component-library-label">Style 3: Heading 3</p>
+            <h3 className="text-h3">Heading 3</h3>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-h3<br />
+              Font-size: 1.3rem<br />
+              Font-weight: 500<br />
+              Color: rgba(255, 255, 255, 1)<br />
+              Line-height: 1.05
+            </p>
+          </div>
+
+          <div className="component-library-card">
+            <p className="component-library-label">Style 4: Body Text</p>
+            <p className="text-body">
+              Body text for paragraphs and main content. This style provides comfortable reading with appropriate line height and color contrast.
+            </p>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-body<br />
+              Font-size: 1.2rem<br />
+              Font-weight: 400<br />
+              Color: rgba(255, 255, 255, 0.5)<br />
+              Line-height: 1.6
+            </p>
+          </div>
+
+          <div className="component-library-card">
+            <p className="component-library-label">Style 5: Small Text</p>
+            <p className="text-small">
+              Small text for labels, notes, captions, and secondary information.
+            </p>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-small<br />
+              Font-size: 0.9rem<br />
+              Font-weight: 400<br />
+              Color: rgba(255, 255, 255, 0.6)<br />
+              Line-height: 1.5
+            </p>
+          </div>
+
+          <div className="component-library-card">
+            <p className="component-library-label">Style 6: Emphasis Text</p>
+            <p className="text-emphasis">
+              Emphasis text for <span style={{ color: 'rgba(255, 255, 255, 1)' }}>highlighted content</span> and important inline elements.
+            </p>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-emphasis<br />
+              Font-size: 1.2rem<br />
+              Font-weight: 400<br />
+              Color: rgba(255, 255, 255, 1)<br />
+              Line-height: 1.6<br />
+              <span style={{ color: 'rgba(255, 255, 255, 1)' }}>Used for inline emphasis</span>
+            </p>
+          </div>
+
           <div className="component-library-card">
             <p className="component-library-label">Color Palette</p>
             <div className="component-library-swatches">
@@ -139,6 +208,95 @@ export default function ComponentLibrary(): JSX.Element {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="component-library-section">
+        <div className="component-library-section-header">
+          <h2>Non-Unified Text Styles Audit</h2>
+          <p className="text-body">
+            The following text styles are still in use but NOT part of the 6 unified styles. These should be migrated to use the unified system.
+          </p>
+        </div>
+        <div className="component-library-card component-library-card-wide">
+          <p className="component-library-label">⚠️ Text Styles That Need Migration</p>
+          <div style={{ display: 'grid', gap: '24px', marginTop: '24px' }}>
+            <div>
+              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+                Component Library Specific:
+              </p>
+              <ul className="component-library-list">
+                <li><code>.component-library-kicker</code> - Should use <code>.text-small</code></li>
+                <li><code>.component-library-note</code> - Should use <code>.text-small</code></li>
+                <li><code>.component-library-h3</code> - Should use <code>.text-h3</code></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+                Stats & Pricing:
+              </p>
+              <ul className="component-library-list">
+                <li><code>.stats-source</code> - Should use <code>.text-small</code></li>
+                <li><code>.stat-box h1</code> - Special gradient style (may need exception)</li>
+                <li><code>.stat-box p</code> - Should use <code>.text-body</code> or <code>.text-emphasis</code></li>
+                <li><code>.price</code> - Special gradient style (may need exception)</li>
+                <li><code>.pricing-card h2</code> - Should use <code>.text-h2</code></li>
+                <li><code>.pricing-card p</code> - Should use <code>.text-body</code></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+                Auth & Modals:
+              </p>
+              <ul className="component-library-list">
+                <li><code>.auth-modal-header h2</code> - Should use <code>.text-h2</code></li>
+                <li><code>.auth-modal-header p</code> - Should use <code>.text-body</code></li>
+                <li><code>.auth-description</code> - Should use <code>.text-small</code></li>
+                <li><code>.auth-error</code> - Should use <code>.text-small</code> (with error color)</li>
+                <li><code>.auth-success</code> - Should use <code>.text-small</code> (with success color)</li>
+                <li><code>.auth-link</code> - Should use <code>.text-small</code> (with link styling)</li>
+                <li><code>.terms-modal-content h1</code> - Should use <code>.text-h1</code></li>
+                <li><code>.terms-modal-content h2</code> - Should use <code>.text-h2</code></li>
+                <li><code>.terms-modal-content p</code> - Should use <code>.text-body</code></li>
+                <li><code>.terms-link</code> - Should use <code>.text-small</code> (with link styling)</li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+                Model Delivery:
+              </p>
+              <ul className="component-library-list">
+                <li><code>.model-delivery-label</code> - Should use <code>.text-small</code></li>
+                <li><code>.model-delivery-description</code> - Should use <code>.text-body</code></li>
+                <li><code>.model-delivery-meta</code> - Should use <code>.text-small</code></li>
+                <li><code>.model-delivery-hint</code> - Should use <code>.text-small</code></li>
+                <li><code>.model-delivery-error</code> - Should use <code>.text-small</code> (with error color)</li>
+                <li><code>.model-delivery-success</code> - Should use <code>.text-small</code> (with success color)</li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+                Inline & Special:
+              </p>
+              <ul className="component-library-list">
+                <li><code>.inline-white</code> - Should use <code>.text-emphasis</code> or inline style</li>
+                <li><code>.beta-text</code> - Special pill style (may need exception)</li>
+                <li><code>.text-highlight</code> - Should use <code>.text-emphasis</code></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+                Landing Page:
+              </p>
+              <ul className="component-library-list">
+                <li><code>.landing-content h1</code> - Should use <code>.text-h1</code> (font-weight 700 variant)</li>
+                <li><code>.landing-content p</code> - Should use <code>.text-body</code></li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-small" style={{ marginTop: '24px', padding: '16px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid rgba(255, 107, 107, 0.3)', borderRadius: '12px' }}>
+            <strong>Note:</strong> Some styles like gradient text (.stat-box h1, .price) and special UI elements (.beta-text) may need to remain as exceptions. All other text should migrate to the 6 unified styles.
+          </p>
         </div>
       </section>
 
