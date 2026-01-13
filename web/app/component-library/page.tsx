@@ -130,7 +130,7 @@ export default function ComponentLibrary(): JSX.Element {
             <p className="text-small" style={{ marginTop: '16px' }}>
               Class: .text-h3<br />
               Font-size: 1.3rem<br />
-              Font-weight: 500<br />
+              Font-weight: 400<br />
               Color: rgba(255, 255, 255, 1)<br />
               Line-height: 1.05
             </p>
