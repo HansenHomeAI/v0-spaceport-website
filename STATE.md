@@ -1,5 +1,5 @@
 reason: none (unblocked)
-last_step: moved spaces viewer to spcprt.com/spaces/*, deployed worker, and validated /spaces/health + /spaces/publish + /spaces/{slug} end-to-end (publish + serve + delete).
-next_unblocked_step: push changes, run Pages build, then retry Send Model Link flow in staging to confirm /spaces/publish works from UI and email delivery succeeds.
-owner_action_needed: re-run the UI send flow after preview rebuild.
-updated: 2026-01-12T17:59:35Z
+last_step: implemented stripe model payment integration, added enforcement lambda + webhook restore, and pushed branch with green CF/CDK; preview at https://agent-58392014-stripe-model.v0-spaceport-website-preview2.pages.dev.
+next_unblocked_step: validate model delivery + payment flow on preview (send link, revoke, restore) and run lifecycle script/tests, then open PR to development.
+owner_action_needed: supply Stripe price IDs and R2 credentials in branch secrets if missing; provide admin test credentials for Playwright if needed.
+updated: 2026-01-13T17:47:17Z
