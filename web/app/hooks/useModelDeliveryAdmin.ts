@@ -26,6 +26,11 @@ export type ResolveClientResponse = {
   projects: ModelDeliveryProject[];
 };
 
+export type PublishViewerResponse = {
+  url: string;
+  slug: string;
+};
+
 type PermissionState = {
   loading: boolean;
   hasPermission: boolean;
@@ -45,6 +50,11 @@ async function authorizedFetch(input: RequestInfo, init: RequestInit = {}): Prom
     ...init,
     headers,
   });
+}
+
+async function getIdToken(): Promise<string> {
+  const session = await Auth.currentSession();
+  return session.getIdToken().getJwtToken();
 }
 
 export function useModelDeliveryAdmin() {
@@ -157,7 +167,7 @@ export function useModelDeliveryAdmin() {
     return data as ResolveClientResponse;
   }, [endpoints.resolve]);
 
-  const sendDelivery = useCallback(async (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; }) => {
+  const sendDelivery = useCallback(async (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string; }) => {
     if (!endpoints.send) {
       throw new Error('Model delivery API is not configured');
     }
@@ -190,6 +200,33 @@ export function useModelDeliveryAdmin() {
     }
   }, [endpoints.send]);
 
+  const publishViewer = useCallback(async (payload: { title: string; file: File; }): Promise<PublishViewerResponse> => {
+    const publishUrl = buildApiUrl.spacesViewer.publish();
+    if (!publishUrl) {
+      throw new Error('Spaces viewer is not configured');
+    }
+
+    const token = await getIdToken();
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    formData.append('file', payload.file);
+
+    const response = await fetch(publishUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || `Failed to publish viewer (${response.status})`);
+    }
+
+    return data as PublishViewerResponse;
+  }, []);
+
   useEffect(() => {
     checkPermission();
   }, [checkPermission]);
@@ -199,5 +236,6 @@ export function useModelDeliveryAdmin() {
     checkPermission,
     resolveClient,
     sendDelivery,
+    publishViewer,
   };
 }

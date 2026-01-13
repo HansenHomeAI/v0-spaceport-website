@@ -69,6 +69,7 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
+            echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
@@ -88,6 +89,7 @@ jobs:
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
+            echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
