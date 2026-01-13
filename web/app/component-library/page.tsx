@@ -97,7 +97,7 @@ export default function ComponentLibrary(): JSX.Element {
       <section className="component-library-section">
         <div className="component-library-section-header">
           <h2>Foundations</h2>
-          <p>Six unified text styles used throughout the entire web app.</p>
+          <p className="text-body">Six unified text styles used throughout the entire web app.</p>
         </div>
         <div className="component-library-grid">
           <div className="component-library-card">
@@ -151,20 +151,6 @@ export default function ComponentLibrary(): JSX.Element {
           </div>
 
           <div className="component-library-card">
-            <p className="component-library-label">Style 5: Small Text</p>
-            <p className="text-small">
-              Small text for labels, notes, captions, and secondary information.
-            </p>
-            <p className="text-small" style={{ marginTop: '16px' }}>
-              Class: .text-small<br />
-              Font-size: 0.9rem<br />
-              Font-weight: 400<br />
-              Color: rgba(255, 255, 255, 0.6)<br />
-              Line-height: 1.5
-            </p>
-          </div>
-
-          <div className="component-library-card">
             <p className="component-library-label">Style 6: Emphasis Text</p>
             <p className="text-emphasis">
               Emphasis text for <span style={{ color: 'rgba(255, 255, 255, 1)' }}>highlighted content</span> and important inline elements.
@@ -176,6 +162,20 @@ export default function ComponentLibrary(): JSX.Element {
               Color: rgba(255, 255, 255, 1)<br />
               Line-height: 1.6<br />
               <span style={{ color: 'rgba(255, 255, 255, 1)' }}>Used for inline emphasis</span>
+            </p>
+          </div>
+
+          <div className="component-library-card">
+            <p className="component-library-label">Style 5: Small Text</p>
+            <p className="text-small">
+              Small text for labels, notes, captions, and secondary information.
+            </p>
+            <p className="text-small" style={{ marginTop: '16px' }}>
+              Class: .text-small<br />
+              Font-size: 0.9rem<br />
+              Font-weight: 400<br />
+              Color: rgba(255, 255, 255, 0.6)<br />
+              Line-height: 1.5
             </p>
           </div>
 
