@@ -234,6 +234,6 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
           }
         }
       `}</style>
-    </div>
+    </Container>
   );
 }
