@@ -192,8 +192,12 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     setView('signin');
   };
 
-  const waitlistButtonVariants = ['auth-mode-button', authMode === 'waitlist' ? 'active' : undefined].filter(Boolean) as string[];
-  const loginButtonVariants = ['auth-mode-button', authMode === 'login' ? 'active' : undefined].filter(Boolean) as string[];
+  const waitlistButtonVariants = authMode === 'waitlist'
+    ? ['auth-mode-button', 'active']
+    : ['auth-mode-button'];
+  const loginButtonVariants = authMode === 'login'
+    ? ['auth-mode-button', 'active']
+    : ['auth-mode-button'];
 
   // Sign-up and confirm flows are disabled (invite-only)
 

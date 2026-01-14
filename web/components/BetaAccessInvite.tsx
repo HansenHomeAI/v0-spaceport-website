@@ -53,8 +53,8 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
     }
   };
 
-  const inviteVariants = ['beta-access-invite', className].filter(Boolean) as string[];
-  const buttonVariants = ['beta-access-button', sendingInvitation ? 'loading' : undefined].filter(Boolean) as string[];
+  const inviteVariants = className ? ['beta-access-invite', className] : ['beta-access-invite'];
+  const buttonVariants = sendingInvitation ? ['beta-access-button', 'loading'] : ['beta-access-button'];
 
   return (
     <Container variant={inviteVariants}>
