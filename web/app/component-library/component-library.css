@@ -69,15 +69,12 @@
 }
 
 .component-library-label {
-  /* Uses unified Style 5: Small Text (.text-small) as base */
-  font-size: 0.9rem;
-  font-weight: 400;
+  /* Uses Style 3: Heading 3 (.text-h3) sizing */
+  font-size: 1.3rem;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.6);
-  line-height: 1.5;
+  line-height: 1.05;
   margin-bottom: 16px;
-  /* Additional styling for labels */
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
 }
 
 .component-library h1 {
