@@ -11,6 +11,9 @@ from aws_cdk import (
     aws_iam as iam,
     aws_dynamodb as dynamodb,
     aws_logs as logs,
+    aws_kms as kms,
+    aws_stepfunctions as sfn,
+    aws_stepfunctions_tasks as sfn_tasks,
 )
 from constructs import Construct
 import os
@@ -679,6 +682,248 @@ class AuthStack(Stack):
 
         self.model_delivery_lambda = model_delivery_lambda
         self.model_delivery_api = model_delivery_api
+
+        # ========== LITCHI AUTOMATION ==========
+        litchi_credentials_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-LitchiCredentialsTable",
+            preferred_name=f"Spaceport-LitchiCredentials-{suffix}",
+            fallback_name="Spaceport-LitchiCredentials",
+            partition_key_name="userId",
+            partition_key_type=dynamodb.AttributeType.STRING,
+        )
+
+        litchi_kms_key = kms.Key(
+            self,
+            "Spaceport-LitchiCredentialsKey",
+            description="KMS key for encrypting Litchi session cookies",
+            enable_key_rotation=True,
+            removal_policy=RemovalPolicy.RETAIN,
+        )
+        kms.Alias(
+            self,
+            "Spaceport-LitchiCredentialsKeyAlias",
+            alias_name=f"alias/spaceport-litchi-credentials-{suffix}",
+            target_key=litchi_kms_key,
+        )
+
+        litchi_worker_role = iam.Role(
+            self,
+            "LitchiWorkerLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+        )
+        litchi_credentials_table.grant_read_write_data(litchi_worker_role)
+        litchi_kms_key.grant_encrypt_decrypt(litchi_worker_role)
+
+        litchi_worker_lambda = lambda_.Function(
+            self,
+            "Spaceport-LitchiWorkerFunction",
+            function_name=f"Spaceport-LitchiWorkerFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "litchi_worker"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash",
+                        "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output",
+                    ],
+                ),
+            ),
+            role=litchi_worker_role,
+            timeout=Duration.minutes(5),
+            memory_size=2048,
+            environment={
+                "LITCHI_CREDENTIALS_TABLE": litchi_credentials_table.table_name,
+                "LITCHI_KMS_KEY_ID": litchi_kms_key.key_id,
+            },
+        )
+
+        litchi_stepfunctions_log_group = logs.LogGroup(
+            self,
+            "LitchiStepFunctionsLogGroup",
+            log_group_name=f"/aws/stepfunctions/litchi-{suffix}",
+            retention=logs.RetentionDays.ONE_WEEK,
+            removal_policy=RemovalPolicy.DESTROY,
+        )
+
+        litchi_state_machine_role = iam.Role(
+            self,
+            "LitchiStateMachineRole",
+            assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
+        )
+        litchi_worker_lambda.grant_invoke(litchi_state_machine_role)
+
+        worker_task = sfn_tasks.LambdaInvoke(
+            self,
+            "LitchiUploadWorker",
+            lambda_function=litchi_worker_lambda,
+            payload=sfn.TaskInput.from_object(
+                {
+                    "mode": "upload",
+                    "userId.$": "$.userId",
+                    "mission.$": "$.mission",
+                    "missionIndex.$": "$.missionIndex",
+                    "missionTotal.$": "$.missionTotal",
+                }
+            ),
+            payload_response_only=True,
+            result_path="$.worker",
+        )
+        worker_task.add_retry(
+            errors=["RateLimitedError"],
+            interval=Duration.seconds(60),
+            max_attempts=3,
+            backoff_rate=2.0,
+        )
+
+        jitter_wait = sfn.Wait(
+            self,
+            "LitchiJitterWait",
+            time=sfn.WaitTime.seconds_path("$.worker.waitSeconds"),
+        )
+
+        litchi_map = sfn.Map(
+            self,
+            "LitchiMissionMap",
+            items_path="$.missions",
+            parameters={
+                "userId.$": "$.userId",
+                "mission.$": "$$.Map.Item.Value",
+                "missionIndex.$": "$$.Map.Item.Index",
+                "missionTotal.$": "$.totalMissions",
+            },
+        )
+        litchi_map.iterator(worker_task.next(jitter_wait))
+
+        litchi_state_machine = sfn.StateMachine(
+            self,
+            "LitchiUploadStateMachine",
+            state_machine_name=f"Spaceport-LitchiUpload-{suffix}",
+            definition=litchi_map,
+            role=litchi_state_machine_role,
+            logs=sfn.LogOptions(
+                destination=litchi_stepfunctions_log_group,
+                level=sfn.LogLevel.ALL,
+                include_execution_data=True,
+            ),
+            timeout=Duration.hours(1),
+        )
+
+        litchi_api_role = iam.Role(
+            self,
+            "LitchiApiLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ],
+        )
+        litchi_credentials_table.grant_read_data(litchi_api_role)
+
+        litchi_api_lambda = lambda_.Function(
+            self,
+            "Spaceport-LitchiApiFunction",
+            function_name=f"Spaceport-LitchiApiFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "litchi_api"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash",
+                        "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output",
+                    ],
+                ),
+            ),
+            role=litchi_api_role,
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            environment={
+                "LITCHI_CREDENTIALS_TABLE": litchi_credentials_table.table_name,
+                "LITCHI_WORKER_FUNCTION": litchi_worker_lambda.function_name,
+                "LITCHI_STATE_MACHINE_ARN": litchi_state_machine.state_machine_arn,
+            },
+        )
+
+        litchi_worker_lambda.grant_invoke(litchi_api_lambda)
+        litchi_state_machine.grant_start_execution(litchi_api_lambda)
+
+        litchi_api = apigw.RestApi(
+            self,
+            "Spaceport-LitchiApi",
+            rest_api_name=f"Spaceport-LitchiApi-{suffix}",
+            description="Litchi automation API for Spaceport users",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "authorization",
+                    "X-Amz-Date",
+                    "X-Amz-Security-Token",
+                ],
+            ),
+        )
+
+        litchi_authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self,
+            "LitchiAuthorizer",
+            cognito_user_pools=[user_pool],
+        )
+
+        litchi_resource = litchi_api.root.add_resource("litchi")
+        litchi_resource.add_resource("status").add_method(
+            "GET",
+            apigw.LambdaIntegration(litchi_api_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=litchi_authorizer,
+        )
+        litchi_resource.add_resource("connect").add_method(
+            "POST",
+            apigw.LambdaIntegration(litchi_api_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=litchi_authorizer,
+        )
+        litchi_resource.add_resource("test-connection").add_method(
+            "POST",
+            apigw.LambdaIntegration(litchi_api_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=litchi_authorizer,
+        )
+        litchi_resource.add_resource("upload").add_method(
+            "POST",
+            apigw.LambdaIntegration(litchi_api_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=litchi_authorizer,
+        )
+
+        for response_type, label in (
+            (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
+            (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
+        ):
+            litchi_api.add_gateway_response(
+                f"Litchi{label}",
+                type=response_type,
+                response_headers={
+                    "Access-Control-Allow-Origin": "'*'",
+                    "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                    "Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                },
+            )
+
+        CfnOutput(self, "LitchiApiUrl", value=litchi_api.url)
+
+        self.litchi_api = litchi_api
+        self.litchi_api_lambda = litchi_api_lambda
+        self.litchi_worker_lambda = litchi_worker_lambda
+        self.litchi_state_machine = litchi_state_machine
 
         # ========== PASSWORD RESET SYSTEM ==========
         # Create DynamoDB table for password reset codes
