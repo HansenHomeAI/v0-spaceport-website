@@ -143,7 +143,11 @@ async def _launch_context():
         args=[
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
+            "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
+            "--no-zygote",
+            "--single-process",
+            "--disable-gpu",
         ],
     )
     context = await browser.new_context(
