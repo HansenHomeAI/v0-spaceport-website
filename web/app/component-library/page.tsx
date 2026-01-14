@@ -6,6 +6,7 @@ import ModelDeliveryModal from '../../components/ModelDeliveryModal';
 import NewProjectModal from '../../components/NewProjectModal';
 import TermsOfServiceModal from '../../components/TermsOfServiceModal';
 import type { ModelDeliveryProject, ResolveClientResponse } from '../hooks/useModelDeliveryAdmin';
+import { Button, Container, Layout, Section, Text } from '../../components/foundational';
 
 import './component-library.css';
 
@@ -71,145 +72,145 @@ export default function ComponentLibrary(): JSX.Element {
   };
 
   return (
-    <div className="component-library">
-      <section className="section component-library-intro">
-        <p className="component-library-kicker">Component Library</p>
-        <h1>Spaceport UI inventory</h1>
-        <p>
+    <Container variant="component-library">
+      <Section variant="component-library-intro">
+        <Text.Small withBase={false} className="component-library-kicker">Component Library</Text.Small>
+        <Text.H1>Spaceport UI inventory</Text.H1>
+        <Text.Body>
           One page to review every text style, layout pattern, and reusable block. Filter and consolidate from here.
-        </p>
-        <div className="component-library-actions">
-          <a href="/create" className="cta-button">Primary CTA</a>
-          <button type="button" className="cta-button2-fixed" onClick={() => setNewProjectOpen(true)}>
+        </Text.Body>
+        <Container variant="component-library-actions">
+          <Button.Primary href="/create">Primary CTA</Button.Primary>
+          <Button.Secondary fixed type="button" onClick={() => setNewProjectOpen(true)}>
             Open New Project Modal
-          </button>
-          <button type="button" className="cta-button2" onClick={() => setDeliveryOpen(true)}>
+          </Button.Secondary>
+          <Button.Secondary type="button" onClick={() => setDeliveryOpen(true)}>
             Open Model Delivery
-          </button>
-        </div>
+          </Button.Secondary>
+        </Container>
         {lastDelivered && (
-          <p className="component-library-note">
+          <Text.Body withBase={false} className="component-library-note">
             Demo delivery sent for {lastDelivered.title || 'Untitled'}.
-          </p>
+          </Text.Body>
         )}
-      </section>
+      </Section>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Foundations</h2>
-          <p>Six unified text styles used throughout the entire web app.</p>
-        </div>
-        <div className="component-library-grid">
-          <div className="component-library-card">
-            <p className="component-library-label">Style 1: Heading 1</p>
-            <h1 className="text-h1">Heading 1</h1>
-            <p className="text-small" style={{ marginTop: '16px' }}>
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Foundations</Text.H2>
+          <Text.Body withBase={false}>Six unified text styles used throughout the entire web app.</Text.Body>
+        </Container>
+        <Layout.Grid variant="component-library-grid">
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Style 1: Heading 1</Text.Small>
+            <Text.H1>Heading 1</Text.H1>
+            <Text.Small style={{ marginTop: '16px' }}>
               Class: .text-h1<br />
               Font-size: clamp(2.9rem, 8vw, 3.9rem)<br />
               Font-weight: 500<br />
               Color: rgba(255, 255, 255, 1)<br />
               Line-height: 1.05
-            </p>
-          </div>
+            </Text.Small>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Style 2: Heading 2</p>
-            <h2 className="text-h2">Heading 2</h2>
-            <p className="text-small" style={{ marginTop: '16px' }}>
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Style 2: Heading 2</Text.Small>
+            <Text.H2>Heading 2</Text.H2>
+            <Text.Small style={{ marginTop: '16px' }}>
               Class: .text-h2<br />
               Font-size: 2rem<br />
               Font-weight: 500<br />
               Color: rgba(255, 255, 255, 1)<br />
               Line-height: 1.05
-            </p>
-          </div>
+            </Text.Small>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Style 3: Heading 3</p>
-            <h3 className="text-h3">Heading 3</h3>
-            <p className="text-small" style={{ marginTop: '16px' }}>
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Style 3: Heading 3</Text.Small>
+            <Text.H3>Heading 3</Text.H3>
+            <Text.Small style={{ marginTop: '16px' }}>
               Class: .text-h3<br />
               Font-size: 1.3rem<br />
               Font-weight: 500<br />
               Color: rgba(255, 255, 255, 1)<br />
               Line-height: 1.05
-            </p>
-          </div>
+            </Text.Small>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Style 4: Body Text</p>
-            <p className="text-body">
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Style 4: Body Text</Text.Small>
+            <Text.Body>
               Body text for paragraphs and main content. This style provides comfortable reading with appropriate line height and color contrast.
-            </p>
-            <p className="text-small" style={{ marginTop: '16px' }}>
+            </Text.Body>
+            <Text.Small style={{ marginTop: '16px' }}>
               Class: .text-body<br />
               Font-size: 1.2rem<br />
               Font-weight: 400<br />
               Color: rgba(255, 255, 255, 0.5)<br />
               Line-height: 1.6
-            </p>
-          </div>
+            </Text.Small>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Style 5: Small Text</p>
-            <p className="text-small">
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Style 5: Small Text</Text.Small>
+            <Text.Small>
               Small text for labels, notes, captions, and secondary information.
-            </p>
-            <p className="text-small" style={{ marginTop: '16px' }}>
+            </Text.Small>
+            <Text.Small style={{ marginTop: '16px' }}>
               Class: .text-small<br />
               Font-size: 0.9rem<br />
               Font-weight: 400<br />
               Color: rgba(255, 255, 255, 0.6)<br />
               Line-height: 1.5
-            </p>
-          </div>
+            </Text.Small>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Style 6: Emphasis Text</p>
-            <p className="text-emphasis">
-              Emphasis text for <span style={{ color: 'rgba(255, 255, 255, 1)' }}>highlighted content</span> and important inline elements.
-            </p>
-            <p className="text-small" style={{ marginTop: '16px' }}>
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Style 6: Emphasis Text</Text.Small>
+            <Text.Emphasis>
+              Emphasis text for <Container as="span" style={{ color: 'rgba(255, 255, 255, 1)' }}>highlighted content</Container> and important inline elements.
+            </Text.Emphasis>
+            <Text.Small style={{ marginTop: '16px' }}>
               Class: .text-emphasis<br />
               Font-size: 1.2rem<br />
               Font-weight: 400<br />
               Color: rgba(255, 255, 255, 1)<br />
               Line-height: 1.6<br />
-              <span style={{ color: 'rgba(255, 255, 255, 1)' }}>Used for inline emphasis</span>
-            </p>
-          </div>
+              <Container as="span" style={{ color: 'rgba(255, 255, 255, 1)' }}>Used for inline emphasis</Container>
+            </Text.Small>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Color Palette</p>
-            <div className="component-library-swatches">
-              <div className="component-library-swatch">
-                <span className="component-library-swatch-chip" style={{ background: '#ffffff' }} />
-                <span>#FFFFFF</span>
-              </div>
-              <div className="component-library-swatch">
-                <span className="component-library-swatch-chip" style={{ background: '#000000' }} />
-                <span>#000000</span>
-              </div>
-              <div className="component-library-swatch">
-                <span className="component-library-swatch-chip" style={{ background: '#737373' }} />
-                <span>#737373</span>
-              </div>
-              <div className="component-library-swatch">
-                <span className="component-library-swatch-chip" style={{ background: '#a6a6a6' }} />
-                <span>#A6A6A6</span>
-              </div>
-              <div className="component-library-swatch">
-                <span className="component-library-swatch-chip" style={{ background: '#3fb27f' }} />
-                <span>#3FB27F</span>
-              </div>
-              <div className="component-library-swatch">
-                <span className="component-library-swatch-chip" style={{ background: '#ff6b6b' }} />
-                <span>#FF6B6B</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          <Container variant="component-library-card">
+            <Text.Small withBase={false} className="component-library-label">Color Palette</Text.Small>
+            <Container variant="component-library-swatches">
+              <Container variant="component-library-swatch">
+                <Container as="span" variant="component-library-swatch-chip" style={{ background: '#ffffff' }} />
+                <Container as="span">#FFFFFF</Container>
+              </Container>
+              <Container variant="component-library-swatch">
+                <Container as="span" variant="component-library-swatch-chip" style={{ background: '#000000' }} />
+                <Container as="span">#000000</Container>
+              </Container>
+              <Container variant="component-library-swatch">
+                <Container as="span" variant="component-library-swatch-chip" style={{ background: '#737373' }} />
+                <Container as="span">#737373</Container>
+              </Container>
+              <Container variant="component-library-swatch">
+                <Container as="span" variant="component-library-swatch-chip" style={{ background: '#a6a6a6' }} />
+                <Container as="span">#A6A6A6</Container>
+              </Container>
+              <Container variant="component-library-swatch">
+                <Container as="span" variant="component-library-swatch-chip" style={{ background: '#3fb27f' }} />
+                <Container as="span">#3FB27F</Container>
+              </Container>
+              <Container variant="component-library-swatch">
+                <Container as="span" variant="component-library-swatch-chip" style={{ background: '#ff6b6b' }} />
+                <Container as="span">#FF6B6B</Container>
+              </Container>
+            </Container>
+          </Container>
+        </Layout.Grid>
+      </Container>
 
       <section className="component-library-section">
         <div className="component-library-section-header">
@@ -643,6 +644,6 @@ export default function ComponentLibrary(): JSX.Element {
         sendDelivery={sendDelivery}
         onDelivered={(project) => setLastDelivered(project as ModelDeliveryProject)}
       />
-    </div>
+    </Container>
   );
 }

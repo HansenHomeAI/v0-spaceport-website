@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import TermsOfServiceModal from './TermsOfServiceModal';
+import { Button, Container, Input, Layout, Section } from './foundational';
 
 export default function Footer(): JSX.Element {
   const [feedback, setFeedback] = useState('');
@@ -77,20 +78,20 @@ export default function Footer(): JSX.Element {
   return (
     <>
       {/* Gradient logo section (previously landing-stats2) */}
-      <section className="section" id="footer-stats">
-        <div className="stats-grid">
-          <div className="stat-box2 grainy">
+      <Section id="footer-stats">
+        <Layout.Grid variant="stats-grid">
+          <Container variant={['stat-box2', 'grainy']}>
             <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport Logo" />
-          </div>
-        </div>
-      </section>
+          </Container>
+        </Layout.Grid>
+      </Section>
 
       {/* Feedback form section */}
-      <section className="section" id="feedback-section">
-        <div className="feedback-container">
-          <form onSubmit={handleFeedbackSubmit} className="feedback-form">
-            <div className="feedback-input-container">
-              <input
+      <Section id="feedback-section">
+        <Container variant="feedback-container">
+          <Container as="form" variant="feedback-form" onSubmit={handleFeedbackSubmit}>
+            <Container variant="feedback-input-container">
+              <Input.Text
                 type="text"
                 value={feedback}
                 onChange={(e) => {
@@ -98,20 +99,20 @@ export default function Footer(): JSX.Element {
                   if (status !== 'idle') setStatus('idle');
                 }}
                 placeholder="How can we improve?"
-                className="feedback-input"
+                variant="feedback-input"
                 disabled={isSubmitting}
               />
-              <button
+              <Button.Base
                 type="submit"
                 disabled={isSubmitting || !feedback.trim()}
-                className="cta-button2 feedback-submit"
+                variant={['cta-button2', 'feedback-submit']}
               >
                 {isSubmitting ? 'Sending...' : 'Send Feedback'}
-              </button>
-            </div>
-            <div
+              </Button.Base>
+            </Container>
+            <Container
               aria-live="polite"
-              className={`feedback-status ${status}`}
+              variant={['feedback-status', status]}
               style={{
                 minHeight: '1.5rem',
                 marginTop: '0.5rem',
@@ -123,24 +124,23 @@ export default function Footer(): JSX.Element {
               {status === 'success' && 'Thanks for sharing your feedback!'}
               {status === 'error' && 'Something went wrong. Please try again soon.'}
               {status === 'idle' && '‎'}
-            </div>
-          </form>
-        </div>
-      </section>
+            </Container>
+          </Container>
+        </Container>
+      </Section>
 
       {/* Traditional footer content */}
       <footer>
-        <div className="footer-content">
+        <Container variant="footer-content">
           <p>
             © 2025 Spaceport AI · By using Spaceport AI, you agree to the{' '}
-            <button 
-              className="terms-link" 
+            <Button.Link
               onClick={() => setIsTermsModalOpen(true)}
             >
               Terms of Service
-            </button>
+            </Button.Link>
           </p>
-        </div>
+        </Container>
       </footer>
 
       {/* Terms of Service Modal */}

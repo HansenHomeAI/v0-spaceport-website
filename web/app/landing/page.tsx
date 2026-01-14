@@ -1,23 +1,23 @@
+import { Button, Container, Layout, Section, Text } from '../../components/foundational';
+
 export const runtime = 'edge';
 
 export default function Landing(): JSX.Element {
   return (
     <>
-      <section className="section" id="landing">
-        <iframe className="landing-iframe" src="https://hansenhomeai.github.io/WebbyDeerKnoll/" />
-        <div id="iframe-overlay" />
-        <div className="landing-content">
-          <h1>Location. Visualized in 3D.</h1>
-          <a href="/create" className="cta-button">
-            Join waitlist
-          </a>
-        </div>
-      </section>
+      <Section id="landing">
+        <Container as="iframe" variant="landing-iframe" src="https://hansenhomeai.github.io/WebbyDeerKnoll/" />
+        <Container id="iframe-overlay" />
+        <Container variant="landing-content">
+          <Text.H1>Location. Visualized in 3D.</Text.H1>
+          <Button.Primary href="/create">Join waitlist</Button.Primary>
+        </Container>
+      </Section>
 
       {/* Logos carousel (client logos, seamless loop) */}
-      <section className="section" id="landing-carousel">
-        <div className="logo-carousel">
-          <div className="logos">
+      <Section id="landing-carousel">
+        <Container variant="logo-carousel">
+          <Container variant="logos">
             {/* Set 1 (reordered to separate BHHS logos) */}
             <img src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" />
             <img src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" />
@@ -37,70 +37,72 @@ export default function Landing(): JSX.Element {
             <img src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" aria-hidden="true" />
             <img src="/assets/VestCapital.png" alt="Vest Capital" aria-hidden="true" />
             <img src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
+          </Container>
+        </Container>
+      </Section>
 
       {/* Additional value prop (legacy: landing-additional) */}
-      <section className="section two-col-section" id="landing-additional">
-        <div className="two-col-content">
-          <h2>Show what matters most to buyers.</h2>
-          <div className="right-col">
-            <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you're right there—feeling the neighborhood and natural flow around it.</p>
-            <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
+      <Section id="landing-additional" variant="two-col-section">
+        <Layout.TwoCol>
+          <Text.H2>Show what matters most to buyers.</Text.H2>
+          <Container variant="right-col">
+            <Text.Body>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you're right there—feeling the neighborhood and natural flow around it.</Text.Body>
+            <Button.Secondary href="https://deer-knoll-dr.hansentour.com" fixed withSymbol target="_blank">
+              <Container as="img" variant="symbol-3d" src="/assets/SpaceportIcons/3D.svg" alt="" aria-hidden="true" />
               View example
-            </a>
-          </div>
-        </div>
-      </section>
+            </Button.Secondary>
+          </Container>
+        </Layout.TwoCol>
+      </Section>
 
       {/* Stats section matching legacy visuals */}
-      <section className="section" id="landing-stats">
-        <h2>Virtual experiences work.</h2>
-        <div className="stats-grid">
-          <div className="stat-box">
-            <h1>95%</h1>
-            <p>Are more likely to contact listings with 3D tours.</p>
-          </div>
-          <div className="stat-box">
-            <h1>99%</h1>
-            <p>See 3D tours as a competitive edge.</p>
-          </div>
-          <div className="stat-box">
-            <h1>82%</h1>
-            <p>Consider switching agents if a 3D tour is offered.</p>
-          </div>
-        </div>
-        <p className="stats-source">National Association of Realtors</p>
-      </section>
+      <Section id="landing-stats">
+        <Text.H2>Virtual experiences work.</Text.H2>
+        <Layout.Grid variant="stats-grid">
+          <Container variant="stat-box">
+            <Text.H1 withBase={false}>95%</Text.H1>
+            <Text.Body withBase={false}>Are more likely to contact listings with 3D tours.</Text.Body>
+          </Container>
+          <Container variant="stat-box">
+            <Text.H1 withBase={false}>99%</Text.H1>
+            <Text.Body withBase={false}>See 3D tours as a competitive edge.</Text.Body>
+          </Container>
+          <Container variant="stat-box">
+            <Text.H1 withBase={false}>82%</Text.H1>
+            <Text.Body withBase={false}>Consider switching agents if a 3D tour is offered.</Text.Body>
+          </Container>
+        </Layout.Grid>
+        <Text.Small withBase={false} className="stats-source">National Association of Realtors</Text.Small>
+      </Section>
 
       {/* More sections from legacy */}
-      <section className="section two-col-section" id="landing-more">
-        <div className="two-col-content">
-          <h2>The future of property listings.</h2>
-          <div className="right-col">
-            <p>Photos and 3D tours only show parts of a property—never the full picture. We create interactive models that let you explore the land, surroundings, and location in a way <span className="inline-white">no photo or video can match.</span></p>
-            <a href="https://dolan-road.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
+      <Section id="landing-more" variant="two-col-section">
+        <Layout.TwoCol>
+          <Text.H2>The future of property listings.</Text.H2>
+          <Container variant="right-col">
+            <Text.Body>
+              Photos and 3D tours only show parts of a property—never the full picture. We create interactive models that let you explore the land, surroundings, and location in a way{' '}
+              <Container as="span" variant="inline-white">no photo or video can match.</Container>
+            </Text.Body>
+            <Button.Secondary href="https://dolan-road.hansentour.com" fixed withSymbol target="_blank">
+              <Container as="img" variant="symbol-3d" src="/assets/SpaceportIcons/3D.svg" alt="" aria-hidden="true" />
               View example
-            </a>
-          </div>
-        </div>
-      </section>
+            </Button.Secondary>
+          </Container>
+        </Layout.TwoCol>
+      </Section>
 
-      <section className="section two-col-section" id="landing-more2">
-        <div className="two-col-content">
-          <h2>Effortless creation with your drone.</h2>
-          <div className="right-col">
-            <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you'll receive the completed model straight to your inbox.</p>
-            <a href="/create" className="cta-button2-fixed">Create your own</a>
-          </div>
-        </div>
-      </section>
+      <Section id="landing-more2" variant="two-col-section">
+        <Layout.TwoCol>
+          <Text.H2>Effortless creation with your drone.</Text.H2>
+          <Container variant="right-col">
+            <Text.Body>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you'll receive the completed model straight to your inbox.</Text.Body>
+            <Button.Secondary href="/create" fixed>Create your own</Button.Secondary>
+          </Container>
+        </Layout.TwoCol>
+      </Section>
 
 
     </>
   );
 }
-

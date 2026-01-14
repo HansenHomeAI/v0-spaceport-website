@@ -1,5 +1,7 @@
 'use client';
 
+import { Button, Container, Layout, Section, Text } from '../../components/foundational';
+
 export const runtime = 'edge';
 
 export default function Pricing(): JSX.Element {
@@ -8,26 +10,28 @@ export default function Pricing(): JSX.Element {
 
   return (
     <>
-      <section className="section" id="pricing-header">
-        <h1>Pricing.</h1>
-        <p><span className="inline-white">Capture the imagination of your buyers.</span></p>
-      </section>
-      <section className="section" id="pricing">
-        <div className="pricing-grid">
-          <div className="pricing-card">
-            <h2>Per model.</h2>
-            <div className="price">$599</div>
-            <p>$29/mo hosting per model. First month free.</p>
-          </div>
+      <Section id="pricing-header">
+        <Text.H1>Pricing.</Text.H1>
+        <Text.Body>
+          <Container as="span" variant="inline-white">Capture the imagination of your buyers.</Container>
+        </Text.Body>
+      </Section>
+      <Section id="pricing">
+        <Layout.Grid variant="pricing-grid">
+          <Container variant="pricing-card">
+            <Text.H2 withBase={false}>Per model.</Text.H2>
+            <Container variant="price">$599</Container>
+            <Text.Body withBase={false}>$29/mo hosting per model. First month free.</Text.Body>
+          </Container>
 
-          <div className="pricing-card">
-            <h2>Enterprise.</h2>
-            <div className="price">Custom</div>
-            <p>Volume pricing for brokerages with large portfolios or deeper integrations.</p>
-            <a href={enterpriseMailto} className="cta-button">Contact</a>
-          </div>
-        </div>
-      </section>
+          <Container variant="pricing-card">
+            <Text.H2 withBase={false}>Enterprise.</Text.H2>
+            <Container variant="price">Custom</Container>
+            <Text.Body withBase={false}>Volume pricing for brokerages with large portfolios or deeper integrations.</Text.Body>
+            <Button.Primary href={enterpriseMailto}>Contact</Button.Primary>
+          </Container>
+        </Layout.Grid>
+      </Section>
     </>
   );
 }

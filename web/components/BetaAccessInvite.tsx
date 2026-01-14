@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useBetaAccess } from '../app/hooks/useBetaAccess';
+import { Button, Container, Input, Text } from './foundational';
 
 interface BetaAccessInviteProps {
   className?: string;
@@ -53,45 +54,45 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
   };
 
   return (
-    <div className={`beta-access-invite ${className}`}>
-      <div className="beta-access-header">
-        <h4>Beta Access Management</h4>
-        <p>Invite new users to access Spaceport AI</p>
-      </div>
+    <Container variant={['beta-access-invite', className].filter(Boolean) as string[]}>
+      <Container variant="beta-access-header">
+        <Container as="h4">Beta Access Management</Container>
+        <Text.Body withBase={false}>Invite new users to access Spaceport AI</Text.Body>
+      </Container>
       
-      <form onSubmit={handleSubmit} className="beta-access-form">
-        <div className="input-group">
-          <input
+      <Container as="form" variant="beta-access-form" onSubmit={handleSubmit}>
+        <Container variant="input-group">
+          <Input.Text
             type="email"
             value={email}
             onChange={handleEmailChange}
             placeholder="Enter email address"
-            className="beta-access-input"
+            variant="beta-access-input"
             disabled={sendingInvitation}
             required
           />
-          <button
+          <Button.Base
             type="submit"
-            className={`beta-access-button ${sendingInvitation ? 'loading' : ''}`}
+            variant={['beta-access-button', sendingInvitation ? 'loading' : undefined].filter(Boolean) as string[]}
             disabled={sendingInvitation || !email.trim()}
           >
             {sendingInvitation ? (
               <>
-                <span className="loading-spinner"></span>
+                <Container as="span" variant="loading-spinner" />
                 Sending...
               </>
             ) : (
               'Grant Access'
             )}
-          </button>
-        </div>
+          </Button.Base>
+        </Container>
         
         {message && (
-          <div className={`beta-access-message ${message.type}`}>
+          <Container variant={['beta-access-message', message.type]}>
             {message.text}
-          </div>
+          </Container>
         )}
-      </form>
+      </Container>
       
       <style jsx>{`
         .beta-access-invite {

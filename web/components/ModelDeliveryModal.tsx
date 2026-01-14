@@ -7,6 +7,7 @@ import type {
   ModelDeliveryProject,
   ResolveClientResponse,
 } from '../app/hooks/useModelDeliveryAdmin';
+import { Button, Container, Input, Modal, Text } from './foundational';
 
 interface ModelDeliveryModalProps {
   open: boolean;
@@ -126,67 +127,69 @@ export default function ModelDeliveryModal({
   if (!open) return null;
 
   return (
-    <div
-      className="model-delivery-modal-overlay"
+    <Modal.Overlay
+      variant="model-delivery-modal-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby={headingId}
       aria-describedby={descriptionId}
     >
-      <div className="model-delivery-modal" role="document">
-        <div className="model-delivery-header">
-          <h2 id={headingId}>Send Model Link</h2>
-          <button className="model-delivery-close" onClick={onClose} aria-label="Close model delivery modal">
+      <Modal.Content variant="model-delivery-modal" role="document">
+        <Container variant="model-delivery-header">
+          <Text.H2 withBase={false} id={headingId}>Send Model Link</Text.H2>
+          <Button.Base variant="model-delivery-close" onClick={onClose} aria-label="Close model delivery modal">
             <img src="/assets/SpaceportIcons/Close.svg" alt="Close" />
-          </button>
-        </div>
+          </Button.Base>
+        </Container>
 
-        <p className="model-delivery-description" id={descriptionId}>
+        <Text.Body withBase={false} className="model-delivery-description" id={descriptionId}>
           Deliver the final 3D model to a client. The link is saved to their project and an email is sent instantly.
-        </p>
+        </Text.Body>
 
-        <form
-          className="model-delivery-form"
+        <Container
+          as="form"
+          variant="model-delivery-form"
           onSubmit={(event) => {
             event.preventDefault();
             handleSubmit();
           }}
         >
-          <label className="model-delivery-label" htmlFor="client-email">
+          <Container as="label" variant="model-delivery-label" htmlFor="client-email">
             Client Email
-          </label>
-          <div className="model-delivery-lookup">
-            <input
+          </Container>
+          <Container variant="model-delivery-lookup">
+            <Input.Text
               id="client-email"
               type="email"
               value={clientEmail}
               onChange={(event) => setClientEmail(event.target.value)}
               placeholder="client@example.com"
-              className="model-delivery-input"
+              variant="model-delivery-input"
               required
             />
-            <button
+            <Button.Base
               type="button"
-              className="model-delivery-secondary"
+              variant="model-delivery-secondary"
               onClick={handleLookup}
               disabled={loadingClient}
             >
               {loadingClient ? 'Searching…' : 'Lookup'}
-            </button>
-          </div>
+            </Button.Base>
+          </Container>
           {client && (
-            <p className="model-delivery-client-summary">
+            <Text.Body withBase={false} className="model-delivery-client-summary">
               Sending to <strong>{client.name || client.email}</strong>
-            </p>
+            </Text.Body>
           )}
-          {lookupError && <p className="model-delivery-error" role="alert">{lookupError}</p>}
+          {lookupError && <Text.Body withBase={false} className="model-delivery-error" role="alert">{lookupError}</Text.Body>}
 
-          <label className="model-delivery-label" htmlFor="project-select">
+          <Container as="label" variant="model-delivery-label" htmlFor="project-select">
             Project
-          </label>
-          <select
+          </Container>
+          <Container
+            as="select"
             id="project-select"
-            className="model-delivery-input"
+            variant="model-delivery-input"
             value={selectedProjectId}
             onChange={(event) => setSelectedProjectId(event.target.value)}
             disabled={!projects.length}
@@ -201,50 +204,50 @@ export default function ModelDeliveryModal({
                 {project.status ? ` · ${project.status}` : ''}
               </option>
             ))}
-          </select>
+          </Container>
 
-          <label className="model-delivery-label" htmlFor="model-link-input">
+          <Container as="label" variant="model-delivery-label" htmlFor="model-link-input">
             Model Link URL
-          </label>
-          <input
+          </Container>
+          <Input.Text
             id="model-link-input"
             type="url"
             value={modelLink}
             onChange={(event) => setModelLink(event.target.value)}
             placeholder="https://viewer.spaceport.ai/..."
-            className="model-delivery-input"
+            variant="model-delivery-input"
             required
           />
-          <p className="model-delivery-hint">
+          <Text.Body withBase={false} className="model-delivery-hint">
             URL must start with <code>https://</code>.
-          </p>
+          </Text.Body>
 
-          {submissionError && <p className="model-delivery-error" role="alert">{submissionError}</p>}
+          {submissionError && <Text.Body withBase={false} className="model-delivery-error" role="alert">{submissionError}</Text.Body>}
           {successState && (
-            <div className="model-delivery-success" role="status">
-              <p>Model link sent successfully.</p>
-              <p className="model-delivery-meta">Resend message ID: {successState.messageId}</p>
-            </div>
+            <Container variant="model-delivery-success" role="status">
+              <Text.Body withBase={false}>Model link sent successfully.</Text.Body>
+              <Text.Body withBase={false} className="model-delivery-meta">Resend message ID: {successState.messageId}</Text.Body>
+            </Container>
           )}
 
-          <div className="model-delivery-actions">
-            <button
+          <Container variant="model-delivery-actions">
+            <Button.Base
               type="button"
-              className="model-delivery-secondary"
+              variant="model-delivery-secondary"
               onClick={onClose}
             >
               Cancel
-            </button>
-            <button
+            </Button.Base>
+            <Button.Base
               type="submit"
-              className="model-delivery-primary"
+              variant="model-delivery-primary"
               disabled={sending || !client || !selectedProjectId || !isValidUrl(modelLink)}
             >
               {sending ? 'Sending…' : 'Send to client'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            </Button.Base>
+          </Container>
+        </Container>
+      </Modal.Content>
+    </Modal.Overlay>
   );
 }

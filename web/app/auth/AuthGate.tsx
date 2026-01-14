@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { configureAmplify, isAuthAvailable } from '../amplifyClient';
 import { Auth } from 'aws-amplify';
 import { buildApiUrl } from '../api-config';
+import { Button, Container, Input, Section, Text } from '../../components/foundational';
 
 type AuthGateProps = {
   children: React.ReactNode;
@@ -122,7 +123,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     }
   }, []);
 
-  if (!ready) return <div style={{ padding: 24 }}>Loading…</div>;
+  if (!ready) return <Container style={{ padding: 24 }}>Loading…</Container>;
   if (user) return <>{children}</>;
 
   const signIn = async (e: React.FormEvent) => {
@@ -217,72 +218,94 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
   };
 
   return (
-    <section className="section" id="signup" style={{ maxWidth: 900, margin: '0 auto', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="auth-modal">
+    <Section
+      id="signup"
+      style={{
+        maxWidth: 900,
+        margin: '0 auto',
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Container variant="auth-modal">
         {/* Mode Toggle */}
-        <div className="auth-mode-toggle">
-          <div className={`auth-mode-slider ${authMode === 'login' ? 'slide-right' : 'slide-left'}`} />
-          <button
+        <Container variant="auth-mode-toggle">
+          <Container
+            variant={[
+              'auth-mode-slider',
+              authMode === 'login' ? 'slide-right' : 'slide-left',
+            ]}
+          />
+          <Button.Base
             type="button"
-            className={`auth-mode-button ${authMode === 'waitlist' ? 'active' : ''}`}
+            variant={['auth-mode-button', authMode === 'waitlist' ? 'active' : undefined].filter(Boolean) as string[]}
             onClick={() => setAuthMode('waitlist')}
           >
             Sign Up
-          </button>
-          <button
+          </Button.Base>
+          <Button.Base
             type="button"
-            className={`auth-mode-button ${authMode === 'login' ? 'active' : ''}`}
+            variant={['auth-mode-button', authMode === 'login' ? 'active' : undefined].filter(Boolean) as string[]}
             onClick={() => setAuthMode('login')}
           >
             Login
-          </button>
-        </div>
+          </Button.Base>
+        </Container>
 
         {/* Modal Content */}
-        <div className="auth-modal-content">
-          <div className="auth-modal-header">
-            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="auth-logo" />
+        <Container variant="auth-modal-content">
+          <Container variant="auth-modal-header">
+            <Container
+              as="img"
+              variant="auth-logo"
+              src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg"
+              alt="Spaceport AI"
+            />
             {authMode === 'waitlist' ? (
               <>
-                <h2>New here?</h2>
-                <p>Join the waitlist to be among the first to access Spaceport AI.</p>
+                <Text.H2 withBase={false}>New here?</Text.H2>
+                <Text.Body withBase={false}>
+                  Join the waitlist to be among the first to access Spaceport AI.
+                </Text.Body>
               </>
             ) : (
               <>
-                <h2>Welcome back!</h2>
-                <p>Sign in to access your account.</p>
+                <Text.H2 withBase={false}>Welcome back!</Text.H2>
+                <Text.Body withBase={false}>Sign in to access your account.</Text.Body>
               </>
             )}
-          </div>
+          </Container>
 
           {/* Waitlist Form */}
           {authMode === 'waitlist' && (
-            <form onSubmit={joinWaitlist} className="auth-form">
-              <div className="input-group">
-                <input
-                  className="auth-input"
+            <Container as="form" variant="auth-form" onSubmit={joinWaitlist}>
+              <Container variant="input-group">
+                <Input.Text
+                  variant="auth-input"
                   placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
-              </div>
-              <div className="input-group">
-                <input
-                  className="auth-input"
+              </Container>
+              <Container variant="input-group">
+                <Input.Text
+                  variant="auth-input"
                   placeholder="Email Address"
                   type="email"
                   value={waitlistEmail}
                   onChange={(e) => setWaitlistEmail(e.target.value)}
                   required
                 />
-              </div>
-              {error && <p className="auth-error">{error}</p>}
-              <button type="submit" className="auth-submit-btn" disabled={waitlistSubmitting}>
-                <span>{waitlistSubmitting ? 'Submitting…' : 'Join Waitlist'}</span>
-                {waitlistSubmitting && <div className="spinner" />}
-              </button>
-            </form>
+              </Container>
+              {error && <Text.Body withBase={false} className="auth-error">{error}</Text.Body>}
+              <Button.Base type="submit" variant="auth-submit-btn" disabled={waitlistSubmitting}>
+                <Container as="span">{waitlistSubmitting ? 'Submitting…' : 'Join Waitlist'}</Container>
+                {waitlistSubmitting && <Container variant="spinner" />}
+              </Button.Base>
+            </Container>
           )}
 
           {/* Login Form */}
@@ -290,142 +313,146 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
             <>
               {/* Sign In View */}
               {view === 'signin' && (
-                <form onSubmit={signIn} className="auth-form">
-                  <div className="input-group">
-                    <input
+                <Container as="form" variant="auth-form" onSubmit={signIn}>
+                  <Container variant="input-group">
+                    <Input.Text
                       value={signInEmail}
                       onChange={(e) => setSignInEmail(e.target.value)}
                       type="email"
-                      className="auth-input"
+                      variant="auth-input"
                       placeholder="Email"
                       required
                     />
-                  </div>
-                  <div className="input-group" style={{ position: 'relative' }}>
-                    <input
+                  </Container>
+                  <Container variant="input-group" style={{ position: 'relative' }}>
+                    <Input.Text
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       type={showPassword ? 'text' : 'password'}
-                      className="auth-input"
+                      variant="auth-input"
                       placeholder="Password"
                       required
                     />
-                    <button
+                    <Button.Base
                       type="button"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       onClick={() => setShowPassword((v) => !v)}
-                      className="password-toggle"
+                      variant="password-toggle"
                     >
                       <EyeIcon hidden={showPassword} />
-                    </button>
-                  </div>
-                  {error && <p className="auth-error">{error}</p>}
-                  {successMessage && <p className="auth-success">{successMessage}</p>}
-                  <button className="auth-submit-btn" type="submit" disabled={isLoading}>
-                    <span>{isLoading ? 'Signing in...' : 'Sign in'}</span>
-                    {isLoading && <div className="spinner" />}
-                  </button>
-                  <div className="auth-links">
-                    <button
+                    </Button.Base>
+                  </Container>
+                  {error && <Text.Body withBase={false} className="auth-error">{error}</Text.Body>}
+                  {successMessage && (
+                    <Text.Body withBase={false} className="auth-success">{successMessage}</Text.Body>
+                  )}
+                  <Button.Base variant="auth-submit-btn" type="submit" disabled={isLoading}>
+                    <Container as="span">{isLoading ? 'Signing in...' : 'Sign in'}</Container>
+                    {isLoading && <Container variant="spinner" />}
+                  </Button.Base>
+                  <Container variant="auth-links">
+                    <Button.Base
                       type="button"
                       onClick={() => setView('forgot_password')}
-                      className="auth-link"
+                      variant="auth-link"
                     >
                       Forgot your password?
-                    </button>
-                  </div>
-                </form>
+                    </Button.Base>
+                  </Container>
+                </Container>
               )}
 
               {/* Forgot Password View */}
               {view === 'forgot_password' && (
-                <form onSubmit={handleForgotPassword} className="auth-form">
-                  <p className="auth-description">
+                <Container as="form" variant="auth-form" onSubmit={handleForgotPassword}>
+                  <Text.Body withBase={false} className="auth-description">
                     Enter your email address and we'll send you a code to reset your password.
-                  </p>
-                  <div className="input-group">
-                    <input
+                  </Text.Body>
+                  <Container variant="input-group">
+                    <Input.Text
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       type="email"
-                      className="auth-input"
+                      variant="auth-input"
                       placeholder="Email address"
                       required
                     />
-                  </div>
-                  {error && <p className="auth-error">{error}</p>}
-                  <button className="auth-submit-btn" type="submit" disabled={isLoading}>
-                    <span>{isLoading ? 'Sending...' : 'Send reset code'}</span>
-                    {isLoading && <div className="spinner" />}
-                  </button>
-                  <div className="auth-links">
-                    <button
+                  </Container>
+                  {error && <Text.Body withBase={false} className="auth-error">{error}</Text.Body>}
+                  <Button.Base variant="auth-submit-btn" type="submit" disabled={isLoading}>
+                    <Container as="span">{isLoading ? 'Sending...' : 'Send reset code'}</Container>
+                    {isLoading && <Container variant="spinner" />}
+                  </Button.Base>
+                  <Container variant="auth-links">
+                    <Button.Base
                       type="button"
                       onClick={resetForm}
-                      className="auth-link"
+                      variant="auth-link"
                     >
                       Back to sign in
-                    </button>
-                  </div>
-                </form>
+                    </Button.Base>
+                  </Container>
+                </Container>
               )}
 
               {/* Reset Password View */}
               {view === 'reset_password' && (
-                <form onSubmit={handleResetPassword} className="auth-form">
-                  <p className="auth-description">
+                <Container as="form" variant="auth-form" onSubmit={handleResetPassword}>
+                  <Text.Body withBase={false} className="auth-description">
                     Enter the code from your email and choose a new password.
-                  </p>
-                  <div className="input-group">
-                    <input
+                  </Text.Body>
+                  <Container variant="input-group">
+                    <Input.Text
                       value={resetCode}
                       onChange={(e) => setResetCode(e.target.value)}
                       type="text"
-                      className="auth-input"
+                      variant="auth-input"
                       placeholder="Reset code"
                       required
                       maxLength={6}
                     />
-                  </div>
-                  <div className="input-group" style={{ position: 'relative' }}>
-                    <input
+                  </Container>
+                  <Container variant="input-group" style={{ position: 'relative' }}>
+                    <Input.Text
                       value={resetPassword}
                       onChange={(e) => setResetPassword(e.target.value)}
                       type={showResetPassword ? 'text' : 'password'}
-                      className="auth-input"
+                      variant="auth-input"
                       placeholder="New password"
                       required
                       minLength={8}
                     />
-                    <button
+                    <Button.Base
                       type="button"
                       aria-label={showResetPassword ? 'Hide password' : 'Show password'}
                       onClick={() => setShowResetPassword((v) => !v)}
-                      className="password-toggle"
+                      variant="password-toggle"
                     >
                       <EyeIcon hidden={showResetPassword} />
-                    </button>
-                  </div>
-                  {error && <p className="auth-error">{error}</p>}
-                  <button className="auth-submit-btn" type="submit" disabled={isLoading}>
-                    <span>{isLoading ? 'Resetting...' : 'Reset password'}</span>
-                    {isLoading && <div className="spinner" />}
-                  </button>
-                  <div className="auth-links">
-                    <button
+                    </Button.Base>
+                  </Container>
+                  {error && <Text.Body withBase={false} className="auth-error">{error}</Text.Body>}
+                  <Button.Base variant="auth-submit-btn" type="submit" disabled={isLoading}>
+                    <Container as="span">{isLoading ? 'Resetting...' : 'Reset password'}</Container>
+                    {isLoading && <Container variant="spinner" />}
+                  </Button.Base>
+                  <Container variant="auth-links">
+                    <Button.Base
                       type="button"
                       onClick={() => setView('forgot_password')}
-                      className="auth-link"
+                      variant="auth-link"
                     >
                       Resend code
-                    </button>
-                  </div>
-                </form>
+                    </Button.Base>
+                  </Container>
+                </Container>
               )}
 
               {/* New Password Required View */}
               {view === 'new_password' && (
-                <form
+                <Container
+                  as="form"
+                  variant="auth-form"
                   onSubmit={async (e) => {
                     e.preventDefault();
                     setError(null);
@@ -465,34 +492,48 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
                       setIsLoading(false);
                     }
                   }}
-                  className="auth-form"
                 >
-                  <p className="auth-description">Finish setup by choosing your password and a unique handle.</p>
-                  <div className="input-group" style={{ position: 'relative' }}>
-                    <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type={showNewPassword ? 'text' : 'password'} required className="auth-input" placeholder="New password" />
-                    <button
+                  <Text.Body withBase={false} className="auth-description">
+                    Finish setup by choosing your password and a unique handle.
+                  </Text.Body>
+                  <Container variant="input-group" style={{ position: 'relative' }}>
+                    <Input.Text
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      variant="auth-input"
+                      placeholder="New password"
+                    />
+                    <Button.Base
                       type="button"
                       aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                       onClick={() => setShowNewPassword((v) => !v)}
-                      className="password-toggle"
+                      variant="password-toggle"
                     >
                       <EyeIcon hidden={showNewPassword} />
-                    </button>
-                  </div>
-                  <div className="input-group">
-                    <input value={handle} onChange={(e) => setHandle(e.target.value)} required className="auth-input" placeholder="Handle (e.g. johndoe)" />
-                  </div>
-                  {error && <p className="auth-error">{error}</p>}
-                  <button className="auth-submit-btn" type="submit" disabled={isLoading}>
-                    <span>{isLoading ? 'Saving...' : 'Save and sign in'}</span>
-                    {isLoading && <div className="spinner" />}
-                  </button>
-                </form>
+                    </Button.Base>
+                  </Container>
+                  <Container variant="input-group">
+                    <Input.Text
+                      value={handle}
+                      onChange={(e) => setHandle(e.target.value)}
+                      required
+                      variant="auth-input"
+                      placeholder="Handle (e.g. johndoe)"
+                    />
+                  </Container>
+                  {error && <Text.Body withBase={false} className="auth-error">{error}</Text.Body>}
+                  <Button.Base variant="auth-submit-btn" type="submit" disabled={isLoading}>
+                    <Container as="span">{isLoading ? 'Saving...' : 'Save and sign in'}</Container>
+                    {isLoading && <Container variant="spinner" />}
+                  </Button.Base>
+                </Container>
               )}
             </>
           )}
-        </div>
-      </div>
-    </section>
+        </Container>
+      </Container>
+    </Section>
   );
 }

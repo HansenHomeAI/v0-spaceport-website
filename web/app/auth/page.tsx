@@ -1,10 +1,11 @@
 'use client';
 
-export const runtime = 'edge';
-
 import { useCallback, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AuthGate from './AuthGate';
+import { Container, Text } from '../../components/foundational';
+
+export const runtime = 'edge';
 
 const ALLOWED_REDIRECTS = new Set(['pricing', 'create']);
 const VALID_PLANS = new Set(['single', 'starter', 'growth']);
@@ -44,10 +45,10 @@ export default function AuthPage(): JSX.Element {
 
   return (
     <AuthGate onAuthenticated={handleAuthenticated}>
-      <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 12 }}>Signed in successfully</h2>
-        <p style={{ color: '#bbb' }}>Redirecting you now…</p>
-      </div>
+      <Container style={{ padding: '48px 24px', textAlign: 'center' }}>
+        <Text.H2 withBase={false} style={{ marginBottom: 12 }}>Signed in successfully</Text.H2>
+        <Text.Body withBase={false} style={{ color: '#bbb' }}>Redirecting you now…</Text.Body>
+      </Container>
     </AuthGate>
   );
 }

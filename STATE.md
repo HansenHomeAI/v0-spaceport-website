@@ -1,5 +1,5 @@
-reason: preview login failing due to Cognito user pool/client mismatch in preview secrets
-last_step: verified preview env now points to staging Cognito pool/client (redacted) via /api/debug-auth
-next_unblocked_step: re-test login on preview URL
+reason: foundational component refactor in progress with partial page/component migrations
+last_step: created foundational components + docs and migrated header/footer, auth flow, landing/pricing/about pages, and model/terms modals
+next_unblocked_step: continue refactor for NewProjectModal, create/sandbox/flight-viewer/shape-* pages, and finish component-library migration
 owner_action_needed: none
-updated: 2026-01-06T19:10:20Z
+updated: 2026-01-14T20:36:05Z
