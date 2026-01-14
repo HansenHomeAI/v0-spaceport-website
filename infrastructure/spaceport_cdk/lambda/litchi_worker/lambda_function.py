@@ -318,6 +318,21 @@ async def _run_test_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await _close_context(playwright, browser)
 
 
+async def _run_healthcheck_flow() -> Dict[str, Any]:
+    playwright, browser, context = await _launch_context()
+    try:
+        page = await context.new_page()
+        await _apply_stealth(page)
+        await page.goto(LOGIN_URL, wait_until="domcontentloaded")
+        await page.wait_for_timeout(int(_human_delay(0.4, 0.9) * 1000))
+        return {"status": "ok", "message": "Browser launched"}
+    except Exception as exc:
+        logger.exception("Healthcheck failed")
+        return {"status": "error", "message": f"Healthcheck failed: {exc}"}
+    finally:
+        await _close_context(playwright, browser)
+
+
 async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     table = _dynamodb_table()
     user_id = payload.get("userId")
@@ -408,6 +423,9 @@ def lambda_handler(event: Dict[str, Any], _context: Any) -> Dict[str, Any]:
 
     if mode == "test":
         return asyncio.run(_run_test_flow(event))
+
+    if mode == "healthcheck":
+        return asyncio.run(_run_healthcheck_flow())
 
     if mode == "upload":
         return asyncio.run(_run_upload_flow(event))
