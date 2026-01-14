@@ -717,22 +717,12 @@ class AuthStack(Stack):
         litchi_credentials_table.grant_read_write_data(litchi_worker_role)
         litchi_kms_key.grant_encrypt_decrypt(litchi_worker_role)
 
-        litchi_worker_lambda = lambda_.Function(
+        litchi_worker_lambda = lambda_.DockerImageFunction(
             self,
             "Spaceport-LitchiWorkerFunction",
             function_name=f"Spaceport-LitchiWorkerFunction-{suffix}",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset(
+            code=lambda_.DockerImageCode.from_image_asset(
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "litchi_worker"),
-                bundling=BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash",
-                        "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output",
-                    ],
-                ),
             ),
             role=litchi_worker_role,
             timeout=Duration.minutes(5),
@@ -740,6 +730,7 @@ class AuthStack(Stack):
             environment={
                 "LITCHI_CREDENTIALS_TABLE": litchi_credentials_table.table_name,
                 "LITCHI_KMS_KEY_ID": litchi_kms_key.key_id,
+                "LITCHI_WORKER_DRY_RUN": "0",
             },
         )
 
