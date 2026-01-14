@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worktree Dev Servers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 32px;
+            font-size: 1rem;
+        }
+        .url-input-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 20px 24px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .url-input-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+        }
+        .url-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0 16px;
+        }
+        .url-input-prefix {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+        .url-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 0.95rem;
+            padding: 12px 0;
+            outline: none;
+        }
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            margin-top: 48px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .server-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        .server-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .server-card.running {
+            border-color: #3fb27f;
+        }
+        .server-card.error {
+            border-color: #ff4444;
+        }
+        .server-branch {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        .server-path {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+        .server-commit {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .server-changes {
+            font-size: 0.7rem;
+            color: rgba(63, 178, 127, 0.9);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .server-timestamp {
+            font-size: 0.75rem;
+            color: rgba(63, 178, 127, 0.8);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .server-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .server-btn {
+            display: inline-block;
+            padding: 9.5px 21.5px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2.5px solid #fff;
+            color: #fff;
+            background: transparent;
+            font-weight: 500;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .server-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        button.server-btn {
+            background: transparent;
+            color: #fff;
+            border: 2.5px solid #fff;
+        }
+        button.server-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        a.server-btn {
+            background: transparent;
+            color: #fff;
+            border: 2.5px solid #fff;
+        }
+        a.server-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .status.running {
+            background: rgba(63, 178, 127, 0.2);
+            color: #3fb27f;
+        }
+        .status.error {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+        .status.stopped {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .server-files {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            border-radius: 6px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .server-files-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .file-item {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 9.5px 21.5px;
+            border-radius: 999px;
+            border: 2.5px solid #fff;
+            color: #fff;
+            background: transparent;
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .action-button:hover {
+            background: #fff;
+            color: #000;
+        }
+        .action-button.danger {
+            border-color: rgba(255, 68, 68, 0.5);
+            color: rgba(255, 68, 68, 0.8);
+        }
+        .action-button.danger:hover {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: rgba(255, 68, 68, 0.8);
+            color: #ff4444;
+        }
+        .refresh-info {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+    <body>
+    <div class="container">
+        <h1>Worktree Dev Servers</h1>
+        <p class="subtitle">Click any worktree to open with your custom URL extension</p>
+        
+        <div class="url-input-section">
+            <span class="url-input-label">URL Extension:</span>
+            <div class="url-input-wrapper">
+                <span class="url-input-prefix">localhost:{servers[0]['port'] if servers else 3000}</span>
+                <input type="text" id="urlExtension" class="url-input" placeholder="/component-library" value="/component-library">
+            </div>
+        </div>
+        
+        <h2 class="section-header">Agent Branches</h2>
+        <div class="servers-grid">
+
+            <div class="server-card running" onclick="openWithExtension(3001)">
+                <div class="status running">Running</div>
+                <div class="server-branch">eb2a9eda</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/aba</div>
+                <div class="server-commit">Commit: eb2a9eda</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <a href="#" onclick="openWithExtension(3001); return false;" class="server-btn primary">Open</a>
+                </div>
+            </div>
+
+            <div class="server-card running" onclick="openWithExtension(3002)">
+                <div class="status running">Running</div>
+                <div class="server-branch">eb2a9eda</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/faf</div>
+                <div class="server-commit">Commit: eb2a9eda</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <a href="#" onclick="openWithExtension(3002); return false;" class="server-btn primary">Open</a>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">eb2a9eda</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/fmk</div>
+                <div class="server-commit">Commit: eb2a9eda</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/fmk', 3003, 'eb2a9eda')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">eb2a9eda</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/nyl</div>
+                <div class="server-commit">Commit: eb2a9eda</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/nyl', 3004, 'eb2a9eda')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">eb2a9eda</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/xlm</div>
+                <div class="server-commit">Commit: eb2a9eda</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/xlm', 3005, 'eb2a9eda')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">49eb0a1e</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/gqg</div>
+                <div class="server-commit">Commit: 49eb0a1e</div>
+                
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/gqg', 3006, '49eb0a1e')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+        </div>
+        
+        <h2 class="section-header">Misc</h2>
+        <div class="servers-grid">
+
+            <div class="server-card running" onclick="openWithExtension(3000)">
+                <div class="status running">Running</div>
+                <div class="server-branch">agent-83910427-component-library</div>
+                <div class="server-path">/Users/gabrielhansen/launchpad-spaceport-website</div>
+                <div class="server-commit">Commit: eb2a9eda</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <a href="#" onclick="openWithExtension(3000); return false;" class="server-btn primary">Open</a>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">development</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/kku</div>
+                <div class="server-commit">Commit: 19a9a1f5</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp">Last edited: 1 day ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/kku', 3007, 'development')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">agent-48210936-battery-estimator</div>
+                <div class="server-path">/Users/gabrielhansen/launchpad-spaceport-website-worktree</div>
+                <div class="server-commit">Commit: 3d686152</div>
+                
+                <div class="server-timestamp old">Last edited: 1 week ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/launchpad-spaceport-website-worktree', 3008, 'agent-48210936-battery-estimator')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+            <div class="server-card running" onclick="openWithExtension(3009)">
+                <div class="status running">Running</div>
+                <div class="server-branch">agent-83427519-terrain-avoidance</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/6X6jx</div>
+                <div class="server-commit">Commit: 5baad4fb</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp old">Last edited: 2 months ago</div>
+                <div class="server-links">
+                    <a href="#" onclick="openWithExtension(3009); return false;" class="server-btn primary">Open</a>
+                </div>
+            </div>
+
+            <div class="server-card running" onclick="openWithExtension(3010)">
+                <div class="status running">Running</div>
+                <div class="server-branch">2025-10-30-a7nz-3OJmi</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/3OJmi</div>
+                <div class="server-commit">Commit: 46f11941</div>
+                
+                <div class="server-timestamp old">Last edited: 2 months ago</div>
+                <div class="server-links">
+                    <a href="#" onclick="openWithExtension(3010); return false;" class="server-btn primary">Open</a>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">2025-10-29-lyfb-Fl9XC</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/Fl9XC</div>
+                <div class="server-commit">Commit: 74551d7c</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp old">Last edited: 2 months ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/Fl9XC', 3011, '2025-10-29-lyfb-Fl9XC')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+            <div class="server-card running" onclick="openWithExtension(3012)">
+                <div class="status running">Running</div>
+                <div class="server-branch">2025-10-29-jlht-4cCkZ</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/4cCkZ</div>
+                <div class="server-commit">Commit: 935f1dac</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp old">Last edited: 2 months ago</div>
+                <div class="server-links">
+                    <a href="#" onclick="openWithExtension(3012); return false;" class="server-btn primary">Open</a>
+                </div>
+            </div>
+
+            <div class="server-card stopped" onclick="">
+                <div class="status stopped">Stopped</div>
+                <div class="server-branch">2025-10-29-91oo-Hh4Xs</div>
+                <div class="server-path">/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/Hh4Xs</div>
+                <div class="server-commit">Commit: 935f1dac</div>
+                <div class="server-changes">✓ Has uncommitted changes</div>
+                <div class="server-timestamp old">Last edited: 2 months ago</div>
+                <div class="server-links">
+                    <button onclick="startServer('/Users/gabrielhansen/.cursor/worktrees/launchpad-spaceport-website/Hh4Xs', 3013, '2025-10-29-91oo-Hh4Xs')" class="server-btn">Start Server</button>
+                </div>
+            </div>
+
+        </div>
+        
+        </div>
+        
+        <div class="actions">
+            <a href="#" onclick="location.reload()" class="action-button">Refresh Status</a>
+            <a href="?stop=all" class="action-button danger">Stop All Servers</a>
+        </div>
+        
+        <div class="refresh-info">
+            Last updated: <span id="timestamp"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+        
+        function getUrlExtension() {
+            const input = document.getElementById('urlExtension');
+            const extension = input.value.trim();
+            return extension.startsWith('/') ? extension : '/' + extension;
+        }
+        
+        function openWithExtension(port, suggestedRoute) {
+            let extension = getUrlExtension();
+            // If user hasn't typed anything custom (still default), use suggested route
+            if (extension === '/component-library' && suggestedRoute) {
+                extension = suggestedRoute;
+            }
+            window.open(`http://localhost:${port}${extension}`, '_blank');
+        }
+        
+        async function startServer(worktreePath, port, branch, suggestedRoute) {
+            event.stopPropagation();
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Starting...';
+            
+            try {
+                const response = await fetch('http://localhost:8765/start-server', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        path: worktreePath,
+                        port: port,
+                        branch: branch
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    btn.textContent = 'Started!';
+                    btn.classList.add('primary');
+                    btn.disabled = false;
+                    
+                    // Open URL immediately
+                    let extension = getUrlExtension();
+                    if (extension === '/component-library' && suggestedRoute) {
+                        extension = suggestedRoute;
+                    }
+                    window.open(`http://localhost:${port}${extension}`, '_blank');
+                } else {
+                    btn.textContent = 'Error';
+                    btn.disabled = false;
+                    alert(`Failed to start server: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                btn.textContent = 'Error';
+                btn.disabled = false;
+                console.error('Error starting server:', error);
+                alert('Failed to connect to server. Make sure the dashboard script is running with --api-server flag.');
+            }
+        }
+        
+        // Allow Enter key in URL extension input
+        document.getElementById('urlExtension').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const runningCards = document.querySelectorAll('.server-card.running');
+                if (runningCards.length > 0) {
+                    const onclickAttr = runningCards[0].querySelector('.server-btn').getAttribute('onclick');
+                    const portMatch = onclickAttr.match(/\d+/);
+                    if (portMatch) {
+                        openWithExtension(parseInt(portMatch[0]));
+                    } else {
+                        // Fallback: try to extract port from card's onclick
+                        const cardOnclick = runningCards[0].getAttribute('onclick');
+                        if (cardOnclick) {
+                            const match = cardOnclick.match(/openWithExtension\((\d+)\)/);
+                            if (match) {
+                                openWithExtension(parseInt(match[1]));
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
