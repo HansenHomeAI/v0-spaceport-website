@@ -1,6 +1,7 @@
 FROM public.ecr.aws/lambda/python:3.9
 
-ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright \
+    PLAYWRIGHT_NODEJS_PATH=/usr/bin/node
 
 # Install system dependencies for Playwright Chromium
 RUN yum -y install \
@@ -24,6 +25,7 @@ RUN yum -y install \
     libxkbcommon \
     libdrm \
     mesa-libgbm \
+    nodejs \
     nss \
     pango \
     xorg-x11-fonts-Type1 \
@@ -33,7 +35,7 @@ RUN yum -y install \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python -m playwright install chromium
+RUN PLAYWRIGHT_NODEJS_PATH=/usr/bin/node python -m playwright install chromium
 
 COPY lambda_function.py ./
 
