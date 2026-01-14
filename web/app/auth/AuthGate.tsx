@@ -192,6 +192,9 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
     setView('signin');
   };
 
+  const waitlistButtonVariants = ['auth-mode-button', authMode === 'waitlist' ? 'active' : undefined].filter(Boolean) as string[];
+  const loginButtonVariants = ['auth-mode-button', authMode === 'login' ? 'active' : undefined].filter(Boolean) as string[];
+
   // Sign-up and confirm flows are disabled (invite-only)
 
   const joinWaitlist = async (e: React.FormEvent) => {
@@ -240,14 +243,14 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
           />
           <Button.Base
             type="button"
-            variant={['auth-mode-button', authMode === 'waitlist' ? 'active' : undefined].filter(Boolean) as string[]}
+            variant={waitlistButtonVariants}
             onClick={() => setAuthMode('waitlist')}
           >
             Sign Up
           </Button.Base>
           <Button.Base
             type="button"
-            variant={['auth-mode-button', authMode === 'login' ? 'active' : undefined].filter(Boolean) as string[]}
+            variant={loginButtonVariants}
             onClick={() => setAuthMode('login')}
           >
             Login

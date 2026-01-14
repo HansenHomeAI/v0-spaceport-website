@@ -53,8 +53,11 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
     }
   };
 
+  const inviteVariants = ['beta-access-invite', className].filter(Boolean) as string[];
+  const buttonVariants = ['beta-access-button', sendingInvitation ? 'loading' : undefined].filter(Boolean) as string[];
+
   return (
-    <Container variant={['beta-access-invite', className].filter(Boolean) as string[]}>
+    <Container variant={inviteVariants}>
       <Container variant="beta-access-header">
         <Container as="h4">Beta Access Management</Container>
         <Text.Body withBase={false}>Invite new users to access Spaceport AI</Text.Body>
@@ -73,7 +76,7 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
           />
           <Button.Base
             type="submit"
-            variant={['beta-access-button', sendingInvitation ? 'loading' : undefined].filter(Boolean) as string[]}
+            variant={buttonVariants}
             disabled={sendingInvitation || !email.trim()}
           >
             {sendingInvitation ? (
