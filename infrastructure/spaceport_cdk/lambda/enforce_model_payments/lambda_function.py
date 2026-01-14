@@ -310,11 +310,37 @@ def _scan_overdue_projects(now_epoch: int) -> List[Dict[str, Any]]:
     return overdue
 
 
+def _scan_revoked_projects(now_epoch: int) -> List[Dict[str, Any]]:
+    revoked: List[Dict[str, Any]] = []
+    filter_expression = (
+        Attr('paymentStatus').eq('pending')
+        & Attr('paymentDeadline').lt(now_epoch)
+        & Attr('status').eq('revoked')
+    )
+
+    last_evaluated_key = None
+    while True:
+        scan_kwargs = {'FilterExpression': filter_expression}
+        if last_evaluated_key:
+            scan_kwargs['ExclusiveStartKey'] = last_evaluated_key
+
+        response = projects_table.scan(**scan_kwargs)
+        revoked.extend(response.get('Items', []))
+        last_evaluated_key = response.get('LastEvaluatedKey')
+        if not last_evaluated_key:
+            break
+
+    return revoked
+
+
 def lambda_handler(event, context):
     now_epoch = int(datetime.now(timezone.utc).timestamp())
     overdue_projects = _scan_overdue_projects(now_epoch)
+    revoked_projects = _scan_revoked_projects(now_epoch)
 
     logger.info('Found %s overdue projects', len(overdue_projects))
+    if revoked_projects:
+        logger.info('Found %s revoked projects to reapply', len(revoked_projects))
 
     for project in overdue_projects:
         try:
@@ -322,9 +348,16 @@ def lambda_handler(event, context):
         except Exception as exc:
             logger.error('Failed to revoke project %s: %s', project.get('projectId'), exc)
 
+    for project in revoked_projects:
+        try:
+            _soft_revoke_viewer(project)
+        except Exception as exc:
+            logger.error('Failed to reapply revocation for project %s: %s', project.get('projectId'), exc)
+
     return {
         'statusCode': 200,
         'body': json.dumps({
             'revokedCount': len(overdue_projects),
+            'reappliedCount': len(revoked_projects),
         }),
     }
