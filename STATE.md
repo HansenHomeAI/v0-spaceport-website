@@ -1,5 +1,5 @@
 reason: none (unblocked)
-last_step: added litchi automation infra (DynamoDB/KMS/State Machine/API) plus worker/api lambdas, UI mission control, env updates, and unit tests.
-next_unblocked_step: run unit tests, validate lint/tests as needed, push branch to trigger Pages + CDK workflows, then watch GH Actions and run Playwright MCP baseline against preview.
+last_step: pushed agent-83015427-litchi-automation, Pages+CDK workflows green, preview alias resolved, MCP baseline run ok (waitlist flow snapshot step failed).
+next_unblocked_step: open development PR with preview URL, test notes, and follow-up for waitlist MCP snapshot gap.
 owner_action_needed: none
-updated: 2026-01-12T18:31:00Z
+updated: 2026-01-14T17:50:30Z
