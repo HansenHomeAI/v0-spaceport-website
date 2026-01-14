@@ -7,6 +7,7 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright \
 RUN yum -y install \
     alsa-lib \
     atk \
+    curl \
     cups-libs \
     gtk3 \
     libXcomposite \
@@ -25,11 +26,12 @@ RUN yum -y install \
     libxkbcommon \
     libdrm \
     mesa-libgbm \
-    nodejs \
     nss \
     pango \
     xorg-x11-fonts-Type1 \
     xorg-x11-fonts-misc \
+  && curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - \
+  && yum -y install nodejs \
   && yum clean all
 
 COPY requirements.txt .
