@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
 import ModelDeliveryModal from '../../components/ModelDeliveryModal';
 import { useModelDeliveryAdmin } from '../hooks/useModelDeliveryAdmin';
+import LitchiMissionControl from '../../components/LitchiMissionControl';
 
 type ProjectRecord = Record<string, any> & {
   projectId?: string;
@@ -334,6 +335,8 @@ export default function Create(): JSX.Element {
                 </div>
               </div>
             )}
+
+            <LitchiMissionControl />
           </div>
         </section>
 
