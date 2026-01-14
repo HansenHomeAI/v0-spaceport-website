@@ -2,8 +2,8 @@ import type { CSSProperties, ElementType, ComponentPropsWithoutRef } from 'react
 import { cx, toArray } from './utils';
 import { resolveRadius } from './Border';
 
-type ContainerOwnProps = {
-  as?: ElementType;
+type ContainerBaseProps<T extends ElementType> = {
+  as?: T;
   variant?: string | string[];
   padding?: CSSProperties['padding'];
   borderRadius?: number | string;
@@ -13,8 +13,8 @@ type ContainerOwnProps = {
   maxWidth?: CSSProperties['maxWidth'];
 };
 
-export type ContainerProps<T extends ElementType = 'div'> = ContainerOwnProps &
-  Omit<ComponentPropsWithoutRef<T>, keyof ContainerOwnProps>;
+export type ContainerProps<T extends ElementType = 'div'> = ContainerBaseProps<T> &
+  Omit<ComponentPropsWithoutRef<T>, keyof ContainerBaseProps<T>>;
 
 export const Container = <T extends ElementType = 'div'>({
   as,
