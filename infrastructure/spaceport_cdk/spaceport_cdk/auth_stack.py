@@ -720,7 +720,7 @@ class AuthStack(Stack):
         litchi_worker_lambda = lambda_.DockerImageFunction(
             self,
             "Spaceport-LitchiWorkerFunction",
-            function_name=f"Spaceport-LitchiWorkerFunction-{suffix}",
+            function_name=f"Spaceport-LitchiWorkerContainerFunction-{suffix}",
             code=lambda_.DockerImageCode.from_image_asset(
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "litchi_worker"),
             ),
