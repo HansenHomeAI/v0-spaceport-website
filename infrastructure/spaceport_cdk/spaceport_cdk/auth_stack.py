@@ -102,7 +102,14 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "lambda", "projects")
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "projects"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
             ),
             timeout=Duration.seconds(30),
             memory_size=256,
