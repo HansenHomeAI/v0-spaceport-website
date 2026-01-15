@@ -14,7 +14,7 @@ export default function About(): JSX.Element {
         <div className="two-col-content">
           <h2>How it works.</h2>
           <div className="right-col">
-            <p><span className="inline-white">Plan your flight</span> – A drone pilot generates a flight path here on our platform.</p>
+            <p><span className="inline-white">Plan your flight</span> – A drone pilot generates a flight path right here on our platform.</p>
             <p><span className="inline-white">Capture and upload</span> – The drone follows the path, taking photos, which are then uploaded back to us.</p>
             <p><span className="inline-white">Get your model</span> – We train a neural network on the images, and within 3 days, you receive a fully immersive 3D model straight to your inbox.</p>
             <a href="/create" className="cta-button2-fixed">Create your own</a>
