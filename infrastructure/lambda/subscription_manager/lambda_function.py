@@ -231,6 +231,11 @@ def _handle_project_checkout_completed(session: Dict[str, Any]) -> None:
     }
     expr_attr_names = {}
 
+    subscription_id = session.get('subscription')
+    if subscription_id:
+        update_expression_parts.append('paymentSubscriptionId = :subscriptionId')
+        expr_attr_values[':subscriptionId'] = subscription_id
+
     if was_revoked:
         update_expression_parts.append('#status = :status')
         expr_attr_names['#status'] = 'status'

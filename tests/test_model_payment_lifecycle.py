@@ -127,13 +127,14 @@ def main() -> int:
     webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET")
     if webhook_url and webhook_secret:
         print("Step 3: Simulate Stripe webhook payment...")
+        subscription_id = "sub_test_model_payment"
         event = {
             "id": "evt_test_model_payment",
             "type": "checkout.session.completed",
             "data": {
                 "object": {
                     "id": "cs_test_model_payment",
-                    "subscription": "sub_test_model_payment",
+                    "subscription": subscription_id,
                     "metadata": {
                         "projectId": project_id,
                         "userSub": user_sub,
@@ -158,6 +159,8 @@ def main() -> int:
         project = projects_table.get_item(Key={"userSub": user_sub, "projectId": project_id}).get("Item")
         if project.get("paymentStatus") != "paid":
             raise SystemExit("Payment status did not update to paid.")
+        if project.get("paymentSubscriptionId") != subscription_id:
+            raise SystemExit("Payment subscription ID was not stored.")
         if project.get("status") != "delivered":
             raise SystemExit("Project was not restored to delivered status.")
     else:

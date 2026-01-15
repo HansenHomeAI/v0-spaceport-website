@@ -108,6 +108,12 @@ class AuthStack(Stack):
             memory_size=256,
             environment={
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
+                "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{suffix.upper()}", os.environ.get("STRIPE_SECRET_KEY", "")),
+                "R2_ENDPOINT": os.environ.get(f"R2_ENDPOINT_{suffix.upper()}", os.environ.get("R2_ENDPOINT", "")),
+                "R2_ACCESS_KEY_ID": os.environ.get(f"R2_ACCESS_KEY_ID_{suffix.upper()}", os.environ.get("R2_ACCESS_KEY_ID", "")),
+                "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
+                "R2_BUCKET_NAME": os.environ.get(f"R2_BUCKET_NAME_{suffix.upper()}", os.environ.get("R2_BUCKET_NAME", "spaces-viewers")),
+                "R2_REGION": os.environ.get(f"R2_REGION_{suffix.upper()}", os.environ.get("R2_REGION", "auto")),
             },
         )
         # Allow the Lambda to read/write from the Projects table

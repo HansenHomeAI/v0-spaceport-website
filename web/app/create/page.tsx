@@ -375,13 +375,24 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
 
   const modelLink = useMemo(() => extractModelLink(project), [project]);
   const displayLink = useMemo(() => (modelLink ? formatModelLinkDisplay(modelLink) : ''), [modelLink]);
+  const paymentLink = useMemo(() => {
+    if (typeof project?.paymentLink === 'string' && project.paymentLink.trim().startsWith('http')) {
+      return project.paymentLink.trim();
+    }
+    return '';
+  }, [project?.paymentLink]);
 
   const normalizedStatus = useMemo(() => {
     const rawStatus = project?.status;
     return typeof rawStatus === 'string' ? rawStatus.toLowerCase() : '';
   }, [project?.status]);
+  const normalizedPaymentStatus = useMemo(() => {
+    const rawStatus = project?.paymentStatus;
+    return typeof rawStatus === 'string' ? rawStatus.toLowerCase() : '';
+  }, [project?.paymentStatus]);
 
   const isDelivered = normalizedStatus === 'delivered';
+  const showPaymentLink = Boolean(paymentLink && normalizedPaymentStatus !== 'paid');
 
   const progressValue = useMemo(() => {
     const rawProgress = project?.progress;
@@ -539,6 +550,21 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
         ) : (
           <div className={`model-link-status ${isDelivered ? 'pending' : 'pending'}`} role="status">
             {getGuidanceText()}
+          </div>
+        )}
+        {showPaymentLink && (
+          <div className="payment-link-pill" role="group" aria-label="Payment required">
+            <span className="payment-link-text">Payment pending</span>
+            <div className="payment-link-actions">
+              <a
+                className="payment-link-button"
+                href={paymentLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Complete payment
+              </a>
+            </div>
           </div>
         )}
       </div>
