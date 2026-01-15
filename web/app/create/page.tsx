@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { trackEvent, AnalyticsEvents } from '../../lib/analytics';
 import ModelDeliveryModal from '../../components/ModelDeliveryModal';
 import { useModelDeliveryAdmin } from '../hooks/useModelDeliveryAdmin';
+import { Button, Container, Section, Text } from '../../components/foundational';
 
 type ProjectRecord = Record<string, any> & {
   projectId?: string;
@@ -227,74 +228,82 @@ export default function Create(): JSX.Element {
   return (
     <>
       {/* Always-visible header matching pricing/about spacing and swirl */}
-      <section className="section" id="create">
-        <div id="development-content">
-          <h1>Dashboard</h1>
-          <a 
-            href="https://www.loom.com/share/e5b2d593df724c279742d9d4dcdbb5cf" 
-            target="_blank" 
+      <Section id="create">
+        <Container id="development-content">
+          <Text.H1 withBase={false}>Dashboard</Text.H1>
+          <Button.Primary
+            href="https://www.loom.com/share/e5b2d593df724c279742d9d4dcdbb5cf"
+            target="_blank"
             rel="noopener noreferrer"
-            className="cta-button"
           >
             Watch Tutorial
-          </a>
-        </div>
-      </section>
+          </Button.Primary>
+        </Container>
+      </Section>
 
       {/* Auth-gated creation experience below the header */}
       <AuthGate onAuthenticated={handleAuthenticated}>
-        <section className="section" id="create-dashboard">
-          <div className="project-cards">
+        <Section id="create-dashboard">
+          <Container variant="project-cards">
             {/* Account Settings Card */}
-            <div className="project-box account-card">
-              <div className="account-info">
-                <div className="account-details">
-                  <div className="account-header">
-                    <div className="account-info-compact">
-                      <h3 className="account-handle">{user?.attributes?.preferred_username || user?.username || 'User'}</h3>
-                      <div className="subscription-compact">
-                        <button
-                          className="subscription-pill clickable"
+            <Container variant={['project-box', 'account-card']}>
+              <Container variant="account-info">
+                <Container variant="account-details">
+                  <Container variant="account-header">
+                    <Container variant="account-info-compact">
+                      <Text.H3 withBase={false} className="account-handle">
+                        {user?.attributes?.preferred_username || user?.username || 'User'}
+                      </Text.H3>
+                      <Container variant="subscription-compact">
+                        <Button.Base
+                          variant={['subscription-pill', 'clickable']}
                           onClick={() => router.push('/pricing')}
                         >
                           {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
-                        </button>
-                        <span className="model-count">
+                        </Button.Base>
+                        <Container as="span" variant="model-count">
                           {projects.length}/{subscription?.planFeatures?.maxModels || getPlanFeatures().maxModels} active models
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                </div>
-                <button className="sign-out-btn" onClick={signOut}>
-                  <span className="sign-out-icon"></span>
+                        </Container>
+                      </Container>
+                    </Container>
+                  </Container>
+                </Container>
+                <Button.Base variant="sign-out-btn" onClick={signOut}>
+                  <Container as="span" variant="sign-out-icon" />
                   Sign Out
-                </button>
-              </div>
-            </div>
+                </Button.Base>
+              </Container>
+            </Container>
             
             {/* New Project Button */}
-            <div 
-              className={`project-box new-project-card ${!canCreateModel(projects.length) ? 'disabled' : ''}`} 
+            <Container 
+              variant={canCreateModel(projects.length)
+                ? ['project-box', 'new-project-card']
+                : ['project-box', 'new-project-card', 'disabled']}
               onClick={canCreateModel(projects.length) ? () => setModalOpen(true) : undefined}
             >
-              <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
+              <Text.H1 withBase={false}>
+                New Project
+                <Container as="span" variant="plus-icon">
+                  <Container as="span" />
+                  <Container as="span" />
+                </Container>
+              </Text.H1>
               {!canCreateModel(projects.length) && (
-                <p className="upgrade-prompt">
+                <Text.Body withBase={false} className="upgrade-prompt">
                   Upgrade your plan to create more models
-                </p>
+                </Text.Body>
               )}
-            </div>
+            </Container>
             
             {/* Loading Spinner */}
             {loading && (
-              <div className="project-box loading-card">
-                <div className="loading-spinner">
-                  <div className="spinner"></div>
-                  <p>Loading projects...</p>
-                </div>
-              </div>
+              <Container variant={['project-box', 'loading-card']}>
+                <Container variant="loading-spinner">
+                  <Container variant="spinner" />
+                  <Text.Body withBase={false}>Loading projects...</Text.Body>
+                </Container>
+              </Container>
             )}
             
             {/* Projects */}
@@ -314,27 +323,29 @@ export default function Create(): JSX.Element {
 
             {/* Model Delivery - Only shown to authorized employees */}
             {hasModelDeliveryPermission && (
-              <div className="project-box model-delivery-card">
-                <h4>Model Delivery</h4>
-                <p>Send a final model link to a client and attach it to their project.</p>
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <button
-                    className="model-delivery-primary"
+              <Container variant={['project-box', 'model-delivery-card']}>
+                <Container as="h4">Model Delivery</Container>
+                <Text.Body withBase={false}>
+                  Send a final model link to a client and attach it to their project.
+                </Text.Body>
+                <Container style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Button.Base
+                    variant="model-delivery-primary"
                     onClick={() => setModelDeliveryOpen(true)}
                     disabled={modelDeliveryLoading || !modelDeliveryApiConfigured}
                   >
                     Send Model Link
-                  </button>
+                  </Button.Base>
                   {modelDeliveryError && (
-                    <p className="model-delivery-banner-error" role="status" style={{ margin: 0 }}>
+                    <Text.Body withBase={false} className="model-delivery-banner-error" role="status" style={{ margin: 0 }}>
                       {modelDeliveryError}
-                    </p>
+                    </Text.Body>
                   )}
-                </div>
-              </div>
+                </Container>
+              </Container>
             )}
-          </div>
-        </section>
+          </Container>
+        </Section>
 
 
         <NewProjectModal
@@ -491,25 +502,34 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
   };
 
   return (
-    <div className="project-box">
-      <button className="project-controls-btn" aria-label="Edit project" onClick={handleEdit}>
-        <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
-      </button>
-      <h1>{project?.title || 'Untitled'}</h1>
-      <div className="project-progress">
-        <div className="project-progress-track">
-          <div className="project-progress-fill" style={{ width: `${progressValue}%` }}></div>
-        </div>
-      </div>
+    <Container variant="project-box">
+      <Button.Base variant="project-controls-btn" aria-label="Edit project" onClick={handleEdit}>
+        <Container
+          as="img"
+          variant="project-controls-icon"
+          src="/assets/SpaceportIcons/Controls.svg"
+          alt="Edit controls"
+        />
+      </Button.Base>
+      <Text.H1 withBase={false}>{project?.title || 'Untitled'}</Text.H1>
+      <Container variant="project-progress">
+        <Container variant="project-progress-track">
+          <Container variant="project-progress-fill" style={{ width: `${progressValue}%` }} />
+        </Container>
+      </Container>
 
-      <div className="model-link-area" role={modelLink ? 'group' : 'status'} aria-live={modelLink ? undefined : 'polite'}>
+      <Container
+        variant="model-link-area"
+        role={modelLink ? 'group' : 'status'}
+        aria-live={modelLink ? undefined : 'polite'}
+      >
         {modelLink ? (
           <>
-            <div className="model-link-pill">
-              <span className="model-link-text" title={modelLink}>{displayLink}</span>
-              <div className="model-link-actions">
-                <a
-                  className="model-link-button"
+            <Container variant="model-link-pill">
+              <Container as="span" variant="model-link-text" title={modelLink}>{displayLink}</Container>
+              <Container variant="model-link-actions">
+                <Button.Base
+                  variant="model-link-button"
                   href={modelLink}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -517,30 +537,34 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
                   aria-label="Open model link in a new tab"
                 >
                   Open
-                </a>
-                <button
+                </Button.Base>
+                <Button.Base
                   type="button"
-                  className="model-link-button"
+                  variant="model-link-button"
                   onClick={handleCopy}
                   aria-label="Copy model link to clipboard"
                 >
                   Copy
-                </button>
-              </div>
-            </div>
+                </Button.Base>
+              </Container>
+            </Container>
             {copyState !== 'idle' && (
-              <span className={`model-link-feedback ${copyState === 'error' ? 'error' : ''}`} role="status">
+              <Container
+                as="span"
+                variant={copyState === 'error' ? ['model-link-feedback', 'error'] : 'model-link-feedback'}
+                role="status"
+              >
                 {copyMessage}
-              </span>
+              </Container>
             )}
           </>
         ) : (
-          <div className={`model-link-status ${isDelivered ? 'pending' : 'pending'}`} role="status">
+          <Container variant={['model-link-status', 'pending']} role="status">
             {getGuidanceText()}
-          </div>
+          </Container>
         )}
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 }
 

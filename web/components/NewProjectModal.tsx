@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildApiUrl } from '../app/api-config';
+import { Button, Container, Input, Text } from './foundational';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -1096,25 +1097,31 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
 
   return (
-    <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>
-      <div className="popup-header">
-        <div className="popup-title-section">
-          <textarea
+    <Container
+      id="newProjectPopup"
+      role="dialog"
+      aria-modal="true"
+      variant="popup-overlay"
+      style={{ display: 'block' }}
+    >
+      <Container variant="popup-header">
+        <Container variant="popup-title-section">
+          <Input.TextArea
             id="projectTitle"
-            className="popup-title-input"
+            variant="popup-title-input"
             rows={1}
             placeholder="Untitled"
             value={projectTitle}
             onChange={(e) => setProjectTitle(e.target.value)}
           />
-          <span className="edit-icon" />
-        </div>
-        <button className="popup-close" onClick={onClose} />
-      </div>
+          <Container as="span" variant="edit-icon" />
+        </Container>
+        <Button.Base variant="popup-close" onClick={onClose} />
+      </Container>
 
       {toast && (
-        <div aria-live="polite" style={{ position: 'fixed', right: 16, top: 16, zIndex: 1100 }}>
-          <div style={{
+        <Container aria-live="polite" style={{ position: 'fixed', right: 16, top: 16, zIndex: 1100 }}>
+          <Container style={{
             background: toast.type === 'success' ? '#163a24' : '#3a1616',
             border: `1px solid ${toast.type === 'success' ? '#1f6f46' : '#7a2e2e'}`,
             color: '#fff',
@@ -1123,71 +1130,75 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             boxShadow: '0 10px 32px rgba(0,0,0,0.3)'
           }}>
             {toast.message}
-          </div>
-        </div>
+          </Container>
+        </Container>
       )}
 
-      <div className="popup-content-scroll">
+      <Container variant="popup-content-scroll">
         {/* Status is automatic and displayed on the dashboard cards only */}
         {/* SECTION 1: CREATE FLIGHT PLAN */}
-        <div className={`accordion-section${setupOpen ? ' active' : ''}`} data-section="setup">
-          <div className="accordion-header" onClick={() => setSetupOpen(v => !v)}>
-            <div className="accordion-title">
-              <h3>Create Flight Plan</h3>
-            </div>
-            <span className="accordion-chevron"></span>
-          </div>
+        <Container variant={setupOpen ? ['accordion-section', 'active'] : 'accordion-section'} data-section="setup">
+          <Container variant="accordion-header" onClick={() => setSetupOpen(v => !v)}>
+            <Container variant="accordion-title">
+              <Text.H3 withBase={false}>Create Flight Plan</Text.H3>
+            </Container>
+            <Container as="span" variant="accordion-chevron" />
+          </Container>
           {setupOpen && (
-          <div className="accordion-content">
-            <div className="popup-map-section">
-                            <div className="map-wrapper">
+          <Container variant="accordion-content">
+            <Container variant="popup-map-section">
+              <Container variant="map-wrapper">
                 {/* Empty map container for Mapbox - avoids the warning */}
-                <div id="map-container" className="map-container" ref={mapContainerRef}></div>
+                <Container id="map-container" variant="map-container" ref={mapContainerRef} />
                 
                 {/* Map overlays and controls as siblings */}
-                <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
-                  <span className="expand-icon"></span>
-                </button>
-                <div className="map-dim-overlay"></div>
-                <div className="map-blur-background"></div>
-                <div className="map-blur-overlay top"></div>
-                <div className="map-blur-overlay bottom"></div>
-                <div className="map-progressive-bottom-blur"></div>
+                <Button.Base
+                  variant={isFullscreen ? ['expand-button', 'expanded'] : 'expand-button'}
+                  id="expand-button"
+                  onClick={toggleFullscreen}
+                >
+                  <Container as="span" variant="expand-icon" />
+                </Button.Base>
+                <Container variant="map-dim-overlay" />
+                <Container variant="map-blur-background" />
+                <Container variant={['map-blur-overlay', 'top']} />
+                <Container variant={['map-blur-overlay', 'bottom']} />
+                <Container variant="map-progressive-bottom-blur" />
 
-                <div className="map-instructions-center" id="map-instructions">
-                  <div className="instruction-content">
-                    <div className="instruction-pin"></div>
-                    <h3>Select the focus point for your drone flight.</h3>
-                  </div>
-                </div>
+                <Container variant="map-instructions-center" id="map-instructions">
+                  <Container variant="instruction-content">
+                    <Container variant="instruction-pin" />
+                    <Text.H3 withBase={false}>Select the focus point for your drone flight.</Text.H3>
+                  </Container>
+                </Container>
 
-                <div className="address-search-overlay">
-                  <div className="address-search-wrapper">
-                    <input
+                <Container variant="address-search-overlay">
+                  <Container variant="address-search-wrapper">
+                    <Input.Text
                       type="text"
                       id="address-search"
-                      className="text-fade-right"
+                      variant="text-fade-right"
                       placeholder="Enter location"
                       value={addressSearch}
                       onChange={(e) => setAddressSearch(e.target.value)}
                       onKeyDown={handleAddressEnter}
                       style={{}}
                     />
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </Container>
+                </Container>
+              </Container>
+            </Container>
 
             {/* Batteries */}
-            <div className="category-outline">
-              <div className="popup-section">
-                <h4>Batteries</h4>
-                <div className="input-row-popup">
-                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
-                    <span className="input-icon time"></span>
-                    <input
+            <Container variant="category-outline">
+              <Container variant="popup-section">
+                <Container as="h4">Batteries</Container>
+                <Container variant="input-row-popup">
+                  <Container variant="popup-input-wrapper" style={{ position: 'relative' }}>
+                    <Container as="span" variant={['input-icon', 'time']} />
+                    <Input.Text
                       type="text"
-                      className="text-fade-right"
+                      variant="text-fade-right"
                       placeholder="Duration"
                       value={batteryMinutes ? `${batteryMinutes} min/battery` : ''}
                       onChange={(e) => { 
@@ -1204,12 +1215,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       }}
                       style={{}}
                     />
-                  </div>
-                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
-                    <span className="input-icon number"></span>
-                    <input
+                  </Container>
+                  <Container variant="popup-input-wrapper" style={{ position: 'relative' }}>
+                    <Container as="span" variant={['input-icon', 'number']} />
+                    <Input.Text
                       type="text"
-                      className="text-fade-right"
+                      variant="text-fade-right"
                       placeholder="Quantity"
                       value={numBatteries ? `${numBatteries} ${parseInt(numBatteries) === 1 ? 'battery' : 'batteries'}` : ''}
                       onChange={(e) => { 
@@ -1226,21 +1237,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       }}
                       style={{}}
                     />
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </Container>
+                </Container>
+              </Container>
+            </Container>
 
             {/* Altitude */}
-            <div className="category-outline">
-              <div className="popup-section">
-                <h4>Altitude</h4>
-                <div className="input-row-popup">
-                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
-                    <span className="input-icon minimum"></span>
-                    <input
+            <Container variant="category-outline">
+              <Container variant="popup-section">
+                <Container as="h4">Altitude</Container>
+                <Container variant="input-row-popup">
+                  <Container variant="popup-input-wrapper" style={{ position: 'relative' }}>
+                    <Container as="span" variant={['input-icon', 'minimum']} />
+                    <Input.Text
                       type="text"
-                      className="text-fade-right"
+                      variant="text-fade-right"
                       placeholder="Minimum"
                       value={minHeightFeet ? `${minHeightFeet} ft AGL` : ''}
                       onChange={(e) => { 
@@ -1257,12 +1268,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       }}
                       style={{}}
                     />
-                  </div>
-                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
-                    <span className="input-icon maximum"></span>
-                    <input
+                  </Container>
+                  <Container variant="popup-input-wrapper" style={{ position: 'relative' }}>
+                    <Container as="span" variant={['input-icon', 'maximum']} />
+                    <Input.Text
                       type="text"
-                      className="text-fade-right"
+                      variant="text-fade-right"
                       placeholder="Maximum"
                       value={maxHeightFeet ? `${maxHeightFeet} ft AGL` : ''}
                       onChange={(e) => { 
@@ -1279,22 +1290,26 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       }}
                       style={{}}
                     />
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </Container>
+                </Container>
+              </Container>
+            </Container>
 
             {/* Individual Battery Segments (legacy-correct UI) */}
-            <div className="category-outline">
-              <div className="popup-section">
-                <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
+            <Container variant="category-outline">
+              <Container variant="popup-section">
+                <Container
+                  as="h4"
+                  variant="text-fade-right"
+                  style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}
+                >
                   {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
-                </h4>
-                <div id="batteryButtons" className="flight-path-grid">
+                </Container>
+                <Container id="batteryButtons" variant="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
-                  <button
+                  <Button.Base
                     key={idx}
-                    className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
+                    variant={downloadingBatteries.has(idx + 1) ? ['flight-path-download-btn', 'loading'] : 'flight-path-download-btn'}
                     onClick={async () => {
                       console.log(`🔍 Battery ${idx + 1} clicked:`, {
                         optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
@@ -1359,71 +1374,119 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       downloadBatteryCsv(idx + 1);
                     }}
                   >
-                    <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
+                    <Container
+                      as="span"
+                      variant={downloadingBatteries.has(idx + 1) ? ['download-icon', 'loading'] : 'download-icon'}
+                    />
                     Battery {idx + 1}
-                  </button>
+                  </Button.Base>
                 ))}
-                </div>
-              </div>
-            </div>
-          </div>
+                </Container>
+              </Container>
+            </Container>
+          </Container>
           )}
-        </div>
+        </Container>
 
         {/* SECTION 2: PROPERTY UPLOAD */}
-        <div className={`accordion-section${uploadOpen ? ' active' : ''}`} data-section="upload" style={{ marginTop: '16px' }}>
-          <div className="accordion-header" onClick={() => setUploadOpen(v => !v)}>
-            <div className="accordion-title"><h3>Property Upload</h3></div>
-            <span className="accordion-chevron"></span>
-          </div>
+        <Container
+          variant={uploadOpen ? ['accordion-section', 'active'] : 'accordion-section'}
+          data-section="upload"
+          style={{ marginTop: '16px' }}
+        >
+          <Container variant="accordion-header" onClick={() => setUploadOpen(v => !v)}>
+            <Container variant="accordion-title">
+              <Text.H3 withBase={false}>Property Upload</Text.H3>
+            </Container>
+            <Container as="span" variant="accordion-chevron" />
+          </Container>
           {uploadOpen && (
-          <div className="accordion-content">
-            <div className="popup-section">
-              <div className="category-outline">
-                <div className="popup-section">
-                  <div className="upload-zone" onClick={() => document.getElementById('fileInputHidden')?.click()} onDragOver={(e) => { e.preventDefault(); }} onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) onFileChosen(f); }}>
-                    <div className="upload-icon"></div>
-                    {!selectedFile && <p>Upload .jpg photos as a .zip file</p>}
+          <Container variant="accordion-content">
+            <Container variant="popup-section">
+              <Container variant="category-outline">
+                <Container variant="popup-section">
+                  <Container
+                    variant="upload-zone"
+                    onClick={() => document.getElementById('fileInputHidden')?.click()}
+                    onDragOver={(e) => { e.preventDefault(); }}
+                    onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) onFileChosen(f); }}
+                  >
+                    <Container variant="upload-icon" />
+                    {!selectedFile && <Text.Body withBase={false}>Upload .jpg photos as a .zip file</Text.Body>}
                     {selectedFile && (
-                      <p id="selectedFileDisplay">Selected file: <span id="selectedFileName">{selectedFile.name}</span> <span className="close-icon" onClick={(e) => { e.stopPropagation(); onFileChosen(null); }}>&times;</span></p>
+                      <Text.Body withBase={false} id="selectedFileDisplay">
+                        Selected file: <Container as="span" id="selectedFileName">{selectedFile.name}</Container>{' '}
+                        <Container
+                          as="span"
+                          variant="close-icon"
+                          onClick={(e) => { e.stopPropagation(); onFileChosen(null); }}
+                        >
+                          &times;
+                        </Container>
+                      </Text.Body>
                     )}
-                    <input id="fileInputHidden" type="file" accept=".zip" style={{ display: 'none' }} onChange={(e) => onFileChosen(e.target.files?.[0] || null)} />
-                  </div>
-                </div>
-              </div>
+                    <Input.Text
+                      id="fileInputHidden"
+                      type="file"
+                      accept=".zip"
+                      style={{ display: 'none' }}
+                      onChange={(e) => onFileChosen(e.target.files?.[0] || null)}
+                    />
+                  </Container>
+                </Container>
+              </Container>
 
-              <div className="category-outline">
-                <div className="popup-section">
-                  <h4>Property Details</h4>
-                  <div className="input-row-popup">
-                    <div className="popup-input-wrapper">
-                      <span className="input-icon home"></span>
-                      <input type="text" className="text-fade-right" placeholder="Property Title" value={propertyTitle} onChange={(e) => setPropertyTitle(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="popup-input-wrapper listing-description-wrapper">
-                    <span className="input-icon paragraph"></span>
-                    <textarea id="listingDescription" className="text-fade-right" placeholder="Listing Description" rows={3} value={listingDescription} onChange={(e) => setListingDescription(e.target.value)} />
-                  </div>
-                </div>
-              </div>
+              <Container variant="category-outline">
+                <Container variant="popup-section">
+                  <Container as="h4">Property Details</Container>
+                  <Container variant="input-row-popup">
+                    <Container variant="popup-input-wrapper">
+                      <Container as="span" variant={['input-icon', 'home']} />
+                      <Input.Text
+                        type="text"
+                        variant="text-fade-right"
+                        placeholder="Property Title"
+                        value={propertyTitle}
+                        onChange={(e) => setPropertyTitle(e.target.value)}
+                      />
+                    </Container>
+                  </Container>
+                  <Container variant={['popup-input-wrapper', 'listing-description-wrapper']}>
+                    <Container as="span" variant={['input-icon', 'paragraph']} />
+                    <Input.TextArea
+                      id="listingDescription"
+                      variant="text-fade-right"
+                      placeholder="Listing Description"
+                      rows={3}
+                      value={listingDescription}
+                      onChange={(e) => setListingDescription(e.target.value)}
+                    />
+                  </Container>
+                </Container>
+              </Container>
 
-              <div className="category-outline">
-                <div className="popup-section">
-                  <h4>Delivery Method</h4>
-                  <div className="input-row-popup">
-                    <div className="popup-input-wrapper">
-                      <span className="input-icon email"></span>
-                      <input type="email" className="text-fade-right" placeholder="Email Address" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Container variant="category-outline">
+                <Container variant="popup-section">
+                  <Container as="h4">Delivery Method</Container>
+                  <Container variant="input-row-popup">
+                    <Container variant="popup-input-wrapper">
+                      <Container as="span" variant={['input-icon', 'email']} />
+                      <Input.Text
+                        type="email"
+                        variant="text-fade-right"
+                        placeholder="Email Address"
+                        value={contactEmail}
+                        onChange={(e) => setContactEmail(e.target.value)}
+                      />
+                    </Container>
+                  </Container>
+                </Container>
+              </Container>
 
-              <div className="category-outline upload-button-only no-outline">
-                <div className="popup-section" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+              <Container variant={['category-outline', 'upload-button-only', 'no-outline']}>
+                <Container variant="popup-section" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
                   {uploadLoading && uploadStage && (
-                    <div className="upload-stage-text" style={{ 
+                    <Container className="upload-stage-text" style={{ 
                       position: 'absolute', 
                       top: '-30px', 
                       left: '50%', 
@@ -1434,48 +1497,59 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       width: '100%'
                     }}>
                       {uploadStage}
-                    </div>
+                    </Container>
                   )}
-                  <div className="upload-progress-text" style={{ 
+                  <Container className="upload-progress-text" style={{ 
                     opacity: uploadLoading ? 1 : 0.5 
                   }}>
                     {uploadLoading ? `${Math.round(uploadProgress)}%` : ''}
-                  </div>
-                  <div className="upload-button-container">
-                    <button className={`upload-btn-with-icon${uploadLoading ? ' loading' : ''}`} onClick={startUpload} disabled={uploadLoading}>
-                      <span className="upload-btn-icon"></span>
+                  </Container>
+                  <Container className="upload-button-container">
+                    <Button.Base
+                      variant={uploadLoading ? ['upload-btn-with-icon', 'loading'] : 'upload-btn-with-icon'}
+                      onClick={startUpload}
+                      disabled={uploadLoading}
+                    >
+                      <Container as="span" variant="upload-btn-icon" />
                       {uploadLoading ? 'Uploading…' : mlLoading ? 'Starting ML…' : 'Upload'}
-                    </button>
-                    <button className="cancel-btn-with-icon" disabled={uploadLoading} onClick={() => onClose()}>
-                      <span className="cancel-btn-icon"></span>
+                    </Button.Base>
+                    <Button.Base
+                      variant="cancel-btn-with-icon"
+                      disabled={uploadLoading}
+                      onClick={() => onClose()}
+                    >
+                      <Container as="span" variant="cancel-btn-icon" />
                       Cancel
-                    </button>
-                  </div>
-                  <div className="upload-progress-container">
-                    <div className="upload-progress-bar" style={{ 
+                    </Button.Base>
+                  </Container>
+                  <Container className="upload-progress-container">
+                    <Container className="upload-progress-bar" style={{ 
                       width: `${uploadProgress}%`,
                       background: uploadProgress === 100 && mlLoading 
                         ? 'linear-gradient(90deg, #4ade80, #22c55e)' 
                         : 'linear-gradient(90deg, #3b82f6, #1d4ed8)',
                       transition: 'all 0.3s ease'
-                    }}></div>
-                  </div>
-                </div>
-              </div>
+                    }} />
+                  </Container>
+                </Container>
+              </Container>
 
               {/* Error messages now shown as popups via toast state */}
-            </div>
-          </div>
+            </Container>
+          </Container>
           )}
-        </div>
+        </Container>
         {/* Autosave enabled; no explicit Save button */}
         
         {/* Delete Project Button - Only show when editing existing project */}
         {currentProjectId && (
-          <div className="popup-section" style={{ marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <button 
-                className="delete-project-btn"
+          <Container
+            variant="popup-section"
+            style={{ marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}
+          >
+            <Container style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button.Base 
+                variant="delete-project-btn"
                 onClick={handleDeleteProject}
                 style={{
                   display: 'inline-block',
@@ -1502,34 +1576,32 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 }}
               >
                 Delete Project
-              </button>
-            </div>
-          </div>
+              </Button.Base>
+            </Container>
+          </Container>
         )}
-      </div>
+      </Container>
 
       {/* Center-screen modal popup system */}
       {modalPopup && (
-        <div className="modal-popup-overlay" onClick={() => setModalPopup(null)}>
-          <div className="modal-popup-content" onClick={(e) => e.stopPropagation()}>
-            <div className={`modal-popup-icon ${modalPopup.type}`}>
+        <Container variant="modal-popup-overlay" onClick={() => setModalPopup(null)}>
+          <Container variant="modal-popup-content" onClick={(e) => e.stopPropagation()}>
+            <Container variant={['modal-popup-icon', modalPopup.type]}>
               {modalPopup.type === 'success' ? '✓' : '⚠'}
-            </div>
-            <h3 className="modal-popup-title">
+            </Container>
+            <Text.H3 withBase={false} className="modal-popup-title">
               {modalPopup.type === 'success' ? 'Success' : 'Error'}
-            </h3>
-            <p className="modal-popup-message">{modalPopup.message}</p>
-            <button 
-              className="modal-popup-button"
+            </Text.H3>
+            <Text.Body withBase={false} className="modal-popup-message">{modalPopup.message}</Text.Body>
+            <Button.Base 
+              variant="modal-popup-button"
               onClick={() => setModalPopup(null)}
             >
               OK
-            </button>
-          </div>
-        </div>
+            </Button.Base>
+          </Container>
+        </Container>
       )}
-    </div>
+    </Container>
   );
 }
-
-
