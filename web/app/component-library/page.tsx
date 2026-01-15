@@ -6,7 +6,7 @@ import ModelDeliveryModal from '../../components/ModelDeliveryModal';
 import NewProjectModal from '../../components/NewProjectModal';
 import TermsOfServiceModal from '../../components/TermsOfServiceModal';
 import type { ModelDeliveryProject, ResolveClientResponse } from '../hooks/useModelDeliveryAdmin';
-import { Button, Container, Layout, Section, Text } from '../../components/foundational';
+import { Button, Container, Input, Layout, Section, Text } from '../../components/foundational';
 
 import './component-library.css';
 
@@ -212,428 +212,443 @@ export default function ComponentLibrary(): JSX.Element {
         </Layout.Grid>
       </Container>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Non-Unified Text Styles Audit</h2>
-          <p className="text-body">
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Non-Unified Text Styles Audit</Text.H2>
+          <Text.Body withBase={false} className="text-body">
             The following text styles are still in use but NOT part of the 6 unified styles. These should be migrated to use the unified system.
-          </p>
-        </div>
-        <div className="component-library-card component-library-card-wide">
-          <p className="component-library-label">⚠️ Text Styles That Need Migration</p>
-          <div style={{ display: 'grid', gap: '24px', marginTop: '24px' }}>
-            <div>
-              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+          </Text.Body>
+        </Container>
+        <Container variant={['component-library-card', 'component-library-card-wide']}>
+          <Text.Body withBase={false} className="component-library-label">⚠️ Text Styles That Need Migration</Text.Body>
+          <Layout.Grid style={{ gap: '24px', marginTop: '24px' }}>
+            <Container>
+              <Text.Small withBase={false} className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
                 Component Library Specific:
-              </p>
-              <ul className="component-library-list">
-                <li><code>.component-library-kicker</code> - Should use <code>.text-small</code></li>
-                <li><code>.component-library-note</code> - Should use <code>.text-small</code></li>
-                <li><code>.component-library-h3</code> - Should use <code>.text-h3</code></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+              </Text.Small>
+              <Container as="ul" variant="component-library-list">
+                <Container as="li"><code>.component-library-kicker</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.component-library-note</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.component-library-h3</code> - Should use <code>.text-h3</code></Container>
+              </Container>
+            </Container>
+            <Container>
+              <Text.Small withBase={false} className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
                 Stats & Pricing:
-              </p>
-              <ul className="component-library-list">
-                <li><code>.stats-source</code> - Should use <code>.text-small</code></li>
-                <li><code>.stat-box h1</code> - Special gradient style (may need exception)</li>
-                <li><code>.stat-box p</code> - Should use <code>.text-body</code> or <code>.text-emphasis</code></li>
-                <li><code>.price</code> - Special gradient style (may need exception)</li>
-                <li><code>.pricing-card h2</code> - Should use <code>.text-h2</code></li>
-                <li><code>.pricing-card p</code> - Should use <code>.text-body</code></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+              </Text.Small>
+              <Container as="ul" variant="component-library-list">
+                <Container as="li"><code>.stats-source</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.stat-box h1</code> - Special gradient style (may need exception)</Container>
+                <Container as="li"><code>.stat-box p</code> - Should use <code>.text-body</code> or <code>.text-emphasis</code></Container>
+                <Container as="li"><code>.price</code> - Special gradient style (may need exception)</Container>
+                <Container as="li"><code>.pricing-card h2</code> - Should use <code>.text-h2</code></Container>
+                <Container as="li"><code>.pricing-card p</code> - Should use <code>.text-body</code></Container>
+              </Container>
+            </Container>
+            <Container>
+              <Text.Small withBase={false} className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
                 Auth & Modals:
-              </p>
-              <ul className="component-library-list">
-                <li><code>.auth-modal-header h2</code> - Should use <code>.text-h2</code></li>
-                <li><code>.auth-modal-header p</code> - Should use <code>.text-body</code></li>
-                <li><code>.auth-description</code> - Should use <code>.text-small</code></li>
-                <li><code>.auth-error</code> - Should use <code>.text-small</code> (with error color)</li>
-                <li><code>.auth-success</code> - Should use <code>.text-small</code> (with success color)</li>
-                <li><code>.auth-link</code> - Should use <code>.text-small</code> (with link styling)</li>
-                <li><code>.terms-modal-content h1</code> - Should use <code>.text-h1</code></li>
-                <li><code>.terms-modal-content h2</code> - Should use <code>.text-h2</code></li>
-                <li><code>.terms-modal-content p</code> - Should use <code>.text-body</code></li>
-                <li><code>.terms-link</code> - Should use <code>.text-small</code> (with link styling)</li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+              </Text.Small>
+              <Container as="ul" variant="component-library-list">
+                <Container as="li"><code>.auth-modal-header h2</code> - Should use <code>.text-h2</code></Container>
+                <Container as="li"><code>.auth-modal-header p</code> - Should use <code>.text-body</code></Container>
+                <Container as="li"><code>.auth-description</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.auth-error</code> - Should use <code>.text-small</code> (with error color)</Container>
+                <Container as="li"><code>.auth-success</code> - Should use <code>.text-small</code> (with success color)</Container>
+                <Container as="li"><code>.auth-link</code> - Should use <code>.text-small</code> (with link styling)</Container>
+                <Container as="li"><code>.terms-modal-content h1</code> - Should use <code>.text-h1</code></Container>
+                <Container as="li"><code>.terms-modal-content h2</code> - Should use <code>.text-h2</code></Container>
+                <Container as="li"><code>.terms-modal-content p</code> - Should use <code>.text-body</code></Container>
+                <Container as="li"><code>.terms-link</code> - Should use <code>.text-small</code> (with link styling)</Container>
+              </Container>
+            </Container>
+            <Container>
+              <Text.Small withBase={false} className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
                 Model Delivery:
-              </p>
-              <ul className="component-library-list">
-                <li><code>.model-delivery-label</code> - Should use <code>.text-small</code></li>
-                <li><code>.model-delivery-description</code> - Should use <code>.text-body</code></li>
-                <li><code>.model-delivery-meta</code> - Should use <code>.text-small</code></li>
-                <li><code>.model-delivery-hint</code> - Should use <code>.text-small</code></li>
-                <li><code>.model-delivery-error</code> - Should use <code>.text-small</code> (with error color)</li>
-                <li><code>.model-delivery-success</code> - Should use <code>.text-small</code> (with success color)</li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+              </Text.Small>
+              <Container as="ul" variant="component-library-list">
+                <Container as="li"><code>.model-delivery-label</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.model-delivery-description</code> - Should use <code>.text-body</code></Container>
+                <Container as="li"><code>.model-delivery-meta</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.model-delivery-hint</code> - Should use <code>.text-small</code></Container>
+                <Container as="li"><code>.model-delivery-error</code> - Should use <code>.text-small</code> (with error color)</Container>
+                <Container as="li"><code>.model-delivery-success</code> - Should use <code>.text-small</code> (with success color)</Container>
+              </Container>
+            </Container>
+            <Container>
+              <Text.Small withBase={false} className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
                 Inline & Special:
-              </p>
-              <ul className="component-library-list">
-                <li><code>.inline-white</code> - Should use <code>.text-emphasis</code> or inline style</li>
-                <li><code>.beta-text</code> - Special pill style (may need exception)</li>
-                <li><code>.text-highlight</code> - Should use <code>.text-emphasis</code></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
+              </Text.Small>
+              <Container as="ul" variant="component-library-list">
+                <Container as="li"><code>.inline-white</code> - Should use <code>.text-emphasis</code> or inline style</Container>
+                <Container as="li"><code>.beta-text</code> - Special pill style (may need exception)</Container>
+                <Container as="li"><code>.text-highlight</code> - Should use <code>.text-emphasis</code></Container>
+              </Container>
+            </Container>
+            <Container>
+              <Text.Small withBase={false} className="text-small" style={{ color: '#ff6b6b', fontWeight: 600, marginBottom: '8px' }}>
                 Landing Page:
-              </p>
-              <ul className="component-library-list">
-                <li><code>.landing-content h1</code> - Should use <code>.text-h1</code> (font-weight 700 variant)</li>
-                <li><code>.landing-content p</code> - Should use <code>.text-body</code></li>
-              </ul>
-            </div>
-          </div>
-          <p className="text-small" style={{ marginTop: '24px', padding: '16px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid rgba(255, 107, 107, 0.3)', borderRadius: '12px' }}>
+              </Text.Small>
+              <Container as="ul" variant="component-library-list">
+                <Container as="li"><code>.landing-content h1</code> - Should use <code>.text-h1</code> (font-weight 700 variant)</Container>
+                <Container as="li"><code>.landing-content p</code> - Should use <code>.text-body</code></Container>
+              </Container>
+            </Container>
+          </Layout.Grid>
+          <Text.Small
+            withBase={false}
+            className="text-small"
+            style={{ marginTop: '24px', padding: '16px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid rgba(255, 107, 107, 0.3)', borderRadius: '12px' }}
+          >
             <strong>Note:</strong> Some styles like gradient text (.stat-box h1, .price) and special UI elements (.beta-text) may need to remain as exceptions. All other text should migrate to the 6 unified styles.
-          </p>
-        </div>
-      </section>
+          </Text.Small>
+        </Container>
+      </Container>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Buttons & Links</h2>
-          <p>Primary and secondary CTA styles plus inline link treatments.</p>
-        </div>
-        <div className="component-library-row">
-          <a href="/create" className="cta-button">Primary CTA</a>
-          <a href="/pricing" className="cta-button2-fixed">Secondary CTA</a>
-          <a href="/about" className="cta-button2">Ghost CTA</a>
-          <a
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Buttons & Links</Text.H2>
+          <Text.Body withBase={false}>Primary and secondary CTA styles plus inline link treatments.</Text.Body>
+        </Container>
+        <Layout.Flex variant="component-library-row">
+          <Button.Primary href="/create">Primary CTA</Button.Primary>
+          <Button.Secondary fixed href="/pricing">Secondary CTA</Button.Secondary>
+          <Button.Secondary href="/about">Ghost CTA</Button.Secondary>
+          <Button.Secondary
+            fixed
+            withSymbol
             href="https://dolan-road.hansentour.com"
-            className="cta-button2-fixed with-symbol"
             target="_blank"
             rel="noreferrer"
           >
-            <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
+            <Container as="img" variant="symbol-3d" src="/assets/SpaceportIcons/3D.svg" alt="" aria-hidden="true" />
             View example
-          </a>
-          <button type="button" className="terms-link" onClick={() => setTermsOpen(true)}>
+          </Button.Secondary>
+          <Button.Link type="button" onClick={() => setTermsOpen(true)}>
             Terms of Service
-          </button>
-        </div>
-      </section>
+          </Button.Link>
+        </Layout.Flex>
+      </Container>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Marketing Layouts</h2>
-          <p>Hero, carousel, two-column, stats, and pricing patterns.</p>
-        </div>
-        <div className="component-library-layouts">
-          <div className="component-library-layout">
-            <section className="section" id="landing">
-              <div className="landing-iframe component-library-hero-media" aria-hidden="true" />
-              <div className="landing-content">
-                <h1>Location. Visualized in 3D.</h1>
-                <p>Show the land, context, and surroundings with an immersive model buyers can explore.</p>
-                <a href="/create" className="cta-button">Join waitlist</a>
-              </div>
-            </section>
-          </div>
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Marketing Layouts</Text.H2>
+          <Text.Body withBase={false}>Hero, carousel, two-column, stats, and pricing patterns.</Text.Body>
+        </Container>
+        <Container variant="component-library-layouts">
+          <Container variant="component-library-layout">
+            <Section id="landing">
+              <Container variant={['landing-iframe', 'component-library-hero-media']} aria-hidden="true" />
+              <Container variant="landing-content">
+                <Text.H1 withBase={false}>Location. Visualized in 3D.</Text.H1>
+                <Text.Body withBase={false}>Show the land, context, and surroundings with an immersive model buyers can explore.</Text.Body>
+                <Button.Primary href="/create">Join waitlist</Button.Primary>
+              </Container>
+            </Section>
+          </Container>
 
-          <div className="component-library-layout">
-            <section className="section" id="landing-carousel">
-              <div className="logo-carousel">
-                <div className="logos">
-                  <img src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" />
-                  <img src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" />
-                  <img src="/assets/Engel&Volkers.png" alt="Engel & Volkers" />
-                  <img src="/assets/BHHS.png" alt="Berkshire Hathaway HomeServices" />
-                  <img src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" />
-                  <img src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" />
-                  <img src="/assets/VestCapital.png" alt="Vest Capital" />
-                  <img src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" />
-                  <img src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" aria-hidden="true" />
-                  <img src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" aria-hidden="true" />
-                  <img src="/assets/Engel&Volkers.png" alt="Engel & Volkers" aria-hidden="true" />
-                  <img src="/assets/BHHS.png" alt="Berkshire Hathaway HomeServices" aria-hidden="true" />
-                  <img src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" aria-hidden="true" />
-                  <img src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" aria-hidden="true" />
-                  <img src="/assets/VestCapital.png" alt="Vest Capital" aria-hidden="true" />
-                  <img src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" aria-hidden="true" />
-                </div>
-              </div>
-            </section>
-          </div>
+          <Container variant="component-library-layout">
+            <Section id="landing-carousel">
+              <Container variant="logo-carousel">
+                <Container variant="logos">
+                  <Container as="img" src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" />
+                  <Container as="img" src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" />
+                  <Container as="img" src="/assets/Engel&Volkers.png" alt="Engel & Volkers" />
+                  <Container as="img" src="/assets/BHHS.png" alt="Berkshire Hathaway HomeServices" />
+                  <Container as="img" src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" />
+                  <Container as="img" src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" />
+                  <Container as="img" src="/assets/VestCapital.png" alt="Vest Capital" />
+                  <Container as="img" src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" />
+                  <Container as="img" src="/assets/BerkshireNorthwest.png" alt="Berkshire Hathaway Northwest Real Estate" aria-hidden="true" />
+                  <Container as="img" src="/assets/ColumbiaRiver.png" alt="Columbia River Realty" aria-hidden="true" />
+                  <Container as="img" src="/assets/Engel&Volkers.png" alt="Engel & Volkers" aria-hidden="true" />
+                  <Container as="img" src="/assets/BHHS.png" alt="Berkshire Hathaway HomeServices" aria-hidden="true" />
+                  <Container as="img" src="/assets/MirrRanchGroup2.png" alt="Mirr Ranch Group" aria-hidden="true" />
+                  <Container as="img" src="/assets/MullinRealEstate2.png" alt="Mullin Real Estate" aria-hidden="true" />
+                  <Container as="img" src="/assets/VestCapital.png" alt="Vest Capital" aria-hidden="true" />
+                  <Container as="img" src="/assets/WoodlandRealEstate.png" alt="Woodland Real Estate" aria-hidden="true" />
+                </Container>
+              </Container>
+            </Section>
+          </Container>
 
-          <div className="component-library-layout">
-            <section className="section two-col-section">
-              <div className="two-col-content">
-                <h2>Two-column value prop</h2>
-                <div className="right-col">
-                  <p>
+          <Container variant="component-library-layout">
+            <Section variant="two-col-section">
+              <Layout.TwoCol>
+                <Text.H2 withBase={false}>Two-column value prop</Text.H2>
+                <Container variant="right-col">
+                  <Text.Body withBase={false}>
                     Captivate buyers with immersive models that capture not just a building, but its location and flow.
-                  </p>
-                  <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank" rel="noreferrer">
-                    <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
+                  </Text.Body>
+                  <Button.Secondary
+                    fixed
+                    withSymbol
+                    href="https://deer-knoll-dr.hansentour.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Container as="img" variant="symbol-3d" src="/assets/SpaceportIcons/3D.svg" alt="" aria-hidden="true" />
                     View example
-                  </a>
-                </div>
-              </div>
-            </section>
-          </div>
+                  </Button.Secondary>
+                </Container>
+              </Layout.TwoCol>
+            </Section>
+          </Container>
 
-          <div className="component-library-layout">
-            <section className="section two-col-section">
-              <div className="two-col-content">
-                <h2>Two-column checklist</h2>
-                <div className="right-col">
-                  <ul className="component-library-list">
-                    <li><span className="inline-white">Plan your flight</span> with an optimized spiral path.</li>
-                    <li><span className="inline-white">Capture + upload</span> imagery from the drone.</li>
-                    <li><span className="inline-white">Receive the model</span> in 72 hours.</li>
-                  </ul>
-                  <a href="/create" className="cta-button2-fixed">Create your own</a>
-                </div>
-              </div>
-            </section>
-          </div>
+          <Container variant="component-library-layout">
+            <Section variant="two-col-section">
+              <Layout.TwoCol>
+                <Text.H2 withBase={false}>Two-column checklist</Text.H2>
+                <Container variant="right-col">
+                  <Container as="ul" variant="component-library-list">
+                    <Container as="li"><Container as="span" variant="inline-white">Plan your flight</Container> with an optimized spiral path.</Container>
+                    <Container as="li"><Container as="span" variant="inline-white">Capture + upload</Container> imagery from the drone.</Container>
+                    <Container as="li"><Container as="span" variant="inline-white">Receive the model</Container> in 72 hours.</Container>
+                  </Container>
+                  <Button.Secondary fixed href="/create">Create your own</Button.Secondary>
+                </Container>
+              </Layout.TwoCol>
+            </Section>
+          </Container>
 
-          <div className="component-library-layout">
-            <section className="section" id="landing-stats">
-              <h2>Virtual experiences work.</h2>
-              <div className="stats-grid">
-                <div className="stat-box">
-                  <h1>95%</h1>
-                  <p>Are more likely to contact listings with 3D tours.</p>
-                </div>
-                <div className="stat-box">
-                  <h1>99%</h1>
-                  <p>See 3D tours as a competitive edge.</p>
-                </div>
-                <div className="stat-box">
-                  <h1>82%</h1>
-                  <p>Consider switching agents if a 3D tour is offered.</p>
-                </div>
-              </div>
-              <p className="stats-source">National Association of Realtors</p>
-            </section>
-          </div>
+          <Container variant="component-library-layout">
+            <Section id="landing-stats">
+              <Text.H2 withBase={false}>Virtual experiences work.</Text.H2>
+              <Layout.Grid variant="stats-grid">
+                <Container variant="stat-box">
+                  <Text.H1 withBase={false}>95%</Text.H1>
+                  <Text.Body withBase={false}>Are more likely to contact listings with 3D tours.</Text.Body>
+                </Container>
+                <Container variant="stat-box">
+                  <Text.H1 withBase={false}>99%</Text.H1>
+                  <Text.Body withBase={false}>See 3D tours as a competitive edge.</Text.Body>
+                </Container>
+                <Container variant="stat-box">
+                  <Text.H1 withBase={false}>82%</Text.H1>
+                  <Text.Body withBase={false}>Consider switching agents if a 3D tour is offered.</Text.Body>
+                </Container>
+              </Layout.Grid>
+              <Text.Small withBase={false} className="stats-source">National Association of Realtors</Text.Small>
+            </Section>
+          </Container>
 
-          <div className="component-library-layout">
-            <section className="section" id="pricing-header">
-              <h1>Pricing.</h1>
-              <p><span className="inline-white">Capture the imagination of your buyers.</span></p>
-            </section>
-            <section className="section" id="pricing">
-              <div className="pricing-grid">
-                <div className="pricing-card">
-                  <h2>Per model.</h2>
-                  <div className="price">$599</div>
-                  <p>$29/mo hosting per model. First month free.</p>
-                </div>
-                <div className="pricing-card">
-                  <h2>Enterprise.</h2>
-                  <div className="price">Custom</div>
-                  <p>Volume pricing for brokerages with large portfolios or deeper integrations.</p>
-                  <a href="mailto:sam@spcprt.com" className="cta-button">Contact</a>
-                </div>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
+          <Container variant="component-library-layout">
+            <Section id="pricing-header">
+              <Text.H1 withBase={false}>Pricing.</Text.H1>
+              <Text.Body withBase={false}>
+                <Container as="span" variant="inline-white">Capture the imagination of your buyers.</Container>
+              </Text.Body>
+            </Section>
+            <Section id="pricing">
+              <Layout.Grid variant="pricing-grid">
+                <Container variant="pricing-card">
+                  <Text.H2 withBase={false}>Per model.</Text.H2>
+                  <Container variant="price">$599</Container>
+                  <Text.Body withBase={false}>$29/mo hosting per model. First month free.</Text.Body>
+                </Container>
+                <Container variant="pricing-card">
+                  <Text.H2 withBase={false}>Enterprise.</Text.H2>
+                  <Container variant="price">Custom</Container>
+                  <Text.Body withBase={false}>
+                    Volume pricing for brokerages with large portfolios or deeper integrations.
+                  </Text.Body>
+                  <Button.Primary href="mailto:sam@spcprt.com">Contact</Button.Primary>
+                </Container>
+              </Layout.Grid>
+            </Section>
+          </Container>
+        </Container>
+      </Container>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Forms & Input</h2>
-          <p>Waitlist, auth, feedback, and admin invites.</p>
-        </div>
-        <div className="component-library-grid">
-          <div className="component-library-card">
-            <p className="component-library-label">Waitlist Card</p>
-            <div className="waitlist-card">
-              <div className="waitlist-header">
-                <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="waitlist-logo" />
-                <h1>Join the Waitlist</h1>
-                <p>Be among the future of 3D visualization.</p>
-              </div>
-              <form className="waitlist-form">
-                <input className="waitlist-input" placeholder="Email address" />
-                <button type="button" className="waitlist-submit-btn">Request Access</button>
-              </form>
-              <div className="waitlist-terms">
-                <p>By joining, you agree to the Spaceport terms.</p>
-              </div>
-            </div>
-          </div>
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Forms & Input</Text.H2>
+          <Text.Body withBase={false}>Waitlist, auth, feedback, and admin invites.</Text.Body>
+        </Container>
+        <Layout.Grid variant="component-library-grid">
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Waitlist Card</Text.Body>
+            <Container variant="waitlist-card">
+              <Container variant="waitlist-header">
+                <Container as="img" src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="waitlist-logo" />
+                <Text.H1 withBase={false}>Join the Waitlist</Text.H1>
+                <Text.Body withBase={false}>Be among the future of 3D visualization.</Text.Body>
+              </Container>
+              <Container as="form" variant="waitlist-form">
+                <Input.Text variant="waitlist-input" placeholder="Email address" />
+                <Button.Base type="button" variant="waitlist-submit-btn">Request Access</Button.Base>
+              </Container>
+              <Container variant="waitlist-terms">
+                <Text.Body withBase={false}>By joining, you agree to the Spaceport terms.</Text.Body>
+              </Container>
+            </Container>
+          </Container>
 
-          <div className="component-library-card">
-            <p className="component-library-label">Beta Access Invite</p>
-            <div className="beta-access-invite">
-              <div className="beta-access-header">
-                <h4>Beta Access Management</h4>
-                <p>Invite new users to access Spaceport AI</p>
-              </div>
-              <form className="beta-access-form">
-                <div className="input-group">
-                  <input
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Beta Access Invite</Text.Body>
+            <Container variant="beta-access-invite">
+              <Container variant="beta-access-header">
+                <Container as="h4">Beta Access Management</Container>
+                <Text.Body withBase={false}>Invite new users to access Spaceport AI</Text.Body>
+              </Container>
+              <Container as="form" variant="beta-access-form">
+                <Container variant="input-group">
+                  <Input.Text
                     type="email"
                     placeholder="Enter email address"
-                    className="beta-access-input"
+                    variant="beta-access-input"
                     defaultValue="pilot@brokerage.com"
                   />
-                  <button type="button" className="beta-access-button">
+                  <Button.Base type="button" variant="beta-access-button">
                     Grant Access
-                  </button>
-                </div>
-                <div className="beta-access-message success">
+                  </Button.Base>
+                </Container>
+                <Container variant={['beta-access-message', 'success']}>
                   Invite sent successfully.
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+                </Container>
+              </Container>
+            </Container>
+          </Container>
+        </Layout.Grid>
 
-        <div className="component-library-grid component-library-card-spacer">
-          <div className="component-library-card component-library-card-wide">
-            <p className="component-library-label">Auth Modal</p>
-            <div className="component-library-auth">
-              <div className="auth-modal">
-                <div className="auth-mode-toggle">
-                  <div className="auth-mode-slider slide-left" />
-                  <button type="button" className="auth-mode-button active">Sign Up</button>
-                  <button type="button" className="auth-mode-button">Login</button>
-                </div>
-                <div className="auth-modal-content">
-                  <div className="auth-modal-header">
-                    <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="auth-logo" />
-                    <h2>New here?</h2>
-                    <p>Join the waitlist to be among the first to access Spaceport AI.</p>
-                  </div>
-                  <form className="auth-form">
-                    <div className="input-group">
-                      <input className="auth-input" placeholder="Name" />
-                    </div>
-                    <div className="input-group">
-                      <input className="auth-input" placeholder="Email address" />
-                    </div>
-                    <button type="button" className="auth-submit-btn">
-                      <span>Join Waitlist</span>
-                    </button>
-                  </form>
-                  <div className="auth-links">
-                    <button type="button" className="auth-link">Already have an account?</button>
-                  </div>
-                </div>
-              </div>
+        <Layout.Grid variant={['component-library-grid', 'component-library-card-spacer']}>
+          <Container variant={['component-library-card', 'component-library-card-wide']}>
+            <Text.Body withBase={false} className="component-library-label">Auth Modal</Text.Body>
+            <Container variant="component-library-auth">
+              <Container variant="auth-modal">
+                <Container variant="auth-mode-toggle">
+                  <Container variant={['auth-mode-slider', 'slide-left']} />
+                  <Button.Base type="button" variant={['auth-mode-button', 'active']}>Sign Up</Button.Base>
+                  <Button.Base type="button" variant="auth-mode-button">Login</Button.Base>
+                </Container>
+                <Container variant="auth-modal-content">
+                  <Container variant="auth-modal-header">
+                    <Container as="img" src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="auth-logo" />
+                    <Text.H2 withBase={false}>New here?</Text.H2>
+                    <Text.Body withBase={false}>Join the waitlist to be among the first to access Spaceport AI.</Text.Body>
+                  </Container>
+                  <Container as="form" variant="auth-form">
+                    <Container variant="input-group">
+                      <Input.Text variant="auth-input" placeholder="Name" />
+                    </Container>
+                    <Container variant="input-group">
+                      <Input.Text variant="auth-input" placeholder="Email address" />
+                    </Container>
+                    <Button.Base type="button" variant="auth-submit-btn">
+                      <Container as="span">Join Waitlist</Container>
+                    </Button.Base>
+                  </Container>
+                  <Container variant="auth-links">
+                    <Button.Base type="button" variant="auth-link">Already have an account?</Button.Base>
+                  </Container>
+                </Container>
+              </Container>
 
-              <div className="auth-modal">
-                <div className="auth-mode-toggle">
-                  <div className="auth-mode-slider slide-right" />
-                  <button type="button" className="auth-mode-button">Sign Up</button>
-                  <button type="button" className="auth-mode-button active">Login</button>
-                </div>
-                <div className="auth-modal-content">
-                  <div className="auth-modal-header">
-                    <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="auth-logo" />
-                    <h2>Welcome back!</h2>
-                    <p>Sign in to access your account.</p>
-                  </div>
-                  <form className="auth-form">
-                    <div className="input-group">
-                      <input className="auth-input" placeholder="Email" />
-                    </div>
-                    <div className="input-group">
-                      <input className="auth-input" placeholder="Password" type="password" />
-                    </div>
-                    <button type="button" className="auth-submit-btn">
-                      <span>Sign In</span>
-                    </button>
-                  </form>
-                  <div className="auth-links">
-                    <button type="button" className="auth-link">Forgot password?</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+              <Container variant="auth-modal">
+                <Container variant="auth-mode-toggle">
+                  <Container variant={['auth-mode-slider', 'slide-right']} />
+                  <Button.Base type="button" variant="auth-mode-button">Sign Up</Button.Base>
+                  <Button.Base type="button" variant={['auth-mode-button', 'active']}>Login</Button.Base>
+                </Container>
+                <Container variant="auth-modal-content">
+                  <Container variant="auth-modal-header">
+                    <Container as="img" src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="auth-logo" />
+                    <Text.H2 withBase={false}>Welcome back!</Text.H2>
+                    <Text.Body withBase={false}>Sign in to access your account.</Text.Body>
+                  </Container>
+                  <Container as="form" variant="auth-form">
+                    <Container variant="input-group">
+                      <Input.Text variant="auth-input" placeholder="Email" />
+                    </Container>
+                    <Container variant="input-group">
+                      <Input.Text variant="auth-input" placeholder="Password" type="password" />
+                    </Container>
+                    <Button.Base type="button" variant="auth-submit-btn">
+                      <Container as="span">Sign In</Container>
+                    </Button.Base>
+                  </Container>
+                  <Container variant="auth-links">
+                    <Button.Base type="button" variant="auth-link">Forgot password?</Button.Base>
+                  </Container>
+                </Container>
+              </Container>
+            </Container>
+          </Container>
 
-          <div className="component-library-card component-library-card-wide">
-            <p className="component-library-label">Feedback Form</p>
-            <div className="feedback-container">
-              <form className="feedback-form">
-                <div className="feedback-input-container">
-                  <input className="feedback-input" placeholder="How can we improve?" />
-                  <button type="button" className="cta-button2 feedback-submit">Send Feedback</button>
-                </div>
-                <div className="feedback-status">Placeholder for success and error states.</div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+          <Container variant={['component-library-card', 'component-library-card-wide']}>
+            <Text.Body withBase={false} className="component-library-label">Feedback Form</Text.Body>
+            <Container variant="feedback-container">
+              <Container as="form" variant="feedback-form">
+                <Container variant="feedback-input-container">
+                  <Input.Text variant="feedback-input" placeholder="How can we improve?" />
+                  <Button.Base type="button" variant={['cta-button2', 'feedback-submit']}>Send Feedback</Button.Base>
+                </Container>
+                <Container variant="feedback-status">Placeholder for success and error states.</Container>
+              </Container>
+            </Container>
+          </Container>
+        </Layout.Grid>
+      </Container>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Dashboard Components</h2>
-          <p>Cards, status pills, and dashboard layout variants.</p>
-        </div>
-        <div className="component-library-card component-library-card-wide">
-          <div className="project-cards">
-            <div className="project-box">
-              <button className="project-controls-btn">
-                <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
-              </button>
-              <h1>Downtown Property</h1>
-              <p>Processing - neural network training in progress.</p>
-              <div className="component-library-progress">
-                <div className="component-library-progress-bar" style={{ width: '70%' }} />
-              </div>
-            </div>
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Dashboard Components</Text.H2>
+          <Text.Body withBase={false}>Cards, status pills, and dashboard layout variants.</Text.Body>
+        </Container>
+        <Container variant={['component-library-card', 'component-library-card-wide']}>
+          <Container variant="project-cards">
+            <Container variant="project-box">
+              <Button.Base variant="project-controls-btn">
+                <Container as="img" variant="project-controls-icon" src="/assets/SpaceportIcons/Controls.svg" alt="Edit controls" />
+              </Button.Base>
+              <Text.H1 withBase={false}>Downtown Property</Text.H1>
+              <Text.Body withBase={false}>Processing - neural network training in progress.</Text.Body>
+              <Container variant="component-library-progress">
+                <Container variant="component-library-progress-bar" style={{ width: '70%' }} />
+              </Container>
+            </Container>
 
-            <div className="project-box">
-              <button className="project-controls-btn">
-                <img src="/assets/SpaceportIcons/Controls.svg" className="project-controls-icon" alt="Edit controls" />
-              </button>
-              <h1>Meadow Ridge</h1>
-              <p>Complete - hosting ready.</p>
-              <div className="component-library-progress">
-                <div className="component-library-progress-bar" style={{ width: '100%' }} />
-              </div>
-            </div>
+            <Container variant="project-box">
+              <Button.Base variant="project-controls-btn">
+                <Container as="img" variant="project-controls-icon" src="/assets/SpaceportIcons/Controls.svg" alt="Edit controls" />
+              </Button.Base>
+              <Text.H1 withBase={false}>Meadow Ridge</Text.H1>
+              <Text.Body withBase={false}>Complete - hosting ready.</Text.Body>
+              <Container variant="component-library-progress">
+                <Container variant="component-library-progress-bar" style={{ width: '100%' }} />
+              </Container>
+            </Container>
 
-            <div className="project-box new-project-card">
-              <h1>
+            <Container variant={['project-box', 'new-project-card']}>
+              <Text.H1 withBase={false}>
                 New Project
-                <span className="plus-icon">
-                  <span></span>
-                  <span></span>
-                </span>
-              </h1>
-            </div>
-          </div>
-        </div>
-      </section>
+                <Container as="span" variant="plus-icon">
+                  <Container as="span" />
+                  <Container as="span" />
+                </Container>
+              </Text.H1>
+            </Container>
+          </Container>
+        </Container>
+      </Container>
 
-      <section className="component-library-section">
-        <div className="component-library-section-header">
-          <h2>Modals</h2>
-          <p>Live modal components rendered with safe demo data.</p>
-        </div>
-        <div className="component-library-row">
-          <button type="button" className="cta-button2-fixed" onClick={() => setTermsOpen(true)}>
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Modals</Text.H2>
+          <Text.Body withBase={false}>Live modal components rendered with safe demo data.</Text.Body>
+        </Container>
+        <Layout.Flex variant="component-library-row">
+          <Button.Secondary fixed type="button" onClick={() => setTermsOpen(true)}>
             Open Terms of Service
-          </button>
-          <button type="button" className="cta-button2-fixed" onClick={() => setNewProjectOpen(true)}>
+          </Button.Secondary>
+          <Button.Secondary fixed type="button" onClick={() => setNewProjectOpen(true)}>
             Open New Project
-          </button>
-          <button type="button" className="cta-button2-fixed" onClick={() => setDeliveryOpen(true)}>
+          </Button.Secondary>
+          <Button.Secondary fixed type="button" onClick={() => setDeliveryOpen(true)}>
             Open Model Delivery
-          </button>
-        </div>
-      </section>
+          </Button.Secondary>
+        </Layout.Flex>
+      </Container>
 
       <TermsOfServiceModal isOpen={termsOpen} onClose={() => setTermsOpen(false)} />
       <NewProjectModal open={newProjectOpen} onClose={() => setNewProjectOpen(false)} />
