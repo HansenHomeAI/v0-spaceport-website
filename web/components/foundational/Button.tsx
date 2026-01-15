@@ -10,6 +10,7 @@ export type ButtonBaseProps = HTMLAttributes<HTMLElement> & {
   type?: 'button' | 'submit' | 'reset';
   variant?: string | string[];
   withSymbol?: boolean;
+  disabled?: boolean;
 };
 
 const isInternalLink = (href?: string) => !!href && href.startsWith('/') && !href.startsWith('//');
