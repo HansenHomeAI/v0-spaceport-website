@@ -3,6 +3,8 @@ import { cx } from './utils';
 
 export type TextAlign = 'left' | 'center' | 'right';
 
+type TextTag = 'h1' | 'h2' | 'h3' | 'p';
+
 export type TextProps = HTMLAttributes<HTMLElement> & {
   align?: TextAlign;
   color?: string;
@@ -31,7 +33,7 @@ const buildStyle = (
   };
 };
 
-const createText = (Tag: keyof JSX.IntrinsicElements, baseClass: string) => {
+const createText = (Tag: TextTag, baseClass: string) => {
   const Component = ({
     align,
     color,
