@@ -14,3 +14,5 @@ Production Lambda sync 2025-10-13T23:53:00Z
 2026-01-12T17:25:30Z spaces path prefix update
 
 2026-01-12T18:30:00Z litchi mission control ui
+
+2026-01-14T19:35:00Z litchi modal integration

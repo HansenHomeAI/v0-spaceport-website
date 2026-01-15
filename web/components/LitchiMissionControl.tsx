@@ -1,23 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Auth } from 'aws-amplify';
-import { API_CONFIG, buildApiUrl } from '../app/api-config';
-
-type LitchiStatus = {
-  status: string;
-  connected: boolean;
-  lastUsed?: string;
-  updatedAt?: string;
-  message?: string;
-  progress?: {
-    current?: number;
-    total?: number;
-    label?: string;
-  };
-  logs?: string[];
-  needsTwoFactor?: boolean;
-};
+import { useCallback, useState } from 'react';
+import { useLitchiAutomation } from '../hooks/useLitchiAutomation';
 
 const STATUS_LABELS: Record<string, string> = {
   not_connected: 'Not connected',
@@ -31,152 +15,55 @@ const STATUS_LABELS: Record<string, string> = {
   error: 'Error',
 };
 
-const POLL_INTERVAL_MS = 15000;
-
-async function authHeaders(): Promise<HeadersInit> {
-  const session = await Auth.currentSession();
-  const token = session.getIdToken().getJwtToken();
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-}
-
 export default function LitchiMissionControl(): JSX.Element {
-  const [status, setStatus] = useState<LitchiStatus | null>(null);
-  const [statusError, setStatusError] = useState<string | null>(null);
   const [connectOpen, setConnectOpen] = useState(false);
-  const [connecting, setConnecting] = useState(false);
-  const [testing, setTesting] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [connectMessage, setConnectMessage] = useState<string | null>(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [missionName, setMissionName] = useState('');
   const [missionFile, setMissionFile] = useState<File | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const apiConfigured = useMemo(() => Boolean(API_CONFIG.LITCHI_API_URL), []);
-
-  const fetchStatus = useCallback(async () => {
-    if (!apiConfigured) return;
-    try {
-      setStatusError(null);
-      const response = await fetch(buildApiUrl.litchi.status(), {
-        headers: await authHeaders(),
-      });
-      if (!response.ok) {
-        throw new Error(`Status request failed (${response.status})`);
-      }
-      const data = await response.json();
-      setStatus(data);
-    } catch (error: any) {
-      setStatusError(error?.message || 'Unable to load Litchi status');
-    }
-  }, [apiConfigured]);
-
-  useEffect(() => {
-    fetchStatus();
-    if (!apiConfigured) return;
-    const interval = setInterval(fetchStatus, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [apiConfigured, fetchStatus]);
+  const {
+    apiConfigured,
+    status,
+    error,
+    connectMessage,
+    isConnecting,
+    isTesting,
+    isUploading,
+    connect,
+    testConnection,
+    uploadMissions,
+  } = useLitchiAutomation();
 
   const handleConnect = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!username || !password) {
-      setConnectMessage('Enter your Litchi email and password.');
-      return;
+    const result = await connect(username, password, twoFactorCode || undefined);
+    if (result?.status === 'active') {
+      setConnectOpen(false);
     }
-
-    try {
-      setConnecting(true);
-      setConnectMessage(null);
-      const response = await fetch(buildApiUrl.litchi.connect(), {
-        method: 'POST',
-        headers: await authHeaders(),
-        body: JSON.stringify({
-          username,
-          password,
-          twoFactorCode: twoFactorCode || undefined,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error || 'Connect failed');
-      }
-      setStatus(data);
-      setConnectMessage(data?.message || 'Connection updated');
-      if (data?.status === 'active') {
-        setConnectOpen(false);
-      }
-    } catch (error: any) {
-      setConnectMessage(error?.message || 'Connect failed');
-    } finally {
-      setConnecting(false);
-      fetchStatus();
-    }
-  }, [fetchStatus, password, twoFactorCode, username]);
-
-  const handleTest = useCallback(async () => {
-    if (!apiConfigured) return;
-    try {
-      setTesting(true);
-      const response = await fetch(buildApiUrl.litchi.testConnection(), {
-        method: 'POST',
-        headers: await authHeaders(),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error || 'Test failed');
-      }
-      setStatus(data);
-    } catch (error: any) {
-      setStatusError(error?.message || 'Test failed');
-    } finally {
-      setTesting(false);
-      fetchStatus();
-    }
-  }, [apiConfigured, fetchStatus]);
+  }, [connect, password, twoFactorCode, username]);
 
   const handleUpload = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
     if (!missionFile) {
-      setStatusError('Select a CSV mission file to upload.');
+      setLocalError('Select a CSV mission file to upload.');
       return;
     }
 
-    try {
-      setUploading(true);
-      setStatusError(null);
-      const csvText = await missionFile.text();
-      const payload = {
-        missions: [
-          {
-            name: missionName || missionFile.name.replace(/\.csv$/i, ''),
-            csv: csvText,
-          },
-        ],
-      };
-      const response = await fetch(buildApiUrl.litchi.upload(), {
-        method: 'POST',
-        headers: await authHeaders(),
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error || 'Upload failed');
-      }
-      setStatus(data);
-    } catch (error: any) {
-      setStatusError(error?.message || 'Upload failed');
-    } finally {
-      setUploading(false);
-      fetchStatus();
-    }
-  }, [fetchStatus, missionFile, missionName]);
+    setLocalError(null);
+    const csvText = await missionFile.text();
+    await uploadMissions([
+      {
+        name: missionName || missionFile.name.replace(/\.csv$/i, ''),
+        csv: csvText,
+      },
+    ]);
+  }, [missionFile, missionName, uploadMissions]);
 
   const statusLabel = status ? (STATUS_LABELS[status.status] || status.status) : 'Unknown';
+  const statusError = localError || error;
 
   if (!apiConfigured) {
     return (
@@ -201,11 +88,11 @@ export default function LitchiMissionControl(): JSX.Element {
       {statusError && <p className="litchi-error" role="status">{statusError}</p>}
 
       <div className="litchi-actions">
-        <button className="litchi-primary" onClick={() => setConnectOpen(true)} disabled={connecting}>
+        <button className="litchi-primary" onClick={() => setConnectOpen(true)} disabled={isConnecting}>
           {status?.needsTwoFactor ? 'Enter 2FA Code' : 'Connect Litchi Account'}
         </button>
-        <button className="litchi-secondary" onClick={handleTest} disabled={testing}>
-          {testing ? 'Testing...' : 'Test Connection'}
+        <button className="litchi-secondary" onClick={testConnection} disabled={isTesting}>
+          {isTesting ? 'Testing...' : 'Test Connection'}
         </button>
       </div>
 
@@ -229,8 +116,8 @@ export default function LitchiMissionControl(): JSX.Element {
             onChange={(event) => setMissionFile(event.target.files?.[0] || null)}
           />
         </div>
-        <button className="litchi-primary" type="submit" disabled={uploading}>
-          {uploading ? 'Queueing upload...' : 'Upload Mission'}
+        <button className="litchi-primary" type="submit" disabled={isUploading}>
+          {isUploading ? 'Queueing upload...' : 'Upload Mission'}
         </button>
       </form>
 
@@ -288,8 +175,8 @@ export default function LitchiMissionControl(): JSX.Element {
                 <button type="button" className="litchi-secondary" onClick={() => setConnectOpen(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="litchi-primary" disabled={connecting}>
-                  {connecting ? 'Connecting...' : 'Connect'}
+                <button type="submit" className="litchi-primary" disabled={isConnecting}>
+                  {isConnecting ? 'Connecting...' : 'Connect'}
                 </button>
               </div>
             </form>

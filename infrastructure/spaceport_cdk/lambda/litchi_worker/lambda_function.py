@@ -242,19 +242,34 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await page.goto(LOGIN_URL, wait_until="domcontentloaded")
         await asyncio.sleep(_human_delay(0.6, 1.2))
 
-        email_input = page.get_by_label("Email")
+        login_link = page.get_by_role("link", name="Log In")
+        if await login_link.count() == 0:
+            login_link = page.get_by_role("link", name="Log in")
+        if await login_link.count() == 0:
+            login_link = page.get_by_text("Log In")
+        if await login_link.count() > 0:
+            await _human_click(login_link.first)
+            await page.wait_for_timeout(int(_human_delay(0.5, 1.1) * 1000))
+
+        login_dialog = page.get_by_role("dialog")
+        if await login_dialog.count() > 0:
+            await login_dialog.first.wait_for(state="visible", timeout=5000)
+
+        login_scope = login_dialog.first if await login_dialog.count() > 0 else page
+
+        email_input = login_scope.get_by_label("Email")
         if await email_input.count() == 0:
-            email_input = page.locator("input[type='email']")
+            email_input = login_scope.locator("input[type='email']")
         await _human_type(email_input, username)
 
-        password_input = page.get_by_label("Password")
+        password_input = login_scope.get_by_label("Password")
         if await password_input.count() == 0:
-            password_input = page.locator("input[type='password']")
+            password_input = login_scope.locator("input[type='password']")
         await _human_type(password_input, password)
 
-        login_button = page.get_by_role("button", name="Log in")
+        login_button = login_scope.get_by_role("button", name="Log in")
         if await login_button.count() == 0:
-            login_button = page.get_by_role("button", name="Sign in")
+            login_button = login_scope.get_by_role("button", name="Sign in")
         await _human_click(login_button)
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
