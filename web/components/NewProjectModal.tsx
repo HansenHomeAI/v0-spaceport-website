@@ -508,6 +508,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return isValid;
   }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
 
+  const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+
   // Rotating processing messages for optimization
   const processingMessages = [
     "This may take a moment...",
@@ -1238,7 +1240,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   if (!open) return null;
 
-  const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
   const litchiInlineOpen = litchiConnectOpen || Boolean(litchiStatus?.needsTwoFactor);
   const litchiIndicator = litchiProgress?.current && litchiProgress?.total
     ? `Uploading ${litchiProgress.current}/${litchiProgress.total}...`
