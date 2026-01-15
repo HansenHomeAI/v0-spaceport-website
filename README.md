@@ -102,6 +102,18 @@ NEXT_PUBLIC_FILE_UPLOAD_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.c
 NEXT_PUBLIC_WAITLIST_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/waitlist
 
 # Authentication
+# 🚀 EASIEST WAY: Auto-setup from AWS (recommended)
+./scripts/setup-local-env-auto.sh staging
+
+# This automatically fetches:
+# - Cognito configuration
+# - All API endpoints  
+# - Litchi API URL
+# - ML Pipeline API
+# - Subscription API
+# (Only prompts for Google Maps API key)
+
+# Manual setup (if auto-setup doesn't work):
 NEXT_PUBLIC_COGNITO_REGION=us-west-2
 NEXT_PUBLIC_COGNITO_USER_POOL_ID=us-west-2_USER_POOL_ID
 NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=CLIENT_ID
