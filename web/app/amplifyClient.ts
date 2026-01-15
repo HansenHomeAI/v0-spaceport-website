@@ -55,6 +55,17 @@ export function configureAmplify(): boolean {
   const userPoolWebClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '';
 
   if (!region || !userPoolId || !userPoolWebClientId) {
+    // Log missing config for debugging (only in browser console, not server logs)
+    if (typeof window !== 'undefined') {
+      console.warn('[Amplify Config] Missing Cognito environment variables:', {
+        hasRegion: !!region,
+        hasUserPoolId: !!userPoolId,
+        hasClientId: !!userPoolWebClientId,
+        region: region || 'MISSING',
+        userPoolId: userPoolId ? `${userPoolId.substring(0, 10)}...` : 'MISSING',
+        clientId: userPoolWebClientId ? `${userPoolWebClientId.substring(0, 10)}...` : 'MISSING',
+      });
+    }
     configured = true;
     available = false;
     return false;
