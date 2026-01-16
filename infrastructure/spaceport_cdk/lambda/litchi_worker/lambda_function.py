@@ -273,19 +273,25 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         login_scope = login_dialog.first if await login_dialog.count() > 0 else page
 
-        email_input = login_scope.get_by_label("Email")
+        email_input = login_scope.locator("input[type='email']:visible")
         if await email_input.count() == 0:
-            email_input = login_scope.locator("input[type='email']")
+            email_input = login_scope.get_by_label("Email")
+        if await email_input.count() > 1:
+            email_input = email_input.first
         await _human_type(email_input, username)
 
-        password_input = login_scope.get_by_label("Password")
+        password_input = login_scope.locator("input[type='password']:visible")
         if await password_input.count() == 0:
-            password_input = login_scope.locator("input[type='password']")
+            password_input = login_scope.get_by_label("Password")
+        if await password_input.count() > 1:
+            password_input = password_input.first
         await _human_type(password_input, password)
 
         login_button = login_scope.get_by_role("button", name="Log in")
         if await login_button.count() == 0:
             login_button = login_scope.get_by_role("button", name="Sign in")
+        if await login_button.count() > 1:
+            login_button = login_button.first
         try:
             await _human_click(login_button, timeout_ms=8000, force_fallback=True)
         except PlaywrightTimeoutError as exc:
