@@ -112,15 +112,21 @@ def _update_status(
     return record
 
 
-async def _human_click(locator) -> None:
+async def _human_click(locator, *, timeout_ms: int = 30000, force_fallback: bool = False) -> None:
     await asyncio.sleep(_human_delay())
     box = await locator.bounding_box()
+    click_kwargs = {"delay": int(_human_delay(0.08, 0.25) * 1000), "timeout": timeout_ms}
     if box:
         x = box["x"] + random.uniform(0.2, 0.8) * box["width"]
         y = box["y"] + random.uniform(0.2, 0.8) * box["height"]
-        await locator.click(position={"x": x, "y": y}, delay=int(_human_delay(0.08, 0.25) * 1000))
-    else:
-        await locator.click(delay=int(_human_delay(0.08, 0.25) * 1000))
+        click_kwargs["position"] = {"x": x, "y": y}
+    try:
+        await locator.click(**click_kwargs)
+    except PlaywrightTimeoutError:
+        if not force_fallback:
+            raise
+        click_kwargs["force"] = True
+        await locator.click(**click_kwargs)
 
 
 async def _human_type(locator, text: str) -> None:
@@ -255,7 +261,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     "document.documentElement.style.pointerEvents='auto';"
                     "document.body.style.pointerEvents='auto';"
                 )
-                await _human_click(login_link.first)
+                await _human_click(login_link.first, timeout_ms=8000, force_fallback=True)
             except PlaywrightTimeoutError as exc:
                 logger.warning("Login link click failed, falling back to script click: %s", exc)
                 await login_link.first.evaluate("el => el.click()")
@@ -280,7 +286,11 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         login_button = login_scope.get_by_role("button", name="Log in")
         if await login_button.count() == 0:
             login_button = login_scope.get_by_role("button", name="Sign in")
-        await _human_click(login_button)
+        try:
+            await _human_click(login_button, timeout_ms=8000, force_fallback=True)
+        except PlaywrightTimeoutError as exc:
+            logger.warning("Login button click failed, falling back to script click: %s", exc)
+            await login_button.evaluate("el => el.click()")
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
 
@@ -298,7 +308,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await _human_type(two_factor_input.first, str(two_factor_code))
             verify_button = page.get_by_role("button", name="Verify")
             if await verify_button.count() > 0:
-                await _human_click(verify_button)
+                await _human_click(verify_button, timeout_ms=8000, force_fallback=True)
             await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
 
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
