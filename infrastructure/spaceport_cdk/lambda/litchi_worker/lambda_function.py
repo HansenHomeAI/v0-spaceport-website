@@ -10,8 +10,10 @@ from typing import Any, Dict, List, Optional
 import boto3
 
 try:
+    from playwright.async_api import TimeoutError as PlaywrightTimeoutError
     from playwright.async_api import async_playwright
 except Exception:  # pragma: no cover - optional dependency at runtime
+    PlaywrightTimeoutError = Exception
     async_playwright = None
 
 try:
@@ -248,12 +250,20 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if await login_link.count() == 0:
             login_link = page.get_by_text("Log In")
         if await login_link.count() > 0:
-            await _human_click(login_link.first)
+            try:
+                await page.evaluate(
+                    "document.documentElement.style.pointerEvents='auto';"
+                    "document.body.style.pointerEvents='auto';"
+                )
+                await _human_click(login_link.first)
+            except PlaywrightTimeoutError as exc:
+                logger.warning("Login link click failed, falling back to script click: %s", exc)
+                await login_link.first.evaluate("el => el.click()")
             await page.wait_for_timeout(int(_human_delay(0.5, 1.1) * 1000))
 
         login_dialog = page.get_by_role("dialog")
         if await login_dialog.count() > 0:
-            await login_dialog.first.wait_for(state="visible", timeout=5000)
+            await login_dialog.first.wait_for(state="visible", timeout=10000)
 
         login_scope = login_dialog.first if await login_dialog.count() > 0 else page
 
@@ -273,6 +283,12 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await _human_click(login_button)
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+
+        disabled_banner = page.get_by_text("temporarily disabled", exact=False)
+        if await disabled_banner.count() > 0:
+            message = (await disabled_banner.first.text_content()) or "Sign in temporarily disabled"
+            _mark_error(table, user_id, message.strip())
+            return {"status": "error", "message": message.strip()}
 
         two_factor_input = page.locator("input[name*='code']")
         if await two_factor_input.count() > 0:
