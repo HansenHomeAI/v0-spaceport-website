@@ -93,8 +93,7 @@ class AuthStack(Stack):
                     command=[
                         "bash", "-c",
                         "pip install -r requirements.txt -t /asset-output && "
-                        "cp -au . /asset-output && "
-                        "if [ -d ../shared ]; then cp -r ../shared /asset-output/; fi"
+                        "cp -au . /asset-output"
                     ],
                 ),
             ),

@@ -2,11 +2,27 @@ import json
 import os
 import boto3
 import resend
+import secrets
 from typing import Optional
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'shared'))
 
-from shared.password_utils import generate_user_friendly_password
+# Inline password generation utility to avoid import issues
+_WORDS = [
+    "orbit", "rocket", "nova", "astro", "comet", "vector", "launch", "stellar",
+    "saturn", "galaxy", "fusion", "cosmic", "nebula", "zenith", "quasar",
+    "meteor", "lunar", "solis",
+]
+_DIGITS = "23456789"  # skip 0/1 to avoid confusion with O/I
+_LOWER = "abcdefghjkmnpqrstuvwxyz"  # omit easily confused chars
+_UPPER = "ABCDEFGHJKMNPQRSTUVWXYZ"
+
+def generate_user_friendly_password() -> str:
+    """Return a Cognito-compliant password that is easier to read and type."""
+    word = secrets.choice(_WORDS)
+    digits = ''.join(secrets.choice(_DIGITS) for _ in range(2))
+    suffix_upper = secrets.choice(_UPPER)
+    suffix_lower = secrets.choice(_LOWER)
+    # Capitalize first letter to guarantee uppercase + lowercase usage
+    return f"{word.capitalize()}{digits}{suffix_upper}{suffix_lower}"
 
 # Initialize Resend
 resend.api_key = os.environ.get('RESEND_API_KEY')
