@@ -94,7 +94,7 @@ class AuthStack(Stack):
                         "bash", "-c",
                         "pip install -r requirements.txt -t /asset-output && "
                         "cp -au . /asset-output && "
-                        "cp -au ../shared /asset-output/"
+                        "if [ -d ../shared ]; then cp -r ../shared /asset-output/; fi"
                     ],
                 ),
             ),
