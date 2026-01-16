@@ -44,8 +44,8 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _jitter_seconds(low: int = 12, high: int = 25) -> float:
-    return random.uniform(low, high)
+def _jitter_seconds(low: int = 12, high: int = 25) -> int:
+    return random.randint(low, high)
 
 
 def _human_delay(base_min: float = 0.04, base_max: float = 0.18) -> float:
