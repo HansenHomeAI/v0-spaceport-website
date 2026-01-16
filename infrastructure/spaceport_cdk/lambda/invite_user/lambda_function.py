@@ -3,8 +3,10 @@ import os
 import boto3
 import resend
 from typing import Optional
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'shared'))
 
-from ..shared.password_utils import generate_user_friendly_password
+from shared.password_utils import generate_user_friendly_password
 
 # Initialize Resend
 resend.api_key = os.environ.get('RESEND_API_KEY')
