@@ -462,6 +462,20 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             return {"status": "expired", "message": "Session expired"}
 
         if csv_content:
+            await page.evaluate(
+                """
+                () => {
+                  const modal = document.querySelector('#importmodal');
+                  if (!modal) return;
+                  modal.classList.add('show', 'in');
+                  modal.style.display = 'block';
+                  modal.style.visibility = 'visible';
+                  modal.setAttribute('aria-hidden', 'false');
+                  document.body.classList.add('modal-open');
+                }
+                """
+            )
+            await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
             import_input = page.locator("#fileimport")
             if await import_input.count() == 0:
                 import_input = page.locator("input[type='file']:not(#import-dem-file)")
@@ -481,7 +495,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             if await import_button.count() == 0:
                 import_button = page.get_by_text("Import to new mission")
             if await import_button.count() > 0:
-                await _human_click(import_button.first, timeout_ms=20000, force_fallback=True)
+                try:
+                    await _human_click(import_button.first, timeout_ms=20000, force_fallback=True)
+                except Exception as exc:
+                    logger.warning("Import button click failed, forcing script click: %s", exc)
+                    await import_button.first.evaluate("el => el.click()")
             await page.wait_for_timeout(int(_human_delay(0.9, 1.8) * 1000))
 
         name_input = page.locator("input[name='missionName'], input#missionName, input#mission-name")
