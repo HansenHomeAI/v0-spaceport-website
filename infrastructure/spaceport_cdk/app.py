@@ -13,37 +13,42 @@ env_config = app.node.try_get_context('environments')[env_name]
 print(f"Deploying to environment: {env_name}")
 print(f"Environment config: {env_config}")
 
-# Deploy the main Spaceport stack with environment context
-spaceport_stack = SpaceportStack(
-    app,
-    f"Spaceport{env_name.title()}Stack",
-    env_config=env_config,
-    env={
-        'account': app.node.try_get_context('account') or None,  # Dynamically resolved
-        'region': env_config['region']
-    }
-)
+deploy_target = (app.node.try_get_context('deployTarget') or 'all').lower()
 
-# Deploy the ML pipeline stack with environment context
-ml_pipeline_stack = MLPipelineStack(
-    app,
-    f"SpaceportMLPipeline{env_name.title()}Stack",
-    env_config=env_config,
-    env={
-        'account': app.node.try_get_context('account') or None,  # Dynamically resolved
-        'region': env_config['region']
-    }
-)
+if deploy_target in ('all', 'spaceport', 'main'):
+    # Deploy the main Spaceport stack with environment context
+    spaceport_stack = SpaceportStack(
+        app,
+        f"Spaceport{env_name.title()}Stack",
+        env_config=env_config,
+        env={
+            'account': app.node.try_get_context('account') or None,  # Dynamically resolved
+            'region': env_config['region']
+        }
+    )
 
-# Deploy the Auth stack with environment context
-auth_stack = AuthStack(
-    app,
-    f"SpaceportAuth{env_name.title()}Stack",
-    env_config=env_config,
-    env={
-        'account': app.node.try_get_context('account') or None,  # Dynamically resolved
-        'region': env_config['region']
-    }
-)
+if deploy_target in ('all', 'ml', 'ml_pipeline'):
+    # Deploy the ML pipeline stack with environment context
+    ml_pipeline_stack = MLPipelineStack(
+        app,
+        f"SpaceportMLPipeline{env_name.title()}Stack",
+        env_config=env_config,
+        env={
+            'account': app.node.try_get_context('account') or None,  # Dynamically resolved
+            'region': env_config['region']
+        }
+    )
+
+if deploy_target in ('all', 'auth'):
+    # Deploy the Auth stack with environment context
+    auth_stack = AuthStack(
+        app,
+        f"SpaceportAuth{env_name.title()}Stack",
+        env_config=env_config,
+        env={
+            'account': app.node.try_get_context('account') or None,  # Dynamically resolved
+            'region': env_config['region']
+        }
+    )
 
 app.synth() 

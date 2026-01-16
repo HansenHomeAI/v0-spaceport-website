@@ -456,26 +456,37 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if _detect_rate_limit(await page.content()):
             raise RateLimitedError("Rate limit detected")
 
-        create_button = page.get_by_role("button", name="New Mission")
-        if await create_button.count() == 0:
-            create_button = page.get_by_text("New Mission")
-        if await create_button.count() > 0:
-            await _human_click(create_button)
-
-        name_input = page.locator("input[name='missionName']")
-        if await name_input.count() > 0:
-            await _human_type(name_input, mission_name)
+        login_link = page.get_by_role("link", name="Log In")
+        if await login_link.count() > 0 and await login_link.first.is_visible():
+            _mark_expired(table, user_id, "Session expired, please reconnect")
+            return {"status": "expired", "message": "Session expired"}
 
         if csv_content:
-            upload_input = page.locator("input[type='file']")
-            if await upload_input.count() > 0:
-                await upload_input.set_input_files(
-                    {
-                        "name": f"{mission_name}.csv",
-                        "mimeType": "text/csv",
-                        "buffer": csv_content.encode("utf-8"),
-                    }
-                )
+            import_input = page.locator("#fileimport")
+            if await import_input.count() == 0:
+                import_input = page.locator("input[type='file']:not(#import-dem-file)")
+            if await import_input.count() == 0:
+                raise RuntimeError("Import file input not found on Litchi hub")
+            await import_input.first.set_input_files(
+                {
+                    "name": f"{mission_name}.csv",
+                    "mimeType": "text/csv",
+                    "buffer": csv_content.encode("utf-8"),
+                }
+            )
+
+            import_button = page.locator("#importbtn")
+            if await import_button.count() == 0:
+                import_button = page.get_by_role("button", name="Import to new mission")
+            if await import_button.count() == 0:
+                import_button = page.get_by_text("Import to new mission")
+            if await import_button.count() > 0:
+                await _human_click(import_button.first, timeout_ms=20000, force_fallback=True)
+            await page.wait_for_timeout(int(_human_delay(0.9, 1.8) * 1000))
+
+        name_input = page.locator("input[name='missionName'], input#missionName, input#mission-name")
+        if await name_input.count() > 0:
+            await _human_type(name_input.first, mission_name)
 
         save_button = page.get_by_role("button", name="Save")
         if await save_button.count() > 0:
