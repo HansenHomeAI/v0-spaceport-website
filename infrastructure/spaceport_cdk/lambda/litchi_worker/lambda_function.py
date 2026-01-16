@@ -271,16 +271,24 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if await login_dialog.count() > 0:
             await login_dialog.first.wait_for(state="visible", timeout=10000)
 
+        login_form = page.locator("form").filter(
+            has=page.locator("input[type='email']")
+        ).filter(
+            has=page.locator("input[type='password']")
+        )
         login_scope = login_dialog.first if await login_dialog.count() > 0 else page
+        if await login_form.count() > 0:
+            await login_form.first.wait_for(state="visible", timeout=8000)
+            login_scope = login_form.first
 
-        email_input = login_scope.locator("input[type='email']:visible")
+        email_input = login_scope.locator("input[type='email']")
         if await email_input.count() == 0:
             email_input = login_scope.get_by_label("Email")
         if await email_input.count() > 1:
             email_input = email_input.first
         await _human_type(email_input, username)
 
-        password_input = login_scope.locator("input[type='password']:visible")
+        password_input = login_scope.locator("input[type='password']")
         if await password_input.count() == 0:
             password_input = login_scope.get_by_label("Password")
         if await password_input.count() > 1:
@@ -290,6 +298,8 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         login_button = login_scope.get_by_role("button", name="Log in")
         if await login_button.count() == 0:
             login_button = login_scope.get_by_role("button", name="Sign in")
+        if await login_button.count() == 0:
+            login_button = login_scope.locator("button[type='submit'], button#signin")
         if await login_button.count() > 1:
             login_button = login_button.first
         try:
