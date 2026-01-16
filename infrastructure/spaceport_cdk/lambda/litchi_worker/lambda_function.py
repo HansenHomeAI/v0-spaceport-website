@@ -271,13 +271,32 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if await login_dialog.count() > 0:
             await login_dialog.first.wait_for(state="visible", timeout=10000)
 
-        login_form = page.locator("form").filter(
-            has=page.locator("input[type='email']")
-        ).filter(
-            has=page.locator("input[type='password']")
-        )
+        login_form = page.locator("form#login-form")
+        if await login_form.count() == 0:
+            login_form = page.locator("form").filter(
+                has=page.locator("input[type='email']")
+            ).filter(
+                has=page.locator("input[type='password']")
+            )
         login_scope = login_dialog.first if await login_dialog.count() > 0 else page
         if await login_form.count() > 0:
+            if not await login_form.first.is_visible():
+                await page.evaluate(
+                    """
+                    () => {
+                      const form = document.querySelector('form#login-form');
+                      if (!form) return;
+                      const modal = form.closest('.modal');
+                      if (modal) {
+                        modal.classList.add('show', 'in');
+                        modal.style.display = 'block';
+                      }
+                      form.style.display = 'block';
+                      form.style.visibility = 'visible';
+                      document.body.classList.add('modal-open');
+                    }
+                    """
+                )
             await login_form.first.wait_for(state="visible", timeout=8000)
             login_scope = login_form.first
 
