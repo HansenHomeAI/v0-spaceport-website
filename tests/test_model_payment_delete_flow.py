@@ -44,6 +44,7 @@ def _invoke_model_delivery(lambda_client, admin_user_id, client_email, project_i
     event = {
         "httpMethod": "POST",
         "path": "/admin/model-delivery/send",
+        "headers": {"X-Forwarded-Proto": "https"},
         "body": json.dumps(
             {
                 "clientEmail": client_email,
@@ -54,6 +55,8 @@ def _invoke_model_delivery(lambda_client, admin_user_id, client_email, project_i
             }
         ),
         "requestContext": {
+            "domainName": "example.com",
+            "stage": "prod",
             "authorizer": {
                 "claims": {
                     "sub": admin_user_id,
