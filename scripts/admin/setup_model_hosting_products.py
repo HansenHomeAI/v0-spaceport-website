@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Stripe setup script for model training + hosting products.
-Creates one product with a one-time training fee and a recurring hosting fee.
+Creates separate products for training (one-time) and hosting (recurring).
 """
 
 import os
@@ -13,16 +13,29 @@ import stripe
 
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
-PRODUCT_NAME = "3D AI Model Training & Hosting"
+TRAINING_PRODUCT_NAME = "AI Model Training"
+HOSTING_PRODUCT_NAME = "Web Hosting"
 TRAINING_PRICE_CENTS = 60000
 HOSTING_PRICE_CENTS = 2900
 
 
-def _create_product() -> Optional[Dict[str, Any]]:
+def _create_training_product() -> Optional[Dict[str, Any]]:
     try:
         return stripe.Product.create(
-            name=PRODUCT_NAME,
-            description="One-time AI model training plus monthly hosting",
+            name=TRAINING_PRODUCT_NAME,
+            metadata={
+                "product_type": "model_training",
+            },
+        )
+    except Exception as exc:
+        print(f"Error creating product: {exc}")
+        return None
+
+
+def _create_hosting_product() -> Optional[Dict[str, Any]]:
+    try:
+        return stripe.Product.create(
+            name=HOSTING_PRODUCT_NAME,
             metadata={
                 "product_type": "model_hosting",
             },
@@ -76,12 +89,13 @@ def main() -> int:
         print(f"Stripe connection failed: {exc}")
         return 1
 
-    product = _create_product()
-    if not product:
+    training_product = _create_training_product()
+    hosting_product = _create_hosting_product()
+    if not training_product or not hosting_product:
         return 1
 
-    training_price = _create_training_price(product["id"])
-    hosting_price = _create_hosting_price(product["id"])
+    training_price = _create_training_price(training_product["id"])
+    hosting_price = _create_hosting_price(hosting_product["id"])
 
     if not training_price or not hosting_price:
         return 1
