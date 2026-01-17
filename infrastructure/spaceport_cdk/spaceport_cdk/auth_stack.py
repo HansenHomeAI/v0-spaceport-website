@@ -700,6 +700,12 @@ class AuthStack(Stack):
             authorizer=model_delivery_authorizer,
         )
 
+        payment_link_resource = model_delivery_api.root.add_resource("payment-link")
+        payment_link_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(model_delivery_lambda),
+        )
+
         for response_type, label in (
             (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
             (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
@@ -718,6 +724,7 @@ class AuthStack(Stack):
 
         self.model_delivery_lambda = model_delivery_lambda
         self.model_delivery_api = model_delivery_api
+        model_delivery_lambda.add_environment("MODEL_DELIVERY_PUBLIC_URL", model_delivery_api.url)
 
         # ========== MODEL PAYMENT ENFORCEMENT ==========
         enforce_model_payments_lambda = lambda_.Function(

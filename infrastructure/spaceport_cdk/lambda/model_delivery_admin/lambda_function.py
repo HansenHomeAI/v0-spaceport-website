@@ -1,10 +1,12 @@
 import json
 import os
 import logging
+import hashlib
+import hmac
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 from decimal import Decimal
-from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
+from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse, quote_plus
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -23,6 +25,8 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_MODEL_TRAINING_PRICE = os.environ.get('STRIPE_MODEL_TRAINING_PRICE')
 STRIPE_MODEL_HOSTING_PRICE = os.environ.get('STRIPE_MODEL_HOSTING_PRICE')
+MODEL_DELIVERY_PUBLIC_URL = os.environ.get('MODEL_DELIVERY_PUBLIC_URL')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://spcprt.com')
 
 
 if not USER_POOL_ID or not PROJECTS_TABLE_NAME:
@@ -71,6 +75,17 @@ def _response(status: int, body: Dict[str, Any]) -> Dict[str, Any]:
         'statusCode': status,
         'headers': _cors_headers(),
         'body': json.dumps(body, default=decimal_default),
+    }
+
+
+def _redirect(location: str) -> Dict[str, Any]:
+    headers = _cors_headers()
+    headers['Location'] = location
+    headers['Cache-Control'] = 'no-store'
+    return {
+        'statusCode': 302,
+        'headers': headers,
+        'body': '',
     }
 
 
@@ -180,6 +195,126 @@ def _append_query_params(url: str, params: Dict[str, str]) -> str:
     query.update(params)
     new_query = urlencode(query)
     return urlunparse(parsed._replace(query=new_query))
+
+
+def _resolve_delivery_value(project: Dict[str, Any], keys: List[str]) -> Optional[str]:
+    delivery = project.get('delivery') or {}
+    for key in keys:
+        value = delivery.get(key) or project.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
+def _resolve_model_link(project: Dict[str, Any]) -> Optional[str]:
+    return _resolve_delivery_value(
+        project,
+        [
+            'modelLink',
+            'model_link',
+            'modelUrl',
+            'model_url',
+            'viewerLink',
+            'viewer_link',
+            'viewerUrl',
+            'viewer_url',
+            'finalModelUrl',
+            'final_model_url',
+            'finalViewerUrl',
+            'final_viewer_url',
+        ],
+    )
+
+
+def _sign_payment_link(project_id: str, user_sub: str) -> str:
+    if not STRIPE_SECRET_KEY:
+        raise RuntimeError('STRIPE_SECRET_KEY is not configured')
+    payload = f"{project_id}:{user_sub}".encode('utf-8')
+    signature = hmac.new(STRIPE_SECRET_KEY.encode('utf-8'), payload, hashlib.sha256).hexdigest()
+    return signature
+
+
+def _is_valid_payment_signature(project_id: str, user_sub: str, signature: str) -> bool:
+    if not signature:
+        return False
+    expected = _sign_payment_link(project_id, user_sub)
+    return hmac.compare_digest(signature, expected)
+
+
+def _build_payment_link(project_id: str, user_sub: str) -> str:
+    if not MODEL_DELIVERY_PUBLIC_URL:
+        raise RuntimeError('MODEL_DELIVERY_PUBLIC_URL is not configured')
+    signature = _sign_payment_link(project_id, user_sub)
+    base = MODEL_DELIVERY_PUBLIC_URL.rstrip('/')
+    return (
+        f"{base}/payment-link?"
+        f"projectId={quote_plus(project_id)}&userSub={quote_plus(user_sub)}&sig={signature}"
+    )
+
+
+def _handle_public_payment_link(event: Dict[str, Any]) -> Dict[str, Any]:
+    params = event.get('queryStringParameters') or {}
+    project_id = (params.get('projectId') or '').strip()
+    user_sub = (params.get('userSub') or '').strip()
+    signature = (params.get('sig') or params.get('signature') or '').strip()
+
+    if not project_id or not user_sub or not signature:
+        return _response(400, {'error': 'Invalid payment link'})
+
+    if not _is_valid_payment_signature(project_id, user_sub, signature):
+        return _response(401, {'error': 'Invalid payment link'})
+
+    project = projects_table.get_item(Key={'userSub': user_sub, 'projectId': project_id}).get('Item')
+    if not project:
+        return _response(404, {'error': 'Project not found'})
+
+    payment_status = (project.get('paymentStatus') or '').lower()
+    model_link = _resolve_model_link(project) or FRONTEND_URL
+    if payment_status == 'paid':
+        return _redirect(model_link)
+
+    client_email = _resolve_delivery_value(project, ['clientEmail', 'email']) or ''
+    viewer_slug = _resolve_delivery_value(project, ['viewerSlug', 'viewer_slug'])
+    viewer_title = _resolve_delivery_value(project, ['viewerTitle', 'viewer_title', 'title'])
+
+    try:
+        payment_session = _create_payment_session(
+            project=project,
+            client={'email': client_email},
+            model_link=model_link,
+            viewer_slug=viewer_slug,
+            viewer_title=viewer_title,
+        )
+    except RuntimeError as exc:
+        return _response(500, {'error': str(exc)})
+
+    payment_deadline = int((datetime.now(timezone.utc) + timedelta(days=14)).timestamp())
+    try:
+        projects_table.update_item(
+            Key={'userSub': user_sub, 'projectId': project_id},
+            UpdateExpression=(
+                'SET paymentSessionId = :paymentSessionId, '
+                'paymentLink = :paymentLink, '
+                'paymentStatus = :paymentStatus, '
+                'paymentDeadline = if_not_exists(paymentDeadline, :paymentDeadline), '
+                '#updatedAt = :updatedAt'
+            ),
+            ExpressionAttributeNames={
+                '#updatedAt': 'updatedAt',
+            },
+            ExpressionAttributeValues={
+                ':paymentSessionId': payment_session['id'],
+                ':paymentLink': _build_payment_link(project_id, user_sub),
+                ':paymentStatus': 'pending',
+                ':paymentDeadline': payment_deadline,
+                ':updatedAt': int(datetime.now(timezone.utc).timestamp()),
+            },
+        )
+    except Exception as exc:
+        logger.error(f'Failed to update payment session state: {exc}')
+        return _response(500, {'error': 'Failed to update payment session'})
+
+    return _redirect(payment_session['url'])
 
 
 def _create_payment_session(
@@ -452,12 +587,15 @@ def lambda_handler(event, context):
         return _response(200, {'ok': True})
 
     try:
+        method = (event.get('httpMethod') or 'GET').upper()
+        path = event.get('path', '')
+
+        if method == 'GET' and path.endswith('payment-link'):
+            return _handle_public_payment_link(event)
+
         employee = _get_user_from_jwt(event)
         if not employee or not employee.get('user_id'):
             return _response(401, {'error': 'Unauthorized'})
-
-        method = (event.get('httpMethod') or 'GET').upper()
-        path = event.get('path', '')
 
         if method == 'GET' and path.endswith('check-permission'):
             allowed = _check_employee_permission(employee['user_id'])
@@ -519,10 +657,11 @@ def lambda_handler(event, context):
                 viewer_title=viewer_title,
             )
 
+            payment_link = _build_payment_link(project_id, client['user_id'])
             payment_deadline = int((datetime.now(timezone.utc) + timedelta(days=14)).timestamp())
             payment_state = {
                 'paymentSessionId': payment_session['id'],
-                'paymentLink': payment_session['url'],
+                'paymentLink': payment_link,
                 'paymentDeadline': payment_deadline,
                 'paymentStatus': 'pending',
             }
@@ -531,7 +670,7 @@ def lambda_handler(event, context):
                 recipient_email=client['email'],
                 project_title=project.get('title') or data.get('projectTitle'),
                 model_link=model_link,
-                payment_link=payment_session['url'],
+                payment_link=payment_link,
             )
 
             message_id = (
