@@ -5,7 +5,7 @@ import time
 import urllib.request
 from decimal import Decimal
 from typing import Any, Dict, Optional
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import boto3
 from botocore.config import Config
@@ -42,6 +42,9 @@ table = dynamodb.Table(TABLE_NAME)
 
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 stripe.api_key = STRIPE_SECRET_KEY
+STRIPE_MODEL_TRAINING_PRICE = os.environ.get('STRIPE_MODEL_TRAINING_PRICE')
+STRIPE_MODEL_HOSTING_PRICE = os.environ.get('STRIPE_MODEL_HOSTING_PRICE')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://spcprt.com')
 
 R2_ENDPOINT = os.environ.get('R2_ENDPOINT')
 R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
@@ -130,6 +133,90 @@ def _resolve_viewer_slug(project: Dict[str, Any]) -> Optional[str]:
             return parts[-1]
 
     return None
+
+
+def _append_query_params(url: str, params: Dict[str, str]) -> str:
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
+    for key, value in params.items():
+        query[key] = [value]
+    new_query = urlencode(query, doseq=True)
+    return urlunparse(parsed._replace(query=new_query))
+
+
+def _resolve_model_link(project: Dict[str, Any]) -> Optional[str]:
+    candidates = [
+        'modelLink',
+        'model_link',
+        'modelUrl',
+        'model_url',
+        'viewerLink',
+        'viewer_link',
+        'viewerUrl',
+        'viewer_url',
+        'finalModelUrl',
+        'final_model_url',
+        'finalViewerUrl',
+        'final_viewer_url',
+    ]
+    delivery = project.get('delivery') or {}
+    for key in candidates:
+        value = delivery.get(key) or project.get(key)
+        if isinstance(value, str) and value.strip().startswith(('http://', 'https://')):
+            return value.strip()
+    return None
+
+
+def _create_payment_session(project: Dict[str, Any], user_email: str) -> Dict[str, str]:
+    if not STRIPE_SECRET_KEY:
+        raise RuntimeError('Stripe is not configured for payments.')
+    if not STRIPE_MODEL_TRAINING_PRICE or not STRIPE_MODEL_HOSTING_PRICE:
+        raise RuntimeError('Stripe price IDs for model payments are not configured.')
+
+    model_link = _resolve_model_link(project) or FRONTEND_URL
+    success_url = _append_query_params(model_link, {'payment': 'success'})
+    cancel_url = _append_query_params(model_link, {'payment': 'canceled'})
+
+    metadata = {
+        'projectId': project.get('projectId', ''),
+        'userSub': project.get('userSub', ''),
+        'clientEmail': user_email or project.get('email', ''),
+        'viewerSlug': _resolve_viewer_slug(project) or '',
+        'projectTitle': project.get('title') or '',
+        'source': 'project_portal',
+    }
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='subscription',
+        client_reference_id=project.get('projectId'),
+        customer_email=user_email or project.get('email'),
+        line_items=[
+            {
+                'price': STRIPE_MODEL_TRAINING_PRICE,
+                'quantity': 1,
+            },
+            {
+                'price': STRIPE_MODEL_HOSTING_PRICE,
+                'quantity': 1,
+            },
+        ],
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata=metadata,
+        subscription_data={
+            'trial_period_days': 30,
+            'metadata': metadata,
+        },
+    )
+
+    if not session or not getattr(session, 'url', None):
+        raise RuntimeError('Stripe checkout session is missing a payment URL')
+
+    return {
+        'id': session.id,
+        'url': session.url,
+    }
 
 
 def _cleanup_hosting(project: Dict[str, Any]) -> Optional[str]:
@@ -272,6 +359,45 @@ def lambda_handler(event, context):
             )
             return _response(200, {'ok': True})
 
+        if method == 'POST' and project_id and path.endswith('/payment-session'):
+            res = table.get_item(Key={'userSub': user_sub, 'projectId': project_id})
+            project = res.get('Item')
+            if not project:
+                return _response(404, {'error': 'Not found'})
+
+            payment_status = (project.get('paymentStatus') or '').lower()
+            if payment_status == 'paid':
+                return _response(409, {'error': 'Payment already completed'})
+
+            try:
+                payment_session = _create_payment_session(project, user_email)
+            except RuntimeError as exc:
+                return _response(500, {'error': str(exc)})
+
+            payment_deadline = int(time.time()) + (14 * 24 * 60 * 60)
+            table.update_item(
+                Key={'userSub': user_sub, 'projectId': project_id},
+                UpdateExpression=(
+                    'SET paymentSessionId = :sessionId, '
+                    'paymentLink = :paymentLink, '
+                    'paymentStatus = :paymentStatus, '
+                    '#updatedAt = :updatedAt, '
+                    'paymentDeadline = if_not_exists(paymentDeadline, :paymentDeadline)'
+                ),
+                ExpressionAttributeNames={
+                    '#updatedAt': 'updatedAt',
+                },
+                ExpressionAttributeValues={
+                    ':sessionId': payment_session['id'],
+                    ':paymentLink': payment_session['url'],
+                    ':paymentStatus': 'pending',
+                    ':updatedAt': now,
+                    ':paymentDeadline': payment_deadline,
+                },
+            )
+
+            return _response(200, {'paymentLink': payment_session['url']})
+
         if method == 'DELETE' and project_id:
             res = table.get_item(Key={'userSub': user_sub, 'projectId': project_id})
             project = res.get('Item')
@@ -304,4 +430,3 @@ def lambda_handler(event, context):
     except Exception as e:
         print('Error:', e)
         return _response(500, {'error': 'Internal server error'})
-

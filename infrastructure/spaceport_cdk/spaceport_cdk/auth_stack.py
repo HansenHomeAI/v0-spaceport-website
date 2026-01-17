@@ -119,6 +119,9 @@ class AuthStack(Stack):
                     f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}",
                     os.environ.get("STRIPE_SECRET_KEY", ""),
                 ),
+                "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
+                "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
                 "R2_ENDPOINT": os.environ.get(f"R2_ENDPOINT_{suffix.upper()}", os.environ.get("R2_ENDPOINT", "")),
                 "R2_ACCESS_KEY_ID": os.environ.get(f"R2_ACCESS_KEY_ID_{suffix.upper()}", os.environ.get("R2_ACCESS_KEY_ID", "")),
                 "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
@@ -214,6 +217,13 @@ class AuthStack(Stack):
         )
         proj_id.add_method(
             "DELETE", 
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_payment_session = proj_id.add_resource("payment-session")
+        proj_payment_session.add_method(
+            "POST",
             apigw.LambdaIntegration(projects_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
             authorizer=projects_authorizer

@@ -369,18 +369,14 @@ type ProjectCardProps = {
 function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
   const [copyMessage, setCopyMessage] = useState('');
+  const [paymentBusy, setPaymentBusy] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const viewTrackedRef = useRef(false);
   const unavailableTrackedRef = useRef(false);
 
   const modelLink = useMemo(() => extractModelLink(project), [project]);
   const displayLink = useMemo(() => (modelLink ? formatModelLinkDisplay(modelLink) : ''), [modelLink]);
-  const paymentLink = useMemo(() => {
-    if (typeof project?.paymentLink === 'string' && project.paymentLink.trim().startsWith('http')) {
-      return project.paymentLink.trim();
-    }
-    return '';
-  }, [project?.paymentLink]);
 
   const normalizedStatus = useMemo(() => {
     const rawStatus = project?.status;
@@ -392,7 +388,7 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
   }, [project?.paymentStatus]);
 
   const isDelivered = normalizedStatus === 'delivered';
-  const showPaymentLink = Boolean(paymentLink && normalizedPaymentStatus !== 'paid');
+  const showPaymentLink = Boolean(normalizedPaymentStatus && normalizedPaymentStatus !== 'paid');
 
   const progressValue = useMemo(() => {
     const rawProgress = project?.progress;
@@ -483,6 +479,39 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
     });
   }, [modelLink, normalizedStatus, project?.projectId]);
 
+  const handlePayment = useCallback(async () => {
+    if (!project?.projectId || paymentBusy) return;
+    setPaymentBusy(true);
+    setPaymentError('');
+    try {
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || '').replace(/\/$/, '');
+      if (!apiBase) {
+        throw new Error('Projects API is not configured');
+      }
+      const res = await fetch(`${apiBase}/${project.projectId}/payment-session`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'Unable to start payment');
+      }
+      const paymentUrl = data?.paymentLink;
+      if (!paymentUrl) {
+        throw new Error('Payment link unavailable');
+      }
+      window.location.href = paymentUrl;
+    } catch (error: any) {
+      setPaymentError(error?.message || 'Unable to start payment');
+    } finally {
+      setPaymentBusy(false);
+    }
+  }, [paymentBusy, project?.projectId]);
+
   const handleEdit = useCallback(() => {
     onEdit(project);
   }, [onEdit, project]);
@@ -553,19 +582,26 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
           </div>
         )}
         {showPaymentLink && (
-          <div className="payment-link-pill" role="group" aria-label="Payment required">
-            <span className="payment-link-text">Payment pending</span>
-            <div className="payment-link-actions">
-              <a
-                className="payment-link-button"
-                href={paymentLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Complete payment
-              </a>
+          <>
+            <div className="payment-link-pill" role="group" aria-label="Payment required">
+              <span className="payment-link-text">Payment pending</span>
+              <div className="payment-link-actions">
+                <button
+                  type="button"
+                  className="payment-link-button"
+                  onClick={handlePayment}
+                  disabled={paymentBusy}
+                >
+                  {paymentBusy ? 'Opening checkout...' : 'Complete payment'}
+                </button>
+              </div>
             </div>
-          </div>
+            {paymentError && (
+              <span className="payment-link-feedback" role="status">
+                {paymentError}
+              </span>
+            )}
+          </>
         )}
       </div>
     </div>

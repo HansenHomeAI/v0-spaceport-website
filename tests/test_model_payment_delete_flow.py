@@ -93,6 +93,26 @@ def _invoke_project_delete(lambda_client, user_sub, project_id):
         raise RuntimeError(f"Project delete failed: {payload}")
 
 
+def _invoke_payment_session(lambda_client, user_sub, project_id):
+    event = {
+        "httpMethod": "POST",
+        "path": f"/projects/{project_id}/payment-session",
+        "pathParameters": {"id": project_id},
+        "requestContext": {
+            "authorizer": {"claims": {"sub": user_sub, "email": "client-test@spcprt.com"}}
+        },
+    }
+    response = lambda_client.invoke(
+        FunctionName=PROJECTS_LAMBDA,
+        InvocationType="RequestResponse",
+        Payload=json.dumps(event).encode("utf-8"),
+    )
+    payload = json.loads(response["Payload"].read().decode("utf-8"))
+    if payload.get("statusCode") != 200:
+        raise RuntimeError(f"Payment session failed: {payload}")
+    return json.loads(payload.get("body") or "{}")
+
+
 def _head_missing(client, bucket, key):
     try:
         client.head_object(Bucket=bucket, Key=key)
@@ -262,10 +282,15 @@ def main() -> int:
             viewer_slug_a,
             viewer_title_a,
         )
+        payment_response = _invoke_payment_session(lambda_client, user_sub_a, project_id_a)
+        if not payment_response.get("paymentLink"):
+            raise RuntimeError("Payment session response missing paymentLink")
         payment = delivery_body.get("payment") or {}
-        session_id = payment.get("paymentSessionId") or delivery_body.get("project", {}).get("paymentSessionId")
+        session_id = projects_table.get_item(
+            Key={"userSub": user_sub_a, "projectId": project_id_a}
+        ).get("Item", {}).get("paymentSessionId")
         if not session_id:
-            session_id = projects_table.get_item(Key={"userSub": user_sub_a, "projectId": project_id_a}).get("Item", {}).get("paymentSessionId")
+            session_id = payment.get("paymentSessionId") or delivery_body.get("project", {}).get("paymentSessionId")
         if not session_id:
             raise RuntimeError("Missing payment session ID")
 

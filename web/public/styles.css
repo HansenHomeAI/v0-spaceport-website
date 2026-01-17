@@ -1592,6 +1592,16 @@ footer {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
 }
 
+.payment-link-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.payment-link-feedback {
+  font-size: 0.8rem;
+  color: rgba(255, 119, 119, 0.9);
+}
+
 .model-link-status {
   padding: 10px 16px;
   border-radius: 999px;
