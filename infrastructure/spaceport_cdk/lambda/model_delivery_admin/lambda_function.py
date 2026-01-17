@@ -25,7 +25,6 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_MODEL_TRAINING_PRICE = os.environ.get('STRIPE_MODEL_TRAINING_PRICE')
 STRIPE_MODEL_HOSTING_PRICE = os.environ.get('STRIPE_MODEL_HOSTING_PRICE')
-MODEL_DELIVERY_PUBLIC_URL = os.environ.get('MODEL_DELIVERY_PUBLIC_URL')
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://spcprt.com')
 
 
@@ -197,6 +196,19 @@ def _append_query_params(url: str, params: Dict[str, str]) -> str:
     return urlunparse(parsed._replace(query=new_query))
 
 
+def _get_request_base_url(event: Dict[str, Any]) -> Optional[str]:
+    headers = event.get('headers') or {}
+    proto = headers.get('x-forwarded-proto') or headers.get('X-Forwarded-Proto') or 'https'
+    rc = event.get('requestContext') or {}
+    domain = rc.get('domainName')
+    stage = rc.get('stage')
+    if not domain:
+        return None
+    if stage:
+        return f"{proto}://{domain}/{stage}"
+    return f"{proto}://{domain}"
+
+
 def _resolve_delivery_value(project: Dict[str, Any], keys: List[str]) -> Optional[str]:
     delivery = project.get('delivery') or {}
     for key in keys:
@@ -241,11 +253,11 @@ def _is_valid_payment_signature(project_id: str, user_sub: str, signature: str) 
     return hmac.compare_digest(signature, expected)
 
 
-def _build_payment_link(project_id: str, user_sub: str) -> str:
-    if not MODEL_DELIVERY_PUBLIC_URL:
-        raise RuntimeError('MODEL_DELIVERY_PUBLIC_URL is not configured')
+def _build_payment_link(project_id: str, user_sub: str, base_url: str) -> str:
+    if not base_url:
+        raise RuntimeError('Payment link base URL is not available')
     signature = _sign_payment_link(project_id, user_sub)
-    base = MODEL_DELIVERY_PUBLIC_URL.rstrip('/')
+    base = base_url.rstrip('/')
     return (
         f"{base}/payment-link?"
         f"projectId={quote_plus(project_id)}&userSub={quote_plus(user_sub)}&sig={signature}"
@@ -272,6 +284,10 @@ def _handle_public_payment_link(event: Dict[str, Any]) -> Dict[str, Any]:
     model_link = _resolve_model_link(project) or FRONTEND_URL
     if payment_status == 'paid':
         return _redirect(model_link)
+
+    base_url = _get_request_base_url(event)
+    if not base_url:
+        return _response(500, {'error': 'Unable to resolve payment link base URL'})
 
     client_email = _resolve_delivery_value(project, ['clientEmail', 'email']) or ''
     viewer_slug = _resolve_delivery_value(project, ['viewerSlug', 'viewer_slug'])
@@ -304,7 +320,7 @@ def _handle_public_payment_link(event: Dict[str, Any]) -> Dict[str, Any]:
             },
             ExpressionAttributeValues={
                 ':paymentSessionId': payment_session['id'],
-                ':paymentLink': _build_payment_link(project_id, user_sub),
+                ':paymentLink': _build_payment_link(project_id, user_sub, base_url),
                 ':paymentStatus': 'pending',
                 ':paymentDeadline': payment_deadline,
                 ':updatedAt': int(datetime.now(timezone.utc).timestamp()),
@@ -649,6 +665,10 @@ def lambda_handler(event, context):
             if not project:
                 return _response(404, {'error': 'Project not found for client'})
 
+            base_url = _get_request_base_url(event)
+            if not base_url:
+                return _response(500, {'error': 'Unable to resolve payment link base URL'})
+
             payment_session = _create_payment_session(
                 project=project,
                 client=client,
@@ -657,7 +677,7 @@ def lambda_handler(event, context):
                 viewer_title=viewer_title,
             )
 
-            payment_link = _build_payment_link(project_id, client['user_id'])
+            payment_link = _build_payment_link(project_id, client['user_id'], base_url)
             payment_deadline = int((datetime.now(timezone.utc) + timedelta(days=14)).timestamp())
             payment_state = {
                 'paymentSessionId': payment_session['id'],

@@ -724,7 +724,6 @@ class AuthStack(Stack):
 
         self.model_delivery_lambda = model_delivery_lambda
         self.model_delivery_api = model_delivery_api
-        model_delivery_lambda.add_environment("MODEL_DELIVERY_PUBLIC_URL", model_delivery_api.url)
 
         # ========== MODEL PAYMENT ENFORCEMENT ==========
         enforce_model_payments_lambda = lambda_.Function(
