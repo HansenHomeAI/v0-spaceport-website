@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
@@ -18,11 +19,19 @@ def _cors_headers() -> Dict[str, str]:
     }
 
 
+def _json_default(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        if value % 1 == 0:
+            return int(value)
+        return float(value)
+    raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
+
+
 def _response(status: int, body: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "statusCode": status,
         "headers": _cors_headers(),
-        "body": json.dumps(body),
+        "body": json.dumps(body, default=_json_default),
     }
 
 
