@@ -156,7 +156,7 @@ async def _launch_context():
             "--disable-gpu",
             "--no-zygote",
             "--disable-features=VizDisplayCompositor",
-            "--disable-software-rasterizer",
+            "--use-gl=swiftshader",
         ],
     )
     context = await browser.new_context(
