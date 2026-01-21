@@ -1,7 +1,9 @@
 FROM public.ecr.aws/lambda/python:3.9
 
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright \
-    PLAYWRIGHT_NODEJS_PATH=/usr/bin/node
+    PLAYWRIGHT_NODEJS_PATH=/usr/bin/node \
+    HOME=/tmp \
+    XDG_CACHE_HOME=/tmp
 
 # Install system dependencies for Playwright Chromium
 RUN yum -y install \
@@ -9,6 +11,7 @@ RUN yum -y install \
     atk \
     curl \
     cups-libs \
+    fontconfig \
     gtk3 \
     libXcomposite \
     libXcursor \

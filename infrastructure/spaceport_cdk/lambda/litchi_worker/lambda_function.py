@@ -153,9 +153,8 @@ async def _launch_context():
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
-            "--no-zygote",
-            "--single-process",
             "--disable-gpu",
+            "--no-zygote",
         ],
     )
     context = await browser.new_context(
