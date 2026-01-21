@@ -93,6 +93,19 @@ def _invoke_worker(payload: Dict[str, Any]) -> Dict[str, Any]:
         return {"raw": raw_payload}
 
 
+def _invoke_worker_async(payload: Dict[str, Any]) -> None:
+    worker_name = os.environ.get("LITCHI_WORKER_FUNCTION")
+    if not worker_name:
+        raise RuntimeError("LITCHI_WORKER_FUNCTION is not configured")
+
+    lambda_client = boto3.client("lambda")
+    lambda_client.invoke(
+        FunctionName=worker_name,
+        InvocationType="Event",
+        Payload=json.dumps(payload).encode("utf-8"),
+    )
+
+
 def _handle_status(user_id: str) -> Dict[str, Any]:
     table = _table()
     item = table.get_item(Key={"userId": user_id}).get("Item", {})
@@ -127,8 +140,8 @@ def _handle_connect(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         "requestedAt": _now_iso(),
     }
 
-    result = _invoke_worker(worker_payload)
-    return _response(200, result if isinstance(result, dict) else {"result": result})
+    _invoke_worker_async(worker_payload)
+    return _response(202, {"status": "connecting", "message": "Litchi login started"})
 
 
 def _handle_test_connection(user_id: str) -> Dict[str, Any]:
