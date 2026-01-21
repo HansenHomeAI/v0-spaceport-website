@@ -1,47 +1,18 @@
-FROM public.ecr.aws/lambda/python:3.9
+FROM mcr.microsoft.com/playwright/python:v1.38.0-jammy
 
-ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright \
-    PLAYWRIGHT_NODEJS_PATH=/usr/bin/node \
+ENV LAMBDA_TASK_ROOT=/var/task \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     HOME=/tmp \
     XDG_CACHE_HOME=/tmp
 
-# Install system dependencies for Playwright Chromium
-RUN yum -y install \
-    alsa-lib \
-    atk \
-    curl \
-    cups-libs \
-    fontconfig \
-    gtk3 \
-    libXcomposite \
-    libXcursor \
-    libXdamage \
-    libXext \
-    libXi \
-    libXrandr \
-    libXScrnSaver \
-    libXtst \
-    libX11-xcb \
-    libXrender \
-    libXfixes \
-    libXinerama \
-    libxcb \
-    libxkbcommon \
-    libdrm \
-    mesa-libgbm \
-    nss \
-    pango \
-    xorg-x11-fonts-Type1 \
-    xorg-x11-fonts-misc \
-  && curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - \
-  && yum -y install nodejs \
-  && yum clean all
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+RUN pip install --no-cache-dir awslambdaric
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN PLAYWRIGHT_NODEJS_PATH=/usr/bin/node python -m playwright install chromium
-
 COPY lambda_function.py ./
 
+ENTRYPOINT ["/usr/bin/python3", "-m", "awslambdaric"]
 CMD ["lambda_function.lambda_handler"]
