@@ -155,11 +155,13 @@ async def _launch_context():
             "--disable-dev-shm-usage",
             "--disable-gpu",
             "--no-zygote",
+            "--disable-features=VizDisplayCompositor",
+            "--disable-software-rasterizer",
         ],
     )
     context = await browser.new_context(
         user_agent=random.choice(USER_AGENTS),
-        viewport={"width": 1440, "height": 900},
+        viewport=None,
         locale="en-US",
     )
     return playwright, browser, context
