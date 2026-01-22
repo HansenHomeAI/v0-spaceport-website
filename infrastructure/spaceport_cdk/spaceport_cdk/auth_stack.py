@@ -913,31 +913,31 @@ class AuthStack(Stack):
             cognito_user_pools=[user_pool],
         )
 
+        litchi_routes = (
+            ("status", "GET"),
+            ("connect", "POST"),
+            ("test-connection", "POST"),
+            ("upload", "POST"),
+        )
+
         litchi_resource = litchi_api.root.add_resource("litchi")
-        litchi_resource.add_resource("status").add_method(
-            "GET",
-            apigw.LambdaIntegration(litchi_api_lambda),
-            authorization_type=apigw.AuthorizationType.COGNITO,
-            authorizer=litchi_authorizer,
-        )
-        litchi_resource.add_resource("connect").add_method(
-            "POST",
-            apigw.LambdaIntegration(litchi_api_lambda),
-            authorization_type=apigw.AuthorizationType.COGNITO,
-            authorizer=litchi_authorizer,
-        )
-        litchi_resource.add_resource("test-connection").add_method(
-            "POST",
-            apigw.LambdaIntegration(litchi_api_lambda),
-            authorization_type=apigw.AuthorizationType.COGNITO,
-            authorizer=litchi_authorizer,
-        )
-        litchi_resource.add_resource("upload").add_method(
-            "POST",
-            apigw.LambdaIntegration(litchi_api_lambda),
-            authorization_type=apigw.AuthorizationType.COGNITO,
-            authorizer=litchi_authorizer,
-        )
+        for route, method in litchi_routes:
+            litchi_resource.add_resource(route).add_method(
+                method,
+                apigw.LambdaIntegration(litchi_api_lambda),
+                authorization_type=apigw.AuthorizationType.COGNITO,
+                authorizer=litchi_authorizer,
+            )
+
+        # Mirror Litchi endpoints on the Projects API base for frontend fallback.
+        litchi_projects_resource = projects_api.root.add_resource("litchi")
+        for route, method in litchi_routes:
+            litchi_projects_resource.add_resource(route).add_method(
+                method,
+                apigw.LambdaIntegration(litchi_api_lambda),
+                authorization_type=apigw.AuthorizationType.COGNITO,
+                authorizer=projects_authorizer,
+            )
 
         for response_type, label in (
             (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
