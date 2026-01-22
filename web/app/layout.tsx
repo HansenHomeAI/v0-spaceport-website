@@ -10,7 +10,6 @@ export const metadata = {
   },
 };
 import './globals.css';
-import '../public/styles.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';

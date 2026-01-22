@@ -1,5 +1,6 @@
 import type { CSSProperties, ElementType, ComponentPropsWithoutRef } from 'react';
-import { cx, toArray } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toArray, toTokens } from './utils';
 
 export type SpacingValue = number | string;
 
@@ -38,6 +39,8 @@ export const Spacing = <T extends ElementType = 'div'>({
   ...rest
 }: SpacingProps<T>) => {
   const Component = as || 'div';
+  const variantClasses = mapTokens(legacyStyles, toArray(variant));
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
   const resolvedStyle: CSSProperties = {
     ...style,
     ...(margin !== undefined ? { margin: resolveSpacing(margin) } : null),
@@ -58,7 +61,7 @@ export const Spacing = <T extends ElementType = 'div'>({
 
   return (
     <Component
-      className={cx(...toArray(variant), className)}
+      className={cx(...variantClasses, ...classTokens)}
       style={resolvedStyle}
       {...rest}
     />

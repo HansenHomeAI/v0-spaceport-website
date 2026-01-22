@@ -1,0 +1,13 @@
+*
+0%
+100%
+50%
+:root
+body
+body.popup-open
+body::before
+footer
+from
+html
+input.text-fade-right
+to

@@ -1,5 +1,6 @@
 import type { ElementType, ComponentPropsWithoutRef } from 'react';
-import { cx, toArray } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toArray, toTokens } from './utils';
 
 type SectionOwnProps = {
   as?: ElementType;
@@ -18,11 +19,10 @@ export const Section = <T extends ElementType = 'section'>({
   ...rest
 }: SectionProps<T>) => {
   const Component = as || 'section';
-  const classes = cx(
-    withBase ? 'section' : undefined,
-    ...toArray(variant),
-    className
-  );
+  const variantClasses = mapTokens(legacyStyles, toArray(variant));
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
+  const baseClass = withBase ? legacyStyles.section : undefined;
+  const classes = cx(baseClass, ...variantClasses, ...classTokens);
 
   return <Component className={classes} {...rest} />;
 };

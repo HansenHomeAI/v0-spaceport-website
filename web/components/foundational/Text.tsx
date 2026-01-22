@@ -1,5 +1,6 @@
 import type { CSSProperties, HTMLAttributes } from 'react';
-import { cx } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toTokens } from './utils';
 
 export type TextAlign = 'left' | 'center' | 'right';
 
@@ -45,7 +46,10 @@ const createText = (Tag: TextTag, baseClass: string) => {
     ...rest
   }: TextProps) => (
     <Tag
-      className={cx(withBase ? baseClass : undefined, className)}
+      className={cx(
+        withBase ? legacyStyles[baseClass] : undefined,
+        mapTokens(legacyStyles, toTokens(className)).join(' ')
+      )}
       style={buildStyle(style, align, color, marginAll, margiall)}
       {...rest}
     />

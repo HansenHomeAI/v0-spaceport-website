@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import type { CSSProperties, ElementType, ComponentPropsWithRef } from 'react';
-import { cx, toArray } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toArray, toTokens } from './utils';
 import { resolveRadius } from './Border';
 
 type ContainerBaseProps<T extends ElementType> = {
@@ -39,7 +40,9 @@ export const Container = forwardRef(
     ref: ComponentPropsWithRef<T>['ref']
   ) => {
     const Component = as || 'div';
-    const classes = cx(...toArray(variant), className);
+    const variantClasses = mapTokens(legacyStyles, toArray(variant));
+    const classTokens = mapTokens(legacyStyles, toTokens(className));
+    const classes = cx(...variantClasses, ...classTokens);
     const resolvedRadius = resolveRadius(borderRadius);
     const mergedStyle: CSSProperties = {
       ...style,

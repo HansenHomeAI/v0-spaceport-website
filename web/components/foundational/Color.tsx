@@ -1,5 +1,6 @@
 import type { CSSProperties, ElementType, ComponentPropsWithoutRef } from 'react';
-import { cx, toArray } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toArray, toTokens } from './utils';
 
 type ColorOwnProps = {
   as?: ElementType;
@@ -20,9 +21,11 @@ export const Background = <T extends ElementType = 'div'>({
   ...rest
 }: ColorProps<T>) => {
   const Component = as || 'div';
+  const variantClasses = mapTokens(legacyStyles, toArray(variant));
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
   return (
     <Component
-      className={cx(...toArray(variant), className)}
+      className={cx(...variantClasses, ...classTokens)}
       style={{
         ...style,
         ...(background ? { background } : null),
@@ -41,9 +44,11 @@ export const TextColor = <T extends ElementType = 'span'>({
   ...rest
 }: ColorProps<T>) => {
   const Component = as || 'span';
+  const variantClasses = mapTokens(legacyStyles, toArray(variant));
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
   return (
     <Component
-      className={cx(...toArray(variant), className)}
+      className={cx(...variantClasses, ...classTokens)}
       style={{
         ...style,
         ...(color ? { color } : null),

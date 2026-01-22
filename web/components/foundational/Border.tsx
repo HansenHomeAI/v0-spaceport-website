@@ -1,5 +1,6 @@
 import type { CSSProperties, ElementType, ComponentPropsWithoutRef } from 'react';
-import { cx } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toTokens } from './utils';
 
 export const MIN_RADIUS = 25;
 
@@ -61,6 +62,7 @@ export const Border = <T extends ElementType = 'div'>({
 }: BorderProps<T>) => {
   const Component = as || 'div';
   const resolvedRadius = resolveRadius(radius);
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
   const resolvedStyle: CSSProperties = {
     ...style,
     ...(resolvedRadius ? { borderRadius: resolvedRadius } : null),
@@ -69,7 +71,7 @@ export const Border = <T extends ElementType = 'div'>({
     ...(color ? { borderColor: color } : null),
   };
 
-  return <Component className={cx(className)} style={resolvedStyle} {...rest} />;
+  return <Component className={cx(...classTokens)} style={resolvedStyle} {...rest} />;
 };
 
 export default Border;

@@ -1,0 +1,773 @@
+#about
+#about-innovation
+#about-mission
+#about::after
+#about::before
+#create
+#create-dashboard
+#create-steps1
+#create-steps2
+#create-steps3
+#create::after
+#create::before
+#detectedParams
+#detectedParams div
+#detectedParams span
+#detectedParams strong
+#dfpg-container
+#dfpg-container #downloadMasterBtn
+#dfpg-container #flightTime
+#dfpg-container #log
+#dfpg-container #log strong
+#dfpg-container #result
+#dfpg-container *
+#dfpg-container .battery-btn
+#dfpg-container .battery-btn:hover
+#dfpg-container .battery-buttons
+#dfpg-container .battery-downloads
+#dfpg-container .delete-poi-button
+#dfpg-container .delete-poi-button:hover
+#dfpg-container .dfpg-container-inner
+#dfpg-container .download-btn
+#dfpg-container .download-btn:disabled
+#dfpg-container .download-btn:hover:not(:disabled)
+#dfpg-container .download-label
+#dfpg-container .download-section
+#dfpg-container .error-message
+#dfpg-container .error-message p
+#dfpg-container .hover-overlay
+#dfpg-container .info-pill-icon
+#dfpg-container .info-pill-icon:hover
+#dfpg-container .info-tooltip
+#dfpg-container .info-tooltip.active
+#dfpg-container .info-tooltip::before
+#dfpg-container .info-wrapper
+#dfpg-container .input-row
+#dfpg-container .input-wrapper
+#dfpg-container .input-wrapper input::placeholder
+#dfpg-container .input-wrapper input:focus
+#dfpg-container .input-wrapper input[type="number"]
+#dfpg-container .input-wrapper input[type="number"]::-webkit-inner-spin-button
+#dfpg-container .input-wrapper input[type="number"]::-webkit-outer-spin-button
+#dfpg-container .input-wrapper input[type="text"]
+#dfpg-container .input-wrapper.hover-active .hover-overlay
+#dfpg-container .input-wrapper.hover-active input
+#dfpg-container .ios-toggle-container
+#dfpg-container .mission-logs
+#dfpg-container .mission-logs #logContent
+#dfpg-container .mission-logs #logContent strong
+#dfpg-container .mission-logs h3
+#dfpg-container .optimization-results
+#dfpg-container .optimization-section
+#dfpg-container .optimize-btn
+#dfpg-container .optimize-btn:disabled
+#dfpg-container .optimize-btn:hover
+#dfpg-container .pill-toggle
+#dfpg-container .pill-toggle-labels
+#dfpg-container .pill-toggle-labels span
+#dfpg-container .pill-toggle-selector
+#dfpg-container .pill-toggle[data-mode="advanced"] .pill-toggle-selector
+#dfpg-container .pill-toggle[data-mode="standard"] .pill-toggle-selector
+#dfpg-container .poi-row
+#dfpg-container .poi-row .poi-row-title
+#dfpg-container .poi-row-actions
+#dfpg-container .result-item
+#dfpg-container .result-label
+#dfpg-container .result-value
+#dfpg-container .result-value.error
+#dfpg-container .result-value.success
+#dfpg-container .result-value.warning
+#dfpg-container .results-grid
+#dfpg-container .segment-downloads button
+#dfpg-container .slider
+#dfpg-container .slider-container
+#dfpg-container .slider-labels
+#dfpg-container .slider:before
+#dfpg-container .spinner
+#dfpg-container .toggle-switch
+#dfpg-container .toggle-switch input:checked + .slider
+#dfpg-container .toggle-switch input:checked + .slider:before
+#dfpg-container .toggle-switch input[type="checkbox"]
+#dfpg-container button
+#dfpg-container button:hover
+#dfpg-container h1
+#dfpg-container h2
+#dfpg-container input[type="range"]
+#dfpg-container input[type="range"]::-moz-range-thumb
+#dfpg-container input[type="range"]::-moz-range-thumb:active
+#dfpg-container input[type="range"]::-moz-range-thumb:hover
+#dfpg-container input[type="range"]::-webkit-slider-runnable-track
+#dfpg-container input[type="range"]::-webkit-slider-thumb
+#dfpg-container input[type="range"]::-webkit-slider-thumb:active
+#dfpg-container input[type="range"]::-webkit-slider-thumb:hover
+#dfpg-container label
+#dpu-container
+#dpu-container *
+#dpu-container .close-icon
+#dpu-container .close-icon:hover
+#dpu-container .dpu-btn
+#dpu-container .dpu-btn:hover
+#dpu-container .dpu-container-inner
+#dpu-container .input-row
+#dpu-container .input-wrapper
+#dpu-container .input-wrapper input::placeholder
+#dpu-container .input-wrapper input:focus
+#dpu-container .input-wrapper input[type="email"]
+#dpu-container .input-wrapper input[type="text"]
+#dpu-container .input-wrapper textarea
+#dpu-container .input-wrapper textarea::placeholder
+#dpu-container .input-wrapper textarea:focus
+#dpu-container .missing-field
+#dpu-container .progress-bar
+#dpu-container .progress-bar-fill
+#dpu-container .spinner
+#dpu-container .upload-area
+#dpu-container .upload-area p
+#dpu-container .upload-area.csv-upload
+#dpu-container .upload-area.csv-upload .upload-description
+#dpu-container .upload-area.csv-upload p:first-child
+#dpu-container .upload-area.csv-upload.dragover
+#dpu-container .upload-area.csv-upload:hover
+#dpu-container .upload-area.dragover
+#dpu-container h1
+#dpu-container h2
+#dpu-container label
+#feedback-section
+#footer-stats
+#iframe-overlay
+#landing
+#landing-additional
+#landing-carousel
+#landing-more
+#landing-more2
+#landing-stats
+#landing-stats2
+#landing.section
+#ml-container
+#ml-container #s3UrlInput.step-3dgs
+#ml-container #s3UrlInput.step-compression
+#ml-container #s3UrlInput.step-sfm
+#ml-container *
+#ml-container .dpu-btn
+#ml-container .dpu-btn:disabled
+#ml-container .dpu-btn:hover
+#ml-container .dpu-container-inner
+#ml-container .error-message
+#ml-container .error-message h3
+#ml-container .error-message p
+#ml-container .input-row
+#ml-container .input-wrapper
+#ml-container .input-wrapper input::placeholder
+#ml-container .input-wrapper input:focus
+#ml-container .input-wrapper input[type="email"]
+#ml-container .input-wrapper input[type="url"]
+#ml-container .job-status
+#ml-container .job-status h3
+#ml-container .job-status p
+#ml-container .spinner
+#ml-container .step-selector
+#ml-container .step-selector option
+#ml-container .step-selector-label
+#ml-container .step-selector:focus
+#ml-container .stop-button
+#ml-container .stop-button .stop-icon
+#ml-container .stop-button:disabled
+#ml-container .stop-button:hover
+#ml-container h1
+#ml-container h2
+#pricing-header
+#pricing-header::after
+#pricing-header::before
+#signup
+#signup::after
+#signup::before
+*
+.accordion-chevron
+.accordion-content
+.accordion-header
+.accordion-header:hover
+.accordion-section
+.accordion-section.active .accordion-chevron
+.accordion-section.active .accordion-content
+.accordion-section.active .accordion-header
+.accordion-section[data-section="upload"] .category-outline:first-child
+.accordion-section[data-section="upload"].active .accordion-header
+.accordion-title
+.accordion-title h3
+.account-card
+.account-card h1
+.account-details
+.account-handle
+.account-header
+.account-info
+.account-info-compact
+.action-buttons
+.add-path-button
+.add-path-button.info-pill-icon
+.add-path-button.info-pill-icon:hover
+.add-path-button:hover
+.address-search-overlay
+.address-search-wrapper
+.address-search-wrapper input
+.address-search-wrapper input.text-fade-right
+.address-search-wrapper input::placeholder
+.address-search-wrapper::after
+.address-search-wrapper::before
+.address-search-wrapper:focus-within
+.apple-progress-tracker
+.auth-description
+.auth-error
+.auth-form
+.auth-input
+.auth-input::placeholder
+.auth-input:focus
+.auth-link
+.auth-link:hover
+.auth-links
+.auth-logo
+.auth-modal
+.auth-modal-content
+.auth-modal-header
+.auth-modal-header h2
+.auth-modal-header p
+.auth-modal::before
+.auth-mode-button
+.auth-mode-button.active
+.auth-mode-button:hover:not(.active)
+.auth-mode-slider
+.auth-mode-slider.slide-left
+.auth-mode-slider.slide-right
+.auth-mode-toggle
+.auth-submit-btn
+.auth-submit-btn:active:not(:disabled)
+.auth-submit-btn:disabled
+.auth-submit-btn:hover:not(:disabled)
+.auth-success
+.battery-segments-title
+.battery-segments-title::after
+.body-text
+.body-text-highlight
+.btn-icon
+.cancel-btn-icon
+.cancel-btn-with-icon
+.cancel-btn-with-icon.active
+.cancel-btn-with-icon.active .cancel-btn-icon
+.cancel-btn-with-icon:hover
+.category-outline
+.category-outline h4
+.category-outline.upload-button-only
+.category-outline.upload-button-only.no-outline
+.category-outline:last-child
+.close-icon
+.close-icon:hover
+.csv-data-input
+.csv-data-input:focus
+.csv-data-label
+.cta-button
+.cta-button .symbol-3d
+.cta-button.with-symbol
+.cta-button.with-symbol .symbol-3d
+.cta-button2
+.cta-button2 .symbol-3d
+.cta-button2-fixed
+.cta-button2-fixed .symbol-3d
+.cta-button2-fixed.with-symbol
+.cta-button2-fixed.with-symbol .symbol-3d
+.cta-button2-fixed:hover
+.cta-button2-fixed:hover .symbol-3d
+.cta-button2.with-symbol
+.cta-button2.with-symbol .symbol-3d
+.cta-button2:hover
+.cta-button2:hover .symbol-3d
+.cta-button::after
+.cta-button:disabled
+.cta-button:hover
+.cta-button:hover::after
+.current-badge
+.current-plan-badge
+.current-plan-button
+.custom-teardrop-pin
+.custom-teardrop-pin::after
+.custom-teardrop-pin:hover
+.custom-teardrop-pin:hover::after
+.dfpg-header
+.disable-hover:hover::before
+.earnings-info
+.enterprise-button
+.enterprise-button:hover
+.error-message
+.expand-button
+.expand-button.expanded .expand-icon
+.expand-button::before
+.expand-button:hover
+.expand-icon
+.feature
+.features-list
+.features-list li
+.features-list li:before
+.feedback-container
+.feedback-form
+.feedback-input
+.feedback-input-container
+.feedback-input::placeholder
+.feedback-input:focus
+.feedback-section
+.feedback-submit
+.feedback-submit:disabled
+.file-format
+.flight-path-download-btn
+.flight-path-download-btn .download-icon
+.flight-path-download-btn .download-icon.loading
+.flight-path-download-btn.loading
+.flight-path-download-btn.loading:hover
+.flight-path-download-btn::after
+.flight-path-download-btn:active
+.flight-path-download-btn:hover
+.flight-path-download-btn:hover .download-icon
+.flight-path-download-btn:hover::after
+.flight-path-grid
+.flight-path-placeholder
+.footer-content
+.footer-logo
+.footer-logo:hover
+.h3
+.header
+.header .logo
+.header .nav-links a
+.header .nav-links-desktop a
+.header-title-group
+.header-title-group .info-wrapper
+.header-title-group h2
+.header-top
+.header.expanded
+.header.expanded .nav-links
+.header::before
+.hidden
+.iframe-container
+.inline-white
+.input-group
+.input-icon
+.input-icon.email
+.input-icon.flight
+.input-icon.home
+.input-icon.link
+.input-icon.map
+.input-icon.maximum
+.input-icon.minimum
+.input-icon.number
+.input-icon.paragraph
+.input-icon.pin
+.input-icon.time
+.input-row-popup
+.input-row-popup:last-child
+.instruction-content
+.instruction-content h3
+.instruction-content::before
+.instruction-content:hover
+.instruction-pin
+.instructions
+.job-status
+.landing-content
+.landing-content h1
+.landing-content p
+.landing-iframe
+.loading-card
+.loading-card h1
+.loading-spinner
+.loading-spinner .spinner
+.loading-spinner p
+.logo
+.logo-carousel
+.logo-carousel::after
+.logo-carousel::before
+.logo-image
+.logo::before
+.logo:hover .logo-image
+.logo:hover::before
+.logos
+.logos img
+.luxury-text-fade
+.luxury-text-fade::after
+.map-blur-background
+.map-container
+.map-container.fullscreen .map-progressive-bottom-blur
+.map-container.has-instructions .map-blur-background
+.map-container.has-instructions .map-dim-overlay
+.map-container.has-instructions.instructions-hidden .map-blur-background
+.map-container.has-instructions.instructions-hidden::before
+.map-container.has-instructions::before
+.map-dim-overlay
+.map-instructions-center
+.map-wrapper
+.map-wrapper.fullscreen
+.map-wrapper.fullscreen .address-search-overlay
+.map-wrapper.fullscreen .coordinates-input-overlay
+.map-wrapper.fullscreen .expand-button
+.map-wrapper.fullscreen .map-instructions-center
+.map-wrapper.fullscreen .map-progressive-bottom-blur
+.modal-body
+.modal-body h3
+.modal-body h4
+.modal-body li
+.modal-body p
+.modal-body strong
+.modal-body ul
+.modal-close
+.modal-close:hover
+.modal-content
+.modal-header
+.modal-header h2
+.modal-overlay
+.modal-overlay.hidden
+.modal-popup-button
+.modal-popup-button:hover
+.modal-popup-content
+.modal-popup-icon
+.modal-popup-icon.error
+.modal-popup-icon.success
+.modal-popup-message
+.modal-popup-overlay
+.modal-popup-title
+.model-count
+.model-delivery-actions
+.model-delivery-banner-error
+.model-delivery-client-summary
+.model-delivery-close
+.model-delivery-close img
+.model-delivery-close:focus-visible
+.model-delivery-close:hover
+.model-delivery-description
+.model-delivery-error
+.model-delivery-form
+.model-delivery-header
+.model-delivery-header h2
+.model-delivery-hint
+.model-delivery-hint code
+.model-delivery-input
+.model-delivery-input:focus
+.model-delivery-label
+.model-delivery-lookup
+.model-delivery-meta
+.model-delivery-modal
+.model-delivery-modal-overlay
+.model-delivery-primary
+.model-delivery-primary:disabled
+.model-delivery-primary:not(:disabled):focus-visible
+.model-delivery-primary:not(:disabled):hover
+.model-delivery-secondary
+.model-delivery-secondary:disabled
+.model-delivery-secondary:not(:disabled):focus-visible
+.model-delivery-secondary:not(:disabled):hover
+.model-delivery-success
+.model-delivery-trigger
+.model-delivery-trigger:disabled
+.model-delivery-trigger:not(:disabled):focus-visible
+.model-delivery-trigger:not(:disabled):hover
+.model-link-actions
+.model-link-area
+.model-link-button
+.model-link-button:focus
+.model-link-button:focus-visible
+.model-link-button:hover
+.model-link-feedback
+.model-link-feedback.error
+.model-link-label
+.model-link-pill
+.model-link-status
+.model-link-status.error
+.model-link-status.pending
+.model-link-text
+.nav-links
+.nav-links a
+.nav-links a::before
+.nav-links a:hover::before
+.nav-links-desktop
+.nav-links-desktop a
+.nav-links-desktop a::before
+.nav-links-desktop a:hover::before
+.new-project-card
+.new-project-card .plus-icon
+.new-project-card .plus-icon span
+.new-project-card .plus-icon span:first-child
+.new-project-card .plus-icon span:last-child
+.new-project-card h1
+.new-project-card.disabled
+.new-project-card.disabled:hover
+.new-project-card:hover
+.parsing-results
+.parsing-results.hidden
+.password-toggle
+.password-toggle svg
+.password-toggle svg path
+.password-toggle:hover svg path
+.pill-progress-bar
+.pill-progress-fill
+.plan-cancel-btn
+.plan-cancel-btn:hover
+.plan-card
+.plan-card.current
+.plan-card.current .plan-header
+.plan-card:hover
+.plan-contact-btn
+.plan-contact-btn:hover
+.plan-features
+.plan-header
+.plan-header h3
+.plan-period
+.plan-price
+.plan-upgrade-btn
+.plan-upgrade-btn:hover
+.popup
+.popup-action-btn
+.popup-action-btn.disabled
+.popup-action-btn.primary
+.popup-action-btn.primary:hover
+.popup-action-btn.secondary
+.popup-action-btn.secondary:hover
+.popup-close
+.popup-close::before
+.popup-close:hover::before
+.popup-content
+.popup-content-scroll
+.popup-header
+.popup-header h2
+.popup-input-wrapper
+.popup-input-wrapper input
+.popup-input-wrapper input.has-suffix
+.popup-input-wrapper input.has-suffix::after
+.popup-input-wrapper input.luxury-text-fade
+.popup-input-wrapper input::placeholder
+.popup-input-wrapper input:focus
+.popup-input-wrapper input[type="number"]
+.popup-input-wrapper input[type="number"]::-webkit-inner-spin-button
+.popup-input-wrapper input[type="number"]::-webkit-outer-spin-button
+.popup-input-wrapper span[style*="position: absolute"]
+.popup-input-wrapper span[style*="position: absolute"]:after
+.popup-input-wrapper textarea
+.popup-input-wrapper textarea::placeholder
+.popup-input-wrapper textarea:focus
+.popup-input-wrapper.has-suffix::after
+.popup-input-wrapper.listing-description-wrapper
+.popup-input-wrapper.listing-description-wrapper .input-icon
+.popup-input-wrapper.listing-description-wrapper textarea
+.popup-input-wrapper:focus-within
+.popup-map-section
+.popup-overlay
+.popup-overlay.hidden
+.popup-section
+.popup-section h4
+.popup-section:last-child
+.popup-title-input
+.popup-title-input::placeholder
+.popup-title-input:focus
+.popup-title-section
+.popup.hidden
+.pricing-card
+.pricing-card .price
+.pricing-card h2
+.pricing-card p
+.pricing-card::before
+.pricing-grid
+.privacy-policy-link
+.privacy-policy-link:hover
+.progress-container
+.project-box
+.project-box h1
+.project-box p
+.project-box:nth-child(1)
+.project-box:nth-child(2)
+.project-box:nth-child(3)
+.project-cards
+.project-controls-btn
+.project-controls-btn:focus
+.project-controls-btn:hover
+.project-controls-icon
+.project-progress
+.project-progress-fill
+.project-progress-track
+.referral-info
+.referral-input
+.referral-input-container
+.referral-input::placeholder
+.referral-input:focus
+.referral-program-info
+.referral-program-info h3
+.referral-program-info p
+.referral-program-info strong
+.referral-section
+.referral-toggle
+.referral-toggle:hover
+.section
+.section h1
+.section h2
+.section p
+.section-description
+.sign-out-btn
+.sign-out-btn::before
+.sign-out-btn:hover::before
+.sign-out-icon
+.signin-block
+.signin-block h2
+.signup-stack
+.spinner
+.stat-box
+.stat-box h1
+.stat-box p
+.stat-box2
+.stat-box2 h1
+.stat-box2 img
+.stat-box2 p
+.stat-box2::after
+.stat-box2::before
+.stat-box2:nth-child(1)
+.stat-box::before
+.stat-box:nth-child(1)
+.stat-box:nth-child(2)
+.stat-box:nth-child(3)
+.stats-grid
+.stats-source
+.status-dot
+.status-dot.complete
+.status-dot.pending
+.status-dot.processing
+.status-indicator
+.status-indicator span
+.status-text
+.step-selector
+.step-selector-label
+.stop-button
+.stop-button:active
+.stop-button:disabled
+.stop-button:hover
+.stop-icon
+.subscription-compact
+.subscription-details
+.subscription-details p
+.subscription-info
+.subscription-loading
+.subscription-loading::after
+.subscription-pill
+.subscription-pill.clickable
+.subscription-pill.clickable:hover
+.subscription-plan
+.subscription-plans
+.subscription-popup
+.subscription-popup-header
+.subscription-popup-header h2
+.subscription-popup-overlay
+.subscription-popup::before
+.subscription-status
+.subscription-status.active
+.subscription-status.canceled
+.subscription-status.past_due
+.subscription-status.trialing
+.success-icon
+.symbol-3d
+.terms-company-info
+.terms-conclusion
+.terms-intro
+.terms-link
+.terms-link:hover
+.terms-modal
+.terms-modal-close
+.terms-modal-close img
+.terms-modal-close-container
+.terms-modal-close:hover
+.terms-modal-content
+.terms-modal-content h1
+.terms-modal-content h2
+.terms-modal-content h2:first-of-type
+.terms-modal-content li
+.terms-modal-content p
+.terms-modal-content strong
+.terms-modal-content ul
+.terms-modal-overlay
+.text-body
+.text-emphasis
+.text-fade-right
+.text-fade-right.fade-long
+.text-fade-right.fade-short
+.text-h1
+.text-h2
+.text-h3
+.text-small
+.toggle
+.toggle span
+.toggle span:first-child
+.toggle span:last-child
+.toggle.rotated span:first-child
+.toggle.rotated span:last-child
+.toggle::before
+.toggle:hover::before
+.trial-info
+.tutorial-button
+.tutorial-button::after
+.tutorial-button:hover
+.tutorial-button:hover::after
+.two-col-section .two-col-content
+.two-col-section .two-col-content .right-col
+.two-col-section .two-col-content .right-col .cta-button2-fixed
+.two-col-section .two-col-content .right-col p
+.two-col-section .two-col-content h1
+.two-col-section .two-col-content h2
+.upgrade-prompt
+.upload-area
+.upload-area p
+.upload-area:hover
+.upload-btn-icon
+.upload-btn-with-icon
+.upload-btn-with-icon.loading
+.upload-btn-with-icon.loading .upload-btn-icon
+.upload-btn-with-icon.loading:hover
+.upload-btn-with-icon.uploading
+.upload-btn-with-icon.uploading .upload-btn-icon
+.upload-btn-with-icon:hover
+.upload-button-container
+.upload-hint
+.upload-icon
+.upload-progress-bar
+.upload-progress-container
+.upload-progress-container.active
+.upload-progress-text
+.upload-progress-text.active
+.upload-zone
+.upload-zone p
+.upload-zone:hover
+.viewer-button
+.viewer-button-container
+.viewer-button-icon
+.viewer-button::after
+.viewer-button:hover
+.viewer-button:hover .viewer-button-icon
+.viewer-button:hover::after
+.waitlist-card
+.waitlist-card::before
+.waitlist-container
+.waitlist-form
+.waitlist-header
+.waitlist-header h1
+.waitlist-header p
+.waitlist-input
+.waitlist-input::placeholder
+.waitlist-input:focus
+.waitlist-logo
+.waitlist-submit-btn
+.waitlist-submit-btn:active
+.waitlist-submit-btn:hover
+.waitlist-success
+.waitlist-success h3
+.waitlist-success p
+.waitlist-terms
+.waitlist-terms p
+0%
+100%
+50%
+:root
+body
+body.popup-open
+body::before
+footer
+from
+html
+input.text-fade-right
+to

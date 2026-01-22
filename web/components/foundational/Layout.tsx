@@ -1,5 +1,6 @@
 import type { CSSProperties, ElementType, ComponentPropsWithoutRef } from 'react';
-import { cx, toArray } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toArray, toTokens } from './utils';
 
 type LayoutOwnProps = {
   as?: ElementType;
@@ -15,8 +16,11 @@ type LayoutOwnProps = {
 export type LayoutProps<T extends ElementType = 'div'> = LayoutOwnProps &
   Omit<ComponentPropsWithoutRef<T>, keyof LayoutOwnProps>;
 
-const buildClassName = (variant: string | string[] | undefined, className?: string) =>
-  cx(...toArray(variant), className);
+const buildClassName = (variant: string | string[] | undefined, className?: string) => {
+  const variantClasses = mapTokens(legacyStyles, toArray(variant));
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
+  return cx(...variantClasses, ...classTokens);
+};
 
 export const Flex = <T extends ElementType = 'div'>({
   as,

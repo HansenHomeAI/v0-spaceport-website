@@ -1,6 +1,7 @@
 import type { ElementType, HTMLAttributes } from 'react';
 import Link from 'next/link';
-import { cx, toArray } from './utils';
+import legacyStyles from './legacy.module.css';
+import { cx, mapTokens, toArray, toTokens } from './utils';
 
 export type ButtonBaseProps = HTMLAttributes<HTMLElement> & {
   as?: ElementType;
@@ -26,7 +27,10 @@ export const ButtonBase = ({
   className,
   ...rest
 }: ButtonBaseProps) => {
-  const classes = cx(...toArray(variant), withSymbol ? 'with-symbol' : undefined, className);
+  const variantClasses = mapTokens(legacyStyles, toArray(variant));
+  const classTokens = mapTokens(legacyStyles, toTokens(className));
+  const symbolClass = withSymbol ? legacyStyles['with-symbol'] ?? 'with-symbol' : undefined;
+  const classes = cx(...variantClasses, symbolClass, ...classTokens);
 
   if (href) {
     if (isInternalLink(href)) {
