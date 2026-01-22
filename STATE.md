@@ -1,5 +1,5 @@
-reason: unblocked - updating LITCHI_API_URL_PREVIEW to new API endpoint from latest CDK deploy logs
-last_step: set LITCHI_API_URL_PREVIEW to https://nvk970wacg.execute-api.us-west-2.amazonaws.com/prod and trigger Pages rebuild
-next_unblocked_step: wait for Pages deploy, then rerun Playwright UI flow and verify Litchi status/upload/Step Functions
+reason: unblocked - LITCHI_API_URL_PREVIEW reset to projects API (mca9) after nvk endpoint failed DNS
+last_step: set LITCHI_API_URL_PREVIEW to https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod and bump trigger-dev-build
+next_unblocked_step: push branch, watch Pages+CDK runs, verify preview URL, rerun Playwright UI flow end-to-end
 owner_action_needed: none
-updated: 2026-01-22T17:26:00Z
+updated: 2026-01-22T17:39:06Z
