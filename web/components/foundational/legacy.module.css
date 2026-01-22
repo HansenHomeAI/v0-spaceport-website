@@ -1709,6 +1709,7 @@
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   background: transparent;
   pointer-events: auto;
   z-index: 1;
@@ -6799,5 +6800,4 @@ input.text-fade-right,
 .terms-link:hover {
   color: rgba(255, 255, 255, 0.7);
 }
-
 
