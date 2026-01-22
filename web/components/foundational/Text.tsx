@@ -56,7 +56,16 @@ const createText = (Tag: TextTag, baseClass: string) => {
 };
 
 const H1 = createText('h1', 'text-h1');
-const H2 = createText('h2', 'text-h2');
+const H2Base = createText('h2', 'text-h2');
+const H2 = (props: TextProps) => (
+  <H2Base
+    {...props}
+    style={{
+      ...props.style,
+      textDecoration: 'underline wavy rgb(255, 0, 0)',
+    }}
+  />
+);
 const H3 = createText('h3', 'text-h3');
 const Body = createText('p', 'text-body');
 const Small = createText('p', 'text-small');
