@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { Container, Input, Text } from '../../components/foundational';
 
 type Waypoint = {
   x: number;
@@ -424,12 +425,12 @@ function PathView({ params, sliceIndex, showLabels }: { params: FlightParams; sl
             </mesh>
             {showLabels && (
               <Html distanceFactor={150} center>
-                <div style={{
+                <Container style={{
                   background: 'rgba(0,0,0,0.85)', color: 'white', padding: '3px 8px',
                   borderRadius: 4, fontSize: 11, whiteSpace: 'nowrap', transform: 'translateY(-25px)'
                 }}>
                   {wp.index}: {wp.phase} · {Math.round(wp.z)}ft
-                </div>
+                </Container>
               </Html>
             )}
           </group>
@@ -881,373 +882,387 @@ export default function ShapeLabPage() {
   const dphi = (2 * Math.PI) / params.slices;
 
   return (
-    <div style={{ 
-      width: '100%', 
-      height: 'calc(100vh - 120px)', 
-      background: '#000000', 
+    <Container style={{
+      width: '100%',
+      height: 'calc(100vh - 120px)',
+      background: '#000000',
       display: 'flex',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
     }}>
       {/* Control Panel - Apple Style */}
-      <div style={{ 
-        width: 320, 
-        background: 'rgba(28, 28, 30, 0.95)', 
+      <Container style={{
+        width: 320,
+        background: 'rgba(28, 28, 30, 0.95)',
         backdropFilter: 'blur(20px)',
         borderRight: '0.5px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
       }}>
         {/* Header */}
-        <div style={{ 
-          padding: '24px 20px 16px', 
-          borderBottom: '0.5px solid rgba(255, 255, 255, 0.1)' 
+        <Container style={{
+          padding: '24px 20px 16px',
+          borderBottom: '0.5px solid rgba(255, 255, 255, 0.1)',
         }}>
-          <h1 style={{ 
-            color: '#ffffff', 
-            margin: 0, 
-            fontSize: '22px', 
-            fontWeight: '600',
-            letterSpacing: '-0.02em'
-          }}>
+          <Text.H1
+            withBase={false}
+            style={{
+              color: '#ffffff',
+              margin: 0,
+              fontSize: '22px',
+              fontWeight: '600',
+              letterSpacing: '-0.02em',
+            }}
+          >
             Flight Shape Lab
-          </h1>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.6)', 
-            margin: '4px 0 0', 
-            fontSize: '14px',
-            fontWeight: '400'
-          }}>
+          </Text.H1>
+          <Text.Body
+            withBase={false}
+            style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              margin: '4px 0 0',
+              fontSize: '14px',
+              fontWeight: '400',
+            }}
+          >
             Design and visualize 3D drone flight patterns
-          </p>
-        </div>
+          </Text.Body>
+        </Container>
 
-        
         {/* Controls Container */}
-        <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-          
+        <Container style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
           {/* Diagnostics Card */}
-          <div style={{ 
-            background: 'rgba(255, 255, 255, 0.05)', 
-            borderRadius: '12px', 
-            padding: '16px', 
+          <Container style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '12px',
+            padding: '16px',
             marginBottom: '24px',
-            border: '0.5px solid rgba(255, 255, 255, 0.1)'
+            border: '0.5px solid rgba(255, 255, 255, 0.1)',
           }}>
-            <div style={{ color: '#ffffff', fontSize: '15px', fontWeight: '600', marginBottom: '12px' }}>
+            <Container style={{ color: '#ffffff', fontSize: '15px', fontWeight: '600', marginBottom: '12px' }}>
               Flight Parameters
-            </div>
-            <div style={{ fontSize: '13px', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.7)' }}>
-              <div>Bounces: {N}</div>
-              <div>Angle: {(360 / params.slices).toFixed(1)}°</div>
-              <div>Slice: {sliceIndex + 1} of {params.slices}</div>
-            </div>
-          </div>
+            </Container>
+            <Container style={{ fontSize: '13px', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.7)' }}>
+              <Container>Bounces: {N}</Container>
+              <Container>Angle: {(360 / params.slices).toFixed(1)}°</Container>
+              <Container>Slice: {sliceIndex + 1} of {params.slices}</Container>
+            </Container>
+          </Container>
 
           {/* Control Groups */}
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
-              color: '#ffffff', 
-              display: 'block', 
-              marginBottom: '12px', 
-              fontSize: '15px',
-              fontWeight: '500'
-            }}>
+          <Container style={{ marginBottom: '24px' }}>
+            <Container
+              as="label"
+              style={{
+                color: '#ffffff',
+                display: 'block',
+                marginBottom: '12px',
+                fontSize: '15px',
+                fontWeight: '500',
+              }}
+            >
               Battery Configuration
-            </label>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
+            </Container>
+
+            <Container style={{ marginBottom: '20px' }}>
+              <Container style={{
+                display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '8px'
+                marginBottom: '8px',
               }}>
-                <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                <Container as="span" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
                   Number of Batteries
-                </span>
-                <span style={{ 
-                  color: '#007AFF', 
-                  fontSize: '14px', 
+                </Container>
+                <Container as="span" style={{
+                  color: '#007AFF',
+                  fontSize: '14px',
                   fontWeight: '600',
                   background: 'rgba(0, 122, 255, 0.15)',
                   padding: '2px 8px',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
                 }}>
                   {params.slices}
-                </span>
-              </div>
-              <input
+                </Container>
+              </Container>
+              <Input.Text
                 type="range"
                 min="1"
                 max="8"
                 value={params.slices}
                 onChange={(e) => setParams(p => ({ ...p, slices: parseInt(e.target.value, 10) }))}
-                style={{ 
-                  width: '100%', 
+                style={{
+                  width: '100%',
                   height: '6px',
                   background: 'rgba(255, 255, 255, 0.2)',
                   borderRadius: '3px',
                   outline: 'none',
-                  appearance: 'none'
+                  appearance: 'none',
                 }}
               />
-            </div>
+            </Container>
 
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
+            <Container style={{ marginBottom: '20px' }}>
+              <Container style={{
+                display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '8px'
+                marginBottom: '8px',
               }}>
-                <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                <Container as="span" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
                   Battery Duration
-                </span>
-                <span style={{ 
-                  color: '#34C759', 
-                  fontSize: '14px', 
+                </Container>
+                <Container as="span" style={{
+                  color: '#34C759',
+                  fontSize: '14px',
                   fontWeight: '600',
                   background: 'rgba(52, 199, 89, 0.15)',
                   padding: '2px 8px',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
                 }}>
                   {params.batteryDurationMinutes}m
-                </span>
-              </div>
-              <input
+                </Container>
+              </Container>
+              <Input.Text
                 type="range"
                 min="5"
                 max="30"
                 value={params.batteryDurationMinutes}
                 onChange={(e) => setParams(p => ({ ...p, batteryDurationMinutes: parseInt(e.target.value, 10) }))}
-                style={{ 
-                  width: '100%', 
+                style={{
+                  width: '100%',
                   height: '6px',
                   background: 'rgba(255, 255, 255, 0.2)',
                   borderRadius: '3px',
                   outline: 'none',
-                  appearance: 'none'
+                  appearance: 'none',
                 }}
               />
-            </div>
-          </div>
+            </Container>
+          </Container>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
-              color: '#ffffff', 
-              display: 'block', 
-              marginBottom: '12px', 
-              fontSize: '15px',
-              fontWeight: '500'
-            }}>
+          <Container style={{ marginBottom: '24px' }}>
+            <Container
+              as="label"
+              style={{
+                color: '#ffffff',
+                display: 'block',
+                marginBottom: '12px',
+                fontSize: '15px',
+                fontWeight: '500',
+              }}
+            >
               Altitude Settings
-            </label>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
+            </Container>
+
+            <Container style={{ marginBottom: '20px' }}>
+              <Container style={{
+                display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '8px'
+                marginBottom: '8px',
               }}>
-                <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                <Container as="span" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
                   Minimum Altitude
-                </span>
-                <span style={{ 
-                  color: '#FF9500', 
-                  fontSize: '14px', 
+                </Container>
+                <Container as="span" style={{
+                  color: '#FF9500',
+                  fontSize: '14px',
                   fontWeight: '600',
                   background: 'rgba(255, 149, 0, 0.15)',
                   padding: '2px 8px',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
                 }}>
                   {params.minHeight}ft
-                </span>
-              </div>
-              <input
+                </Container>
+              </Container>
+              <Input.Text
                 type="range"
                 min="50"
                 max="400"
                 step="5"
                 value={params.minHeight}
                 onChange={(e) => setParams(p => ({ ...p, minHeight: parseInt(e.target.value, 10) }))}
-                style={{ 
-                  width: '100%', 
+                style={{
+                  width: '100%',
                   height: '6px',
                   background: 'rgba(255, 255, 255, 0.2)',
                   borderRadius: '3px',
                   outline: 'none',
-                  appearance: 'none'
+                  appearance: 'none',
                 }}
               />
-            </div>
+            </Container>
 
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
+            <Container style={{ marginBottom: '20px' }}>
+              <Container style={{
+                display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '8px'
+                marginBottom: '8px',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
+                <Container style={{ display: 'flex', alignItems: 'center' }}>
+                  <Input.Text
                     type="checkbox"
                     checked={typeof params.maxHeight === 'number'}
                     onChange={(e) => setParams(p => ({ ...p, maxHeight: e.target.checked ? (p.maxHeight ?? Math.max(p.minHeight + 50, 200)) : null }))}
-                    style={{ 
+                    style={{
                       marginRight: '8px',
-                      accentColor: '#007AFF'
+                      accentColor: '#007AFF',
                     }}
                   />
-                  <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                  <Container as="span" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
                     Maximum Altitude
-                  </span>
-                </div>
+                  </Container>
+                </Container>
                 {typeof params.maxHeight === 'number' && (
-                  <span style={{ 
-                    color: '#FF3B30', 
-                    fontSize: '14px', 
+                  <Container as="span" style={{
+                    color: '#FF3B30',
+                    fontSize: '14px',
                     fontWeight: '600',
                     background: 'rgba(255, 59, 48, 0.15)',
                     padding: '2px 8px',
-                    borderRadius: '6px'
+                    borderRadius: '6px',
                   }}>
                     {params.maxHeight}ft
-                  </span>
+                  </Container>
                 )}
-              </div>
+              </Container>
               {typeof params.maxHeight === 'number' && (
-                <input
+                <Input.Text
                   type="range"
                   min={params.minHeight + 10}
                   max="1000"
                   step="10"
                   value={params.maxHeight}
                   onChange={(e) => setParams(p => ({ ...p, maxHeight: parseInt(e.target.value, 10) }))}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     height: '6px',
                     background: 'rgba(255, 255, 255, 0.2)',
                     borderRadius: '3px',
                     outline: 'none',
-                    appearance: 'none'
+                    appearance: 'none',
                   }}
                 />
               )}
-            </div>
-          </div>
+            </Container>
+          </Container>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
-              color: '#ffffff', 
-              display: 'block', 
-              marginBottom: '12px', 
-              fontSize: '15px',
-              fontWeight: '500'
-            }}>
+          <Container style={{ marginBottom: '24px' }}>
+            <Container
+              as="label"
+              style={{
+                color: '#ffffff',
+                display: 'block',
+                marginBottom: '12px',
+                fontSize: '15px',
+                fontWeight: '500',
+              }}
+            >
               View Options
-            </label>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
+            </Container>
+
+            <Container style={{ marginBottom: '20px' }}>
+              <Container style={{
+                display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '8px'
+                marginBottom: '8px',
               }}>
-                <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                <Container as="span" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
                   Active Slice
-                </span>
-                <span style={{ 
-                  color: '#AF52DE', 
-                  fontSize: '14px', 
+                </Container>
+                <Container as="span" style={{
+                  color: '#AF52DE',
+                  fontSize: '14px',
                   fontWeight: '600',
                   background: 'rgba(175, 82, 222, 0.15)',
                   padding: '2px 8px',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
                 }}>
                   {sliceIndex + 1}
-                </span>
-              </div>
-              <input
+                </Container>
+              </Container>
+              <Input.Text
                 type="range"
                 min="0"
                 max={params.slices - 1}
                 value={sliceIndex}
                 onChange={(e) => setSliceIndex(parseInt(e.target.value, 10))}
-                style={{ 
-                  width: '100%', 
+                style={{
+                  width: '100%',
                   height: '6px',
                   background: 'rgba(255, 255, 255, 0.2)',
                   borderRadius: '3px',
                   outline: 'none',
-                  appearance: 'none'
+                  appearance: 'none',
                 }}
               />
-            </div>
+            </Container>
 
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <Container style={{
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'space-between',
               padding: '12px',
               background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '8px',
-              border: '0.5px solid rgba(255, 255, 255, 0.1)'
+              border: '0.5px solid rgba(255, 255, 255, 0.1)',
             }}>
-              <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+              <Container as="span" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
                 Show Labels
-              </span>
-              <input
+              </Container>
+              <Input.Text
                 type="checkbox"
                 checked={showLabels}
                 onChange={(e) => setShowLabels(e.target.checked)}
                 style={{ accentColor: '#007AFF' }}
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </Container>
+          </Container>
+        </Container>
+      </Container>
 
       {/* 3D Viewer */}
-      <div style={{ flex: 1, position: 'relative' }}>
+      <Container style={{ flex: 1, position: 'relative' }}>
         {/* Add top padding to avoid navbar overlay */}
-        <div style={{ width: '100%', height: '100%', background: '#000', paddingTop: 56 }}>
-          <canvas 
+        <Container style={{ width: '100%', height: '100%', background: '#000', paddingTop: 56 }}>
+          <Container
+            as="canvas"
             id="shape-lab-canvas"
             style={{ width: '100%', height: '100%', display: 'block' }}
           />
-        </div>
+        </Container>
 
         {showControls && (
-          <div style={{
-            position: 'absolute', top: 76, left: 20, 
-            background: 'rgba(28, 28, 30, 0.95)', 
+          <Container style={{
+            position: 'absolute', top: 76, left: 20,
+            background: 'rgba(28, 28, 30, 0.95)',
             backdropFilter: 'blur(20px)',
             color: 'white',
-            padding: '16px 20px', 
-            borderRadius: 12, 
-            fontSize: 13, 
+            padding: '16px 20px',
+            borderRadius: 12,
+            fontSize: 13,
             fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
             lineHeight: '1.5',
-            border: '0.5px solid rgba(255, 255, 255, 0.1)'
+            border: '0.5px solid rgba(255, 255, 255, 0.1)',
           }}>
-            <div style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</div>
-            <div style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</div>
-            <div style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</div>
-            <div style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</div>
-            <div style={{ 
-              marginTop: 8, 
-              paddingTop: 8, 
-              borderTop: '0.5px solid rgba(255, 255, 255, 0.2)', 
+            <Container style={{ fontWeight: '600', marginBottom: 8, color: '#ffffff' }}>3D Controls</Container>
+            <Container style={{ marginBottom: 4 }}>• Left Drag: Orbit around focus point</Container>
+            <Container style={{ marginBottom: 4 }}>• Right Drag / Ctrl(⌘)+Drag: Move focus point</Container>
+            <Container style={{ marginBottom: 8 }}>• Scroll: Zoom in/out</Container>
+            <Container style={{
+              marginTop: 8,
+              paddingTop: 8,
+              borderTop: '0.5px solid rgba(255, 255, 255, 0.2)',
               opacity: 0.7,
-              fontSize: 12
+              fontSize: 12,
             }}>
               Units in feet. Green (Y) axis = altitude (AGL)
-            </div>
-          </div>
+            </Container>
+          </Container>
         )}
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 }

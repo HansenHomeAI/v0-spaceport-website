@@ -8,6 +8,7 @@ import TermsOfServiceModal from '../../components/TermsOfServiceModal';
 import type { ModelDeliveryProject, ResolveClientResponse } from '../hooks/useModelDeliveryAdmin';
 import { Button, Container, Input, Layout, Section, Text } from '../../components/foundational';
 
+import '../flight-viewer/styles.css';
 import './component-library.css';
 
 export const runtime = 'edge';
@@ -300,7 +301,7 @@ export default function ComponentLibrary(): JSX.Element {
             className="text-small"
             style={{ marginTop: '24px', padding: '16px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid rgba(255, 107, 107, 0.3)', borderRadius: '12px' }}
           >
-            <strong>Note:</strong> Some styles like gradient text (.stat-box h1, .price) and special UI elements (.beta-text) may need to remain as exceptions. All other text should migrate to the 6 unified styles.
+            <Container as="strong">Note:</Container> Some styles like gradient text (.stat-box h1, .price) and special UI elements (.beta-text) may need to remain as exceptions. All other text should migrate to the 6 unified styles.
           </Text.Small>
         </Container>
       </Container>
@@ -630,6 +631,193 @@ export default function ComponentLibrary(): JSX.Element {
             </Container>
           </Container>
         </Container>
+      </Container>
+
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Flight Viewer UI</Text.H2>
+          <Text.Body withBase={false}>Upload flow, flight list, lens controls, tooltip, and converter modal building blocks.</Text.Body>
+        </Container>
+        <Layout.Grid variant="component-library-grid">
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Upload Dropzone</Text.Body>
+            <Container as="label" variant="flight-viewer__upload">
+              <Container as="span" variant="flight-viewer__upload-title">Add flight files</Container>
+              <Container as="span" variant="flight-viewer__upload-hint">
+                Support for CSV (Litchi/DJI) and KMZ (DJI WPML) formats.
+              </Container>
+              <Input.Text type="file" accept=".csv,text/csv,.kmz,application/vnd.google-earth.kmz" />
+            </Container>
+          </Container>
+
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Flight List Item</Text.Body>
+            <Container variant="flight-viewer__flight-item">
+              <Container variant="flight-viewer__flight-item-header">
+                <Container variant="flight-viewer__flight-color" style={{ backgroundColor: '#4f83ff' }} />
+                <Container as="span" variant="flight-viewer__flight-name">ridgeview-001.csv</Container>
+                <Button.Base variant="flight-viewer__remove-btn" aria-label="Remove ridgeview-001">
+                  x
+                </Button.Base>
+              </Container>
+              <Container variant="flight-viewer__flight-stats">
+                <Container as="span">210 pts</Container>
+                <Container as="span">-</Container>
+                <Container as="span">1180m</Container>
+                <Container as="span">-</Container>
+                <Container as="span">120-320ft</Container>
+              </Container>
+            </Container>
+          </Container>
+
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Lens Controls + Tooltip</Text.Body>
+            <Container variant="flight-viewer__controls" style={{ position: 'relative' }}>
+              <Container as="label" variant="flight-viewer__lens-select">
+                <Container as="span">Camera Lens:</Container>
+                <Container as="select" defaultValue="mavic3_wide">
+                  <Container as="option" value="mavic3_wide">Mavic 3 Wide (24mm)</Container>
+                  <Container as="option" value="mavic3_tele">Mavic 3 Tele (162mm)</Container>
+                </Container>
+              </Container>
+            </Container>
+            <Container
+              variant="flight-viewer__tooltip"
+              style={{ position: 'static', marginTop: '16px', pointerEvents: 'auto' }}
+            >
+              <Container variant="flight-viewer__tooltip-header">
+                <Container as="span" variant="flight-viewer__tooltip-marker" style={{ background: '#4f83ff' }} />
+                <Container as="strong">ridgeview-001.csv</Container> - Waypoint 12
+              </Container>
+              <Container variant="flight-viewer__tooltip-body">
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Heading:</Container>
+                  <Container as="span">112.5deg</Container>
+                </Container>
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Gimbal Pitch:</Container>
+                  <Container as="span">-28.0deg</Container>
+                </Container>
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Altitude:</Container>
+                  <Container as="span">240 ft</Container>
+                </Container>
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Speed:</Container>
+                  <Container as="span">6.5 m/s</Container>
+                </Container>
+              </Container>
+            </Container>
+          </Container>
+        </Layout.Grid>
+
+        <Container variant={['component-library-card', 'component-library-card-wide']}>
+          <Text.Body withBase={false} className="component-library-label">Converter Modal</Text.Body>
+          <Container
+            variant="flight-viewer__modal-overlay"
+            style={{ position: 'relative', inset: 'auto', minHeight: '320px' }}
+          >
+            <Container variant="flight-viewer__modal">
+              <Container variant="flight-viewer__modal-header">
+                <Text.H2 withBase={false}>CSV to KMZ Converter</Text.H2>
+                <Button.Base variant="flight-viewer__modal-close" type="button">x</Button.Base>
+              </Container>
+              <Container variant="flight-viewer__modal-body">
+                <Text.Body withBase={false} className="flight-viewer__modal-description">
+                  Convert Litchi CSV waypoint missions to DJI Fly/Pilot 2 compatible KMZ files.
+                </Text.Body>
+                <Container as="label" variant="flight-viewer__converter-upload">
+                  <Container as="span">Select Litchi CSV file</Container>
+                  <Input.Text type="file" accept=".csv,text/csv" />
+                </Container>
+                <Container variant="flight-viewer__converter-options">
+                  <Container as="label">
+                    <Container as="span">Signal Lost Action</Container>
+                    <Container as="select" defaultValue="executeLostAction">
+                      <Container as="option" value="executeLostAction">Execute Lost Action</Container>
+                      <Container as="option" value="continue">Continue Mission</Container>
+                    </Container>
+                  </Container>
+                  <Container as="label">
+                    <Container as="span">Mission Speed (m/s)</Container>
+                    <Input.Text type="number" min="1" max="15" step="0.1" defaultValue={8.85} />
+                  </Container>
+                </Container>
+              </Container>
+              <Container variant="flight-viewer__modal-actions">
+                <Button.Base variant={['flight-viewer__modal-btn', 'secondary']} type="button">
+                  Cancel
+                </Button.Base>
+                <Button.Base variant={['flight-viewer__modal-btn', 'primary']} type="button">
+                  Convert & Download
+                </Button.Base>
+              </Container>
+            </Container>
+          </Container>
+        </Container>
+      </Container>
+
+      <Container as="section" variant="component-library-section">
+        <Container variant="component-library-section-header">
+          <Text.H2 withBase={false}>Shape Tools UI</Text.H2>
+          <Text.Body withBase={false}>Inline-styled panels used in the Shape Lab and Shape Viewer experiences.</Text.Body>
+        </Container>
+        <Layout.Grid variant="component-library-grid">
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Shape Lab Control Panel</Text.Body>
+            <Container style={{
+              background: 'rgba(28, 28, 30, 0.95)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '12px',
+              padding: '16px',
+              border: '0.5px solid rgba(255, 255, 255, 0.1)',
+              color: '#ffffff',
+            }}>
+              <Text.H3 withBase={false} style={{ fontSize: '16px', marginBottom: '8px' }}>Flight Shape Lab</Text.H3>
+              <Text.Body withBase={false} style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '16px' }}>
+                Design and visualize 3D drone flight patterns
+              </Text.Body>
+              <Container style={{ marginBottom: '12px' }}>
+                <Container style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <Container as="span" style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.8)' }}>Number of Batteries</Container>
+                  <Container as="span" style={{ fontSize: '12px', color: '#007AFF' }}>3</Container>
+                </Container>
+                <Input.Text type="range" min="1" max="8" defaultValue={3} style={{ width: '100%' }} />
+              </Container>
+              <Container style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
+                <Container as="span" style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.8)' }}>Show Labels</Container>
+                <Input.Text type="checkbox" defaultChecked style={{ accentColor: '#007AFF' }} />
+              </Container>
+            </Container>
+          </Container>
+
+          <Container variant="component-library-card">
+            <Text.Body withBase={false} className="component-library-label">Shape Viewer Panel</Text.Body>
+            <Container style={{
+              background: '#1a1a1a',
+              borderRadius: '12px',
+              padding: '16px',
+              color: '#ffffff',
+              fontFamily: 'monospace',
+              border: '1px solid #333',
+            }}>
+              <Text.H3 withBase={false} style={{ fontSize: '16px', marginBottom: '12px', color: '#00ff88' }}>
+                Flight Shape Viewer
+              </Text.H3>
+              <Container style={{ marginBottom: '12px' }}>
+                <Container as="label" style={{ display: 'block', fontSize: '11px', marginBottom: '6px', opacity: 0.8 }}>
+                  Number of Bounces (N)
+                </Container>
+                <Input.Text type="range" min="3" max="12" defaultValue={6} style={{ width: '100%' }} />
+                <Container style={{ fontSize: '12px', marginTop: '6px' }}>6</Container>
+              </Container>
+              <Container style={{ display: 'flex', alignItems: 'center' }}>
+                <Input.Text type="checkbox" defaultChecked style={{ marginRight: '8px' }} />
+                <Container as="span" style={{ fontSize: '11px' }}>Show Waypoint Labels</Container>
+              </Container>
+            </Container>
+          </Container>
+        </Layout.Grid>
       </Container>
 
       <Container as="section" variant="component-library-section">

@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Line, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { Container, Input, Text } from '../../components/foundational';
 
 interface Waypoint {
   x: number;
@@ -221,7 +222,7 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
             <meshBasicMaterial color={color} />
             {showLabels && (
               <Html distanceFactor={100} center>
-                <div style={{
+                <Container style={{
                   background: 'rgba(0,0,0,0.85)',
                   color: 'white',
                   padding: '3px 8px',
@@ -231,7 +232,7 @@ function FlightPathVisualization({ waypoints, showLabels }: { waypoints: Waypoin
                   transform: 'translateY(-25px)'
                 }}>
                   {wp.index}: {wp.phase}
-                </div>
+                </Container>
               </Html>
             )}
           </mesh>
@@ -287,35 +288,35 @@ export default function ShapeViewerPage() {
   };
   
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#0a0a0a', display: 'flex' }}>
+    <Container style={{ width: '100vw', height: '100vh', background: '#0a0a0a', display: 'flex' }}>
       {/* Control Panel */}
-      <div style={{
+      <Container style={{
         width: '350px',
         background: '#1a1a1a',
         padding: '20px',
         overflowY: 'auto',
         borderRight: '1px solid #333',
         color: '#fff',
-        fontFamily: 'monospace'
+        fontFamily: 'monospace',
       }}>
-        <h1 style={{ fontSize: '20px', marginBottom: '20px', color: '#00ff88' }}>
+        <Text.H1 withBase={false} style={{ fontSize: '20px', marginBottom: '20px', color: '#00ff88' }}>
           Flight Shape Viewer
-        </h1>
-        
-        <div style={{ marginBottom: '20px', padding: '10px', background: '#252525', borderRadius: '8px' }}>
-          <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '5px' }}>DIAGNOSTICS</div>
-          <div style={{ fontSize: '11px' }}>
-            <div>dphi: {(2 * Math.PI / params.slices).toFixed(4)} rad</div>
-            <div>dphi: {(360 / params.slices).toFixed(2)}°</div>
-            <div>Waypoints: {(2 * params.N + 5)} per battery</div>
-          </div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
+        </Text.H1>
+
+        <Container style={{ marginBottom: '20px', padding: '10px', background: '#252525', borderRadius: '8px' }}>
+          <Container style={{ fontSize: '12px', opacity: 0.7, marginBottom: '5px' }}>DIAGNOSTICS</Container>
+          <Container style={{ fontSize: '11px' }}>
+            <Container>dphi: {(2 * Math.PI / params.slices).toFixed(4)} rad</Container>
+            <Container>dphi: {(360 / params.slices).toFixed(2)}°</Container>
+            <Container>Waypoints: {(2 * params.N + 5)} per battery</Container>
+          </Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
             Number of Batteries (slices)
-          </label>
-          <input
+          </Container>
+          <Input.Text
             type="range"
             min="1"
             max="8"
@@ -323,14 +324,14 @@ export default function ShapeViewerPage() {
             onChange={(e) => updateParam('slices', parseInt(e.target.value))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: '14px', marginTop: '5px' }}>{params.slices}</div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
+          <Container style={{ fontSize: '14px', marginTop: '5px' }}>{params.slices}</Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
             Number of Bounces (N)
-          </label>
-          <input
+          </Container>
+          <Input.Text
             type="range"
             min="3"
             max="12"
@@ -338,14 +339,14 @@ export default function ShapeViewerPage() {
             onChange={(e) => updateParam('N', parseInt(e.target.value))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: '14px', marginTop: '5px' }}>{params.N}</div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
+          <Container style={{ fontSize: '14px', marginTop: '5px' }}>{params.N}</Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
             Starting Radius (r0) ft
-          </label>
-          <input
+          </Container>
+          <Input.Text
             type="range"
             min="50"
             max="300"
@@ -354,14 +355,14 @@ export default function ShapeViewerPage() {
             onChange={(e) => updateParam('r0', parseInt(e.target.value))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: '14px', marginTop: '5px' }}>{params.r0} ft</div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
+          <Container style={{ fontSize: '14px', marginTop: '5px' }}>{params.r0} ft</Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
             Hold Radius (rHold) ft
-          </label>
-          <input
+          </Container>
+          <Input.Text
             type="range"
             min="200"
             max="5000"
@@ -370,14 +371,14 @@ export default function ShapeViewerPage() {
             onChange={(e) => updateParam('rHold', parseInt(e.target.value))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: '14px', marginTop: '5px' }}>{params.rHold} ft</div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
+          <Container style={{ fontSize: '14px', marginTop: '5px' }}>{params.rHold} ft</Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
             Battery Duration (minutes)
-          </label>
-          <input
+          </Container>
+          <Input.Text
             type="range"
             min="5"
             max="30"
@@ -385,14 +386,14 @@ export default function ShapeViewerPage() {
             onChange={(e) => updateParam('battery_duration_minutes', parseInt(e.target.value))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: '14px', marginTop: '5px' }}>{params.battery_duration_minutes} min</div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
+          <Container style={{ fontSize: '14px', marginTop: '5px' }}>{params.battery_duration_minutes} min</Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', opacity: 0.8 }}>
             View Battery/Slice
-          </label>
-          <input
+          </Container>
+          <Input.Text
             type="range"
             min="0"
             max={params.slices - 1}
@@ -400,72 +401,72 @@ export default function ShapeViewerPage() {
             onChange={(e) => setBatteryIndex(parseInt(e.target.value))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: '14px', marginTop: '5px' }}>Battery {batteryIndex + 1} of {params.slices}</div>
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-            <input
+          <Container style={{ fontSize: '14px', marginTop: '5px' }}>Battery {batteryIndex + 1} of {params.slices}</Container>
+        </Container>
+
+        <Container style={{ marginBottom: '15px' }}>
+          <Container as="label" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+            <Input.Text
               type="checkbox"
               checked={showLabels}
               onChange={(e) => setShowLabels(e.target.checked)}
               style={{ marginRight: '8px' }}
             />
-            <span style={{ fontSize: '12px' }}>Show Waypoint Labels</span>
-          </label>
-        </div>
-        
-        <div style={{ 
-          marginTop: '20px', 
-          padding: '15px', 
-          background: '#252525', 
-          borderRadius: '8px',
-          fontSize: '11px',
-          lineHeight: '1.6'
-        }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '10px', color: '#00ff88' }}>Legend:</div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-            <div style={{ width: '12px', height: '12px', background: '#ff0000', borderRadius: '50%', marginRight: '8px' }} />
-            Start Point
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-            <div style={{ width: '12px', height: '12px', background: '#ffaa00', borderRadius: '50%', marginRight: '8px' }} />
-            Bounce Points
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-            <div style={{ width: '12px', height: '12px', background: '#0088ff', borderRadius: '50%', marginRight: '8px' }} />
-            Hold Pattern
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ width: '12px', height: '12px', background: '#ffffff', borderRadius: '50%', marginRight: '8px' }} />
-            Midpoints
-          </div>
-        </div>
-        
-        <div style={{ 
-          marginTop: '15px', 
-          padding: '15px', 
-          background: '#331a1a', 
+            <Container as="span" style={{ fontSize: '12px' }}>Show Waypoint Labels</Container>
+          </Container>
+        </Container>
+
+        <Container style={{
+          marginTop: '20px',
+          padding: '15px',
+          background: '#252525',
           borderRadius: '8px',
           fontSize: '11px',
           lineHeight: '1.6',
-          border: '1px solid #ff4444'
         }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#ff6666' }}>Bug Description:</div>
-          <div>At slices=1, dphi=2π causes phase oscillation to span full circle, collapsing all waypoints onto same radial line.</div>
-        </div>
-      </div>
-      
+          <Container style={{ fontWeight: 'bold', marginBottom: '10px', color: '#00ff88' }}>Legend:</Container>
+          <Container style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+            <Container style={{ width: '12px', height: '12px', background: '#ff0000', borderRadius: '50%', marginRight: '8px' }} />
+            Start Point
+          </Container>
+          <Container style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+            <Container style={{ width: '12px', height: '12px', background: '#ffaa00', borderRadius: '50%', marginRight: '8px' }} />
+            Bounce Points
+          </Container>
+          <Container style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+            <Container style={{ width: '12px', height: '12px', background: '#0088ff', borderRadius: '50%', marginRight: '8px' }} />
+            Hold Pattern
+          </Container>
+          <Container style={{ display: 'flex', alignItems: 'center' }}>
+            <Container style={{ width: '12px', height: '12px', background: '#ffffff', borderRadius: '50%', marginRight: '8px' }} />
+            Midpoints
+          </Container>
+        </Container>
+
+        <Container style={{
+          marginTop: '15px',
+          padding: '15px',
+          background: '#331a1a',
+          borderRadius: '8px',
+          fontSize: '11px',
+          lineHeight: '1.6',
+          border: '1px solid #ff4444',
+        }}>
+          <Container style={{ fontWeight: 'bold', marginBottom: '5px', color: '#ff6666' }}>Bug Description:</Container>
+          <Container>At slices=1, dphi=2π causes phase oscillation to span full circle, collapsing all waypoints onto same radial line.</Container>
+        </Container>
+      </Container>
+
       {/* 2D Shape Viewer */}
-      <div style={{ flex: 1, position: 'relative' }}>
-        <Canvas 
+      <Container style={{ flex: 1, position: 'relative' }}>
+        <Canvas
           camera={{ position: [0, 0, 3000], fov: 50 }}
           orthographic
         >
           <Scene params={params} batteryIndex={batteryIndex} showLabels={showLabels} />
         </Canvas>
-        
-        <div style={{
+
+        <Container style={{
           position: 'absolute',
           top: '20px',
           left: '20px',
@@ -474,13 +475,12 @@ export default function ShapeViewerPage() {
           padding: '10px 15px',
           borderRadius: '8px',
           fontSize: '12px',
-          fontFamily: 'monospace'
+          fontFamily: 'monospace',
         }}>
-          <div>2D Top-Down View: Drag to pan, Scroll to zoom</div>
-          <div style={{ marginTop: '5px', opacity: 0.7 }}>Grid = 500ft spacing, Red dot = start point</div>
-        </div>
-      </div>
-    </div>
+          <Container>2D Top-Down View: Drag to pan, Scroll to zoom</Container>
+          <Container style={{ marginTop: '5px', opacity: 0.7 }}>Grid = 500ft spacing, Red dot = start point</Container>
+        </Container>
+      </Container>
+    </Container>
   );
 }
-

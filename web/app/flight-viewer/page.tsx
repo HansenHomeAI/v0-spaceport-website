@@ -6,6 +6,7 @@ import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
 import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
 import { buildApiUrl } from "../api-config";
+import { Button, Container, Input, Text } from "../../components/foundational";
 import "./styles.css";
 
 type RawFlightRow = Record<string, unknown>;
@@ -991,27 +992,29 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
 
   if (!apiKey) {
     return (
-      <div className="flight-viewer__map-placeholder">
-        <p>Google Maps API key missing. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable photorealistic terrain.</p>
-      </div>
+      <Container variant="flight-viewer__map-placeholder">
+        <Text.Body withBase={false}>
+          Google Maps API key missing. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable photorealistic terrain.
+        </Text.Body>
+      </Container>
     );
   }
 
   return (
-    <div className="flight-viewer__map-container">
-      <div ref={containerRef} className="flight-viewer__cesium-canvas" />
+    <Container variant="flight-viewer__map-container">
+      <Container ref={containerRef} variant="flight-viewer__cesium-canvas" />
       {initError && (
-        <div className="flight-viewer__map-warning">
-          <strong>3D view unavailable.</strong>
+        <Container variant="flight-viewer__map-warning">
+          <Container as="strong">3D view unavailable.</Container>
           {" "}
           {initError === "missing-key"
             ? "Add a Google Maps API key to render photorealistic terrain."
             : initError.startsWith("tileset")
             ? `Photorealistic tiles failed to load (${initError.split(":").slice(1).join(":") || "check Map Tiles API access"}).`
             : "WebGL initialization failed."}
-        </div>
+        </Container>
       )}
-    </div>
+    </Container>
   );
 }
 export default function FlightViewerPage(): JSX.Element {
@@ -1171,133 +1174,139 @@ export default function FlightViewerPage(): JSX.Element {
   }, [converterFile, converterOptions]);
 
   return (
-    <main className="flight-viewer">
-      <div className="flight-viewer__intro">
-        <div>
-          <h1>Flight Viewer</h1>
-          <p>Upload CSV or KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.</p>
-        </div>
-        <button 
-          className="flight-viewer__converter-btn"
+    <Container as="main" variant="flight-viewer">
+      <Container variant="flight-viewer__intro">
+        <Container>
+          <Text.H1 withBase={false}>Flight Viewer</Text.H1>
+          <Text.Body withBase={false}>
+            Upload CSV or KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.
+          </Text.Body>
+        </Container>
+        <Button.Base
+          variant="flight-viewer__converter-btn"
           onClick={() => setShowConverter(true)}
         >
           Convert CSV to KMZ
-        </button>
-      </div>
+        </Button.Base>
+      </Container>
 
-      <section className="flight-viewer__content">
-        <aside className="flight-viewer__sidebar">
-          <label className="flight-viewer__upload">
-            <span className="flight-viewer__upload-title">Add flight files</span>
-            <span className="flight-viewer__upload-hint">Support for CSV (Litchi/DJI) and KMZ (DJI WPML) formats. Select multiple files to overlay paths.</span>
-            <input
+      <Container as="section" variant="flight-viewer__content">
+        <Container as="aside" variant="flight-viewer__sidebar">
+          <Container as="label" variant="flight-viewer__upload">
+            <Container as="span" variant="flight-viewer__upload-title">Add flight files</Container>
+            <Container as="span" variant="flight-viewer__upload-hint">
+              Support for CSV (Litchi/DJI) and KMZ (DJI WPML) formats. Select multiple files to overlay paths.
+            </Container>
+            <Input.Text
               type="file"
               accept=".csv,text/csv,.kmz,application/vnd.google-earth.kmz"
               multiple
               onChange={onFilesSelected}
               disabled={isParsing}
             />
-          </label>
+          </Container>
 
-          {isParsing && <p className="flight-viewer__status">Parsing files...</p>}
-          {status && !isParsing && <p className="flight-viewer__status flight-viewer__status--error">{status}</p>}
+          {isParsing && (
+            <Text.Body withBase={false} className="flight-viewer__status">Parsing files...</Text.Body>
+          )}
+          {status && !isParsing && (
+            <Text.Body withBase={false} className="flight-viewer__status flight-viewer__status--error">{status}</Text.Body>
+          )}
 
           {flights.length > 0 && (
-            <>
-              <div className="flight-viewer__flight-list">
-                <div className="flight-viewer__flight-list-header">
-                  <h3>Loaded Flights ({flights.length})</h3>
-                  <button onClick={clearAll} className="flight-viewer__clear-btn">Clear All</button>
-                </div>
-                {flights.map(flight => {
-                  const stats = computeStats(flight);
-                  return (
-                    <div key={flight.id} className="flight-viewer__flight-item">
-                      <div className="flight-viewer__flight-item-header">
-                        <div className="flight-viewer__flight-color" style={{ backgroundColor: flight.color }} />
-                        <span className="flight-viewer__flight-name">{flight.name}</span>
-                        <button 
-                          onClick={() => removeFlight(flight.id)} 
-                          className="flight-viewer__remove-btn"
-                          aria-label={`Remove ${flight.name}`}
-                        >
-                          x
-                        </button>
-                      </div>
-                      <div className="flight-viewer__flight-stats">
-                        <span>{flight.samples.length} pts</span>
-                        {stats && (
-                          <>
-                            <span>-</span>
-                            <span>{formatNumber(stats.totalDistanceMeters, 0)}m</span>
-                            <span>-</span>
-                            <span>{formatNumber(stats.minAltitudeFt, 0)}-{formatNumber(stats.maxAltitudeFt, 0)}ft</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
+            <Container variant="flight-viewer__flight-list">
+              <Container variant="flight-viewer__flight-list-header">
+                <Text.H3 withBase={false}>Loaded Flights ({flights.length})</Text.H3>
+                <Button.Base onClick={clearAll} variant="flight-viewer__clear-btn">Clear All</Button.Base>
+              </Container>
+              {flights.map(flight => {
+                const stats = computeStats(flight);
+                return (
+                  <Container key={flight.id} variant="flight-viewer__flight-item">
+                    <Container variant="flight-viewer__flight-item-header">
+                      <Container variant="flight-viewer__flight-color" style={{ backgroundColor: flight.color }} />
+                      <Container as="span" variant="flight-viewer__flight-name">{flight.name}</Container>
+                      <Button.Base
+                        onClick={() => removeFlight(flight.id)}
+                        variant="flight-viewer__remove-btn"
+                        aria-label={`Remove ${flight.name}`}
+                      >
+                        x
+                      </Button.Base>
+                    </Container>
+                    <Container variant="flight-viewer__flight-stats">
+                      <Container as="span">{flight.samples.length} pts</Container>
+                      {stats && (
+                        <>
+                          <Container as="span">-</Container>
+                          <Container as="span">{formatNumber(stats.totalDistanceMeters, 0)}m</Container>
+                          <Container as="span">-</Container>
+                          <Container as="span">{formatNumber(stats.minAltitudeFt, 0)}-{formatNumber(stats.maxAltitudeFt, 0)}ft</Container>
+                        </>
+                      )}
+                    </Container>
+                  </Container>
+                );
+              })}
+            </Container>
           )}
 
           {flights.length === 0 && !isParsing && (
-            <div className="flight-viewer__details flight-viewer__details--placeholder">
-              <h2>How it works</h2>
-              <ul>
-                <li>Upload CSV (Litchi/DJI) or KMZ (DJI WPML) flight plans.</li>
-                <li>All paths share a common reference point for accurate overlays.</li>
-                <li>Metric and imperial units are automatically converted.</li>
-                <li>Each flight gets a unique color for easy comparison.</li>
-              </ul>
-            </div>
+            <Container variant={['flight-viewer__details', 'flight-viewer__details--placeholder']}>
+              <Text.H2 withBase={false}>How it works</Text.H2>
+              <Container as="ul">
+                <Container as="li">Upload CSV (Litchi/DJI) or KMZ (DJI WPML) flight plans.</Container>
+                <Container as="li">All paths share a common reference point for accurate overlays.</Container>
+                <Container as="li">Metric and imperial units are automatically converted.</Container>
+                <Container as="li">Each flight gets a unique color for easy comparison.</Container>
+              </Container>
+            </Container>
           )}
-        </aside>
+        </Container>
 
-        <div className="flight-viewer__visualizer" aria-live="polite">
+        <Container variant="flight-viewer__visualizer" aria-live="polite">
           {flights.length > 0 && (
-            <div className="flight-viewer__controls">
-              <label className="flight-viewer__lens-select">
-                <span>Camera Lens:</span>
-                <select value={selectedLens} onChange={(e) => setSelectedLens(e.target.value)}>
+            <Container variant="flight-viewer__controls">
+              <Container as="label" variant="flight-viewer__lens-select">
+                <Container as="span">Camera Lens:</Container>
+                <Container as="select" value={selectedLens} onChange={(e) => setSelectedLens(e.target.value)}>
                   {Object.entries(DRONE_LENSES).map(([key, lens]) => (
-                    <option key={key} value={key}>
+                    <Container as="option" key={key} value={key}>
                       {lens.name}
-                    </option>
+                    </Container>
                   ))}
-                </select>
-              </label>
-            </div>
+                </Container>
+              </Container>
+            </Container>
           )}
-          
+
           {hoveredData && (
-            <div className="flight-viewer__tooltip">
-              <div className="flight-viewer__tooltip-header">
-                <span className="flight-viewer__tooltip-marker" style={{ background: hoveredData.flight.color }} />
-                <strong>{hoveredData.flight.name}</strong> - Waypoint {hoveredData.sample.index + 1}
-              </div>
-              <div className="flight-viewer__tooltip-body">
-                <div className="flight-viewer__tooltip-row">
-                  <span>Heading:</span>
-                  <span>{hoveredData.sample.headingDeg?.toFixed(1) || "--"}deg</span>
-                </div>
-                <div className="flight-viewer__tooltip-row">
-                  <span>Gimbal Pitch:</span>
-                  <span>{hoveredData.sample.gimbalPitchAngle?.toFixed(1) || "--"}deg</span>
-                </div>
-                <div className="flight-viewer__tooltip-row">
-                  <span>Altitude:</span>
-                  <span>{hoveredData.sample.altitudeFt.toFixed(1)} ft</span>
-                </div>
-                <div className="flight-viewer__tooltip-row">
-                  <span>Speed:</span>
-                  <span>{hoveredData.sample.speedMs?.toFixed(1) || "--"} m/s</span>
-                </div>
-              </div>
-            </div>
+            <Container variant="flight-viewer__tooltip">
+              <Container variant="flight-viewer__tooltip-header">
+                <Container as="span" variant="flight-viewer__tooltip-marker" style={{ background: hoveredData.flight.color }} />
+                <Container as="strong">{hoveredData.flight.name}</Container> - Waypoint {hoveredData.sample.index + 1}
+              </Container>
+              <Container variant="flight-viewer__tooltip-body">
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Heading:</Container>
+                  <Container as="span">{hoveredData.sample.headingDeg?.toFixed(1) || "--"}deg</Container>
+                </Container>
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Gimbal Pitch:</Container>
+                  <Container as="span">{hoveredData.sample.gimbalPitchAngle?.toFixed(1) || "--"}deg</Container>
+                </Container>
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Altitude:</Container>
+                  <Container as="span">{hoveredData.sample.altitudeFt.toFixed(1)} ft</Container>
+                </Container>
+                <Container variant="flight-viewer__tooltip-row">
+                  <Container as="span">Speed:</Container>
+                  <Container as="span">{hoveredData.sample.speedMs?.toFixed(1) || "--"} m/s</Container>
+                </Container>
+              </Container>
+            </Container>
           )}
-          
+
           {flights.length > 0 ? (
             <FlightPathScene
               flights={flights}
@@ -1305,66 +1314,70 @@ export default function FlightViewerPage(): JSX.Element {
               onWaypointHover={handleWaypointHover}
             />
           ) : (
-            <div className="flight-viewer__placeholder">
-              <div className="flight-viewer__placeholder-inner">
-                <p>Select flight files to render their 3D trajectories.</p>
-              </div>
-            </div>
+            <Container variant="flight-viewer__placeholder">
+              <Container variant="flight-viewer__placeholder-inner">
+                <Text.Body withBase={false}>Select flight files to render their 3D trajectories.</Text.Body>
+              </Container>
+            </Container>
           )}
-        </div>
-      </section>
+        </Container>
+      </Container>
 
       {showConverter && (
-        <div className="flight-viewer__modal-overlay" onClick={() => setShowConverter(false)}>
-          <div className="flight-viewer__modal" onClick={(e) => e.stopPropagation()}>
-            <div className="flight-viewer__modal-header">
-              <h2>CSV to KMZ Converter</h2>
-              <button 
-                className="flight-viewer__modal-close"
+        <Container
+          variant="flight-viewer__modal-overlay"
+          onClick={() => setShowConverter(false)}
+        >
+          <Container variant="flight-viewer__modal" onClick={(e) => e.stopPropagation()}>
+            <Container variant="flight-viewer__modal-header">
+              <Text.H2 withBase={false}>CSV to KMZ Converter</Text.H2>
+              <Button.Base
+                variant="flight-viewer__modal-close"
                 onClick={() => setShowConverter(false)}
               >
                 x
-              </button>
-            </div>
+              </Button.Base>
+            </Container>
 
-            <div className="flight-viewer__modal-body">
-              <p className="flight-viewer__modal-description">
+            <Container variant="flight-viewer__modal-body">
+              <Text.Body withBase={false} className="flight-viewer__modal-description">
                 Convert Litchi CSV waypoint missions to DJI Fly/Pilot 2 compatible KMZ files.
-              </p>
+              </Text.Body>
 
-              <label className="flight-viewer__converter-upload">
-                <span>Select Litchi CSV file</span>
-                <input
+              <Container as="label" variant="flight-viewer__converter-upload">
+                <Container as="span">Select Litchi CSV file</Container>
+                <Input.Text
                   type="file"
                   accept=".csv,text/csv"
                   onChange={(e) => setConverterFile(e.target.files?.[0] || null)}
                 />
-              </label>
+              </Container>
 
               {converterFile && (
-                <div className="flight-viewer__converter-file">
+                <Container variant="flight-viewer__converter-file">
                   {converterFile.name}
-                </div>
+                </Container>
               )}
 
-              <div className="flight-viewer__converter-options">
-                <label>
-                  <span>Signal Lost Action</span>
-                  <select
+              <Container variant="flight-viewer__converter-options">
+                <Container as="label">
+                  <Container as="span">Signal Lost Action</Container>
+                  <Container
+                    as="select"
                     value={converterOptions.signalLostAction}
                     onChange={(e) => setConverterOptions(prev => ({
                       ...prev,
-                      signalLostAction: e.target.value as "continue" | "executeLostAction"
+                      signalLostAction: e.target.value as "continue" | "executeLostAction",
                     }))}
                   >
-                    <option value="executeLostAction">Execute Lost Action</option>
-                    <option value="continue">Continue Mission</option>
-                  </select>
-                </label>
+                    <Container as="option" value="executeLostAction">Execute Lost Action</Container>
+                    <Container as="option" value="continue">Continue Mission</Container>
+                  </Container>
+                </Container>
 
-                <label>
-                  <span>Mission Speed (m/s)</span>
-                  <input
+                <Container as="label">
+                  <Container as="span">Mission Speed (m/s)</Container>
+                  <Input.Text
                     type="number"
                     min="1"
                     max="15"
@@ -1372,81 +1385,84 @@ export default function FlightViewerPage(): JSX.Element {
                     value={converterOptions.missionSpeed}
                     onChange={(e) => setConverterOptions(prev => ({
                       ...prev,
-                      missionSpeed: parseFloat(e.target.value)
+                      missionSpeed: parseFloat(e.target.value),
                     }))}
                   />
-                </label>
+                </Container>
 
-                <label>
-                  <span>Drone Type</span>
-                  <select
+                <Container as="label">
+                  <Container as="span">Drone Type</Container>
+                  <Container
+                    as="select"
                     value={converterOptions.droneType}
                     onChange={(e) => setConverterOptions(prev => ({
                       ...prev,
-                      droneType: e.target.value as any
+                      droneType: e.target.value as any,
                     }))}
                   >
-                    <option value="dji_fly">DJI Fly (Consumer)</option>
-                    <option value="mavic3_enterprise">Mavic 3 Enterprise</option>
-                    <option value="matrice_30">Matrice 30</option>
-                  </select>
-                </label>
+                    <Container as="option" value="dji_fly">DJI Fly (Consumer)</Container>
+                    <Container as="option" value="mavic3_enterprise">Mavic 3 Enterprise</Container>
+                    <Container as="option" value="matrice_30">Matrice 30</Container>
+                  </Container>
+                </Container>
 
-                <label>
-                  <span>Heading Mode</span>
-                  <select
+                <Container as="label">
+                  <Container as="span">Heading Mode</Container>
+                  <Container
+                    as="select"
                     value={converterOptions.headingMode}
                     onChange={(e) => setConverterOptions(prev => ({
                       ...prev,
-                      headingMode: e.target.value as any
+                      headingMode: e.target.value as any,
                     }))}
                   >
-                    <option value="poi_or_interpolate">Toward POI / Interpolate</option>
-                    <option value="follow_wayline">Follow Wayline</option>
-                    <option value="manual">Manual</option>
-                  </select>
-                </label>
+                    <Container as="option" value="poi_or_interpolate">Toward POI / Interpolate</Container>
+                    <Container as="option" value="follow_wayline">Follow Wayline</Container>
+                    <Container as="option" value="manual">Manual</Container>
+                  </Container>
+                </Container>
 
-                <label className="flight-viewer__converter-checkbox">
-                  <input
+                <Container as="label" variant="flight-viewer__converter-checkbox">
+                  <Input.Text
                     type="checkbox"
                     checked={converterOptions.allowStraightLines}
                     onChange={(e) => setConverterOptions(prev => ({
                       ...prev,
-                      allowStraightLines: e.target.checked
+                      allowStraightLines: e.target.checked,
                     }))}
                   />
-                  <span>Allow Straight Lines (may show incorrectly in DJI Fly)</span>
-                </label>
-              </div>
+                  <Container as="span">Allow Straight Lines (may show incorrectly in DJI Fly)</Container>
+                </Container>
+              </Container>
 
               {converterStatus && (
-              <div className={`flight-viewer__converter-status ${converterStatus.startsWith("Converted") ? "success" : "error"}`}>
+                <Container
+                  variant={`flight-viewer__converter-status ${converterStatus.startsWith("Converted") ? "success" : "error"}`}
+                >
                   {converterStatus}
-                </div>
+                </Container>
               )}
 
-              <div className="flight-viewer__modal-actions">
-                <button
-                  className="flight-viewer__modal-btn secondary"
+              <Container variant="flight-viewer__modal-actions">
+                <Button.Base
+                  variant={["flight-viewer__modal-btn", "secondary"]}
                   onClick={() => setShowConverter(false)}
                   disabled={converting}
                 >
                   Cancel
-                </button>
-                <button
-                  className="flight-viewer__modal-btn primary"
+                </Button.Base>
+                <Button.Base
+                  variant={["flight-viewer__modal-btn", "primary"]}
                   onClick={handleConvertFile}
                   disabled={!converterFile || converting}
                 >
                   {converting ? "Converting..." : "Convert & Download"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+                </Button.Base>
+              </Container>
+            </Container>
+          </Container>
+        </Container>
       )}
-
-    </main>
+    </Container>
   );
 }
