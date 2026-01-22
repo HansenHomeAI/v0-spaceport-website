@@ -154,11 +154,6 @@ async def _launch_context():
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
             "--disable-gpu",
-            "--disable-gpu-compositing",
-            "--disable-software-rasterizer",
-            "--no-zygote",
-            "--single-process",
-            "--disable-features=VizDisplayCompositor",
         ],
     )
     context = await browser.new_context(
