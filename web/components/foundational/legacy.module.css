@@ -245,10 +245,8 @@
 .header .nav-links a,
 .header .nav-links-desktop a {
   text-shadow: none;
-}
-
-/* LANDING SECTION & IFRAME */
-#landing {
+}.legacy-scope /* LANDING SECTION & IFRAME */
+.legacy-scope :global(#landing){
   position: relative;
   height: 100vh;
   padding: 0 0 60px;
@@ -392,8 +390,7 @@
   margin: 0 auto;
   box-sizing: border-box;
   text-align: center;
-}
-#landing.section {
+}.legacy-scope :global(#landing).section{
   max-width: 100% !important;
   margin: 0 !important;
   width: 100%; /* Changed from 100vw to 100% */
@@ -401,34 +398,20 @@
   position: relative;
   height: 100vh;
   overflow: hidden;
-}
-
-#landing-carousel {
+}.legacy-scope :global(#landing-carousel){
   padding: 30px 20px 0px; /* Keep top padding, remove bottom padding */
   position: relative;
   min-height: 10px; /* Adjust this value based on your needs */
   align-items: flex-end;
-}
-
-#landing-stats2 {
+}.legacy-scope :global(#landing-stats2){
   padding: 70px 20px 10px;
   position: relative;
-}
-
-/* We apply padding to all sections below for consistent spacing */
-#landing-more,
-#landing-more2,
-#landing-stats,
-#about-mission,
-#about-innovation,
-#create-steps1,
-#create-steps2,
-#create-steps3 {
+}.legacy-scope /* We apply padding to all sections below for consistent spacing */
+.legacy-scope :global(#landing-more), .legacy-scope :global(#landing-more2), .legacy-scope :global(#landing-stats), .legacy-scope :global(#about-mission), .legacy-scope :global(#about-innovation), .legacy-scope :global(#create-steps1), .legacy-scope :global(#create-steps2), .legacy-scope :global(#create-steps3){
   padding: 70px 20px 40px;
   position: relative;
-}
-/* We reduce top padding of #landing-additional by ~25px to tighten the gap */
-#landing-additional {
+}.legacy-scope /* We reduce top padding of .legacy-scope :global(#landing-additional) by ~25px to tighten the gap */
+.legacy-scope :global(#landing-additional){
   padding: 50px 20px 60px;
   position: relative;
 }
@@ -679,16 +662,12 @@
   outline: none;
   font-size: 1rem;
   color: #ccc;
-}
-
-/* Footer stats section (gradient logo) */
-#footer-stats {
+}.legacy-scope /* Footer stats section (gradient logo) */
+.legacy-scope :global(#footer-stats){
   padding: 70px 20px 10px;
   position: relative;
-}
-
-/* Feedback form section */
-#feedback-section {
+}.legacy-scope /* Feedback form section */
+.legacy-scope :global(#feedback-section){
   padding: 40px 20px;
   display: flex;
   justify-content: center;
@@ -1199,12 +1178,8 @@
 /* Create page iframes container */
 .iframe-container {
   margin-top: 80px;
-}
-
-/* Ensure About, Pricing, and Create start lower from the top */
-#about,
-#pricing-header,
-#create {
+}/* Ensure About, Pricing, .legacy-scope and Create start lower from the top */
+.legacy-scope :global(#about), .legacy-scope :global(#pricing-header), .legacy-scope :global(#create){
   flex-direction: column;
   justify-content: center;
   min-height: 3rem;
@@ -1315,19 +1290,16 @@
   text-align: left;
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-}
-/* Variation for box #1 */
-.stat-box:nth-child(1) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#1) */
+.stat-box:nth-child(1){
   background: rgba(0, 0, 0, 0.1); /* Base background with opacity */
   /* Applying gradient potentially as overlay or removing opacity from definition */
   /* Simpler approach: Just use a base color if gradient is complex */
-}
-/* Variation for box #2 */
-.stat-box:nth-child(2) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#2) */
+.stat-box:nth-child(2){
   background: rgba(0, 0, 0, 0.1);
-}
-/* Variation for box #3 */
-.stat-box:nth-child(3) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#3) */
+.stat-box:nth-child(3){
   background: rgba(0, 0, 0, 0.1);
 }
 .stat-box::before {
@@ -1429,17 +1401,14 @@
     flex: 0 0 calc(50% - 15px);
     width: calc(50% - 15px);
   }
-}
-/* Variation for box #1 */
-.project-box:nth-child(1) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#1) */
+.project-box:nth-child(1){
   background: rgba(0, 0, 0, 0.1); /* Base background with opacity */
-}
-/* Variation for box #2 */
-.project-box:nth-child(2) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#2) */
+.project-box:nth-child(2){
   background: rgba(0, 0, 0, 0.1);
-}
-/* Variation for box #3 */
-.project-box:nth-child(3) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#3) */
+.project-box:nth-child(3){
   background: rgba(0, 0, 0, 0.1);
 }
 
@@ -1660,9 +1629,8 @@
   text-align: left;
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-}
-/* Variation for box #1 */
-.stat-box2:nth-child(1) {
+}.legacy-scope /* Variation for box .legacy-scope :global(#1) */
+.stat-box2:nth-child(1){
   background: conic-gradient(
     from 100deg at 50% 110%,
     #FF4F00 0%,
@@ -1719,10 +1687,8 @@
   max-width: none;
   margin-left: 0;
   margin-right: 0;
-}
-
-/* Invisible overlay to prevent accidental iframe interactions */
-#iframe-overlay {
+}.legacy-scope /* Invisible overlay to prevent accidental iframe interactions */
+.legacy-scope :global(#iframe-overlay){
   position: absolute;
   top: 0;
   left: 0;
@@ -1737,18 +1703,14 @@
     opacity: 0 !important;
     transform: scale(0.7) !important;
   }
-}
-
-/* FILE: dronePathGenerator.css */
-#dfpg-container {
+}.legacy-scope /* FILE: dronePathGenerator.css */
+.legacy-scope :global(#dfpg-container){
   position: relative;
   margin: 20px auto;
   max-width: 1200px;
   overflow-x: hidden; /* Prevent horizontal overflow */
-}
-
-/* We replaced .container with .dfpg-container-inner */
-#dfpg-container .dfpg-container-inner {
+}.legacy-scope /* We replaced .container with .dfpg-container-inner */
+.legacy-scope :global(#dfpg-container) .dfpg-container-inner{
   width: 90%;
   max-width: 600px;
   margin: 80px auto 40px auto;
@@ -1759,57 +1721,42 @@
   -webkit-backdrop-filter: blur(30px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   position: relative; /* for absolute positioning of tooltips */
-}
-
-/* Reset-like styles for elements inside #dfpg-container */
-#dfpg-container * {
+}.legacy-scope /* Reset-like styles for elements inside .legacy-scope :global(#dfpg-container) */
+.legacy-scope :global(#dfpg-container) *{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-#dfpg-container h1, 
-#dfpg-container h2, 
-#dfpg-container label {
+}.legacy-scope :global(#dfpg-container) h1, .legacy-scope :global(#dfpg-container) h2, .legacy-scope :global(#dfpg-container) label{
   text-shadow: 0 3px 16px rgba(0,0,0,0.8);
-}
-
-/* HEADINGS */
-#dfpg-container h1 {
+}.legacy-scope /* HEADINGS */
+.legacy-scope :global(#dfpg-container) h1{
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 15px;
   text-align: center;
-}
-#dfpg-container h2 {
+}.legacy-scope :global(#dfpg-container) h2{
   font-size: 1.3rem;
   font-weight: 500;
   margin-top: 40px;
   margin-bottom: 15px;
-}
-#dfpg-container label {
+}.legacy-scope :global(#dfpg-container) label{
   font-size: 1rem;
   font-weight: 400;
   margin-bottom: 8px;
   display: block;
-}
-
-/* FORMS & INPUTS */
-#dfpg-container .input-row {
+}.legacy-scope /* FORMS & INPUTS */
+.legacy-scope :global(#dfpg-container) .input-row{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-}
-#dfpg-container .input-wrapper {
+}.legacy-scope :global(#dfpg-container) .input-wrapper{
   position: relative;
   display: block;
   flex: 1;
   margin-bottom: 15px;
-}
-#dfpg-container .input-wrapper input[type="text"],
-#dfpg-container .input-wrapper input[type="number"] {
+}.legacy-scope :global(#dfpg-container) .input-wrapper input[type="text"], .legacy-scope :global(#dfpg-container) .input-wrapper input[type="number"]{
   width: 100%;
   padding: 12px 15px;
   font-size: 1rem;
@@ -1819,18 +1766,14 @@
   color: #fff;
   outline: none;
   transition: border 0.2s ease, background 0.2s ease;
-}
-#dfpg-container .input-wrapper input::placeholder {
+}.legacy-scope :global(#dfpg-container) .input-wrapper input::placeholder{
   color: #bbb;
   opacity: 1;
-}
-#dfpg-container .input-wrapper input:focus {
+}.legacy-scope :global(#dfpg-container) .input-wrapper input:focus{
   border: 1px solid #FF4F00;
   background: rgba(255, 255, 255, 0.15);
-}
-
-/* Hover label overlay */
-#dfpg-container .hover-overlay {
+}.legacy-scope /* Hover label overlay */
+.legacy-scope :global(#dfpg-container) .hover-overlay{
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1846,16 +1789,12 @@
   pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: 999;
-}
-#dfpg-container .input-wrapper.hover-active input {
+}.legacy-scope :global(#dfpg-container) .input-wrapper.hover-active input{
   background: rgba(255, 255, 255, 0.3);
-}
-#dfpg-container .input-wrapper.hover-active .hover-overlay {
+}.legacy-scope :global(#dfpg-container) .input-wrapper.hover-active .hover-overlay{
   opacity: 1;
-}
-
-/* iOS-style toggles */
-#dfpg-container .ios-toggle-container {
+}.legacy-scope /* iOS-style toggles */
+.legacy-scope :global(#dfpg-container) .ios-toggle-container{
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -1868,28 +1807,24 @@
   min-height: 46px;
   box-sizing: border-box;
   flex: 0;
-}
-#dfpg-container .toggle-switch {
+}.legacy-scope :global(#dfpg-container) .toggle-switch{
   position: relative;
   width: 50px;
   height: 24px;
   flex-shrink: 0;
-}
-#dfpg-container .toggle-switch input[type="checkbox"] {
+}.legacy-scope :global(#dfpg-container) .toggle-switch input[type="checkbox"]{
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
-}
-#dfpg-container .slider {
+}.legacy-scope :global(#dfpg-container) .slider{
   position: absolute;
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: #565656;
   border-radius: 34px;
   transition: 0.4s;
-}
-#dfpg-container .slider:before {
+}.legacy-scope :global(#dfpg-container) .slider:before{
   position: absolute;
   content: "";
   height: 18px;
@@ -1899,16 +1834,12 @@
   background-color: white;
   border-radius: 50%;
   transition: 0.4s;
-}
-#dfpg-container .toggle-switch input:checked + .slider {
+}.legacy-scope :global(#dfpg-container) .toggle-switch input:checked + .slider{
   background-color: #FF4F00;
-}
-#dfpg-container .toggle-switch input:checked + .slider:before {
+}.legacy-scope :global(#dfpg-container) .toggle-switch input:checked + .slider:before{
   transform: translateX(26px);
-}
-
-/* BUTTONS */
-#dfpg-container button {
+}.legacy-scope /* BUTTONS */
+.legacy-scope :global(#dfpg-container) button{
   padding: 14px 24px;
   font-size: 1rem;
   border: none;
@@ -1920,18 +1851,13 @@
   transition: all 0.3s ease;
   margin-top: 15px;
   text-shadow: 0 1px 10px rgba(0,0,0,0.4);
-}
-#dfpg-container button:hover {
+}.legacy-scope :global(#dfpg-container) button:hover{
   background: #d84400;
-}
-#dfpg-container #downloadMasterBtn,
-#dfpg-container .segment-downloads button {
+}.legacy-scope :global(#dfpg-container) .legacy-scope :global(#downloadMasterBtn), .legacy-scope :global(#dfpg-container) .segment-downloads button{
   margin-top: 8px;
   margin-right: 8px;
-}
-
-/* PILL-TOGGLE */
-#dfpg-container .pill-toggle {
+}.legacy-scope /* PILL-TOGGLE */
+.legacy-scope :global(#dfpg-container) .pill-toggle{
   display: inline-block;
   background-color: #2C2C2C;
   border-radius: 999px;
@@ -1941,8 +1867,7 @@
   margin: 0 auto 20px auto;
   border: none;
   overflow: hidden;
-}
-#dfpg-container .pill-toggle-selector {
+}.legacy-scope :global(#dfpg-container) .pill-toggle-selector{
   position: absolute;
   top: 3px;
   left: 3px;
@@ -1952,8 +1877,7 @@
   background-color: #565656;
   border-radius: 999px;
   transition: all 0.3s ease;
-}
-#dfpg-container .pill-toggle-labels {
+}.legacy-scope :global(#dfpg-container) .pill-toggle-labels{
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1961,8 +1885,7 @@
   height: 100%;
   user-select: none;
   cursor: pointer;
-}
-#dfpg-container .pill-toggle-labels span {
+}.legacy-scope :global(#dfpg-container) .pill-toggle-labels span{
   flex: 1;
   min-width: 0; /* Allows the flex item to shrink */
   display: block; /* Ensures block-level behavior for overflow to work */
@@ -1974,39 +1897,29 @@
   white-space: nowrap; /* Prevents wrapping */
   overflow: hidden;    /* Hides any overflow */
   text-overflow: ellipsis; /* Shows "..." when text is too long */
-}
-
-
-/* Move the toggle for the 3 modes */
-#dfpg-container .pill-toggle[data-mode="standard"] .pill-toggle-selector {
+}.legacy-scope /* Move the toggle for the 3 modes */
+.legacy-scope :global(#dfpg-container) .pill-toggle[data-mode="standard"] .pill-toggle-selector{
   left: 3px;
-}
+}.legacy-scope /*
 
-/*
-
-#dfpg-container .pill-toggle[data-mode="ranch"] .pill-toggle-selector {
+.legacy-scope :global(#dfpg-container) .pill-toggle[data-mode="ranch"] .pill-toggle-selector{
   left: calc(100% / 3 + 3px);
-}
-#dfpg-container .pill-toggle[data-mode="advanced"] .pill-toggle-selector {
+}.legacy-scope :global(#dfpg-container) .pill-toggle[data-mode="advanced"] .pill-toggle-selector{
   left: calc(2 * (100% / 3) + 3px);
 }
 
 */
-
-#dfpg-container .pill-toggle[data-mode="advanced"] .pill-toggle-selector {
+.legacy-scope :global(#dfpg-container) .pill-toggle[data-mode="advanced"] .pill-toggle-selector{
   left: calc(50% + 3px); /* Change from thirds to halves */
-}
-
-/* SLIDER-RANGE */
-#dfpg-container .slider-container {
+}.legacy-scope /* SLIDER-RANGE */
+.legacy-scope :global(#dfpg-container) .slider-container{
   width: 100%;
   margin: 0 auto 20px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-}
-#dfpg-container input[type="range"] {
+}.legacy-scope :global(#dfpg-container) input[type="range"]{
   -webkit-appearance: none;
   appearance: none;
   width: 95%;
@@ -2017,12 +1930,10 @@
   margin: 0;
   cursor: pointer;
   position: relative;
-}
-#dfpg-container input[type="range"]::-webkit-slider-runnable-track {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-webkit-slider-runnable-track{
   height: 4px;
   background: transparent;
-}
-#dfpg-container input[type="range"]::-webkit-slider-thumb {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
   width: 20px;
@@ -2032,28 +1943,22 @@
   cursor: pointer;
   margin-top: -8px;
   transition: transform 0.15s ease;
-}
-#dfpg-container input[type="range"]::-webkit-slider-thumb:hover {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-webkit-slider-thumb:hover{
   transform: scale(1.1);
-}
-#dfpg-container input[type="range"]::-webkit-slider-thumb:active {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-webkit-slider-thumb:active{
   transform: scale(1.2);
-}
-#dfpg-container input[type="range"]::-moz-range-thumb {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-moz-range-thumb{
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: #FF4F00;
   cursor: pointer;
   transition: transform 0.15s ease;
-}
-#dfpg-container input[type="range"]::-moz-range-thumb:hover {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-moz-range-thumb:hover{
   transform: scale(1.1);
-}
-#dfpg-container input[type="range"]::-moz-range-thumb:active {
+}.legacy-scope :global(#dfpg-container) input[type="range"]::-moz-range-thumb:active{
   transform: scale(1.2);
-}
-#dfpg-container .slider-labels {
+}.legacy-scope :global(#dfpg-container) .slider-labels{
   width: 95%;
   display: flex;
   justify-content: space-between;
@@ -2061,12 +1966,8 @@
   margin-top: 8px;
   font-size: 1rem;
   color: #ccc;
-}
-
-/* RESULTS & LOGGING */
-#dfpg-container #result,
-#dfpg-container #flightTime,
-#dfpg-container #log {
+}.legacy-scope /* RESULTS & LOGGING */
+.legacy-scope :global(#dfpg-container) .legacy-scope :global(#result), .legacy-scope :global(#dfpg-container) .legacy-scope :global(#flightTime), .legacy-scope :global(#dfpg-container) .legacy-scope :global(#log){
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 10px;
@@ -2074,38 +1975,30 @@
   margin-top: 20px;
   font-size: 0.9rem;
   color: #fff;
-}
-#dfpg-container #result {
+}.legacy-scope :global(#dfpg-container) .legacy-scope :global(#result){
   font-weight: 600;
-}
-#dfpg-container #log {
+}.legacy-scope :global(#dfpg-container) .legacy-scope :global(#log){
   max-height: 250px;
   overflow-y: auto;
-}
-#dfpg-container #log strong {
+}.legacy-scope :global(#dfpg-container) .legacy-scope :global(#log) strong{
   color: #FF4F00;
-}
-
-/* POI ROWS */
-#dfpg-container .poi-row {
+}.legacy-scope /* POI ROWS */
+.legacy-scope :global(#dfpg-container) .poi-row{
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 15px;
-}
-#dfpg-container .poi-row .poi-row-title {
+}.legacy-scope :global(#dfpg-container) .poi-row .poi-row-title{
   font-size: 0.95rem;
   margin-bottom: 8px;
   display: block;
-}
-#dfpg-container .poi-row-actions {
+}.legacy-scope :global(#dfpg-container) .poi-row-actions{
   display: flex;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
-}
-#dfpg-container .delete-poi-button {
+}.legacy-scope :global(#dfpg-container) .delete-poi-button{
   background-color: rgba(255,255,255,0.1);
   color: #fff;
   font-size: 0.9rem;
@@ -2114,13 +2007,10 @@
   padding: 8px 14px;
   cursor: pointer;
   transition: background 0.3s ease;
-}
-#dfpg-container .delete-poi-button:hover {
+}.legacy-scope :global(#dfpg-container) .delete-poi-button:hover{
   background-color: rgba(255,255,255,0.2);
-}
-
-/* Spinner styling */
-#dfpg-container .spinner {
+}.legacy-scope /* Spinner styling */
+.legacy-scope :global(#dfpg-container) .spinner{
   width: 20px;
   height: 20px;
   border: 3px solid #fff;
@@ -2131,10 +2021,8 @@
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Info icon & tooltips */
-#dfpg-container .info-pill-icon {
+}.legacy-scope /* Info icon & tooltips */
+.legacy-scope :global(#dfpg-container) .info-pill-icon{
   display: inline-flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.1);
@@ -2149,17 +2037,14 @@
   transition: background 0.3s ease;
   margin: 0;
   height: 24px;
-}
-#dfpg-container .info-pill-icon:hover {
+}.legacy-scope :global(#dfpg-container) .info-pill-icon:hover{
   background: #FF4F00;
   color: #fff;
-}
-#dfpg-container .info-wrapper {
+}.legacy-scope :global(#dfpg-container) .info-wrapper{
   display: inline-flex;
   align-items: center;
   margin: 0;
-}
-#dfpg-container .info-tooltip {
+}.legacy-scope :global(#dfpg-container) .info-tooltip{
   display: none;
   position: absolute; 
   width: 90%;  
@@ -2173,8 +2058,7 @@
   box-sizing: border-box;
   white-space: normal; 
   color: #fff;
-}
-#dfpg-container .info-tooltip::before {
+}.legacy-scope :global(#dfpg-container) .info-tooltip::before{
   content: "";
   position: absolute;
   bottom: 100%; 
@@ -2185,34 +2069,28 @@
   border-bottom: 6px solid rgba(0,0,0,0.9);
   left: var(--arrowOffset, 50%);
   transform: translateX(-50%);
-}
-#dfpg-container .info-tooltip.active {
+}.legacy-scope :global(#dfpg-container) .info-tooltip.active{
   display: block;
 }
 
 /* RESPONSIVE */
-@media (max-width: 480px) {
-  #dfpg-container .dfpg-container-inner {
+@media (max-width: 480px) {.legacy-scope :global(#dfpg-container) .dfpg-container-inner{
     width: 95%;
     margin: 40px auto;
     padding: 15px;
     position: relative;
   }
-}
-
-/* CHUNK #2: dronePhotoUploader.css (CSS) */
+}.legacy-scope /* CHUNK .legacy-scope :global(#2): dronePhotoUploader.css (CSS) */
 
 /* Outer wrapper for everything in this uploader */
-#dpu-container {
+.legacy-scope :global(#dpu-container){
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #000;
   color: #fff;
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-/* The "card" that replaced .container */
-#dpu-container .dpu-container-inner {
+}.legacy-scope /* The "card" that replaced .container */
+.legacy-scope :global(#dpu-container) .dpu-container-inner{
   width: 90%;
   max-width: 600px;
   margin: 80px auto 40px auto;
@@ -2223,48 +2101,34 @@
   -webkit-backdrop-filter: blur(30px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   position: relative;
-}
-
-/* Reset-like styles inside #dpu-container */
-#dpu-container * {
+}.legacy-scope /* Reset-like styles inside .legacy-scope :global(#dpu-container) */
+.legacy-scope :global(#dpu-container) *{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-#dpu-container h1, 
-#dpu-container h2, 
-#dpu-container label {
+}.legacy-scope :global(#dpu-container) h1, .legacy-scope :global(#dpu-container) h2, .legacy-scope :global(#dpu-container) label{
   text-shadow: 0 3px 16px rgba(0,0,0,0.8);
-}
-#dpu-container h1 {
+}.legacy-scope :global(#dpu-container) h1{
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 35px;
   text-align: center;
-}
-#dpu-container label {
+}.legacy-scope :global(#dpu-container) label{
   font-size: 1rem;
   font-weight: 400;
   margin-bottom: 8px;
   display: block;
-}
-
-#dpu-container .input-row {
+}.legacy-scope :global(#dpu-container) .input-row{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-}
-#dpu-container .input-wrapper {
+}.legacy-scope :global(#dpu-container) .input-wrapper{
   position: relative;
   display: block;
   flex: 1;
-}
-#dpu-container .input-wrapper input[type="text"],
-#dpu-container .input-wrapper input[type="email"],
-#dpu-container .input-wrapper textarea {
+}.legacy-scope :global(#dpu-container) .input-wrapper input[type="text"], .legacy-scope :global(#dpu-container) .input-wrapper input[type="email"], .legacy-scope :global(#dpu-container) .input-wrapper textarea{
   width: 100%;
   padding: 12px 15px;
   font-size: 1rem;
@@ -2275,24 +2139,17 @@
   outline: none;
   transition: border 0.2s ease, background 0.2s ease;
   margin-bottom: 15px;
-}
-#dpu-container .input-wrapper textarea {
+}.legacy-scope :global(#dpu-container) .input-wrapper textarea{
   border-radius: 20px;
   resize: vertical;
-}
-#dpu-container .input-wrapper input::placeholder, 
-#dpu-container .input-wrapper textarea::placeholder {
+}.legacy-scope :global(#dpu-container) .input-wrapper input::placeholder, .legacy-scope :global(#dpu-container) .input-wrapper textarea::placeholder{
   color: #bbb;
   opacity: 1;
-}
-#dpu-container .input-wrapper input:focus,
-#dpu-container .input-wrapper textarea:focus {
+}.legacy-scope :global(#dpu-container) .input-wrapper input:focus, .legacy-scope :global(#dpu-container) .input-wrapper textarea:focus{
   border: 1px solid #FF4F00;
   background: rgba(255, 255, 255, 0.15);
-}
-
-/* Drag & Drop */
-#dpu-container .upload-area {
+}.legacy-scope /* Drag & Drop */
+.legacy-scope :global(#dpu-container) .upload-area{
   border: 2px dashed rgba(255, 255, 255, 0.3);
   border-radius: 20px;
   padding: 30px;
@@ -2300,48 +2157,34 @@
   transition: border-color 0.3s ease;
   cursor: pointer;
   margin-bottom: 15px;
-}
-#dpu-container .upload-area.dragover {
+}.legacy-scope :global(#dpu-container) .upload-area.dragover{
   border-color: #FF4F00;
   background: rgba(255, 255, 255, 0.07);
-}
-#dpu-container .upload-area p {
+}.legacy-scope :global(#dpu-container) .upload-area p{
   margin-bottom: 10px;
   font-size: 0.95rem;
-}
-
-/* Enhanced styling for CSV upload area */
-#dpu-container .upload-area.csv-upload {
+}.legacy-scope /* Enhanced styling for CSV upload area */
+.legacy-scope :global(#dpu-container) .upload-area.csv-upload{
   border-color: #4CAF50;
   background: rgba(76, 175, 80, 0.05);
   margin: 20px 0;
   position: relative;
-}
-
-#dpu-container .upload-area.csv-upload:hover {
+}.legacy-scope :global(#dpu-container) .upload-area.csv-upload:hover{
   border-color: #66BB6A;
   background: rgba(76, 175, 80, 0.08);
-}
-
-#dpu-container .upload-area.csv-upload.dragover {
+}.legacy-scope :global(#dpu-container) .upload-area.csv-upload.dragover{
   border-color: #4CAF50;
   background: rgba(76, 175, 80, 0.12);
-}
-
-#dpu-container .upload-area.csv-upload p:first-child {
+}.legacy-scope :global(#dpu-container) .upload-area.csv-upload p:first-child{
   color: #4CAF50;
   font-weight: 500;
   margin-bottom: 8px;
-}
-
-#dpu-container .upload-area.csv-upload .upload-description {
+}.legacy-scope :global(#dpu-container) .upload-area.csv-upload .upload-description{
   color: #888;
   font-size: 0.9rem;
   margin-bottom: 0;
-}
-
-/* Buttons => changed .btn to .dpu-btn */
-#dpu-container .dpu-btn {
+}.legacy-scope /* Buttons => changed .btn to .dpu-btn */
+.legacy-scope :global(#dpu-container) .dpu-btn{
   padding: 14px 24px;
   font-size: 1rem;
   border: none;
@@ -2355,13 +2198,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-#dpu-container .dpu-btn:hover {
+}.legacy-scope :global(#dpu-container) .dpu-btn:hover{
   background: #d84400;
-}
-
-/* Spinner */
-#dpu-container .spinner {
+}.legacy-scope /* Spinner */
+.legacy-scope :global(#dpu-container) .spinner{
   width: 20px;
   height: 20px;
   border: 3px solid #fff;
@@ -2372,10 +2212,8 @@
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Progress Bar */
-#dpu-container .progress-bar {
+}.legacy-scope /* Progress Bar */
+.legacy-scope :global(#dpu-container) .progress-bar{
   width: 100%;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 999px;
@@ -2384,21 +2222,16 @@
   margin-top: 15px;
   margin-bottom: 15px;
   display: none;
-}
-#dpu-container .progress-bar-fill {
+}.legacy-scope :global(#dpu-container) .progress-bar-fill{
   background: #FF4F00;
   height: 100%;
   width: 0%;
   transition: width 0.3s ease;
-}
-
-/* Red highlight when missing required fields */
-#dpu-container .missing-field {
+}.legacy-scope /* Red highlight when missing required fields */
+.legacy-scope :global(#dpu-container) .missing-field{
   border: 2px solid red !important;
-}
-
-/* Close icon (X) */
-#dpu-container .close-icon {
+}.legacy-scope /* Close icon (X) */
+.legacy-scope :global(#dpu-container) .close-icon{
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -2411,33 +2244,24 @@
   font-weight: bold;
   margin-left: 10px;
   cursor: pointer;
-}
-#dpu-container .close-icon:hover {
+}.legacy-scope :global(#dpu-container) .close-icon:hover{
   background: #ccc;
 }
 
 /* Mobile breakpoint */
-@media (max-width: 480px) {
-  #dpu-container .dpu-container-inner {
+@media (max-width: 480px) {.legacy-scope :global(#dpu-container) .dpu-container-inner{
     width: 95%;
     margin: 40px auto;
     padding: 15px;
   }
-}
-
-
+}.legacy-scope /* Keep the same position & overflow for all three */
 /* Keep the same position & overflow for all three */
-/* Keep the same position & overflow for all three */
-#pricing-header,
-#about,
-#create {
+.legacy-scope :global(#pricing-header), .legacy-scope :global(#about), .legacy-scope :global(#create){
   position: relative;
   overflow: visible; /* Allow pseudo-element to extend beyond boundaries */
   isolation: isolate; /* Create new stacking context */
-}
-
-/* PRICING Optimized Color Effect */
-#pricing-header::before {
+}.legacy-scope /* PRICING Optimized Color Effect */
+.legacy-scope :global(#pricing-header)::before{
   content: "";
   position: absolute;
   top: -12rem; /* Extend well above the header to reach viewport top */
@@ -2463,10 +2287,8 @@
   opacity: 0.8;
   filter: blur(45px);
   will-change: transform;
-}
-
-/* ABOUT Optimized Color Effect */
-#about::before {
+}.legacy-scope /* ABOUT Optimized Color Effect */
+.legacy-scope :global(#about)::before{
   content: "";
   position: absolute;
   top: -12rem; /* Extend well above the header to reach viewport top */
@@ -2492,10 +2314,8 @@
   opacity: 0.7;
   filter: blur(50px);
   will-change: transform;
-}
-
-/* CREATE Optimized Color Effect */
-#create::before {
+}.legacy-scope /* CREATE Optimized Color Effect */
+.legacy-scope :global(#create)::before{
   content: "";
   position: absolute;
   top: -12rem; /* Extend well above the header to reach viewport top */
@@ -2526,25 +2346,19 @@
   opacity: 0.9;
   filter: blur(55px);
   will-change: transform;
-}
-
-/* Keep create background effects, but constrain signup background to prevent overlap */
+}/* Keep create background effects, .legacy-scope but constrain signup background to prevent overlap */
 /* This allows the create page to maintain its intended visual design */
 
 /* Breathing room below the create header before dashboard */
-#create-dashboard {
+.legacy-scope :global(#create-dashboard){
   margin-top: 3.5rem;
-}
-
-/* Signup section spacing and stack layout */
-#signup {
+}.legacy-scope /* Signup section spacing and stack layout */
+.legacy-scope :global(#signup){
   margin-top: 10rem;
   margin-bottom: 4rem;
   position: relative;
-}
-
-/* Reuse the same swirl background treatment for signup */
-#signup::before {
+}.legacy-scope /* Reuse the same swirl background treatment for signup */
+.legacy-scope :global(#signup)::before{
   content: "";
   position: absolute;
   top: 0; /* Changed from -1200px to 0 to prevent overlap with create section */
@@ -2568,9 +2382,7 @@
   mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 90%);
   opacity: 0.35;
   filter: blur(80px);
-}
-
-#signup::after {
+}.legacy-scope :global(#signup)::after{
   content: "";
   position: absolute;
   top: 0; /* Changed from -1600px to 0 to prevent overlap with create section */
@@ -2923,12 +2735,8 @@
     padding: 12px 18px; /* Proportional mobile padding */
     border-radius: 999px; /* Maintain true pill shape on mobile */
   }
-}
-
-/* Noise overlay layer for all three */
-#pricing-header::after,
-#about::after,
-#create::after {
+}.legacy-scope /* Noise overlay layer for all three */
+.legacy-scope :global(#pricing-header)::after, .legacy-scope :global(#about)::after, .legacy-scope :global(#create)::after{
   content: "";
   position: absolute;
   top: -1600px;
@@ -3073,23 +2881,14 @@
 .viewer-button:hover .viewer-button-icon {
   transform: scale(1.1);
 }
-
-#dpu-container .input-wrapper textarea {
+.legacy-scope :global(#dpu-container) .input-wrapper textarea{
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-/* Remove arrows (spinners) in Chrome, Safari, Edge, and Opera */
-#dfpg-container .input-wrapper input[type="number"]::-webkit-outer-spin-button,
-#dfpg-container .input-wrapper input[type="number"]::-webkit-inner-spin-button,
-.popup-input-wrapper input[type="number"]::-webkit-outer-spin-button,
-.popup-input-wrapper input[type="number"]::-webkit-inner-spin-button {
+}/* Remove arrows (spinners) in Chrome, Safari, Edge, .legacy-scope and Opera */
+.legacy-scope :global(#dfpg-container) .input-wrapper input[type="number"]::-webkit-outer-spin-button, .legacy-scope :global(#dfpg-container) .input-wrapper input[type="number"]::-webkit-inner-spin-button, .popup-input-wrapper input[type="number"]::-webkit-outer-spin-button, .popup-input-wrapper input[type="number"]::-webkit-inner-spin-button{
   -webkit-appearance: none;
   margin: 0;
-}
-
-/* Remove arrows (spinners) in Firefox */
-#dfpg-container .input-wrapper input[type="number"],
-.popup-input-wrapper input[type="number"] {
+}.legacy-scope /* Remove arrows (spinners) in Firefox */
+.legacy-scope :global(#dfpg-container) .input-wrapper input[type="number"], .popup-input-wrapper input[type="number"]{
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -3211,32 +3010,21 @@
 
 .parsing-results.hidden {
   display: none;
-}
-
-#detectedParams {
+}.legacy-scope :global(#detectedParams){
   margin-top: 1rem;
-}
-
-#detectedParams div {
+}.legacy-scope :global(#detectedParams) div{
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
   padding: 0.5rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
-}
-
-#detectedParams strong,
-#detectedParams span {
+}.legacy-scope :global(#detectedParams) strong, .legacy-scope :global(#detectedParams) span{
   font-size: 1.2rem;
   font-weight: 500;
-}
-
-#detectedParams strong {
+}.legacy-scope :global(#detectedParams) strong{
   color: rgba(255, 255, 255, 0.8);
-}
-
-#detectedParams span {
+}.legacy-scope :global(#detectedParams) span{
   color: white;
 }
 
@@ -3289,18 +3077,14 @@
 .add-path-button.info-pill-icon:hover {
   background: #FF4F00;
   color: #fff;
-}
-
-/* ML Processing Styles - Match dpu-container design language */
-#ml-container {
+}.legacy-scope /* ML Processing Styles - Match dpu-container design language */
+.legacy-scope :global(#ml-container){
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #000;
   color: #fff;
   overflow-x: hidden; /* Already present - good */
-}
-
-/* The main container that matches dpu-container-inner */
-#ml-container .dpu-container-inner {
+}.legacy-scope /* The main container that matches dpu-container-inner */
+.legacy-scope :global(#ml-container) .dpu-container-inner{
   width: 90%;
   max-width: 600px;
   margin: 80px auto 40px auto;
@@ -3311,29 +3095,19 @@
   -webkit-backdrop-filter: blur(30px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   position: relative;
-}
-
-/* Reset styles inside ml-container */
-#ml-container * {
+}.legacy-scope /* Reset styles inside ml-container */
+.legacy-scope :global(#ml-container) *{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-#ml-container h1, 
-#ml-container h2 {
+}.legacy-scope :global(#ml-container) h1, .legacy-scope :global(#ml-container) h2{
   text-shadow: 0 3px 16px rgba(0,0,0,0.8);
-}
-
-#ml-container .input-wrapper {
+}.legacy-scope :global(#ml-container) .input-wrapper{
   position: relative;
   display: block;
   flex: 1;
   margin-bottom: 15px;
-}
-
-#ml-container .input-wrapper input[type="url"],
-#ml-container .input-wrapper input[type="email"] {
+}.legacy-scope :global(#ml-container) .input-wrapper input[type="url"], .legacy-scope :global(#ml-container) .input-wrapper input[type="email"]{
   width: 100%;
   padding: 12px 15px;
   font-size: 1rem;
@@ -3344,27 +3118,19 @@
   outline: none;
   transition: border 0.2s ease, background 0.2s ease;
   margin-bottom: 15px;
-}
-
-#ml-container .input-wrapper input::placeholder {
+}.legacy-scope :global(#ml-container) .input-wrapper input::placeholder{
   color: #bbb;
   opacity: 1;
-}
-
-#ml-container .input-wrapper input:focus {
+}.legacy-scope :global(#ml-container) .input-wrapper input:focus{
   border: 1px solid #FF4F00;
   background: rgba(255, 255, 255, 0.15);
-}
-
-#ml-container .input-row {
+}.legacy-scope :global(#ml-container) .input-row{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-}
-
-#ml-container .dpu-btn {
+}.legacy-scope :global(#ml-container) .dpu-btn{
   padding: 14px 24px;
   font-size: 1rem;
   border: none;
@@ -3380,19 +3146,13 @@
   justify-content: center;
   position: relative;
   min-width: 160px;
-}
-
-#ml-container .dpu-btn:hover {
+}.legacy-scope :global(#ml-container) .dpu-btn:hover{
   background: #d84400;
-}
-
-#ml-container .dpu-btn:disabled {
+}.legacy-scope :global(#ml-container) .dpu-btn:disabled{
   background: #666;
   cursor: not-allowed;
-}
-
-/* Stop button in ML form - using existing cta-button2 style */
-#ml-container .stop-button {
+}.legacy-scope /* Stop button in ML form - using existing cta-button2 style */
+.legacy-scope :global(#ml-container) .stop-button{
   background: transparent;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -3408,27 +3168,19 @@
   gap: 8px;
   margin-left: 16px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-#ml-container .stop-button:hover {
+}.legacy-scope :global(#ml-container) .stop-button:hover{
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
-}
-
-#ml-container .stop-button:disabled {
+}.legacy-scope :global(#ml-container) .stop-button:disabled{
   background: transparent;
   color: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
   transform: none;
-}
-
-#ml-container .stop-button .stop-icon {
+}.legacy-scope :global(#ml-container) .stop-button .stop-icon{
   font-size: 14px;
-}
-
-#ml-container .spinner {
+}.legacy-scope :global(#ml-container) .spinner{
   width: 16px;
   height: 16px;
   border: 2px solid #fff;
@@ -3437,68 +3189,51 @@
   animation: spin 0.8s linear infinite;
   margin-left: 10px;
   display: inline-block;
-}
-
-#ml-container .job-status {
+}.legacy-scope :global(#ml-container) .job-status{
   background: rgba(40, 167, 69, 0.1);
   border: 1px solid rgba(40, 167, 69, 0.3);
   padding: 20px;
   border-radius: 12px;
   margin-top: 20px;
-}
-
-#ml-container .job-status h3 {
+}.legacy-scope :global(#ml-container) .job-status h3{
   color: #28a745;
   margin-bottom: 15px;
   font-size: 1.2rem;
   text-shadow: 0 3px 16px rgba(0,0,0,0.8);
-}
-
-#ml-container .job-status p {
+}.legacy-scope :global(#ml-container) .job-status p{
   margin-bottom: 8px;
   line-height: 1.5;
   color: #fff;
-}
-
-#ml-container .error-message {
+}.legacy-scope :global(#ml-container) .error-message{
   background: rgba(220, 53, 69, 0.1);
   border: 1px solid rgba(220, 53, 69, 0.3);
   padding: 20px;
   border-radius: 12px;
   margin-top: 20px;
-}
-
-#ml-container .error-message h3 {
+}.legacy-scope :global(#ml-container) .error-message h3{
   color: #dc3545;
   margin-bottom: 15px;
   font-size: 1.2rem;
   text-shadow: 0 3px 16px rgba(0,0,0,0.8);
-}
-
-#ml-container .error-message p {
+}.legacy-scope :global(#ml-container) .error-message p{
   line-height: 1.5;
   color: #fff;
 }
 
 /* Mobile breakpoint */
-@media (max-width: 480px) {
-  #ml-container .dpu-container-inner {
+@media (max-width: 480px) {.legacy-scope :global(#ml-container) .dpu-container-inner{
     width: 95%;
     margin: 40px auto;
     padding: 15px;
   }
-}
-
-/* Enhanced Drone Path Generator Styles */
-#dfpg-container .optimization-section {
+}.legacy-scope /* Enhanced Drone Path Generator Styles */
+.legacy-scope :global(#dfpg-container) .optimization-section{
   margin: 30px 0;
   padding: 20px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-#dfpg-container .optimize-btn {
+}.legacy-scope :global(#dfpg-container) .optimize-btn{
   width: 100%;
   padding: 16px 24px;
   background: linear-gradient(135deg, #0a84ff, #007aff);
@@ -3514,44 +3249,32 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
-}
-
-#dfpg-container .optimize-btn:hover {
+}.legacy-scope :global(#dfpg-container) .optimize-btn:hover{
   background: linear-gradient(135deg, #007aff, #005fe7);
   transform: translateY(-1px);
   box-shadow: 0 8px 25px rgba(10, 132, 255, 0.3);
-}
-
-#dfpg-container .optimize-btn:disabled {
+}.legacy-scope :global(#dfpg-container) .optimize-btn:disabled{
   background: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-}
-
-#dfpg-container .spinner {
+}.legacy-scope :global(#dfpg-container) .spinner{
   width: 16px;
   height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top: 2px solid white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-
-#dfpg-container .optimization-results {
+}.legacy-scope :global(#dfpg-container) .optimization-results{
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-#dfpg-container .results-grid {
+}.legacy-scope :global(#dfpg-container) .results-grid{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 15px;
-}
-
-#dfpg-container .result-item {
+}.legacy-scope :global(#dfpg-container) .result-item{
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3559,43 +3282,31 @@
   background: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-#dfpg-container .result-label {
+}.legacy-scope :global(#dfpg-container) .result-label{
   font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
-}
-
-#dfpg-container .result-value {
+}.legacy-scope :global(#dfpg-container) .result-value{
   font-size: 14px;
   color: #fff;
   font-weight: 600;
   text-align: right;
-}
-
-#dfpg-container .error-message {
+}.legacy-scope :global(#dfpg-container) .error-message{
   background: rgba(255, 59, 48, 0.1);
   border: 1px solid rgba(255, 59, 48, 0.3);
   border-radius: 8px;
   padding: 16px;
   margin-top: 16px;
-}
-
-#dfpg-container .error-message p {
+}.legacy-scope :global(#dfpg-container) .error-message p{
   color: #ff453a;
   margin: 0;
   font-size: 14px;
-}
-
-#dfpg-container .download-section {
+}.legacy-scope :global(#dfpg-container) .download-section{
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-top: 20px;
-}
-
-#dfpg-container .download-btn {
+}.legacy-scope :global(#dfpg-container) .download-btn{
   padding: 14px 20px;
   background: rgba(52, 199, 89, 0.2);
   border: 1px solid rgba(52, 199, 89, 0.4);
@@ -3609,42 +3320,30 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-}
-
-#dfpg-container .download-btn:hover:not(:disabled) {
+}.legacy-scope :global(#dfpg-container) .download-btn:hover:not(:disabled){
   background: rgba(52, 199, 89, 0.3);
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(52, 199, 89, 0.2);
-}
-
-#dfpg-container .download-btn:disabled {
+}.legacy-scope :global(#dfpg-container) .download-btn:disabled{
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-}
-
-#dfpg-container .battery-downloads {
+}.legacy-scope :global(#dfpg-container) .battery-downloads{
   background: rgba(255, 255, 255, 0.03);
   border-radius: 10px;
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-#dfpg-container .download-label {
+}.legacy-scope :global(#dfpg-container) .download-label{
   font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 12px;
   font-weight: 500;
-}
-
-#dfpg-container .battery-buttons {
+}.legacy-scope :global(#dfpg-container) .battery-buttons{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
-}
-
-#dfpg-container .battery-btn {
+}.legacy-scope :global(#dfpg-container) .battery-btn{
   padding: 12px 16px;
   background: rgba(255, 149, 0, 0.2);
   border: 1px solid rgba(255, 149, 0, 0.4);
@@ -3655,76 +3354,51 @@
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
-}
-
-#dfpg-container .battery-btn:hover {
+}.legacy-scope :global(#dfpg-container) .battery-btn:hover{
   background: rgba(255, 149, 0, 0.3);
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(255, 149, 0, 0.2);
-}
-
-#dfpg-container .mission-logs {
+}.legacy-scope :global(#dfpg-container) .mission-logs{
   background: rgba(255, 255, 255, 0.03);
   border-radius: 10px;
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 20px;
-}
-
-#dfpg-container .mission-logs h3 {
+}.legacy-scope :global(#dfpg-container) .mission-logs h3{
   color: #fff;
   font-size: 16px;
   margin-bottom: 12px;
   font-weight: 600;
-}
-
-#dfpg-container .mission-logs #logContent {
+}.legacy-scope :global(#dfpg-container) .mission-logs .legacy-scope :global(#logContent){
   font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
-}
-
-#dfpg-container .mission-logs #logContent strong {
+}.legacy-scope :global(#dfpg-container) .mission-logs .legacy-scope :global(#logContent) strong{
   color: #0a84ff;
   font-weight: 600;
-}
-
-/* Success highlighting for optimization results */
-#dfpg-container .result-value.success {
+}.legacy-scope /* Success highlighting for optimization results */
+.legacy-scope :global(#dfpg-container) .result-value.success{
   color: #34c759;
-}
-
-#dfpg-container .result-value.warning {
+}.legacy-scope :global(#dfpg-container) .result-value.warning{
   color: #ff9500;
-}
-
-#dfpg-container .result-value.error {
+}.legacy-scope :global(#dfpg-container) .result-value.error{
   color: #ff453a;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  #dfpg-container .results-grid {
+@media (max-width: 768px) {.legacy-scope :global(#dfpg-container) .results-grid{
     grid-template-columns: 1fr;
-  }
-  
-  #dfpg-container .battery-buttons {
+  }.legacy-scope :global(#dfpg-container) .battery-buttons{
     grid-template-columns: 1fr;
-  }
-  
-  #dfpg-container .result-item {
+  }.legacy-scope :global(#dfpg-container) .result-item{
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-  }
-  
-  #dfpg-container .result-value {
+  }.legacy-scope :global(#dfpg-container) .result-value{
     text-align: left;
   }
-}
-
-/* Pipeline Step Selector Styling */
-#ml-container .step-selector-label {
+}.legacy-scope /* Pipeline Step Selector Styling */
+.legacy-scope :global(#ml-container) .step-selector-label{
   display: block;
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
@@ -3732,9 +3406,7 @@
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-#ml-container .step-selector {
+}.legacy-scope :global(#ml-container) .step-selector{
   width: 100%;
   padding: 14px 18px;
   background: rgba(255, 255, 255, 0.08);
@@ -3753,46 +3425,33 @@
   background-position: right 12px center;
   background-size: 20px;
   padding-right: 45px;
-}
-
-#ml-container .step-selector:focus {
+}.legacy-scope :global(#ml-container) .step-selector:focus{
   outline: none;
   border-color: rgba(10, 132, 255, 0.8);
   background: rgba(255, 255, 255, 0.12);
   box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
-}
-
-#ml-container .step-selector option {
+}.legacy-scope :global(#ml-container) .step-selector option{
   background: #1a1a1a;
   color: #fff;
   padding: 12px;
   font-weight: 500;
-}
-
-/* Dynamic placeholder text color */
-#ml-container #s3UrlInput.step-sfm {
+}.legacy-scope /* Dynamic placeholder text color */
+.legacy-scope :global(#ml-container) .legacy-scope :global(#s3UrlInput).step-sfm{
   color: #34c759;
-}
-
-#ml-container #s3UrlInput.step-3dgs {
+}.legacy-scope :global(#ml-container) .legacy-scope :global(#s3UrlInput).step-3dgs{
   color: #ff9500;
-}
-
-#ml-container #s3UrlInput.step-compression {
+}.legacy-scope :global(#ml-container) .legacy-scope :global(#s3UrlInput).step-compression{
   color: #0a84ff;
 }
 
 /* Responsive adjustments for step selector */
-@media (max-width: 480px) {
-  #ml-container .step-selector {
+@media (max-width: 480px) {.legacy-scope :global(#ml-container) .step-selector{
     font-size: 14px;
     padding: 12px 16px;
     padding-right: 40px;
     background-size: 18px;
     background-position: right 10px center;
-  }
-  
-  #ml-container .step-selector-label {
+  }.legacy-scope :global(#ml-container) .step-selector-label{
     font-size: 13px;
   }
 }
@@ -3889,17 +3548,13 @@
 @media (max-width: 768px) {
   .apple-progress-tracker {
     margin: 16px 0;
-  }
-  
-  #ml-container .stop-button {
+  }.legacy-scope :global(#ml-container) .stop-button{
     margin-left: 8px;
     padding: 10px 20px;
     font-size: 0.9rem;
   }
-}
-
-/* ML Processing Section */
-#ml-container {
+}.legacy-scope /* ML Processing Section */
+.legacy-scope :global(#ml-container){
   margin-top: 2rem;
 }
 
@@ -6113,10 +5768,8 @@ input.text-fade-right,
   .plan-price {
     font-size: 1.6rem; /* Smaller on mobile */
   }
-}
-
-/* Prevent horizontal overflow on create page */
-#create-dashboard {
+}.legacy-scope /* Prevent horizontal overflow on create page */
+.legacy-scope :global(#create-dashboard){
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;

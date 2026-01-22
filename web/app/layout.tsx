@@ -14,6 +14,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import AnalyticsProvider from '../components/AnalyticsProvider';
+import legacyStyles from '../components/foundational/legacy.module.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/assets/SpaceportIcons/Favicon.png" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body>
+      <body className={legacyStyles['legacy-scope']}>
         <AnalyticsProvider>
           <Header />
           {children}
