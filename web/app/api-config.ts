@@ -38,6 +38,13 @@ function stripTrailingSlash(rawUrl: string | undefined): string {
   return trimmed.replace(/\/+$/, '');
 }
 
+function deriveProjectsBase(rawUrl: string | undefined): string {
+  if (!rawUrl) return '';
+  const trimmed = stripTrailingSlash(rawUrl);
+  if (!trimmed) return '';
+  return trimmed.replace(/\/projects$/i, '');
+}
+
 export const API_CONFIG = {
   // Projects API - User project management
   PROJECTS_API_URL: process.env.NEXT_PUBLIC_PROJECTS_API_URL!,
@@ -56,6 +63,7 @@ export const API_CONFIG = {
 
   // Litchi Automation API - Mission Hub automation
   LITCHI_API_URL: stripTrailingSlash(process.env.NEXT_PUBLIC_LITCHI_API_URL),
+  LITCHI_API_URL_FALLBACK: deriveProjectsBase(process.env.NEXT_PUBLIC_PROJECTS_API_URL),
   
   // Beta Access Admin API - Employee beta access management
   BETA_ACCESS_API_URL: process.env.NEXT_PUBLIC_BETA_ACCESS_API_URL || '',

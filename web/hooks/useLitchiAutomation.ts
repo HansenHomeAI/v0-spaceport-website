@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { API_CONFIG, buildApiUrl } from '../app/api-config';
+import { API_CONFIG } from '../app/api-config';
 
 export type LitchiStatus = {
   status: string;
@@ -45,14 +45,34 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
   const [isTesting, setIsTesting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const apiConfigured = useMemo(() => Boolean(API_CONFIG.LITCHI_API_URL), []);
+  const fallbackApiBase = API_CONFIG.LITCHI_API_URL_FALLBACK;
+  const initialApiBase = API_CONFIG.LITCHI_API_URL || fallbackApiBase;
+  const [apiBase, setApiBase] = useState(initialApiBase);
+  const apiConfigured = useMemo(() => Boolean(initialApiBase), [initialApiBase]);
   const pollIntervalMs = options.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
+
+  const fetchWithFallback = useCallback(async (path: string, init: RequestInit) => {
+    if (!apiBase) {
+      throw new Error('Litchi API is not configured.');
+    }
+    try {
+      return await fetch(`${apiBase}${path}`, init);
+    } catch (err: any) {
+      const message = err?.message?.toLowerCase?.() || '';
+      const isNetworkError = err instanceof TypeError || message.includes('failed to fetch');
+      if (fallbackApiBase && apiBase !== fallbackApiBase && isNetworkError) {
+        setApiBase(fallbackApiBase);
+        return fetch(`${fallbackApiBase}${path}`, init);
+      }
+      throw err;
+    }
+  }, [apiBase, fallbackApiBase]);
 
   const refreshStatus = useCallback(async () => {
     if (!apiConfigured) return;
     try {
       setError(null);
-      const response = await fetch(buildApiUrl.litchi.status(), {
+      const response = await fetchWithFallback('/litchi/status', {
         headers: await authHeaders(),
       });
       if (!response.ok) {
@@ -83,7 +103,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
       setIsConnecting(true);
       setConnectMessage(null);
       setError(null);
-      const response = await fetch(buildApiUrl.litchi.connect(), {
+      const response = await fetchWithFallback('/litchi/connect', {
         method: 'POST',
         headers: await authHeaders(),
         body: JSON.stringify({
@@ -114,7 +134,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
     try {
       setIsTesting(true);
       setError(null);
-      const response = await fetch(buildApiUrl.litchi.testConnection(), {
+      const response = await fetchWithFallback('/litchi/test-connection', {
         method: 'POST',
         headers: await authHeaders(),
       });
@@ -141,7 +161,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
     try {
       setIsUploading(true);
       setError(null);
-      const response = await fetch(buildApiUrl.litchi.upload(), {
+      const response = await fetchWithFallback('/litchi/upload', {
         method: 'POST',
         headers: await authHeaders(),
         body: JSON.stringify({ missions }),
