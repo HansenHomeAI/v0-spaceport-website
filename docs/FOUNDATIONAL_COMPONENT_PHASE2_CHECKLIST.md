@@ -23,7 +23,7 @@ Purpose: migrate all styling from `web/public/styles.css` into the foundational 
 - [x] Create flow parity check
 - [x] Auth flow parity check
 - [x] Flight viewer / Shape tools parity check
-- [ ] Modals (New Project, Model Delivery, Terms) open/close
-- [ ] Forms (waitlist, feedback, auth) input states
+- [x] Modals (New Project, Model Delivery, Terms) open/close
+- [x] Forms (waitlist, feedback, auth) input states
 - [x] Mobile breakpoints (375px) snapshots
 - [x] Desktop breakpoints (1280px) snapshots
