@@ -27,11 +27,22 @@ def _json_default(value: Any) -> Any:
     raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
 
 
+def _coerce_decimals(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        return _json_default(value)
+    if isinstance(value, list):
+        return [_coerce_decimals(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _coerce_decimals(item) for key, item in value.items()}
+    return value
+
+
 def _response(status: int, body: Dict[str, Any]) -> Dict[str, Any]:
+    sanitized_body = _coerce_decimals(body)
     return {
         "statusCode": status,
         "headers": _cors_headers(),
-        "body": json.dumps(body, default=_json_default),
+        "body": json.dumps(sanitized_body, default=_json_default),
     }
 
 
