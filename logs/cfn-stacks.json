@@ -1,0 +1,116 @@
+{
+    "StackSummaries": [
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/RoadmapInfraStack-roadmap-main/d839ade0-c2a0-11f0-860d-0add6566abbd",
+            "StackName": "RoadmapInfraStack-roadmap-main",
+            "TemplateDescription": "Shared infrastructure for the Roadmap project (managed via CDK).",
+            "CreationTime": "2025-11-16T04:00:52.943000+00:00",
+            "LastUpdatedTime": "2025-11-25T01:28:35.376000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStagingStack/4a092ac0-8298-11f0-aa99-0635e2e96369",
+            "StackName": "SpaceportMLPipelineStagingStack",
+            "CreationTime": "2025-08-26T16:18:24.067000+00:00",
+            "LastUpdatedTime": "2026-01-06T04:25:25.980000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "StackName": "SpaceportAuthStagingStack",
+            "CreationTime": "2025-08-25T22:51:32.590000+00:00",
+            "LastUpdatedTime": "2026-01-22T19:23:01.997000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStack/b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+            "StackName": "SpaceportStagingStack",
+            "CreationTime": "2025-08-25T22:42:05.686000+00:00",
+            "LastUpdatedTime": "2026-01-06T18:50:24.918000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportCrmStack/f90d5a50-6664-11f0-897f-0213cb6e89f7",
+            "StackName": "SpaceportCrmStack",
+            "TemplateDescription": "Spaceport CRM - Luxury CRM application with AWS backend",
+            "CreationTime": "2025-07-21T19:00:31.358000+00:00",
+            "LastUpdatedTime": "2025-12-31T01:27:19.854000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStack/0a4642b0-3b4e-11f0-a9f8-06c33d291e3b",
+            "StackName": "SpaceportMLPipelineStack",
+            "CreationTime": "2025-05-27T23:09:15.560000+00:00",
+            "LastUpdatedTime": "2025-08-25T19:38:36.265000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStack/4a264de0-2fd1-11f0-9919-0a6839bd7c2f",
+            "StackName": "SpaceportStack",
+            "CreationTime": "2025-05-13T08:07:19.008000+00:00",
+            "LastUpdatedTime": "2025-08-23T19:22:22.270000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SteepleCo/d993df90-171e-11f0-8d09-0624c0eedabf",
+            "StackName": "SteepleCo",
+            "CreationTime": "2025-04-11T21:49:31.835000+00:00",
+            "LastUpdatedTime": "2025-04-21T22:01:54.762000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/BauhausPosterShopStack/5a4bafd0-14d3-11f0-9d11-02b0a583b6a3",
+            "StackName": "BauhausPosterShopStack",
+            "CreationTime": "2025-04-08T23:44:03.677000+00:00",
+            "LastUpdatedTime": "2025-04-11T21:11:27.674000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/BackendStack/aa65ce10-1352-11f0-8729-02267691e3c1",
+            "StackName": "BackendStack",
+            "CreationTime": "2025-04-07T01:50:21.815000+00:00",
+            "LastUpdatedTime": "2025-04-08T20:03:12.613000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/MyRenderingPipelineStack/607b1cc0-015e-11f0-b00c-0ab6847bbd51",
+            "StackName": "MyRenderingPipelineStack",
+            "CreationTime": "2025-03-15T05:28:50.768000+00:00",
+            "LastUpdatedTime": "2025-03-30T02:11:13.525000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}

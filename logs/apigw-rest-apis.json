@@ -1,0 +1,409 @@
+{
+    "items": [
+        {
+            "id": "140zkriu48",
+            "name": "Spaceport CRM API",
+            "description": "API for Spaceport CRM application",
+            "createdDate": "2025-07-21T13:00:42-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportCrmApi889610B4",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportCrmStack/f90d5a50-6664-11f0-897f-0213cb6e89f7",
+                "aws:cloudformation:stack-name": "SpaceportCrmStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "gk2s001r98"
+        },
+        {
+            "id": "2sgk99b5pg",
+            "name": "DronePathGeneratorREST",
+            "createdDate": "2024-12-31T17:59:07-07:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "REGIONAL"
+                ]
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "yuahqofv1f"
+        },
+        {
+            "id": "34ap3qgem7",
+            "name": "Spaceport-ProjectsApi",
+            "description": "CRUD for user projects (requires Cognito JWT)",
+            "createdDate": "2025-08-13T22:10:42-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportProjectsApiFB4F7886",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStack/26cd12a0-77c2-11f0-a69c-0656f7514a25",
+                "aws:cloudformation:stack-name": "SpaceportAuthStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "j0m6qbtgw8"
+        },
+        {
+            "id": "3xzfdyvwpd",
+            "name": "Spaceport-ML-API",
+            "description": "API for ML processing pipeline",
+            "createdDate": "2025-05-27T17:09:26-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportMLApi05F9F32F",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStack/0a4642b0-3b4e-11f0-a9f8-06c33d291e3b",
+                "aws:cloudformation:stack-name": "SpaceportMLPipelineStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "i5bmq16p41"
+        },
+        {
+            "id": "42l1g4mmkk",
+            "name": "spaceport-feedback-api-staging",
+            "description": "Spaceport Feedback API for staging.spcprt.com",
+            "createdDate": "2025-09-19T17:17:57-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportFeedbackApiEAA52E63",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStack/b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+                "aws:cloudformation:stack-name": "SpaceportStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "3yh2o1qa92"
+        },
+        {
+            "id": "6ypk9kjze3",
+            "name": "Poster Shop API",
+            "description": "API for the Bauhaus Poster Shop",
+            "createdDate": "2025-04-06T19:50:33-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "PosterShopApi8B81541D",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/BackendStack/aa65ce10-1352-11f0-8729-02267691e3c1",
+                "aws:cloudformation:stack-name": "BackendStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "5syygzhgke"
+        },
+        {
+            "id": "cy6e77329k",
+            "name": "SteepleCo-API",
+            "description": "API for SteepleCo Poster Shop",
+            "createdDate": "2025-04-11T15:49:44-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "PosterShopApi8B81541D",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SteepleCo/d993df90-171e-11f0-8d09-0624c0eedabf",
+                "aws:cloudformation:stack-name": "SteepleCo"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "twr6g9unb5"
+        },
+        {
+            "id": "gcqqr7bwpg",
+            "name": "Spaceport-InviteApiV3",
+            "description": "Invite approved users to Spaceport (v3)",
+            "createdDate": "2025-08-12T15:34:29-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportInviteApiV300A7D88C",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStack/26cd12a0-77c2-11f0-a69c-0656f7514a25",
+                "aws:cloudformation:stack-name": "SpaceportAuthStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "y4omzgczzh"
+        },
+        {
+            "id": "gxlmbhtbi4",
+            "name": "Spaceport-InviteApiV2",
+            "description": "Invite approved users to Spaceport (v2)",
+            "createdDate": "2025-08-12T15:20:31-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportInviteApiV2EC19D6FE",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStack/26cd12a0-77c2-11f0-a69c-0656f7514a25",
+                "aws:cloudformation:stack-name": "SpaceportAuthStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "4mho0q12j8"
+        },
+        {
+            "id": "h5w9p6vn2l",
+            "name": "BauhausPosterShopAPI",
+            "description": "API for Bauhaus Poster Shop",
+            "createdDate": "2025-04-08T17:44:14-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "PosterShopApi8B81541D",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/BauhausPosterShopStack/5a4bafd0-14d3-11f0-9d11-02b0a583b6a3",
+                "aws:cloudformation:stack-name": "BauhausPosterShopStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "lychfoadga"
+        },
+        {
+            "id": "h6ogvocgk4",
+            "name": "spaceport-waitlist-api-staging",
+            "description": "Spaceport Waitlist API for staging.spcprt.com",
+            "createdDate": "2025-09-06T14:26:17-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportWaitlistApiC5F13778",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStack/b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+                "aws:cloudformation:stack-name": "SpaceportStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "08uua0q7jc"
+        },
+        {
+            "id": "hkp7hyqjt4",
+            "name": "APIGateway-RenderingPipeline",
+            "createdDate": "2025-03-14T23:29:00-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "APIGatewayRenderingPipelineBD1FECDF",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/MyRenderingPipelineStack/607b1cc0-015e-11f0-b00c-0ab6847bbd51",
+                "aws:cloudformation:stack-name": "MyRenderingPipelineStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "8xdig94qef"
+        },
+        {
+            "id": "ih2qiclfw2",
+            "name": "Spaceport-InviteApi",
+            "description": "Invite approved users to Spaceport",
+            "createdDate": "2026-01-22T12:23:10-07:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportInviteApiE1929295",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+                "aws:cloudformation:stack-name": "SpaceportAuthStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "wzn3szrk89"
+        },
+        {
+            "id": "mca9yf1vgl",
+            "name": "Spaceport-ProjectsApi-staging",
+            "description": "CRUD for user projects (requires Cognito JWT)",
+            "createdDate": "2025-08-25T16:51:51-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportProjectsApiFB4F7886",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+                "aws:cloudformation:stack-name": "SpaceportAuthStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "4jhg8yh0f1"
+        },
+        {
+            "id": "mismmjgpm3",
+            "name": "FileUploadAPI",
+            "createdDate": "2025-01-13T10:22:49-07:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "cxxg44cej6"
+        },
+        {
+            "id": "mx549qsbel",
+            "name": "Spaceport-PasswordResetApi-staging",
+            "description": "Password reset API for Spaceport users",
+            "createdDate": "2025-09-05T13:58:33-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportPasswordResetApiE0B0C737",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+                "aws:cloudformation:stack-name": "SpaceportAuthStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "8zgs1zt42l"
+        },
+        {
+            "id": "tbzxbstibh",
+            "name": "Spaceport-ModelDeliveryAdminApi-staging",
+            "description": "Model delivery admin API for sending model links to clients",
+            "createdDate": "2025-09-24T12:53:34-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportModelDeliveryAdminApiBB20EA91",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+                "aws:cloudformation:stack-name": "SpaceportAuthStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "0e1je21oe3"
+        },
+        {
+            "id": "wz0ezgptue",
+            "name": "Spaceport-ML-API-staging",
+            "description": "API for ML processing pipeline",
+            "createdDate": "2025-08-26T10:18:34-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportMLApi05F9F32F",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStagingStack/4a092ac0-8298-11f0-aa99-0635e2e96369",
+                "aws:cloudformation:stack-name": "SpaceportMLPipelineStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "mlhkqiplvk"
+        },
+        {
+            "id": "xduxbyklm1",
+            "name": "Spaceport-SubscriptionApi",
+            "description": "Subscription management API for Spaceport",
+            "createdDate": "2025-08-25T16:51:51-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SubscriptionApiGateway52D8266E",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+                "aws:cloudformation:stack-name": "SpaceportAuthStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "80gcl2kohh"
+        },
+        {
+            "id": "xv4bpkwlb8",
+            "name": "spaceport-file-upload-api-staging",
+            "description": "Spaceport File Upload API for staging.spcprt.com",
+            "createdDate": "2025-08-25T16:42:18-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportFileUploadApiC08E7F01",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStack/b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+                "aws:cloudformation:stack-name": "SpaceportStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "tr1zmczk57"
+        },
+        {
+            "id": "y5fej7zgx8",
+            "name": "Spaceport-BetaAccessAdminApi-staging",
+            "description": "Beta access admin API for employee invitation management",
+            "createdDate": "2025-09-04T00:10:33-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportBetaAccessAdminApi5BED58DD",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+                "aws:cloudformation:stack-name": "SpaceportAuthStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "g9ys9jjupa"
+        },
+        {
+            "id": "yhpjmfhdxf",
+            "name": "spaceport-drone-path-api-staging",
+            "description": "Spaceport Drone Path API for staging.spcprt.com",
+            "createdDate": "2025-08-25T16:42:18-06:00",
+            "apiKeySource": "HEADER",
+            "endpointConfiguration": {
+                "types": [
+                    "EDGE"
+                ]
+            },
+            "tags": {
+                "aws:cloudformation:logical-id": "SpaceportDronePathApiE5F30A9C",
+                "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStack/b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+                "aws:cloudformation:stack-name": "SpaceportStagingStack"
+            },
+            "disableExecuteApiEndpoint": false,
+            "rootResourceId": "1u4dg11gb2"
+        }
+    ]
+}

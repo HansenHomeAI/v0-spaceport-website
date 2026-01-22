@@ -1,0 +1,6 @@
+{
+  "url": "https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/litchi/status",
+  "status": 500,
+  "requestId": "d879bc07-a4b0-4ee1-aee5-f2e4ee56576f",
+  "body": "{\"message\": \"Internal server error\"}"
+}

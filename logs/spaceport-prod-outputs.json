@@ -1,0 +1,12 @@
+[
+    {
+        "OutputKey": "DronePathApiUrl",
+        "OutputValue": "https://0r3y4bx7lc.execute-api.us-west-2.amazonaws.com/prod",
+        "Description": "Drone Path API Gateway URL"
+    },
+    {
+        "OutputKey": "FileUploadApiUrl",
+        "OutputValue": "https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod",
+        "Description": "File Upload API Gateway URL"
+    }
+]

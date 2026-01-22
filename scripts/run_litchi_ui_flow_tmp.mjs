@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { Client } from '@modelcontextprotocol/sdk/client';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import { writeFileSync } from 'node:fs';
 
 const SERVER_URL = process.env.PLAYWRIGHT_MCP_SSE_URL ?? 'http://localhost:5174/sse';
-const PREVIEW_URL = process.env.PREVIEW_URL;
+const PREVIEW_URL = process.env.PREVIEW_URL ?? 'http://localhost:3000';
 const SPACEPORT_EMAIL = process.env.SPACEPORT_EMAIL;
 const SPACEPORT_PASSWORD = process.env.SPACEPORT_PASSWORD;
 const LITCHI_EMAIL = process.env.LITCHI_EMAIL ?? SPACEPORT_EMAIL;
@@ -104,13 +105,35 @@ async function waitForText(text, time = 20) {
     record('Login step', 'warn', 'Login form not detected; assuming already authenticated');
   }
 
-  await callTool('browser_evaluate', {
+  const openResult = await callTool('browser_evaluate', {
     function: '() => { const el = document.querySelector(".new-project-card"); if (!el) return false; el.click(); return true; }'
   }, { silent: true });
+  let opened = /true/i.test(textFromResult(openResult));
   record('Open New Project modal', 'pass');
 
-  await waitForText('Delivery & Automation', 20);
+  await waitForText('Delivery & Automation', 10);
   snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+
+  if (!tryFindRef(snapshot, 'button', ['Send to Litchi']) && !tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code'])) {
+    const newProjectRef = tryFindRef(snapshot, 'heading', ['New Project']);
+    if (newProjectRef) {
+      await callTool('browser_click', { element: 'New Project', ref: newProjectRef }, { silent: true });
+      opened = true;
+    }
+  }
+
+  if (!tryFindRef(snapshot, 'button', ['Send to Litchi']) && !tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code'])) {
+    const editRef = tryFindRef(snapshot, 'button', ['Edit project']);
+    if (editRef) {
+      await callTool('browser_click', { element: 'Edit project', ref: editRef }, { silent: true });
+      opened = true;
+    }
+  }
+
+  if (opened) {
+    await waitForText('Delivery & Automation', 20);
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  }
 
   let sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
   const connectRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code']);
@@ -144,6 +167,7 @@ async function waitForText(text, time = 20) {
   }
 
   if (!sendRef) {
+    writeFileSync('logs/litchi-ui-missing-send.yaml', snapshot, 'utf-8');
     record('Litchi connection', 'fail', 'Send to Litchi button not found');
     process.exitCode = 1;
   } else {

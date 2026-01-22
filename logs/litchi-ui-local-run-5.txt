@@ -1,0 +1,51 @@
+✅ Connect MCP — http://localhost:5174/sse
+✅ Navigate to create page — http://localhost:3000/create
+⚠️ Login step — Login form not detected; assuming already authenticated
+✅ Open New Project modal
+✅ Open Litchi connect form
+✅ Fill Litchi credentials — hello@spcprt.com
+✅ Submit Litchi connect
+❌ Litchi connection — Send to Litchi button not found
+
+Summary: [
+  {
+    "step": "Connect MCP",
+    "status": "pass",
+    "info": "http://localhost:5174/sse"
+  },
+  {
+    "step": "Navigate to create page",
+    "status": "pass",
+    "info": "http://localhost:3000/create"
+  },
+  {
+    "step": "Login step",
+    "status": "warn",
+    "info": "Login form not detected; assuming already authenticated"
+  },
+  {
+    "step": "Open New Project modal",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Open Litchi connect form",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Fill Litchi credentials",
+    "status": "pass",
+    "info": "hello@spcprt.com"
+  },
+  {
+    "step": "Submit Litchi connect",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Litchi connection",
+    "status": "fail",
+    "info": "Send to Litchi button not found"
+  }
+]

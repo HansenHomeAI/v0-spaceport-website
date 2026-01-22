@@ -1,0 +1,48 @@
+[
+    {
+        "OutputKey": "DronePathApiUrl",
+        "OutputValue": "https://yhpjmfhdxf.execute-api.us-west-2.amazonaws.com/prod",
+        "Description": "Drone Path API Gateway URL for staging"
+    },
+    {
+        "OutputKey": "SpaceportDronePathApiEndpoint1D9832EA",
+        "OutputValue": "https://yhpjmfhdxf.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SpaceportFeedbackApiEndpoint5BE02C72",
+        "OutputValue": "https://42l1g4mmkk.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "EnvironmentName",
+        "OutputValue": "staging",
+        "Description": "Environment suffix: staging"
+    },
+    {
+        "OutputKey": "SpaceportFileUploadApiEndpoint9D442019",
+        "OutputValue": "https://xv4bpkwlb8.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "WaitlistApiUrl",
+        "OutputValue": "https://h6ogvocgk4.execute-api.us-west-2.amazonaws.com/prod",
+        "Description": "Waitlist API Gateway URL for staging"
+    },
+    {
+        "OutputKey": "FeedbackApiUrl",
+        "OutputValue": "https://42l1g4mmkk.execute-api.us-west-2.amazonaws.com/prod",
+        "Description": "Feedback API Gateway URL for staging"
+    },
+    {
+        "OutputKey": "SpaceportWaitlistApiEndpointF5C6E1F3",
+        "OutputValue": "https://h6ogvocgk4.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "FileUploadApiUrl",
+        "OutputValue": "https://xv4bpkwlb8.execute-api.us-west-2.amazonaws.com/prod",
+        "Description": "File Upload API Gateway URL for staging"
+    },
+    {
+        "OutputKey": "UploadBucketName",
+        "OutputValue": "spaceport-uploads-staging",
+        "Description": "Upload S3 bucket name for staging"
+    }
+]

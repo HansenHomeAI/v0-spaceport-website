@@ -1,0 +1,914 @@
+{
+    "StackResourceSummaries": [
+        {
+            "LogicalResourceId": "CDKMetadata",
+            "PhysicalResourceId": "b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+            "ResourceType": "AWS::CDK::Metadata",
+            "LastUpdatedTimestamp": "2025-11-17T18:59:14.328000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportCsvUploadFunction9DA7BB71",
+            "PhysicalResourceId": "Spaceport-CsvUploadFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:27.011000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiAccount6BD70B6F",
+            "PhysicalResourceId": "Spacep-Space-8PgZqjaFyiLg",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:37.340000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiCloudWatchRole53F25330",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiCloudWat-UV3AdSjYWF8Y",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:34.773000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDeploymentA4598A4Baa4dd643335a545d3983b2ecdacf9aac",
+            "PhysicalResourceId": "5w3ag2",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:42.642000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDeploymentStageprodFC8C4F1F",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:45.466000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDronePathRESTA4911C09",
+            "PhysicalResourceId": "qsfzsm",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:21.597000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDronePathRESTOPTIONS3FE804C6",
+            "PhysicalResourceId": "yhpjmfhdxf|qsfzsm|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:25.052000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDronePathRESTPOST3856A6A5",
+            "PhysicalResourceId": "yhpjmfhdxf|qsfzsm|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:35.549000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDronePathRESTPOSTApiPermissionSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTDronePathREST0B31DA05",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiDronePathRESTPOSTApiPermissionSpaceportStagi-qB1qZvMgr3b5",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:48.440000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiDronePathRESTPOSTApiPermissionTestSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTDronePathREST9D19BAF9",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiDronePathRESTPOSTApiPermissionTestSpaceportS-NsYmsJGk0E9G",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.797000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiE5F30A9C",
+            "PhysicalResourceId": "yhpjmfhdxf",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "LastUpdatedTimestamp": "2026-01-06T04:23:42.144000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiOPTIONS665C399F",
+            "PhysicalResourceId": "yhpjmfhdxf|1u4dg11gb2|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:23.231000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapi52DC3093",
+            "PhysicalResourceId": "dt60j5",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:21.456000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapiOPTIONS412D1D2C",
+            "PhysicalResourceId": "yhpjmfhdxf|dt60j5|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:24.813000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsv6855679A",
+            "PhysicalResourceId": "8hp407",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:23.508000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvOPTIONSE6A26BF5",
+            "PhysicalResourceId": "yhpjmfhdxf|8hp407|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:30.427000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvPOSTApiPermissionSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapicsv226BAE01",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapicsvPOSTApiPermissionSpaceportStagingStack-SByZQNriMqt8",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:48.045000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvPOSTApiPermissionTestSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapicsvBB612746",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapicsvPOSTApiPermissionTestSpaceportStagingS-XuzCHsT0Q5iV",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.766000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvPOSTFB5A0C2B",
+            "PhysicalResourceId": "yhpjmfhdxf|8hp407|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.236000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbattery170C56D1",
+            "PhysicalResourceId": "pu1wfe",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:27.050000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbatteryOPTIONS75474036",
+            "PhysicalResourceId": "yhpjmfhdxf|pu1wfe|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:32.059000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbatteryid42A9B457",
+            "PhysicalResourceId": "u86le1",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:29.108000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbatteryidOPTIONSC4BE6F51",
+            "PhysicalResourceId": "yhpjmfhdxf|u86le1|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:32.406000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbatteryidPOST57C1D8C8",
+            "PhysicalResourceId": "yhpjmfhdxf|u86le1|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.397000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbatteryidPOSTApiPermissionSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapicsvbatteryid12D9B119",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapicsvbatteryidPOSTApiPermissionSpaceportSta-K1PmrshCGnWj",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:48.081000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapicsvbatteryidPOSTApiPermissionTestSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapicsvbatteryid8FF915B9",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapicsvbatteryidPOSTApiPermissionTestSpacepor-iIFsue41wHSQ",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.415000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapielevationA81E7C71",
+            "PhysicalResourceId": "4cuqy6",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:23.522000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapielevationOPTIONSB06F2A91",
+            "PhysicalResourceId": "yhpjmfhdxf|4cuqy6|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:30.995000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapielevationPOSTApiPermissionSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapielevation818D568A",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapielevationPOSTApiPermissionSpaceportStagin-rYTCNcKPKlay",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:48.408000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapielevationPOSTApiPermissionTestSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapielevationA86085DC",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapielevationPOSTApiPermissionTestSpaceportSt-dfmRR8LnvQmj",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.526000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapielevationPOSTC14B2ADA",
+            "PhysicalResourceId": "yhpjmfhdxf|4cuqy6|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.164000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapioptimizespiral19420274",
+            "PhysicalResourceId": "awrqdc",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:23.518000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapioptimizespiralOPTIONS1702ECF8",
+            "PhysicalResourceId": "yhpjmfhdxf|awrqdc|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:28.367000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapioptimizespiralPOSTApiPermissionSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapioptimizespiral874DE760",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapioptimizespiralPOSTApiPermissionSpaceportS-XCEC3cBp84ES",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:48.204000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapioptimizespiralPOSTApiPermissionTestSpaceportStagingStackSpaceportDronePathApi63F426FCPOSTapioptimizespiral7DE5535F",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportDronePathApiapioptimizespiralPOSTApiPermissionTestSpacep-YYzZGBoVG6KB",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:31.125000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathApiapioptimizespiralPOSTEC39408D",
+            "PhysicalResourceId": "yhpjmfhdxf|awrqdc|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:31.178000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportDronePathFunctionC609C294",
+            "PhysicalResourceId": "Spaceport-DronePathFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-01-06T18:50:38.672000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApiAccount36A6CA36",
+            "PhysicalResourceId": "Spacep-Space-OuLshYwd8lgf",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "LastUpdatedTimestamp": "2025-09-19T23:18:15.850000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApiCloudWatchRoleC6C96028",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFeedbackApiCloudWatc-rj0dY29uuIqW",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2025-09-19T23:18:13.505000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApiDeployment6E5F7FBF90271a00a5261393559701aa8bf055e7",
+            "PhysicalResourceId": "q3gu8a",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:31.886000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApiDeploymentStageprod97EE0CCE",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:36.458000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApiEAA52E63",
+            "PhysicalResourceId": "42l1g4mmkk",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "LastUpdatedTimestamp": "2026-01-06T04:23:41.514000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApiOPTIONS6262E3FB",
+            "PhysicalResourceId": "42l1g4mmkk|3yh2o1qa92|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-09-19T23:18:00.937000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApifeedback41DBCC33",
+            "PhysicalResourceId": "2hcjt0",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-09-19T23:17:59.861000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApifeedbackOPTIONSB18190AF",
+            "PhysicalResourceId": "42l1g4mmkk|2hcjt0|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-09-19T23:18:02.857000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApifeedbackPOST56535D23",
+            "PhysicalResourceId": "42l1g4mmkk|2hcjt0|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:29.688000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApifeedbackPOSTApiPermissionSpaceportStagingStackSpaceportFeedbackApi1ED45279POSTfeedbackDC806DA4",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFeedbackApifeedbackPOSTApiPermissionSpaceportStagingStac-usNrLsCV3dwy",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:39.014000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackApifeedbackPOSTApiPermissionTestSpaceportStagingStackSpaceportFeedbackApi1ED45279POSTfeedback79F07752",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFeedbackApifeedbackPOSTApiPermissionTestSpaceportStaging-d5rO1SgDsOFW",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:29.975000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFeedbackFunction32A86282",
+            "PhysicalResourceId": "Spaceport-FeedbackFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:27.292000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApiAccountA9D3F14E",
+            "PhysicalResourceId": "Spacep-Space-fFz7QwAsy9h5",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:37.661000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApiC08E7F01",
+            "PhysicalResourceId": "xv4bpkwlb8",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "LastUpdatedTimestamp": "2026-01-06T04:23:41.396000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApiCloudWatchRoleE0CCBCC1",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApiCloudWa-awvJflqu3Pkb",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:34.671000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApiDeploymentAD2363F02005e7915ebc37432fbc217eaca830a2",
+            "PhysicalResourceId": "7rij21",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:34.410000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApiDeploymentStageprod68F442E5",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:38.131000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApiOPTIONSC51C7D72",
+            "PhysicalResourceId": "xv4bpkwlb8|tr1zmczk57|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:23.146000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApicompletemultipartupload73A88CD4",
+            "PhysicalResourceId": "hohhyj",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:21.667000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApicompletemultipartuploadOPTIONS988F35F0",
+            "PhysicalResourceId": "xv4bpkwlb8|hohhyj|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:25.090000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApicompletemultipartuploadPOSTAF44D20F",
+            "PhysicalResourceId": "xv4bpkwlb8|hohhyj|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.047000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApicompletemultipartuploadPOSTApiPermissionSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTcompletemultipartupload24951A09",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApicompletemultipartuploadPOSTApiPermissionSpa-JOdKZQ9TfVoF",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:40.602000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApicompletemultipartuploadPOSTApiPermissionTestSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTcompletemultipartuploadAA40FE91",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApicompletemultipartuploadPOSTApiPermissionTes-1XWetO0ixqxE",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.303000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApigetpresignedurl7CD8D7C2",
+            "PhysicalResourceId": "zpbt9a",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:21.767000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApigetpresignedurlOPTIONS5C5D1136",
+            "PhysicalResourceId": "xv4bpkwlb8|zpbt9a|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:25.159000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApigetpresignedurlPOST6E515E8A",
+            "PhysicalResourceId": "xv4bpkwlb8|zpbt9a|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.120000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApigetpresignedurlPOSTApiPermissionSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTgetpresignedurl2A62109E",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApigetpresignedurlPOSTApiPermissionSpaceportSt-sd90SXeD6c55",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:40.628000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApigetpresignedurlPOSTApiPermissionTestSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTgetpresignedurl1767810E",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApigetpresignedurlPOSTApiPermissionTestSpacepo-aOWVaFllpsPy",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.501000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApisavesubmission5E148A52",
+            "PhysicalResourceId": "zpjfne",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:21.749000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApisavesubmissionOPTIONS4E9E79AB",
+            "PhysicalResourceId": "xv4bpkwlb8|zpjfne|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:25.191000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApisavesubmissionPOST25222373",
+            "PhysicalResourceId": "xv4bpkwlb8|zpjfne|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.041000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApisavesubmissionPOSTApiPermissionSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTsavesubmission05EB05EC",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApisavesubmissionPOSTApiPermissionSpaceportSta-EYUlrRjIzprB",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:41.145000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApisavesubmissionPOSTApiPermissionTestSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTsavesubmissionDFA06832",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApisavesubmissionPOSTApiPermissionTestSpacepor-bUBbRoOG2mpf",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.336000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApistartmultipartupload6F21EA32",
+            "PhysicalResourceId": "erjbvh",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:21.717000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApistartmultipartuploadOPTIONS20EA2D5C",
+            "PhysicalResourceId": "xv4bpkwlb8|erjbvh|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-25T22:42:25.162000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApistartmultipartuploadPOSTApiPermissionSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTstartmultipartupload8DA0B542",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApistartmultipartuploadPOSTApiPermissionSpacep-I35nn5CifAY3",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:41.085000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApistartmultipartuploadPOSTApiPermissionTestSpaceportStagingStackSpaceportFileUploadApi2BF98BA6POSTstartmultipartuploadC803E09B",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportFileUploadApistartmultipartuploadPOSTApiPermissionTestSp-QODSnIMW5D4w",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.733000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadApistartmultipartuploadPOSTFE8A4D2A",
+            "PhysicalResourceId": "xv4bpkwlb8|erjbvh|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:30.054000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportFileUploadFunction234557E5",
+            "PhysicalResourceId": "Spaceport-FileUploadFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:27.706000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportLambdaRole4013C0D8",
+            "PhysicalResourceId": "Spaceport-Lambda-Role-staging",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2026-01-06T04:23:58.639000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportLambdaRoleDefaultPolicyE6D4EBE4",
+            "PhysicalResourceId": "Space-Space-51W0QioTart0",
+            "ResourceType": "AWS::IAM::Policy",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:16.038000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiAccount22F24E96",
+            "PhysicalResourceId": "Spacep-Space-1anaW6ET9UpE",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "LastUpdatedTimestamp": "2025-09-06T20:26:35.865000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiC5F13778",
+            "PhysicalResourceId": "h6ogvocgk4",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "LastUpdatedTimestamp": "2026-01-06T04:23:41.697000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiCloudWatchRoleB0968FF1",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportWaitlistApiCloudWatc-BwQCuX9IzeAy",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2025-09-06T20:26:33.610000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiDeployment0CB6954C1166737d21c79736fd035204fe9e8291",
+            "PhysicalResourceId": "i10kmn",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:39.784000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiDeploymentStageprodC8855078",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:42.148000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiOPTIONSD7DC9515",
+            "PhysicalResourceId": "h6ogvocgk4|08uua0q7jc|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-09-06T20:26:21.550000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiwaitlist4637926F",
+            "PhysicalResourceId": "yqc4y6",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-09-06T20:26:20.025000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiwaitlistOPTIONSEC79C1B9",
+            "PhysicalResourceId": "h6ogvocgk4|yqc4y6|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-09-06T20:26:23.102000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiwaitlistPOSTApiPermissionSpaceportStagingStackSpaceportWaitlistApiEF315B15POSTwaitlistC57D467F",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportWaitlistApiwaitlistPOSTApiPermissionSpaceportStagingStac-YeIaq62n5gBd",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:44.939000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiwaitlistPOSTApiPermissionTestSpaceportStagingStackSpaceportWaitlistApiEF315B15POSTwaitlist90021913",
+            "PhysicalResourceId": "SpaceportStagingStack-SpaceportWaitlistApiwaitlistPOSTApiPermissionTestSpaceportStaging-uSqzHHASrrKg",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:31.196000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistApiwaitlistPOSTB1277BA6",
+            "PhysicalResourceId": "h6ogvocgk4|yqc4y6|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:35.627000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportWaitlistFunction6A4E4086",
+            "PhysicalResourceId": "Spaceport-WaitlistFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-01-06T04:24:28.450000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}

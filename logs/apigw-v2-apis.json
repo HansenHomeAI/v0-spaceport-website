@@ -1,0 +1,126 @@
+{
+    "Items": [
+        {
+            "ApiEndpoint": "https://0iuy5e5qve.execute-api.us-west-2.amazonaws.com",
+            "ApiId": "0iuy5e5qve",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CorsConfiguration": {
+                "AllowCredentials": false,
+                "AllowHeaders": [
+                    "content-type, x-amz-date, authorization, x-api-key, x-amz-security-token"
+                ],
+                "AllowMethods": [
+                    "GET",
+                    "POST",
+                    "OPTIONS",
+                    "PUT",
+                    "DELETE"
+                ],
+                "AllowOrigins": [
+                    "*"
+                ],
+                "MaxAge": 3600
+            },
+            "CreatedDate": "2024-12-31T05:28:39+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "Name": "FEtoBE-DronePathGenerator",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        },
+        {
+            "ApiEndpoint": "https://0u4uyzuw1e.execute-api.us-west-2.amazonaws.com",
+            "ApiId": "0u4uyzuw1e",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CorsConfiguration": {
+                "AllowCredentials": false,
+                "AllowHeaders": [
+                    "content-type",
+                    "x-amz-date",
+                    "authorization",
+                    "x-api-key",
+                    "x-amz-security-token",
+                    "x-requested-with",
+                    "accept"
+                ],
+                "AllowMethods": [
+                    "GET",
+                    "POST",
+                    "OPTIONS",
+                    "PUT",
+                    "DELETE"
+                ],
+                "AllowOrigins": [
+                    "*"
+                ],
+                "ExposeHeaders": [
+                    "*"
+                ],
+                "MaxAge": 300
+            },
+            "CreatedDate": "2024-07-22T22:59:49+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "Name": "CSVGeneratorAPI",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        },
+        {
+            "ApiEndpoint": "https://80z2ooylmg.execute-api.us-west-2.amazonaws.com",
+            "ApiId": "80z2ooylmg",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CorsConfiguration": {
+                "AllowCredentials": false,
+                "AllowOrigins": [
+                    "https://www.hansenhome.ai"
+                ],
+                "MaxAge": 0
+            },
+            "CreatedDate": "2024-07-31T22:00:49+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "Name": "MyFileUploadAPI",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        },
+        {
+            "ApiEndpoint": "https://8q1rfj7rli.execute-api.us-west-2.amazonaws.com",
+            "ApiId": "8q1rfj7rli",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CreatedDate": "2024-07-29T10:25:17+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "Name": "DropboxTokenRefreshAPI",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        },
+        {
+            "ApiEndpoint": "https://h8rg235g0b.execute-api.us-west-2.amazonaws.com",
+            "ApiId": "h8rg235g0b",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CorsConfiguration": {
+                "AllowCredentials": true,
+                "AllowHeaders": [
+                    "content-type",
+                    "authorization"
+                ],
+                "AllowMethods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "HEAD"
+                ],
+                "AllowOrigins": [
+                    "https://www.hansenhome.ai"
+                ],
+                "MaxAge": 0
+            },
+            "CreatedDate": "2024-07-31T21:05:35+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "Name": "MyFileUploadAPI",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        }
+    ]
+}
