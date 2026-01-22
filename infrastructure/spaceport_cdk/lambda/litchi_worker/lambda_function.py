@@ -446,7 +446,21 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         return {"status": "expired", "message": "Session cookies missing"}
 
     if os.environ.get("LITCHI_WORKER_DRY_RUN") == "1":
-        _update_status(table, user_id, status="active", message=f"Uploaded {mission_name} (dry run)")
+        completed_progress = None
+        if isinstance(mission_index, int) and mission_total:
+            current = mission_index + 1
+            completed_progress = {
+                "current": current,
+                "total": mission_total,
+                "label": f"Uploaded {current}/{mission_total}",
+            }
+        _update_status(
+            table,
+            user_id,
+            status="active",
+            message=f"Uploaded {mission_name} (dry run)",
+            progress=completed_progress,
+        )
         return {"status": "ok", "message": "Dry run upload complete", "waitSeconds": _jitter_seconds()}
 
     playwright, browser, context = await _launch_context()
@@ -515,7 +529,21 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await _human_click(save_button)
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
-        _update_status(table, user_id, status="active", message=f"Uploaded {mission_name}")
+        completed_progress = None
+        if isinstance(mission_index, int) and mission_total:
+            current = mission_index + 1
+            completed_progress = {
+                "current": current,
+                "total": mission_total,
+                "label": f"Uploaded {current}/{mission_total}",
+            }
+        _update_status(
+            table,
+            user_id,
+            status="active",
+            message=f"Uploaded {mission_name}",
+            progress=completed_progress,
+        )
         return {"status": "ok", "message": f"Uploaded {mission_name}", "waitSeconds": _jitter_seconds()}
     except RateLimitedError as exc:
         _update_status(table, user_id, status="rate_limited", message=str(exc))

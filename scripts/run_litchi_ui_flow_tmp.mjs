@@ -9,6 +9,8 @@ const SPACEPORT_EMAIL = process.env.SPACEPORT_EMAIL;
 const SPACEPORT_PASSWORD = process.env.SPACEPORT_PASSWORD;
 const LITCHI_EMAIL = process.env.LITCHI_EMAIL ?? SPACEPORT_EMAIL;
 const LITCHI_PASSWORD = process.env.LITCHI_PASSWORD;
+const BATTERY_MINUTES = process.env.LITCHI_BATTERY_MINUTES ?? '10';
+const BATTERY_COUNT = process.env.LITCHI_BATTERY_COUNT ?? '2';
 
 if (!PREVIEW_URL || !SPACEPORT_EMAIL || !SPACEPORT_PASSWORD || !LITCHI_EMAIL || !LITCHI_PASSWORD) {
   console.error('Missing required env vars: PREVIEW_URL, SPACEPORT_EMAIL, SPACEPORT_PASSWORD, LITCHI_EMAIL, LITCHI_PASSWORD');
@@ -105,20 +107,59 @@ async function waitForText(text, time = 20) {
     record('Login step', 'warn', 'Login form not detected; assuming already authenticated');
   }
 
-  const openResult = await callTool('browser_evaluate', {
-    function: '() => { const el = document.querySelector(".new-project-card"); if (!el) return false; el.click(); return true; }'
-  }, { silent: true });
-  let opened = /true/i.test(textFromResult(openResult));
+  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+
+  if (hasText(snapshot, 'Litchi Mission Control')) {
+    const connected = hasText(snapshot, 'Connected') && hasText(snapshot, 'Litchi session connected');
+    if (!connected) {
+      const connectDashboardRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account']);
+      if (connectDashboardRef) {
+        await callTool('browser_click', { element: 'Connect Litchi Account', ref: connectDashboardRef }, { silent: true });
+        record('Open dashboard Litchi connect', 'pass');
+        await callTool('browser_wait_for', { text: 'Connect Litchi Account', time: 20 }, { silent: true });
+        snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+
+        const emailDialogRef = tryFindRef(snapshot, 'textbox', ['Email']);
+        const passwordDialogRef = tryFindRef(snapshot, 'textbox', ['Password']);
+        const connectDialogRef = tryFindRef(snapshot, 'button', ['Connect']);
+
+        if (emailDialogRef && passwordDialogRef && connectDialogRef) {
+          await callTool('browser_fill_form', {
+            fields: [
+              { name: 'Email', type: 'textbox', ref: emailDialogRef, value: LITCHI_EMAIL },
+              { name: 'Password', type: 'textbox', ref: passwordDialogRef, value: LITCHI_PASSWORD }
+            ]
+          }, { silent: true });
+          record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+
+          await callTool('browser_click', { element: 'Connect', ref: connectDialogRef }, { silent: true });
+          record('Submit Litchi connect (dashboard)', 'pass');
+          await callTool('browser_wait_for', { text: 'Connected', time: 60 }, { silent: true });
+        } else {
+          record('Fill Litchi credentials', 'fail', 'Connect dialog fields not found');
+        }
+      }
+    }
+  }
+
+  const openHeadingRef = tryFindRef(snapshot, 'heading', ['New Project']);
+  if (openHeadingRef) {
+    await callTool('browser_click', { element: 'New Project', ref: openHeadingRef }, { silent: true });
+  } else {
+    await callTool('browser_evaluate', {
+      function: '() => { const el = document.querySelector(".new-project-card"); if (!el) return false; el.click(); return true; }'
+    }, { silent: true });
+  }
   record('Open New Project modal', 'pass');
 
-  await waitForText('Delivery & Automation', 10);
+  await waitForText('Delivery & Automation', 20);
   snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
 
   if (!tryFindRef(snapshot, 'button', ['Send to Litchi']) && !tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code'])) {
     const newProjectRef = tryFindRef(snapshot, 'heading', ['New Project']);
     if (newProjectRef) {
       await callTool('browser_click', { element: 'New Project', ref: newProjectRef }, { silent: true });
-      opened = true;
+      await callTool('browser_wait_for', { text: 'Delivery & Automation', time: 20 }, { silent: true });
     }
   }
 
@@ -126,14 +167,11 @@ async function waitForText(text, time = 20) {
     const editRef = tryFindRef(snapshot, 'button', ['Edit project']);
     if (editRef) {
       await callTool('browser_click', { element: 'Edit project', ref: editRef }, { silent: true });
-      opened = true;
+      await callTool('browser_wait_for', { text: 'Delivery & Automation', time: 20 }, { silent: true });
     }
   }
 
-  if (opened) {
-    await waitForText('Delivery & Automation', 20);
-    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
-  }
+  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
 
   let sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
   const connectRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code']);
@@ -142,23 +180,22 @@ async function waitForText(text, time = 20) {
     await callTool('browser_click', { element: 'Connect Litchi Account', ref: connectRef }, { silent: true });
     record('Open Litchi connect form', 'pass');
 
-    await callTool('browser_evaluate', {
-      function: `() => {
-        const email = document.querySelector('#litchi-inline-email');
-        const password = document.querySelector('#litchi-inline-password');
-        if (!email || !password) return false;
-        email.value = ${JSON.stringify(LITCHI_EMAIL)};
-        email.dispatchEvent(new Event('input', { bubbles: true }));
-        password.value = ${JSON.stringify(LITCHI_PASSWORD)};
-        password.dispatchEvent(new Event('input', { bubbles: true }));
-        return true;
-      }`
-    }, { silent: true });
-    record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+    const inlineEmailRef = tryFindRef(snapshot, 'textbox', ['Email']);
+    const inlinePasswordRef = tryFindRef(snapshot, 'textbox', ['Password']);
+    if (inlineEmailRef && inlinePasswordRef) {
+      await callTool('browser_fill_form', {
+        fields: [
+          { name: 'Email', type: 'textbox', ref: inlineEmailRef, value: LITCHI_EMAIL },
+          { name: 'Password', type: 'textbox', ref: inlinePasswordRef, value: LITCHI_PASSWORD }
+        ]
+      }, { silent: true });
+      record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+    }
 
-    await callTool('browser_evaluate', {
-      function: '() => { const btn = document.querySelector(".litchi-form button[type=submit]"); if (!btn) return false; btn.click(); return true; }'
-    }, { silent: true });
+    const inlineSubmitRef = tryFindRef(snapshot, 'button', ['Connect', 'Submit', 'Send']);
+    if (inlineSubmitRef) {
+      await callTool('browser_click', { element: 'Connect', ref: inlineSubmitRef }, { silent: true });
+    }
     record('Submit Litchi connect', 'pass');
 
     await waitForText('Send to Litchi', 30);
@@ -191,11 +228,11 @@ async function waitForText(text, time = 20) {
     if (durationRef && quantityRef) {
       await callTool('browser_fill_form', {
         fields: [
-          { name: 'Duration', type: 'textbox', ref: durationRef, value: '10' },
-          { name: 'Quantity', type: 'textbox', ref: quantityRef, value: '2' }
+          { name: 'Duration', type: 'textbox', ref: durationRef, value: BATTERY_MINUTES },
+          { name: 'Quantity', type: 'textbox', ref: quantityRef, value: BATTERY_COUNT }
         ]
       }, { silent: true });
-      record('Set battery inputs', 'pass', '10 min / 2 batteries');
+      record('Set battery inputs', 'pass', `${BATTERY_MINUTES} min / ${BATTERY_COUNT} batteries`);
     } else {
       record('Set battery inputs', 'warn', 'Duration/Quantity inputs not found');
     }
@@ -212,8 +249,8 @@ async function waitForText(text, time = 20) {
       if (durationRef && quantityRef) {
         await callTool('browser_fill_form', {
           fields: [
-            { name: 'Duration', type: 'textbox', ref: durationRef, value: '10' },
-            { name: 'Quantity', type: 'textbox', ref: quantityRef, value: '2' }
+            { name: 'Duration', type: 'textbox', ref: durationRef, value: BATTERY_MINUTES },
+            { name: 'Quantity', type: 'textbox', ref: quantityRef, value: BATTERY_COUNT }
           ]
         }, { silent: true });
       }
