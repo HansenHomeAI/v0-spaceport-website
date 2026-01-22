@@ -156,15 +156,15 @@ async def _launch_context():
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
-            "--disable-features=VizDisplayCompositor,UseSkiaRenderer",
-            "--disable-gpu-compositing",
+            "--no-zygote",
+            "--single-process",
             "--use-gl=swiftshader",
             "--ignore-gpu-blocklist",
         ],
     )
     context = await browser.new_context(
         user_agent=random.choice(USER_AGENTS),
-        viewport={"width": 1280, "height": 720},
+        viewport=None,
         locale="en-US",
     )
     return playwright, browser, context
