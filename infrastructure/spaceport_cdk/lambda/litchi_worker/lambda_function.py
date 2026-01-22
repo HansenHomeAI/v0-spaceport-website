@@ -145,6 +145,9 @@ async def _launch_context():
     if async_playwright is None:
         raise RuntimeError("playwright is not installed in the runtime")
 
+    os.environ.setdefault("LIBGL_ALWAYS_SOFTWARE", "1")
+    os.environ.setdefault("GALLIUM_DRIVER", "llvmpipe")
+
     playwright = await async_playwright().start()
     browser = await playwright.chromium.launch(
         headless=True,
@@ -153,7 +156,8 @@ async def _launch_context():
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
-            "--disable-gpu",
+            "--disable-features=VizDisplayCompositor,UseSkiaRenderer",
+            "--disable-gpu-compositing",
             "--use-gl=swiftshader",
             "--ignore-gpu-blocklist",
         ],
