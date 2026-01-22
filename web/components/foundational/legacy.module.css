@@ -1,36 +1,5 @@
-:root {
-  --accent-gradient: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 41%,
-    rgba(255, 255, 255, 0) 57%,
-    rgba(255, 255, 255, 0.4) 100%
-  );
-}
-
 /* Global reset / base styling */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 /* Prevent horizontal overflow globally */
-html, body {
-  overflow-x: hidden;
-  max-width: 100%;
-}
-html {
-  /* overflow-x and max-width now handled globally above */
-}
-html, body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: #000;
-  color: #fff;
-  /* overflow-x and max-width now handled globally above */
-  position: relative;
-  min-height: 100vh;
-}
 .hidden { display: none; }
 
 /* --------------------------
@@ -801,18 +770,6 @@ html, body {
 }
 
 /* Footer */
-footer {
-  text-align: center;
-  padding: 40px 20px;
-  color: #777;
-  font-size: 0.9rem;
-  width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  z-index: 2;
-}
-
 .footer-content {
   display: flex;
   flex-direction: column;
@@ -3002,22 +2959,6 @@ footer {
 
 
 /* Not adding gradient for now, work on later so it just appears on pages other than the landing page */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  background: linear-gradient(to bottom, 
-    rgba(0,0,0,0.0) 0%,
-    rgba(0,0,0,0.0) 20%,
-    rgba(0,0,0,0) 100%
-  );
-  pointer-events: none;
-  z-index: 998; /* Below header (999) but above other content */
-}
-
 .symbol-3d {
   display: inline-block;
   width: 15px;
@@ -4013,16 +3954,6 @@ body::before {
 }
 
 /* NEW PROJECT POPUP */
-body.popup-open {
-  overflow: hidden;
-  overscroll-behavior: none;
-  -webkit-overscroll-behavior: none;
-  -ms-scroll-chaining: none;
-  height: 100%;
-  position: fixed;
-  width: 100%;
-}
-
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -4115,7 +4046,7 @@ body.popup-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('assets/SpaceportIcons/Close.svg');
+  background-image: url('/assets/SpaceportIcons/Close.svg');
   background-size: 16px 16px;
   background-repeat: no-repeat;
   background-position: center;
@@ -4217,7 +4148,7 @@ body.popup-open {
 .accordion-chevron {
   width: 16px;
   height: 16px;
-  background: url('assets/SpaceportIcons/Arrow.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center;
   background-size: contain;
   opacity: 1;
   transition: transform 0.3s ease;
@@ -4355,14 +4286,14 @@ body.popup-open {
 .expand-icon {
   width: 20px;
   height: 20px;
-  background: url('assets/SpaceportIcons/MaximizeScreen.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/MaximizeScreen.svg') no-repeat center;
   background-size: contain;
   opacity: 1;
   filter: brightness(0) invert(1);
 }
 
 .expand-button.expanded .expand-icon {
-  background: url('assets/SpaceportIcons/MinimizeScreen.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/MinimizeScreen.svg') no-repeat center;
   background-size: contain;
   filter: brightness(0) invert(1);
 }
@@ -4572,7 +4503,7 @@ body.popup-open {
 .instruction-pin {
   width: 32px;
   height: 32px;
-  background: url('assets/SpaceportIcons/Pin.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/Pin.svg') no-repeat center;
   background-size: contain;
   margin: 0 auto 12px;
   opacity: 1;
@@ -4786,7 +4717,7 @@ body.popup-open {
 .upload-icon {
   width: 48px;
   height: 48px;
-  background: url('assets/SpaceportIcons/Camera.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/Camera.svg') no-repeat center;
   background-size: contain;
   margin: 0 auto 12px auto;
   opacity: 0.7;
@@ -4917,43 +4848,43 @@ body.popup-open {
 
 /* Specific Input Icon Classes */
 .input-icon.pin {
-  background-image: url('assets/SpaceportIcons/Pin.svg');
+  background-image: url('/assets/SpaceportIcons/Pin.svg');
 }
 
 .input-icon.time {
-  background-image: url('assets/SpaceportIcons/Time.svg');
+  background-image: url('/assets/SpaceportIcons/Time.svg');
 }
 
 .input-icon.number {
-  background-image: url('assets/SpaceportIcons/Number.svg');
+  background-image: url('/assets/SpaceportIcons/Number.svg');
 }
 
 .input-icon.minimum {
-  background-image: url('assets/SpaceportIcons/Minimum.svg');
+  background-image: url('/assets/SpaceportIcons/Minimum.svg');
 }
 
 .input-icon.maximum {
-  background-image: url('assets/SpaceportIcons/Maximum.svg');
+  background-image: url('/assets/SpaceportIcons/Maximum.svg');
 }
 
 .input-icon.home {
-  background-image: url('assets/SpaceportIcons/3D.svg');
+  background-image: url('/assets/SpaceportIcons/3D.svg');
 }
 
 .input-icon.map {
-  background-image: url('assets/SpaceportIcons/Map.svg');
+  background-image: url('/assets/SpaceportIcons/Map.svg');
 }
 
 .input-icon.email {
-  background-image: url('assets/SpaceportIcons/Info.svg');
+  background-image: url('/assets/SpaceportIcons/Info.svg');
 }
 
 .input-icon.link {
-  background-image: url('assets/SpaceportIcons/Controls.svg');
+  background-image: url('/assets/SpaceportIcons/Controls.svg');
 }
 
 .input-icon.flight {
-  background-image: url('assets/SpaceportIcons/FlightPath.svg');
+  background-image: url('/assets/SpaceportIcons/FlightPath.svg');
 }
 
 /* Flight Path Download Buttons Grid */
@@ -5013,7 +4944,7 @@ body.popup-open {
   margin-right: 10px;
   flex-shrink: 0;
   opacity: 0.6;
-  background: url('assets/SpaceportIcons/Download.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/Download.svg') no-repeat center;
   background-size: contain;
   filter: brightness(0) invert(1);
   transition: opacity 0.2s ease;
@@ -5118,7 +5049,7 @@ body.popup-open {
   left: 20px;
   width: 18px;
   height: 18px;
-  background: url('assets/SpaceportIcons/Map.svg') no-repeat center;
+  background: url('/assets/SpaceportIcons/Map.svg') no-repeat center;
   background-size: contain;
   opacity: 1;
   filter: brightness(0) invert(1);
@@ -5127,7 +5058,7 @@ body.popup-open {
 /* Text fade-out effect for inputs */
 .text-fade-right,
 input.text-fade-right,
-.address-search-wrapper input.text-fade-right {
+.address-search-wrapper :global(input.text-fade-right) {
   position: relative;
   z-index: 1;
   -webkit-mask-image: linear-gradient(
@@ -5266,7 +5197,7 @@ input.text-fade-right,
 }
 
 .input-icon.paragraph {
-  background-image: url('assets/SpaceportIcons/Paragraph.svg');
+  background-image: url('/assets/SpaceportIcons/Paragraph.svg');
 }
 
 .popup-input-wrapper input:focus {
@@ -5468,11 +5399,11 @@ input.text-fade-right,
 }
 
 .upload-btn-icon {
-  background-image: url('assets/SpaceportIcons/Upload.svg');
+  background-image: url('/assets/SpaceportIcons/Upload.svg');
 }
 
 .cancel-btn-icon {
-  background-image: url('assets/SpaceportIcons/Close.svg');
+  background-image: url('/assets/SpaceportIcons/Close.svg');
   opacity: 0;
 }
 
