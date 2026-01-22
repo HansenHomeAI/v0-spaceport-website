@@ -17,13 +17,13 @@ Purpose: migrate all styling from `web/public/styles.css` into the foundational 
 - `className` tokens are also mapped through the same legacy module to preserve any remaining ad hoc class usage while refactoring.
 
 ## Verification checklist
-- [ ] Component library parity check
-- [ ] Home / Landing parity check
-- [ ] Pricing parity check
-- [ ] Create flow parity check
-- [ ] Auth flow parity check
-- [ ] Flight viewer / Shape tools parity check
+- [x] Component library parity check
+- [x] Home / Landing parity check
+- [x] Pricing parity check
+- [x] Create flow parity check
+- [x] Auth flow parity check
+- [x] Flight viewer / Shape tools parity check
 - [ ] Modals (New Project, Model Delivery, Terms) open/close
 - [ ] Forms (waitlist, feedback, auth) input states
-- [ ] Mobile breakpoints (375px) snapshots
-- [ ] Desktop breakpoints (1280px) snapshots
+- [x] Mobile breakpoints (375px) snapshots
+- [x] Desktop breakpoints (1280px) snapshots
