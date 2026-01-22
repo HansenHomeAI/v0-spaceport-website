@@ -1,0 +1,35 @@
+{
+    "items": [
+        {
+            "id": "4jhg8yh0f1",
+            "path": "/",
+            "resourceMethods": {
+                "OPTIONS": {}
+            }
+        },
+        {
+            "id": "e3c2ah",
+            "parentId": "kpq7yn",
+            "pathPart": "{id}",
+            "path": "/projects/{id}",
+            "resourceMethods": {
+                "DELETE": {},
+                "GET": {},
+                "OPTIONS": {},
+                "PATCH": {},
+                "PUT": {}
+            }
+        },
+        {
+            "id": "kpq7yn",
+            "parentId": "4jhg8yh0f1",
+            "pathPart": "projects",
+            "path": "/projects",
+            "resourceMethods": {
+                "GET": {},
+                "OPTIONS": {},
+                "POST": {}
+            }
+        }
+    ]
+}

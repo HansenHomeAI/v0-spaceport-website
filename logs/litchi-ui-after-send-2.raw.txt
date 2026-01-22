@@ -1,0 +1,2 @@
+### Result
+Error: Browser is already in use for /Users/gabrielhansen/Library/Caches/ms-playwright/mcp-chrome, use --isolated to run multiple instances of the same browser

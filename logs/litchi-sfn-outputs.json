@@ -1,0 +1,86 @@
+[
+    {
+        "OutputKey": "PasswordResetApiUrl",
+        "OutputValue": "https://mx549qsbel.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "InviteApiUrlV2",
+        "OutputValue": "https://2n0nedyceh.execute-api.us-west-2.amazonaws.com/prod/invite"
+    },
+    {
+        "OutputKey": "BetaAccessAdminLambdaArn",
+        "OutputValue": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-BetaAccessAdminFunction-staging"
+    },
+    {
+        "OutputKey": "ProjectsApiUrl",
+        "OutputValue": "https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/projects"
+    },
+    {
+        "OutputKey": "SpaceportProjectsApiEndpointD35A751E",
+        "OutputValue": "https://mca9yf1vgl.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "ModelDeliveryAdminApiUrl",
+        "OutputValue": "https://tbzxbstibh.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SpaceportPasswordResetApiEndpointE15E4E91",
+        "OutputValue": "https://mx549qsbel.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "CognitoUserPoolClientId",
+        "OutputValue": "55btcf6qs9l8u8ppjr4g2mrofr"
+    },
+    {
+        "OutputKey": "CognitoUserPoolId",
+        "OutputValue": "us-west-2_VuNwiNkPC"
+    },
+    {
+        "OutputKey": "SubscriptionStackDebug",
+        "OutputValue": "Subscription resources included in AuthStack"
+    },
+    {
+        "OutputKey": "BetaAccessAdminApiUrl",
+        "OutputValue": "https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SpaceportLitchiApiEndpointC0EFC1B9",
+        "OutputValue": "https://vh9bu6q640.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "LitchiApiUrl",
+        "OutputValue": "https://vh9bu6q640.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SpaceportBetaAccessAdminApiEndpoint1F2B20C4",
+        "OutputValue": "https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SpaceportInviteApiV2EndpointE2E230B5",
+        "OutputValue": "https://2n0nedyceh.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SubscriptionApiUrl",
+        "OutputValue": "https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SpaceportModelDeliveryAdminApiEndpoint0448F73B",
+        "OutputValue": "https://tbzxbstibh.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SubscriptionApiGatewayEndpointFBEF6028",
+        "OutputValue": "https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod/"
+    },
+    {
+        "OutputKey": "SubscriptionLambdaArn",
+        "OutputValue": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-SubscriptionManager-staging"
+    },
+    {
+        "OutputKey": "BetaAccessPermissionsTableName",
+        "OutputValue": "Spaceport-BetaAccessPermissions-staging"
+    },
+    {
+        "OutputKey": "PasswordResetLambdaArn",
+        "OutputValue": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-PasswordResetFunction-staging"
+    }
+]

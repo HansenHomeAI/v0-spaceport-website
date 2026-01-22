@@ -1,0 +1,4 @@
+Deploying to environment: staging
+Environment config: {'region': 'us-west-2', 'resourceSuffix': 'staging', 'domain': 'staging.spcprt.com', 'useOIDC': False}
+Importing existing Cognito User Pool: Spaceport-Users-staging
+✅ CloudFormation-managed client: Spaceport-Web-Client

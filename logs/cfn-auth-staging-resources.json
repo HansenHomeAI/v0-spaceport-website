@@ -1,0 +1,1204 @@
+{
+    "StackResources": [
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "BetaAccessAdminLambdaRole5BC7B8D0",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-BetaAccessAdminLambdaRole-Ihii588zJoHI",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2026-01-06T04:29:27.316000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "BetaAccessCheckPermissionAuthorizer24230A20",
+            "PhysicalResourceId": "hif5js",
+            "ResourceType": "AWS::ApiGateway::Authorizer",
+            "Timestamp": "2026-01-06T04:29:18.570000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "BetaAccessSendInvitationAuthorizerCDA419DE",
+            "PhysicalResourceId": "0gbyai",
+            "ResourceType": "AWS::ApiGateway::Authorizer",
+            "Timestamp": "2026-01-06T04:29:16.939000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "CDKMetadata",
+            "PhysicalResourceId": "0b72e860-8206-11f0-bb21-02af4760acfb",
+            "ResourceType": "AWS::CDK::Metadata",
+            "Timestamp": "2026-01-22T00:17:23.950000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-LogRetentionaae0aa3c5b4d-g08yn36f038z",
+            "ResourceType": "AWS::Lambda::Function",
+            "Timestamp": "2025-08-25T22:52:34.340000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-LogRetentionaae0aa3c5b4d4-cclMdDyoOvW5",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2025-08-25T22:52:07.658000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+            "PhysicalResourceId": "Space-LogRe-ckLB0cn2Wumr",
+            "ResourceType": "AWS::IAM::Policy",
+            "Timestamp": "2025-08-25T22:52:25.671000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "ModelDeliveryAdminLambdaRoleDefaultPolicy118875E8",
+            "PhysicalResourceId": "Space-Model-sl1WUsdjZgyu",
+            "ResourceType": "AWS::IAM::Policy",
+            "Timestamp": "2026-01-06T04:29:43.847000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "ModelDeliveryAdminLambdaRoleE96780B4",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-ModelDeliveryAdminLambdaR-34YdlnMUIqeS",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2026-01-06T04:29:27.080000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "ModelDeliveryAuthorizerFAAB82DD",
+            "PhysicalResourceId": "wx9al8",
+            "ResourceType": "AWS::ApiGateway::Authorizer",
+            "Timestamp": "2026-01-06T04:29:14.151000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "PasswordResetLambdaRole89115A35",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-PasswordResetLambdaRole89-vlRrCepYYAqg",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2026-01-06T04:29:27.089000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "PasswordResetLambdaRoleDefaultPolicy6F5B0AA3",
+            "PhysicalResourceId": "Space-Passw-cIaqqlpuDPzO",
+            "ResourceType": "AWS::IAM::Policy",
+            "Timestamp": "2026-01-06T04:29:44.365000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "ProjectsApiAccessLogs23C55026",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-ProjectsApiAccessLogs23C55026-XQhqSjgnRvk9",
+            "ResourceType": "AWS::Logs::LogGroup",
+            "Timestamp": "2025-08-25T22:52:00.390000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "ProjectsAuthorizerD3F18333",
+            "PhysicalResourceId": "ke5kma",
+            "ResourceType": "AWS::ApiGateway::Authorizer",
+            "Timestamp": "2026-01-06T04:29:16.374000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApi5BED58DD",
+            "PhysicalResourceId": "y5fej7zgx8",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "Timestamp": "2026-01-06T04:29:11.849000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiAccountB22F368C",
+            "PhysicalResourceId": "Spacep-Space-iY2LUzeZnk9O",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "Timestamp": "2025-09-04T06:10:52.328000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiBetaAccessDefault4XXBACCF76F",
+            "PhysicalResourceId": "y5fej7zgx8:DEFAULT_4XX",
+            "ResourceType": "AWS::ApiGateway::GatewayResponse",
+            "Timestamp": "2025-09-25T19:51:10.462000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiBetaAccessDefault5XXC522DA27",
+            "PhysicalResourceId": "y5fej7zgx8:DEFAULT_5XX",
+            "ResourceType": "AWS::ApiGateway::GatewayResponse",
+            "Timestamp": "2025-09-25T19:51:10.820000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiCloudWatchRole28C7547C",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportBetaAccessAdminA-EDkulf3rCUtk",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2025-09-04T06:10:49.803000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiDeployment426DE6832e1a7d729ca3bfe971975a74ef1528a6",
+            "PhysicalResourceId": "7vuhbh",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "Timestamp": "2026-01-06T04:29:51.574000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiDeploymentStageprodBD30FDFA",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "Timestamp": "2026-01-06T04:29:53.920000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiOPTIONS8AA3B745",
+            "PhysicalResourceId": "y5fej7zgx8|g9ys9jjupa|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-04T06:10:37.644000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadmin0773A89C",
+            "PhysicalResourceId": "fh06c7",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-04T06:10:36.302000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminOPTIONS1F3FCE77",
+            "PhysicalResourceId": "y5fej7zgx8|fh06c7|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-04T06:10:39.188000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccessEF2B59DB",
+            "PhysicalResourceId": "8r3gup",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-04T06:10:37.770000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccessOPTIONS4DC54C26",
+            "PhysicalResourceId": "y5fej7zgx8|8r3gup|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-04T06:10:40.708000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesscheckpermission416111B1",
+            "PhysicalResourceId": "etikcu",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-04T06:10:39.544000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesscheckpermissionGET50BEF5E2",
+            "PhysicalResourceId": "y5fej7zgx8|etikcu|GET",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:47.347000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesscheckpermissionGETApiPermissionSpaceportAuthStagingStackSpaceportBetaAccessAdminApi2B34059EGETadminbetaaccesscheckpermission39B97A61",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportBetaAccessAdminApiadminbetaaccesscheckpermissionGETA-xxuJWJOWnJj9",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:56.383000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesscheckpermissionGETApiPermissionTestSpaceportAuthStagingStackSpaceportBetaAccessAdminApi2B34059EGETadminbetaaccesscheckpermission347E1CAF",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportBetaAccessAdminApiadminbetaaccesscheckpermissionGETA-UfYmWmzAuXdt",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:41.709000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesscheckpermissionOPTIONSCDE2BCC6",
+            "PhysicalResourceId": "y5fej7zgx8|etikcu|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-04T06:10:42.522000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesssendinvitation4D767C76",
+            "PhysicalResourceId": "1ueryu",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-04T06:10:39.446000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesssendinvitationOPTIONSAEED4007",
+            "PhysicalResourceId": "y5fej7zgx8|1ueryu|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-04T06:10:42.621000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesssendinvitationPOSTApiPermissionSpaceportAuthStagingStackSpaceportBetaAccessAdminApi2B34059EPOSTadminbetaaccesssendinvitationA231B21E",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportBetaAccessAdminApiadminbetaaccesssendinvitationPOSTA-pmaSGeKbMXMQ",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:56.689000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesssendinvitationPOSTApiPermissionTestSpaceportAuthStagingStackSpaceportBetaAccessAdminApi2B34059EPOSTadminbetaaccesssendinvitationBC60A45D",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportBetaAccessAdminApiadminbetaaccesssendinvitationPOSTA-qrULHeHk3Xsn",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:41.998000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminApiadminbetaaccesssendinvitationPOSTD9DE1A3F",
+            "PhysicalResourceId": "y5fej7zgx8|1ueryu|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:44.657000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportBetaAccessAdminFunction3E1ABDD3",
+            "PhysicalResourceId": "Spaceport-BetaAccessAdminFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "Timestamp": "2026-01-06T04:29:39.282000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportEnforceModelPaymentsFunctionServiceRole80FBA8F1",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportEnforceModelPaym-iKUPVAmriUoT",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2026-01-22T00:10:29.516000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiAccount93A6BF6B",
+            "PhysicalResourceId": "Spacep-Space-qe79N0hN0115",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "Timestamp": "2026-01-22T00:10:32.319000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiCloudWatchRoleB3044788",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportInviteApiCloudWa-2KWNVoJlhcr8",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2026-01-22T00:10:29.607000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiDeploymentFBD574ACbf55d622baa934029dc6ecb49adc931c",
+            "PhysicalResourceId": "aeaw0i",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "Timestamp": "2026-01-22T00:10:22.274000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiDeploymentStageprod298D8E19",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "Timestamp": "2026-01-22T00:10:35.966000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiE1929295",
+            "PhysicalResourceId": "98tfpo7vue",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "Timestamp": "2026-01-22T00:10:14.071000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiOPTIONS6BF6A1ED",
+            "PhysicalResourceId": "98tfpo7vue|etxze56da0|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-22T00:10:17.670000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiinviteE80B5627",
+            "PhysicalResourceId": "ez972m",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2026-01-22T00:10:16.279000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiinviteOPTIONS6913803C",
+            "PhysicalResourceId": "98tfpo7vue|ez972m|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-22T00:10:19.989000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportInviteApiinvitePOSTE4C0F265",
+            "PhysicalResourceId": "98tfpo7vue|ez972m|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-22T00:10:19.704000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiAccount826AE98D",
+            "PhysicalResourceId": "Spacep-Space-ZTzm4goCSNHB",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "Timestamp": "2025-09-24T18:53:52.718000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiBB20EA91",
+            "PhysicalResourceId": "tbzxbstibh",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "Timestamp": "2026-01-06T04:29:11.836000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiCloudWatchRoleD21D7524",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdm-b1HIuokA7aca",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2025-09-24T18:53:50.285000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiDeploymentD0D48B5B271a7176422cd7fa9de7f8065b0f2bbd",
+            "PhysicalResourceId": "hdu8z2",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "Timestamp": "2026-01-22T00:17:45.479000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiDeploymentStageprod6D7A899D",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "Timestamp": "2026-01-22T00:17:48.175000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiModelDeliveryDefault4XX4DF524B5",
+            "PhysicalResourceId": "tbzxbstibh:DEFAULT_4XX",
+            "ResourceType": "AWS::ApiGateway::GatewayResponse",
+            "Timestamp": "2025-09-25T19:51:10.578000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiModelDeliveryDefault5XX10820367",
+            "PhysicalResourceId": "tbzxbstibh:DEFAULT_5XX",
+            "ResourceType": "AWS::ApiGateway::GatewayResponse",
+            "Timestamp": "2025-09-25T19:51:10.360000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiOPTIONSC808F47E",
+            "PhysicalResourceId": "tbzxbstibh|0e1je21oe3|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-24T18:53:38.079000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadmin39D95CEA",
+            "PhysicalResourceId": "vlud5o",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-24T18:53:36.677000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminOPTIONS125EF744",
+            "PhysicalResourceId": "tbzxbstibh|vlud5o|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-24T18:53:39.669000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldelivery4FA919D3",
+            "PhysicalResourceId": "b7w6pw",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-24T18:53:38.228000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliveryOPTIONSB533B2CD",
+            "PhysicalResourceId": "tbzxbstibh|b7w6pw|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-24T18:53:41.342000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermission6B6BBDA5",
+            "PhysicalResourceId": "u9di79",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-24T18:53:40.084000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermissionGETApiPermissionSpaceportAuthStagingStackSpaceportModelDeliveryAdminApiA7C9196AGETadminmodeldeliverycheckpermissionEC38EACA",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermissi-L55zorHEDpOR",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:30:06.715000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermissionGETApiPermissionTestSpaceportAuthStagingStackSpaceportModelDeliveryAdminApiA7C9196AGETadminmodeldeliverycheckpermissionFD0D81FC",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermissi-1feMDpHJKYJI",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:58.753000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermissionGETD3BB7C8B",
+            "PhysicalResourceId": "tbzxbstibh|u9di79|GET",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:58.413000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverycheckpermissionOPTIONS56CA3A55",
+            "PhysicalResourceId": "tbzxbstibh|u9di79|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-24T18:53:43.038000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclientA2E2614C",
+            "PhysicalResourceId": "c1p1za",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-24T18:53:39.958000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclientOPTIONS7FD894AA",
+            "PhysicalResourceId": "tbzxbstibh|c1p1za|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-24T18:53:42.804000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclientPOSTApiPermissionSpaceportAuthStagingStackSpaceportModelDeliveryAdminApiA7C9196APOSTadminmodeldeliveryresolveclient86352F2B",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclient-kJZb29SBn5fI",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:30:06.610000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclientPOSTApiPermissionTestSpaceportAuthStagingStackSpaceportModelDeliveryAdminApiA7C9196APOSTadminmodeldeliveryresolveclient1478BC91",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclient-43zTLQIz9040",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:59.026000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliveryresolveclientPOSTB62327EC",
+            "PhysicalResourceId": "tbzxbstibh|c1p1za|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:58.512000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverysend6E3E8E70",
+            "PhysicalResourceId": "t8rn9n",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-24T18:53:39.817000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverysendOPTIONS4686518A",
+            "PhysicalResourceId": "tbzxbstibh|t8rn9n|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-24T18:53:42.994000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverysendPOST540F4C41",
+            "PhysicalResourceId": "tbzxbstibh|t8rn9n|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:58.821000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverysendPOSTApiPermissionSpaceportAuthStagingStackSpaceportModelDeliveryAdminApiA7C9196APOSTadminmodeldeliverysend87E6E19B",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdminApiadminmodeldeliverysendPOSTApiPe-2Z20cxQ22HPb",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:30:06.526000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminApiadminmodeldeliverysendPOSTApiPermissionTestSpaceportAuthStagingStackSpaceportModelDeliveryAdminApiA7C9196APOSTadminmodeldeliverysend297A25F0",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportModelDeliveryAdminApiadminmodeldeliverysendPOSTApiPe-fjHnEhR0AheA",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:58.906000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportModelDeliveryAdminFunction5F233A5B",
+            "PhysicalResourceId": "Spaceport-ModelDeliveryAdminFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "Timestamp": "2026-01-22T00:17:38.095000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApiAccount6E4502C1",
+            "PhysicalResourceId": "Spacep-Space-YzWlO4ki45Ck",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "Timestamp": "2025-09-05T19:58:51.689000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApiCloudWatchRole1C520E4D",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportPasswordResetApi-YMdncBb9GRym",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2025-09-05T19:58:49.289000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApiDeployment1F1303131747573f9d4dae4262383282293f2a39",
+            "PhysicalResourceId": "38qzqb",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "Timestamp": "2026-01-06T04:30:01.077000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApiDeploymentStageprod046B239C",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "Timestamp": "2026-01-06T04:30:03.579000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApiE0B0C737",
+            "PhysicalResourceId": "mx549qsbel",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "Timestamp": "2026-01-06T04:29:11.897000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApiOPTIONS7669D794",
+            "PhysicalResourceId": "mx549qsbel|8zgs1zt42l|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-05T19:58:37.346000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApipasswordresetD1B71CCF",
+            "PhysicalResourceId": "cxznz8",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-09-05T19:58:35.566000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApipasswordresetOPTIONSE74E42F9",
+            "PhysicalResourceId": "mx549qsbel|cxznz8|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-09-05T19:58:38.600000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApipasswordresetPOST7104E360",
+            "PhysicalResourceId": "mx549qsbel|cxznz8|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:58.993000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApipasswordresetPOSTApiPermissionSpaceportAuthStagingStackSpaceportPasswordResetApiE10C8ABEPOSTpasswordresetB15F71AC",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportPasswordResetApipasswordresetPOSTApiPermissionSpacep-essnwes8vXIp",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:30:06.161000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetApipasswordresetPOSTApiPermissionTestSpaceportAuthStagingStackSpaceportPasswordResetApiE10C8ABEPOSTpasswordresetD0C8951E",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportPasswordResetApipasswordresetPOSTApiPermissionTestSp-4W4tJwOtn4Xp",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:59.138000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportPasswordResetFunction6E130394",
+            "PhysicalResourceId": "Spaceport-PasswordResetFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "Timestamp": "2026-01-06T04:29:56.603000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiAccount9AAE3EAD",
+            "PhysicalResourceId": "Spacep-Space-gwI827xgjt1T",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "Timestamp": "2025-08-25T22:52:10.551000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiCloudWatchRoleD1C35844",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportProjectsApiCloud-GcpqIhXaEQVq",
+            "ResourceType": "AWS::IAM::Role",
+            "Timestamp": "2025-08-25T22:52:08.042000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiDEFAULT4XXC6E91DCE",
+            "PhysicalResourceId": "mca9yf1vgl:DEFAULT_4XX",
+            "ResourceType": "AWS::ApiGateway::GatewayResponse",
+            "Timestamp": "2025-09-07T00:58:34.447000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiDEFAULT5XX5328C480",
+            "PhysicalResourceId": "mca9yf1vgl:DEFAULT_5XX",
+            "ResourceType": "AWS::ApiGateway::GatewayResponse",
+            "Timestamp": "2025-09-07T00:58:39.278000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiDeploymentD9BB739076b08b8f2acf93e03d719644b3d3c208",
+            "PhysicalResourceId": "23ig87",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "Timestamp": "2026-01-22T00:17:40.126000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiDeploymentStageprod463BC6F6",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "Timestamp": "2026-01-22T00:17:43.161000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiFB4F7886",
+            "PhysicalResourceId": "mca9yf1vgl",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "Timestamp": "2026-01-06T04:29:11.616000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiOPTIONS25161C7C",
+            "PhysicalResourceId": "mca9yf1vgl|4jhg8yh0f1|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-08-25T22:51:55.518000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiprojectsB72197F1",
+            "PhysicalResourceId": "kpq7yn",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "Timestamp": "2025-08-25T22:51:54.220000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiprojectsGET1C8FA46F",
+            "PhysicalResourceId": "mca9yf1vgl|kpq7yn|GET",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2026-01-06T04:29:39.795000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiprojectsGETApiPermissionSpaceportAuthStagingStackSpaceportProjectsApi54C74015GETprojects35F7F649",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportProjectsApiprojectsGETApiPermissionSpaceportAuthStag-gPkNgmuk2rhY",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:53.670000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiprojectsGETApiPermissionTestSpaceportAuthStagingStackSpaceportProjectsApi54C74015GETprojects0DF995EA",
+            "PhysicalResourceId": "SpaceportAuthStagingStack-SpaceportProjectsApiprojectsGETApiPermissionTestSpaceportAuth-dt1Q24Fie3Il",
+            "ResourceType": "AWS::Lambda::Permission",
+            "Timestamp": "2026-01-06T04:29:40.344000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackName": "SpaceportAuthStagingStack",
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "LogicalResourceId": "SpaceportProjectsApiprojectsOPTIONS5BACE43B",
+            "PhysicalResourceId": "mca9yf1vgl|kpq7yn|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "Timestamp": "2025-08-25T22:51:59.740000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+### Result
+"Dashboard\nWatch Tutorial"
+
+### Ran Playwright code
+await page.evaluate('() => {\n      const card = document.querySelector(\'section, .card, .litchi-card\') || document.body;\n      const activity = document.querySelector(\'[data-testid="litchi-activity"]\') || document.querySelector(\'.litchi-activity\');\n      const text = (activity || card).innerText || \'\';\n      return text.slice(0, 1200);\n    }');
+
+### New console messages
+- [ERROR] Access to fetch at 'https://4ambcdgywa.execute-api.us-west-2.amazonaws.com/prod/litchi/statu...
+- [ERROR] Failed to load resource: net::ERR_FAILED @ https://4ambcdgywa.execute-api.us-west-2.amazonaw...
+- [ERROR] Access to fetch at 'https://4ambcdgywa.execute-api.us-west-2.amazonaws.com/prod/litchi/statu...
+- [ERROR] Failed to load resource: net::ERR_FAILED @ https://4ambcdgywa.execute-api.us-west-2.amazonaw...
+
+### Page state
+- Page URL: https://agent-49231687-litchi-connec.v0-spaceport-website-preview2.pages.dev/create
+- Page Title: Spaceport AI
+- Page Snapshot:
+```yaml
+- <changed> generic [ref=e37]:
+  - ref=e38 [unchanged]
+  - status [ref=e143]: Failed to fetch
+  - ref=e44 [unchanged]
+  - ref=e47 [unchanged]
+  - ref=e55 [unchanged]
+- <changed> generic [ref=e128]:
+  - ref=e129 [unchanged]
+  - status [ref=e144]: Failed to fetch
+  - ref=e131 [unchanged]
+```

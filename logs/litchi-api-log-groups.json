@@ -1,0 +1,13 @@
+{
+    "logGroups": [
+        {
+            "logGroupName": "/aws/lambda/Spaceport-LitchiApiFunction-staging",
+            "creationTime": 1768498375373,
+            "metricFilterCount": 0,
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/lambda/Spaceport-LitchiApiFunction-staging:*",
+            "storedBytes": 15593,
+            "logGroupClass": "STANDARD",
+            "logGroupArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/lambda/Spaceport-LitchiApiFunction-staging"
+        }
+    ]
+}

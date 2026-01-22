@@ -1,0 +1,69 @@
+✅ Connect MCP — http://localhost:5174/sse
+✅ Navigate to create page — https://agent-49231687-litchi-connec.v0-spaceport-website-preview2.pages.dev/create
+✅ Open login form
+✅ Fill Spaceport credentials — hello@spcprt.com
+✅ Submit Spaceport login
+✅ Open New Project modal
+✅ Set map coordinates — 38.27371, -78.1695
+✅ Confirm map focus
+✅ Set battery inputs — 10 min / 2 batteries
+✅ Trigger Send to Litchi
+✅ Confirm upload started
+
+Summary: [
+  {
+    "step": "Connect MCP",
+    "status": "pass",
+    "info": "http://localhost:5174/sse"
+  },
+  {
+    "step": "Navigate to create page",
+    "status": "pass",
+    "info": "https://agent-49231687-litchi-connec.v0-spaceport-website-preview2.pages.dev/create"
+  },
+  {
+    "step": "Open login form",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Fill Spaceport credentials",
+    "status": "pass",
+    "info": "hello@spcprt.com"
+  },
+  {
+    "step": "Submit Spaceport login",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Open New Project modal",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Set map coordinates",
+    "status": "pass",
+    "info": "38.27371, -78.1695"
+  },
+  {
+    "step": "Confirm map focus",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Set battery inputs",
+    "status": "pass",
+    "info": "10 min / 2 batteries"
+  },
+  {
+    "step": "Trigger Send to Litchi",
+    "status": "pass",
+    "info": ""
+  },
+  {
+    "step": "Confirm upload started",
+    "status": "pass",
+    "info": ""
+  }
+]

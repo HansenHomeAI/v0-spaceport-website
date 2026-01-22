@@ -1,0 +1,2 @@
+upload_text=true
+error_text=true

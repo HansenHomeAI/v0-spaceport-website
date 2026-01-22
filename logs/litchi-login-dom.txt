@@ -1,0 +1,5 @@
+### Result
+"{\"newProject\":false,\"signOut\":false,\"loginButton\":true}"
+
+### Ran Playwright code
+await page.evaluate('() => JSON.stringify({\n          newProject: Boolean(document.querySelector(\'.new-project-card\')),\n          signOut: Boolean(document.querySelector(\'.sign-out-btn\')),\n          loginButton: [...document.querySelectorAll(\'button\')].some(b => /login/i.test(b.textContent || \'\'))\n        })');

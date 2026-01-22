@@ -1,0 +1,5 @@
+### Result
+"{\"alerts\":[]}"
+
+### Ran Playwright code
+await page.evaluate('() => JSON.stringify({\n          alerts: [...document.querySelectorAll(\'[role="alert"], .amplify-alert, .error, .alert, .notification\')]\n            .map(el => (el.textContent || \'\').trim())\n            .filter(Boolean)\n        })');
