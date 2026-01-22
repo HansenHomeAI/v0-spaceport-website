@@ -1,5 +1,5 @@
-reason: sandbox removed; flight-viewer/shape pages refactored; component library updated with flight/shape UI
-last_step: deleted sandbox route and added flight-viewer/shape sections in component library
-next_unblocked_step: push branch, watch Pages/CDK workflows, capture preview URL, and validate
+reason: sandbox removed; component library expanded; flight/shape refactors validated via preview + MCP
+last_step: ran build + MCP sanity checks against preview URL
+next_unblocked_step: decide on any follow-up UX tweaks or open PR to development
 owner_action_needed: none
-updated: 2026-01-15T17:38:20Z
+updated: 2026-01-22T00:26:40Z
