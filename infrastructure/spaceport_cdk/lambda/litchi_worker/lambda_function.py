@@ -127,6 +127,11 @@ async def _human_click(locator, *, timeout_ms: int = 30000, force_fallback: bool
             raise
         click_kwargs["force"] = True
         await locator.click(**click_kwargs)
+    except Exception:
+        if not force_fallback:
+            raise
+        click_kwargs["force"] = True
+        await locator.click(**click_kwargs)
 
 
 async def _human_type(locator, text: str) -> None:
@@ -736,7 +741,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if await save_menu_item.count() == 0:
             save_menu_item = page.get_by_text("Save...")
         if await save_menu_item.count() > 0:
-            await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
+            try:
+                await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
+            except Exception as exc:
+                logger.warning("Save menu click failed, forcing script click: %s", exc)
+                await save_menu_item.first.evaluate("el => el.click()")
             await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
 
         await page.evaluate(
@@ -759,7 +768,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         not_logged_in = page.locator("#save-notloggedin")
         if await not_logged_in.count() > 0 and await not_logged_in.first.is_visible():
             _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
-            return {"status": "error", "message": "Not logged in to save missions"}
+            return {
+                "status": "error",
+                "message": "Not logged in to save missions",
+                "waitSeconds": _jitter_seconds(),
+            }
 
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
@@ -794,7 +807,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as exc:
         logger.exception("Upload failed")
         _mark_error(table, user_id, f"Upload failed: {exc}")
-        return {"status": "error", "message": "Upload failed"}
+        return {
+            "status": "error",
+            "message": "Upload failed",
+            "waitSeconds": _jitter_seconds(),
+        }
     finally:
         await _close_context(playwright, browser)
 
