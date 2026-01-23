@@ -190,6 +190,16 @@ def _deserialize_cookies(ciphertext: str) -> List[Dict[str, Any]]:
     return json.loads(payload)
 
 
+def _serialize_local_storage(storage: Dict[str, str], key_id: str) -> str:
+    payload = json.dumps(storage)
+    return _encrypt_text(payload, key_id)
+
+
+def _deserialize_local_storage(ciphertext: str) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext)
+    return json.loads(payload)
+
+
 def _require_kms_key() -> str:
     key_id = os.environ.get("LITCHI_KMS_KEY_ID")
     if not key_id:
@@ -213,10 +223,26 @@ def _load_cookies(table, user_id: str) -> Optional[List[Dict[str, Any]]]:
     return _deserialize_cookies(encrypted)
 
 
-def _save_cookies(table, user_id: str, cookies: List[Dict[str, Any]], status: str = "active") -> None:
+def _load_local_storage(table, user_id: str) -> Optional[Dict[str, str]]:
+    record = _session_record(table, user_id)
+    encrypted = record.get("localStorage")
+    if not encrypted:
+        return None
+    return _deserialize_local_storage(encrypted)
+
+
+def _save_cookies(
+    table,
+    user_id: str,
+    cookies: List[Dict[str, Any]],
+    status: str = "active",
+    local_storage: Optional[Dict[str, str]] = None,
+) -> None:
     record = _session_record(table, user_id)
     key_id = _require_kms_key()
     record["cookies"] = _serialize_cookies(cookies, key_id)
+    if local_storage is not None:
+        record["localStorage"] = _serialize_local_storage(local_storage, key_id)
     record["status"] = status
     record["lastUsed"] = _now_iso()
     record["updatedAt"] = _now_iso()
@@ -559,8 +585,22 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 _mark_error(table, user_id, "Login failed. Check your email and password.")
                 return {"status": "error", "message": "Login failed"}
 
+        local_storage = await page.evaluate(
+            """
+            () => {
+              const entries = {};
+              for (const key of Object.keys(localStorage)) {
+                if (key.includes('/currentUser') || key.startsWith('Parse/')) {
+                  const value = localStorage.getItem(key);
+                  if (value) entries[key] = value;
+                }
+              }
+              return entries;
+            }
+            """
+        )
         cookies = await context.cookies()
-        _save_cookies(table, user_id, cookies, status="active")
+        _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
         _update_status(table, user_id, status="active", message="Litchi session connected")
         return {"status": "active", "message": "Connected"}
     except Exception as exc:
@@ -647,6 +687,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     _update_status(table, user_id, status="uploading", message=f"Uploading {mission_name}", progress=progress)
 
     cookies = _load_cookies(table, user_id)
+    local_storage = _load_local_storage(table, user_id)
     if not cookies:
         _mark_expired(table, user_id, "Session cookies missing")
         return {"status": "expired", "message": "Session cookies missing"}
@@ -672,6 +713,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     playwright, browser, context = await _launch_context()
     try:
         await context.add_cookies(cookies)
+        if local_storage:
+            await context.add_init_script(
+                f\"\"\"\n                () => {{\n                  const entries = {json.dumps(local_storage)};\n                  for (const [key, value] of Object.entries(entries)) {{\n                    localStorage.setItem(key, value);\n                  }}\n                }}\n                \"\"\"\n            )
         page = await context.new_page()
         await _apply_stealth(page)
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
