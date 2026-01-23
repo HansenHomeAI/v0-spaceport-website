@@ -26,7 +26,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-LOGIN_URL = os.environ.get("LITCHI_LOGIN_URL", "https://flylitchi.com")
+LOGIN_URL = os.environ.get("LITCHI_LOGIN_URL", "https://flylitchi.com/hub")
 MISSIONS_URL = os.environ.get("LITCHI_MISSIONS_URL", "https://flylitchi.com/hub")
 
 USER_AGENTS = [
@@ -282,6 +282,19 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             ).filter(
                 has=page.locator("input[type='password']")
             )
+
+        if await login_form.count() == 0 and LOGIN_URL != MISSIONS_URL:
+            await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
+            login_dialog = page.get_by_role("dialog")
+            if await login_dialog.count() > 0:
+                await login_dialog.first.wait_for(state="visible", timeout=10000)
+            login_form = page.locator("form#login-form")
+            if await login_form.count() == 0:
+                login_form = page.locator("form").filter(
+                    has=page.locator("input[type='email']")
+                ).filter(
+                    has=page.locator("input[type='password']")
+                )
         login_scope = login_dialog.first if await login_dialog.count() > 0 else page
         if await login_form.count() > 0:
             if not await login_form.first.is_visible():
