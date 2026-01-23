@@ -339,10 +339,6 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 _mark_error(table, user_id, "Invalid Litchi credentials")
                 return {"status": "error", "message": "Invalid Litchi credentials"}
 
-        if await login_form.count() > 0 and await login_form.first.is_visible():
-            _mark_error(table, user_id, "Login failed. Check your email and password.")
-            return {"status": "error", "message": "Login failed"}
-
         disabled_banner = page.get_by_text("temporarily disabled", exact=False)
         if await disabled_banner.count() > 0:
             message = (await disabled_banner.first.text_content()) or "Sign in temporarily disabled"
@@ -362,6 +358,11 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
+
+        login_link = page.get_by_role("link", name="Log In")
+        if await login_link.count() > 0 and await login_link.first.is_visible():
+            _mark_error(table, user_id, "Login failed. Check your email and password.")
+            return {"status": "error", "message": "Login failed"}
 
         cookies = await context.cookies()
         _save_cookies(table, user_id, cookies, status="active")
