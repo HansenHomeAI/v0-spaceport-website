@@ -385,6 +385,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         if not current_user:
             current_url = page.url
+            page_title = await page.title()
             if "login" in current_url:
                 _mark_error(table, user_id, "Login failed. Check your email and password.")
                 return {"status": "error", "message": "Login failed"}
@@ -396,19 +397,41 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 ).filter(
                     has=page.locator("input[type='password']")
                 )
-            if await login_form_after.count() > 0 and await login_form_after.first.is_visible():
-                _mark_error(table, user_id, "Login failed. Check your email and password.")
-                return {"status": "error", "message": "Login failed"}
+            login_form_visible = await login_form_after.count() > 0 and await login_form_after.first.is_visible()
 
             login_link = page.get_by_role("link", name="Log In")
-            if await login_link.count() > 0 and await login_link.first.is_visible():
-                _mark_error(table, user_id, "Login failed. Check your email and password.")
-                return {"status": "error", "message": "Login failed"}
+            login_link_visible = await login_link.count() > 0 and await login_link.first.is_visible()
 
             login_button = page.get_by_role("button", name="Log In")
             if await login_button.count() == 0:
                 login_button = page.get_by_role("button", name="Login")
-            if await login_button.count() > 0 and await login_button.first.is_visible():
+            login_button_visible = await login_button.count() > 0 and await login_button.first.is_visible()
+
+            two_factor_visible = await page.locator("input[name*='code']").count() > 0
+            captcha_visible = await page.locator("iframe[src*='captcha'], iframe[src*='recaptcha']").count() > 0
+
+            logger.info(
+                "Litchi login diagnostics url=%s title=%s parse_user=%s local_storage=%s login_form=%s login_link=%s login_button=%s two_factor=%s captcha=%s",
+                current_url,
+                page_title,
+                parse_user,
+                bool(current_user),
+                login_form_visible,
+                login_link_visible,
+                login_button_visible,
+                two_factor_visible,
+                captcha_visible,
+            )
+
+            if login_form_visible:
+                _mark_error(table, user_id, "Login failed. Check your email and password.")
+                return {"status": "error", "message": "Login failed"}
+
+            if login_link_visible:
+                _mark_error(table, user_id, "Login failed. Check your email and password.")
+                return {"status": "error", "message": "Login failed"}
+
+            if login_button_visible:
                 _mark_error(table, user_id, "Login failed. Check your email and password.")
                 return {"status": "error", "message": "Login failed"}
 
