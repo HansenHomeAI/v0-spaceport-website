@@ -250,6 +250,18 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     playwright, browser, context = await _launch_context()
     try:
         page = await context.new_page()
+        login_responses: List[str] = []
+        page.on(
+            "response",
+            lambda response: login_responses.append(
+                f"{response.status} {response.url}"
+            )
+            if any(
+                key in response.url.lower()
+                for key in ("login", "parse", "session", "users")
+            ) and len(login_responses) < 10
+            else None,
+        )
         await _apply_stealth(page)
         await page.goto(LOGIN_URL, wait_until="domcontentloaded")
         await asyncio.sleep(_human_delay(0.6, 1.2))
@@ -398,6 +410,10 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         except PlaywrightTimeoutError as exc:
             logger.warning("Login button click failed, falling back to script click: %s", exc)
             await login_button.evaluate("el => el.click()")
+        try:
+            await password_input.press("Enter")
+        except PlaywrightTimeoutError:
+            pass
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
 
@@ -507,7 +523,11 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             login_button_visible = await login_button.count() > 0 and await login_button.first.is_visible()
 
             two_factor_visible = await page.locator("input[name*='code']").count() > 0
-            captcha_visible = await page.locator("iframe[src*='captcha'], iframe[src*='recaptcha']").count() > 0
+            captcha_visible = await page.locator(
+                "iframe[src*='captcha'], iframe[src*='recaptcha'], iframe[src*='turnstile'], iframe[src*='challenges.cloudflare.com'], .cf-turnstile"
+            ).count() > 0
+            if login_responses:
+                logger.info("Litchi login network activity: %s", " | ".join(login_responses))
 
             logger.info(
                 "Litchi login diagnostics url=%s title=%s parse_user=%s local_storage=%s login_form=%s login_link=%s login_button=%s two_factor=%s captcha=%s",
