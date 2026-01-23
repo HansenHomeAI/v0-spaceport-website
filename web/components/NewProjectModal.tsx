@@ -1280,11 +1280,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   if (!open) return null;
 
   const litchiInlineOpen = litchiConnectOpen || Boolean(litchiStatus?.needsTwoFactor);
-  const litchiIndicator = litchiProgress?.current && litchiProgress?.total
-    ? `Uploading ${litchiProgress.current}/${litchiProgress.total}...`
-    : litchiPrepProgress
-      ? `Preparing ${litchiPrepProgress.current}/${litchiPrepProgress.total}...`
-      : '';
+  const litchiStatusState = litchiStatus?.status ?? 'unknown';
+  const litchiIndicator = litchiStatusState !== 'error' && litchiStatusState !== 'expired'
+    ? litchiProgress?.current && litchiProgress?.total
+      ? `Uploading ${litchiProgress.current}/${litchiProgress.total}...`
+      : litchiPrepProgress
+        ? `Preparing ${litchiPrepProgress.current}/${litchiPrepProgress.total}...`
+        : ''
+    : '';
   const litchiSectionError = litchiSendError || litchiError;
   const litchiLogs = litchiStatus?.logs ?? [];
   const litchiVisibleLogs = litchiShowAllLogs ? litchiLogs : litchiLogs.slice(-5);
@@ -1303,17 +1306,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     rate_limited: 'Rate limited',
     error: 'Error',
   };
-  const litchiStatusLabel = litchiStatus ? (litchiStatusLabels[litchiStatus.status] || litchiStatus.status) : 'Unknown';
+  const litchiStatusLabel = litchiStatus ? (litchiStatusLabels[litchiStatusState] || litchiStatusState) : 'Unknown';
   const litchiNeedsReconnect = litchiStatus?.status === 'error' || litchiStatus?.status === 'expired';
   const litchiHasLoginFailure = litchiLogs.some(entry => /login failed/i.test(entry));
   const litchiGuidance = litchiNeedsReconnect
     ? 'Login failed or expired. Re-enter your Litchi credentials to continue.'
     : litchiHasLoginFailure
       ? 'We could not verify these credentials. Please retry or re-enter your password.'
-      : litchiStatus?.status === 'connecting'
-        ? 'Verifying your Litchi login. This can take up to a minute.'
-        : 'Uploads run in the background. You can close this window and return later.';
-  const litchiConnectStatusMessage = litchiConnectMessage || (litchiNeedsReconnect ? 'Login failed. Please re-enter your credentials.' : null);
+      : litchiStatus?.needsTwoFactor
+        ? 'Enter your 2FA code to finish connecting.'
+        : litchiStatus?.status === 'connecting'
+          ? 'Verifying your Litchi login. This can take up to a minute.'
+          : !litchiConnected
+            ? 'Connect your Litchi account to enable uploads.'
+            : litchiSelectedCount === 0
+              ? 'Select the battery segments you want to send below.'
+              : 'Uploads run in the background. You can close this window and return later.';
+  const litchiConnectStatusMessage = (litchiNeedsReconnect || litchiHasLoginFailure)
+    ? 'Login failed. Please re-enter your credentials.'
+    : litchiConnectMessage;
 
   return (
     <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>

@@ -335,7 +335,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         for snippet in ("invalid", "incorrect", "wrong password", "failed"):
             login_error_text = page.get_by_text(snippet, exact=False)
-            if await login_error_text.count() > 0:
+            if await login_error_text.count() > 0 and await login_error_text.first.is_visible():
                 _mark_error(table, user_id, "Invalid Litchi credentials")
                 return {"status": "error", "message": "Invalid Litchi credentials"}
 
