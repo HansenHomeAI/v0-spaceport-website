@@ -360,20 +360,28 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await page.wait_for_timeout(int(_human_delay(2.0, 3.0) * 1000))
 
         current_user = None
-        for _ in range(15):
-            current_user = await page.evaluate(
-                """
-                () => {
-                  const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
-                  if (!key) return null;
-                  const value = localStorage.getItem(key);
-                  return value ? { key, value } : null;
-                }
-                """
-            )
-            if current_user:
-                break
-            await page.wait_for_timeout(1000)
+        parse_user = await page.evaluate(
+            """
+            () => Boolean(window.Parse && window.Parse.User && window.Parse.User.current && window.Parse.User.current())
+            """
+        )
+        if parse_user:
+            current_user = {"parse": True}
+        else:
+            for _ in range(15):
+                current_user = await page.evaluate(
+                    """
+                    () => {
+                      const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                      if (!key) return null;
+                      const value = localStorage.getItem(key);
+                      return value ? { key, value } : null;
+                    }
+                    """
+                )
+                if current_user:
+                    break
+                await page.wait_for_timeout(1000)
 
         if not current_user:
             current_url = page.url
