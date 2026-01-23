@@ -357,7 +357,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
 
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
-        await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
+        await page.wait_for_timeout(int(_human_delay(2.0, 3.0) * 1000))
 
         current_url = page.url
         if "login" in current_url:
