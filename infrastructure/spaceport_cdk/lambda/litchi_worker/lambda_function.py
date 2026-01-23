@@ -276,6 +276,10 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await login_dialog.first.wait_for(state="visible", timeout=10000)
 
         login_form = page.locator("form#login-form")
+        try:
+            await page.wait_for_selector("form#login-form", state="attached", timeout=10000)
+        except PlaywrightTimeoutError:
+            pass
         if await login_form.count() == 0:
             login_form = page.locator("form").filter(
                 has=page.locator("input[type='email']")
@@ -294,7 +298,12 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     await _human_click(login_button.first, timeout_ms=8000, force_fallback=True)
                 except PlaywrightTimeoutError:
                     await login_button.first.evaluate("el => el.click()")
-                await page.wait_for_timeout(1000)
+                await page.wait_for_timeout(1500)
+
+            try:
+                await page.wait_for_selector("form#login-form", state="attached", timeout=10000)
+            except PlaywrightTimeoutError:
+                pass
 
             login_form = page.locator("form#login-form")
             if await login_form.count() == 0:
@@ -309,6 +318,10 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             login_dialog = page.get_by_role("dialog")
             if await login_dialog.count() > 0:
                 await login_dialog.first.wait_for(state="visible", timeout=10000)
+            try:
+                await page.wait_for_selector("form#login-form", state="attached", timeout=10000)
+            except PlaywrightTimeoutError:
+                pass
             login_form = page.locator("form#login-form")
             if await login_form.count() == 0:
                 login_form = page.locator("form").filter(
@@ -316,7 +329,11 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 ).filter(
                     has=page.locator("input[type='password']")
                 )
-        login_scope = login_dialog.first if await login_dialog.count() > 0 else page
+        login_scope = page
+        if await login_dialog.count() > 0:
+            dialog_inputs = login_dialog.first.locator("input[type='email']")
+            if await dialog_inputs.count() > 0:
+                login_scope = login_dialog.first
         if await login_form.count() > 0:
             if not await login_form.first.is_visible():
                 await page.evaluate(
@@ -337,6 +354,13 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 )
             await login_form.first.wait_for(state="visible", timeout=8000)
             login_scope = login_form.first
+        logger.info(
+            "Litchi login elements form_count=%s form_visible=%s email_count=%s password_count=%s",
+            await login_form.count(),
+            await login_form.first.is_visible() if await login_form.count() > 0 else False,
+            await login_scope.locator("input[type='email']").count(),
+            await login_scope.locator("input[type='password']").count(),
+        )
 
         email_input = login_scope.locator("input[type='email']:visible")
         if await email_input.count() == 0:
@@ -345,6 +369,9 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             email_input = login_scope.get_by_label("Email")
         if await email_input.count() > 1:
             email_input = email_input.first
+        if await email_input.count() == 0:
+            _mark_error(table, user_id, "Login form not available")
+            return {"status": "error", "message": "Login form not available"}
         await _human_type(email_input, username)
 
         password_input = login_scope.locator("input[type='password']:visible")
@@ -354,6 +381,9 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             password_input = login_scope.get_by_label("Password")
         if await password_input.count() > 1:
             password_input = password_input.first
+        if await password_input.count() == 0:
+            _mark_error(table, user_id, "Login form not available")
+            return {"status": "error", "message": "Login form not available"}
         await _human_type(password_input, password)
 
         login_button = login_scope.get_by_role("button", name="Log in")
