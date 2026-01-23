@@ -338,14 +338,18 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await login_form.first.wait_for(state="visible", timeout=8000)
             login_scope = login_form.first
 
-        email_input = login_scope.locator("input[type='email']")
+        email_input = login_scope.locator("input[type='email']:visible")
+        if await email_input.count() == 0:
+            email_input = login_scope.locator("input[type='email']")
         if await email_input.count() == 0:
             email_input = login_scope.get_by_label("Email")
         if await email_input.count() > 1:
             email_input = email_input.first
         await _human_type(email_input, username)
 
-        password_input = login_scope.locator("input[type='password']")
+        password_input = login_scope.locator("input[type='password']:visible")
+        if await password_input.count() == 0:
+            password_input = login_scope.locator("input[type='password']")
         if await password_input.count() == 0:
             password_input = login_scope.get_by_label("Password")
         if await password_input.count() > 1:
