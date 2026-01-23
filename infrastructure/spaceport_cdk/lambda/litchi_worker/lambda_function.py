@@ -359,6 +359,11 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
 
+        current_url = page.url
+        if "login" in current_url:
+            _mark_error(table, user_id, "Login failed. Check your email and password.")
+            return {"status": "error", "message": "Login failed"}
+
         login_form_after = page.locator("form#login-form")
         if await login_form_after.count() == 0:
             login_form_after = page.locator("form").filter(
