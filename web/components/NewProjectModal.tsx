@@ -97,6 +97,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [litchiSendError, setLitchiSendError] = useState<string | null>(null);
   const [litchiShowAllLogs, setLitchiShowAllLogs] = useState<boolean>(false);
   const [litchiSelectedBatteries, setLitchiSelectedBatteries] = useState<Set<number>>(new Set());
+  const [litchiLocalLogs, setLitchiLocalLogs] = useState<string[]>([]);
 
   const {
     apiConfigured: litchiApiConfigured,
@@ -695,24 +696,38 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [batteryMinutes, canOptimize, handleOptimize, numBatteries, showSystemNotification]);
 
+  const appendLitchiLog = useCallback((message: string) => {
+    setLitchiLocalLogs(prev => [...prev, `[${new Date().toISOString()}] ${message}`].slice(-50));
+  }, []);
+
   const handleLitchiConnect = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
+    appendLitchiLog('Submitting Litchi credentials...');
     const result = await connectLitchi(litchiEmail, litchiPassword, litchiTwoFactor || undefined);
     if (result?.status === 'active') {
+      appendLitchiLog('Litchi session connected.');
       setLitchiConnectOpen(false);
       setLitchiPassword('');
       setLitchiTwoFactor('');
+      return;
     }
-  }, [connectLitchi, litchiEmail, litchiPassword, litchiTwoFactor]);
+    if (result?.status === 'connecting') {
+      appendLitchiLog('Login started. Verification can take up to a minute.');
+    } else if (!result) {
+      appendLitchiLog('Connection request failed. Double-check your credentials.');
+    }
+  }, [appendLitchiLog, connectLitchi, litchiEmail, litchiPassword, litchiTwoFactor]);
 
   const handleSendToLitchi = useCallback(async () => {
     if (!litchiApiConfigured) {
       setLitchiSendError('Litchi automation API is not configured.');
+      appendLitchiLog('Litchi automation API is not configured.');
       return;
     }
 
     if (!batteryCount) {
       setLitchiSendError('Please set battery quantity first');
+      appendLitchiLog('Please set battery quantity before sending to Litchi.');
       return;
     }
 
@@ -726,9 +741,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setLitchiSending(false);
       setLitchiPrepProgress(null);
       setLitchiSendError('Select at least one battery to send to Litchi.');
+      appendLitchiLog('Select at least one battery before sending.');
       return;
     }
     setLitchiPrepProgress({ current: 0, total: selectedIndexes.length });
+    appendLitchiLog(`Preparing ${selectedIndexes.length} battery ${selectedIndexes.length === 1 ? 'segment' : 'segments'} for Litchi.`);
 
     try {
       const baseTitle = projectTitle && projectTitle !== 'Untitled' ? projectTitle.trim() : 'Untitled';
@@ -754,13 +771,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       );
 
       setLitchiPrepProgress(null);
+      appendLitchiLog('Queueing upload to Litchi...');
       const result = await uploadLitchiMissions(missions);
       if (!result) {
         setLitchiSendError('Upload failed');
+        appendLitchiLog('Upload request failed. Check your connection and try again.');
+        return;
       }
+      appendLitchiLog('Upload queued. You can close this window while it completes.');
     } catch (e: any) {
       const message = e?.message || 'Upload failed';
       setLitchiSendError(message);
+      appendLitchiLog(`Upload failed: ${message}`);
     } finally {
       setLitchiSending(false);
       setLitchiPrepProgress(null);
@@ -769,6 +791,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     API_ENHANCED_BASE,
     batteryCount,
     ensureOptimizedParams,
+    appendLitchiLog,
     litchiApiConfigured,
     litchiSelectedBatteries,
     projectTitle,
@@ -1290,7 +1313,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     : '';
   const litchiSectionError = litchiSendError || litchiError;
   const litchiLogs = litchiStatus?.logs ?? [];
-  const litchiVisibleLogs = litchiShowAllLogs ? litchiLogs : litchiLogs.slice(-5);
+  const litchiAllLogs = [...litchiLogs, ...litchiLocalLogs].slice(-50);
+  const litchiVisibleLogs = litchiShowAllLogs ? litchiAllLogs : litchiAllLogs.slice(-5);
   const litchiSelectedCount = litchiSelectedBatteries.size;
   const litchiSelectionLabel = batteryCount
     ? `${litchiSelectedCount}/${batteryCount} batteries selected`
@@ -1318,7 +1342,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         : litchiStatus?.status === 'connecting'
           ? 'Verifying your Litchi login. This can take up to a minute.'
           : !litchiConnected
-            ? 'Connect your Litchi account to enable uploads.'
+            ? 'Enter your Litchi email and password. Verification takes about a minute and updates in Activity.'
             : litchiSelectedCount === 0
               ? 'Select the battery segments you want to send below.'
               : 'Uploads run in the background. You can close this window and return later.';
@@ -1646,7 +1670,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       </div>
                     ))}
                   </div>
-                  {litchiLogs.length > 5 && (
+                  {litchiAllLogs.length > 5 && (
                     <button
                       type="button"
                       className="litchi-secondary"
