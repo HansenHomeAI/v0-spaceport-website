@@ -346,20 +346,51 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
 
-        for snippet in ("invalid", "incorrect", "wrong password", "failed"):
-            login_error_text = page.get_by_text(snippet, exact=False)
-            if await login_error_text.count() > 0 and await login_error_text.first.is_visible():
-                _mark_error(table, user_id, "Invalid Litchi credentials")
-                return {"status": "error", "message": "Invalid Litchi credentials"}
-
-        disabled_banner = page.get_by_text("temporarily disabled", exact=False)
-        if await disabled_banner.count() > 0:
-            message = (await disabled_banner.first.text_content()) or "Sign in temporarily disabled"
-            _mark_error(table, user_id, message.strip())
-            return {"status": "error", "message": message.strip()}
-
         two_factor_input = page.locator("input[name*='code']")
-        if await two_factor_input.count() > 0:
+        current_user = None
+        parse_user = False
+
+        for _ in range(20):
+            if await two_factor_input.count() > 0 and await two_factor_input.first.is_visible():
+                break
+
+            for snippet in ("invalid", "incorrect", "wrong password", "failed"):
+                login_error_text = page.get_by_text(snippet, exact=False)
+                if await login_error_text.count() > 0 and await login_error_text.first.is_visible():
+                    _mark_error(table, user_id, "Invalid Litchi credentials")
+                    return {"status": "error", "message": "Invalid Litchi credentials"}
+
+            disabled_banner = page.get_by_text("temporarily disabled", exact=False)
+            if await disabled_banner.count() > 0 and await disabled_banner.first.is_visible():
+                message = (await disabled_banner.first.text_content()) or "Sign in temporarily disabled"
+                _mark_error(table, user_id, message.strip())
+                return {"status": "error", "message": message.strip()}
+
+            parse_user = await page.evaluate(
+                """
+                () => Boolean(window.Parse && window.Parse.User && window.Parse.User.current && window.Parse.User.current())
+                """
+            )
+            if parse_user:
+                current_user = {"parse": True}
+                break
+
+            current_user = await page.evaluate(
+                """
+                () => {
+                  const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                  if (!key) return null;
+                  const value = localStorage.getItem(key);
+                  return value ? { key, value } : null;
+                }
+                """
+            )
+            if current_user:
+                break
+
+            await page.wait_for_timeout(1000)
+
+        if await two_factor_input.count() > 0 and await two_factor_input.first.is_visible():
             if not two_factor_code:
                 _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
                 return {"status": "pending_2fa", "message": "Two-factor code required"}
