@@ -380,6 +380,13 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             _mark_error(table, user_id, "Login failed. Check your email and password.")
             return {"status": "error", "message": "Login failed"}
 
+        login_button = page.get_by_role("button", name="Log In")
+        if await login_button.count() == 0:
+            login_button = page.get_by_role("button", name="Login")
+        if await login_button.count() > 0 and await login_button.first.is_visible():
+            _mark_error(table, user_id, "Login failed. Check your email and password.")
+            return {"status": "error", "message": "Login failed"}
+
         cookies = await context.cookies()
         _save_cookies(table, user_id, cookies, status="active")
         _update_status(table, user_id, status="active", message="Litchi session connected")
