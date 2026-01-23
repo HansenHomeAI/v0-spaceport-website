@@ -11,6 +11,10 @@ const LITCHI_EMAIL = process.env.LITCHI_EMAIL ?? SPACEPORT_EMAIL;
 const LITCHI_PASSWORD = process.env.LITCHI_PASSWORD;
 const BATTERY_MINUTES = process.env.LITCHI_BATTERY_MINUTES ?? '10';
 const BATTERY_COUNT = process.env.LITCHI_BATTERY_COUNT ?? '2';
+const SELECTED_BATTERIES = (process.env.LITCHI_SELECTED_BATTERIES ?? '')
+  .split(',')
+  .map((value) => parseInt(value.trim(), 10))
+  .filter((value) => Number.isFinite(value) && value > 0);
 
 if (!PREVIEW_URL || !SPACEPORT_EMAIL || !SPACEPORT_PASSWORD || !LITCHI_EMAIL || !LITCHI_PASSWORD) {
   console.error('Missing required env vars: PREVIEW_URL, SPACEPORT_EMAIL, SPACEPORT_PASSWORD, LITCHI_EMAIL, LITCHI_PASSWORD');
@@ -180,6 +184,8 @@ async function waitForText(text, time = 20) {
     await callTool('browser_click', { element: 'Connect Litchi Account', ref: connectRef }, { silent: true });
     record('Open Litchi connect form', 'pass');
 
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+
     const inlineEmailRef = tryFindRef(snapshot, 'textbox', ['Email']);
     const inlinePasswordRef = tryFindRef(snapshot, 'textbox', ['Password']);
     if (inlineEmailRef && inlinePasswordRef) {
@@ -235,6 +241,20 @@ async function waitForText(text, time = 20) {
       record('Set battery inputs', 'pass', `${BATTERY_MINUTES} min / ${BATTERY_COUNT} batteries`);
     } else {
       record('Set battery inputs', 'warn', 'Duration/Quantity inputs not found');
+    }
+
+    if (SELECTED_BATTERIES.length) {
+      const clearRef = tryFindRef(snapshot, 'button', ['Clear']);
+      if (clearRef) {
+        await callTool('browser_click', { element: 'Clear', ref: clearRef }, { silent: true });
+      }
+      for (const batteryIndex of SELECTED_BATTERIES) {
+        const batteryRef = tryFindRef(snapshot, 'button', [`Battery ${batteryIndex}`]);
+        if (batteryRef) {
+          await callTool('browser_click', { element: `Battery ${batteryIndex}`, ref: batteryRef }, { silent: true });
+        }
+      }
+      record('Select batteries for Litchi', 'pass', SELECTED_BATTERIES.join(','));
     }
 
     await callTool('browser_click', { element: 'Send to Litchi', ref: sendRef }, { silent: true });

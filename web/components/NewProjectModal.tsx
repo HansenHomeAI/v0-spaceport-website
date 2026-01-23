@@ -95,6 +95,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [litchiPrepProgress, setLitchiPrepProgress] = useState<{ current: number; total: number } | null>(null);
   const [litchiSending, setLitchiSending] = useState<boolean>(false);
   const [litchiSendError, setLitchiSendError] = useState<string | null>(null);
+  const [litchiShowAllLogs, setLitchiShowAllLogs] = useState<boolean>(false);
+  const [litchiSelectedBatteries, setLitchiSelectedBatteries] = useState<Set<number>>(new Set());
 
   const {
     apiConfigured: litchiApiConfigured,
@@ -510,6 +512,41 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
 
+  useEffect(() => {
+    setLitchiSelectedBatteries(prev => {
+      if (!batteryCount) return new Set();
+      if (prev.size === 0) {
+        return new Set(Array.from({ length: batteryCount }, (_, idx) => idx + 1));
+      }
+      const next = new Set<number>();
+      for (let idx = 1; idx <= batteryCount; idx += 1) {
+        if (prev.has(idx)) next.add(idx);
+      }
+      return next;
+    });
+  }, [batteryCount]);
+
+  const toggleLitchiBattery = useCallback((batteryIndex: number) => {
+    setLitchiSelectedBatteries(prev => {
+      const next = new Set(prev);
+      if (next.has(batteryIndex)) {
+        next.delete(batteryIndex);
+      } else {
+        next.add(batteryIndex);
+      }
+      return next;
+    });
+  }, []);
+
+  const selectAllLitchiBatteries = useCallback(() => {
+    if (!batteryCount) return;
+    setLitchiSelectedBatteries(new Set(Array.from({ length: batteryCount }, (_, idx) => idx + 1)));
+  }, [batteryCount]);
+
+  const clearLitchiBatterySelection = useCallback(() => {
+    setLitchiSelectedBatteries(new Set());
+  }, []);
+
   // Rotating processing messages for optimization
   const processingMessages = [
     "This may take a moment...",
@@ -670,12 +707,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const handleSendToLitchi = useCallback(async () => {
     if (!litchiApiConfigured) {
-      showSystemNotification('error', 'Litchi automation API is not configured.');
+      setLitchiSendError('Litchi automation API is not configured.');
       return;
     }
 
     if (!batteryCount) {
-      showSystemNotification('error', 'Please set battery quantity first');
+      setLitchiSendError('Please set battery quantity first');
       return;
     }
 
@@ -684,14 +721,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     setLitchiSendError(null);
     setLitchiSending(true);
-    setLitchiPrepProgress({ current: 0, total: batteryCount });
+    const selectedIndexes = Array.from(litchiSelectedBatteries).sort((a, b) => a - b);
+    if (selectedIndexes.length === 0) {
+      setLitchiSending(false);
+      setLitchiPrepProgress(null);
+      setLitchiSendError('Select at least one battery to send to Litchi.');
+      return;
+    }
+    setLitchiPrepProgress({ current: 0, total: selectedIndexes.length });
 
     try {
       const baseTitle = projectTitle && projectTitle !== 'Untitled' ? projectTitle.trim() : 'Untitled';
       let completed = 0;
-      const batteryIndexes = Array.from({ length: batteryCount }, (_, idx) => idx + 1);
       const missions = await Promise.all(
-        batteryIndexes.map(async (batteryIndex) => {
+        selectedIndexes.map(async (batteryIndex) => {
           const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -712,16 +755,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       setLitchiPrepProgress(null);
       const result = await uploadLitchiMissions(missions);
-      if (result) {
-        showSystemNotification('success', 'Litchi upload started');
-      } else {
+      if (!result) {
         setLitchiSendError('Upload failed');
-        showSystemNotification('error', 'Upload failed');
       }
     } catch (e: any) {
       const message = e?.message || 'Upload failed';
       setLitchiSendError(message);
-      showSystemNotification('error', message);
     } finally {
       setLitchiSending(false);
       setLitchiPrepProgress(null);
@@ -731,8 +770,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     batteryCount,
     ensureOptimizedParams,
     litchiApiConfigured,
+    litchiSelectedBatteries,
     projectTitle,
-    showSystemNotification,
     uploadLitchiMissions,
   ]);
 
@@ -1247,6 +1286,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       ? `Preparing ${litchiPrepProgress.current}/${litchiPrepProgress.total}...`
       : '';
   const litchiSectionError = litchiSendError || litchiError;
+  const litchiLogs = litchiStatus?.logs ?? [];
+  const litchiVisibleLogs = litchiShowAllLogs ? litchiLogs : litchiLogs.slice(-5);
+  const litchiSelectedCount = litchiSelectedBatteries.size;
+  const litchiSelectionLabel = batteryCount
+    ? `${litchiSelectedCount}/${batteryCount} batteries selected`
+    : 'No batteries selected';
+  const litchiStatusLabels: Record<string, string> = {
+    not_connected: 'Not connected',
+    connecting: 'Connecting',
+    active: 'Connected',
+    pending_2fa: 'Needs 2FA',
+    expired: 'Expired',
+    uploading: 'Uploading',
+    testing: 'Testing connection',
+    rate_limited: 'Rate limited',
+    error: 'Error',
+  };
+  const litchiStatusLabel = litchiStatus ? (litchiStatusLabels[litchiStatus.status] || litchiStatus.status) : 'Unknown';
+  const litchiNeedsReconnect = litchiStatus?.status === 'error' || litchiStatus?.status === 'expired';
+  const litchiHasLoginFailure = litchiLogs.some(entry => /login failed/i.test(entry));
+  const litchiGuidance = litchiNeedsReconnect
+    ? 'Login failed or expired. Re-enter your Litchi credentials to continue.'
+    : litchiHasLoginFailure
+      ? 'We could not verify these credentials. Please retry or re-enter your password.'
+      : litchiStatus?.status === 'connecting'
+        ? 'Verifying your Litchi login. This can take up to a minute.'
+        : 'Uploads run in the background. You can close this window and return later.';
+  const litchiConnectStatusMessage = litchiConnectMessage || (litchiNeedsReconnect ? 'Login failed. Please re-enter your credentials.' : null);
 
   return (
     <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>
@@ -1446,7 +1513,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 {!litchiApiConfigured && (
                   <p className="litchi-muted">Litchi automation API is not configured for this environment.</p>
                 )}
-                {litchiStatus?.message && <p className="litchi-status-message">{litchiStatus.message}</p>}
+                <div className="litchi-card-header">
+                  <div>
+                    {litchiStatus?.message && <p className="litchi-status-message">{litchiStatus.message}</p>}
+                    <p className="litchi-muted">{litchiGuidance}</p>
+                  </div>
+                  <span className={`litchi-status-pill litchi-status-${litchiStatus?.status || 'unknown'}`}>{litchiStatusLabel}</span>
+                </div>
                 {litchiSectionError && <p className="litchi-error" role="status">{litchiSectionError}</p>}
                 <div className="litchi-actions">
                   {litchiConnected ? (
@@ -1454,9 +1527,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       className="litchi-primary"
                       type="button"
                       onClick={handleSendToLitchi}
-                      disabled={!litchiApiConfigured || litchiSending || litchiUploading}
+                      disabled={!litchiApiConfigured || litchiSending || litchiUploading || litchiSelectedCount === 0}
                     >
-                      {litchiSending ? 'Preparing missions...' : litchiUploading ? 'Queueing upload...' : 'Send to Litchi'}
+                      {litchiSending
+                        ? 'Preparing missions...'
+                        : litchiUploading
+                          ? 'Queueing upload...'
+                          : litchiSelectedCount && litchiSelectedCount < batteryCount
+                            ? `Send ${litchiSelectedCount} batteries to Litchi`
+                            : 'Send to Litchi'}
                     </button>
                   ) : (
                     <button
@@ -1472,6 +1551,39 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     {showManualDownloads ? 'Hide manual downloads' : 'Download manually'}
                   </button>
                 </div>
+                {batteryCount > 0 && (
+                  <div className="litchi-selection">
+                    <div className="litchi-selection-header">
+                      <span className="litchi-muted">Choose which batteries to send</span>
+                      <div className="litchi-actions">
+                        <button className="litchi-secondary" type="button" onClick={selectAllLitchiBatteries}>
+                          Select all
+                        </button>
+                        <button className="litchi-secondary" type="button" onClick={clearLitchiBatterySelection}>
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                    <div className="litchi-select-grid">
+                      {Array.from({ length: batteryCount }, (_, idx) => {
+                        const batteryIndex = idx + 1;
+                        const selected = litchiSelectedBatteries.has(batteryIndex);
+                        return (
+                          <button
+                            key={batteryIndex}
+                            type="button"
+                            className={`litchi-select-btn${selected ? ' selected' : ''}`}
+                            onClick={() => toggleLitchiBattery(batteryIndex)}
+                            aria-pressed={selected}
+                          >
+                            Battery {batteryIndex}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="litchi-muted">{litchiSelectionLabel}</p>
+                  </div>
+                )}
                 {litchiIndicator && <p className="litchi-muted">{litchiIndicator}</p>}
                 {litchiInlineOpen && !litchiConnected && (
                   <form className="litchi-form" onSubmit={handleLitchiConnect}>
@@ -1502,7 +1614,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         />
                       </>
                     )}
-                    {litchiConnectMessage && <p className="litchi-muted" role="status">{litchiConnectMessage}</p>}
+                    {litchiConnectStatusMessage && <p className="litchi-muted" role="status">{litchiConnectStatusMessage}</p>}
                     <div className="litchi-modal-actions">
                       <button type="button" className="litchi-secondary" onClick={() => setLitchiConnectOpen(false)}>
                         Cancel
@@ -1513,6 +1625,26 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </div>
                   </form>
                 )}
+                <div className="litchi-log-panel" aria-live="polite">
+                  <h5>Activity</h5>
+                  <div className="litchi-logs">
+                    {litchiVisibleLogs.length === 0 && <span className="litchi-muted">No activity yet.</span>}
+                    {litchiVisibleLogs.map((entry, index) => (
+                      <div key={`${entry}-${index}`} className="litchi-log-entry">
+                        {entry}
+                      </div>
+                    ))}
+                  </div>
+                  {litchiLogs.length > 5 && (
+                    <button
+                      type="button"
+                      className="litchi-secondary"
+                      onClick={() => setLitchiShowAllLogs(v => !v)}
+                    >
+                      {litchiShowAllLogs ? 'Show recent activity' : 'Show full activity'}
+                    </button>
+                  )}
+                </div>
                 {showManualDownloads && (
                   <>
                     <h5 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>

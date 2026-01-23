@@ -7047,6 +7047,41 @@ input.text-fade-right,
   gap: 12px;
 }
 
+.litchi-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.litchi-selection-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.litchi-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.litchi-select-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+.litchi-select-btn.selected {
+  border-color: rgba(90, 228, 146, 0.45);
+  background: rgba(90, 228, 146, 0.18);
+  color: #b9f6cf;
+}
+
 .litchi-primary,
 .litchi-secondary {
   border: none;

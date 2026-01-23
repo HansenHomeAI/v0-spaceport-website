@@ -333,6 +333,16 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
 
+        for snippet in ("invalid", "incorrect", "wrong password", "failed"):
+            login_error_text = page.get_by_text(snippet, exact=False)
+            if await login_error_text.count() > 0:
+                _mark_error(table, user_id, "Invalid Litchi credentials")
+                return {"status": "error", "message": "Invalid Litchi credentials"}
+
+        if await login_form.count() > 0 and await login_form.first.is_visible():
+            _mark_error(table, user_id, "Login failed. Check your email and password.")
+            return {"status": "error", "message": "Login failed"}
+
         disabled_banner = page.get_by_text("temporarily disabled", exact=False)
         if await disabled_banner.count() > 0:
             message = (await disabled_banner.first.text_content()) or "Sign in temporarily disabled"

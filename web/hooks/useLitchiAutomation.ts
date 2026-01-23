@@ -117,7 +117,11 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
         throw new Error(data?.error || 'Connect failed');
       }
       setStatus(data);
-      setConnectMessage(data?.message || 'Connection updated');
+      if (response.status === 202) {
+        setConnectMessage('Checking your Litchi login. This usually takes 30–60 seconds.');
+      } else {
+        setConnectMessage(data?.message || 'Connection updated');
+      }
       return data as LitchiStatus;
     } catch (connectError: any) {
       setConnectMessage(connectError?.message || 'Connect failed');
