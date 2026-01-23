@@ -359,6 +359,17 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
 
+        login_form_after = page.locator("form#login-form")
+        if await login_form_after.count() == 0:
+            login_form_after = page.locator("form").filter(
+                has=page.locator("input[type='email']")
+            ).filter(
+                has=page.locator("input[type='password']")
+            )
+        if await login_form_after.count() > 0 and await login_form_after.first.is_visible():
+            _mark_error(table, user_id, "Login failed. Check your email and password.")
+            return {"status": "error", "message": "Login failed"}
+
         login_link = page.get_by_role("link", name="Log In")
         if await login_link.count() > 0 and await login_link.first.is_visible():
             _mark_error(table, user_id, "Login failed. Check your email and password.")
