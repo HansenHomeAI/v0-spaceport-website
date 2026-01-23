@@ -22,6 +22,13 @@ function textFromResult(result) {
   return result?.content?.find((c) => c.type === 'text')?.text ?? '';
 }
 
+function jsonFromToolResult(result) {
+  const text = textFromResult(result);
+  const match = text.match(/### Result\s*\n([\s\S]*?)(?:\n###|\n$)/);
+  const payload = match ? match[1].trim() : text.trim();
+  return JSON.parse(payload);
+}
+
 function snapshotFrom(result) {
   const match = textFromResult(result).match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
   return match ? match[1] : '';
@@ -71,22 +78,32 @@ async function callTool(name, args) {
     await callTool('browser_wait_for', { text: 'Litchi Mission Control', time: 30 }).catch(() => {});
   }
 
-  const result = await callTool('browser_evaluate', {
+  const tokenResult = await callTool('browser_evaluate', {
     function: `async () => {
       const keys = Object.keys(localStorage);
       const tokenKey = keys.find((key) => key.endsWith('.idToken'));
       if (!tokenKey) return { ok: false, error: 'missing_token', keys };
-      const token = localStorage.getItem(tokenKey);
-      const response = await fetch(${JSON.stringify(CONNECT_URL)}, {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: ${JSON.stringify(LITCHI_EMAIL)}, password: ${JSON.stringify(LITCHI_PASSWORD)} })
-      });
-      const text = await response.text();
-      return { ok: response.ok, status: response.status, text: text.slice(0, 500) };
+      return { ok: true, token: localStorage.getItem(tokenKey) };
     }`
   });
 
-  console.log(textFromResult(result));
+  const tokenPayload = jsonFromToolResult(tokenResult);
+  if (!tokenPayload.ok || !tokenPayload.token) {
+    console.error('Missing auth token', tokenPayload);
+    await client.close();
+    process.exit(1);
+  }
+
+  const response = await fetch(CONNECT_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${tokenPayload.token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username: LITCHI_EMAIL, password: LITCHI_PASSWORD })
+  });
+  const text = await response.text();
+  const resultPayload = { ok: response.ok, status: response.status, text: text.slice(0, 500) };
+  console.log(JSON.stringify(resultPayload, null, 2));
   await client.close();
 })();

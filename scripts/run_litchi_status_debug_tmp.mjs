@@ -21,6 +21,13 @@ function textFromResult(result) {
   return result?.content?.find((c) => c.type === 'text')?.text ?? '';
 }
 
+function jsonFromToolResult(result) {
+  const text = textFromResult(result);
+  const match = text.match(/### Result\s*\n([\s\S]*?)(?:\n###|\n$)/);
+  const payload = match ? match[1].trim() : text.trim();
+  return JSON.parse(payload);
+}
+
 function snapshotFrom(result) {
   const match = textFromResult(result).match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
   return match ? match[1] : '';
@@ -77,26 +84,33 @@ async function callTool(name, args) {
     await callTool('browser_wait_for', { text: 'Litchi Mission Control', time: 30 });
   }
 
-  const result = await callTool('browser_evaluate', {
+  const tokenResult = await callTool('browser_evaluate', {
     function: `async () => {
       const keys = Object.keys(localStorage);
       const tokenKey = keys.find((key) => key.endsWith('.idToken'));
       if (!tokenKey) return { ok: false, error: 'missing_token', keys };
-      const token = localStorage.getItem(tokenKey);
-      const response = await fetch(${JSON.stringify(STATUS_URL)}, {
-        headers: { Authorization: 'Bearer ' + token }
-      });
-      const text = await response.text();
-      return {
-        ok: response.ok,
-        status: response.status,
-        requestId: response.headers.get('x-amzn-requestid'),
-        text
-      };
+      return { ok: true, token: localStorage.getItem(tokenKey) };
     }`
   });
 
-  const resultText = textFromResult(result);
+  const tokenPayload = jsonFromToolResult(tokenResult);
+  if (!tokenPayload.ok || !tokenPayload.token) {
+    console.error('Missing auth token', tokenPayload);
+    await client.close();
+    process.exit(1);
+  }
+
+  const response = await fetch(STATUS_URL, {
+    headers: { Authorization: `Bearer ${tokenPayload.token}` }
+  });
+  const text = await response.text();
+  const resultPayload = {
+    ok: response.ok,
+    status: response.status,
+    requestId: response.headers.get('x-amzn-requestid'),
+    text
+  };
+  const resultText = JSON.stringify(resultPayload, null, 2);
   writeFileSync('logs/litchi-status-full.json', resultText, 'utf-8');
   console.log(resultText.slice(0, 500));
   await client.close();
