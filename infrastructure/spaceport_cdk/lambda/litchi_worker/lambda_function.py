@@ -360,7 +360,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await page.wait_for_timeout(int(_human_delay(2.0, 3.0) * 1000))
 
         current_user = None
-        for _ in range(6):
+        for _ in range(15):
             current_user = await page.evaluate(
                 """
                 () => {
