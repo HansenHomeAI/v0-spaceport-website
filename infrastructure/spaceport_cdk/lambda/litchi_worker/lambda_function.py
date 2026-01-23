@@ -715,7 +715,15 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await context.add_cookies(cookies)
         if local_storage:
             await context.add_init_script(
-                f\"\"\"\n                () => {{\n                  const entries = {json.dumps(local_storage)};\n                  for (const [key, value] of Object.entries(entries)) {{\n                    localStorage.setItem(key, value);\n                  }}\n                }}\n                \"\"\"\n            )
+                f"""
+                () => {{
+                  const entries = {json.dumps(local_storage)};
+                  for (const [key, value] of Object.entries(entries)) {{
+                    localStorage.setItem(key, value);
+                  }}
+                }}
+                """
+            )
         page = await context.new_page()
         await _apply_stealth(page)
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
