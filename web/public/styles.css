@@ -316,8 +316,8 @@ html, body {
 }
 #landing .landing-content p {
   line-height: 1.6;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  color: #fff;
   margin-bottom: 5px;
   font-size: 1.1rem;
 }
@@ -325,8 +325,11 @@ html, body {
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
-  background: #fff;
-  color: #000;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   text-decoration: none;
   padding: 12px 21.5px;
   border-radius: 999px;
@@ -336,6 +339,8 @@ html, body {
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
+  font-weight: 500;
+  font-size: 1.1rem;
 }
 .cta-button::after {
   content: '';
@@ -348,7 +353,7 @@ html, body {
   height: 14px;
   background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center;
   background-size: contain;
-  filter: brightness(0);
+  filter: brightness(0) invert(1);
   transition: opacity 0.3s ease;
 }
 .cta-button:hover {
@@ -1785,7 +1790,8 @@ footer {
   top: 0;
   left: 0;
   width: 100%;
-  background: transparent;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 11%, rgba(0,0,0,0.8) 62%, rgba(0,0,0,1) 100%);
   pointer-events: auto;
   z-index: 1;
 }
@@ -3077,7 +3083,7 @@ body::before {
 
 /* Icon color filters for CTA button (white background, black text) */
 .cta-button .symbol-3d {
-  filter: brightness(0); /* Black icons on white background */
+  filter: brightness(0) invert(1); /* White icons on dark background */
 }
 
 /* Icon color filters for CTA2 buttons (white border, white text) */
