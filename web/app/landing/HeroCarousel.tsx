@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Default landing page state
 const DEFAULT_IFRAME = "https://hansenhomeai.github.io/WebbyDeerKnoll/";
+const DEFAULT_SUBTITLE = "Convert drone imagery to life-like 3D models.";
 
 // Example data
 const EXAMPLES = [
@@ -32,8 +33,39 @@ const EXAMPLES = [
 export default function HeroCarousel(): JSX.Element {
   const [isActive, setIsActive] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1); // -1 means default state
-  const [showCarouselTitle, setShowCarouselTitle] = useState(false);
-  const [showDefaultSubtitle, setShowDefaultSubtitle] = useState(true);
+  
+  // Subtitle animation state
+  const [subtitleText, setSubtitleText] = useState(DEFAULT_SUBTITLE);
+  const [isTextVisible, setIsTextVisible] = useState(true);
+  const prevIndexRef = useRef(-1);
+
+  // Sync subtitle text with animation delay to match H1 collapse
+  useEffect(() => {
+    const targetText = activeIndex === -1 ? DEFAULT_SUBTITLE : EXAMPLES[activeIndex].title;
+    const prevIndex = prevIndexRef.current;
+    
+    // Determine if we are switching modes (Default <-> Carousel)
+    const isModeChange = (prevIndex === -1 && activeIndex !== -1) || (prevIndex !== -1 && activeIndex === -1);
+    
+    // Only animate if text actually changes
+    if (subtitleText !== targetText) {
+      // Fade out immediately
+      setIsTextVisible(false);
+      
+      // If switching modes, wait for H1 animation (500ms). Otherwise faster transition (200ms).
+      // The user specifically asked to tune the default <-> carousel transition.
+      const delay = isModeChange ? 500 : 250;
+      
+      const timer = setTimeout(() => {
+        setSubtitleText(targetText);
+        setIsTextVisible(true);
+      }, delay);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    prevIndexRef.current = activeIndex;
+  }, [activeIndex, subtitleText]);
 
   const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -66,23 +98,6 @@ export default function HeroCarousel(): JSX.Element {
   const currentExample = isDefaultState ? null : EXAMPLES[activeIndex];
   const currentIframeSrc = isDefaultState ? DEFAULT_IFRAME : currentExample?.src || DEFAULT_IFRAME;
 
-  // Handle subtitle visibility with proper timing for smooth transitions
-  useEffect(() => {
-    if (isDefaultState) {
-      // When going back to default, hide carousel title immediately, then show default subtitle
-      setShowCarouselTitle(false);
-      setShowDefaultSubtitle(false);
-      const timer = setTimeout(() => setShowDefaultSubtitle(true), 500);
-      return () => clearTimeout(timer);
-    } else {
-      // When going to carousel, hide default subtitle first, then show carousel title after delay
-      setShowDefaultSubtitle(false);
-      setShowCarouselTitle(false);
-      const timer = setTimeout(() => setShowCarouselTitle(true), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isDefaultState]);
-
   return (
     <section className="section" id="landing">
       <iframe 
@@ -107,36 +122,18 @@ export default function HeroCarousel(): JSX.Element {
           Sell the location.
         </h1>
 
-        {/* Subtitle logic: Smooth fade transitions with proper timing */}
-        {isDefaultState ? (
-          <p className="hero-subtitle" style={{
-              fontSize: '1.1rem',
-              fontWeight: 400,
-              textShadow: '0 3px 16px rgba(0,0,0,1)',
-              transition: 'opacity 0.5s ease, max-height 0.5s ease, margin-bottom 0.5s ease',
-              marginBottom: showDefaultSubtitle ? '6px' : 0,
-              color: '#fff',
-              opacity: showDefaultSubtitle ? 1 : 0,
-              maxHeight: showDefaultSubtitle ? '100px' : 0,
-              overflow: 'hidden'
-          }}>
-            Convert drone imagery to life-like 3D models.
-          </p>
-        ) : (
-          <p className="hero-subtitle" style={{
-              fontSize: '1.1rem',
-              fontWeight: 400,
-              textShadow: '0 3px 16px rgba(0,0,0,1)',
-              transition: 'opacity 0.5s ease, max-height 0.5s ease, margin-bottom 0.5s ease',
-              marginBottom: showCarouselTitle ? '6px' : 0,
-              color: '#fff',
-              opacity: showCarouselTitle ? 1 : 0,
-              maxHeight: showCarouselTitle ? '100px' : 0,
-              overflow: 'hidden'
-          }}>
-            {currentExample?.title || ""}
-          </p>
-        )}
+        {/* Subtitle logic: Changes text when active, but keeps subtitle font size */}
+        <p className="hero-subtitle" style={{
+            fontSize: '1.1rem', // Always subtitle font size
+            fontWeight: 400,
+            textShadow: '0 3px 16px rgba(0,0,0,1)',
+            transition: 'opacity 0.5s ease, text-shadow 0.5s ease',
+            marginBottom: '6px',
+            color: '#fff',
+            opacity: isTextVisible ? 1 : 0
+        }}>
+          {subtitleText}
+        </p>
 
         {/* Button / Carousel Control */}
         <div className="carousel-control-container">
