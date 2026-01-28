@@ -7,9 +7,10 @@ export default function Landing(): JSX.Element {
         <iframe className="landing-iframe" src="https://hansenhomeai.github.io/WebbyDeerKnoll/" />
         <div id="iframe-overlay" />
         <div className="landing-content">
-          <h1>Location. Visualized in 3D.</h1>
-          <a href="/create" className="cta-button">
-            Join waitlist
+          <h1>Sell the location.</h1>
+          <a href="https://dolan-road.hansentour.com" className="cta-button with-symbol" target="_blank">
+            <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
+            View example
           </a>
         </div>
       </section>
