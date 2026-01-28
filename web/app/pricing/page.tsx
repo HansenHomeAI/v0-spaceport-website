@@ -106,9 +106,14 @@ export default function Pricing(): JSX.Element {
               
               <button 
                 type="submit" 
-                className="auth-submit-btn" 
+                className="cta-button2" 
                 disabled={status === 'submitting'}
-                style={{ width: '100%' }}
+                style={{ 
+                  width: '100%', 
+                  marginLeft: 0,
+                  opacity: status === 'submitting' ? 0.6 : 1,
+                  cursor: status === 'submitting' ? 'not-allowed' : 'pointer'
+                }}
               >
                 {status === 'submitting' ? 'Sending...' : 'Contact'}
               </button>
