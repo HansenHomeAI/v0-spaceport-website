@@ -659,7 +659,7 @@ def update_user_subscription(user_sub: str, subscription_id: Optional[str], plan
 # SUBSCRIPTION TIERS CONFIGURATION - ADDITIVE MODEL LIMITS
 SUBSCRIPTION_TIERS = {
     'beta': {
-        'maxModels': 5,  # Beta users start with 5 models
+        'maxModels': -1,  # Unlimited beta models
         'support': 'email',
         'price': 0,
         'displayName': 'Beta Plan',
@@ -696,7 +696,7 @@ SUBSCRIPTION_TIERS = {
 }
 
 ACTIVE_SUBSCRIPTION_STATUSES = {'active', 'trialing', 'past_due'}
-DEFAULT_PLAN_TYPE = 'beta'
+DEFAULT_PLAN_TYPE = 'enterprise'
 
 def get_plan_features_new_structure(plan_type: str) -> Dict[str, Any]:
     """
