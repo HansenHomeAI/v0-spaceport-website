@@ -311,7 +311,7 @@ html, body {
 .landing-content h1 {
   font-weight: 400;
   margin-bottom: 6px;
-  font-size: clamp(2rem, 8vw, 2.9rem) !important;
+  font-size: clamp(2rem, 8vw, 2.4rem) !important;
   max-width: 100%;
 }
 #landing .landing-content p {
