@@ -1542,6 +1542,66 @@ footer {
   color: rgba(255, 119, 119, 0.9);
 }
 
+.payment-link-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  flex-wrap: wrap;
+}
+
+.payment-link-text {
+  flex: 1;
+  min-width: 140px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+}
+
+.payment-link-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.payment-link-button:hover,
+.payment-link-button:focus {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.45);
+  outline: none;
+}
+
+.payment-link-button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.payment-link-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.payment-link-feedback {
+  font-size: 0.8rem;
+  color: rgba(255, 119, 119, 0.9);
+}
+
 .model-link-status {
   padding: 10px 16px;
   border-radius: 999px;
@@ -1572,6 +1632,19 @@ footer {
   }
 
   .model-link-button {
+    width: auto;
+  }
+
+  .payment-link-pill {
+    padding: 10px 14px;
+  }
+
+  .payment-link-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .payment-link-button {
     width: auto;
   }
 }
@@ -6976,5 +7049,3 @@ input.text-fade-right,
 .terms-link:hover {
   color: rgba(255, 255, 255, 0.7);
 }
-
-
