@@ -1,1 +1,5 @@
 2026-01-17T20:51:01Z
+Bump for hero carousel Wed Jan 28 16:03:19 MST 2026
+Hero carousel fixes: styling, font size, loop back Wed Jan 28 16:10:42 MST 2026
+Disable carousel hover arrow effect Wed Jan 28 16:12:58 MST 2026
+Carousel spacing adjustment Wed Jan 28 16:17:06 MST 2026
