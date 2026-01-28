@@ -64,86 +64,62 @@ export default function Pricing(): JSX.Element {
         <h1>Pricing.</h1>
         <p><span className="inline-white">Capture the imagination of your buyers.</span></p>
       </section>
-      <section className="section" id="pricing">
-        <div className="pricing-grid" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-          <div className="pricing-card" style={{ maxWidth: '500px', width: '100%', padding: '40px' }}>
-            <h2>Contact Sales</h2>
-            <p style={{ marginBottom: '30px' }}>Fill out the form below and our team will get back to you shortly.</p>
+      <section className="section" id="pricing" style={{ padding: '40px 20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <div className="auth-modal" style={{ margin: 0 }}>
+            <div className="auth-modal-header">
+              <h2>Contact Sales</h2>
+              <p>Fill out the form below and our team will get back to you shortly.</p>
+            </div>
             
-            <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <input
-                type="text"
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                style={{
-                  width: '100%',
-                  padding: '15px 20px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none'
-                }}
-              />
-              <input
-                type="tel"
-                placeholder="Phone"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
-                style={{
-                  width: '100%',
-                  padding: '15px 20px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none'
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Listing Link or Address"
-                value={formData.listingInfo}
-                onChange={(e) => setFormData({ ...formData, listingInfo: e.target.value })}
-                required
-                style={{
-                  width: '100%',
-                  padding: '15px 20px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none'
-                }}
-              />
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="auth-input"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="input-group">
+                <input
+                  type="tel"
+                  placeholder="Phone"
+                  className="auth-input"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder="Listing Link or Address"
+                  className="auth-input"
+                  value={formData.listingInfo}
+                  onChange={(e) => setFormData({ ...formData, listingInfo: e.target.value })}
+                  required
+                />
+              </div>
               
               <button 
                 type="submit" 
-                className="cta-button" 
+                className="auth-submit-btn" 
                 disabled={status === 'submitting'}
-                style={{ 
-                  marginTop: '10px',
-                  width: '100%',
-                  opacity: status === 'submitting' ? 0.7 : 1,
-                  cursor: status === 'submitting' ? 'not-allowed' : 'pointer'
-                }}
+                style={{ width: '100%' }}
               >
                 {status === 'submitting' ? 'Sending...' : 'Contact'}
               </button>
 
               {status === 'success' && (
-                <p style={{ color: '#3fb27f', marginTop: '15px', fontSize: '0.9rem' }}>
+                <p className="auth-success">
                   Thanks! We'll be in touch soon.
                 </p>
               )}
               {status === 'error' && (
-                <p style={{ color: '#ff6b6b', marginTop: '15px', fontSize: '0.9rem' }}>
+                <p className="auth-error">
                   Something went wrong. Please try again.
                 </p>
               )}
