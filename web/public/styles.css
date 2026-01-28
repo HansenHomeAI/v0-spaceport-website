@@ -294,7 +294,7 @@ html, body {
 }
 .landing-content {
   position: absolute;
-  bottom: 100px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -309,27 +309,27 @@ html, body {
   text-align: center;
 }
 .landing-content h1 {
-  font-weight: 700;
-  margin-bottom: 5px;
+  font-weight: 400;
+  margin-bottom: 6px;
   font-size: clamp(2rem, 8vw, 2.9rem) !important;
   max-width: 100%;
 }
 #landing .landing-content p {
   line-height: 1.6;
-  font-weight: 500;
+  font-weight: 400;
   color: #fff;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   font-size: 1.1rem;
 }
 
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
   text-decoration: none;
   padding: 12px 21.5px;
   border-radius: 999px;
@@ -339,8 +339,29 @@ html, body {
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 1.1rem;
+  overflow: hidden;
+}
+.cta-button::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
 }
 .cta-button::after {
   content: '';
@@ -355,6 +376,7 @@ html, body {
   background-size: contain;
   filter: brightness(0) invert(1);
   transition: opacity 0.3s ease;
+  z-index: 1;
 }
 .cta-button:hover {
   padding-right: 40px;
