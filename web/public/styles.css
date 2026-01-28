@@ -310,16 +310,16 @@ html, body {
 }
 .landing-content h1 {
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 5px;
   font-size: clamp(2rem, 8vw, 2.9rem) !important;
   max-width: 100%;
 }
-.landing-content p {
+#landing .landing-content p {
   line-height: 1.6;
-  font-weight: 500;
-  color: #A6A6A6;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 5px;
+  font-size: 1.1rem;
 }
 
 /* CTA 1 (original) */
