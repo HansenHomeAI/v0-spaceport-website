@@ -313,6 +313,7 @@ html, body {
   margin-bottom: 6px;
   font-size: clamp(2rem, 8vw, 2.4rem) !important;
   max-width: 100%;
+  letter-spacing: 0.02em;
 }
 #landing .landing-content p {
   line-height: 1.6;
@@ -320,6 +321,7 @@ html, body {
   color: #fff;
   margin-bottom: 6px;
   font-size: 1.1rem;
+  letter-spacing: 0.02em;
 }
 
 /* CTA 1 (original) */
@@ -342,6 +344,7 @@ html, body {
   font-weight: 400;
   font-size: 1.1rem;
   overflow: hidden;
+  letter-spacing: 0.02em;
 }
 .cta-button::before {
   content: "";
