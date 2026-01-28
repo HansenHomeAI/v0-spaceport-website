@@ -64,6 +64,10 @@ class BetaReadinessRunner:
         print(f"{Colors.BOLD}{Colors.CYAN}🚀 SPACEPORT AI - BETA READINESS TEST SUITE{Colors.END}")
         print(f"{Colors.WHITE}Comprehensive testing for early beta launch readiness{Colors.END}")
         print(f"{Colors.WHITE}{'='*70}{Colors.END}")
+
+        preview_url = os.getenv("BETA_READINESS_PREVIEW_URL") or os.getenv("PREVIEW_URL")
+        if preview_url:
+            print(f"{Colors.WHITE}Preview URL detected: {preview_url}{Colors.END}")
         
         if quick_mode:
             print(f"{Colors.YELLOW}⚡ Quick mode enabled - running essential tests only{Colors.END}")
