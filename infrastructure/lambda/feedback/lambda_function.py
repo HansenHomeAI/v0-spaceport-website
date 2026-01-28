@@ -63,6 +63,11 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Prepare email content
         subject = f"New Feedback from {source.title()}"
         
+        # Override recipients for contact-sales
+        if source == "contact-sales":
+            subject = "New Contact Sales Inquiry"
+            recipients = ["jayden@spcprt.com", "gabriel@spcprt.com", "sam@spcprt.com"]
+        
         formatted_message = message.replace('\n', '<br>')
 
         html_content = f"""
