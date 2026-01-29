@@ -34,6 +34,7 @@ from datetime import datetime
 from typing import Dict, List, Tuple, Any
 import boto3
 from botocore.exceptions import ClientError
+from preview_config import resolve_api_endpoints
 
 # Color codes for terminal output
 class Colors:
@@ -54,13 +55,14 @@ class BetaReadinessTestSuite:
         """Initialize test suite with production API endpoints"""
         
         # Production API Endpoints
-        self.api_endpoints = {
+        default_endpoints = {
             'projects': 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects',
             'drone_path': 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod',
             'file_upload': 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod',
             'ml_pipeline': 'https://3xzfdyvwpd.execute-api.us-west-2.amazonaws.com/prod',
             'waitlist': 'https://o7d0i4to5a.execute-api.us-west-2.amazonaws.com/prod/waitlist'
         }
+        self.api_endpoints = resolve_api_endpoints(default_endpoints)
         
         # AWS Configuration
         self.region = 'us-west-2'
@@ -85,7 +87,10 @@ class BetaReadinessTestSuite:
             sys.exit(1)
             
         print(f"{Colors.CYAN}🧪 Beta Readiness Test Suite Initialized{Colors.END}")
-        print(f"{Colors.WHITE}Testing against production endpoints{Colors.END}\n")
+        if self.api_endpoints != default_endpoints:
+            print(f"{Colors.WHITE}Testing against Cloudflare preview endpoints{Colors.END}\n")
+        else:
+            print(f"{Colors.WHITE}Testing against production endpoints{Colors.END}\n")
 
     def log_test(self, test_name: str, status: str, details: str = ""):
         """Log test results with colored output"""

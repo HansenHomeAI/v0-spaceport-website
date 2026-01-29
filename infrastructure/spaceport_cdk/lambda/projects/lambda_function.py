@@ -39,6 +39,8 @@ logger.setLevel(logging.INFO)
 dynamodb = boto3.resource('dynamodb')
 TABLE_NAME = os.environ['PROJECTS_TABLE_NAME']
 table = dynamodb.Table(TABLE_NAME)
+PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
+permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
 
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 stripe.api_key = STRIPE_SECRET_KEY
@@ -165,6 +167,34 @@ def _resolve_model_link(project: Dict[str, Any]) -> Optional[str]:
         if isinstance(value, str) and value.strip().startswith(('http://', 'https://')):
             return value.strip()
     return None
+
+
+def _check_user_is_admin(user_id: str) -> bool:
+    try:
+        item = permissions_table.get_item(Key={'user_id': user_id}).get('Item')
+        if not item:
+            return False
+
+        if item.get('has_beta_access_permission') is True:
+            return True
+
+        permission_type = (item.get('permission_type') or '').lower()
+        status = (item.get('status') or '').lower()
+
+        if permission_type in ('model_delivery_admin', 'beta_access_admin') and status != 'revoked':
+            return True
+
+        if item.get('model_delivery_permission') is True:
+            return True
+
+        return False
+    except Exception as exc:
+        logger.error('Error checking admin permissions for user %s: %s', user_id, exc)
+        return False
+
+
+def _admin_payment_deadline() -> int:
+    return int(time.time()) + (3650 * 24 * 60 * 60)
 
 
 def _create_payment_session(project: Dict[str, Any], user_email: str) -> Dict[str, str]:
@@ -366,6 +396,27 @@ def lambda_handler(event, context):
                 return _response(404, {'error': 'Not found'})
 
             payment_status = (project.get('paymentStatus') or '').lower()
+            if _check_user_is_admin(user_sub):
+                if payment_status != 'paid':
+                    table.update_item(
+                        Key={'userSub': user_sub, 'projectId': project_id},
+                        UpdateExpression=(
+                            'SET paymentStatus = :paymentStatus, '
+                            'paymentDeadline = :paymentDeadline, '
+                            '#updatedAt = :updatedAt'
+                        ),
+                        ExpressionAttributeNames={
+                            '#updatedAt': 'updatedAt',
+                        },
+                        ExpressionAttributeValues={
+                            ':paymentStatus': 'paid',
+                            ':paymentDeadline': _admin_payment_deadline(),
+                            ':updatedAt': now,
+                        },
+                    )
+                model_link = _resolve_model_link(project) or FRONTEND_URL
+                return _response(200, {'paymentLink': model_link})
+
             if payment_status == 'paid':
                 return _response(409, {'error': 'Payment already completed'})
 
