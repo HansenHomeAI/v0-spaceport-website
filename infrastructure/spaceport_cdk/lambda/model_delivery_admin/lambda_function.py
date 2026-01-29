@@ -134,6 +134,53 @@ def _check_employee_permission(user_id: str) -> bool:
         return False
 
 
+def _check_user_is_admin(user_id: str) -> bool:
+    try:
+        item = permissions_table.get_item(Key={'user_id': user_id}).get('Item')
+        if not item:
+            return False
+
+        if item.get('has_beta_access_permission') is True:
+            return True
+
+        permission_type = (item.get('permission_type') or '').lower()
+        status = (item.get('status') or '').lower()
+
+        if permission_type in ('model_delivery_admin', 'beta_access_admin') and status != 'revoked':
+            return True
+
+        if item.get('model_delivery_permission') is True:
+            return True
+
+        return False
+    except Exception as exc:
+        logger.error(f'Error checking admin permissions for user {user_id}: {exc}')
+        return False
+
+
+def _admin_payment_deadline() -> int:
+    return int((datetime.now(timezone.utc) + timedelta(days=3650)).timestamp())
+
+
+def _mark_project_paid(user_sub: str, project_id: str, payment_deadline: Optional[int] = None) -> None:
+    update_expression_parts = ['paymentStatus = :paymentStatus', '#updatedAt = :updatedAt']
+    expr_attr_names = {'#updatedAt': 'updatedAt'}
+    expr_attr_values = {
+        ':paymentStatus': 'paid',
+        ':updatedAt': int(datetime.now(timezone.utc).timestamp()),
+    }
+
+    if payment_deadline is not None:
+        update_expression_parts.append('paymentDeadline = :paymentDeadline')
+        expr_attr_values[':paymentDeadline'] = payment_deadline
+
+    projects_table.update_item(
+        Key={'userSub': user_sub, 'projectId': project_id},
+        UpdateExpression='SET ' + ', '.join(update_expression_parts),
+        ExpressionAttributeNames=expr_attr_names,
+        ExpressionAttributeValues=expr_attr_values,
+    )
+
 def _resolve_client(email: str) -> Optional[Dict[str, Any]]:
     if not email:
         return None
@@ -282,6 +329,15 @@ def _handle_public_payment_link(event: Dict[str, Any]) -> Dict[str, Any]:
 
     payment_status = (project.get('paymentStatus') or '').lower()
     model_link = _resolve_model_link(project) or FRONTEND_URL
+    is_admin_owner = _check_user_is_admin(user_sub)
+    if is_admin_owner:
+        if payment_status != 'paid':
+            try:
+                _mark_project_paid(user_sub, project_id, _admin_payment_deadline())
+            except Exception as exc:
+                logger.error(f'Failed to mark admin project paid: {exc}')
+                return _response(500, {'error': 'Failed to update payment status'})
+        return _redirect(model_link)
     if payment_status == 'paid':
         return _redirect(model_link)
 
@@ -557,24 +613,18 @@ def _persist_delivery(
     }
 
     if payment_state:
-        update_expression_parts.extend([
-            '#paymentSessionId = :paymentSessionId',
-            '#paymentLink = :paymentLink',
-            '#paymentDeadline = :paymentDeadline',
-            '#paymentStatus = :paymentStatus',
-        ])
-        expr_attr_names.update({
-            '#paymentSessionId': 'paymentSessionId',
-            '#paymentLink': 'paymentLink',
-            '#paymentDeadline': 'paymentDeadline',
-            '#paymentStatus': 'paymentStatus',
-        })
-        expr_attr_values.update({
-            ':paymentSessionId': payment_state.get('paymentSessionId'),
-            ':paymentLink': payment_state.get('paymentLink'),
-            ':paymentDeadline': payment_state.get('paymentDeadline'),
-            ':paymentStatus': payment_state.get('paymentStatus'),
-        })
+        payment_field_map = {
+            'paymentSessionId': '#paymentSessionId',
+            'paymentLink': '#paymentLink',
+            'paymentDeadline': '#paymentDeadline',
+            'paymentStatus': '#paymentStatus',
+        }
+        for field, attr_name in payment_field_map.items():
+            if field not in payment_state:
+                continue
+            update_expression_parts.append(f'{attr_name} = :{field}')
+            expr_attr_names[attr_name] = field
+            expr_attr_values[f':{field}'] = payment_state[field]
 
     update_expression = ', '.join(update_expression_parts)
     expr_attr_values = convert_floats_to_decimal(expr_attr_values)
@@ -665,26 +715,36 @@ def lambda_handler(event, context):
             if not project:
                 return _response(404, {'error': 'Project not found for client'})
 
-            base_url = _get_request_base_url(event)
-            if not base_url:
-                return _response(500, {'error': 'Unable to resolve payment link base URL'})
+            is_admin_owner = _check_user_is_admin(client['user_id'])
+            payment_state = None
+            payment_link = None
 
-            payment_session = _create_payment_session(
-                project=project,
-                client=client,
-                model_link=model_link,
-                viewer_slug=viewer_slug,
-                viewer_title=viewer_title,
-            )
+            if is_admin_owner:
+                payment_state = {
+                    'paymentStatus': 'paid',
+                    'paymentDeadline': _admin_payment_deadline(),
+                }
+            else:
+                base_url = _get_request_base_url(event)
+                if not base_url:
+                    return _response(500, {'error': 'Unable to resolve payment link base URL'})
 
-            payment_link = _build_payment_link(project_id, client['user_id'], base_url)
-            payment_deadline = int((datetime.now(timezone.utc) + timedelta(days=14)).timestamp())
-            payment_state = {
-                'paymentSessionId': payment_session['id'],
-                'paymentLink': payment_link,
-                'paymentDeadline': payment_deadline,
-                'paymentStatus': 'pending',
-            }
+                payment_session = _create_payment_session(
+                    project=project,
+                    client=client,
+                    model_link=model_link,
+                    viewer_slug=viewer_slug,
+                    viewer_title=viewer_title,
+                )
+
+                payment_link = _build_payment_link(project_id, client['user_id'], base_url)
+                payment_deadline = int((datetime.now(timezone.utc) + timedelta(days=14)).timestamp())
+                payment_state = {
+                    'paymentSessionId': payment_session['id'],
+                    'paymentLink': payment_link,
+                    'paymentDeadline': payment_deadline,
+                    'paymentStatus': 'pending',
+                }
 
             email_response = _send_delivery_email(
                 recipient_email=client['email'],

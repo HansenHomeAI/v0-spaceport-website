@@ -63,6 +63,7 @@ jobs:
             echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=${{ secrets.BETA_ACCESS_API_URL_PROD }}" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=${{ secrets.MODEL_DELIVERY_ADMIN_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PROD }}" >> .env
@@ -83,6 +84,7 @@ jobs:
             echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=${{ secrets.BETA_ACCESS_API_URL_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=${{ secrets.MODEL_DELIVERY_ADMIN_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PREVIEW }}" >> .env
