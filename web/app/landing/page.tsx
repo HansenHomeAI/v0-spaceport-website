@@ -1,18 +1,11 @@
+import HeroCarousel from './HeroCarousel';
+
 export const runtime = 'edge';
 
 export default function Landing(): JSX.Element {
   return (
     <>
-      <section className="section" id="landing">
-        <iframe className="landing-iframe" src="https://hansenhomeai.github.io/WebbyDeerKnoll/" />
-        <div id="iframe-overlay" />
-        <div className="landing-content">
-          <h1>Location. Visualized in 3D.</h1>
-          <a href="/create" className="cta-button">
-            Join waitlist
-          </a>
-        </div>
-      </section>
+      <HeroCarousel />
 
       {/* Logos carousel (client logos, seamless loop) */}
       <section className="section" id="landing-carousel">
