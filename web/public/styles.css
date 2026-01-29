@@ -1817,8 +1817,28 @@ footer {
   width: 100%;
   height: 100%;
   background: linear-gradient(to bottom, rgba(0,0,0,0) 11%, rgba(0,0,0,0.8) 62%, rgba(0,0,0,1) 100%);
+  transition: background 0.5s ease;
   pointer-events: auto;
   z-index: 1;
+}
+
+#iframe-overlay.carousel-active {
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 65%, rgba(0,0,0,0.8) 88%, rgba(0,0,0,1) 100%);
+}
+
+/* Block iframe interaction from carousel control top (Y) and below (only when carousel active) */
+#landing-bottom-block {
+  position: absolute;
+  top: 358px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: pointer-events 0s;
+}
+#landing-bottom-block.active {
+  pointer-events: auto;
 }
 
 @media (hover: none) {
