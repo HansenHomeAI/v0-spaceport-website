@@ -294,7 +294,7 @@ html, body {
 }
 .landing-content {
   position: absolute;
-  bottom: 100px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -309,24 +309,29 @@ html, body {
   text-align: center;
 }
 .landing-content h1 {
-  font-weight: 700;
-  margin-bottom: 1rem;
-  font-size: clamp(2rem, 8vw, 2.9rem) !important;
+  font-weight: 400;
+  margin-bottom: 6px;
+  font-size: clamp(2rem, 8vw, 2.4rem) !important;
   max-width: 100%;
+  letter-spacing: 0.15px;
 }
-.landing-content p {
-  line-height: 1.6;
-  font-weight: 500;
-  color: #A6A6A6;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+#landing .landing-content p {
+  line-height: 24px;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  letter-spacing: 0.15px;
 }
 
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
-  background: #fff;
-  color: #000;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  color: #fff;
+  border: none;
   text-decoration: none;
   padding: 12px 21.5px;
   border-radius: 999px;
@@ -336,6 +341,30 @@ html, body {
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
+  font-weight: 400;
+  font-size: 1.1rem;
+  overflow: hidden;
+  letter-spacing: 0.15px;
+}
+.cta-button::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
 }
 .cta-button::after {
   content: '';
@@ -348,8 +377,9 @@ html, body {
   height: 14px;
   background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center;
   background-size: contain;
-  filter: brightness(0);
+  filter: brightness(0) invert(1);
   transition: opacity 0.3s ease;
+  z-index: 1;
 }
 .cta-button:hover {
   padding-right: 40px;
@@ -837,7 +867,7 @@ footer {
 .waitlist-header h1 {
   font-size: 1.5rem;
   font-weight: 500;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
   color: #fff;
 }
 
@@ -1785,9 +1815,30 @@ footer {
   top: 0;
   left: 0;
   width: 100%;
-  background: transparent;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 11%, rgba(0,0,0,0.8) 62%, rgba(0,0,0,1) 100%);
+  transition: background 0.5s ease;
   pointer-events: auto;
   z-index: 1;
+}
+
+#iframe-overlay.carousel-active {
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 65%, rgba(0,0,0,0.8) 88%, rgba(0,0,0,1) 100%);
+}
+
+/* Block iframe interaction from carousel control top (Y) and below (only when carousel active) */
+#landing-bottom-block {
+  position: absolute;
+  top: 358px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: pointer-events 0s;
+}
+#landing-bottom-block.active {
+  pointer-events: auto;
 }
 
 @media (hover: none) {
@@ -3077,7 +3128,7 @@ body::before {
 
 /* Icon color filters for CTA button (white background, black text) */
 .cta-button .symbol-3d {
-  filter: brightness(0); /* Black icons on white background */
+  filter: brightness(0) invert(1); /* White icons on dark background */
 }
 
 /* Icon color filters for CTA2 buttons (white border, white text) */
@@ -7048,4 +7099,122 @@ input.text-fade-right,
 
 .terms-link:hover {
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* Carousel Controls - matches .cta-button styling */
+.carousel-controls {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  padding: 12px 21.5px;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  font-weight: 400;
+  font-size: 1.1rem;
+  overflow: hidden;
+  letter-spacing: 0.15px;
+  min-width: 170px;
+}
+.carousel-controls::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Disable hover arrow effect for carousel controls */
+.carousel-controls.cta-button::after {
+  display: none !important;
+}
+.carousel-controls.cta-button:hover {
+  padding-right: 21.5px !important;
+}
+.carousel-controls.cta-button:hover::after {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+.carousel-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.carousel-arrow:hover {
+  opacity: 1;
+}
+
+.carousel-arrow img {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) invert(1);
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  margin: 0 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.dot {
+  width: 6.8px;
+  height: 6.8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dot.active {
+  background: #fff;
+  transform: scale(1.2);
+}
+
+.carousel-control-container {
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
