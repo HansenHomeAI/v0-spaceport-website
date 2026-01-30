@@ -91,27 +91,28 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           cursor: 'pointer',
           textAlign: 'left',
           color: 'white',
-          fontSize: '1.2rem', // Matched with .section p
-          fontWeight: 400, // Matched with .section p
+          fontSize: '1.2rem',
+          fontWeight: 400,
           outline: 'none'
         }}
         aria-expanded={isOpen}
       >
-        <span style={{ opacity: isOpen ? 1 : 0.8, transition: 'opacity 0.3s' }}>{item.question}</span>
+        <span style={{ opacity: 1 }}>{item.question}</span>
         <div style={{ 
-          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          transform: isOpen ? 'rotate(-90deg)' : 'rotate(90deg)',
           transition: 'transform 0.3s ease',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           width: '24px',
           height: '24px',
-          opacity: 0.5, // Set to 50% opacity
-          color: 'white'
+          opacity: 0.5
         }}>
-          <svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <img 
+            src="/assets/SpaceportIcons/Arrow.svg" 
+            alt="" 
+            style={{ width: '12px', height: '12px', filter: 'brightness(0) invert(1)' }} 
+          />
         </div>
       </button>
       
@@ -126,10 +127,10 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           ref={contentRef} 
           style={{ 
             paddingBottom: '24px', 
-            color: 'rgba(255, 255, 255, 0.5)', // White at 50% opacity
+            color: 'rgba(255, 255, 255, 0.5)',
             lineHeight: '1.6',
             fontSize: '1.1rem',
-            textAlign: 'left' // Ensure left alignment
+            textAlign: 'left'
           }}
         >
           {item.answer}
