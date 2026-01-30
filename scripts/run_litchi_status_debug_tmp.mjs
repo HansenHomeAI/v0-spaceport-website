@@ -29,7 +29,8 @@ function jsonFromToolResult(result) {
 }
 
 function snapshotFrom(result) {
-  const match = textFromResult(result).match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
+  const text = textFromResult(result);
+  const match = text.match(/(?:Page )?Snapshot:?\s*```yaml\s*([\s\S]*?)```/);
   return match ? match[1] : '';
 }
 

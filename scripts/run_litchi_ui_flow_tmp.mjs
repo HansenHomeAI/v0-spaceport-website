@@ -37,7 +37,8 @@ function textFromResult(result) {
 }
 
 function snapshotFrom(result) {
-  const match = textFromResult(result).match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
+  const text = textFromResult(result);
+  const match = text.match(/(?:Page )?Snapshot:?\s*```yaml\s*([\s\S]*?)```/);
   return match ? match[1] : '';
 }
 
@@ -80,6 +81,7 @@ async function waitForText(text, time = 20) {
   const nav = await callTool('browser_navigate', { url: targetUrl }, { silent: true });
   let snapshot = snapshotFrom(nav);
   record('Navigate to create page', 'pass', targetUrl);
+  await callTool('browser_wait_for', { textGone: 'Loading projects...', time: 30 }, { silent: true }).catch(() => {});
 
   const loginButtonRef = tryFindRef(snapshot, 'button', ['Login', 'Log in', 'Log In']);
   if (loginButtonRef) {
@@ -111,7 +113,15 @@ async function waitForText(text, time = 20) {
     record('Login step', 'warn', 'Login form not detected; assuming already authenticated');
   }
 
-  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  const modalSnapshotResult = await callTool('browser_snapshot', {}, { silent: true });
+  snapshot = snapshotFrom(modalSnapshotResult);
+  if (!snapshot) {
+    const rawText = textFromResult(modalSnapshotResult);
+    if (rawText) {
+      writeFileSync('logs/litchi-ui-modal-snapshot-raw.txt', rawText, 'utf-8');
+    }
+    await callTool('browser_snapshot', { filename: 'logs/litchi-ui-modal-snapshot.yaml' }, { silent: true });
+  }
 
   if (hasText(snapshot, 'Litchi Mission Control')) {
     const connected = hasText(snapshot, 'Connected') && hasText(snapshot, 'Litchi session connected');
@@ -146,18 +156,74 @@ async function waitForText(text, time = 20) {
     }
   }
 
-  const openHeadingRef = tryFindRef(snapshot, 'heading', ['New Project']);
-  if (openHeadingRef) {
-    await callTool('browser_click', { element: 'New Project', ref: openHeadingRef }, { silent: true });
+  const editProjectRef = tryFindRef(snapshot, 'button', ['Edit project']);
+  if (editProjectRef) {
+    await callTool('browser_click', { element: 'Edit project', ref: editProjectRef }, { silent: true });
   } else {
-    await callTool('browser_evaluate', {
-      function: '() => { const el = document.querySelector(".new-project-card"); if (!el) return false; el.click(); return true; }'
-    }, { silent: true });
+    const openButtonRef = tryFindRef(snapshot, 'button', ['New Project', 'Create Project', 'Create New Project']);
+    const openHeadingRef = tryFindRef(snapshot, 'heading', ['New Project']);
+    if (openButtonRef) {
+      await callTool('browser_click', { element: 'New Project', ref: openButtonRef }, { silent: true });
+    } else if (openHeadingRef) {
+      await callTool('browser_click', { element: 'New Project', ref: openHeadingRef }, { silent: true });
+    } else {
+      await callTool('browser_evaluate', {
+        function: '() => { const el = document.querySelector(".new-project-card") || document.querySelector("[data-new-project]"); if (!el) return false; el.click(); return true; }'
+      }, { silent: true });
+    }
   }
   record('Open New Project modal', 'pass');
 
-  await waitForText('Delivery & Automation', 20);
-  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  await waitForText('Delivery & Automation', 12);
+  const afterOpenResult = await callTool('browser_snapshot', {}, { silent: true });
+  snapshot = snapshotFrom(afterOpenResult);
+  const modalCheck = await callTool('browser_evaluate', {
+    function: '() => Boolean(document.querySelector("#newProjectPopup"))'
+  }, { silent: true });
+  const modalCheckText = textFromResult(modalCheck);
+  if (modalCheckText) {
+    record('Modal present', modalCheckText.includes('true') ? 'pass' : 'warn', modalCheckText.trim());
+  }
+  const modalStyle = await callTool('browser_evaluate', {
+    function: `() => {
+      const modal = document.querySelector("#newProjectPopup");
+      if (!modal) return { present: false };
+      const style = window.getComputedStyle(modal);
+      return {
+        present: true,
+        display: style.display,
+        visibility: style.visibility,
+        opacity: style.opacity,
+      };
+    }`
+  }, { silent: true });
+  const modalStyleText = textFromResult(modalStyle);
+  if (modalStyleText) {
+    record('Modal style', 'pass', modalStyleText.trim());
+  }
+  if (!snapshot) {
+    const rawText = textFromResult(afterOpenResult);
+    if (rawText) {
+      writeFileSync('logs/litchi-ui-after-open-raw.txt', rawText, 'utf-8');
+    }
+  }
+  if (!hasText(snapshot, 'Delivery & Automation')) {
+    await callTool('browser_evaluate', {
+      function: `() => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const edit = buttons.find((btn) => (btn.textContent || '').includes('Edit project'));
+        if (edit) { edit.click(); return true; }
+        return false;
+      }`
+    }, { silent: true });
+    await waitForText('Delivery & Automation', 20);
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  }
+  if (snapshot) {
+    record('Modal snapshot length', 'pass', String(snapshot.length));
+  } else {
+    record('Modal snapshot length', 'warn', '0');
+  }
 
   if (!tryFindRef(snapshot, 'button', ['Send to Litchi']) && !tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code'])) {
     const newProjectRef = tryFindRef(snapshot, 'heading', ['New Project']);
@@ -210,6 +276,9 @@ async function waitForText(text, time = 20) {
   }
 
   if (!sendRef) {
+    if (!snapshot) {
+      await callTool('browser_snapshot', { filename: 'logs/litchi-ui-missing-send.yaml' }, { silent: true });
+    }
     writeFileSync('logs/litchi-ui-missing-send.yaml', snapshot, 'utf-8');
     record('Litchi connection', 'fail', 'Send to Litchi button not found');
     process.exitCode = 1;
