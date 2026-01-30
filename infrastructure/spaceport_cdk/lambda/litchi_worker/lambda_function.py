@@ -322,6 +322,30 @@ def _detect_rate_limit(content: str) -> bool:
 
 
 async def _login_in_page(page, username: str, password: str, two_factor_code: Optional[str] = None) -> str:
+    try:
+        parse_login = await page.evaluate(
+            """
+            async ({ username, password }) => {
+              if (!window.Parse || !window.Parse.User || !window.Parse.User.logIn) {
+                return { ok: false, reason: 'parse_unavailable' };
+              }
+              try {
+                const user = await window.Parse.User.logIn(username, password);
+                return { ok: true, user: Boolean(user) };
+              } catch (err) {
+                return { ok: false, error: String(err) };
+              }
+            }
+            """,
+            {"username": username, "password": password},
+        )
+        if parse_login and isinstance(parse_login, dict):
+            if parse_login.get("ok"):
+                return "success"
+            logger.info("Parse login attempt did not succeed: %s", parse_login)
+    except Exception as exc:
+        logger.warning("Parse login attempt failed: %s", exc)
+
     login_link = page.get_by_role("link", name="Log In")
     if await login_link.count() == 0:
         login_link = page.get_by_role("link", name="Log in")
