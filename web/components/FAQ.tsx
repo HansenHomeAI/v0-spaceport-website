@@ -34,19 +34,19 @@ export default function FAQ(): JSX.Element {
   };
 
   return (
-    <section className="section" id="faq" style={{ padding: '4rem 0' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+    <section className="section" id="faq" style={{ padding: '70px 20px 40px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
         <h2 style={{ 
           textAlign: 'left', 
           marginBottom: '2rem', 
           fontSize: '2rem', 
-          fontWeight: 600,
-          color: 'white' // Assuming dark theme based on other components
+          fontWeight: 500, // Matched with .section h2
+          color: 'white'
         }}>
           Frequently Asked Questions
         </h2>
         
-        <div className="faq-list">
+        <div className="faq-list" style={{ maxWidth: '800px' }}>
           {FAQ_ITEMS.map((item, index) => (
             <FAQItem 
               key={index} 
@@ -75,7 +75,7 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
 
   return (
     <div style={{ 
-      borderBottom: '1px solid rgba(255, 255, 255, 0.1)', // Thin rounded line look
+      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       marginBottom: '10px'
     }}>
       <button 
@@ -91,13 +91,13 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           cursor: 'pointer',
           textAlign: 'left',
           color: 'white',
-          fontSize: '1.1rem',
-          fontWeight: 500,
+          fontSize: '1.2rem', // Matched with .section p
+          fontWeight: 400, // Matched with .section p
           outline: 'none'
         }}
         aria-expanded={isOpen}
       >
-        <span>{item.question}</span>
+        <span style={{ opacity: isOpen ? 1 : 0.8, transition: 'opacity 0.3s' }}>{item.question}</span>
         <div style={{ 
           transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
           transition: 'transform 0.3s ease',
@@ -106,10 +106,11 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           justifyContent: 'center',
           width: '24px',
           height: '24px',
-          opacity: 0.7
+          opacity: 0.5, // Set to 50% opacity
+          color: 'white'
         }}>
           <svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </button>
@@ -119,10 +120,18 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           height: `${height}px`, 
           overflow: 'hidden', 
           transition: 'height 0.3s ease-in-out',
-          opacity: isOpen ? 1 : 0.5
         }}
       >
-        <div ref={contentRef} style={{ paddingBottom: '24px', color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6' }}>
+        <div 
+          ref={contentRef} 
+          style={{ 
+            paddingBottom: '24px', 
+            color: 'rgba(255, 255, 255, 0.5)', // White at 50% opacity
+            lineHeight: '1.6',
+            fontSize: '1.1rem',
+            textAlign: 'left' // Ensure left alignment
+          }}
+        >
           {item.answer}
         </div>
       </div>

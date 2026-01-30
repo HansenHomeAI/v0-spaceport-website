@@ -1,2 +1,2 @@
 2026-01-30
-feat: update landing copy with partner messaging and value propositions
+feat: refine FAQ styling for consistency and arrow opacity
