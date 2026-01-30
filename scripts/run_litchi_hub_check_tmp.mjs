@@ -52,7 +52,7 @@ function hasText(snapshot, text) {
 (async () => {
   await client.connect(transport);
 
-  await callTool('browser_run_code', {
+  const loginResult = await callTool('browser_run_code', {
     code: `async (page) => {
       const email = ${JSON.stringify(LITCHI_EMAIL)};
       const password = ${JSON.stringify(LITCHI_PASSWORD)};
@@ -77,6 +77,10 @@ function hasText(snapshot, text) {
       return { url: page.url() };
     }`
   });
+  const loginResultText = textFromResult(loginResult);
+  if (loginResultText) {
+    console.log(loginResultText);
+  }
 
   await callTool('browser_wait_for', { time: 5 }).catch(() => {});
   const snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
@@ -84,6 +88,9 @@ function hasText(snapshot, text) {
     function: '() => document.body.innerText'
   });
   const pageText = textFromResult(pageTextResult);
+  if (pageText) {
+    console.log(JSON.stringify({ pageTextSample: pageText.slice(0, 200) }, null, 2));
+  }
 
   await callTool('browser_take_screenshot', {
     filename: '/Users/gabrielhansen/Spaceport-Website copy/logs/litchi-hub-missions.png',
