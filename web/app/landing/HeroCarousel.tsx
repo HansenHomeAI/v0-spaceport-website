@@ -293,6 +293,29 @@ export default function HeroCarousel(): JSX.Element {
     setIsActive(true);
   };
 
+  // Add non-passive listeners to top trigger to block scroll while capturing interaction
+  useEffect(() => {
+    const triggerEl = topTriggerRef.current;
+    if (!triggerEl) return;
+
+    const onScrollInteract = (e: Event) => {
+      // Prevent page scroll
+      if (e.cancelable) e.preventDefault();
+      // Trigger carousel
+      handleIframeEngage();
+    };
+
+    // Attach non-passive listeners for wheel and touchmove to block scrolling
+    triggerEl.addEventListener('wheel', onScrollInteract, { passive: false });
+    triggerEl.addEventListener('touchmove', onScrollInteract, { passive: false });
+
+    return () => {
+      triggerEl.removeEventListener('wheel', onScrollInteract);
+      triggerEl.removeEventListener('touchmove', onScrollInteract);
+    };
+  }, [activeIndex, isActive]); // Re-bind if state changes (though handleIframeEngage logic is stable, we need latest closures if not using refs)
+
+
   const isDefaultState = activeIndex === -1;
   const currentExample = isDefaultState ? null : EXAMPLES[activeIndex];
   const currentIframeSrc = isDefaultState ? DEFAULT_IFRAME : currentExample?.src || DEFAULT_IFRAME;
@@ -318,9 +341,7 @@ export default function HeroCarousel(): JSX.Element {
         id="landing-top-trigger"
         ref={topTriggerRef}
         className={isActive ? '' : 'active'}
-        onPointerDown={handleIframeEngage}
-        onTouchStart={handleIframeEngage}
-        onWheel={handleIframeEngage}
+        onPointerDown={handleIframeEngage} // Keep click handling for pointer devices
         aria-hidden="true"
       />
       {/* Block iframe interaction below the controls - always active to limit interaction to area above controls */}
