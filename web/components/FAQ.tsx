@@ -110,6 +110,7 @@ function renderAnswerWithEmphasis(answer: string): React.ReactNode {
 
 function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, onClick: () => void }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [height, setHeight] = useState(0);
   const hasEmphasis = FAQ_EMPHASIS_HEADERS.some((h) => item.answer.includes(h));
 
@@ -121,13 +122,48 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
     }
   }, [isOpen]);
 
+  const handleClick = () => {
+    const button = buttonRef.current;
+    if (!button) {
+      onClick();
+      return;
+    }
+
+    // Capture current position relative to viewport before state change
+    const startTop = button.getBoundingClientRect().top;
+    
+    onClick();
+
+    // Continuously correct scroll position during the transition to "stick" the element
+    // This prevents disorientation when content above collapses
+    const startTime = performance.now();
+    const duration = 350; // Match transition time + buffer
+
+    const loop = (now: number) => {
+      if (now - startTime > duration) return;
+
+      const currentTop = button.getBoundingClientRect().top;
+      const diff = currentTop - startTop;
+
+      // If element moved, instantly correct scroll to keep it in place
+      if (Math.abs(diff) > 1) {
+        window.scrollBy({ top: diff, behavior: 'instant' as ScrollBehavior });
+      }
+
+      requestAnimationFrame(loop);
+    };
+
+    requestAnimationFrame(loop);
+  };
+
   return (
     <div style={{ 
       borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       marginBottom: '10px'
     }}>
       <button 
-        onClick={onClick}
+        ref={buttonRef}
+        onClick={handleClick}
         style={{
           width: '100%',
           display: 'flex',
@@ -141,13 +177,14 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           color: 'white',
           fontSize: '1.2rem',
           fontWeight: 400,
-          outline: 'none'
+          outline: 'none',
+          scrollMarginTop: '100px' // Ensure it doesn't snap to the very top edge
         }}
         aria-expanded={isOpen}
       >
         <span style={{ opacity: 1 }}>{item.question}</span>
         <div style={{ 
-          transform: isOpen ? 'rotate(-90deg)' : 'rotate(90deg)',
+          transform: isOpen ? 'rotate(270deg)' : 'rotate(90deg)',
           transition: 'transform 0.3s ease',
           display: 'flex',
           alignItems: 'center',
