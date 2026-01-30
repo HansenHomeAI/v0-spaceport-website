@@ -170,31 +170,23 @@ html, body {
   opacity: 1;
 }
 
-/* The plus lines */
-.toggle span {
-  position: absolute;
-  display: block;
+/* Arrow icon for toggle */
+.toggle-arrow {
   width: 16px;
-  height: 2.5px;
-  background: #fff;
-  top: 50%;
-  left: 50%;
-  transform-origin: center;
-  transition: transform 0.3s ease;
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
+  height: 16px;
+  display: block;
+  /* Shift rotation point left 2px (towards the flat base of the > arrow) */
+  /* When rotated 90deg down, this base becomes the top, so this shifts the pivot UP visually, which moves the icon DOWN to center it */
+  transform-origin: calc(50% - 2px) 50%;
+  transition: transform 0.5s ease;
+  filter: drop-shadow(0 0px 20px rgba(0, 0, 0, 0.9));
+  /* Point down when closed (rotate 90deg from default right-pointing arrow) */
+  transform: rotate(90deg);
 }
 
-.toggle span:first-child {
-  transform: translate(-50%, -50%) rotate(0deg);
-}
-.toggle span:last-child {
-  transform: translate(-50%, -50%) rotate(90deg);
-}
-.toggle.rotated span:first-child {
-  transform: translate(-50%, -50%) rotate(135deg);
-}
-.toggle.rotated span:last-child {
-  transform: translate(-50%, -50%) rotate(225deg);
+.toggle.rotated .toggle-arrow {
+  /* Rotate 180deg to point up: 90deg (down) + 180deg = 270deg (up) */
+  transform: rotate(270deg);
 }
 
 /* NAV LINKS (small screens) */
@@ -300,7 +292,7 @@ html, body {
   width: 100%;
   max-width: 750px;
   padding: 0 5px;
-  pointer-events: auto;
+  pointer-events: none; /* Changed from auto to none so text doesn't block iframe */
   z-index: 2;
 }
 .landing-content h1,
@@ -327,6 +319,7 @@ html, body {
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
+  pointer-events: auto; /* Re-enable pointer events for buttons */
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
@@ -1809,35 +1802,73 @@ footer {
   margin-right: 0;
 }
 
-/* Invisible overlay to prevent accidental iframe interactions */
+/* Visual overlay gradient (no pointer events blocking) */
+@property --gradient-stop-1 {
+  syntax: '<percentage>';
+  initial-value: 11%;
+  inherits: false;
+}
+@property --gradient-stop-2 {
+  syntax: '<percentage>';
+  initial-value: 62%;
+  inherits: false;
+}
+
 #iframe-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 11%, rgba(0,0,0,0.8) 62%, rgba(0,0,0,1) 100%);
-  transition: background 0.5s ease;
-  pointer-events: auto;
+  
+  /* Use CSS variables for stops to enable interpolation */
+  --gradient-stop-1: 11%;
+  --gradient-stop-2: 62%;
+  
+  background: linear-gradient(
+    to bottom, 
+    rgba(0,0,0,0) var(--gradient-stop-1), 
+    rgba(0,0,0,0.8) var(--gradient-stop-2), 
+    rgba(0,0,0,1) 100%
+  );
+  
+  /* Transition the variables */
+  transition: --gradient-stop-1 0.5s ease, --gradient-stop-2 0.5s ease;
+  
+  pointer-events: none; /* Visual only - allows iframe interaction above controls */
   z-index: 1;
+  will-change: --gradient-stop-1, --gradient-stop-2;
 }
 
 #iframe-overlay.carousel-active {
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 65%, rgba(0,0,0,0.8) 88%, rgba(0,0,0,1) 100%);
+  --gradient-stop-1: 65%;
+  --gradient-stop-2: 88%;
 }
 
-/* Block iframe interaction from carousel control top (Y) and below (only when carousel active) */
+/* Block iframe interaction below the controls - always active to limit interaction to area above controls */
 #landing-bottom-block {
   position: absolute;
-  top: 358px;
+  top: 358px; /* Dynamically updated via JS to align with controls */
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 1;
-  pointer-events: none;
+  pointer-events: auto; /* Always blocks interactions below controls */
   transition: pointer-events 0s;
+  border-top: none;
 }
-#landing-bottom-block.active {
+
+/* Trigger carousel activation when interacting above controls */
+#landing-top-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+#landing-top-trigger.active {
   pointer-events: auto;
 }
 
