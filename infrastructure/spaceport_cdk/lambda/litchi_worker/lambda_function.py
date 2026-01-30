@@ -756,8 +756,38 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             }
             """
         )
+        if not current_user and local_storage:
+            logger.warning("No Parse currentUser found after restore. Reapplying localStorage and reloading.")
+            await page.evaluate(
+                """
+                (entries) => {
+                  for (const [key, value] of Object.entries(entries)) {
+                    localStorage.setItem(key, value);
+                  }
+                }
+                """,
+                local_storage,
+            )
+            await page.reload(wait_until="domcontentloaded")
+            await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+            current_user = await page.evaluate(
+                """
+                () => {
+                  const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                  if (!key) return null;
+                  return localStorage.getItem(key);
+                }
+                """
+            )
+
         if not current_user:
-            logger.warning("No Parse currentUser found in localStorage after restore.")
+            logger.warning("No Parse currentUser found in localStorage after reload.")
+            _mark_error(table, user_id, "Litchi session missing. Please reconnect.")
+            return {
+                "status": "error",
+                "message": "Session missing",
+                "waitSeconds": _jitter_seconds(),
+            }
 
         login_link = page.get_by_role("link", name="Log In")
         if await login_link.count() > 0 and await login_link.first.is_visible():
