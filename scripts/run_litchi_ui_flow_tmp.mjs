@@ -11,6 +11,7 @@ const LITCHI_EMAIL = process.env.LITCHI_EMAIL ?? SPACEPORT_EMAIL;
 const LITCHI_PASSWORD = process.env.LITCHI_PASSWORD;
 const BATTERY_MINUTES = process.env.LITCHI_BATTERY_MINUTES ?? '10';
 const BATTERY_COUNT = process.env.LITCHI_BATTERY_COUNT ?? '2';
+const PROJECT_TITLE = process.env.LITCHI_PROJECT_TITLE ?? `Litchi Local ${new Date().toISOString()}`;
 const SELECTED_BATTERIES = (process.env.LITCHI_SELECTED_BATTERIES ?? '')
   .split(',')
   .map((value) => parseInt(value.trim(), 10))
@@ -177,6 +178,15 @@ async function waitForText(text, time = 20) {
   await waitForText('Delivery & Automation', 12);
   const afterOpenResult = await callTool('browser_snapshot', {}, { silent: true });
   snapshot = snapshotFrom(afterOpenResult);
+  const titleRef = tryFindRef(snapshot, 'textbox', ['Untitled', 'Project Title', 'Title']);
+  if (titleRef) {
+    await callTool('browser_fill_form', {
+      fields: [{ name: 'Project Title', type: 'textbox', ref: titleRef, value: PROJECT_TITLE }]
+    }, { silent: true });
+    record('Set project title', 'pass', PROJECT_TITLE);
+  } else {
+    record('Set project title', 'warn', 'Project title input not found');
+  }
   const modalCheck = await callTool('browser_evaluate', {
     function: '() => Boolean(document.querySelector("#newProjectPopup"))'
   }, { silent: true });
@@ -242,7 +252,51 @@ async function waitForText(text, time = 20) {
   }
 
   snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  const deliveryScrollResult = await callTool('browser_evaluate', {
+    function: `() => {
+      const headings = Array.from(document.querySelectorAll('h4, h3, h2'))
+        .map((el) => (el.textContent || '').trim())
+        .filter(Boolean);
+      const hasDelivery = headings.some((text) => text.includes('Delivery & Automation'));
+      let scrolled = false;
+      if (!hasDelivery) {
+        const modalScroller = document.querySelector('.popup-content-scroll');
+        if (modalScroller) {
+          modalScroller.scrollTo({ top: modalScroller.scrollHeight, behavior: 'instant' });
+          scrolled = true;
+        } else {
+          const scrollables = Array.from(document.querySelectorAll('*')).filter((el) => {
+            const style = window.getComputedStyle(el);
+            return /(auto|scroll)/.test(style.overflowY || '') && el.scrollHeight > el.clientHeight + 10;
+          });
+          if (scrollables.length) {
+            scrollables[0].scrollTo({ top: scrollables[0].scrollHeight, behavior: 'instant' });
+            scrolled = true;
+          } else {
+            const modal = document.querySelector('#newProjectPopup');
+            if (modal) {
+              modal.scrollTo({ top: modal.scrollHeight, behavior: 'instant' });
+              scrolled = true;
+            } else {
+              window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+              scrolled = true;
+            }
+          }
+        }
+      }
+      const target = Array.from(document.querySelectorAll('h4, h3, h2')).find((el) =>
+        (el.textContent || '').includes('Delivery & Automation')
+      );
+      if (target) target.scrollIntoView({ block: 'center', behavior: 'instant' });
+      return { found: Boolean(target), scrolled, headings };
+    }`
+  }, { silent: true });
+  const deliveryScrollText = textFromResult(deliveryScrollResult).trim();
+  if (deliveryScrollText) {
+    record('Scroll to Delivery & Automation', deliveryScrollText.includes('"found":true') ? 'pass' : 'warn', deliveryScrollText);
+  }
 
+  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
   let sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
   const connectRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code']);
 

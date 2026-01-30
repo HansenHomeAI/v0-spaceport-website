@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import random
-from urllib.parse import urlparse
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -155,18 +154,23 @@ async def _launch_context(storage_state: Optional[Dict[str, Any]] = None):
     os.environ.setdefault("GALLIUM_DRIVER", "llvmpipe")
 
     playwright = await async_playwright().start()
+    base_args = [
+        "--disable-blink-features=AutomationControlled",
+    ]
+    lambda_args = [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--no-zygote",
+        "--single-process",
+        "--use-gl=swiftshader",
+        "--ignore-gpu-blocklist",
+    ]
+    running_in_lambda = bool(os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+    launch_args = base_args + (lambda_args if running_in_lambda else [])
     browser = await playwright.chromium.launch(
         headless=True,
-        args=[
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--no-zygote",
-            "--single-process",
-            "--use-gl=swiftshader",
-            "--ignore-gpu-blocklist",
-        ],
+        args=launch_args,
     )
     context = await browser.new_context(
         user_agent=random.choice(USER_AGENTS),
@@ -1050,26 +1054,6 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             )
         page = await context.new_page()
         await _apply_stealth(page)
-        save_requests: List[str] = []
-        save_responses: List[str] = []
-        save_statuses: List[int] = []
-        def _capture_save_request(request):
-            if request.method in {"POST", "PUT", "PATCH"}:
-                url = request.url.lower()
-                if "google-analytics" in url or "g/collect" in url:
-                    return
-                save_requests.append(f"{request.method} {request.url}")
-
-        def _capture_save_response(response):
-            if response.request.method in {"POST", "PUT", "PATCH"}:
-                url = response.url.lower()
-                if "google-analytics" in url or "g/collect" in url:
-                    return
-                if "parse.litchiapi.com" in url or "mission" in url:
-                    save_responses.append(f"{response.status} {response.url}")
-                    save_statuses.append(response.status)
-        page.on("request", _capture_save_request)
-        page.on("response", _capture_save_response)
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
         if (local_storage or session_storage) and not storage_state:
@@ -1214,6 +1198,12 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     if login_result != "success":
                         _mark_error(table, user_id, "Login failed. Please reconnect.")
                         return {"status": "error", "message": "Login failed"}
+                    login_modal = page.locator("#login-modal")
+                    if await login_modal.count() > 0:
+                        try:
+                            await login_modal.first.wait_for(state="hidden", timeout=15000)
+                        except PlaywrightTimeoutError:
+                            pass
                     local_storage = await page.evaluate(
                         """
                         () => {
@@ -1253,8 +1243,12 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         session_storage=session_storage,
                     )
                     relogin_attempted = True
-            _mark_expired(table, user_id, "Session expired, please reconnect")
-            return {"status": "expired", "message": "Session expired"}
+                else:
+                    _mark_expired(table, user_id, "Session expired, please reconnect")
+                    return {"status": "expired", "message": "Session expired"}
+            else:
+                _mark_expired(table, user_id, "Session expired, please reconnect")
+                return {"status": "expired", "message": "Session expired"}
 
         if csv_content:
             await page.evaluate(
@@ -1549,22 +1543,25 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             if login_result != "success":
                 _mark_error(table, user_id, "Login failed. Please reconnect.")
                 return {"status": "error", "message": "Login failed"}
-            await page.evaluate(
-                """
-                () => {
-                  const modal = document.querySelector('#login-modal');
-                  if (!modal) return;
-                  modal.classList.remove('show', 'in');
-                  modal.style.display = 'none';
-                  modal.style.visibility = 'hidden';
-                  modal.setAttribute('aria-hidden', 'true');
-                  document.body.classList.remove('modal-open');
-                  const backdrop = document.querySelector('.modal-backdrop');
-                  if (backdrop) backdrop.remove();
-                }
-                """
-            )
-            await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+            try:
+                await login_modal.first.wait_for(state="hidden", timeout=15000)
+            except PlaywrightTimeoutError:
+                await page.evaluate(
+                    """
+                    () => {
+                      const modal = document.querySelector('#login-modal');
+                      if (!modal) return;
+                      modal.classList.remove('show', 'in');
+                      modal.style.display = 'none';
+                      modal.style.visibility = 'hidden';
+                      modal.setAttribute('aria-hidden', 'true');
+                      document.body.classList.remove('modal-open');
+                      const backdrop = document.querySelector('.modal-backdrop');
+                      if (backdrop) backdrop.remove();
+                    }
+                    """
+                )
+                await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
             download_modal = page.locator("#downloadalert")
             if await download_modal.count() == 0 or not await download_modal.first.is_visible():
                 missions_menu = page.locator("#dropdownMenuMissions")
@@ -1640,24 +1637,17 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 logger.warning("Unable to inspect save button state.")
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
 
-        await page.wait_for_timeout(int(_human_delay(1.4, 2.4) * 1000))
-        if save_requests:
-            logger.info("Mission save requests (last 10): %s", " | ".join(save_requests[-10:]))
+        await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+        modal_closed = False
+        if await download_modal.count() == 0:
+            modal_closed = True
         else:
-            logger.warning("No Mission save requests captured after save click.")
-        if save_responses:
-            logger.info("Mission save responses (last 10): %s", " | ".join(save_responses[-10:]))
-            response_summary: Dict[str, int] = {}
-            for entry in save_responses:
-                try:
-                    _, raw_url = entry.split(" ", 1)
-                    host = urlparse(raw_url).netloc or raw_url
-                except ValueError:
-                    host = entry
-                response_summary[host] = response_summary.get(host, 0) + 1
-            logger.info("Mission save response summary: %s", response_summary)
-        else:
-            logger.warning("No Mission save responses captured after save click.")
+            try:
+                await download_modal.first.wait_for(state="hidden", timeout=12000)
+                modal_closed = True
+            except PlaywrightTimeoutError:
+                modal_closed = False
+        logger.info("Save modal closed: %s", modal_closed)
         try:
             mission_check = await page.evaluate(
                 """
@@ -1680,7 +1670,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return results.map((item) => item.get('name')).filter(Boolean);
                   };
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     if (names.length) {
@@ -1703,7 +1693,8 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             logger.info("Mission list check: %s", mission_check)
         except Exception as exc:
             logger.warning("Mission list check failed: %s", exc)
-        save_success = any(200 <= status < 300 for status in save_statuses)
+        mission_found = bool(mission_check.get("found")) if isinstance(mission_check, dict) else False
+        save_success = modal_closed or mission_found
         if login_gate_present and not save_success:
             _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
             return {
