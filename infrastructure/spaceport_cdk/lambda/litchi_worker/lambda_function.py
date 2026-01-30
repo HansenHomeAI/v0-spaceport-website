@@ -1092,6 +1092,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             }
             """
         )
+        parse_user = await page.evaluate(
+            """
+            () => Boolean(window.Parse && window.Parse.User && window.Parse.User.current && window.Parse.User.current())
+            """
+        )
         if not current_user and local_storage and not storage_state:
             logger.warning("No Parse currentUser found after restore. Reapplying localStorage and reloading.")
             await page.evaluate(
@@ -1115,9 +1120,17 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 }
                 """
             )
+            parse_user = await page.evaluate(
+                """
+                () => Boolean(window.Parse && window.Parse.User && window.Parse.User.current && window.Parse.User.current())
+                """
+            )
 
-        if not current_user:
-            logger.warning("No Parse currentUser found in localStorage after reload.")
+        if not current_user or not parse_user:
+            if not parse_user:
+                logger.warning("No Parse currentUser available via Parse.User.current().")
+            if not current_user:
+                logger.warning("No Parse currentUser found in localStorage after reload.")
             if not relogin_attempted:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
