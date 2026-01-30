@@ -724,6 +724,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                   for (const [key, value] of Object.entries(entries)) {{
                     localStorage.setItem(key, value);
                   }}
+                  window.__litchiLocalStorageApplied = Object.keys(entries).length;
                 }}
                 """
             )
@@ -738,6 +739,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         )
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
+        if local_storage:
+            applied_count = await page.evaluate("() => window.__litchiLocalStorageApplied || 0")
+            logger.info("Init script localStorage applied count: %s", applied_count)
 
         response_status = response.status if response else None
         if response_status == 429:
