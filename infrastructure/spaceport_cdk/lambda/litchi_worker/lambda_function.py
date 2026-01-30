@@ -1579,6 +1579,28 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             logger.info("Mission save responses: %s", " | ".join(save_responses[-5:]))
         else:
             logger.warning("No Mission save responses captured after save click.")
+        try:
+            mission_check = await page.evaluate(
+                """
+                async (missionName) => {
+                  if (!window.Parse || !window.Parse.Cloud || !window.Parse.Cloud.run) {
+                    return { ok: false, reason: 'parse_unavailable' };
+                  }
+                  try {
+                    const result = await window.Parse.Cloud.run('listMissionsV3');
+                    const missions = result?.missions || result?.results || result?.data || [];
+                    const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
+                    return { ok: true, count: names.length, found: names.includes(missionName) };
+                  } catch (err) {
+                    return { ok: false, error: String(err) };
+                  }
+                }
+                """,
+                mission_name,
+            )
+            logger.info("Mission list check: %s", mission_check)
+        except Exception as exc:
+            logger.warning("Mission list check failed: %s", exc)
         save_success = any(200 <= status < 300 for status in save_statuses)
         if login_gate_present and not save_success:
             _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
