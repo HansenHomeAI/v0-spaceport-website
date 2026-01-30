@@ -200,6 +200,16 @@ def _deserialize_local_storage(ciphertext: str) -> Dict[str, str]:
     return json.loads(payload)
 
 
+def _serialize_credentials(credentials: Dict[str, str], key_id: str) -> str:
+    payload = json.dumps(credentials)
+    return _encrypt_text(payload, key_id)
+
+
+def _deserialize_credentials(ciphertext: str) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext)
+    return json.loads(payload)
+
+
 def _require_kms_key() -> str:
     key_id = os.environ.get("LITCHI_KMS_KEY_ID")
     if not key_id:
@@ -229,6 +239,25 @@ def _load_local_storage(table, user_id: str) -> Optional[Dict[str, str]]:
     if not encrypted:
         return None
     return _deserialize_local_storage(encrypted)
+
+
+def _load_credentials(table, user_id: str) -> Optional[Dict[str, str]]:
+    record = _session_record(table, user_id)
+    encrypted = record.get("credentials")
+    if not encrypted:
+        return None
+    return _deserialize_credentials(encrypted)
+
+
+def _save_credentials(table, user_id: str, username: str, password: str) -> None:
+    record = _session_record(table, user_id)
+    key_id = _require_kms_key()
+    record["credentials"] = _serialize_credentials(
+        {"username": username, "password": password},
+        key_id,
+    )
+    record["updatedAt"] = _now_iso()
+    _save_record(table, record)
 
 
 def _save_cookies(
@@ -585,6 +614,8 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 _mark_error(table, user_id, "Login failed. Check your email and password.")
                 return {"status": "error", "message": "Login failed"}
 
+        _save_credentials(table, user_id, username, password)
+
         local_storage = await page.evaluate(
             """
             () => {
@@ -672,6 +703,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     csv_content = mission.get("csv")
     mission_index = payload.get("missionIndex")
     mission_total = payload.get("missionTotal")
+    relogin_attempted = bool(payload.get("reloginAttempted"))
 
     if not user_id:
         return {"status": "error", "message": "Missing userId"}
@@ -786,6 +818,29 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         if not current_user:
             logger.warning("No Parse currentUser found in localStorage after reload.")
+            if not relogin_attempted:
+                credentials = _load_credentials(table, user_id)
+                if credentials and credentials.get("username") and credentials.get("password"):
+                    logger.info("Attempting Litchi re-login before upload.")
+                    relogin_result = await _run_login_flow(
+                        {
+                            "userId": user_id,
+                            "username": credentials["username"],
+                            "password": credentials["password"],
+                            "requestedAt": _now_iso(),
+                        }
+                    )
+                    if isinstance(relogin_result, dict) and relogin_result.get("status") not in (None, "active"):
+                        return relogin_result
+                    retry_payload = dict(payload)
+                    retry_payload["reloginAttempted"] = True
+                    return await _run_upload_flow(retry_payload)
+                _mark_expired(table, user_id, "Session expired. Please reconnect.")
+                return {
+                    "status": "expired",
+                    "message": "Session expired",
+                    "waitSeconds": _jitter_seconds(),
+                }
             _mark_error(table, user_id, "Litchi session missing. Please reconnect.")
             return {
                 "status": "error",
@@ -795,6 +850,23 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         login_link = page.get_by_role("link", name="Log In")
         if await login_link.count() > 0 and await login_link.first.is_visible():
+            if not relogin_attempted:
+                credentials = _load_credentials(table, user_id)
+                if credentials and credentials.get("username") and credentials.get("password"):
+                    logger.info("Attempting Litchi re-login after login link detected.")
+                    relogin_result = await _run_login_flow(
+                        {
+                            "userId": user_id,
+                            "username": credentials["username"],
+                            "password": credentials["password"],
+                            "requestedAt": _now_iso(),
+                        }
+                    )
+                    if isinstance(relogin_result, dict) and relogin_result.get("status") not in (None, "active"):
+                        return relogin_result
+                    retry_payload = dict(payload)
+                    retry_payload["reloginAttempted"] = True
+                    return await _run_upload_flow(retry_payload)
             _mark_expired(table, user_id, "Session expired, please reconnect")
             return {"status": "expired", "message": "Session expired"}
 
@@ -892,6 +964,23 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
         not_logged_in = page.locator("#save-notloggedin")
         if await not_logged_in.count() > 0 and await not_logged_in.first.is_visible():
+            if not relogin_attempted:
+                credentials = _load_credentials(table, user_id)
+                if credentials and credentials.get("username") and credentials.get("password"):
+                    logger.info("Attempting Litchi re-login after save modal login gate.")
+                    relogin_result = await _run_login_flow(
+                        {
+                            "userId": user_id,
+                            "username": credentials["username"],
+                            "password": credentials["password"],
+                            "requestedAt": _now_iso(),
+                        }
+                    )
+                    if isinstance(relogin_result, dict) and relogin_result.get("status") not in (None, "active"):
+                        return relogin_result
+                    retry_payload = dict(payload)
+                    retry_payload["reloginAttempted"] = True
+                    return await _run_upload_flow(retry_payload)
             _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
             return {
                 "status": "error",
