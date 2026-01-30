@@ -39,7 +39,7 @@ export default function Landing(): JSX.Element {
         <div className="two-col-content">
           <h2>Built for innovative brokerages.</h2>
           <div className="right-col">
-            <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you're right there—feeling the neighborhood and natural flow around it.</p>
+            <p>Give buyers the clearest understanding of the listing. Before they even visit.</p>
             <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
               <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
               View example
