@@ -1137,11 +1137,20 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 logger.warning("Unable to inspect save modal buttons")
 
         not_logged_in = page.locator("#save-notloggedin")
-        if await not_logged_in.count() > 0 and await not_logged_in.first.is_visible():
+        login_gate_button = page.locator("#downloadalert button", has_text="Log in")
+        if (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
+            await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
+        ):
             if not relogin_attempted:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
                     logger.info("Attempting in-context Litchi re-login after save modal login gate.")
+                    if await login_gate_button.count() > 0 and await login_gate_button.first.is_visible():
+                        try:
+                            await _human_click(login_gate_button.first, timeout_ms=8000, force_fallback=True)
+                        except PlaywrightTimeoutError:
+                            await login_gate_button.first.evaluate("el => el.click()")
+                        await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
                     login_result = await _login_in_page(page, credentials["username"], credentials["password"])
                     if login_result == "pending_2fa":
                         _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
@@ -1196,7 +1205,10 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     if await download_modal.count() > 0:
                         await download_modal.first.wait_for(state="visible", timeout=8000)
                     not_logged_in = page.locator("#save-notloggedin")
-                    if await not_logged_in.count() > 0 and await not_logged_in.first.is_visible():
+                    login_gate_button = page.locator("#downloadalert button", has_text="Log in")
+                    if (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
+                        await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
+                    ):
                         _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
                         return {
                             "status": "error",
