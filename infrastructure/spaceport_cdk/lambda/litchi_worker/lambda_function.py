@@ -1622,19 +1622,6 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 if await save_menu_item.count() > 0:
                     await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
                     await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
-                await page.evaluate(
-                    """
-                    () => {
-                      const modal = document.querySelector('#downloadalert');
-                      if (!modal) return;
-                      modal.classList.add('show', 'in');
-                      modal.style.display = 'block';
-                      modal.style.visibility = 'visible';
-                      modal.setAttribute('aria-hidden', 'false');
-                      document.body.classList.add('modal-open');
-                    }
-                    """
-                )
                 if await download_modal.count() > 0:
                     await download_modal.first.wait_for(state="visible", timeout=8000)
             not_logged_in = page.locator("#save-notloggedin")
@@ -1716,7 +1703,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return results.map((item) => item.get('name')).filter(Boolean);
                   };
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200 });
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     if (names.length) {
