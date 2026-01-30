@@ -52,70 +52,34 @@ function hasText(snapshot, text) {
 (async () => {
   await client.connect(transport);
 
-  const nav = await callTool('browser_navigate', { url: 'https://flylitchi.com/hub/#/login' });
-  let snapshot = snapshotFrom(nav);
-
-  const frameInfo = await callTool('browser_evaluate', {
-    function: `() => ({
-      url: window.location.href,
-      frames: Array.from(document.querySelectorAll('iframe')).map((frame) => frame.src || '')
-    })`
+  await callTool('browser_run_code', {
+    code: `async (page) => {
+      const email = ${JSON.stringify(LITCHI_EMAIL)};
+      const password = ${JSON.stringify(LITCHI_PASSWORD)};
+      const loginSelectors = {
+        email: 'input[type="email"], input[name*="email" i], input[id*="email" i], input[type="text"]',
+        password: 'input[type="password"]',
+        submit: 'button[type="submit"], button:has-text("Log in"), button:has-text("Login"), button:has-text("Sign in")'
+      };
+      await page.goto('https://flylitchi.com/hub#/login', { waitUntil: 'domcontentloaded' });
+      const pickFrame = () => page.frames().find((frame) => frame.url().includes('flylitchi.com/hub')) ?? page;
+      const frame = pickFrame();
+      await frame.waitForSelector(loginSelectors.email, { timeout: 20000 });
+      await frame.fill(loginSelectors.email, email);
+      await frame.fill(loginSelectors.password, password);
+      const submit = await frame.$(loginSelectors.submit);
+      if (submit) {
+        await submit.click();
+      }
+      await page.waitForTimeout(2000);
+      await page.goto('https://flylitchi.com/hub/#/missions', { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(2000);
+      return { url: page.url() };
+    }`
   });
-  console.log(textFromResult(frameInfo));
 
-  const loginRef = tryFindRef(snapshot, 'link', ['Login', 'Log In', 'Sign in'])
-    ?? tryFindRef(snapshot, 'button', ['Login', 'Log In', 'Sign in', 'login Log In']);
-  if (loginRef) {
-    await callTool('browser_click', { element: 'Login', ref: loginRef });
-    const tabsAfterLogin = await callTool('browser_tabs', { action: 'list' });
-    console.log(textFromResult(tabsAfterLogin));
-    await callTool('browser_wait_for', { text: 'Email', time: 20 }).catch(() => {});
-    snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
-  } else {
-    await callTool('browser_evaluate', {
-      function: `() => {
-        const candidates = Array.from(document.querySelectorAll('button,a'));
-        const target = candidates.find((el) => /log\\s*in/i.test(el.textContent || ''));
-        if (!target) return false;
-        target.click();
-        return true;
-      }`
-    });
-    const tabsAfterEval = await callTool('browser_tabs', { action: 'list' });
-    console.log(textFromResult(tabsAfterEval));
-    await callTool('browser_wait_for', { text: 'Email', time: 20 }).catch(() => {});
-    snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
-  }
-
-  const emailRef = tryFindRef(snapshot, 'textbox', ['Email', 'E-mail']);
-  const passwordRef = tryFindRef(snapshot, 'textbox', ['Password']);
-  const signInRef = tryFindRef(snapshot, 'button', ['Log In', 'Login', 'Sign in', 'Sign In']);
-
-  if (emailRef && passwordRef && signInRef) {
-    await callTool('browser_fill_form', {
-      fields: [
-        { name: 'Email', type: 'textbox', ref: emailRef, value: LITCHI_EMAIL },
-        { name: 'Password', type: 'textbox', ref: passwordRef, value: LITCHI_PASSWORD }
-      ]
-    });
-    await callTool('browser_click', { element: 'Log In', ref: signInRef });
-  }
-
-  if (!emailRef || !passwordRef || !signInRef) {
-    await callTool('browser_navigate', { url: 'https://flylitchi.com/hub' });
-    await callTool('browser_wait_for', { text: 'Log In', time: 20 }).catch(() => {});
-  }
-
-  await callTool('browser_navigate', { url: 'https://flylitchi.com/hub/#/missions' });
-  await callTool('browser_wait_for', { text: 'MISSIONS', time: 30 }).catch(() => {});
-  snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
-
-  const missionsRef = tryFindRef(snapshot, 'button', ['MISSIONS', 'Missions']);
-  if (missionsRef) {
-    await callTool('browser_click', { element: 'MISSIONS', ref: missionsRef });
-    await callTool('browser_wait_for', { text: 'Missions', time: 20 }).catch(() => {});
-    snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
-  }
+  await callTool('browser_wait_for', { time: 5 }).catch(() => {});
+  const snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
 
   await callTool('browser_take_screenshot', {
     filename: '/Users/gabrielhansen/Spaceport-Website copy/logs/litchi-hub-missions.png',
