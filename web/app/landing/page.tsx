@@ -64,18 +64,17 @@ export default function Landing(): JSX.Element {
             <p>Consider switching agents if a 3D tour is offered.</p>
           </div>
         </div>
-        <p className="stats-source">National Association of Realtors</p>
+        <p className="stats-source">National Association of Realtors: 2024 Report</p>
       </section>
 
       {/* More sections from legacy */}
       <section className="section two-col-section" id="landing-more">
         <div className="two-col-content">
-          <h2>The future of property listings.</h2>
+          <h2>Seeing is believing.</h2>
           <div className="right-col">
-            <p>Photos and 3D tours only show parts of a property—never the full picture. We create interactive models that let you explore the land, surroundings, and location in a way <span className="inline-white">no photo or video can match.</span></p>
-            <a href="https://dolan-road.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
-              View example
+            <p>Our vision is to create a listing experience better than visiting in-person. Less time on market, and much more convenient.</p>
+            <a href="/create" className="cta-button2-fixed">
+              Join waitlist
             </a>
           </div>
         </div>
