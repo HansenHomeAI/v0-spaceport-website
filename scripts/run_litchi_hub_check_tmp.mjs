@@ -62,10 +62,23 @@ function hasText(snapshot, text) {
         submit: 'button[type="submit"], button:has-text("Log in"), button:has-text("Login"), button:has-text("Sign in")'
       };
       await page.goto('https://flylitchi.com/hub#/login', { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => {
+        const modal = document.querySelector('#login-modal');
+        if (modal) {
+          modal.classList.add('show', 'in');
+          modal.style.display = 'block';
+          modal.style.visibility = 'visible';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('modal-open');
+        }
+        const loginLink = Array.from(document.querySelectorAll('a,button')).find((el) => /log\s*in/i.test(el.textContent || ''));
+        if (loginLink) loginLink.click();
+      });
       const pickFrame = () => page.frames().find((frame) => frame.url().includes('flylitchi.com/hub')) ?? page;
       const frame = pickFrame();
       await frame.waitForSelector(loginSelectors.email, { timeout: 20000 });
       await frame.fill(loginSelectors.email, email);
+      await frame.waitForSelector(loginSelectors.password, { timeout: 20000 });
       await frame.fill(loginSelectors.password, password);
       const submit = await frame.$(loginSelectors.submit);
       if (submit) {
