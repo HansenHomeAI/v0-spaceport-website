@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 // Default landing page state
 const DEFAULT_IFRAME = "https://hansenhomeai.github.io/WebbyDeerKnoll/";
-const DEFAULT_SUBTITLE = "Convert drone imagery to life-like 3D models.";
+const DEFAULT_SUBTITLE = "Create life-like 3D models with your drone.";
 const TIP_TEXT = "Tip: Pinch to zoom";
 
 // Example data
