@@ -24,7 +24,7 @@ function textFromResult(result) {
 }
 
 function snapshotFrom(result) {
-  const match = textFromResult(result).match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
+  const match = textFromResult(result).match(/(?:Page )?Snapshot:?\s*```yaml\s*([\s\S]*?)```/);
   return match ? match[1] : '';
 }
 
@@ -80,6 +80,10 @@ function hasText(snapshot, text) {
 
   await callTool('browser_wait_for', { time: 5 }).catch(() => {});
   const snapshot = snapshotFrom(await callTool('browser_snapshot', {}));
+  const pageTextResult = await callTool('browser_evaluate', {
+    function: '() => document.body.innerText'
+  });
+  const pageText = textFromResult(pageTextResult);
 
   await callTool('browser_take_screenshot', {
     filename: '/Users/gabrielhansen/Spaceport-Website copy/logs/litchi-hub-missions.png',
@@ -88,10 +92,12 @@ function hasText(snapshot, text) {
 
   const results = EXPECTED_MISSIONS.map((mission) => ({
     mission,
-    found: hasText(snapshot, mission)
+    found: hasText(snapshot, mission) || (pageText ? pageText.includes(mission) : false)
   }));
 
-  writeFileSync('logs/litchi-hub-snapshot.yaml', snapshot, 'utf-8');
+  if (snapshot) {
+    writeFileSync('logs/litchi-hub-snapshot.yaml', snapshot, 'utf-8');
+  }
   console.log(JSON.stringify({ results }, null, 2));
 
   await client.close();
