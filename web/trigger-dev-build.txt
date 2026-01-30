@@ -1,2 +1,2 @@
 2026-01-30
-feat: update landing-more section with new copy "Seeing is believing"
+feat: update landing copy with partner messaging and value propositions

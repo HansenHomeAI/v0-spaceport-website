@@ -39,7 +39,7 @@ export default function Landing(): JSX.Element {
         <div className="two-col-content">
           <h2>Built for innovative brokerages.</h2>
           <div className="right-col">
-            <p>Give buyers the clearest understanding of the listing. Before they even visit.</p>
+            <p>Give buyers the clearest understanding of the listing. Less time on market, and much more convenient.</p>
             <a href="/create" className="cta-button2-fixed">
               Join waitlist
             </a>
@@ -68,24 +68,24 @@ export default function Landing(): JSX.Element {
       </section>
 
       {/* More sections from legacy */}
-      <section className="section two-col-section" id="landing-more">
-        <div className="two-col-content">
-          <h2>Seeing is believing.</h2>
-          <div className="right-col">
-            <p>Our vision is to create a listing experience better than visiting in-person. Less time on market, and much more convenient.</p>
-            <a href="/create" className="cta-button2-fixed">
-              Join waitlist
-            </a>
-          </div>
-        </div>
-      </section>
-
       <section className="section two-col-section" id="landing-more2">
         <div className="two-col-content">
           <h2>Effortless creation with your drone.</h2>
           <div className="right-col">
             <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you'll receive the completed model straight to your inbox.</p>
             <a href="/create" className="cta-button2-fixed">Create your own</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="section two-col-section" id="landing-more">
+        <div className="two-col-content">
+          <h2>Seeing is believing.</h2>
+          <div className="right-col">
+            <p>Our vision is to create a listing experience better than visiting in-person. Apply to become a select partner as we reimagine real estate for the 3D future.</p>
+            <a href="/create" className="cta-button2-fixed">
+              Join waitlist
+            </a>
           </div>
         </div>
       </section>
