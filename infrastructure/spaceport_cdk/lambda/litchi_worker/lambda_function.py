@@ -1204,6 +1204,29 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                             await login_modal.first.wait_for(state="hidden", timeout=15000)
                         except PlaywrightTimeoutError:
                             pass
+                    try:
+                        became_after_login = await page.evaluate(
+                            """
+                            async () => {
+                              if (!window.Parse || !window.Parse.User || !window.Parse.User.become) return false;
+                              const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                              if (!key) return false;
+                              try {
+                                const raw = localStorage.getItem(key);
+                                if (!raw) return false;
+                                const value = JSON.parse(raw);
+                                if (!value || !value.sessionToken) return false;
+                                await window.Parse.User.become(value.sessionToken);
+                                return true;
+                              } catch (err) {
+                                return false;
+                              }
+                            }
+                            """
+                        )
+                        logger.info("Parse.User.become after save-modal login: %s", became_after_login)
+                    except Exception as exc:
+                        logger.warning("Parse.User.become after save-modal login failed: %s", exc)
                     local_storage = await page.evaluate(
                         """
                         () => {
@@ -1544,6 +1567,29 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 _mark_error(table, user_id, "Login failed. Please reconnect.")
                 return {"status": "error", "message": "Login failed"}
             try:
+                became_after_modal_login = await page.evaluate(
+                    """
+                    async () => {
+                      if (!window.Parse || !window.Parse.User || !window.Parse.User.become) return false;
+                      const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                      if (!key) return false;
+                      try {
+                        const raw = localStorage.getItem(key);
+                        if (!raw) return false;
+                        const value = JSON.parse(raw);
+                        if (!value || !value.sessionToken) return false;
+                        await window.Parse.User.become(value.sessionToken);
+                        return true;
+                      } catch (err) {
+                        return false;
+                      }
+                    }
+                    """
+                )
+                logger.info("Parse.User.become after login modal: %s", became_after_modal_login)
+            except Exception as exc:
+                logger.warning("Parse.User.become after login modal failed: %s", exc)
+            try:
                 await login_modal.first.wait_for(state="hidden", timeout=15000)
             except PlaywrightTimeoutError:
                 await page.evaluate(
@@ -1670,7 +1716,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return results.map((item) => item.get('name')).filter(Boolean);
                   };
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     if (names.length) {
