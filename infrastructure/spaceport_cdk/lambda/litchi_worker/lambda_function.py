@@ -729,6 +729,13 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             )
         page = await context.new_page()
         await _apply_stealth(page)
+        save_responses: List[str] = []
+        page.on(
+            "response",
+            lambda response: save_responses.append(f"{response.status} {response.url}")
+            if response.request.method == "POST" and "parse/classes/Mission" in response.url
+            else None,
+        )
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
 
@@ -739,6 +746,18 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             page_title = await page.title()
             logger.warning("Rate limit detection triggered url=%s title=%s status=%s", page.url, page_title, response_status)
             raise RateLimitedError("Rate limited by Litchi. Retrying shortly.")
+
+        current_user = await page.evaluate(
+            """
+            () => {
+              const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+              if (!key) return null;
+              return localStorage.getItem(key);
+            }
+            """
+        )
+        if not current_user:
+            logger.warning("No Parse currentUser found in localStorage after restore.")
 
         login_link = page.get_by_role("link", name="Log In")
         if await login_link.count() > 0 and await login_link.first.is_visible():
@@ -824,6 +843,18 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         download_modal = page.locator("#downloadalert")
         if await download_modal.count() > 0:
             await download_modal.first.wait_for(state="visible", timeout=8000)
+            try:
+                modal_buttons = await page.evaluate(
+                    """
+                    () => Array.from(document.querySelectorAll('#downloadalert button')).map(btn => ({
+                      id: btn.id || '',
+                      text: (btn.textContent || '').trim(),
+                    }))
+                    """
+                )
+                logger.info("Save modal buttons: %s", modal_buttons)
+            except Exception:
+                logger.warning("Unable to inspect save modal buttons")
 
         not_logged_in = page.locator("#save-notloggedin")
         if await not_logged_in.count() > 0 and await not_logged_in.first.is_visible():
@@ -838,13 +869,19 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if await filename_input.count() > 0:
             await _human_type(filename_input.first, mission_name)
 
-        save_button = page.locator("#downloadbtn")
+        save_button = page.locator("#downloadalert button#downloadbtn")
+        if await save_button.count() == 0:
+            save_button = page.locator("#downloadalert button", has_text="Save")
         if await save_button.count() == 0:
             save_button = page.get_by_role("button", name="Save")
         if await save_button.count() > 0:
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+        if save_responses:
+            logger.info("Mission save responses: %s", " | ".join(save_responses[-5:]))
+        else:
+            logger.warning("No Mission save responses captured after save click.")
         completed_progress = None
         if isinstance(mission_index, int) and mission_total:
             current = mission_index + 1
