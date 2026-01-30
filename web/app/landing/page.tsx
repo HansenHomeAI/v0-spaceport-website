@@ -40,9 +40,8 @@ export default function Landing(): JSX.Element {
           <h2>Built for innovative brokerages.</h2>
           <div className="right-col">
             <p>Give buyers the clearest understanding of the listing. Before they even visit.</p>
-            <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
-              View example
+            <a href="/create" className="cta-button2-fixed">
+              Join waitlist
             </a>
           </div>
         </div>
