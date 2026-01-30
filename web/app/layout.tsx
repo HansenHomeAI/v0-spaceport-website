@@ -17,7 +17,7 @@ export const metadata = {
     siteName: 'Spaceport AI',
     images: [
       {
-        url: '/assets/SpaceportIcons/SpaceportSocialIcon.PNG',
+        url: '/assets/SpaceportIcons/SpcprtLarge.png',
         width: 1200,
         height: 630,
         alt: 'Spaceport AI Logo',
@@ -30,7 +30,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Spaceport AI',
     description: 'Transform your drone footage into 3D models with Spaceport AI.',
-    images: ['/assets/SpaceportIcons/SpaceportSocialIcon.PNG'],
+    images: ['/assets/SpaceportIcons/SpcprtLarge.png'],
   },
 };
 import './globals.css';
