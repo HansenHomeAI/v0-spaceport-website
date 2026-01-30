@@ -342,30 +342,37 @@ def _detect_rate_limit(content: str) -> bool:
     return "too many requests" in lowered or "rate limit" in lowered or "rate limited" in lowered
 
 
-async def _login_in_page(page, username: str, password: str, two_factor_code: Optional[str] = None) -> str:
-    try:
-        parse_login = await page.evaluate(
-            """
-            async ({ username, password }) => {
-              if (!window.Parse || !window.Parse.User || !window.Parse.User.logIn) {
-                return { ok: false, reason: 'parse_unavailable' };
-              }
-              try {
-                const user = await window.Parse.User.logIn(username, password);
-                return { ok: true, user: Boolean(user) };
-              } catch (err) {
-                return { ok: false, error: String(err) };
-              }
-            }
-            """,
-            {"username": username, "password": password},
-        )
-        if parse_login and isinstance(parse_login, dict):
-            if parse_login.get("ok"):
-                return "success"
-            logger.info("Parse login attempt did not succeed: %s", parse_login)
-    except Exception as exc:
-        logger.warning("Parse login attempt failed: %s", exc)
+async def _login_in_page(
+    page,
+    username: str,
+    password: str,
+    two_factor_code: Optional[str] = None,
+    force_form: bool = False,
+) -> str:
+    if not force_form:
+        try:
+            parse_login = await page.evaluate(
+                """
+                async ({ username, password }) => {
+                  if (!window.Parse || !window.Parse.User || !window.Parse.User.logIn) {
+                    return { ok: false, reason: 'parse_unavailable' };
+                  }
+                  try {
+                    const user = await window.Parse.User.logIn(username, password);
+                    return { ok: true, user: Boolean(user) };
+                  } catch (err) {
+                    return { ok: false, error: String(err) };
+                  }
+                }
+                """,
+                {"username": username, "password": password},
+            )
+            if parse_login and isinstance(parse_login, dict):
+                if parse_login.get("ok"):
+                    return "success"
+                logger.info("Parse login attempt did not succeed: %s", parse_login)
+        except Exception as exc:
+            logger.warning("Parse login attempt failed: %s", exc)
 
     login_link = page.get_by_role("link", name="Log In")
     if await login_link.count() == 0:
@@ -1167,7 +1174,12 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
                     logger.info("Attempting in-context Litchi re-login after login link detected.")
-                    login_result = await _login_in_page(page, credentials["username"], credentials["password"])
+                    login_result = await _login_in_page(
+                        page,
+                        credentials["username"],
+                        credentials["password"],
+                        force_form=True,
+                    )
                     if login_result == "pending_2fa":
                         _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
                         return {"status": "pending_2fa", "message": "Two-factor code required"}
@@ -1343,7 +1355,12 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         except PlaywrightTimeoutError:
                             await login_gate_button.first.evaluate("el => el.click()")
                         await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
-                    login_result = await _login_in_page(page, credentials["username"], credentials["password"])
+                    login_result = await _login_in_page(
+                        page,
+                        credentials["username"],
+                        credentials["password"],
+                        force_form=True,
+                    )
                     if login_result == "pending_2fa":
                         _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
                         return {"status": "pending_2fa", "message": "Two-factor code required"}
