@@ -1052,7 +1052,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         save_responses: List[str] = []
         save_statuses: List[int] = []
         def _capture_save_response(response):
-            if response.request.method == "POST" and "parse/classes/Mission" in response.url:
+            if response.request.method in {"POST", "PUT"} and "mission" in response.url.lower():
                 save_responses.append(f"{response.status} {response.url}")
                 save_statuses.append(response.status)
         page.on("response", _capture_save_response)
