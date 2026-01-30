@@ -71,9 +71,9 @@ export default function Landing(): JSX.Element {
       {/* More sections from legacy */}
       <section className="section two-col-section" id="landing-more2">
         <div className="two-col-content">
-          <h2>Effortless creation with your drone.</h2>
+          <h2>Works with most DJI drones.</h2>
           <div className="right-col">
-            <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you'll receive the completed model straight to your inbox.</p>
+            <p>Creating your 3D tour is effortless. Fly it yourself, or share with your drone photographer.</p>
             <a href="/create" className="cta-button2-fixed">Create your own</a>
           </div>
         </div>
