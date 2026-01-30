@@ -321,6 +321,139 @@ def _detect_rate_limit(content: str) -> bool:
     return "too many requests" in lowered or "rate limit" in lowered or "rate limited" in lowered
 
 
+async def _login_in_page(page, username: str, password: str, two_factor_code: Optional[str] = None) -> str:
+    login_link = page.get_by_role("link", name="Log In")
+    if await login_link.count() == 0:
+        login_link = page.get_by_role("link", name="Log in")
+    if await login_link.count() == 0:
+        login_link = page.get_by_text("Log In")
+    if await login_link.count() > 0 and await login_link.first.is_visible():
+        try:
+            await _human_click(login_link.first, timeout_ms=8000, force_fallback=True)
+        except PlaywrightTimeoutError:
+            await login_link.first.evaluate("el => el.click()")
+        await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+
+    login_dialog = page.get_by_role("dialog")
+    if await login_dialog.count() > 0:
+        await login_dialog.first.wait_for(state="visible", timeout=10000)
+
+    login_form = page.locator("form#login-form")
+    try:
+        await page.wait_for_selector("form#login-form", state="attached", timeout=10000)
+    except PlaywrightTimeoutError:
+        pass
+    if await login_form.count() == 0:
+        login_form = page.locator("form").filter(
+            has=page.locator("input[type='email']")
+        ).filter(
+            has=page.locator("input[type='password']")
+        )
+
+    login_scope = page
+    if await login_dialog.count() > 0:
+        dialog_inputs = login_dialog.first.locator("input[type='email']")
+        if await dialog_inputs.count() > 0:
+            login_scope = login_dialog.first
+    if await login_form.count() > 0:
+        if not await login_form.first.is_visible():
+            await page.evaluate(
+                """
+                () => {
+                  const form = document.querySelector('form#login-form');
+                  if (!form) return;
+                  const modal = form.closest('.modal');
+                  if (modal) {
+                    modal.classList.add('show', 'in');
+                    modal.style.display = 'block';
+                  }
+                  form.style.display = 'block';
+                  form.style.visibility = 'visible';
+                  document.body.classList.add('modal-open');
+                }
+                """
+            )
+        await login_form.first.wait_for(state="visible", timeout=8000)
+        login_scope = login_form.first
+
+    email_input = login_scope.locator("input[type='email']:visible")
+    if await email_input.count() == 0:
+        email_input = login_scope.locator("input[type='email']")
+    if await email_input.count() == 0:
+        email_input = login_scope.get_by_label("Email")
+    if await email_input.count() > 1:
+        email_input = email_input.first
+    if await email_input.count() == 0:
+        return "error"
+    await _human_type(email_input, username)
+
+    password_input = login_scope.locator("input[type='password']:visible")
+    if await password_input.count() == 0:
+        password_input = login_scope.locator("input[type='password']")
+    if await password_input.count() == 0:
+        password_input = login_scope.get_by_label("Password")
+    if await password_input.count() > 1:
+        password_input = password_input.first
+    if await password_input.count() == 0:
+        return "error"
+    await _human_type(password_input, password)
+
+    login_button = login_scope.get_by_role("button", name="Log in")
+    if await login_button.count() == 0:
+        login_button = login_scope.get_by_role("button", name="Sign in")
+    if await login_button.count() == 0:
+        login_button = login_scope.locator("button[type='submit'], button#signin")
+    if await login_button.count() > 1:
+        login_button = login_button.first
+    try:
+        await _human_click(login_button, timeout_ms=8000, force_fallback=True)
+    except PlaywrightTimeoutError:
+        await login_button.evaluate("el => el.click()")
+
+    await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
+
+    two_factor_input = page.locator("input[name*='code']")
+    for _ in range(20):
+        if await two_factor_input.count() > 0 and await two_factor_input.first.is_visible():
+            if not two_factor_code:
+                return "pending_2fa"
+            await _human_type(two_factor_input.first, str(two_factor_code))
+            verify_button = page.get_by_role("button", name="Verify")
+            if await verify_button.count() > 0:
+                await _human_click(verify_button, timeout_ms=8000, force_fallback=True)
+            await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+            return "success"
+
+        for snippet in ("invalid", "incorrect", "wrong password", "failed"):
+            login_error_text = page.get_by_text(snippet, exact=False)
+            if await login_error_text.count() > 0 and await login_error_text.first.is_visible():
+                return "invalid"
+
+        parse_user = await page.evaluate(
+            """
+            () => Boolean(window.Parse && window.Parse.User && window.Parse.User.current && window.Parse.User.current())
+            """
+        )
+        if parse_user:
+            return "success"
+
+        current_user = await page.evaluate(
+            """
+            () => {
+              const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+              if (!key) return null;
+              return localStorage.getItem(key);
+            }
+            """
+        )
+        if current_user:
+            return "success"
+
+        await page.wait_for_timeout(1000)
+
+    return "error"
+
+
 async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     table = _dynamodb_table()
     user_id = payload.get("userId")
@@ -889,20 +1022,25 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             if not relogin_attempted:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
-                    logger.info("Attempting Litchi re-login after login link detected.")
-                    relogin_result = await _run_login_flow(
-                        {
-                            "userId": user_id,
-                            "username": credentials["username"],
-                            "password": credentials["password"],
-                            "requestedAt": _now_iso(),
-                        }
-                    )
-                    if isinstance(relogin_result, dict) and relogin_result.get("status") not in (None, "active"):
-                        return relogin_result
-                    retry_payload = dict(payload)
-                    retry_payload["reloginAttempted"] = True
-                    return await _run_upload_flow(retry_payload)
+                    logger.info("Attempting in-context Litchi re-login after login link detected.")
+                    login_result = await _login_in_page(page, credentials["username"], credentials["password"])
+                    if login_result == "pending_2fa":
+                        _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
+                        return {"status": "pending_2fa", "message": "Two-factor code required"}
+                    if login_result == "invalid":
+                        _mark_error(table, user_id, "Invalid Litchi credentials")
+                        return {"status": "error", "message": "Invalid Litchi credentials"}
+                    if login_result != "success":
+                        _mark_error(table, user_id, "Login failed. Please reconnect.")
+                        return {"status": "error", "message": "Login failed"}
+                    try:
+                        storage_state = await context.storage_state()
+                        _save_storage_state(table, user_id, storage_state)
+                    except Exception as exc:
+                        logger.warning("Failed to capture storage state after re-login: %s", exc)
+                    cookies = await context.cookies()
+                    _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
+                    relogin_attempted = True
             _mark_expired(table, user_id, "Session expired, please reconnect")
             return {"status": "expired", "message": "Session expired"}
 
@@ -1003,20 +1141,68 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             if not relogin_attempted:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
-                    logger.info("Attempting Litchi re-login after save modal login gate.")
-                    relogin_result = await _run_login_flow(
-                        {
-                            "userId": user_id,
-                            "username": credentials["username"],
-                            "password": credentials["password"],
-                            "requestedAt": _now_iso(),
+                    logger.info("Attempting in-context Litchi re-login after save modal login gate.")
+                    login_result = await _login_in_page(page, credentials["username"], credentials["password"])
+                    if login_result == "pending_2fa":
+                        _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
+                        return {"status": "pending_2fa", "message": "Two-factor code required"}
+                    if login_result == "invalid":
+                        _mark_error(table, user_id, "Invalid Litchi credentials")
+                        return {"status": "error", "message": "Invalid Litchi credentials"}
+                    if login_result != "success":
+                        _mark_error(table, user_id, "Login failed. Please reconnect.")
+                        return {"status": "error", "message": "Login failed"}
+                    try:
+                        storage_state = await context.storage_state()
+                        _save_storage_state(table, user_id, storage_state)
+                    except Exception as exc:
+                        logger.warning("Failed to capture storage state after re-login: %s", exc)
+                    cookies = await context.cookies()
+                    _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
+                    relogin_attempted = True
+
+                    missions_menu = page.locator("#dropdownMenuMissions")
+                    if await missions_menu.count() == 0:
+                        missions_menu = page.get_by_role("button", name="MISSIONS")
+                    if await missions_menu.count() > 0:
+                        await _human_click(missions_menu.first, timeout_ms=8000, force_fallback=True)
+                        await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+
+                    save_menu_item = page.get_by_role("menuitem", name="Save...")
+                    if await save_menu_item.count() == 0:
+                        save_menu_item = page.get_by_text("Save...")
+                    if await save_menu_item.count() > 0:
+                        try:
+                            await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
+                        except Exception as exc:
+                            logger.warning("Save menu click failed after re-login, forcing script click: %s", exc)
+                            await save_menu_item.first.evaluate("el => el.click()")
+                        await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
+
+                    await page.evaluate(
+                        """
+                        () => {
+                          const modal = document.querySelector('#downloadalert');
+                          if (!modal) return;
+                          modal.classList.add('show', 'in');
+                          modal.style.display = 'block';
+                          modal.style.visibility = 'visible';
+                          modal.setAttribute('aria-hidden', 'false');
+                          document.body.classList.add('modal-open');
                         }
+                        """
                     )
-                    if isinstance(relogin_result, dict) and relogin_result.get("status") not in (None, "active"):
-                        return relogin_result
-                    retry_payload = dict(payload)
-                    retry_payload["reloginAttempted"] = True
-                    return await _run_upload_flow(retry_payload)
+                    download_modal = page.locator("#downloadalert")
+                    if await download_modal.count() > 0:
+                        await download_modal.first.wait_for(state="visible", timeout=8000)
+                    not_logged_in = page.locator("#save-notloggedin")
+                    if await not_logged_in.count() > 0 and await not_logged_in.first.is_visible():
+                        _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
+                        return {
+                            "status": "error",
+                            "message": "Not logged in to save missions",
+                            "waitSeconds": _jitter_seconds(),
+                        }
             _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
             return {
                 "status": "error",
