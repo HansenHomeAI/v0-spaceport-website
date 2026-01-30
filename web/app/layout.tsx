@@ -1,5 +1,7 @@
 export const metadata = {
   title: 'Spaceport AI',
+  description: 'Transform your drone footage into 3D models with Spaceport AI.',
+  metadataBase: new URL('https://spcprt.com'),
   icons: {
     icon: [
       { url: '/assets/SpaceportIcons/Favicon.png' },
@@ -7,6 +9,28 @@ export const metadata = {
     ],
     shortcut: '/assets/SpaceportIcons/Favicon.png',
     apple: '/assets/SpaceportIcons/Favicon.png',
+  },
+  openGraph: {
+    title: 'Spaceport AI',
+    description: 'Transform your drone footage into 3D models with Spaceport AI.',
+    url: 'https://spcprt.com',
+    siteName: 'Spaceport AI',
+    images: [
+      {
+        url: '/assets/SpaceportIcons/SpaceportSocialIcon.PNG',
+        width: 1200,
+        height: 630,
+        alt: 'Spaceport AI Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Spaceport AI',
+    description: 'Transform your drone footage into 3D models with Spaceport AI.',
+    images: ['/assets/SpaceportIcons/SpaceportSocialIcon.PNG'],
   },
 };
 import './globals.css';
