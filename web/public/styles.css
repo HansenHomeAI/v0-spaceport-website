@@ -170,31 +170,23 @@ html, body {
   opacity: 1;
 }
 
-/* The plus lines */
-.toggle span {
-  position: absolute;
-  display: block;
+/* Arrow icon for toggle */
+.toggle-arrow {
   width: 16px;
-  height: 2.5px;
-  background: #fff;
-  top: 50%;
-  left: 50%;
-  transform-origin: center;
-  transition: transform 0.3s ease;
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
+  height: 16px;
+  display: block;
+  /* Shift rotation point left 2px (towards the flat base of the > arrow) */
+  /* When rotated 90deg down, this base becomes the top, so this shifts the pivot UP visually, which moves the icon DOWN to center it */
+  transform-origin: calc(50% - 2px) 50%;
+  transition: transform 0.5s ease;
+  filter: drop-shadow(0 0px 20px rgba(0, 0, 0, 0.9));
+  /* Point down when closed (rotate 90deg from default right-pointing arrow) */
+  transform: rotate(90deg);
 }
 
-.toggle span:first-child {
-  transform: translate(-50%, -50%) rotate(0deg);
-}
-.toggle span:last-child {
-  transform: translate(-50%, -50%) rotate(90deg);
-}
-.toggle.rotated span:first-child {
-  transform: translate(-50%, -50%) rotate(135deg);
-}
-.toggle.rotated span:last-child {
-  transform: translate(-50%, -50%) rotate(225deg);
+.toggle.rotated .toggle-arrow {
+  /* Rotate 180deg to point up: 90deg (down) + 180deg = 270deg (up) */
+  transform: rotate(270deg);
 }
 
 /* NAV LINKS (small screens) */
