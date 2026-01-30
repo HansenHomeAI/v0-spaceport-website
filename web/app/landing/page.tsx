@@ -54,15 +54,15 @@ export default function Landing(): JSX.Element {
         <div className="stats-grid">
           <div className="stat-box">
             <h1>87%</h1>
-            <p>more views</p>
+            <p>More listing views generated via 3D tours.</p>
           </div>
           <div className="stat-box">
             <h1>31%</h1>
-            <p>faster sales</p>
+            <p>Faster sales achieved with 3D tours.</p>
           </div>
           <div className="stat-box">
-            <h1>5-10x</h1>
-            <p>longer engaging with listing</p>
+            <h1>10x</h1>
+            <p>Higher engagement than standard photos.</p>
           </div>
         </div>
         <p className="stats-source">Sources: Redfin, Matterport & NAR (2024-2025)</p>
