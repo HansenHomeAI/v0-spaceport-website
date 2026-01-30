@@ -43,7 +43,7 @@ export default function FAQ(): JSX.Element {
           fontWeight: 500, // Matched with .section h2
           color: 'white'
         }}>
-          Frequently Asked Questions
+          Common questions.
         </h2>
         
         <div className="faq-list">
