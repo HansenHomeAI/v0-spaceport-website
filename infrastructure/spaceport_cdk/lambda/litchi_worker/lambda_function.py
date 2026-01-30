@@ -1587,12 +1587,13 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return { ok: false, reason: 'parse_unavailable' };
                   }
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3');
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     return { ok: true, count: names.length, found: names.includes(missionName) };
                   } catch (err) {
-                    return { ok: false, error: String(err) };
+                    const error = err && typeof err === 'object' ? JSON.stringify(err) : String(err);
+                    return { ok: false, error };
                   }
                 }
                 """,
