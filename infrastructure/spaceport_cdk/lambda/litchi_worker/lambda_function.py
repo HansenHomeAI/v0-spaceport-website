@@ -201,6 +201,16 @@ def _deserialize_local_storage(ciphertext: str) -> Dict[str, str]:
     return json.loads(payload)
 
 
+def _serialize_session_storage(storage: Dict[str, str], key_id: str) -> str:
+    payload = json.dumps(storage)
+    return _encrypt_text(payload, key_id)
+
+
+def _deserialize_session_storage(ciphertext: str) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext)
+    return json.loads(payload)
+
+
 def _serialize_credentials(credentials: Dict[str, str], key_id: str) -> str:
     payload = json.dumps(credentials)
     return _encrypt_text(payload, key_id)
@@ -252,6 +262,14 @@ def _load_local_storage(table, user_id: str) -> Optional[Dict[str, str]]:
     return _deserialize_local_storage(encrypted)
 
 
+def _load_session_storage(table, user_id: str) -> Optional[Dict[str, str]]:
+    record = _session_record(table, user_id)
+    encrypted = record.get("sessionStorage")
+    if not encrypted:
+        return None
+    return _deserialize_session_storage(encrypted)
+
+
 def _load_credentials(table, user_id: str) -> Optional[Dict[str, str]]:
     record = _session_record(table, user_id)
     encrypted = record.get("credentials")
@@ -293,12 +311,15 @@ def _save_cookies(
     cookies: List[Dict[str, Any]],
     status: str = "active",
     local_storage: Optional[Dict[str, str]] = None,
+    session_storage: Optional[Dict[str, str]] = None,
 ) -> None:
     record = _session_record(table, user_id)
     key_id = _require_kms_key()
     record["cookies"] = _serialize_cookies(cookies, key_id)
     if local_storage is not None:
         record["localStorage"] = _serialize_local_storage(local_storage, key_id)
+    if session_storage is not None:
+        record["sessionStorage"] = _serialize_session_storage(session_storage, key_id)
     record["status"] = status
     record["lastUsed"] = _now_iso()
     record["updatedAt"] = _now_iso()
@@ -460,6 +481,32 @@ async def _login_in_page(page, username: str, password: str, two_factor_code: Op
         )
         if parse_user:
             return "success"
+
+        became_user = False
+        try:
+            became_user = await page.evaluate(
+                """
+                async () => {
+                  if (!window.Parse || !window.Parse.User || !window.Parse.User.become) return false;
+                  const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                  if (!key) return false;
+                  try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) return false;
+                    const value = JSON.parse(raw);
+                    if (!value || !value.sessionToken) return false;
+                    await window.Parse.User.become(value.sessionToken);
+                    return true;
+                  } catch (err) {
+                    return false;
+                  }
+                }
+                """
+            )
+        except Exception:
+            became_user = False
+        if became_user:
+            logger.info("Attempted Parse.User.become from localStorage session token.")
 
         current_user = await page.evaluate(
             """
@@ -805,23 +852,44 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             () => {
               const entries = {};
               for (const key of Object.keys(localStorage)) {
-                if (key.includes('/currentUser') || key.startsWith('Parse/')) {
-                  const value = localStorage.getItem(key);
-                  if (value) entries[key] = value;
-                }
+                const value = localStorage.getItem(key);
+                if (value) entries[key] = value;
               }
               return entries;
             }
             """
         )
-        logger.info("Captured local storage keys: %s", list(local_storage.keys()))
+        session_storage = await page.evaluate(
+            """
+            () => {
+              const entries = {};
+              for (const key of Object.keys(sessionStorage)) {
+                const value = sessionStorage.getItem(key);
+                if (value) entries[key] = value;
+              }
+              return entries;
+            }
+            """
+        )
+        logger.info(
+            "Captured local/session storage keys: local=%s session=%s",
+            list(local_storage.keys()),
+            list(session_storage.keys()),
+        )
         try:
             storage_state = await context.storage_state()
             _save_storage_state(table, user_id, storage_state)
         except Exception as exc:
             logger.warning("Failed to capture storage state: %s", exc)
         cookies = await context.cookies()
-        _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
+        _save_cookies(
+            table,
+            user_id,
+            cookies,
+            status="active",
+            local_storage=local_storage,
+            session_storage=session_storage,
+        )
         _update_status(table, user_id, status="active", message="Litchi session connected")
         return {"status": "active", "message": "Connected"}
     except Exception as exc:
@@ -912,6 +980,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     cookies = _load_cookies(table, user_id)
     local_storage = _load_local_storage(table, user_id)
+    session_storage = _load_session_storage(table, user_id)
     storage_state = _load_storage_state(table, user_id)
     if not cookies:
         _mark_expired(table, user_id, "Session cookies missing")
@@ -939,20 +1008,27 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     try:
         if not storage_state:
             await context.add_cookies(cookies)
-            if local_storage:
-                logger.info("Restoring local storage keys: %s", list(local_storage.keys()))
-            if local_storage:
-                await context.add_init_script(
-                    f"""
-                    () => {{
-                      const entries = {json.dumps(local_storage)};
-                      for (const [key, value] of Object.entries(entries)) {{
-                        localStorage.setItem(key, value);
-                      }}
-                      window.__litchiLocalStorageApplied = Object.keys(entries).length;
-                    }}
-                    """
-                )
+        if local_storage:
+            logger.info("Restoring local storage keys: %s", list(local_storage.keys()))
+        if session_storage:
+            logger.info("Restoring session storage keys: %s", list(session_storage.keys()))
+        if local_storage or session_storage:
+            await context.add_init_script(
+                f"""
+                () => {{
+                  const localEntries = {json.dumps(local_storage or {})};
+                  for (const [key, value] of Object.entries(localEntries)) {{
+                    localStorage.setItem(key, value);
+                  }}
+                  const sessionEntries = {json.dumps(session_storage or {})};
+                  for (const [key, value] of Object.entries(sessionEntries)) {{
+                    sessionStorage.setItem(key, value);
+                  }}
+                  window.__litchiLocalStorageApplied = Object.keys(localEntries).length;
+                  window.__litchiSessionStorageApplied = Object.keys(sessionEntries).length;
+                }}
+                """
+            )
         page = await context.new_page()
         await _apply_stealth(page)
         save_responses: List[str] = []
@@ -964,9 +1040,14 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         )
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
-        if local_storage and not storage_state:
+        if (local_storage or session_storage) and not storage_state:
             applied_count = await page.evaluate("() => window.__litchiLocalStorageApplied || 0")
-            logger.info("Init script localStorage applied count: %s", applied_count)
+            applied_session = await page.evaluate("() => window.__litchiSessionStorageApplied || 0")
+            logger.info(
+                "Init script storage applied counts: local=%s session=%s",
+                applied_count,
+                applied_session,
+            )
 
         response_status = response.status if response else None
         if response_status == 429:
@@ -975,6 +1056,32 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             page_title = await page.title()
             logger.warning("Rate limit detection triggered url=%s title=%s status=%s", page.url, page_title, response_status)
             raise RateLimitedError("Rate limited by Litchi. Retrying shortly.")
+
+        became_user = False
+        try:
+            became_user = await page.evaluate(
+                """
+                async () => {
+                  if (!window.Parse || !window.Parse.User || !window.Parse.User.become) return false;
+                  const key = Object.keys(localStorage).find((item) => item.includes('/currentUser'));
+                  if (!key) return false;
+                  try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) return false;
+                    const value = JSON.parse(raw);
+                    if (!value || !value.sessionToken) return false;
+                    await window.Parse.User.become(value.sessionToken);
+                    return true;
+                  } catch (err) {
+                    return false;
+                  }
+                }
+                """
+            )
+        except Exception:
+            became_user = False
+        if became_user:
+            logger.info("Attempted Parse.User.become from stored session token after restore.")
 
         current_user = await page.evaluate(
             """
@@ -1057,13 +1164,44 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     if login_result != "success":
                         _mark_error(table, user_id, "Login failed. Please reconnect.")
                         return {"status": "error", "message": "Login failed"}
+                    local_storage = await page.evaluate(
+                        """
+                        () => {
+                          const entries = {};
+                          for (const key of Object.keys(localStorage)) {
+                            const value = localStorage.getItem(key);
+                            if (value) entries[key] = value;
+                          }
+                          return entries;
+                        }
+                        """
+                    )
+                    session_storage = await page.evaluate(
+                        """
+                        () => {
+                          const entries = {};
+                          for (const key of Object.keys(sessionStorage)) {
+                            const value = sessionStorage.getItem(key);
+                            if (value) entries[key] = value;
+                          }
+                          return entries;
+                        }
+                        """
+                    )
                     try:
                         storage_state = await context.storage_state()
                         _save_storage_state(table, user_id, storage_state)
                     except Exception as exc:
                         logger.warning("Failed to capture storage state after re-login: %s", exc)
                     cookies = await context.cookies()
-                    _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
+                    _save_cookies(
+                        table,
+                        user_id,
+                        cookies,
+                        status="active",
+                        local_storage=local_storage,
+                        session_storage=session_storage,
+                    )
                     relogin_attempted = True
             _mark_expired(table, user_id, "Session expired, please reconnect")
             return {"status": "expired", "message": "Session expired"}
@@ -1185,13 +1323,44 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     if login_result != "success":
                         _mark_error(table, user_id, "Login failed. Please reconnect.")
                         return {"status": "error", "message": "Login failed"}
+                    local_storage = await page.evaluate(
+                        """
+                        () => {
+                          const entries = {};
+                          for (const key of Object.keys(localStorage)) {
+                            const value = localStorage.getItem(key);
+                            if (value) entries[key] = value;
+                          }
+                          return entries;
+                        }
+                        """
+                    )
+                    session_storage = await page.evaluate(
+                        """
+                        () => {
+                          const entries = {};
+                          for (const key of Object.keys(sessionStorage)) {
+                            const value = sessionStorage.getItem(key);
+                            if (value) entries[key] = value;
+                          }
+                          return entries;
+                        }
+                        """
+                    )
                     try:
                         storage_state = await context.storage_state()
                         _save_storage_state(table, user_id, storage_state)
                     except Exception as exc:
                         logger.warning("Failed to capture storage state after re-login: %s", exc)
                     cookies = await context.cookies()
-                    _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
+                    _save_cookies(
+                        table,
+                        user_id,
+                        cookies,
+                        status="active",
+                        local_storage=local_storage,
+                        session_storage=session_storage,
+                    )
                     relogin_attempted = True
 
                     missions_menu = page.locator("#dropdownMenuMissions")
