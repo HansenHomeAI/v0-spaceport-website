@@ -1259,6 +1259,21 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     logger.warning("Import button click failed, forcing script click: %s", exc)
                     await import_button.first.evaluate("el => el.click()")
             await page.wait_for_timeout(int(_human_delay(0.9, 1.8) * 1000))
+            await page.evaluate(
+                """
+                () => {
+                  const modal = document.querySelector('#importmodal');
+                  if (!modal) return;
+                  modal.classList.remove('show', 'in');
+                  modal.style.display = 'none';
+                  modal.style.visibility = 'hidden';
+                  modal.setAttribute('aria-hidden', 'true');
+                  document.body.classList.remove('modal-open');
+                  const backdrop = document.querySelector('.modal-backdrop');
+                  if (backdrop) backdrop.remove();
+                }
+                """
+            )
 
         name_input = page.locator("input[name='missionName'], input#missionName, input#mission-name")
         if await name_input.count() > 0:
