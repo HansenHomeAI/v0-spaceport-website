@@ -1032,12 +1032,12 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         page = await context.new_page()
         await _apply_stealth(page)
         save_responses: List[str] = []
-        page.on(
-            "response",
-            lambda response: save_responses.append(f"{response.status} {response.url}")
-            if response.request.method == "POST" and "parse/classes/Mission" in response.url
-            else None,
-        )
+        save_statuses: List[int] = []
+        def _capture_save_response(response):
+            if response.request.method == "POST" and "parse/classes/Mission" in response.url:
+                save_responses.append(f"{response.status} {response.url}")
+                save_statuses.append(response.status)
+        page.on("response", _capture_save_response)
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
         if (local_storage or session_storage) and not storage_state:
@@ -1311,11 +1311,13 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             except Exception:
                 logger.warning("Unable to inspect save modal buttons")
 
+        login_gate_present = False
         not_logged_in = page.locator("#save-notloggedin")
         login_gate_button = page.locator("#downloadalert button", has_text="Log in")
         if (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
             await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
         ):
+            login_gate_present = True
             if not relogin_attempted:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
@@ -1412,21 +1414,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         await download_modal.first.wait_for(state="visible", timeout=8000)
                     not_logged_in = page.locator("#save-notloggedin")
                     login_gate_button = page.locator("#downloadalert button", has_text="Log in")
-                    if (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
+                    login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
                         await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
-                    ):
-                        _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
-                        return {
-                            "status": "error",
-                            "message": "Not logged in to save missions",
-                            "waitSeconds": _jitter_seconds(),
-                        }
-            _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
-            return {
-                "status": "error",
-                "message": "Not logged in to save missions",
-                "waitSeconds": _jitter_seconds(),
-            }
+                    )
 
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
@@ -1439,12 +1429,35 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             save_button = page.get_by_role("button", name="Save")
         if await save_button.count() > 0:
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
+            try:
+                response = await page.wait_for_response(
+                    lambda resp: resp.request.method == "POST" and "parse/classes/Mission" in resp.url,
+                    timeout=15000,
+                )
+                save_statuses.append(response.status)
+            except PlaywrightTimeoutError:
+                pass
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
         if save_responses:
             logger.info("Mission save responses: %s", " | ".join(save_responses[-5:]))
         else:
             logger.warning("No Mission save responses captured after save click.")
+        save_success = any(200 <= status < 300 for status in save_statuses)
+        if login_gate_present and not save_success:
+            _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
+            return {
+                "status": "error",
+                "message": "Not logged in to save missions",
+                "waitSeconds": _jitter_seconds(),
+            }
+        if not save_success:
+            _mark_error(table, user_id, "Litchi mission save failed")
+            return {
+                "status": "error",
+                "message": "Mission save failed",
+                "waitSeconds": _jitter_seconds(),
+            }
         completed_progress = None
         if isinstance(mission_index, int) and mission_total:
             current = mission_index + 1
