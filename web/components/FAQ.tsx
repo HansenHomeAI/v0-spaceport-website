@@ -29,7 +29,7 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: "How long does processing take?",
-    answer: "It takes up to 3 days to fully train your 3D space (a custom AI model). We are actively working to get that time down to 3 hours or less."
+    answer: "It takes up to 3 days to fully train your 3D space (a custom AI model)."
   }
 ];
 
