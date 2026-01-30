@@ -122,15 +122,13 @@ export default function Create(): JSX.Element {
   const [modelDeliveryOpen, setModelDeliveryOpen] = useState(false);
   
   // Subscription hook
-  const { 
-    subscription, 
-    loading: subscriptionLoading, 
+  const {
+    subscription,
+    loading: subscriptionLoading,
     error: subscriptionError,
     isSubscriptionActive,
     isOnTrial,
     getTrialDaysRemaining,
-    canCreateModel,
-    getPlanFeatures
   } = useSubscription();
 
   const {
@@ -262,7 +260,7 @@ export default function Create(): JSX.Element {
                           {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
                         </button>
                         <span className="model-count">
-                          {projects.length}/{subscription?.planFeatures?.maxModels || getPlanFeatures().maxModels} active models
+                          {projects.length} active models
                         </span>
                       </div>
                     </div>
@@ -277,16 +275,11 @@ export default function Create(): JSX.Element {
             </div>
             
             {/* New Project Button */}
-            <div 
-              className={`project-box new-project-card ${!canCreateModel(projects.length) ? 'disabled' : ''}`} 
-              onClick={canCreateModel(projects.length) ? () => setModalOpen(true) : undefined}
+            <div
+              className="project-box new-project-card"
+              onClick={() => setModalOpen(true)}
             >
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
-              {!canCreateModel(projects.length) && (
-                <p className="upgrade-prompt">
-                  Upgrade your plan to create more models
-                </p>
-              )}
             </div>
             
             {/* Loading Spinner */}
@@ -372,6 +365,8 @@ type ProjectCardProps = {
 function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
   const [copyMessage, setCopyMessage] = useState('');
+  const [paymentBusy, setPaymentBusy] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const viewTrackedRef = useRef(false);
   const unavailableTrackedRef = useRef(false);
@@ -383,8 +378,13 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
     const rawStatus = project?.status;
     return typeof rawStatus === 'string' ? rawStatus.toLowerCase() : '';
   }, [project?.status]);
+  const normalizedPaymentStatus = useMemo(() => {
+    const rawStatus = project?.paymentStatus;
+    return typeof rawStatus === 'string' ? rawStatus.toLowerCase() : '';
+  }, [project?.paymentStatus]);
 
   const isDelivered = normalizedStatus === 'delivered';
+  const showPaymentLink = Boolean(normalizedPaymentStatus && normalizedPaymentStatus !== 'paid');
 
   const progressValue = useMemo(() => {
     const rawProgress = project?.progress;
@@ -475,6 +475,39 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
     });
   }, [modelLink, normalizedStatus, project?.projectId]);
 
+  const handlePayment = useCallback(async () => {
+    if (!project?.projectId || paymentBusy) return;
+    setPaymentBusy(true);
+    setPaymentError('');
+    try {
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const apiBase = (process.env.NEXT_PUBLIC_PROJECTS_API_URL || '').replace(/\/$/, '');
+      if (!apiBase) {
+        throw new Error('Projects API is not configured');
+      }
+      const res = await fetch(`${apiBase}/${project.projectId}/payment-session`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'Unable to start payment');
+      }
+      const paymentUrl = data?.paymentLink;
+      if (!paymentUrl) {
+        throw new Error('Payment link unavailable');
+      }
+      window.location.href = paymentUrl;
+    } catch (error: any) {
+      setPaymentError(error?.message || 'Unable to start payment');
+    } finally {
+      setPaymentBusy(false);
+    }
+  }, [paymentBusy, project?.projectId]);
+
   const handleEdit = useCallback(() => {
     onEdit(project);
   }, [onEdit, project]);
@@ -543,6 +576,28 @@ function ProjectCard({ project, onEdit }: ProjectCardProps): JSX.Element {
           <div className={`model-link-status ${isDelivered ? 'pending' : 'pending'}`} role="status">
             {getGuidanceText()}
           </div>
+        )}
+        {showPaymentLink && (
+          <>
+            <div className="payment-link-pill" role="group" aria-label="Payment required">
+              <span className="payment-link-text">Payment pending</span>
+              <div className="payment-link-actions">
+                <button
+                  type="button"
+                  className="payment-link-button"
+                  onClick={handlePayment}
+                  disabled={paymentBusy}
+                >
+                  {paymentBusy ? 'Opening checkout...' : 'Complete payment'}
+                </button>
+              </div>
+            </div>
+            {paymentError && (
+              <span className="payment-link-feedback" role="status">
+                {paymentError}
+              </span>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+// rebuild
 export default function Header(): JSX.Element {
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
@@ -26,8 +27,11 @@ export default function Header(): JSX.Element {
         </div>
 
         <div className={`toggle${expanded ? ' rotated' : ''}`} onClick={() => setExpanded(v => !v)}>
-          <span />
-          <span />
+          <img 
+            src="/assets/SpaceportIcons/Arrow.svg" 
+            alt={expanded ? 'Close menu' : 'Open menu'}
+            className="toggle-arrow"
+          />
         </div>
       </div>
 

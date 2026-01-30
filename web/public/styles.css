@@ -170,31 +170,20 @@ html, body {
   opacity: 1;
 }
 
-/* The plus lines */
-.toggle span {
-  position: absolute;
-  display: block;
+/* Arrow icon for toggle */
+.toggle-arrow {
   width: 16px;
-  height: 2.5px;
-  background: #fff;
-  top: 50%;
-  left: 50%;
+  height: 16px;
+  display: block;
   transform-origin: center;
-  transition: transform 0.3s ease;
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.9);
+  transition: transform 0.25s ease;
+  filter: drop-shadow(0 0px 20px rgba(0, 0, 0, 0.9));
+  /* Point down when closed (rotate 90deg from default right-pointing arrow) */
+  transform: rotate(90deg);
 }
 
-.toggle span:first-child {
-  transform: translate(-50%, -50%) rotate(0deg);
-}
-.toggle span:last-child {
-  transform: translate(-50%, -50%) rotate(90deg);
-}
-.toggle.rotated span:first-child {
-  transform: translate(-50%, -50%) rotate(135deg);
-}
-.toggle.rotated span:last-child {
-  transform: translate(-50%, -50%) rotate(225deg);
+.toggle.rotated .toggle-arrow {
+  transform: rotate(270deg); /* 180deg from down (90deg) to up */
 }
 
 /* NAV LINKS (small screens) */
@@ -216,7 +205,7 @@ html, body {
 .nav-links a {
   color: #fff;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 1.2rem;
   cursor: pointer;
   position: relative;
@@ -248,7 +237,7 @@ html, body {
 .nav-links-desktop a {
   color: #fff;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 1.2rem;
   cursor: pointer;
   position: relative;
@@ -294,13 +283,13 @@ html, body {
 }
 .landing-content {
   position: absolute;
-  bottom: 100px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 750px;
   padding: 0 5px;
-  pointer-events: auto;
+  pointer-events: none; /* Changed from auto to none so text doesn't block iframe */
   z-index: 2;
 }
 .landing-content h1,
@@ -309,24 +298,30 @@ html, body {
   text-align: center;
 }
 .landing-content h1 {
-  font-weight: 700;
-  margin-bottom: 1rem;
-  font-size: clamp(2rem, 8vw, 2.9rem) !important;
+  font-weight: 400;
+  margin-bottom: 6px;
+  font-size: clamp(2rem, 8vw, 2.4rem) !important;
   max-width: 100%;
+  letter-spacing: 0.15px;
 }
-.landing-content p {
-  line-height: 1.6;
-  font-weight: 500;
-  color: #A6A6A6;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+#landing .landing-content p {
+  line-height: 24px;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  letter-spacing: 0.15px;
 }
 
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
-  background: #fff;
-  color: #000;
+  pointer-events: auto; /* Re-enable pointer events for buttons */
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  color: #fff;
+  border: none;
   text-decoration: none;
   padding: 12px 21.5px;
   border-radius: 999px;
@@ -336,6 +331,30 @@ html, body {
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
+  font-weight: 400;
+  font-size: 1.1rem;
+  overflow: hidden;
+  letter-spacing: 0.15px;
+}
+.cta-button::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
 }
 .cta-button::after {
   content: '';
@@ -348,8 +367,9 @@ html, body {
   height: 14px;
   background: url('/assets/SpaceportIcons/Arrow.svg') no-repeat center;
   background-size: contain;
-  filter: brightness(0);
+  filter: brightness(0) invert(1);
   transition: opacity 0.3s ease;
+  z-index: 1;
 }
 .cta-button:hover {
   padding-right: 40px;
@@ -837,7 +857,7 @@ footer {
 .waitlist-header h1 {
   font-size: 1.5rem;
   font-weight: 500;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
   color: #fff;
 }
 
@@ -1542,6 +1562,66 @@ footer {
   color: rgba(255, 119, 119, 0.9);
 }
 
+.payment-link-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  flex-wrap: wrap;
+}
+
+.payment-link-text {
+  flex: 1;
+  min-width: 140px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+}
+
+.payment-link-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.payment-link-button:hover,
+.payment-link-button:focus {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.45);
+  outline: none;
+}
+
+.payment-link-button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.payment-link-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.payment-link-feedback {
+  font-size: 0.8rem;
+  color: rgba(255, 119, 119, 0.9);
+}
+
 .model-link-status {
   padding: 10px 16px;
   border-radius: 999px;
@@ -1572,6 +1652,19 @@ footer {
   }
 
   .model-link-button {
+    width: auto;
+  }
+
+  .payment-link-pill {
+    padding: 10px 14px;
+  }
+
+  .payment-link-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .payment-link-button {
     width: auto;
   }
 }
@@ -1706,15 +1799,74 @@ footer {
   margin-right: 0;
 }
 
-/* Invisible overlay to prevent accidental iframe interactions */
+/* Visual overlay gradient (no pointer events blocking) */
+@property --gradient-stop-1 {
+  syntax: '<percentage>';
+  initial-value: 11%;
+  inherits: false;
+}
+@property --gradient-stop-2 {
+  syntax: '<percentage>';
+  initial-value: 62%;
+  inherits: false;
+}
+
 #iframe-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  background: transparent;
-  pointer-events: auto;
+  height: 100%;
+  
+  /* Use CSS variables for stops to enable interpolation */
+  --gradient-stop-1: 11%;
+  --gradient-stop-2: 62%;
+  
+  background: linear-gradient(
+    to bottom, 
+    rgba(0,0,0,0) var(--gradient-stop-1), 
+    rgba(0,0,0,0.8) var(--gradient-stop-2), 
+    rgba(0,0,0,1) 100%
+  );
+  
+  /* Transition the variables */
+  transition: --gradient-stop-1 0.5s ease, --gradient-stop-2 0.5s ease;
+  
+  pointer-events: none; /* Visual only - allows iframe interaction above controls */
   z-index: 1;
+  will-change: --gradient-stop-1, --gradient-stop-2;
+}
+
+#iframe-overlay.carousel-active {
+  --gradient-stop-1: 65%;
+  --gradient-stop-2: 88%;
+}
+
+/* Block iframe interaction below the controls - always active to limit interaction to area above controls */
+#landing-bottom-block {
+  position: absolute;
+  top: 358px; /* Dynamically updated via JS to align with controls */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: auto; /* Always blocks interactions below controls */
+  transition: pointer-events 0s;
+  border-top: none;
+}
+
+/* Trigger carousel activation when interacting above controls */
+#landing-top-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+#landing-top-trigger.active {
+  pointer-events: auto;
 }
 
 @media (hover: none) {
@@ -3004,7 +3156,7 @@ body::before {
 
 /* Icon color filters for CTA button (white background, black text) */
 .cta-button .symbol-3d {
-  filter: brightness(0); /* Black icons on white background */
+  filter: brightness(0) invert(1); /* White icons on dark background */
 }
 
 /* Icon color filters for CTA2 buttons (white border, white text) */
@@ -6977,7 +7129,62 @@ input.text-fade-right,
   color: rgba(255, 255, 255, 0.7);
 }
 
-
+/* Carousel Controls - matches .cta-button styling */
+.carousel-controls {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  padding: 12px 21.5px;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  font-weight: 400;
+  font-size: 1.1rem;
+  overflow: hidden;
+  letter-spacing: 0.15px;
+  min-width: 170px;
+}
+.carousel-controls::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 41%,
+    rgba(255,255,255,0) 57%,
+    rgba(255,255,255,0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.4px;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Disable hover arrow effect for carousel controls */
+.carousel-controls.cta-button::after {
+  display: none !important;
+}
+.carousel-controls.cta-button:hover {
+  padding-right: 21.5px !important;
+}
+.carousel-controls.cta-button:hover::after {
+  opacity: 0 !important;
+  display: none !important;
+}
 
 /* Litchi Mission Control */
 .litchi-card {
@@ -7230,4 +7437,65 @@ input.text-fade-right,
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.carousel-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.carousel-arrow:hover {
+  opacity: 1;
+}
+
+.carousel-arrow img {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) invert(1);
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  margin: 0 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.dot {
+  width: 6.8px;
+  height: 6.8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dot.active {
+  background: #fff;
+  transform: scale(1.2);
+}
+
+.carousel-control-container {
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

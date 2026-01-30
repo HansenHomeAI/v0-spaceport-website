@@ -64,10 +64,10 @@ export function useModelDeliveryAdmin() {
     let base = configuredBase;
     if (!base && typeof window !== 'undefined') {
       const host = window.location.hostname;
-      const isProductionHost = host.endsWith('spcprt.com');
-      base = isProductionHost
-        ? 'https://rimocf046k.execute-api.us-west-2.amazonaws.com/prod'
-        : 'https://tbzxbstibh.execute-api.us-west-2.amazonaws.com/prod';
+      console.warn(
+        '[model-delivery] missing NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL; disabling admin endpoints',
+        { host }
+      );
     }
 
     if (typeof window !== 'undefined') {

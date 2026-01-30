@@ -66,6 +66,7 @@ jobs:
             if [ -n "${{ secrets.LITCHI_API_URL_PROD }}" ]; then
               echo "NEXT_PUBLIC_LITCHI_API_URL=${{ secrets.LITCHI_API_URL_PROD }}" >> .env
             fi
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=${{ secrets.MODEL_DELIVERY_ADMIN_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PROD }}" >> .env
@@ -89,6 +90,7 @@ jobs:
             if [ -n "${{ secrets.LITCHI_API_URL_PREVIEW }}" ]; then
               echo "NEXT_PUBLIC_LITCHI_API_URL=${{ secrets.LITCHI_API_URL_PREVIEW }}" >> .env
             fi
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=${{ secrets.MODEL_DELIVERY_ADMIN_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PREVIEW }}" >> .env

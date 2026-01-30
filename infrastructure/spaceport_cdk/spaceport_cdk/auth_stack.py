@@ -14,6 +14,8 @@ from aws_cdk import (
     aws_kms as kms,
     aws_stepfunctions as sfn,
     aws_stepfunctions_tasks as sfn_tasks,
+    aws_events as events,
+    aws_events_targets as targets,
 )
 from constructs import Construct
 import os
@@ -147,12 +149,31 @@ class AuthStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "lambda", "projects")
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "projects"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
             ),
             timeout=Duration.seconds(30),
             memory_size=256,
             environment={
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
+                "STRIPE_SECRET_KEY": os.environ.get(
+                    f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}",
+                    os.environ.get("STRIPE_SECRET_KEY", ""),
+                ),
+                "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
+                "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
+                "R2_ENDPOINT": os.environ.get(f"R2_ENDPOINT_{suffix.upper()}", os.environ.get("R2_ENDPOINT", "")),
+                "R2_ACCESS_KEY_ID": os.environ.get(f"R2_ACCESS_KEY_ID_{suffix.upper()}", os.environ.get("R2_ACCESS_KEY_ID", "")),
+                "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
+                "R2_BUCKET_NAME": os.environ.get(f"R2_BUCKET_NAME_{suffix.upper()}", os.environ.get("R2_BUCKET_NAME", "spaces-viewers")),
+                "R2_REGION": os.environ.get(f"R2_REGION_{suffix.upper()}", os.environ.get("R2_REGION", "auto")),
             },
         )
         # Allow the Lambda to read/write from the Projects table
@@ -247,6 +268,13 @@ class AuthStack(Stack):
             authorization_type=apigw.AuthorizationType.COGNITO,
             authorizer=projects_authorizer
         )
+        proj_payment_session = proj_id.add_resource("payment-session")
+        proj_payment_session.add_method(
+            "POST",
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
 
         # Add Gateway Responses to handle CORS for error responses
         projects_api.add_gateway_response(
@@ -306,6 +334,7 @@ class AuthStack(Stack):
             memory_size=512,
             environment={
                 "USERS_TABLE": users_table.table_name,
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}", ""),
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
@@ -319,10 +348,16 @@ class AuthStack(Stack):
                 "REFERRAL_DURATION_MONTHS": os.environ.get("REFERRAL_DURATION_MONTHS", "6"),
                 "EMPLOYEE_USER_ID": os.environ.get("EMPLOYEE_USER_ID", ""),
                 "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
+                "R2_ENDPOINT": os.environ.get(f"R2_ENDPOINT_{suffix.upper()}", os.environ.get("R2_ENDPOINT", "")),
+                "R2_ACCESS_KEY_ID": os.environ.get(f"R2_ACCESS_KEY_ID_{suffix.upper()}", os.environ.get("R2_ACCESS_KEY_ID", "")),
+                "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
+                "R2_BUCKET_NAME": os.environ.get(f"R2_BUCKET_NAME_{suffix.upper()}", os.environ.get("R2_BUCKET_NAME", "spaces-viewers")),
+                "R2_REGION": os.environ.get(f"R2_REGION_{suffix.upper()}", os.environ.get("R2_REGION", "auto")),
             },
             log_retention=logs.RetentionDays.ONE_MONTH,
         )
         users_table.grant_read_write_data(subscription_lambda)
+        projects_table.grant_read_write_data(subscription_lambda)
 
         # Add Cognito permissions for updating user attributes
         subscription_lambda.add_to_role_policy(
@@ -655,6 +690,10 @@ class AuthStack(Stack):
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+                "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}", ""),
+                "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
+                "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
+                "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
             },
         )
 
@@ -706,6 +745,12 @@ class AuthStack(Stack):
             apigw.LambdaIntegration(model_delivery_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,
             authorizer=model_delivery_authorizer,
+        )
+
+        payment_link_resource = model_delivery_api.root.add_resource("payment-link")
+        payment_link_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(model_delivery_lambda),
         )
 
         for response_type, label in (
@@ -832,6 +877,7 @@ class AuthStack(Stack):
                 "missionIndex.$": "$$.Map.Item.Index",
                 "missionTotal.$": "$.totalMissions",
             },
+            max_concurrency=1,
         )
         litchi_map.iterator(worker_task.next(jitter_wait))
 
@@ -959,6 +1005,48 @@ class AuthStack(Stack):
         self.litchi_api_lambda = litchi_api_lambda
         self.litchi_worker_lambda = litchi_worker_lambda
         self.litchi_state_machine = litchi_state_machine
+        # ========== MODEL PAYMENT ENFORCEMENT ==========
+        enforce_model_payments_lambda = lambda_.Function(
+            self, "Spaceport-EnforceModelPaymentsFunction",
+            function_name=f"Spaceport-EnforceModelPayments-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "enforce_model_payments"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_11.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            timeout=Duration.seconds(60),
+            memory_size=256,
+            environment={
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
+                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
+                "R2_ENDPOINT": os.environ.get(f"R2_ENDPOINT_{suffix.upper()}", os.environ.get("R2_ENDPOINT", "")),
+                "R2_ACCESS_KEY_ID": os.environ.get(f"R2_ACCESS_KEY_ID_{suffix.upper()}", os.environ.get("R2_ACCESS_KEY_ID", "")),
+                "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
+                "R2_BUCKET_NAME": os.environ.get(f"R2_BUCKET_NAME_{suffix.upper()}", os.environ.get("R2_BUCKET_NAME", "spaces-viewers")),
+                "R2_REGION": os.environ.get(f"R2_REGION_{suffix.upper()}", os.environ.get("R2_REGION", "auto")),
+            },
+            log_retention=logs.RetentionDays.ONE_WEEK,
+        )
+
+        projects_table.grant_read_write_data(enforce_model_payments_lambda)
+
+        enforce_model_payments_schedule = events.Rule(
+            self,
+            "EnforceModelPaymentsSchedule",
+            schedule=events.Schedule.rate(Duration.days(1)),
+        )
+        enforce_model_payments_schedule.add_target(
+            targets.LambdaFunction(enforce_model_payments_lambda)
+        )
+
+        self.enforce_model_payments_lambda = enforce_model_payments_lambda
 
         # ========== PASSWORD RESET SYSTEM ==========
         # Create DynamoDB table for password reset codes
