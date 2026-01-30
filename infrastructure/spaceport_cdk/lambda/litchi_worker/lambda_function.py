@@ -1328,7 +1328,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 """
                 () => {
                   const keys = Object.keys(window).filter((key) => key.toLowerCase().includes('mission'));
-                  return keys.slice(0, 20).map((key) => {
+                  const details = keys.slice(0, 20).map((key) => {
                     const value = window[key];
                     return {
                       key,
@@ -1337,11 +1337,21 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                       hasToJson: value && typeof value.toJSON === 'function',
                     };
                   });
+                  const store = window.store || window.__store__ || window.__STORE__;
+                  let storeKeys = [];
+                  if (store && typeof store.getState === 'function') {
+                    try {
+                      const state = store.getState();
+                      storeKeys = state && typeof state === 'object' ? Object.keys(state).slice(0, 20) : [];
+                    } catch (err) {
+                      storeKeys = ['<error reading store>'];
+                    }
+                  }
+                  return { details, storeKeys };
                 }
                 """
             )
-            if mission_context:
-                logger.info("Mission context keys: %s", mission_context)
+            logger.info("Mission context keys: %s", mission_context)
         except Exception:
             logger.warning("Unable to inspect mission context keys.")
 
