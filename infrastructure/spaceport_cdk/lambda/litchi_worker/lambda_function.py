@@ -1582,6 +1582,27 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     "el => ({disabled: el.disabled, ariaDisabled: el.getAttribute('aria-disabled'), className: el.className})"
                 )
                 logger.info("Save button state: %s", save_state)
+                save_details = await page.evaluate(
+                    """
+                    () => {
+                      const btn = document.querySelector('#downloadalert #downloadbtn');
+                      if (!btn) return null;
+                      const onclick = btn.getAttribute('onclick');
+                      const data = {};
+                      for (const attr of Array.from(btn.attributes)) {
+                        if (attr.name.startsWith('data-')) data[attr.name] = attr.value;
+                      }
+                      return {
+                        id: btn.id,
+                        text: (btn.textContent || '').trim(),
+                        onclick: onclick ? onclick.slice(0, 200) : null,
+                        data,
+                      };
+                    }
+                    """
+                )
+                if save_details:
+                    logger.info("Save button details: %s", save_details)
             except Exception:
                 logger.warning("Unable to inspect save button state.")
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
@@ -1612,10 +1633,21 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return { ok: false, reason: 'parse_unavailable' };
                   }
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200 });
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
-                    return { ok: true, count: names.length, found: names.includes(missionName) };
+                    if (names.length) {
+                      return { ok: true, count: names.length, found: names.includes(missionName) };
+                    }
+                    const tryQuery = async (className) => {
+                      const query = new window.Parse.Query(className);
+                      query.limit(50);
+                      query.descending('updatedAt');
+                      const results = await query.find();
+                      return results.map((item) => item.get('name')).filter(Boolean);
+                    };
+                    const queryNames = await tryQuery('Mission').catch(() => tryQuery('MissionV3'));
+                    return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query' };
                   } catch (err) {
                     const error =
                       err && typeof err === 'object'
