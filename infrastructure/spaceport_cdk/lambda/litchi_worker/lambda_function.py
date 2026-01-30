@@ -1461,14 +1461,6 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             save_button = page.get_by_role("button", name="Save")
         if await save_button.count() > 0:
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
-            try:
-                response = await page.wait_for_response(
-                    lambda resp: resp.request.method == "POST" and "parse/classes/Mission" in resp.url,
-                    timeout=15000,
-                )
-                save_statuses.append(response.status)
-            except PlaywrightTimeoutError:
-                pass
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
         if save_responses:
