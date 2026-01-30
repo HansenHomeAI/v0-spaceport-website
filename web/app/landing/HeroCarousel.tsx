@@ -43,6 +43,10 @@ export default function HeroCarousel(): JSX.Element {
   const [hasInteracted, setHasInteracted] = useState(false);
   const prevIndexRef = useRef(-1);
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  
+  // Refs for dynamic blocking layer positioning
+  const controlContainerRef = useRef<HTMLDivElement>(null);
+  const blockingLayerRef = useRef<HTMLDivElement>(null);
 
   // Helper to clear all timeouts
   const clearTimeouts = () => {
@@ -83,6 +87,40 @@ export default function HeroCarousel(): JSX.Element {
       window.removeEventListener('message', onMessage);
     };
   }, [isActive, hasInteracted, subtitleText, activeIndex]);
+
+  // Update blocking layer position dynamically
+  useEffect(() => {
+    const updatePosition = () => {
+      const landing = document.getElementById('landing');
+      if (controlContainerRef.current && blockingLayerRef.current && landing) {
+        // Measure the first child (the actual button/controls) if available, otherwise the container
+        // This accounts for margins/padding that might push the visual controls down inside the container
+        const targetEl = controlContainerRef.current.firstElementChild || controlContainerRef.current;
+        
+        const controlRect = targetEl.getBoundingClientRect();
+        const landingRect = landing.getBoundingClientRect();
+        
+        // Calculate offset relative to the #landing container
+        const relativeTop = controlRect.top - landingRect.top;
+        
+        blockingLayerRef.current.style.top = `${relativeTop}px`;
+      }
+    };
+
+    // Update on mount, resize, and when active state/content changes
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition); // Also update on scroll just in case
+    
+    // Also update after a short delay to allow for transitions (H1 collapse)
+    const t = setTimeout(updatePosition, 550); 
+    
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition);
+      clearTimeout(t);
+    };
+  }, [isActive, subtitleText, activeIndex]);
 
   // Sync subtitle text with animation delay to match H1 collapse
   // AND handle the tooltip cycle
@@ -224,6 +262,7 @@ export default function HeroCarousel(): JSX.Element {
       {/* Block iframe interaction from carousel top and below so scroll/touch don't hit iframe */}
       <div
         id="landing-bottom-block"
+        ref={blockingLayerRef}
         className={isActive ? 'active' : ''}
         style={{ pointerEvents: isActive ? 'auto' : 'none' }}
         aria-hidden="true"
@@ -257,7 +296,7 @@ export default function HeroCarousel(): JSX.Element {
         </p>
 
         {/* Button / Carousel Control */}
-        <div className="carousel-control-container">
+        <div className="carousel-control-container" ref={controlContainerRef}>
           {isDefaultState ? (
             <button 
               className="cta-button with-symbol" 

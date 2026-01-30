@@ -1836,6 +1836,7 @@ footer {
   z-index: 1;
   pointer-events: none;
   transition: pointer-events 0s;
+  border-top: 2px solid red; /* Visual debug: red line at top edge */
 }
 #landing-bottom-block.active {
   pointer-events: auto;
