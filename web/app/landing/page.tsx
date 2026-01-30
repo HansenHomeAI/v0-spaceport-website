@@ -1,4 +1,5 @@
 import HeroCarousel from './HeroCarousel';
+import FAQ from '../../components/FAQ';
 
 export const runtime = 'edge';
 
@@ -77,6 +78,8 @@ export default function Landing(): JSX.Element {
           </div>
         </div>
       </section>
+
+      <FAQ />
 
       <section className="section two-col-section" id="landing-more">
         <div className="two-col-content">
