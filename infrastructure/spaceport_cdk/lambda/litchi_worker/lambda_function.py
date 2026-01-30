@@ -1328,6 +1328,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 """
                 () => {
                   const keys = Object.keys(window).filter((key) => key.toLowerCase().includes('mission'));
+                  const candidateKeys = Object.keys(window).filter((key) => /litchi|hub|mission|app|state|store|redux/i.test(key)).slice(0, 30);
                   const details = keys.slice(0, 20).map((key) => {
                     const value = window[key];
                     return {
@@ -1347,7 +1348,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                       storeKeys = ['<error reading store>'];
                     }
                   }
-                  return { details, storeKeys };
+                  return { details, storeKeys, candidateKeys };
                 }
                 """
             )
