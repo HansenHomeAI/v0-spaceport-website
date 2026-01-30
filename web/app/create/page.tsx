@@ -121,15 +121,13 @@ export default function Create(): JSX.Element {
   const [modelDeliveryOpen, setModelDeliveryOpen] = useState(false);
   
   // Subscription hook
-  const { 
-    subscription, 
-    loading: subscriptionLoading, 
+  const {
+    subscription,
+    loading: subscriptionLoading,
     error: subscriptionError,
     isSubscriptionActive,
     isOnTrial,
     getTrialDaysRemaining,
-    canCreateModel,
-    getPlanFeatures
   } = useSubscription();
 
   const {
@@ -261,7 +259,7 @@ export default function Create(): JSX.Element {
                           {subscription ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Beta Plan'}
                         </button>
                         <span className="model-count">
-                          {projects.length}/{subscription?.planFeatures?.maxModels || getPlanFeatures().maxModels} active models
+                          {projects.length} active models
                         </span>
                       </div>
                     </div>
@@ -276,16 +274,11 @@ export default function Create(): JSX.Element {
             </div>
             
             {/* New Project Button */}
-            <div 
-              className={`project-box new-project-card ${!canCreateModel(projects.length) ? 'disabled' : ''}`} 
-              onClick={canCreateModel(projects.length) ? () => setModalOpen(true) : undefined}
+            <div
+              className="project-box new-project-card"
+              onClick={() => setModalOpen(true)}
             >
               <h1>New Project<span className="plus-icon"><span></span><span></span></span></h1>
-              {!canCreateModel(projects.length) && (
-                <p className="upgrade-prompt">
-                  Upgrade your plan to create more models
-                </p>
-              )}
             </div>
             
             {/* Loading Spinner */}

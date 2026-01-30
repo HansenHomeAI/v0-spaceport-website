@@ -16,6 +16,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 PROJECTS_TABLE_NAME = os.environ.get('PROJECTS_TABLE_NAME')
+PERMISSIONS_TABLE_NAME = os.environ.get('PERMISSIONS_TABLE_NAME', 'Spaceport-BetaAccessPermissions')
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 R2_ENDPOINT = os.environ.get('R2_ENDPOINT')
 R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
@@ -30,6 +31,42 @@ resend.api_key = RESEND_API_KEY
 
 dynamodb = boto3.resource('dynamodb')
 projects_table = dynamodb.Table(PROJECTS_TABLE_NAME)
+permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
+
+
+def _check_user_is_admin(user_id: str) -> bool:
+    try:
+        item = permissions_table.get_item(Key={'user_id': user_id}).get('Item')
+        if not item:
+            return False
+
+        if item.get('has_beta_access_permission') is True:
+            return True
+
+        permission_type = (item.get('permission_type') or '').lower()
+        status = (item.get('status') or '').lower()
+
+        if permission_type in ('model_delivery_admin', 'beta_access_admin') and status != 'revoked':
+            return True
+
+        if item.get('model_delivery_permission') is True:
+            return True
+
+        return False
+    except Exception as exc:
+        logger.error('Error checking admin permissions for user %s: %s', user_id, exc)
+        return False
+
+
+def _filter_admin_projects(projects: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    filtered: List[Dict[str, Any]] = []
+    for project in projects:
+        user_sub = project.get('userSub')
+        if user_sub and _check_user_is_admin(user_sub):
+            logger.info('Skipping admin project %s from payment enforcement', project.get('projectId'))
+            continue
+        filtered.append(project)
+    return filtered
 
 
 def _get_r2_client() -> Optional[Any]:
@@ -335,8 +372,8 @@ def _scan_revoked_projects(now_epoch: int) -> List[Dict[str, Any]]:
 
 def lambda_handler(event, context):
     now_epoch = int(datetime.now(timezone.utc).timestamp())
-    overdue_projects = _scan_overdue_projects(now_epoch)
-    revoked_projects = _scan_revoked_projects(now_epoch)
+    overdue_projects = _filter_admin_projects(_scan_overdue_projects(now_epoch))
+    revoked_projects = _filter_admin_projects(_scan_revoked_projects(now_epoch))
 
     logger.info('Found %s overdue projects', len(overdue_projects))
     if revoked_projects:
