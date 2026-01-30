@@ -389,6 +389,9 @@ async def _login_in_page(
     login_dialog = page.get_by_role("dialog")
     if await login_dialog.count() > 0:
         await login_dialog.first.wait_for(state="visible", timeout=10000)
+    login_modal = page.locator("#login-modal")
+    if await login_modal.count() > 0 and await login_modal.first.is_visible():
+        login_dialog = login_modal
 
     login_form = page.locator("form#login-form")
     try:
@@ -431,6 +434,14 @@ async def _login_in_page(
     email_input = login_scope.locator("input[type='email']:visible")
     if await email_input.count() == 0:
         email_input = login_scope.locator("input[type='email']")
+    if await email_input.count() == 0:
+        email_input = login_scope.locator("input[name*='email'], input[id*='email']")
+    if await email_input.count() == 0:
+        email_input = login_scope.locator("input[name*='user'], input[id*='user']")
+    if await email_input.count() == 0:
+        email_input = login_scope.locator("input[type='text']:visible")
+    if await email_input.count() == 0:
+        email_input = login_scope.locator("input[type='text']")
     if await email_input.count() == 0:
         email_input = login_scope.get_by_label("Email")
     if await email_input.count() > 1:
@@ -1517,6 +1528,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 )
                 if await download_modal.count() > 0:
                     await download_modal.first.wait_for(state="visible", timeout=8000)
+            not_logged_in = page.locator("#save-notloggedin")
+            login_gate_button = page.locator("#downloadalert button", has_text="Log in")
+            login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
+                await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
+            )
 
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
@@ -1528,6 +1544,13 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         if await save_button.count() == 0:
             save_button = page.get_by_role("button", name="Save")
         if await save_button.count() > 0:
+            try:
+                save_state = await save_button.first.evaluate(
+                    "el => ({disabled: el.disabled, ariaDisabled: el.getAttribute('aria-disabled'), className: el.className})"
+                )
+                logger.info("Save button state: %s", save_state)
+            except Exception:
+                logger.warning("Unable to inspect save button state.")
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
