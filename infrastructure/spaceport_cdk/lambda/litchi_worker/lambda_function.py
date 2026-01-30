@@ -1323,6 +1323,28 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await _human_click(missions_menu.first, timeout_ms=8000, force_fallback=True)
             await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
 
+        try:
+            mission_context = await page.evaluate(
+                """
+                () => {
+                  const keys = Object.keys(window).filter((key) => key.toLowerCase().includes('mission'));
+                  return keys.slice(0, 20).map((key) => {
+                    const value = window[key];
+                    return {
+                      key,
+                      type: typeof value,
+                      hasSave: value && typeof value.save === 'function',
+                      hasToJson: value && typeof value.toJSON === 'function',
+                    };
+                  });
+                }
+                """
+            )
+            if mission_context:
+                logger.info("Mission context keys: %s", mission_context)
+        except Exception:
+            logger.warning("Unable to inspect mission context keys.")
+
         save_menu_item = page.get_by_role("menuitem", name="Save...")
         if await save_menu_item.count() == 0:
             save_menu_item = page.get_by_text("Save...")
@@ -1632,29 +1654,37 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                   if (!window.Parse || !window.Parse.Cloud || !window.Parse.Cloud.run) {
                     return { ok: false, reason: 'parse_unavailable' };
                   }
+                  const tryQuery = async () => {
+                    const query = new window.Parse.Query('Mission');
+                    query.limit(50);
+                    query.descending('updatedAt');
+                    const results = await query.find();
+                    return results.map((item) => item.get('name')).filter(Boolean);
+                  };
+                  const tryQueryV3 = async () => {
+                    const query = new window.Parse.Query('MissionV3');
+                    query.limit(50);
+                    query.descending('updatedAt');
+                    const results = await query.find();
+                    return results.map((item) => item.get('name')).filter(Boolean);
+                  };
                   try {
                     const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     if (names.length) {
-                      return { ok: true, count: names.length, found: names.includes(missionName) };
+                      return { ok: true, count: names.length, found: names.includes(missionName), source: 'list' };
                     }
-                    const tryQuery = async (className) => {
-                      const query = new window.Parse.Query(className);
-                      query.limit(50);
-                      query.descending('updatedAt');
-                      const results = await query.find();
-                      return results.map((item) => item.get('name')).filter(Boolean);
-                    };
-                    const queryNames = await tryQuery('Mission').catch(() => tryQuery('MissionV3'));
-                    return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query' };
                   } catch (err) {
                     const error =
                       err && typeof err === 'object'
                         ? JSON.stringify({ message: err.message, code: err.code, detail: err })
                         : String(err);
-                    return { ok: false, error };
+                    const queryNames = await tryQuery().catch(() => tryQueryV3());
+                    return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query', error };
                   }
+                  const queryNames = await tryQuery().catch(() => tryQueryV3());
+                  return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query' };
                 }
                 """,
                 mission_name,
