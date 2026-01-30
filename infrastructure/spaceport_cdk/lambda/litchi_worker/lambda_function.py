@@ -146,7 +146,7 @@ async def _apply_stealth(page) -> None:
         await stealth_async(page)
 
 
-async def _launch_context():
+async def _launch_context(storage_state: Optional[Dict[str, Any]] = None):
     if async_playwright is None:
         raise RuntimeError("playwright is not installed in the runtime")
 
@@ -171,6 +171,7 @@ async def _launch_context():
         user_agent=random.choice(USER_AGENTS),
         viewport=None,
         locale="en-US",
+        storage_state=storage_state,
     )
     return playwright, browser, context
 
@@ -206,6 +207,16 @@ def _serialize_credentials(credentials: Dict[str, str], key_id: str) -> str:
 
 
 def _deserialize_credentials(ciphertext: str) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext)
+    return json.loads(payload)
+
+
+def _serialize_storage_state(state: Dict[str, Any], key_id: str) -> str:
+    payload = json.dumps(state)
+    return _encrypt_text(payload, key_id)
+
+
+def _deserialize_storage_state(ciphertext: str) -> Dict[str, Any]:
     payload = _decrypt_text(ciphertext)
     return json.loads(payload)
 
@@ -249,6 +260,14 @@ def _load_credentials(table, user_id: str) -> Optional[Dict[str, str]]:
     return _deserialize_credentials(encrypted)
 
 
+def _load_storage_state(table, user_id: str) -> Optional[Dict[str, Any]]:
+    record = _session_record(table, user_id)
+    encrypted = record.get("storageState")
+    if not encrypted:
+        return None
+    return _deserialize_storage_state(encrypted)
+
+
 def _save_credentials(table, user_id: str, username: str, password: str) -> None:
     record = _session_record(table, user_id)
     key_id = _require_kms_key()
@@ -256,6 +275,14 @@ def _save_credentials(table, user_id: str, username: str, password: str) -> None
         {"username": username, "password": password},
         key_id,
     )
+    record["updatedAt"] = _now_iso()
+    _save_record(table, record)
+
+
+def _save_storage_state(table, user_id: str, state: Dict[str, Any]) -> None:
+    record = _session_record(table, user_id)
+    key_id = _require_kms_key()
+    record["storageState"] = _serialize_storage_state(state, key_id)
     record["updatedAt"] = _now_iso()
     _save_record(table, record)
 
@@ -631,6 +658,11 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             """
         )
         logger.info("Captured local storage keys: %s", list(local_storage.keys()))
+        try:
+            storage_state = await context.storage_state()
+            _save_storage_state(table, user_id, storage_state)
+        except Exception as exc:
+            logger.warning("Failed to capture storage state: %s", exc)
         cookies = await context.cookies()
         _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
         _update_status(table, user_id, status="active", message="Litchi session connected")
@@ -652,13 +684,15 @@ async def _run_test_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     _update_status(table, user_id, status="testing", message="Testing Litchi session")
 
     cookies = _load_cookies(table, user_id)
+    storage_state = _load_storage_state(table, user_id)
     if not cookies:
         _mark_expired(table, user_id, "No session cookies found")
         return {"status": "expired", "message": "No session cookies"}
 
-    playwright, browser, context = await _launch_context()
+    playwright, browser, context = await _launch_context(storage_state=storage_state)
     try:
-        await context.add_cookies(cookies)
+        if not storage_state:
+            await context.add_cookies(cookies)
         page = await context.new_page()
         await _apply_stealth(page)
         await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
@@ -721,6 +755,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     cookies = _load_cookies(table, user_id)
     local_storage = _load_local_storage(table, user_id)
+    storage_state = _load_storage_state(table, user_id)
     if not cookies:
         _mark_expired(table, user_id, "Session cookies missing")
         return {"status": "expired", "message": "Session cookies missing"}
@@ -743,23 +778,24 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         )
         return {"status": "ok", "message": "Dry run upload complete", "waitSeconds": _jitter_seconds()}
 
-    playwright, browser, context = await _launch_context()
+    playwright, browser, context = await _launch_context(storage_state=storage_state)
     try:
-        await context.add_cookies(cookies)
-        if local_storage:
-            logger.info("Restoring local storage keys: %s", list(local_storage.keys()))
-        if local_storage:
-            await context.add_init_script(
-                f"""
-                () => {{
-                  const entries = {json.dumps(local_storage)};
-                  for (const [key, value] of Object.entries(entries)) {{
-                    localStorage.setItem(key, value);
-                  }}
-                  window.__litchiLocalStorageApplied = Object.keys(entries).length;
-                }}
-                """
-            )
+        if not storage_state:
+            await context.add_cookies(cookies)
+            if local_storage:
+                logger.info("Restoring local storage keys: %s", list(local_storage.keys()))
+            if local_storage:
+                await context.add_init_script(
+                    f"""
+                    () => {{
+                      const entries = {json.dumps(local_storage)};
+                      for (const [key, value] of Object.entries(entries)) {{
+                        localStorage.setItem(key, value);
+                      }}
+                      window.__litchiLocalStorageApplied = Object.keys(entries).length;
+                    }}
+                    """
+                )
         page = await context.new_page()
         await _apply_stealth(page)
         save_responses: List[str] = []
@@ -771,7 +807,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         )
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
-        if local_storage:
+        if local_storage and not storage_state:
             applied_count = await page.evaluate("() => window.__litchiLocalStorageApplied || 0")
             logger.info("Init script localStorage applied count: %s", applied_count)
 
@@ -792,7 +828,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             }
             """
         )
-        if not current_user and local_storage:
+        if not current_user and local_storage and not storage_state:
             logger.warning("No Parse currentUser found after restore. Reapplying localStorage and reloading.")
             await page.evaluate(
                 """
