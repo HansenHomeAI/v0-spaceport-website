@@ -559,6 +559,18 @@ html, body {
   }
 }
 
+/* FAQ Content Strategy (matches two-col width behavior but keeps left alignment) */
+.faq-content {
+  display: block;
+  text-align: left;
+}
+@media (min-width: 640px) {
+  .faq-content {
+    margin-left: 6%;
+    margin-right: 6%;
+  }
+}
+
 .two-col-section .two-col-content .right-col p,
 .two-col-section .two-col-content .right-col .cta-button2-fixed {
   /* Remove any existing margin overrides */

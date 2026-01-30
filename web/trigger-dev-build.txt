@@ -1,2 +1,2 @@
 2026-01-30
-feat: align FAQ width and margins with two-column sections
+fix: match FAQ width to two-col-layout

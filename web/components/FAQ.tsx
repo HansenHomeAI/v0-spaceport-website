@@ -34,12 +34,8 @@ export default function FAQ(): JSX.Element {
   };
 
   return (
-    <section className="section two-col-section" id="faq" style={{ padding: '70px 0 40px' }}>
-      <div className="two-col-content" style={{ 
-        maxWidth: '900px', 
-        margin: '0 auto', 
-        textAlign: 'left'
-      }}>
+    <section className="section" id="faq" style={{ padding: '70px 20px 40px' }}>
+      <div className="faq-content">
         <h2 style={{ 
           textAlign: 'left', 
           marginBottom: '2rem', 
