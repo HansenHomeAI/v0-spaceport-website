@@ -131,9 +131,43 @@ export default function HeroCarousel(): JSX.Element {
     // Determine if we are switching modes (Default <-> Carousel)
     const isModeChange = (prevIndex === -1 && activeIndex !== -1) || (prevIndex !== -1 && activeIndex === -1);
     
-    // Clear previous timers when index changes
+    // When carousel/iframe position changes: clear tooltip timers and reset displayed text
+    // so the tooltip never sticks for 5s; the 2.75s buffer restarts for the new slide.
     if (prevIndex !== activeIndex) {
       clearTimeouts();
+      // If we were showing the tooltip (or any stale text), immediately switch to the new title
+      if (subtitleText !== targetTitle) {
+        setIsTextVisible(false);
+        const delay = isModeChange ? 500 : 250;
+        const t1 = setTimeout(() => {
+          setSubtitleText(targetTitle);
+          setIsTextVisible(true);
+          // Restart tooltip cycle for new slide (2.75s buffer, then show tip for 5s)
+          if (activeIndex !== -1 && !hasInteracted) {
+            const t2 = setTimeout(() => {
+              setIsTextVisible(false);
+              const t3 = setTimeout(() => {
+                setSubtitleText(TIP_TEXT);
+                setIsTextVisible(true);
+                const t4 = setTimeout(() => {
+                  setIsTextVisible(false);
+                  const t5 = setTimeout(() => {
+                    setSubtitleText(targetTitle);
+                    setIsTextVisible(true);
+                  }, 500);
+                  timeoutsRef.current.push(t5);
+                }, 5000);
+                timeoutsRef.current.push(t4);
+              }, 500);
+              timeoutsRef.current.push(t3);
+            }, 2750);
+            timeoutsRef.current.push(t2);
+          }
+        }, delay);
+        timeoutsRef.current.push(t1);
+        prevIndexRef.current = activeIndex;
+        return;
+      }
     }
 
     // 1. Initial Transition (Title Change)
@@ -289,7 +323,7 @@ export default function HeroCarousel(): JSX.Element {
             textShadow: '0 3px 16px rgba(0,0,0,1)',
             transition: 'opacity 0.5s ease, text-shadow 0.5s ease',
             marginBottom: '6px',
-            color: '#fff',
+            color: 'rgba(255, 255, 255, 0.5)',
             opacity: isTextVisible ? 1 : 0
         }}>
           {subtitleText}

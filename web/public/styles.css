@@ -300,7 +300,7 @@ html, body {
   width: 100%;
   max-width: 750px;
   padding: 0 5px;
-  pointer-events: auto;
+  pointer-events: none; /* Changed from auto to none so text doesn't block iframe */
   z-index: 2;
 }
 .landing-content h1,
@@ -327,6 +327,7 @@ html, body {
 /* CTA 1 (original) */
 .cta-button {
   display: inline-block;
+  pointer-events: auto; /* Re-enable pointer events for buttons */
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
