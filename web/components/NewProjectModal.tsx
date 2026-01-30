@@ -1304,6 +1304,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const litchiInlineOpen = litchiConnectOpen || Boolean(litchiStatus?.needsTwoFactor);
   const litchiStatusState = litchiStatus?.status ?? 'unknown';
+  const litchiIsConnecting = litchiConnecting || litchiStatusState === 'connecting';
+  const litchiIsRateLimited = litchiStatusState === 'rate_limited';
   const litchiIndicator = litchiStatusState !== 'error' && litchiStatusState !== 'expired'
     ? litchiProgress?.current && litchiProgress?.total
       ? `Uploading ${litchiProgress.current}/${litchiProgress.total}...`
@@ -1327,7 +1329,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     expired: 'Expired',
     uploading: 'Uploading',
     testing: 'Testing connection',
-    rate_limited: 'Rate limited',
+    rate_limited: 'Rate limited (retrying)',
     error: 'Error',
   };
   const litchiStatusLabel = litchiStatus ? (litchiStatusLabels[litchiStatusState] || litchiStatusState) : 'Unknown';
@@ -1337,6 +1339,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     ? 'Login failed or expired. Re-enter your Litchi credentials to continue.'
     : litchiHasLoginFailure
       ? 'We could not verify these credentials. Please retry or re-enter your password.'
+      : litchiIsRateLimited
+        ? 'Litchi is rate limiting uploads. We will retry automatically in a minute or two.'
       : litchiStatus?.needsTwoFactor
         ? 'Enter your 2FA code to finish connecting.'
         : litchiStatus?.status === 'connecting'
@@ -1562,7 +1566,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       className="litchi-primary"
                       type="button"
                       onClick={handleSendToLitchi}
-                      disabled={!litchiApiConfigured || litchiSending || litchiUploading || litchiSelectedCount === 0}
+                      disabled={!litchiApiConfigured || litchiSending || litchiUploading || litchiStatusState === 'uploading' || litchiIsRateLimited || litchiSelectedCount === 0}
                     >
                       {litchiSending
                         ? 'Preparing missions...'
@@ -1577,9 +1581,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       className="litchi-primary"
                       type="button"
                       onClick={() => setLitchiConnectOpen(v => !v)}
-                      disabled={!litchiApiConfigured || litchiConnecting}
+                      disabled={!litchiApiConfigured || litchiIsConnecting}
                     >
-                      {litchiStatus?.needsTwoFactor ? 'Enter 2FA Code' : 'Connect Litchi Account'}
+                      {litchiStatus?.needsTwoFactor
+                        ? 'Enter 2FA Code'
+                        : litchiIsConnecting
+                          ? 'Connecting...'
+                          : 'Connect Litchi Account'}
                     </button>
                   )}
                   <button className="litchi-secondary" type="button" onClick={() => setShowManualDownloads(v => !v)}>

@@ -130,9 +130,10 @@ def _handle_status(user_id: str) -> Dict[str, Any]:
     table = _table()
     item = table.get_item(Key={"userId": user_id}).get("Item", {})
     status = item.get("status", "not_connected")
+    connected_states = {"active", "uploading", "rate_limited", "testing"}
     response = {
         "status": status,
-        "connected": status == "active",
+        "connected": status in connected_states,
         "lastUsed": item.get("lastUsed"),
         "updatedAt": item.get("updatedAt"),
         "message": item.get("message"),

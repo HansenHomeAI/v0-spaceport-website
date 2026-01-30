@@ -262,7 +262,7 @@ def _detect_rate_limit(content: str) -> bool:
     if not content:
         return False
     lowered = content.lower()
-    return "too many requests" in lowered or "rate limit" in lowered or "429" in lowered
+    return "too many requests" in lowered or "rate limit" in lowered or "rate limited" in lowered
 
 
 async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -599,6 +599,7 @@ async def _run_login_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             }
             """
         )
+        logger.info("Captured local storage keys: %s", list(local_storage.keys()))
         cookies = await context.cookies()
         _save_cookies(table, user_id, cookies, status="active", local_storage=local_storage)
         _update_status(table, user_id, status="active", message="Litchi session connected")
@@ -714,6 +715,8 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
     try:
         await context.add_cookies(cookies)
         if local_storage:
+            logger.info("Restoring local storage keys: %s", list(local_storage.keys()))
+        if local_storage:
             await context.add_init_script(
                 f"""
                 () => {{
@@ -726,11 +729,16 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             )
         page = await context.new_page()
         await _apply_stealth(page)
-        await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
+        response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
 
+        response_status = response.status if response else None
+        if response_status == 429:
+            raise RateLimitedError("Rate limited by Litchi (HTTP 429). Retrying shortly.")
         if _detect_rate_limit(await page.content()):
-            raise RateLimitedError("Rate limit detected")
+            page_title = await page.title()
+            logger.warning("Rate limit detection triggered url=%s title=%s status=%s", page.url, page_title, response_status)
+            raise RateLimitedError("Rate limited by Litchi. Retrying shortly.")
 
         login_link = page.get_by_role("link", name="Log In")
         if await login_link.count() > 0 and await login_link.first.is_visible():
