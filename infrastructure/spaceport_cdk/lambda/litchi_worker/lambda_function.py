@@ -1468,6 +1468,25 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 _mark_error(table, user_id, "Missing Litchi credentials for login modal")
                 return {"status": "error", "message": "Missing Litchi credentials"}
             logger.info("Login modal detected during save. Attempting in-modal login.")
+            login_modal_iframe = login_modal.first.locator("iframe")
+            if await login_modal_iframe.count() > 0:
+                logger.info("Login modal contains iframe; attempting frame-based login.")
+                frame_locator = page.frame_locator("#login-modal iframe")
+                email_input = frame_locator.locator(
+                    "input[type='email'], input[name*='email'], input[id*='email'], input[name*='user'], input[id*='user'], input[type='text']"
+                )
+                password_input = frame_locator.locator("input[type='password']")
+                if await email_input.count() > 0 and await password_input.count() > 0:
+                    await _human_type(email_input.first, credentials["username"])
+                    await _human_type(password_input.first, credentials["password"])
+                    login_button = frame_locator.get_by_role("button", name="Log in")
+                    if await login_button.count() == 0:
+                        login_button = frame_locator.get_by_role("button", name="Login")
+                    if await login_button.count() == 0:
+                        login_button = frame_locator.locator("button[type='submit'], button#signin")
+                    if await login_button.count() > 0:
+                        await _human_click(login_button.first, timeout_ms=8000, force_fallback=True)
+                        await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
             login_result = await _login_in_page(
                 page,
                 credentials["username"],
