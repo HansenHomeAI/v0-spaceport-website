@@ -43,6 +43,11 @@ export default function HeroCarousel(): JSX.Element {
   const [hasInteracted, setHasInteracted] = useState(false);
   const prevIndexRef = useRef(-1);
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  
+  // Refs for dynamic blocking layer positioning
+  const controlContainerRef = useRef<HTMLDivElement>(null);
+  const blockingLayerRef = useRef<HTMLDivElement>(null);
+  const topTriggerRef = useRef<HTMLDivElement>(null);
 
   // Helper to clear all timeouts
   const clearTimeouts = () => {
@@ -84,6 +89,43 @@ export default function HeroCarousel(): JSX.Element {
     };
   }, [isActive, hasInteracted, subtitleText, activeIndex]);
 
+  // Update blocking layer position dynamically
+  useEffect(() => {
+    const updatePosition = () => {
+      const landing = document.getElementById('landing');
+      if (controlContainerRef.current && blockingLayerRef.current && landing) {
+        // Measure the first child (the actual button/controls) if available, otherwise the container
+        // This accounts for margins/padding that might push the visual controls down inside the container
+        const targetEl = controlContainerRef.current.firstElementChild || controlContainerRef.current;
+        
+        const controlRect = targetEl.getBoundingClientRect();
+        const landingRect = landing.getBoundingClientRect();
+        
+        // Calculate offset relative to the #landing container
+        const relativeTop = controlRect.top - landingRect.top;
+        
+        blockingLayerRef.current.style.top = `${relativeTop}px`;
+        if (topTriggerRef.current) {
+          topTriggerRef.current.style.height = `${relativeTop}px`;
+        }
+      }
+    };
+
+    // Update on mount, resize, and when active state/content changes
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition); // Also update on scroll just in case
+    
+    // Also update after a short delay to allow for transitions (H1 collapse)
+    const t = setTimeout(updatePosition, 550); 
+    
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition);
+      clearTimeout(t);
+    };
+  }, [isActive, subtitleText, activeIndex]);
+
   // Sync subtitle text with animation delay to match H1 collapse
   // AND handle the tooltip cycle
   useEffect(() => {
@@ -93,9 +135,43 @@ export default function HeroCarousel(): JSX.Element {
     // Determine if we are switching modes (Default <-> Carousel)
     const isModeChange = (prevIndex === -1 && activeIndex !== -1) || (prevIndex !== -1 && activeIndex === -1);
     
-    // Clear previous timers when index changes
+    // When carousel/iframe position changes: clear tooltip timers and reset displayed text
+    // so the tooltip never sticks for 5s; the 2.75s buffer restarts for the new slide.
     if (prevIndex !== activeIndex) {
       clearTimeouts();
+      // If we were showing the tooltip (or any stale text), immediately switch to the new title
+      if (subtitleText !== targetTitle) {
+        setIsTextVisible(false);
+        const delay = isModeChange ? 400 : 200;
+        const t1 = setTimeout(() => {
+          setSubtitleText(targetTitle);
+          setIsTextVisible(true);
+          // Restart tooltip cycle for new slide (2.75s buffer, then show tip for 5s)
+          if (activeIndex !== -1 && !hasInteracted) {
+            const t2 = setTimeout(() => {
+              setIsTextVisible(false);
+              const t3 = setTimeout(() => {
+                setSubtitleText(TIP_TEXT);
+                setIsTextVisible(true);
+                const t4 = setTimeout(() => {
+                  setIsTextVisible(false);
+                  const t5 = setTimeout(() => {
+                    setSubtitleText(targetTitle);
+                    setIsTextVisible(true);
+                  }, 500);
+                  timeoutsRef.current.push(t5);
+                }, 5000);
+                timeoutsRef.current.push(t4);
+              }, 500);
+              timeoutsRef.current.push(t3);
+            }, 2750);
+            timeoutsRef.current.push(t2);
+          }
+        }, delay);
+        timeoutsRef.current.push(t1);
+        prevIndexRef.current = activeIndex;
+        return;
+      }
     }
 
     // 1. Initial Transition (Title Change)
@@ -208,9 +284,44 @@ export default function HeroCarousel(): JSX.Element {
     setIsActive(true);
   };
 
+  // Handle iframe engagement - triggers carousel activation (same as Examples button)
+  const handleIframeEngage = () => {
+    if (activeIndex === -1) {
+      setIsTextVisible(false); // Fade out title + subtitle together
+      setActiveIndex(0);
+    }
+    setIsActive(true);
+  };
+
+  // Add non-passive listeners to top trigger to block scroll while capturing interaction
+  useEffect(() => {
+    const triggerEl = topTriggerRef.current;
+    if (!triggerEl) return;
+
+    const onScrollInteract = (e: Event) => {
+      // Prevent page scroll
+      if (e.cancelable) e.preventDefault();
+      // Trigger carousel
+      handleIframeEngage();
+    };
+
+    // Attach non-passive listeners for wheel and touchmove to block scrolling
+    triggerEl.addEventListener('wheel', onScrollInteract, { passive: false });
+    triggerEl.addEventListener('touchmove', onScrollInteract, { passive: false });
+
+    return () => {
+      triggerEl.removeEventListener('wheel', onScrollInteract);
+      triggerEl.removeEventListener('touchmove', onScrollInteract);
+    };
+  }, [activeIndex, isActive]); // Re-bind if state changes (though handleIframeEngage logic is stable, we need latest closures if not using refs)
+
+
   const isDefaultState = activeIndex === -1;
   const currentExample = isDefaultState ? null : EXAMPLES[activeIndex];
   const currentIframeSrc = isDefaultState ? DEFAULT_IFRAME : currentExample?.src || DEFAULT_IFRAME;
+
+  // Title and subtitle enter/exit together: title visible only when default content is shown and subtitle is visible
+  const isTitleVisible = isDefaultState && subtitleText === DEFAULT_SUBTITLE && isTextVisible;
 
   return (
     <section className="section" id="landing">
@@ -218,27 +329,39 @@ export default function HeroCarousel(): JSX.Element {
         className="landing-iframe" 
         src={currentIframeSrc} 
         title={currentExample?.title || "Spaceport AI"}
-        style={{ opacity: 1, transition: 'opacity 0.5s ease' }} 
+        style={{ opacity: 1, transition: 'opacity 0.5s ease' }}
+        onFocus={handleIframeEngage}
+        onPointerDown={handleIframeEngage}
+        onTouchStart={handleIframeEngage}
+        onWheel={handleIframeEngage}
       />
-      <div id="iframe-overlay" className={isActive ? 'carousel-active' : ''} style={{ pointerEvents: isActive ? 'none' : 'auto' }} />
-      {/* Block iframe interaction from carousel top and below so scroll/touch don't hit iframe */}
+      <div id="iframe-overlay" className={isActive ? 'carousel-active' : ''} />
+      {/* Capture top-area interactions to activate carousel, then pass through afterwards */}
+      <div
+        id="landing-top-trigger"
+        ref={topTriggerRef}
+        className={isActive ? '' : 'active'}
+        onPointerDown={handleIframeEngage} // Keep click handling for pointer devices
+        aria-hidden="true"
+      />
+      {/* Block iframe interaction below the controls - always active to limit interaction to area above controls */}
       <div
         id="landing-bottom-block"
-        className={isActive ? 'active' : ''}
-        style={{ pointerEvents: isActive ? 'auto' : 'none' }}
+        ref={blockingLayerRef}
+        className="active"
         aria-hidden="true"
       />
       
       <div className={`landing-content ${isActive ? 'carousel-active' : ''}`}>
         
-        {/* Title logic: Hides H1 when active */}
+        {/* Title logic: Fade in/out in sync with subtitle (same timing) */}
         <h1 style={{ 
-          opacity: isDefaultState ? 1 : 0, 
-          maxHeight: isDefaultState ? '100px' : 0, 
+          opacity: isTitleVisible ? 1 : 0, 
+          maxHeight: isTitleVisible ? '100px' : 0, 
           overflow: 'hidden',
-          marginBottom: isDefaultState ? '6px' : 0,
-          transition: 'all 0.5s ease',
-          pointerEvents: isDefaultState ? 'auto' : 'none'
+          marginBottom: isTitleVisible ? '6px' : 0,
+          transition: 'opacity 0.5s ease, maxHeight 0.5s ease, margin-bottom 0.5s ease',
+          pointerEvents: 'none'
         }}>
           Sell the location.
         </h1>
@@ -250,18 +373,19 @@ export default function HeroCarousel(): JSX.Element {
             textShadow: '0 3px 16px rgba(0,0,0,1)',
             transition: 'opacity 0.5s ease, text-shadow 0.5s ease',
             marginBottom: '6px',
-            color: '#fff',
+            color: 'rgba(255, 255, 255, 0.5)',
             opacity: isTextVisible ? 1 : 0
         }}>
           {subtitleText}
         </p>
 
         {/* Button / Carousel Control */}
-        <div className="carousel-control-container">
+        <div className="carousel-control-container" ref={controlContainerRef}>
           {isDefaultState ? (
             <button 
               className="cta-button with-symbol" 
               onClick={() => {
+                setIsTextVisible(false); // Fade out title + subtitle together
                 setActiveIndex(0);
                 setIsActive(true);
               }}
