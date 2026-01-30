@@ -1450,6 +1450,74 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
                     )
 
+        login_modal = page.locator("#login-modal")
+        if await login_modal.count() > 0 and await login_modal.first.is_visible():
+            credentials = _load_credentials(table, user_id)
+            if not credentials or not credentials.get("username") or not credentials.get("password"):
+                _mark_error(table, user_id, "Missing Litchi credentials for login modal")
+                return {"status": "error", "message": "Missing Litchi credentials"}
+            logger.info("Login modal detected during save. Attempting in-modal login.")
+            login_result = await _login_in_page(
+                page,
+                credentials["username"],
+                credentials["password"],
+                force_form=True,
+            )
+            if login_result == "pending_2fa":
+                _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
+                return {"status": "pending_2fa", "message": "Two-factor code required"}
+            if login_result == "invalid":
+                _mark_error(table, user_id, "Invalid Litchi credentials")
+                return {"status": "error", "message": "Invalid Litchi credentials"}
+            if login_result != "success":
+                _mark_error(table, user_id, "Login failed. Please reconnect.")
+                return {"status": "error", "message": "Login failed"}
+            await page.evaluate(
+                """
+                () => {
+                  const modal = document.querySelector('#login-modal');
+                  if (!modal) return;
+                  modal.classList.remove('show', 'in');
+                  modal.style.display = 'none';
+                  modal.style.visibility = 'hidden';
+                  modal.setAttribute('aria-hidden', 'true');
+                  document.body.classList.remove('modal-open');
+                  const backdrop = document.querySelector('.modal-backdrop');
+                  if (backdrop) backdrop.remove();
+                }
+                """
+            )
+            await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+            download_modal = page.locator("#downloadalert")
+            if await download_modal.count() == 0 or not await download_modal.first.is_visible():
+                missions_menu = page.locator("#dropdownMenuMissions")
+                if await missions_menu.count() == 0:
+                    missions_menu = page.get_by_role("button", name="MISSIONS")
+                if await missions_menu.count() > 0:
+                    await _human_click(missions_menu.first, timeout_ms=8000, force_fallback=True)
+                    await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+                save_menu_item = page.get_by_role("menuitem", name="Save...")
+                if await save_menu_item.count() == 0:
+                    save_menu_item = page.get_by_text("Save...")
+                if await save_menu_item.count() > 0:
+                    await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
+                    await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
+                await page.evaluate(
+                    """
+                    () => {
+                      const modal = document.querySelector('#downloadalert');
+                      if (!modal) return;
+                      modal.classList.add('show', 'in');
+                      modal.style.display = 'block';
+                      modal.style.visibility = 'visible';
+                      modal.setAttribute('aria-hidden', 'false');
+                      document.body.classList.add('modal-open');
+                    }
+                    """
+                )
+                if await download_modal.count() > 0:
+                    await download_modal.first.wait_for(state="visible", timeout=8000)
+
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
             await _human_type(filename_input.first, mission_name)
