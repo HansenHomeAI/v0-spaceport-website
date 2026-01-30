@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+from urllib.parse import urlparse
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -1049,14 +1050,25 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             )
         page = await context.new_page()
         await _apply_stealth(page)
+        save_requests: List[str] = []
         save_responses: List[str] = []
         save_statuses: List[int] = []
+        def _capture_save_request(request):
+            if request.method in {"POST", "PUT", "PATCH"}:
+                url = request.url.lower()
+                if "google-analytics" in url or "g/collect" in url:
+                    return
+                save_requests.append(f"{request.method} {request.url}")
+
         def _capture_save_response(response):
-            if response.request.method in {"POST", "PUT"}:
+            if response.request.method in {"POST", "PUT", "PATCH"}:
                 url = response.url.lower()
+                if "google-analytics" in url or "g/collect" in url:
+                    return
                 if "parse.litchiapi.com" in url or "mission" in url:
                     save_responses.append(f"{response.status} {response.url}")
                     save_statuses.append(response.status)
+        page.on("request", _capture_save_request)
         page.on("response", _capture_save_response)
         response = await page.goto(MISSIONS_URL, wait_until="domcontentloaded")
         await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
@@ -1574,9 +1586,22 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 logger.warning("Unable to inspect save button state.")
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
 
-        await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+        await page.wait_for_timeout(int(_human_delay(1.4, 2.4) * 1000))
+        if save_requests:
+            logger.info("Mission save requests (last 10): %s", " | ".join(save_requests[-10:]))
+        else:
+            logger.warning("No Mission save requests captured after save click.")
         if save_responses:
-            logger.info("Mission save responses: %s", " | ".join(save_responses[-5:]))
+            logger.info("Mission save responses (last 10): %s", " | ".join(save_responses[-10:]))
+            response_summary: Dict[str, int] = {}
+            for entry in save_responses:
+                try:
+                    _, raw_url = entry.split(" ", 1)
+                    host = urlparse(raw_url).netloc or raw_url
+                except ValueError:
+                    host = entry
+                response_summary[host] = response_summary.get(host, 0) + 1
+            logger.info("Mission save response summary: %s", response_summary)
         else:
             logger.warning("No Mission save responses captured after save click.")
         try:
@@ -1587,12 +1612,15 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return { ok: false, reason: 'parse_unavailable' };
                   }
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     return { ok: true, count: names.length, found: names.includes(missionName) };
                   } catch (err) {
-                    const error = err && typeof err === 'object' ? JSON.stringify(err) : String(err);
+                    const error =
+                      err && typeof err === 'object'
+                        ? JSON.stringify({ message: err.message, code: err.code, detail: err })
+                        : String(err);
                     return { ok: false, error };
                   }
                 }
