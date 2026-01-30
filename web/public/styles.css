@@ -1385,12 +1385,12 @@ footer {
   margin-bottom: 5px;
   font-weight: 500;
   background: conic-gradient(
-    from -40deg at 0% -50%,
-    #E7621E 0%,
-    #E7621E 15%,
-    #D768C6 45%,
-    #FF4F00 85%,
-    #E7621E 100%
+    from 230deg at -10% 50%,
+    #D4A27F 6%,
+    #CB785C 26%,
+    #F1784F 53%,
+    #EBDBBC 82%,
+    #D4A27F 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1771,6 +1771,17 @@ footer {
     #EFEEE7 40%,
     #CD70E4 80%,
     #FF4F00 100%
+  );
+}
+/* Angular gradient for grainy footer logo area */
+.stat-box2.grainy {
+  background: conic-gradient(
+    from 230deg at -10% 50%,
+    #D4A27F 6%,
+    #CB785C 26%,
+    #F1784F 53%,
+    #EBDBBC 82%,
+    #D4A27F 100%
   );
 }
 .stat-box2 img {

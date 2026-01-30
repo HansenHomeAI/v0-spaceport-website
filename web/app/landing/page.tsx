@@ -53,19 +53,19 @@ export default function Landing(): JSX.Element {
         <h2>Virtual experiences work.</h2>
         <div className="stats-grid">
           <div className="stat-box">
-            <h1>95%</h1>
-            <p>Are more likely to contact listings with 3D tours.</p>
+            <h1>87%</h1>
+            <p>more views</p>
           </div>
           <div className="stat-box">
-            <h1>99%</h1>
-            <p>See 3D tours as a competitive edge.</p>
+            <h1>31%</h1>
+            <p>faster sales</p>
           </div>
           <div className="stat-box">
-            <h1>82%</h1>
-            <p>Consider switching agents if a 3D tour is offered.</p>
+            <h1>5-10x</h1>
+            <p>longer engaging with listing</p>
           </div>
         </div>
-        <p className="stats-source">National Association of Realtors: 2024 Report</p>
+        <p className="stats-source">Sources: Redfin, Matterport & NAR (2024-2025)</p>
       </section>
 
       {/* More sections from legacy */}
