@@ -1,2 +1,1 @@
-2026-01-28 12:12:13
-feat: improve carousel UX with tooltip, vignette adjustments, and property updates
+2026-01-30T03:23:49Z
