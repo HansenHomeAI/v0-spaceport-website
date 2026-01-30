@@ -1,2 +1,2 @@
 2026-01-30
-feat: update FAQ arrows to use site-wide Arrow.svg and fix question opacity
+feat: align FAQ width and margins with two-column sections
