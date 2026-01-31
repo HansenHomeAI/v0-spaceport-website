@@ -6794,64 +6794,81 @@ input.text-fade-right,
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000; /* Increased to sit above everything */
   padding: 20px;
 }
 
 .terms-modal {
-  background: #000;
-  border-radius: 24px;
-  max-width: 600px;
+  background: rgba(12, 12, 12, 0.95);
+  border-radius: 28px;
+  max-width: 650px; /* Slightly wider */
   width: 100%;
-  max-height: 80vh;
+  max-height: 85vh; /* Slightly taller */
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
 }
 
 .terms-modal-content {
-  padding: 32px;
-  max-height: 80vh;
+  padding: 40px; /* Increased padding */
   overflow-y: auto;
   color: #fff;
   position: relative;
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.terms-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+.terms-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.terms-modal-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
 }
 
 .terms-modal-close-container {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 20px;
+  right: 20px;
   z-index: 10;
 }
 
 .terms-modal-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  width: 40px;
-  height: 40px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
 .terms-modal-close:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.05);
 }
 
 .terms-modal-close img {
-  width: 24px;
-  height: 24px;
+  width: 14px;
+  height: 14px;
   filter: brightness(0) invert(1);
+  opacity: 0.8;
 }
 
 .model-delivery-modal-overlay {
@@ -7102,61 +7119,73 @@ input.text-fade-right,
 
 .terms-modal-content h1 {
   color: #fff;
-  font-size: clamp(2rem, 8vw, 2.9rem);
-  font-weight: 700;
-  margin: 0 0 24px 0;
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin: 0 0 8px 0;
   text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .terms-modal-content h2 {
   color: #fff;
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin: 32px 0 16px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 40px 0 16px 0;
+  letter-spacing: 0.01em;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .terms-modal-content h2:first-of-type {
-  margin-top: 24px;
+  margin-top: 32px;
 }
 
 .terms-modal-content p {
-  color: rgba(255, 255, 255, 0.5);
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.7;
   margin-bottom: 16px;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .terms-company-info {
-  color: rgba(255, 255, 255, 0.7);
-  font-style: italic;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 0.9rem !important;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px !important;
+  font-style: normal !important;
 }
 
 .terms-intro {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9) !important;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px !important;
+  font-size: 1.05rem !important;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6 !important;
 }
 
 .terms-conclusion {
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
   text-align: center;
-  margin-top: 32px;
-  padding-top: 24px;
+  margin-top: 48px !important;
+  padding-top: 32px !important;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.05rem !important;
 }
 
 .terms-modal-content ul {
-  color: rgba(255, 255, 255, 0.5);
-  line-height: 1.6;
-  margin: 12px 0 16px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.7;
+  margin: 12px 0 24px 24px;
 }
 
 .terms-modal-content li {
-  margin-bottom: 8px;
-  font-size: 1.1rem;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  padding-left: 4px;
 }
 
 .terms-modal-content strong {
