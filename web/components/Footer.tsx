@@ -109,16 +109,17 @@ export default function Footer(): JSX.Element {
                   aria-live="polite"
                   className={`feedback-status ${status}`}
                   style={{
-                    minHeight: '1.5rem',
-                    marginTop: '0.5rem',
+                    minHeight: status === 'idle' ? 0 : '1.5rem',
+                    marginTop: status === 'idle' ? 0 : '0.5rem',
                     fontSize: '0.9rem',
                     color: status === 'success' ? '#3fb27f' : status === 'error' ? '#ff6b6b' : 'transparent',
-                    transition: 'color 0.2s ease',
+                    transition: 'all 0.2s ease',
+                    height: status === 'idle' ? 0 : 'auto',
+                    overflow: 'hidden',
                   }}
                 >
                   {status === 'success' && 'Thanks for sharing your feedback!'}
                   {status === 'error' && 'Something went wrong. Please try again soon.'}
-                  {status === 'idle' && '‎'}
                 </div>
               </form>
             </div>
