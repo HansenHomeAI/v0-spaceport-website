@@ -131,7 +131,7 @@ export default function Footer(): JSX.Element {
       <footer>
         <div className="footer-content">
           <p>
-            © 2025 Spaceport AI · By using Spaceport AI, you agree to the{' '}
+            © 2025 Spaceport AI ·{' '}
             <button 
               className="terms-link" 
               onClick={() => setIsTermsModalOpen(true)}
