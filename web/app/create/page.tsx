@@ -225,7 +225,7 @@ export default function Create(): JSX.Element {
 
   return (
     <>
-      {/* Always-visible header matching pricing/about spacing and swirl */}
+      {/* Always-visible header matching pricing/explore spacing and swirl */}
       <section className="section" id="create">
         <div id="development-content">
           <h1>Dashboard</h1>

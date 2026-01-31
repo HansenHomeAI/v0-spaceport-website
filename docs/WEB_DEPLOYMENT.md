@@ -23,7 +23,7 @@ High-signal reference for agents and developers.
 2) `npm run build` (Next.js) → do not enable static export (`next.config` must not set `output: 'export'`).
 3) `npx @cloudflare/next-on-pages` → generates `.vercel/output/static/_worker.js` and Edge routes.
 4) `wrangler pages deploy .vercel/output/static --project-name <PROJECT> --branch <ALIAS>`.
-5) Verify endpoints: `/`, `/landing`, `/about`, `/pricing`, `/create`, `/signup`, `/api/health`.
+5) Verify endpoints: `/`, `/landing`, `/explore`, `/pricing`, `/create`, `/signup`, `/api/health`.
 
 ### Project Runtime Flags via API (idempotent)
 ```
