@@ -686,23 +686,25 @@ html, body {
   color: #ccc;
 }
 
-/* Footer stats section (gradient logo) */
+/* Footer stats section (gradient logo) - Wider container */
 #footer-stats {
   padding: 70px 20px 10px;
   position: relative;
+  max-width: 95% !important; /* Allow it to be wider than standard sections */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Feedback form section – full-width section, content centered in all viewport states */
-#feedback-section {
-  padding: 40px 20px;
-  width: 100%;
-  box-sizing: border-box;
+/* Limit the width on very large screens so it doesn't look too stretched */
+@media (min-width: 1600px) {
+  #footer-stats {
+    max-width: 1400px !important;
+  }
 }
 
-#feedback-section.section {
-  max-width: 100%;
-}
+/* Feedback form section – REMOVED */
 
+/* Feedback Container - keeping for utility/legacy or inner usage */
 .feedback-container {
   width: 100%;
   max-width: 640px;
@@ -715,7 +717,7 @@ html, body {
 
 .feedback-form {
   width: 100%;
-  max-width: 600px;
+  max-width: 100%; /* Allow full width of inner container */
   margin-left: auto;
   margin-right: auto;
   display: flex;
@@ -731,7 +733,7 @@ html, body {
   justify-content: center;
   flex-wrap: wrap;
   width: 100%;
-  max-width: 500px;
+  max-width: 100%; /* Allow full width to reach container edges */
 }
 
 .feedback-input {
@@ -1747,20 +1749,37 @@ footer {
 
 .stat-box2 {
   width: 100%;
-  max-width: 814px;
+  max-width: 100%; /* Wider than before (was 814px) */
+  min-height: 450px; /* Ensure height for 2/3 vs 1/3 split */
   display: flex;
   flex-direction: column;
+  align-items: center; /* Center content */
   justify-content: flex-start;
-  padding-top: 50px;
-  padding-bottom: 50px;
-  padding-left: 5vw;
-  padding-right: 5vw;
+  padding: 30px; /* Reduced padding for tighter/uniform margins */
   border-radius: 31px;
   position: relative;
   color: #fff;
-  text-align: left;
+  text-align: center;
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
+}
+
+@media (max-width: 768px) {
+  .stat-box2 {
+    padding: 30px 20px; /* Reduce padding on mobile */
+  }
+}
+
+/* Inner content constraint for concentric layout */
+.feedback-inner-content {
+  width: 100%;
+  max-width: 814px; /* Matches standard content width */
+  margin-top: auto; /* Push to bottom */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
 }
 /* Variation for box #1 */
 .stat-box2:nth-child(1) {
@@ -1785,12 +1804,11 @@ footer {
   );
 }
 .stat-box2 img {
-  width: auto;
+  width: 60%; /* Smaller width as requested (was 80%) */
+  max-width: 450px; /* Reduced max-width (was 600px) */
   height: auto;
-  margin: 0 17px;
+  margin: auto 0; /* Center vertically in remaining space */
   opacity: 1;
-  scale: 0.702;
-  transform: scale(0.702);
 }
 .stat-box2::before {
   content: "";

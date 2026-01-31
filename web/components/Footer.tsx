@@ -81,50 +81,48 @@ export default function Footer(): JSX.Element {
         <div className="stats-grid">
           <div className="stat-box2 grainy">
             <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport Logo" />
+            
+            {/* Nested Feedback Form */}
+            <div className="feedback-inner-content">
+              <form onSubmit={handleFeedbackSubmit} className="feedback-form">
+                <div className="feedback-input-container">
+                  <input
+                    type="text"
+                    value={feedback}
+                    onChange={(e) => {
+                      setFeedback(e.target.value);
+                      if (status !== 'idle') setStatus('idle');
+                    }}
+                    placeholder="How can we improve?"
+                    className="feedback-input"
+                    disabled={isSubmitting}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !feedback.trim()}
+                    className="cta-button2 feedback-submit"
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Feedback'}
+                  </button>
+                </div>
+                <div
+                  aria-live="polite"
+                  className={`feedback-status ${status}`}
+                  style={{
+                    minHeight: '1.5rem',
+                    marginTop: '0.5rem',
+                    fontSize: '0.9rem',
+                    color: status === 'success' ? '#3fb27f' : status === 'error' ? '#ff6b6b' : 'transparent',
+                    transition: 'color 0.2s ease',
+                  }}
+                >
+                  {status === 'success' && 'Thanks for sharing your feedback!'}
+                  {status === 'error' && 'Something went wrong. Please try again soon.'}
+                  {status === 'idle' && '‎'}
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Feedback form section */}
-      <section className="section" id="feedback-section">
-        <div className="feedback-container">
-          <form onSubmit={handleFeedbackSubmit} className="feedback-form">
-            <div className="feedback-input-container">
-              <input
-                type="text"
-                value={feedback}
-                onChange={(e) => {
-                  setFeedback(e.target.value);
-                  if (status !== 'idle') setStatus('idle');
-                }}
-                placeholder="How can we improve?"
-                className="feedback-input"
-                disabled={isSubmitting}
-              />
-              <button
-                type="submit"
-                disabled={isSubmitting || !feedback.trim()}
-                className="cta-button2 feedback-submit"
-              >
-                {isSubmitting ? 'Sending...' : 'Send Feedback'}
-              </button>
-            </div>
-            <div
-              aria-live="polite"
-              className={`feedback-status ${status}`}
-              style={{
-                minHeight: '1.5rem',
-                marginTop: '0.5rem',
-                fontSize: '0.9rem',
-                color: status === 'success' ? '#3fb27f' : status === 'error' ? '#ff6b6b' : 'transparent',
-                transition: 'color 0.2s ease',
-              }}
-            >
-              {status === 'success' && 'Thanks for sharing your feedback!'}
-              {status === 'error' && 'Something went wrong. Please try again soon.'}
-              {status === 'idle' && '‎'}
-            </div>
-          </form>
         </div>
       </section>
 
