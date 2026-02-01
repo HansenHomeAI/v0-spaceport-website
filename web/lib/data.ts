@@ -48,27 +48,27 @@ export const PROPERTIES: Property[] = [
 
 export const TEAM_MEMBERS: TeamMember[] = [
   {
-    id: 'member-1',
-    name: 'Team Member 1',
-    role: 'Co-Founder & CEO',
+    id: 'gabriel-hansen',
+    name: 'Gabriel Hansen',
+    role: 'Founder, CEO',
     bio: 'Visionary leader with a passion for 3D technology and real estate innovation.',
-    imageSrc: '/assets/SpaceportIcons/SpcprtBWIcon.png', // Placeholder
-    linkedinUrl: 'https://linkedin.com',
+    imageSrc: '/assets/gabriel-hansen.png',
+    linkedinUrl: 'https://www.linkedin.com/in/gabriel-hansen-8697482ba/',
   },
   {
-    id: 'member-2',
-    name: 'Team Member 2',
-    role: 'CTO',
-    bio: 'Expert in machine learning and computer vision, driving the core technology.',
-    imageSrc: '/assets/SpaceportIcons/SpcprtBWIcon.png', // Placeholder
-    linkedinUrl: 'https://linkedin.com',
+    id: 'jayden-flake',
+    name: 'Jayden Flake',
+    role: 'Head of GTM',
+    bio: 'Expert in go-to-market strategy and growth.',
+    imageSrc: '/assets/jayden-flake.png',
+    linkedinUrl: 'https://www.linkedin.com/in/jaydenflake/',
   },
   {
-    id: 'member-3',
-    name: 'Team Member 3',
-    role: 'Head of Product',
-    bio: 'Focused on delivering the best user experience for property tours.',
-    imageSrc: '/assets/SpaceportIcons/SpcprtBWIcon.png', // Placeholder
-    linkedinUrl: 'https://linkedin.com',
+    id: 'samuel-gibby',
+    name: 'Samuel Gibby',
+    role: 'Growth Lead',
+    bio: 'Focused on scaling and growth initiatives.',
+    imageSrc: '/assets/samuel-gibby.png',
+    linkedinUrl: 'https://www.linkedin.com/in/samuel-gibby/',
   },
 ];

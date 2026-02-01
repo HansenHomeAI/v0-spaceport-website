@@ -14,7 +14,7 @@ export default function TeamSection(): JSX.Element {
           fontWeight: 500, 
           color: 'white'
         }}>
-          Meet the Team.
+          Meet the team.
         </h2>
         
         <div className="team-grid">
