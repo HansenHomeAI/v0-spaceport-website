@@ -52,15 +52,15 @@ export default function TeamSection(): JSX.Element {
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 60px;
             align-items: start;
-            justify-items: start;
+            justify-items: center;
           }
 
           .team-member-card {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-            width: 100%;
+            align-items: center;
+            text-align: center;
+            width: 240px;
           }
 
           .member-photo-container {
@@ -82,10 +82,9 @@ export default function TeamSection(): JSX.Element {
           .member-info {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
+            align-items: center;
+            text-align: center;
             width: 100%;
-            align-self: stretch;
           }
 
           .member-name {
@@ -93,8 +92,7 @@ export default function TeamSection(): JSX.Element {
             margin-bottom: 8px;
             color: white;
             font-weight: 500;
-            text-align: left;
-            width: 100%;
+            text-align: center;
           }
 
           .member-role {
@@ -102,11 +100,7 @@ export default function TeamSection(): JSX.Element {
             font-size: 1rem;
             margin: 0 0 16px 0;
             font-weight: 400;
-            text-align: left;
-            width: 100%;
-            max-width: none;
-            margin-left: 0;
-            margin-right: 0;
+            text-align: center;
           }
 
           .linkedin-link {
@@ -125,23 +119,29 @@ export default function TeamSection(): JSX.Element {
             height: 20px;
           }
 
-          /* Avoid 2+1 triangle; stack as list earlier */
+          /* Mobile: vertical center stack, centered on page */
           @media (max-width: 1100px) {
             .team-grid {
               grid-template-columns: 1fr;
               gap: 28px;
+              justify-items: center;
             }
 
             .team-member-card {
-              flex-direction: row;
+              flex-direction: column;
               align-items: center;
-              gap: 20px;
+              text-align: center;
             }
 
             .member-photo-container {
               width: 80px;
               height: 80px;
-              margin-bottom: 0;
+              margin-bottom: 16px;
+            }
+
+            .member-info {
+              align-items: center;
+              text-align: center;
             }
 
             .member-name {
