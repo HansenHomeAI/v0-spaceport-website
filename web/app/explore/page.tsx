@@ -21,7 +21,7 @@ export default function ExplorePage(): JSX.Element {
           
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
             gap: '30px',
             maxWidth: '1200px',
             margin: '0 auto',
@@ -40,10 +40,12 @@ export default function ExplorePage(): JSX.Element {
                   </div>
                   <div className="property-card-content">
                     <h3>{property.title}</h3>
-                    <p className="property-card-location">{property.location}</p>
-                    <span className="cta-button2-fixed property-card-visit">
-                      Visit
-                    </span>
+                    <div className="property-card-bottom-row">
+                      <p className="property-card-location">{property.location}</p>
+                      <span className="cta-button2-fixed property-card-visit">
+                        Visit
+                      </span>
+                    </div>
                   </div>
                 </div>
               </a>
