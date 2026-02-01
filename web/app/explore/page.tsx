@@ -32,96 +32,18 @@ export default function ExplorePage(): JSX.Element {
                 href={property.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ textDecoration: 'none' }}
                 className="property-card"
               >
-                <div style={{
-                  borderRadius: '24px',
-                  overflow: 'hidden',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  height: '400px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-                >
-                  {/* Top 2/3 Image */}
-                  <div style={{
-                    height: '66%',
-                    width: '100%',
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}>
-                    <img 
-                      src={property.imageSrc} 
-                      alt={property.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
+                <div className="property-card-inner">
+                  <div className="property-card-image">
+                    <img src={property.imageSrc} alt={property.title} />
                   </div>
-                  
-                  {/* Bottom 1/3 Content */}
-                  <div style={{
-                    height: '34%',
-                    padding: '24px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    position: 'relative',
-                  }}>
-                    <h3 style={{ 
-                      color: 'white', 
-                      fontSize: '1.4rem', 
-                      marginBottom: '4px',
-                      fontWeight: 500 
-                    }}>
-                      {property.title}
-                    </h3>
-                    <p style={{ 
-                      color: 'rgba(255, 255, 255, 0.6)',
-                      fontSize: '1rem',
-                    }}>
-                      {property.location}
-                    </p>
-                    
-                    {/* Button in corner */}
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '24px',
-                      right: '24px',
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                    }}>
-                       <img 
-                        src="/assets/SpaceportIcons/Arrow.svg" 
-                        alt="Visit" 
-                        style={{ 
-                          width: '14px', 
-                          height: '14px',
-                          filter: 'invert(1)', // Ensure white arrow
-                        }} 
-                      />
-                    </div>
+                  <div className="property-card-content">
+                    <h3>{property.title}</h3>
+                    <p className="property-card-location">{property.location}</p>
+                    <span className="cta-button2-fixed property-card-visit">
+                      Visit
+                    </span>
                   </div>
                 </div>
               </a>

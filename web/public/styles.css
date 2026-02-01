@@ -660,6 +660,86 @@ html, body {
   color: transparent;
 }
 
+/* Property Cards (Explore page - Zillow-style) */
+.property-card {
+  text-decoration: none;
+  display: block;
+}
+.property-card-inner {
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.property-card-inner::before {
+  content: "";
+  padding: 1.4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: var(--accent-gradient);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+.property-card:hover .property-card-inner {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.property-card-image {
+  height: 66%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.property-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.property-card-content {
+  height: 34%;
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 6px;
+}
+.property-card-content h3 {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+.property-card-content .property-card-location {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  margin: 0;
+}
+.property-card-content .property-card-visit {
+  margin-top: auto;
+  margin-left: 0;
+  padding-top: 12px;
+  display: inline-flex;
+  align-self: flex-start;
+}
+
 /* Feedback Section */
 .feedback-section {
   max-width: 640px;
