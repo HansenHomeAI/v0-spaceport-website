@@ -9,7 +9,7 @@ export default function TeamSection(): JSX.Element {
       <div className="team-content">
         <h2 style={{ 
           textAlign: 'center', 
-          marginBottom: '2rem', 
+          marginBottom: '30px', 
           fontSize: '2rem', 
           fontWeight: 500, 
           color: 'white'
@@ -30,17 +30,18 @@ export default function TeamSection(): JSX.Element {
               
               <div className="member-info">
                 <h3 className="member-name">{member.name}</h3>
-                <p className="member-role">{member.role}</p>
-                
-                <a 
-                  href={member.linkedinUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="linkedin-link"
-                  aria-label={`${member.name}'s LinkedIn`}
-                >
-                  <img src="/assets/linkedin.svg" alt="LinkedIn" />
-                </a>
+                <div className="member-role-row">
+                  <p className="member-role">{member.role}</p>
+                  <a 
+                    href={member.linkedinUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="linkedin-link"
+                    aria-label={`${member.name}'s LinkedIn`}
+                  >
+                    <img src="/assets/linkedin.svg" alt="LinkedIn" />
+                  </a>
+                </div>
               </div>
             </div>
           ))}
@@ -49,10 +50,17 @@ export default function TeamSection(): JSX.Element {
         <style jsx>{`
           .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: 1fr;
             gap: 60px;
             align-items: start;
             justify-items: center;
+          }
+
+          /* Desktop: all three in one row (lower threshold so row kicks in sooner) */
+          @media (min-width: 800px) {
+            .team-grid {
+              grid-template-columns: repeat(3, 1fr);
+            }
           }
 
           .team-member-card {
@@ -60,7 +68,9 @@ export default function TeamSection(): JSX.Element {
             flex-direction: column;
             align-items: center;
             text-align: center;
-            width: 240px;
+            width: 200px;
+            margin-top: 30px;
+            margin-bottom: 30px;
           }
 
           .member-photo-container {
@@ -95,10 +105,17 @@ export default function TeamSection(): JSX.Element {
             text-align: center;
           }
 
+          .member-role-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+          }
+
           .member-role {
             color: rgba(255, 255, 255, 0.5);
             font-size: 1rem;
-            margin: 0 0 16px 0;
+            margin: 0;
             font-weight: 400;
             text-align: center;
           }
@@ -115,12 +132,13 @@ export default function TeamSection(): JSX.Element {
           }
 
           .linkedin-link img {
-            width: 20px;
-            height: 20px;
+            display: flex;
+            width: 14px;
+            height: 14px;
           }
 
           /* Mobile: vertical center stack, centered on page */
-          @media (max-width: 1100px) {
+          @media (max-width: 799px) {
             .team-grid {
               grid-template-columns: 1fr;
               gap: 28px;
@@ -148,8 +166,8 @@ export default function TeamSection(): JSX.Element {
               margin-bottom: 4px;
             }
             
-            .member-role {
-              margin-bottom: 8px;
+            .member-role-row {
+              gap: 10px;
             }
           }
         `}</style>
