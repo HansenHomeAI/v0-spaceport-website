@@ -8,7 +8,7 @@ export default function TeamSection(): JSX.Element {
     <section className="section" id="team" style={{ padding: '70px 20px 40px' }}>
       <div className="team-content">
         <h2 style={{ 
-          textAlign: 'left', 
+          textAlign: 'center', 
           marginBottom: '2rem', 
           fontSize: '2rem', 
           fontWeight: 500, 
@@ -17,57 +17,142 @@ export default function TeamSection(): JSX.Element {
           Meet the Team.
         </h2>
         
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          gap: '60px',
-        }}>
+        <div className="team-grid">
           {TEAM_MEMBERS.map((member) => (
-            <div key={member.id} style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-              width: '240px',
-            }}>
-              <div style={{
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                overflow: 'hidden',
-                marginBottom: '20px',
-                background: 'rgba(255, 255, 255, 0.1)',
-              }}>
+            <div key={member.id} className="team-member-card">
+              <div className="member-photo-container">
                 <img 
                   src={member.imageSrc} 
                   alt={member.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className="member-photo"
                 />
               </div>
               
-              <h3 style={{ fontSize: '1.4rem', marginBottom: '8px', color: 'white', fontWeight: 500 }}>{member.name}</h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '1rem', marginBottom: '16px', fontWeight: 400 }}>{member.role}</p>
-              
-              <a 
-                href={member.linkedinUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-block',
-                  opacity: 0.8,
-                  transition: 'opacity 0.2s',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
-                aria-label={`${member.name}'s LinkedIn`}
-              >
-                <img src="/assets/linkedin.svg" alt="LinkedIn" style={{ width: '24px', height: '24px' }} />
-              </a>
+              <div className="member-info">
+                <h3 className="member-name">{member.name}</h3>
+                <p className="member-role">{member.role}</p>
+                
+                <a 
+                  href={member.linkedinUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="linkedin-link"
+                  aria-label={`${member.name}'s LinkedIn`}
+                >
+                  <img src="/assets/linkedin.svg" alt="LinkedIn" />
+                </a>
+              </div>
             </div>
           ))}
         </div>
+
+        <style jsx>{`
+          .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 60px;
+            align-items: start;
+            justify-items: start;
+          }
+
+          .team-member-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            width: 100%;
+          }
+
+          .member-photo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+          }
+
+          .member-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .member-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            width: 100%;
+            align-self: stretch;
+          }
+
+          .member-name {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 500;
+            text-align: left;
+            width: 100%;
+          }
+
+          .member-role {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1rem;
+            margin: 0 0 16px 0;
+            font-weight: 400;
+            text-align: left;
+            width: 100%;
+            max-width: none;
+            margin-left: 0;
+            margin-right: 0;
+          }
+
+          .linkedin-link {
+            display: inline-block;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            cursor: pointer;
+          }
+          
+          .linkedin-link:hover {
+            opacity: 1;
+          }
+
+          .linkedin-link img {
+            width: 20px;
+            height: 20px;
+          }
+
+          /* Avoid 2+1 triangle; stack as list earlier */
+          @media (max-width: 1100px) {
+            .team-grid {
+              grid-template-columns: 1fr;
+              gap: 28px;
+            }
+
+            .team-member-card {
+              flex-direction: row;
+              align-items: center;
+              gap: 20px;
+            }
+
+            .member-photo-container {
+              width: 80px;
+              height: 80px;
+              margin-bottom: 0;
+            }
+
+            .member-name {
+              margin-bottom: 4px;
+            }
+            
+            .member-role {
+              margin-bottom: 8px;
+            }
+          }
+        `}</style>
       </div>
     </section>
   );
