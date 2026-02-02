@@ -678,13 +678,17 @@ html, body {
   text-decoration: none;
   display: block;
 }
+/* Inner radius = outer radius minus border width so image/vignette are flush with inner edge */
 .property-card-inner {
-  border-radius: 24px;
+  --property-card-radius: 24px;
+  --property-card-border: 2.5px;
+  --property-card-inner-radius: calc(var(--property-card-radius) - var(--property-card-border));
+  border-radius: var(--property-card-radius);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border: var(--property-card-border) solid rgba(255, 255, 255, 0.1);
   height: 400px;
   display: block;
   position: relative;
@@ -705,7 +709,7 @@ html, body {
   );
   pointer-events: none;
   z-index: 1;
-  border-radius: inherit;
+  border-radius: var(--property-card-inner-radius);
 }
 .property-card:hover .property-card-inner {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -721,6 +725,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   z-index: 0;
+  border-radius: var(--property-card-inner-radius);
   background: conic-gradient(
     from 230deg at -10% 50%,
     #D4A27F 6%,
@@ -734,6 +739,7 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: var(--property-card-inner-radius);
   opacity: 0; /* Hidden for now so footer gradient shows; set to 1 when using real thumbnails */
 }
 /* Card text overlaid at bottom on top of thumbnail + vignette */
