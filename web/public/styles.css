@@ -696,7 +696,8 @@ html, body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 .property-card-image {
-  height: 66%;
+  flex: 1 1 0;
+  min-height: 0;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -706,10 +707,11 @@ html, body {
   height: 100%;
   object-fit: cover;
 }
-/* Property card content: match project-box typography and spacing (create modal) */
+/* Property card content: fit content so section isn't overly tall */
 .property-card-content {
-  height: 34%;
-  padding: 25px;
+  height: fit-content;
+  flex-shrink: 0;
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
