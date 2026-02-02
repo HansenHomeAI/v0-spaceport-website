@@ -30,7 +30,7 @@ export default function ExplorePage(): JSX.Element {
                   <h3>{property.title}</h3>
                   <div className="property-card-bottom-row">
                     <p className="property-card-location">{property.location}</p>
-                    <span className="cta-color property-card-visit">
+                    <span className="cta-button property-card-visit">
                       Visit
                     </span>
                   </div>
