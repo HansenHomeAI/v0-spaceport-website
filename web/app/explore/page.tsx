@@ -53,8 +53,8 @@ export default function ExplorePage(): JSX.Element {
   return (
     <>
       <section className="section" id="explore-header">
-        <h1>Explore Spaces.</h1>
-        <p><span className="inline-white">Browse 3D experiences from our partners.</span></p>
+        <h1>Explore.</h1>
+        <p><span className="inline-white">Discover 3D spaces created by our partners.</span></p>
       </section>
       <section className="section" id="explore-content">
         <div className="explore-grid">
