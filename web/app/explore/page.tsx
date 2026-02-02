@@ -27,13 +27,13 @@ export default function ExplorePage(): JSX.Element {
                   <img src={property.imageSrc} alt={property.title} />
                 </div>
                 <div className="property-card-content">
-                  <div className="property-card-title-row">
+                  <div className="property-card-content-left">
                     <h3>{property.title}</h3>
-                    <span className="cta-button property-card-visit">
-                      Visit
-                    </span>
+                    <p className="property-card-location">{property.location}</p>
                   </div>
-                  <p className="property-card-location">{property.location}</p>
+                  <span className="cta-button property-card-visit">
+                    Visit
+                  </span>
                 </div>
               </div>
             </a>
