@@ -29,6 +29,7 @@ export type ResolveClientResponse = {
 export type PublishViewerResponse = {
   url: string;
   slug: string;
+  hash?: string;
 };
 
 type PermissionState = {
@@ -167,7 +168,7 @@ export function useModelDeliveryAdmin() {
     return data as ResolveClientResponse;
   }, [endpoints.resolve]);
 
-  const sendDelivery = useCallback(async (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string; }) => {
+  const sendDelivery = useCallback(async (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string; viewerChecksum?: string; }) => {
     if (!endpoints.send) {
       throw new Error('Model delivery API is not configured');
     }

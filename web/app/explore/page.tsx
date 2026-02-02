@@ -1,11 +1,20 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PROPERTIES } from '../../lib/data';
 
 export const runtime = 'edge';
 
 const DEBUG_ENDPOINT = 'http://127.0.0.1:7249/ingest/256c2b17-3bda-4985-b0bf-1f11562cd483';
+const FALLBACK_IMAGE = '/assets/SpaceportIcons/SpcprtLarge.png';
+
+type ExploreCard = {
+  id: string;
+  title: string;
+  location: string;
+  link: string;
+  thumbnailUrl?: string;
+};
 
 function logVisitButtonEvent(
   event: 'enter' | 'leave',
@@ -37,6 +46,51 @@ function logVisitButtonEvent(
 }
 
 export default function ExplorePage(): JSX.Element {
+  const fallbackCards = useMemo<ExploreCard[]>(
+    () => PROPERTIES.map((property) => ({
+      id: property.id,
+      title: property.title,
+      location: property.location,
+      link: property.link,
+      thumbnailUrl: property.imageSrc,
+    })),
+    []
+  );
+  const [properties, setProperties] = useState<ExploreCard[]>(fallbackCards);
+
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_EXPLORE_API_URL;
+    if (!apiUrl) return;
+
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`Explore API failed (${response.status})`);
+        const data = await response.json();
+        const items = (data?.items || []) as Array<any>;
+        const mapped = items
+          .filter((item) => item?.viewerUrl)
+          .map((item) => ({
+            id: item.id || item.viewerUrl || crypto.randomUUID(),
+            title: item.title || 'Untitled',
+            location: item.location || '',
+            link: item.viewerUrl || '#',
+            thumbnailUrl: item.thumbnailUrl || '',
+          }));
+        if (!cancelled && mapped.length) {
+          setProperties(mapped);
+        }
+      } catch {
+        // Keep fallback
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleVisitEnter = useCallback(
     (e: React.MouseEvent<HTMLSpanElement>, propertyId: string) => {
       logVisitButtonEvent('enter', propertyId, e.currentTarget);
@@ -58,7 +112,7 @@ export default function ExplorePage(): JSX.Element {
       </section>
       <section className="section" id="explore-content">
         <div className="explore-grid">
-          {PROPERTIES.map((property) => (
+          {properties.map((property) => (
             <a
               key={property.id}
               href={property.link}
@@ -67,9 +121,14 @@ export default function ExplorePage(): JSX.Element {
               className="property-card"
             >
               <div className="property-card-inner">
-                <div className="property-card-image">
-                  <img src={property.imageSrc} alt={property.title} />
-                </div>
+                <div
+                  className="property-card-image"
+                  role="img"
+                  aria-label={property.title}
+                  style={{
+                    ['--property-thumb' as any]: `url(${property.thumbnailUrl || FALLBACK_IMAGE})`,
+                  }}
+                />
                 <div className="property-card-content">
                   <div className="property-card-content-left">
                     <h3>{property.title}</h3>

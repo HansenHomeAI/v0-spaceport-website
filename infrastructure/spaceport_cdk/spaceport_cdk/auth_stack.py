@@ -94,6 +94,28 @@ class AuthStack(Stack):
             partition_key_type=dynamodb.AttributeType.STRING
         )
 
+        explore_listings_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-ExploreListingsTable",
+            preferred_name=f"Spaceport-ExploreListings-{suffix}",
+            fallback_name="Spaceport-ExploreListings",
+            partition_key_name="listingId",
+            partition_key_type=dynamodb.AttributeType.STRING
+        )
+
+        if isinstance(explore_listings_table, dynamodb.Table):
+            explore_listings_table.add_global_secondary_index(
+                index_name="visibility-updatedAt-index",
+                partition_key=dynamodb.Attribute(
+                    name="visibility",
+                    type=dynamodb.AttributeType.STRING,
+                ),
+                sort_key=dynamodb.Attribute(
+                    name="updatedAt",
+                    type=dynamodb.AttributeType.NUMBER,
+                ),
+                projection_type=dynamodb.ProjectionType.ALL,
+            )
+
         # Define Projects Lambda function with environment-specific naming
         projects_lambda = lambda_.Function(
             self,
@@ -251,6 +273,75 @@ class AuthStack(Stack):
         )
 
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
+
+        # -------------------------------------
+        # Explore Listings (public read API)
+        # -------------------------------------
+        explore_public_lambda = lambda_.Function(
+            self,
+            "Spaceport-ExplorePublicFunction",
+            function_name=f"Spaceport-ExplorePublicFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "explore_public"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            timeout=Duration.seconds(20),
+            memory_size=256,
+            environment={
+                "EXPLORE_LISTINGS_TABLE_NAME": explore_listings_table.table_name,
+                "EXPLORE_LISTINGS_VISIBILITY_INDEX": "visibility-updatedAt-index",
+            },
+        )
+
+        explore_listings_table.grant_read_data(explore_public_lambda)
+
+        explore_api = apigw.RestApi(
+            self,
+            "Spaceport-ExplorePublicApi",
+            rest_api_name=f"Spaceport-ExplorePublicApi-{suffix}",
+            description="Public explore listings API",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+            ),
+        )
+
+        explore_resource = explore_api.root.add_resource("explore")
+        explore_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(explore_public_lambda),
+            authorization_type=apigw.AuthorizationType.NONE,
+        )
+
+        explore_api.add_gateway_response(
+            "ExploreDefault4XX",
+            type=apigw.ResponseType.DEFAULT_4_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,OPTIONS'",
+            },
+        )
+
+        explore_api.add_gateway_response(
+            "ExploreDefault5XX",
+            type=apigw.ResponseType.DEFAULT_5_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,OPTIONS'",
+            },
+        )
+
+        CfnOutput(self, "ExplorePublicApiUrl", value=f"{explore_api.url}explore")
 
         # -------------------------------------
         # Subscription Management (integrated into AuthStack)
@@ -642,17 +733,21 @@ class AuthStack(Stack):
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+                "EXPLORE_LISTINGS_TABLE_NAME": explore_listings_table.table_name,
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
                 "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}", ""),
                 "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
                 "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
                 "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
+                "SPACES_THUMBNAIL_URL": os.environ.get("SPACES_THUMBNAIL_URL", ""),
+                "SPACES_THUMBNAIL_TOKEN": os.environ.get("SPACES_THUMBNAIL_TOKEN", ""),
             },
         )
 
         # Grant table access
         beta_access_permissions_table.grant_read_write_data(model_delivery_lambda)
         projects_table.grant_read_write_data(model_delivery_lambda)
+        explore_listings_table.grant_read_write_data(model_delivery_lambda)
 
         model_delivery_api = apigw.RestApi(
             self, "Spaceport-ModelDeliveryAdminApi",

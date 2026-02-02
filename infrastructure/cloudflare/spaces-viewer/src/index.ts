@@ -1,5 +1,6 @@
 const DEFAULT_CACHE_CONTROL = 'public, max-age=300';
 const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+const DISALLOWED_PATH_SEGMENTS = new Set(['..', '.']);
 
 interface Env {
   SPACES_BUCKET: R2Bucket;
@@ -252,8 +253,13 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const baseSlug = normalizeSlug(title || file.name || 'model');
   const slug = await findAvailableSlug(env, baseSlug);
   const key = `models/${slug}/index.html`;
+  const fileBuffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
+  const hashHex = Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
 
-  await env.SPACES_BUCKET.put(key, await file.arrayBuffer(), {
+  await env.SPACES_BUCKET.put(key, fileBuffer, {
     httpMetadata: {
       contentType: 'text/html; charset=utf-8',
       cacheControl: DEFAULT_CACHE_CONTROL,
@@ -263,16 +269,33 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const baseUrl = buildBaseUrl(env, request);
   const viewerUrl = `${baseUrl}/${slug}`;
 
-  return jsonResponse(200, { ok: true, slug, url: viewerUrl });
+  return jsonResponse(200, { ok: true, slug, url: viewerUrl, hash: hashHex });
+}
+
+function resolveViewerKey(pathname: string): { slug: string; key: string } | null {
+  const parts = pathname.replace(/^\/+/, '').split('/').filter(Boolean);
+  if (!parts.length) return null;
+  if (parts.some((segment) => DISALLOWED_PATH_SEGMENTS.has(segment) || segment.startsWith('.'))) {
+    return null;
+  }
+  const slug = parts[0];
+  const assetPath = parts.slice(1).join('/');
+  const key = assetPath ? `models/${slug}/${assetPath}` : `models/${slug}/index.html`;
+  return { slug, key };
 }
 
 async function handleViewer(request: Request, env: Env, pathname: string): Promise<Response> {
-  const slug = pathname.replace(/^\/+/, '').split('/')[0];
+  const resolved = resolveViewerKey(pathname);
+  const slug = resolved?.slug;
   if (!slug || slug === 'health') {
     return new Response('Not found', { status: 404 });
   }
 
-  const key = `models/${slug}/index.html`;
+  if (!resolved) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const key = resolved.key;
   const object = await env.SPACES_BUCKET.get(key);
   if (!object) {
     return new Response('Not found', { status: 404 });

@@ -44,6 +44,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
   const [contactEmail, setContactEmail] = useState<string>("");
+  const [locationCity, setLocationCity] = useState<string>("");
+  const [locationState, setLocationState] = useState<string>("");
+  const [locationCityState, setLocationCityState] = useState<string>("");
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -125,6 +128,47 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  const normalizeState = useCallback((value?: string) => {
+    if (!value) return '';
+    const cleaned = value.trim();
+    if (cleaned.toLowerCase().startsWith('us-')) {
+      return cleaned.split('-')[1]?.toUpperCase() || cleaned.toUpperCase();
+    }
+    return cleaned.length <= 3 ? cleaned.toUpperCase() : cleaned;
+  }, []);
+
+  const updateLocationParts = useCallback((parts: { city?: string; state?: string }) => {
+    const city = (parts.city || '').trim();
+    const state = normalizeState(parts.state || '');
+    const cityState = city && state ? `${city}, ${state}` : city || state;
+    setLocationCity(city);
+    setLocationState(state);
+    setLocationCityState(cityState);
+  }, [normalizeState]);
+
+  const extractCityStateFromFeature = useCallback((feature: any) => {
+    if (!feature) return { city: '', state: '' };
+    const context = feature.context || [];
+    const place = context.find((item: any) => typeof item?.id === 'string' && (item.id.startsWith('place.') || item.id.startsWith('locality.')));
+    const region = context.find((item: any) => typeof item?.id === 'string' && item.id.startsWith('region.'));
+    const city = place?.text || (feature.place_type?.includes('place') ? feature.text : '');
+    const state = region?.short_code || region?.text || '';
+    return { city, state };
+  }, []);
+
+  const reverseGeocodeCityState = useCallback(async (lat: number, lng: number) => {
+    try {
+      const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}&types=place,locality,region&limit=1`);
+      const data = await res.json();
+      if (data?.features?.length) {
+        const parts = extractCityStateFromFeature(data.features[0]);
+        updateLocationParts(parts);
+      }
+    } catch (err) {
+      console.warn('Reverse geocoding failed:', err);
+    }
+  }, [MAPBOX_TOKEN, extractCityStateFromFeature, updateLocationParts]);
+
 
 
   // Reset state when opening/closing
@@ -159,6 +203,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!(params.latitude && params.longitude)) {
         setAddressSearch(params.address || '');
       }
+      setLocationCity(params.city || '');
+      setLocationState(params.state || '');
+      setLocationCityState(params.cityState || '');
       setBatteryMinutes(params.batteryMinutes || '');
       setNumBatteries(params.batteries || '');
       setMinHeightFeet(params.minHeight || '');
@@ -246,6 +293,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
+      setLocationCity('');
+      setLocationState('');
+      setLocationCityState('');
       setSelectedFile(null);
       setStatus('draft');
       setCurrentProjectId(null);
@@ -259,7 +309,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [open, project]);
+  }, [open, project, reverseGeocodeCityState]);
 
   // Initialize Mapbox on open
   useEffect(() => {
@@ -304,6 +354,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
           setOptimizedParamsWithLogging(null, 'Map coordinates changed');
+          reverseGeocodeCityState(lat, lng);
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
@@ -344,7 +395,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [open, project]);
 
   // Helper function to place marker at coordinates
-  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
+  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number, options?: { skipReverse?: boolean }) => {
     if (!mapRef.current) return;
     
     mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
@@ -376,16 +427,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
-    
+
+    if (!options?.skipReverse) {
+      reverseGeocodeCityState(lat, lng);
+    }
+
     // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, []);
+  }, [reverseGeocodeCityState]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
     if (!map || !coords) return;
     
     // Use the same function as user interaction to ensure consistency
-    await placeMarkerAtCoords(coords.lat, coords.lng);
+    await placeMarkerAtCoords(coords.lat, coords.lng, { skipReverse: true });
     
     // Update the address search field to show the coordinates
     setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
@@ -692,6 +747,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         progress,
         params: {
           address: addressSearch,
+          city: locationCity,
+          state: locationState,
+          cityState: locationCityState,
           batteryMinutes,
           batteries: numBatteries,
           minHeight: minHeightFeet,
@@ -732,7 +790,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
+  }, [addressSearch, batteryMinutes, currentProjectId, locationCity, locationState, locationCityState, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -849,12 +907,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const data = await res.json();
       if (data?.features?.length) {
         const [lng, lat] = data.features[0].center;
-        await placeMarkerAtCoords(lat, lng);
+        const parts = extractCityStateFromFeature(data.features[0]);
+        updateLocationParts(parts);
+        await placeMarkerAtCoords(lat, lng, { skipReverse: true });
       }
     } catch (err) {
       console.warn('Geocoding failed:', err);
     }
-  }, [addressSearch, MAPBOX_TOKEN]);
+  }, [addressSearch, MAPBOX_TOKEN, extractCityStateFromFeature, placeMarkerAtCoords, updateLocationParts]);
 
   // Upload flow
   const onFileChosen = useCallback((file: File | null) => {
@@ -1531,5 +1591,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-
-

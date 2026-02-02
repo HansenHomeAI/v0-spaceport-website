@@ -13,7 +13,7 @@ interface ModelDeliveryModalProps {
   open: boolean;
   onClose: () => void;
   resolveClient: (email: string) => Promise<ResolveClientResponse>;
-  sendDelivery: (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string }) => Promise<any>;
+  sendDelivery: (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string; viewerChecksum?: string }) => Promise<any>;
   publishViewer: (payload: { title: string; file: File }) => Promise<PublishViewerResponse>;
   onDelivered: (project: Record<string, any>) => void;
 }
@@ -117,6 +117,7 @@ export default function ModelDeliveryModal({
       });
       const finalLink = publishResult.url;
       viewerSlug = publishResult.slug;
+      const viewerChecksum = publishResult.hash;
 
       const response = await sendDelivery({
         clientEmail: client.email,
@@ -125,6 +126,7 @@ export default function ModelDeliveryModal({
         projectTitle: selectedProject?.title,
         viewerSlug,
         viewerTitle: preferredTitle.trim() || undefined,
+        viewerChecksum: viewerChecksum || undefined,
       });
 
       const deliveredProject = response?.project as ModelDeliveryProject | undefined;
