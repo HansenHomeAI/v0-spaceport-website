@@ -660,6 +660,19 @@ html, body {
   color: transparent;
 }
 
+/* Explore page content section */
+#explore-content {
+  padding: 40px 20px 60px;
+  position: relative;
+  max-width: 1200px;
+}
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 30px;
+  margin: 0 auto;
+}
+
 /* Property Cards (Explore page - Zillow-style) */
 .property-card {
   text-decoration: none;
@@ -671,30 +684,13 @@ html, body {
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
   height: 400px;
   display: flex;
   flex-direction: column;
   position: relative;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-}
-.property-card-inner::before {
-  content: "";
-  padding: 1.4px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  background: var(--accent-gradient);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 1;
 }
 .property-card:hover .property-card-inner {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -710,20 +706,24 @@ html, body {
   height: 100%;
   object-fit: cover;
 }
+/* Property card content: match project-box typography and spacing (create modal) */
 .property-card-content {
   height: 34%;
-  padding: 24px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   text-align: left;
-  gap: 8px;
+  gap: 0;
 }
 .property-card-content h3 {
-  color: #fff;
-  font-size: 1.25rem;
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 1.2rem;
+  margin: 0 0 8px 0;
   font-weight: 500;
-  margin: 0;
+  color: #fff;
   line-height: 1.3;
 }
 .property-card-bottom-row {
@@ -731,13 +731,15 @@ html, body {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto;
-  gap: 12px;
+  margin-top: 0;
+  gap: 8px;
 }
 .property-card-content .property-card-location {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
+  line-height: 1.4;
   margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: none;
 }
 .property-card-content .property-card-visit {
   margin: 0;
@@ -1316,10 +1318,11 @@ footer {
   margin-top: 80px;
 }
 
-/* Ensure About, Pricing, and Create start lower from the top */
+/* Ensure About, Pricing, Create, and Explore start lower from the top */
 #about,
 #pricing-header,
-#create {
+#create,
+#explore-header {
   flex-direction: column;
   justify-content: center;
   min-height: 3rem;
@@ -2700,11 +2703,11 @@ footer {
 }
 
 
-/* Keep the same position & overflow for all three */
-/* Keep the same position & overflow for all three */
+/* Keep the same position & overflow for header sections */
 #pricing-header,
 #about,
-#create {
+#create,
+#explore-header {
   position: relative;
   overflow: visible; /* Allow pseudo-element to extend beyond boundaries */
   isolation: isolate; /* Create new stacking context */
@@ -2799,6 +2802,35 @@ footer {
     );
   opacity: 0.9;
   filter: blur(55px);
+  will-change: transform;
+}
+
+/* EXPLORE Optimized Color Effect */
+#explore-header::before {
+  content: "";
+  position: absolute;
+  top: -12rem;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 400px;
+  pointer-events: none;
+  z-index: -2;
+  background: 
+    radial-gradient(
+      ellipse 800px 300px at 30% 25%,
+      rgba(75, 0, 109, 0.38) 0%,
+      rgba(205, 112, 228, 0.22) 45%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 700px 260px at 70% 20%,
+      rgba(255, 79, 0, 0.32) 0%,
+      rgba(255, 79, 0, 0.18) 50%,
+      transparent 82%
+    );
+  opacity: 0.8;
+  filter: blur(50px);
   will-change: transform;
 }
 
@@ -3199,10 +3231,11 @@ footer {
   }
 }
 
-/* Noise overlay layer for all three */
+/* Noise overlay layer for header sections */
 #pricing-header::after,
 #about::after,
-#create::after {
+#create::after,
+#explore-header::after {
   content: "";
   position: absolute;
   top: -1600px;
