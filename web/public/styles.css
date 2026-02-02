@@ -1405,6 +1405,28 @@ footer {
   color: #000;
 }
 
+/* CTA Color: pill with #6495ED fill at 10%, no border, tighter than cta-button2-fixed */
+.cta-color {
+  display: inline-block;
+  text-decoration: none;
+  padding: 7px 16px;
+  border-radius: 999px;
+  transition: background 0.3s ease;
+  margin-left: 0;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  color: #6495ED;
+  background: rgba(100, 149, 237, 0.1);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+.cta-color:hover {
+  background: rgba(100, 149, 237, 0.2);
+  color: #6495ED;
+}
+
 /* STATS SECTION (Apple-like) */
 .stats-grid {
   display: flex;
