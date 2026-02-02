@@ -681,14 +681,12 @@ html, body {
 /* Inner radius = outer radius minus border width so image/vignette are flush with inner edge */
 .property-card-inner {
   --property-card-radius: 24px;
-  --property-card-border: 2.5px;
-  --property-card-inner-radius: calc(var(--property-card-radius) - var(--property-card-border));
+  --property-card-inner-radius: var(--property-card-radius);
   border-radius: var(--property-card-radius);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-  border: var(--property-card-border) solid rgba(255, 255, 255, 0.1);
   height: 400px;
   display: block;
   position: relative;
@@ -762,7 +760,7 @@ html, body {
   width: 100%;
   text-align: left;
   font-size: 1.2rem;
-  margin: 0 0 8px 0;
+  margin: 4px 0;
   font-weight: 500;
   color: #fff;
   line-height: 1.3;
