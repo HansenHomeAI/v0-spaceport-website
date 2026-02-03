@@ -658,10 +658,16 @@ class MLPipelineStack(Stack):
         )
 
         # Build the workflow with proper job completion waiting
+        # Terminal states for partial pipeline runs
+        sfm_only_complete = sfn.Succeed(self, "SfmOnlyComplete")
+        gaussian_only_complete = sfn.Succeed(self, "GaussianOnlyComplete")
+
         # SfM workflow: Start job -> Wait and poll until complete
         sfm_polling_loop = sfm_choice.when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Completed"),
-            gaussian_job_with_catch
+            sfn.Choice(self, "IsSfmOnlyRun")
+              .when(sfn.Condition.string_equals("$.pipelineStep", "sfm"), sfm_only_complete)
+              .otherwise(gaussian_job_with_catch)
         ).when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Failed"),
             notify_error
@@ -672,7 +678,9 @@ class MLPipelineStack(Stack):
         # Gaussian workflow: Start job -> Wait and poll until complete  
         gaussian_polling_loop = gaussian_choice.when(
             sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Completed"),
-            compression_job_with_catch
+            sfn.Choice(self, "IsGaussianOnlyRun")
+              .when(sfn.Condition.string_equals("$.pipelineStep", "3dgs"), gaussian_only_complete)
+              .otherwise(compression_job_with_catch)
         ).when(
             sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Failed"),
             notify_error
