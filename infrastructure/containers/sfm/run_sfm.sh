@@ -2,7 +2,7 @@
 
 # Production OpenSfM EXIF-Constrained SfM Processing
 # SageMaker entry point for EXIF-enhanced Structure-from-Motion
-# Updated: 2026-02-03 (EXIF priors rebuild trigger #2)
+# Updated: 2026-02-03 (EXIF priors rebuild trigger #3)
 
 set -e  # Exit on any error
 
