@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-OpenSfM GPS-Enhanced SfM Processing Pipeline
-Runs Structure-from-Motion with GPS priors from drone flight path data
+OpenSfM EXIF-Enhanced SfM Processing Pipeline
+Runs Structure-from-Motion with GPS priors from photo EXIF metadata
 """
 
 import os
@@ -24,9 +24,8 @@ logger = logging.getLogger(__name__)
 # Add current directory to Python path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Import our GPS processors
-from gps_processor import DroneFlightPathProcessor
-from gps_processor_3d import Advanced3DPathProcessor
+# Import our EXIF/GPS processors
+from gps_processor_3d import ExifOnlyPriorBuilder
 from colmap_converter import OpenSfMToCOLMAPConverter
 
 
@@ -87,11 +86,16 @@ class OpenSfMGPSPipeline:
         """
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
+        # CSV priors are deprecated; EXIF-only priors are used instead.
         self.gps_csv_path = Path(gps_csv_path) if gps_csv_path else None
         self.work_dir = None
         self.images_dir = None
         self.opensfm_dir = None
         self.has_gps_priors = False
+        self.gps_source = "none"
+        self.gps_coverage = 0.0
+        self.gps_photos_with_gps = 0
+        self.gps_total_photos = 0
         self.image_count = 0
         self.feature_stats = {}
 
@@ -141,57 +145,28 @@ class OpenSfMGPSPipeline:
         return image_count
     
     def process_gps_data(self) -> bool:
-        """Process GPS data if available"""
-        if not self.gps_csv_path or not self.gps_csv_path.exists():
-            # Check for GPS CSV in input directory
-            csv_files = list(self.input_dir.glob("gps/*.csv"))
-            if not csv_files:
-                logger.warning("⚠️ No GPS CSV file found, proceeding without GPS priors")
-                return False
-            self.gps_csv_path = csv_files[0]
-        
-        logger.info(f"🛰️ Processing GPS data from: {self.gps_csv_path}")
-        
+        """Process EXIF GPS data and create priors (CSV is ignored)."""
+        logger.info("🛰️ Building EXIF-only GPS priors from image metadata")
         try:
-            # Use the new Advanced 3D Path Processor
-            processor = Advanced3DPathProcessor(self.gps_csv_path, self.images_dir)
-            
-            # Process flight data
-            processor.parse_flight_csv()
-            processor.setup_local_coordinate_system()
-            processor.build_3d_flight_path()
-            
-            # Process photos with intelligent ordering
-            photos = processor.get_photo_list_with_validation()
-            if not photos:
-                logger.error("❌ No photos found to process")
+            builder = ExifOnlyPriorBuilder(self.images_dir, self.opensfm_dir)
+            has_priors, stats = builder.build_priors()
+            if not has_priors:
+                self.gps_coverage = stats.get('coverage', 0.0)
+                self.gps_photos_with_gps = stats.get('photos_with_gps', 0)
+                self.gps_total_photos = stats.get('total_photos', 0)
+                logger.warning("⚠️ EXIF GPS coverage insufficient; proceeding without priors")
                 return False
-            
-            # Map photos to 3D positions
-            processor.map_photos_to_3d_positions(photos)
-            # Refine using EXIF+trajectory projection for sub-meter altitude
-            try:
-                processor.apply_exif_trajectory_projection(photos)
-                logger.info("✅ Applied EXIF+trajectory projection refinement")
-            except Exception as refine_err:
-                logger.warning(f"⚠️ EXIF+trajectory projection skipped due to error: {refine_err}")
-            
-            # Generate OpenSfM files
-            processor.generate_opensfm_files(self.opensfm_dir)
-            
-            # Get processing summary
-            summary = processor.get_processing_summary()
-            logger.info(f"📊 GPS Processing Summary:")
-            logger.info(f"   Photos: {summary['photos_processed']}")
-            logger.info(f"   Path length: {summary['path_length_m']}m")
-            logger.info(f"   Photo spacing: {summary['photo_spacing_m']}m")
-            logger.info(f"   Confidence: {summary['confidence_stats']['mean']:.2f}")
-            
+
+            builder.write_opensfm_files(stats['entries'])
             self.has_gps_priors = True
+            self.gps_source = "exif"
+            self.gps_coverage = stats.get('coverage', 0.0)
+            self.gps_photos_with_gps = stats.get('photos_with_gps', 0)
+            self.gps_total_photos = stats.get('total_photos', 0)
+            logger.info(f"📊 EXIF GPS coverage: {self.gps_photos_with_gps}/{self.gps_total_photos} ({self.gps_coverage:.0%})")
             return True
-            
         except Exception as e:
-            logger.error(f"❌ GPS processing failed: {e}")
+            logger.error(f"❌ EXIF GPS processing failed: {e}")
             logger.warning("⚠️ Continuing without GPS priors")
             return False
     
@@ -218,10 +193,12 @@ class OpenSfMGPSPipeline:
             
             # GPS integration
             'use_altitude_tag': True,
+            'use_gps': self.has_gps_priors,
             'gps_accuracy': 5.0,
+            'reconstruct_with_gps': self.has_gps_priors,
             
             # Bundle adjustment
-            'bundle_use_gps': True,
+            'bundle_use_gps': self.has_gps_priors,
             'bundle_use_gcp': False,
             
             # Optimization
@@ -598,12 +575,16 @@ class OpenSfMGPSPipeline:
         
         # Generate metadata
         metadata = {
-            'pipeline': 'OpenSfM GPS-Enhanced Structure-from-Motion',
+            'pipeline': 'OpenSfM EXIF-Enhanced Structure-from-Motion',
             'processing_time_seconds': round(processing_time, 2),
             'cameras_registered': num_cameras,
             'images_registered': num_cameras,  # Assuming 1:1 mapping
             'points_3d': num_points,
-            'gps_enhanced': hasattr(self, 'gps_csv_path') and self.gps_csv_path is not None,
+            'gps_enhanced': self.has_gps_priors,
+            'gps_source': self.gps_source,
+            'gps_coverage': self.gps_coverage,
+            'gps_photos_with_gps': self.gps_photos_with_gps,
+            'gps_total_photos': self.gps_total_photos,
             'quality_check_passed': num_points >= 1000,
             'colmap_format': True,
             'timestamp': time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
@@ -806,7 +787,7 @@ class OpenSfMGPSPipeline:
 def main():
     """Main entry point"""
     if len(sys.argv) < 3:
-        print("Usage: python run_opensfm_gps.py <input_dir> <output_dir> [gps_csv]")
+        print("Usage: python run_opensfm_gps.py <input_dir> <output_dir> [gps_csv (deprecated)]")
         sys.exit(1)
     
     input_dir = Path(sys.argv[1])

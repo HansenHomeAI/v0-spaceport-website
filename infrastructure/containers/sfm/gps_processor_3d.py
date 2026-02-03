@@ -10,6 +10,7 @@ import json
 import math
 import numpy as np
 import pandas as pd
+import re
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Union
 from datetime import datetime, timedelta
@@ -275,7 +276,10 @@ class Advanced3DPathProcessor:
     
     def extract_dji_gps_from_exif(self, photo_path: Path) -> Optional[Dict]:
         """Extract GPS lat/lon from DJI EXIF and timestamp if available.
-        Returns: {'latitude': float, 'longitude': float, 'timestamp': Optional[datetime]}
+        Returns: {'latitude': float, 'longitude': float, 'altitude': float,
+                  'gps_accuracy': float, 'timestamp': Optional[datetime],
+                  'flight_yaw': Optional[float], 'flight_pitch': Optional[float], 'flight_roll': Optional[float],
+                  'gimbal_yaw': Optional[float], 'gimbal_pitch': Optional[float], 'gimbal_roll': Optional[float]}
         """
         try:
             with open(photo_path, 'rb') as f:
@@ -309,22 +313,92 @@ class Advanced3DPathProcessor:
                 if key in tags:
                     lon_ref_tag = str(tags[key])
                     break
+            alt_tag = None
+            alt_ref_tag = None
+            for key in [
+                'GPS GPSAltitude', 'GPSAltitude',
+            ]:
+                if key in tags:
+                    alt_tag = tags[key]
+                    break
+            for key in [
+                'GPS GPSAltitudeRef', 'GPSAltitudeRef',
+            ]:
+                if key in tags:
+                    alt_ref_tag = str(tags[key])
+                    break
+            dop_tag = None
+            for key in [
+                'GPS GPSDOP', 'GPSDOP',
+            ]:
+                if key in tags:
+                    dop_tag = tags[key]
+                    break
             if lat_tag and lat_ref_tag and lon_tag and lon_ref_tag:
                 # exifread returns list of 3 Ratio values for D/M/S
                 lat_vals = lat_tag.values if hasattr(lat_tag, 'values') else lat_tag
                 lon_vals = lon_tag.values if hasattr(lon_tag, 'values') else lon_tag
                 lat = self._dms_to_decimal(lat_vals, lat_ref_tag)
                 lon = self._dms_to_decimal(lon_vals, lon_ref_tag)
+                altitude = None
+                if alt_tag is not None:
+                    alt_val = alt_tag.values[0] if hasattr(alt_tag, 'values') else alt_tag
+                    altitude = self._ratio_to_float(alt_val)
+                    # GPSAltitudeRef: 0 = above sea level, 1 = below sea level
+                    if alt_ref_tag is not None and str(alt_ref_tag).strip() in {'1', 'Below Sea Level'}:
+                        altitude = -altitude
+                gps_accuracy = self.DEFAULT_GPS_ACCURACY_M
+                if dop_tag is not None:
+                    try:
+                        dop_val = dop_tag.values[0] if hasattr(dop_tag, 'values') else dop_tag
+                        gps_accuracy = float(self._ratio_to_float(dop_val))
+                    except Exception:
+                        gps_accuracy = self.DEFAULT_GPS_ACCURACY_M
                 # Timestamp (optional)
                 timestamp = self._extract_photo_timestamp(photo_path)
+                orientation = self.extract_dji_orientation_from_xmp(photo_path)
                 return {
                     'latitude': float(lat),
                     'longitude': float(lon),
-                    'timestamp': timestamp
+                    'altitude': float(altitude) if altitude is not None else None,
+                    'gps_accuracy': float(gps_accuracy),
+                    'timestamp': timestamp,
+                    'flight_yaw': orientation.get('flight_yaw'),
+                    'flight_pitch': orientation.get('flight_pitch'),
+                    'flight_roll': orientation.get('flight_roll'),
+                    'gimbal_yaw': orientation.get('gimbal_yaw'),
+                    'gimbal_pitch': orientation.get('gimbal_pitch'),
+                    'gimbal_roll': orientation.get('gimbal_roll'),
                 }
         except Exception as e:
             logger.debug(f"Could not extract GPS EXIF from {photo_path.name}: {e}")
         return None
+
+    def extract_dji_orientation_from_xmp(self, photo_path: Path) -> Dict[str, Optional[float]]:
+        """Extract DJI flight/gimbal orientation from embedded XMP tags if present."""
+        fields = {
+            'FlightYawDegree': 'flight_yaw',
+            'FlightPitchDegree': 'flight_pitch',
+            'FlightRollDegree': 'flight_roll',
+            'GimbalYawDegree': 'gimbal_yaw',
+            'GimbalPitchDegree': 'gimbal_pitch',
+            'GimbalRollDegree': 'gimbal_roll',
+        }
+        result: Dict[str, Optional[float]] = {value: None for value in fields.values()}
+        try:
+            data = photo_path.read_bytes()
+            # XMP is UTF-8 text inside the JPEG; decode loosely for regex matching.
+            text = data.decode('utf-8', errors='ignore')
+            for key, out_key in fields.items():
+                match = re.search(rf'{key}=\"([+-]?[0-9]+(?:\\.[0-9]+)?)\"', text)
+                if match:
+                    try:
+                        result[out_key] = float(match.group(1))
+                    except ValueError:
+                        result[out_key] = None
+        except Exception:
+            return result
+        return result
     
     def setup_local_coordinate_system(self):
         """Set up local 3D coordinate system centered on flight path"""
@@ -1068,6 +1142,205 @@ class Advanced3DPathProcessor:
         }
         
         return summary
+
+
+class ExifOnlyPriorBuilder:
+    """Build OpenSfM GPS priors using EXIF GPS data only (no CSV)."""
+
+    DEFAULT_GPS_ACCURACY_M = 5.0
+    MIN_GPS_PHOTOS = 5
+    MIN_GPS_COVERAGE = 0.2
+
+    def __init__(self, images_dir: Path, output_dir: Path):
+        self.images_dir = Path(images_dir)
+        self.output_dir = Path(output_dir)
+        self.local_origin = None
+        self.utm_zone = None
+        self.utm_zone_letter = None
+        self.exif_reader = Advanced3DPathProcessor(csv_path=Path('/tmp/none.csv'), images_dir=self.images_dir)
+
+    def _list_images(self) -> List[Path]:
+        return sorted(
+            [
+                p for p in self.images_dir.iterdir()
+                if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}
+            ],
+            key=lambda p: p.name,
+        )
+
+    def _set_local_origin(self, latitudes: List[float], longitudes: List[float], altitudes: List[float]) -> None:
+        center_lat = sum(latitudes) / len(latitudes)
+        center_lon = sum(longitudes) / len(longitudes)
+        center_alt = sum(altitudes) / len(altitudes)
+        utm_e, utm_n, utm_zone, utm_letter = utm.from_latlon(center_lat, center_lon)
+        self.local_origin = (center_lat, center_lon, center_alt)
+        self.utm_zone = utm_zone
+        self.utm_zone_letter = utm_letter
+        # Propagate origin into the EXIF reader for coordinate conversion
+        self.exif_reader.local_origin = self.local_origin
+        self.exif_reader.utm_zone = self.utm_zone
+        self.exif_reader.utm_zone_letter = self.utm_zone_letter
+        logger.info(
+            f"🌍 EXIF local origin set: {center_lat:.6f}, {center_lon:.6f}, {center_alt:.2f}m (UTM {utm_zone}{utm_letter})"
+        )
+
+    def _convert_to_local(self, lat: float, lon: float, alt: float) -> np.ndarray:
+        return self.exif_reader.convert_to_local_3d(lat, lon, alt)
+
+    def _compute_heading(self, current: np.ndarray, neighbor: np.ndarray) -> float:
+        dx = neighbor[0] - current[0]
+        dy = neighbor[1] - current[1]
+        if abs(dx) < 1e-6 and abs(dy) < 1e-6:
+            return 0.0
+        heading = math.degrees(math.atan2(dy, dx))
+        if heading < 0:
+            heading += 360.0
+        return heading
+
+    def _select_ordered_entries(self, entries: List[Dict]) -> List[Dict]:
+        timestamps = [e.get('timestamp') for e in entries if e.get('timestamp')]
+        if len(timestamps) >= max(3, int(len(entries) * 0.5)):
+            logger.info("✅ Using EXIF timestamps for EXIF-only photo ordering")
+            return sorted(entries, key=lambda e: e.get('timestamp') or datetime.min)
+        logger.warning("⚠️ Insufficient EXIF timestamps; using filename ordering")
+        return sorted(entries, key=lambda e: e['photo_path'].name)
+
+    def build_priors(self) -> Tuple[bool, Dict]:
+        photos = self._list_images()
+        if not photos:
+            logger.warning("⚠️ No images found for EXIF prior generation")
+            return False, {}
+
+        entries: List[Dict] = []
+        missing_altitude: List[Dict] = []
+        for photo in photos:
+            exif = self.exif_reader.extract_dji_gps_from_exif(photo)
+            if not exif or exif.get('latitude') is None or exif.get('longitude') is None:
+                continue
+            altitude = exif.get('altitude')
+            entry = {
+                'photo_path': photo,
+                'latitude': float(exif['latitude']),
+                'longitude': float(exif['longitude']),
+                'altitude': float(altitude) if altitude is not None else None,
+                'timestamp': exif.get('timestamp'),
+                'gps_accuracy': float(exif.get('gps_accuracy') or self.DEFAULT_GPS_ACCURACY_M),
+                'flight_yaw': exif.get('flight_yaw'),
+                'flight_pitch': exif.get('flight_pitch'),
+                'flight_roll': exif.get('flight_roll'),
+                'gimbal_yaw': exif.get('gimbal_yaw'),
+                'gimbal_pitch': exif.get('gimbal_pitch'),
+                'gimbal_roll': exif.get('gimbal_roll'),
+            }
+            if entry['altitude'] is None:
+                missing_altitude.append(entry)
+            entries.append(entry)
+
+        coverage = len(entries) / len(photos)
+        if len(entries) < self.MIN_GPS_PHOTOS or coverage < self.MIN_GPS_COVERAGE:
+            logger.warning(
+                f"⚠️ EXIF GPS coverage too low: {len(entries)}/{len(photos)} ({coverage:.0%})."
+            )
+            return False, {'coverage': coverage, 'photos_with_gps': len(entries), 'total_photos': len(photos)}
+
+        if missing_altitude:
+            known_altitudes = [e['altitude'] for e in entries if e['altitude'] is not None]
+            fallback_alt = sum(known_altitudes) / len(known_altitudes) if known_altitudes else 0.0
+            for entry in missing_altitude:
+                entry['altitude'] = fallback_alt
+
+        latitudes = [e['latitude'] for e in entries]
+        longitudes = [e['longitude'] for e in entries]
+        altitudes = [e['altitude'] for e in entries]
+        self._set_local_origin(latitudes, longitudes, altitudes)
+
+        ordered = self._select_ordered_entries(entries)
+
+        # Compute local positions
+        for entry in ordered:
+            entry['position_3d'] = self._convert_to_local(
+                entry['latitude'], entry['longitude'], entry['altitude']
+            )
+
+        # Fill headings
+        for idx, entry in enumerate(ordered):
+            heading = entry.get('flight_yaw')
+            if heading is None:
+                if idx < len(ordered) - 1:
+                    neighbor = ordered[idx + 1]['position_3d']
+                elif idx > 0:
+                    neighbor = ordered[idx - 1]['position_3d']
+                else:
+                    neighbor = entry['position_3d']
+                heading = self._compute_heading(entry['position_3d'], neighbor)
+            entry['heading'] = float(heading)
+
+        return True, {
+            'coverage': coverage,
+            'photos_with_gps': len(entries),
+            'total_photos': len(photos),
+            'entries': ordered,
+        }
+
+    def write_opensfm_files(self, entries: List[Dict]) -> None:
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        exif_overrides = {}
+        for entry in entries:
+            photo_name = entry['photo_path'].name
+            exif_overrides[photo_name] = {
+                'gps': {
+                    'latitude': entry['latitude'],
+                    'longitude': entry['longitude'],
+                    'altitude': entry['altitude'],
+                    'dop': entry['gps_accuracy'],
+                },
+                'orientation': 1,
+                'heading_deg': entry.get('heading', 0.0),
+            }
+            exif_overrides[photo_name]['_exif_orientation'] = {
+                'flight_yaw': entry.get('flight_yaw'),
+                'flight_pitch': entry.get('flight_pitch'),
+                'flight_roll': entry.get('flight_roll'),
+                'gimbal_yaw': entry.get('gimbal_yaw'),
+                'gimbal_pitch': entry.get('gimbal_pitch'),
+                'gimbal_roll': entry.get('gimbal_roll'),
+            }
+
+        with open(self.output_dir / 'exif_overrides.json', 'w') as f:
+            json.dump(exif_overrides, f, indent=2)
+
+        reference_lla = {
+            'latitude': self.local_origin[0],
+            'longitude': self.local_origin[1],
+            'altitude': self.local_origin[2],
+        }
+        with open(self.output_dir / 'reference_lla.json', 'w') as f:
+            json.dump(reference_lla, f, indent=2)
+
+        with open(self.output_dir / 'reference.txt', 'w') as f:
+            f.write(
+                f"WGS84 {self.local_origin[0]:.10f} {self.local_origin[1]:.10f} {self.local_origin[2]:.2f}\n"
+            )
+
+        gps_priors = {'points': {}, 'cameras': {}}
+        for entry in entries:
+            photo_name = entry['photo_path'].name
+            gps_priors['cameras'][photo_name] = {
+                'position': entry['position_3d'].tolist(),
+                'position_std': [entry['gps_accuracy']] * 3,
+                'orientation': [0, 0, entry.get('heading', 0.0)],
+                'orientation_std': [180, 180, 10],
+            }
+
+        with open(self.output_dir / 'gps_priors.json', 'w') as f:
+            json.dump(gps_priors, f, indent=2)
+
+        logger.info("✅ EXIF-only priors written:")
+        logger.info("   - exif_overrides.json")
+        logger.info("   - reference_lla.json")
+        logger.info("   - reference.txt")
+        logger.info("   - gps_priors.json")
 
 
 def main():

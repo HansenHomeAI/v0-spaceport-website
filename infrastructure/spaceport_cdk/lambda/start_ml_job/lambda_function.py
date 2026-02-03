@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         s3_url = body.get('s3Url')
         email = body.get('email', 'hello@spcprt.com')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
-        csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
+        csv_data = body.get('csvData')  # Optional CSV data (deprecated; EXIF-only SfM priors now)
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
         if not s3_url:
@@ -94,31 +94,12 @@ def lambda_handler(event, context):
         timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
         job_name = f"ml-job-{timestamp}-{job_id[:8]}"
         
-        # Verify CSV file exists if provided
+        # CSV priors are deprecated; SfM uses EXIF-only GPS priors now.
         csv_bucket_name = None
         csv_object_key = None
         has_gps_data = False
-        
         if csv_data and pipeline_step == 'sfm':
-            # Save CSV data to S3
-            ml_bucket = os.environ['ML_BUCKET']
-            timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-            csv_object_key = f"csv-data/{job_id}/gps-flight-path-{timestamp}.csv"
-            
-            try:
-                # Upload CSV data to S3
-                s3.put_object(
-                    Bucket=ml_bucket,
-                    Key=csv_object_key,
-                    Body=csv_data.encode('utf-8'),
-                    ContentType='text/csv'
-                )
-                csv_bucket_name = ml_bucket
-                has_gps_data = True
-                print(f"✅ GPS flight path CSV saved: s3://{ml_bucket}/{csv_object_key}")
-            except Exception as e:
-                print(f"⚠️ Failed to save CSV data: {str(e)}")
-                # Continue without GPS data - don't fail the entire request
+            print("⚠️ csvData provided but ignored (EXIF-only SfM priors enabled).")
         
         # Get environment variables
         state_machine_arn = os.environ['STATE_MACHINE_ARN']
@@ -185,18 +166,7 @@ def lambda_handler(event, context):
             }
         }]
         
-        # Add CSV input if GPS data is available
-        if has_gps_data:
-            sfm_processing_inputs.append({
-                "InputName": "gps-data",
-                "AppManaged": False,
-                "S3Input": {
-                    "S3Uri": f"s3://{csv_bucket_name}/{csv_object_key}",
-                    "LocalPath": "/opt/ml/processing/input/gps",
-                    "S3DataType": "S3Prefix",
-                    "S3InputMode": "File"
-                }
-            })
+        # CSV priors disabled; no GPS CSV input is attached.
         
         # Extract hyperparameters from request body (for tuning experiments)
         hyperparameters = body.get('hyperparameters', {})
@@ -271,10 +241,10 @@ def lambda_handler(event, context):
             "sfmProcessingInputs": sfm_processing_inputs,
             
             # GPS/CSV Enhancement Information
-            "hasGpsData": has_gps_data,
-            "csvS3Uri": f"s3://{csv_bucket_name}/{csv_object_key}" if has_gps_data else None,
-            "pipelineType": "gps_enhanced" if has_gps_data else "standard",
-            "sfmMethod": "opensfm_gps" if has_gps_data else "opensfm_standard",
+            "hasGpsData": False,
+            "csvS3Uri": None,
+            "pipelineType": "exif_priors",
+            "sfmMethod": "opensfm_exif",
             
             # Add all hyperparameters to the Step Functions input
             **final_hyperparameters
