@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
+from decimal import Decimal
 
 
 dynamodb = boto3.resource('dynamodb')
@@ -27,14 +28,14 @@ def _response(status: int, body: Dict[str, Any]) -> Dict[str, Any]:
     return {
         'statusCode': status,
         'headers': _cors_headers(),
-        'body': json.dumps(body),
+        'body': json.dumps(body, default=_json_default),
     }
 
 
 def _encode_cursor(key: Optional[Dict[str, Any]]) -> Optional[str]:
     if not key:
         return None
-    raw = json.dumps(key).encode('utf-8')
+    raw = json.dumps(key, default=_json_default).encode('utf-8')
     return base64.urlsafe_b64encode(raw).decode('utf-8')
 
 
@@ -48,6 +49,22 @@ def _decode_cursor(cursor: Optional[str]) -> Optional[Dict[str, Any]]:
         return None
 
 
+def _json_default(value: Any):
+    if isinstance(value, Decimal):
+        as_int = int(value)
+        return as_int if value == as_int else float(value)
+    raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
+
+
+def _to_number(value: Any) -> int:
+    if isinstance(value, Decimal):
+        return int(value)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
 def _shape_item(item: Dict[str, Any]) -> Dict[str, Any]:
     return {
         'id': item.get('listingId') or item.get('projectId') or item.get('viewerSlug') or '',
@@ -55,7 +72,7 @@ def _shape_item(item: Dict[str, Any]) -> Dict[str, Any]:
         'location': item.get('cityState') or '',
         'viewerUrl': item.get('viewerUrl') or item.get('modelLink') or '',
         'thumbnailUrl': item.get('thumbnailUrl') or '',
-        'updatedAt': item.get('updatedAt') or 0,
+        'updatedAt': _to_number(item.get('updatedAt')),
     }
 
 
