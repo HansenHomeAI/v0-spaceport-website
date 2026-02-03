@@ -1,0 +1,1073 @@
+deploy	Set up job	﻿2026-02-03T19:26:56.0494696Z Current runner version: '2.331.0'
+deploy	Set up job	2026-02-03T19:26:56.0521421Z ##[group]Runner Image Provisioner
+deploy	Set up job	2026-02-03T19:26:56.0522618Z Hosted Compute Agent
+deploy	Set up job	2026-02-03T19:26:56.0523629Z Version: 20260123.484
+deploy	Set up job	2026-02-03T19:26:56.0524622Z Commit: 6bd6555ca37d84114959e1c76d2c01448ff61c5d
+deploy	Set up job	2026-02-03T19:26:56.0525690Z Build Date: 2026-01-23T19:41:17Z
+deploy	Set up job	2026-02-03T19:26:56.0526761Z Worker ID: {33aa94d1-d0e8-4dad-88fd-3f09513f5c37}
+deploy	Set up job	2026-02-03T19:26:56.0527757Z Azure Region: westus
+deploy	Set up job	2026-02-03T19:26:56.0528830Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:26:56.0530690Z ##[group]Operating System
+deploy	Set up job	2026-02-03T19:26:56.0531629Z Ubuntu
+deploy	Set up job	2026-02-03T19:26:56.0532530Z 24.04.3
+deploy	Set up job	2026-02-03T19:26:56.0533442Z LTS
+deploy	Set up job	2026-02-03T19:26:56.0534226Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:26:56.0535105Z ##[group]Runner Image
+deploy	Set up job	2026-02-03T19:26:56.0536055Z Image: ubuntu-24.04
+deploy	Set up job	2026-02-03T19:26:56.0536917Z Version: 20260126.10.1
+deploy	Set up job	2026-02-03T19:26:56.0538610Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260126.10/images/ubuntu/Ubuntu2404-Readme.md
+deploy	Set up job	2026-02-03T19:26:56.0541203Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260126.10
+deploy	Set up job	2026-02-03T19:26:56.0542508Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:26:56.0544154Z ##[group]GITHUB_TOKEN Permissions
+deploy	Set up job	2026-02-03T19:26:56.0546316Z Contents: read
+deploy	Set up job	2026-02-03T19:26:56.0547287Z Metadata: read
+deploy	Set up job	2026-02-03T19:26:56.0548151Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:26:56.0551143Z Secret source: Actions
+deploy	Set up job	2026-02-03T19:26:56.0552306Z Prepare workflow directory
+deploy	Set up job	2026-02-03T19:26:56.0958828Z Prepare all required actions
+deploy	Set up job	2026-02-03T19:26:56.0997974Z Getting action download info
+deploy	Set up job	2026-02-03T19:26:56.5712969Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+deploy	Set up job	2026-02-03T19:26:56.7004704Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+deploy	Set up job	2026-02-03T19:26:56.7899597Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+deploy	Set up job	2026-02-03T19:26:57.0036595Z Complete job name: deploy
+deploy	Run actions/checkout@v4	﻿2026-02-03T19:26:57.0924202Z ##[group]Run actions/checkout@v4
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0925457Z with:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0926231Z   repository: HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0927400Z   token: ***
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0928089Z   ssh-strict: true
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0928963Z   ssh-user: git
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0929682Z   persist-credentials: true
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0930453Z   clean: true
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0931165Z   sparse-checkout-cone-mode: true
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0931956Z   fetch-depth: 1
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0932652Z   fetch-tags: false
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0933375Z   show-progress: true
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0934084Z   lfs: false
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0934739Z   submodules: false
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0935448Z   set-safe-directory: true
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.0936451Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2071968Z Syncing repository: HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2074515Z ##[group]Getting Git version info
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2075872Z Working directory is '/home/runner/work/v0-spaceport-website/v0-spaceport-website'
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2077574Z [command]/usr/bin/git version
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2130003Z git version 2.52.0
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2158118Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2172703Z Temporarily overriding HOME='/home/runner/work/_temp/62ac6c5e-fbfe-4b4d-8eb9-7b04dccfe762' before making global git config changes
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2174516Z Adding repository directory to the temporary git global config as a safe directory
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2186043Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/v0-spaceport-website/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2227287Z Deleting the contents of '/home/runner/work/v0-spaceport-website/v0-spaceport-website'
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2230995Z ##[group]Initializing the repository
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2235149Z [command]/usr/bin/git init /home/runner/work/v0-spaceport-website/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2346696Z hint: Using 'master' as the name for the initial branch. This default branch name
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2348430Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2350658Z hint: to use in all of your new repositories, which will suppress this warning,
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2351722Z hint: call:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2352371Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2353135Z hint: 	git config --global init.defaultBranch <name>
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2354020Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2354868Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2356388Z hint: 'development'. The just-created branch can be renamed via this command:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2357430Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2358090Z hint: 	git branch -m <name>
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2359044Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2359957Z hint: Disable this message with "git config set advice.defaultBranchName false"
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2361885Z Initialized empty Git repository in /home/runner/work/v0-spaceport-website/v0-spaceport-website/.git/
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2366536Z [command]/usr/bin/git remote add origin https://github.com/HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2401661Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2403888Z ##[group]Disabling automatic garbage collection
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2405881Z [command]/usr/bin/git config --local gc.auto 0
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2436992Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2439333Z ##[group]Setting up auth
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2444905Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2477177Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2812981Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.2845613Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.3067948Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.3098485Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.3336463Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.3371860Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.3373155Z ##[group]Fetching the repository
+deploy	Run actions/checkout@v4	2026-02-03T19:26:57.3380847Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +91a509a817084e829b8a1400074d56137bca4247:refs/remotes/origin/agent-74621839-explore-auto-listings
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9857962Z From https://github.com/HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9859894Z  * [new ref]         91a509a817084e829b8a1400074d56137bca4247 -> origin/agent-74621839-explore-auto-listings
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9891929Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9893191Z ##[group]Determining the checkout info
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9894549Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9899858Z [command]/usr/bin/git sparse-checkout disable
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9941209Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9966333Z ##[group]Checking out the ref
+deploy	Run actions/checkout@v4	2026-02-03T19:26:58.9970501Z [command]/usr/bin/git checkout --progress --force -B agent-74621839-explore-auto-listings refs/remotes/origin/agent-74621839-explore-auto-listings
+deploy	Run actions/checkout@v4	2026-02-03T19:26:59.2719962Z Switched to a new branch 'agent-74621839-explore-auto-listings'
+deploy	Run actions/checkout@v4	2026-02-03T19:26:59.2721244Z branch 'agent-74621839-explore-auto-listings' set up to track 'origin/agent-74621839-explore-auto-listings'.
+deploy	Run actions/checkout@v4	2026-02-03T19:26:59.2740994Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:26:59.2779851Z [command]/usr/bin/git log -1 --format=%H
+deploy	Run actions/checkout@v4	2026-02-03T19:26:59.2802478Z 91a509a817084e829b8a1400074d56137bca4247
+deploy	Select target Pages project per branch	﻿2026-02-03T19:26:59.3012667Z ##[group]Run BRANCH="agent-74621839-explore-auto-listings"
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3013758Z [36;1mBRANCH="agent-74621839-explore-auto-listings"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3014286Z [36;1mif [ "$BRANCH" = "main" ]; then[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3014796Z [36;1m  TARGET="v0-spaceport-website-prod-fresh"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3015267Z [36;1melse[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3015680Z [36;1m  TARGET="v0-spaceport-website-preview2"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3016137Z [36;1mfi[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3016540Z [36;1mecho "CF_PAGES_PROJECT=$TARGET" >> $GITHUB_ENV[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3017052Z [36;1mecho "project=$TARGET" >> $GITHUB_OUTPUT[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3017621Z [36;1mecho "Using CF Pages project: $TARGET for branch $BRANCH"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3054475Z shell: /usr/bin/bash -e {0}
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3054953Z ##[endgroup]
+deploy	Select target Pages project per branch	2026-02-03T19:26:59.3134486Z Using CF Pages project: v0-spaceport-website-preview2 for branch agent-74621839-explore-auto-listings
+deploy	Setup Node	﻿2026-02-03T19:26:59.3259514Z ##[group]Run actions/setup-node@v4
+deploy	Setup Node	2026-02-03T19:26:59.3260036Z with:
+deploy	Setup Node	2026-02-03T19:26:59.3260444Z   node-version: 20
+deploy	Setup Node	2026-02-03T19:26:59.3260853Z   cache: npm
+deploy	Setup Node	2026-02-03T19:26:59.3261285Z   cache-dependency-path: web/package-lock.json
+deploy	Setup Node	2026-02-03T19:26:59.3261780Z   always-auth: false
+deploy	Setup Node	2026-02-03T19:26:59.3262177Z   check-latest: false
+deploy	Setup Node	2026-02-03T19:26:59.3262716Z   token: ***
+deploy	Setup Node	2026-02-03T19:26:59.3263077Z env:
+deploy	Setup Node	2026-02-03T19:26:59.3263479Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Setup Node	2026-02-03T19:26:59.3263961Z ##[endgroup]
+deploy	Setup Node	2026-02-03T19:26:59.5843031Z Found in cache @ /opt/hostedtoolcache/node/20.20.0/x64
+deploy	Setup Node	2026-02-03T19:26:59.5849929Z ##[group]Environment details
+deploy	Setup Node	2026-02-03T19:26:59.9742086Z node: v20.20.0
+deploy	Setup Node	2026-02-03T19:26:59.9742834Z npm: 10.8.2
+deploy	Setup Node	2026-02-03T19:26:59.9743416Z yarn: 1.22.22
+deploy	Setup Node	2026-02-03T19:26:59.9744555Z ##[endgroup]
+deploy	Setup Node	2026-02-03T19:26:59.9767404Z [command]/opt/hostedtoolcache/node/20.20.0/x64/bin/npm config get cache
+deploy	Setup Node	2026-02-03T19:27:00.0994352Z /home/runner/.npm
+deploy	Setup Node	2026-02-03T19:27:00.4749266Z Cache hit for: node-cache-Linux-x64-npm-0019596879e84280eeafff29e0a0ea29ebb5e7dc5ee399a57ec5a5cb216cb3e9
+deploy	Setup Node	2026-02-03T19:27:01.7795750Z Received 4194304 of 455636485 (0.9%), 4.0 MBs/sec
+deploy	Setup Node	2026-02-03T19:27:02.7797140Z Received 134217728 of 455636485 (29.5%), 64.0 MBs/sec
+deploy	Setup Node	2026-02-03T19:27:03.7796855Z Received 260046848 of 455636485 (57.1%), 82.7 MBs/sec
+deploy	Setup Node	2026-02-03T19:27:04.7796477Z Received 352321536 of 455636485 (77.3%), 84.0 MBs/sec
+deploy	Setup Node	2026-02-03T19:27:05.7798341Z Received 452984832 of 455636485 (99.4%), 86.4 MBs/sec
+deploy	Setup Node	2026-02-03T19:27:05.8148298Z Received 455636485 of 455636485 (100.0%), 86.3 MBs/sec
+deploy	Setup Node	2026-02-03T19:27:05.8149951Z Cache Size: ~435 MB (455636485 B)
+deploy	Setup Node	2026-02-03T19:27:05.8185900Z [command]/usr/bin/tar -xf /home/runner/work/_temp/503ad6a1-f70c-46ee-ba23-8d391a69fe31/cache.tzst -P -C /home/runner/work/v0-spaceport-website/v0-spaceport-website --use-compress-program unzstd
+deploy	Setup Node	2026-02-03T19:27:06.6735709Z Cache restored successfully
+deploy	Setup Node	2026-02-03T19:27:06.8820379Z Cache restored from key: node-cache-Linux-x64-npm-0019596879e84280eeafff29e0a0ea29ebb5e7dc5ee399a57ec5a5cb216cb3e9
+deploy	Install deps (tolerant to peer conflicts in CI)	﻿2026-02-03T19:27:06.9776809Z ##[group]Run npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:06.9777516Z [36;1mnpm ci --legacy-peer-deps || npm install --legacy-peer-deps[0m
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:06.9821438Z shell: /usr/bin/bash -e {0}
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:06.9821810Z env:
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:06.9822164Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:06.9822595Z ##[endgroup]
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.0823786Z npm warn deprecated path-match@1.2.4: This package is archived and no longer maintained. For support, visit https://github.com/expressjs/express/discussions
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.0888430Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.3730241Z npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.4349303Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.6832842Z npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.6936835Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.6961857Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.6982553Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.7030404Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:17.7326106Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:18.1023095Z npm warn deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:18.3986960Z npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:21.2088991Z npm warn deprecated three-mesh-bvh@0.7.8: Deprecated due to three.js version incompatibility. Please use v0.8.0, instead.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:23.0193699Z npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:37.7876169Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:37.7877386Z added 1603 packages, and audited 1604 packages in 31s
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:37.7879105Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:37.7879987Z 93 packages are looking for funding
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:37.7880780Z   run `npm fund` for details
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0013760Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0014821Z 35 vulnerabilities (2 low, 13 moderate, 20 high)
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0015389Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0015830Z To address issues that do not require attention, run:
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0016606Z   npm audit fix
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0016935Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0017342Z To address all issues possible, run:
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0018089Z   npm audit fix --force
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0018516Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0019200Z Some issues need review, and may require choosing
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0020064Z a different dependency.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0020425Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:27:38.0020740Z Run `npm audit` for details.
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	﻿2026-02-03T19:27:38.1567611Z ##[group]Run set -euo pipefail
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1568137Z [36;1mset -euo pipefail[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1568565Z [36;1mBRANCH="agent-74621839-explore-auto-listings"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1569273Z [36;1mecho "Preparing .env for branch $BRANCH"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1569696Z [36;1m: > .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1570049Z [36;1mGOOGLE_MAPS_KEY="${MAPS_KEY_PRIMARY:-}"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1570626Z [36;1mif [ -z "$GOOGLE_MAPS_KEY" ]; then GOOGLE_MAPS_KEY="${MAPS_KEY_LEGACY:-}"; fi[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1571202Z [36;1mGOOGLE_MAPS_MAP_ID="${MAP_ID_PRIMARY:-}"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1571782Z [36;1mif [ -z "$GOOGLE_MAPS_MAP_ID" ]; then GOOGLE_MAPS_MAP_ID="${MAP_ID_LEGACY:-}"; fi[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1572325Z [36;1m[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1572642Z [36;1mif [ "$BRANCH" = "main" ]; then[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1573666Z [36;1m  echo "NEXT_PUBLIC_PROJECTS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1574431Z [36;1m  echo "NEXT_PUBLIC_DRONE_PATH_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1575215Z [36;1m  echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1576015Z [36;1m  echo "NEXT_PUBLIC_WAITLIST_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1576740Z [36;1mecho "NEXT_PUBLIC_ML_PIPELINE_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1577508Z [36;1mecho "NEXT_PUBLIC_BETA_ACCESS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1578284Z [36;1mecho "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1579113Z [36;1mecho "NEXT_PUBLIC_EXPLORE_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1579837Z [36;1mecho "NEXT_PUBLIC_FEEDBACK_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1580592Z [36;1mecho "NEXT_PUBLIC_COGNITO_REGION=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1581156Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1581783Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1582564Z [36;1m  echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1583579Z [36;1m  echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1584193Z [36;1m  echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1584836Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1585448Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1585976Z [36;1m  # Analytics environment variables[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1586751Z [36;1m  echo "NEXT_PUBLIC_SENTRY_DSN=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1587386Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1587931Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_HOST=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1588339Z [36;1melse[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1589174Z [36;1m  echo "NEXT_PUBLIC_PROJECTS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1589908Z [36;1m  echo "NEXT_PUBLIC_DRONE_PATH_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1590630Z [36;1m  echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1591356Z [36;1m  echo "NEXT_PUBLIC_WAITLIST_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1592066Z [36;1mecho "NEXT_PUBLIC_ML_PIPELINE_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1592792Z [36;1mecho "NEXT_PUBLIC_BETA_ACCESS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1593596Z [36;1mecho "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1594369Z [36;1mecho "NEXT_PUBLIC_EXPLORE_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1595067Z [36;1mecho "NEXT_PUBLIC_FEEDBACK_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1595573Z [36;1mecho "NEXT_PUBLIC_COGNITO_REGION=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1596132Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1596740Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1597556Z [36;1m  echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1598576Z [36;1m  echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1599624Z [36;1m  echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1600295Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1600901Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1601442Z [36;1m  # Analytics environment variables[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1602251Z [36;1m  echo "NEXT_PUBLIC_SENTRY_DSN=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1602897Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1603447Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_HOST=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1603868Z [36;1mfi[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1604216Z [36;1mecho "Wrote $(wc -l < .env) vars to .env"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1635707Z shell: /usr/bin/bash -e {0}
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1636151Z env:
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1636536Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1637100Z   MAPS_KEY_PRIMARY: ***
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1637541Z   MAPS_KEY_LEGACY: ***
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1637910Z   MAP_ID_PRIMARY: ***
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1638228Z   MAP_ID_LEGACY: 
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1638531Z ##[endgroup]
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1694502Z Preparing .env for branch agent-74621839-explore-auto-listings
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:27:38.1812386Z Wrote 20 vars to .env
+deploy	Verify injected env values	﻿2026-02-03T19:27:38.1841562Z ##[group]Run if ! [ -s .env ]; then
+deploy	Verify injected env values	2026-02-03T19:27:38.1842038Z [36;1mif ! [ -s .env ]; then[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1842426Z [36;1m  echo ".env missing or empty" >&2[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1842826Z [36;1m  exit 1[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1843124Z [36;1mfi[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1843700Z [36;1mif grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env; then[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1844262Z [36;1m  echo "Detected empty NEXT_PUBLIC variables in .env" >&2[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1844707Z [36;1m  exit 1[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1845003Z [36;1mfi[0m
+deploy	Verify injected env values	2026-02-03T19:27:38.1875568Z shell: /usr/bin/bash -e {0}
+deploy	Verify injected env values	2026-02-03T19:27:38.1875930Z env:
+deploy	Verify injected env values	2026-02-03T19:27:38.1876284Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Verify injected env values	2026-02-03T19:27:38.1876710Z ##[endgroup]
+deploy	Build Next for Cloudflare (SSR)	﻿2026-02-03T19:27:38.1972103Z ##[group]Run npm run build
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.1972761Z [36;1mnpm run build[0m
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.1973367Z [36;1mnpx @cloudflare/next-on-pages[0m
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.2003669Z shell: /usr/bin/bash -e {0}
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.2004203Z env:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.2004772Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.2005480Z ##[endgroup]
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.3167533Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.3168376Z > web@1.0.0 prebuild
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.3169512Z > node scripts/copy-cesium-assets.cjs
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.3170082Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.5164713Z [copy-cesium-assets] Copied Cesium assets to /home/runner/work/v0-spaceport-website/v0-spaceport-website/web/public/cesium
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.5204787Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.5205140Z > web@1.0.0 build
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:38.5205605Z > next build
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0347879Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0349298Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0427182Z Attention: Next.js now collects completely anonymous telemetry regarding usage.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0428158Z This information is used to shape Next.js' roadmap and prioritize features.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0429615Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0430479Z https://nextjs.org/telemetry
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.0430781Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.1369189Z   ▲ Next.js 14.2.31
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.1369875Z   - Environments: .env
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.1370238Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:39.1619165Z    Creating an optimized production build ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4304858Z  ⚠ Compiled with warnings
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4305353Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4306495Z ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4308017Z Critical dependency: the request of a dependency is an expression
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4308650Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4309246Z Import trace for requested module:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4310688Z ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4312496Z ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4314098Z ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4316010Z ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4317354Z ./node_modules/@prisma/instrumentation/dist/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4318362Z ./node_modules/@sentry/node/build/cjs/integrations/tracing/prisma.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4319553Z ./node_modules/@sentry/node/build/cjs/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4320322Z ./node_modules/@sentry/nextjs/build/cjs/index.server.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4320796Z ./app/sentry-test/page.tsx
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4321032Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4321269Z ./node_modules/require-in-the-middle/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4322041Z Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4322526Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4322725Z Import trace for requested module:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4323195Z ./node_modules/require-in-the-middle/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4323880Z ./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4325022Z ./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4325744Z ./node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4326403Z ./node_modules/@opentelemetry/instrumentation/build/esm/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4327485Z ./node_modules/@sentry/node/build/cjs/integrations/tracing/postgresjs.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4328593Z ./node_modules/@sentry/node/build/cjs/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4330226Z ./node_modules/@sentry/nextjs/build/cjs/index.server.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4331124Z ./app/sentry-test/page.tsx
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:27:49.4331543Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:05.0252500Z Browserslist: caniuse-lite is outdated. Please run:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:05.0253490Z   npx update-browserslist-db@latest
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:05.0254561Z   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:50.3366041Z  ✓ Compiled successfully
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:50.3378097Z    Linting and checking validity of types ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:56.9814763Z    Collecting page data ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:57.5500047Z  ⚠ Using edge runtime on a page currently disables static generation for that page
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:58.4510526Z    Generating static pages (0/9) ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:59.4909049Z    Generating static pages (2/9) 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:59.4910783Z    Generating static pages (4/9) 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:59.6008935Z    Generating static pages (6/9) 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:28:59.7660689Z  ✓ Generating static pages (9/9)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:00.1476654Z    Finalizing page optimization ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:00.1477604Z    Collecting build traces ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7247189Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7277762Z Route (app)                              Size     First Load JS
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7279496Z ┌ ƒ /                                    137 B            96 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7280693Z ├ ○ /_not-found                          872 B          88.3 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7281817Z ├ ƒ /api/cancel-subscription             0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7283052Z ├ ƒ /api/create-checkout-session         0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7284266Z ├ ƒ /api/debug-auth                      0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7285479Z ├ ƒ /api/debug-subscription-upstream     0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7286754Z ├ ƒ /api/elevation-proxy                 0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7287928Z ├ ƒ /api/health                          0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7289234Z ├ ƒ /api/new-project                     0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7290173Z ├ ƒ /api/signup                          0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7291293Z ├ ƒ /api/subscription-status             0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7292357Z ├ ƒ /api/test-config                     0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7293430Z ├ ƒ /api/test-token                      0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7294500Z ├ ƒ /auth                                736 B           148 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7295405Z ├ ƒ /create                              21 kB           226 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7296021Z ├ ƒ /explore                             1.78 kB        89.2 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7296632Z ├ ○ /flight-viewer                       54 kB           149 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7297255Z ├ ƒ /landing                             137 B            96 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7297839Z ├ ○ /legacy                              374 B          87.8 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7298435Z ├ ƒ /pricing                             1.28 kB        88.7 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7299247Z ├ ○ /sandbox                             5.89 kB        93.3 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7299847Z ├ ○ /sentry-test                         150 kB          244 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7300425Z ├ ○ /shape-lab                           5.29 kB         267 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7301050Z └ ○ /shape-viewer                        59.2 kB         321 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7301581Z + First Load JS shared by all            87.4 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7302445Z   ├ chunks/30-4c958c101d069cbb.js        31.6 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7302961Z   ├ chunks/fd9d1056-db63787431ce53e6.js  53.6 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7303479Z   └ other shared chunks (total)          2.16 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7303740Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7303748Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7304018Z ○  (Static)   prerendered as static content
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7304517Z ƒ  (Dynamic)  server-rendered on demand
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:04.7304770Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:05.6332018Z ⚡️ @cloudflare/next-on-pages CLI v.1.13.13
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:05.7363856Z ⚡️ Detected Package Manager: npm (10.8.2)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:05.7364908Z ⚡️ Preparing project...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:05.7393260Z ⚡️ Project is ready
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:05.7394328Z ⚡️ Building project...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.4048952Z ▲  Vercel CLI 44.7.3
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.4133334Z ▲  > NOTE: The Vercel CLI now collects telemetry regarding usage of the CLI.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.4134570Z ▲  > This information is used to shape the CLI roadmap and prioritize features.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.4135709Z ▲  > You can learn more, including how to opt-out if you'd not like to participate in this program, by visiting the following URL:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.4136684Z ▲  > https://vercel.com/docs/cli/about-telemetry
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.5348611Z ▲  WARN! Build not running on Vercel. System environment variables will not be available.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.7199499Z ▲  WARNING: You should not upload the `.next` directory.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:06.7304947Z ▲  Installing dependencies...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.7583337Z ▲  up to date in 2s
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.7584768Z ▲  122 packages are looking for funding
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.7585712Z ▲  run `npm fund` for details
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.7710659Z ▲  Detected Next.js version: 14.2.31
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.7785519Z ▲  Running "npm run build"
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.8862772Z ▲  > web@1.0.0 prebuild
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:08.8863474Z ▲  > node scripts/copy-cesium-assets.cjs
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:09.0970169Z ▲  [copy-cesium-assets] Copied Cesium assets to /home/runner/work/v0-spaceport-website/v0-spaceport-website/web/public/cesium
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:09.1012629Z ▲  > web@1.0.0 build
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:09.1013297Z ▲  > next build
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:09.6896420Z ▲  ▲ Next.js 14.2.31
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:09.6897567Z ▲  - Environments: .env
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:09.7226383Z ▲  Creating an optimized production build ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5446429Z ▲  ⚠ Compiled with warnings
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5450562Z ▲  ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5451884Z ▲  Critical dependency: the request of a dependency is an expression
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5452392Z ▲  
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5452791Z ▲  Import trace for requested module:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5453740Z ▲  ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5454939Z ▲  ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5456100Z ▲  ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5457158Z ▲  ./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5457924Z ▲  ./node_modules/@prisma/instrumentation/dist/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5458588Z ▲  ./node_modules/@sentry/node/build/cjs/integrations/tracing/prisma.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5459515Z ▲  ./node_modules/@sentry/node/build/cjs/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5460102Z ▲  ./node_modules/@sentry/nextjs/build/cjs/index.server.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5460608Z ▲  ./app/sentry-test/page.tsx
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5460975Z ▲  
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5461397Z ▲  ./node_modules/require-in-the-middle/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5462253Z ▲  Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5462877Z ▲  
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5463651Z ▲  Import trace for requested module:
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5464168Z ▲  ./node_modules/require-in-the-middle/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5464938Z ▲  ./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5465819Z ▲  ./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5466608Z ▲  ./node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5467325Z ▲  ./node_modules/@opentelemetry/instrumentation/build/esm/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5468240Z ▲  ./node_modules/@sentry/node/build/cjs/integrations/tracing/postgresjs.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5469022Z ▲  ./node_modules/@sentry/node/build/cjs/index.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5469605Z ▲  ./node_modules/@sentry/nextjs/build/cjs/index.server.js
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:12.5470103Z ▲  ./app/sentry-test/page.tsx
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:24.9059420Z ▲  ✓ Compiled successfully
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:24.9066572Z ▲  Linting and checking validity of types ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:31.4793757Z ▲  Collecting page data ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:32.0678470Z ▲  ⚠ Using edge runtime on a page currently disables static generation for that page
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:32.9815192Z ▲  Generating static pages (0/9) ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:34.0727728Z ▲  Generating static pages (2/9)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:34.0740899Z ▲  Generating static pages (4/9)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:34.1775843Z ▲  Generating static pages (6/9)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:34.2684842Z ▲  ✓ Generating static pages (9/9)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:34.4421804Z ▲  Finalizing page optimization ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:34.4422938Z ▲  Collecting build traces ...
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8673993Z ▲  
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8775596Z ▲  Route (app)                              Size     First Load JS
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8776818Z ▲  ┌ ƒ /                                    137 B            96 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8777975Z ▲  ├ ○ /_not-found                          872 B          88.3 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8779372Z ▲  ├ ƒ /api/cancel-subscription             0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8780599Z ▲  ├ ƒ /api/create-checkout-session         0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8781717Z ▲  ├ ƒ /api/debug-auth                      0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8782421Z ▲  ├ ƒ /api/debug-subscription-upstream     0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8783117Z ▲  ├ ƒ /api/elevation-proxy                 0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8783766Z ▲  ├ ƒ /api/health                          0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8784507Z ▲  ├ ƒ /api/new-project                     0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8785582Z ▲  ├ ƒ /api/signup                          0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8786670Z ▲  ├ ƒ /api/subscription-status             0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8787605Z ▲  ├ ƒ /api/test-config                     0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8788634Z ▲  ├ ƒ /api/test-token                      0 B                0 B
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8789884Z ▲  ├ ƒ /auth                                736 B           148 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8790532Z ▲  ├ ƒ /create                              21 kB           226 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8791134Z ▲  ├ ƒ /explore                             1.78 kB        89.2 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8791745Z ▲  ├ ○ /flight-viewer                       54 kB           149 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8792369Z ▲  ├ ƒ /landing                             137 B            96 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8792955Z ▲  ├ ○ /legacy                              374 B          87.8 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8793546Z ▲  ├ ƒ /pricing                             1.28 kB        88.7 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8794131Z ▲  ├ ○ /sandbox                             5.89 kB        93.3 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8794716Z ▲  ├ ○ /sentry-test                         150 kB          244 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8795303Z ▲  ├ ○ /shape-lab                           5.29 kB         267 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8795906Z ▲  └ ○ /shape-viewer                        59.2 kB         321 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8796751Z ▲  + First Load JS shared by all            87.4 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8797311Z ▲  ├ chunks/30-4c958c101d069cbb.js        31.6 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8797845Z ▲  ├ chunks/fd9d1056-db63787431ce53e6.js  53.6 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8798367Z ▲  └ other shared chunks (total)          2.16 kB
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8799204Z ▲  ○  (Static)   prerendered as static content
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:38.8799731Z ▲  ƒ  (Dynamic)  server-rendered on demand
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:39.1820411Z ▲  Traced Next.js server files in: 221.029ms
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:39.2747787Z ▲  Created all serverless functions in: 100.931ms
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:40.3296114Z ▲  Collected static files (public/, static/, .next/static): 44.754ms
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:40.5229625Z ▲  Build Completed in .vercel/output [34s]
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:40.7490825Z ⚡️ Completed `npx vercel build`.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8913683Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8915081Z ⚡️ Build Summary (@cloudflare/next-on-pages v1.13.13)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8916192Z ⚡️ 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8916979Z ⚡️ Edge Function Routes (17)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8917855Z ⚡️   ┌ /
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8919002Z ⚡️   ├ /api/cancel-subscription
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8919929Z ⚡️   ├ /api/create-checkout-session
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8920491Z ⚡️   ├ /api/debug-auth
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8921055Z ⚡️   ├ /api/debug-subscription-upstream
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8921539Z ⚡️   ├ /api/elevation-proxy
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8921924Z ⚡️   ├ /api/health
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8922280Z ⚡️   ├ /api/new-project
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8922659Z ⚡️   ├ /api/signup
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8923087Z ⚡️   ├ /api/subscription-status
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8923498Z ⚡️   ├ /api/test-config
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8923868Z ⚡️   ├ /api/test-token
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8924204Z ⚡️   ├ /auth
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8924521Z ⚡️   ├ /create
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8924846Z ⚡️   ├ /explore
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8925171Z ⚡️   ├ /landing
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8925489Z ⚡️   └ /pricing
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8925796Z ⚡️ 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8926144Z ⚡️ Prerendered Routes (12)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8926547Z ⚡️   ┌ /flight-viewer
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8926937Z ⚡️   ├ /flight-viewer.rsc
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8927293Z ⚡️   ├ /legacy
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8927631Z ⚡️   ├ /legacy.rsc
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8927954Z ⚡️   ├ /sandbox
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8928284Z ⚡️   ├ /sandbox.rsc
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8928629Z ⚡️   ├ /sentry-test
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8929281Z ⚡️   ├ /sentry-test.rsc
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8929647Z ⚡️   ├ /shape-lab
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8929995Z ⚡️   ├ /shape-lab.rsc
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8930352Z ⚡️   ├ /shape-viewer
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8930741Z ⚡️   └ /shape-viewer.rsc
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8931081Z ⚡️ 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8931425Z ⚡️ Other Static Assets (490)
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8931814Z ⚡️   ┌ /_app.rsc.json
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8932183Z ⚡️   ├ /_document.rsc.json
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8932566Z ⚡️   ├ /_error.rsc.json
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8932905Z ⚡️   ├ /404.html
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8933243Z ⚡️   └ ... 486 more
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8933414Z 
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8991934Z ⚡️ Build log saved to '.vercel/output/static/_worker.js/nop-build-log.json'
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8994503Z ⚡️ Generated '.vercel/output/static/_worker.js/index.js'.
+deploy	Build Next for Cloudflare (SSR)	2026-02-03T19:29:43.8995403Z ⚡️ Build completed in 3.15s
+deploy	Debug .vercel/output contents	﻿2026-02-03T19:29:43.9408844Z ##[group]Run echo "Listing .vercel/output" && ls -la .vercel/output || true
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9409611Z [36;1mecho "Listing .vercel/output" && ls -la .vercel/output || true[0m
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9410291Z [36;1mecho "Functions manifest.json:" && (cat .vercel/output/functions/manifest.json || true)[0m
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9410954Z [36;1mecho "Static dir:" && ls -la .vercel/output/static || true[0m
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9444114Z shell: /usr/bin/bash -e {0}
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9444478Z env:
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9444835Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9445257Z ##[endgroup]
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9500812Z Listing .vercel/output
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9515407Z total 32
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9516383Z drwxr-xr-x  5 runner runner 4096 Feb  3 19:29 .
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9531067Z drwxr-xr-x  3 runner runner 4096 Feb  3 19:29 ..
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9532248Z -rw-r--r--  1 runner runner  665 Feb  3 19:29 builds.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9533203Z -rw-r--r--  1 runner runner 4242 Feb  3 19:29 config.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9534177Z drwxr-xr-x  2 runner runner 4096 Feb  3 19:29 diagnostics
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9535170Z drwxr-xr-x 11 runner runner 4096 Feb  3 19:29 functions
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9536144Z drwxr-xr-x  7 runner runner 4096 Feb  3 19:29 static
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9536953Z Functions manifest.json:
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9537668Z Static dir:
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9538631Z cat: .vercel/output/functions/manifest.json: No such file or directory
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9550833Z total 392
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9551544Z drwxr-xr-x 7 runner runner   4096 Feb  3 19:29 .
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9552087Z drwxr-xr-x 5 runner runner   4096 Feb  3 19:29 ..
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9552628Z -rw-r--r-- 2 runner runner  13394 Feb  3 19:29 404.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9553194Z -rw-r--r-- 1 runner runner      2 Feb  3 19:29 404.rsc.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9553755Z -rw-r--r-- 2 runner runner   1995 Feb  3 19:29 500.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9554668Z -rw-r--r-- 2 runner runner   1253 Feb  3 19:26 Favicon.png
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9555458Z -rw-r--r-- 1 runner runner      2 Feb  3 19:29 _app.rsc.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9556066Z -rw-r--r-- 1 runner runner      2 Feb  3 19:29 _document.rsc.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9556649Z -rw-r--r-- 1 runner runner      2 Feb  3 19:29 _error.rsc.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9557182Z -rw-r--r-- 1 runner runner    214 Feb  3 19:29 _headers
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9557694Z drwxr-xr-x 3 runner runner   4096 Feb  3 19:29 _next
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9558233Z -rw-r--r-- 1 runner runner    122 Feb  3 19:29 _routes.json
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9559007Z drwxr-xr-x 3 runner runner   4096 Feb  3 19:29 _worker.js
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9559588Z drwxr-xr-x 3 runner runner   4096 Feb  3 19:29 assets
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9560127Z drwxr-xr-x 3 runner runner   4096 Feb  3 19:29 cdn-cgi
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9560649Z drwxr-xr-x 6 runner runner   4096 Feb  3 19:29 cesium
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9561226Z -rw-r--r-- 1 runner runner  13353 Feb  3 19:29 flight-viewer.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9561822Z -rw-r--r-- 1 runner runner   5636 Feb  3 19:29 flight-viewer.rsc
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9562380Z -rw-r--r-- 2 runner runner      3 Feb  3 19:26 health.txt
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9562919Z -rw-r--r-- 1 runner runner  11452 Feb  3 19:29 legacy.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9563452Z -rw-r--r-- 1 runner runner   5386 Feb  3 19:29 legacy.rsc
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9564001Z -rw-r--r-- 1 runner runner  31009 Feb  3 19:29 sandbox.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9564548Z -rw-r--r-- 1 runner runner   5520 Feb  3 19:29 sandbox.rsc
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9565109Z -rw-r--r-- 1 runner runner  12142 Feb  3 19:29 sentry-test.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9565677Z -rw-r--r-- 1 runner runner   5549 Feb  3 19:29 sentry-test.rsc
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9566238Z -rw-r--r-- 1 runner runner  17494 Feb  3 19:29 shape-lab.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9566796Z -rw-r--r-- 1 runner runner   5499 Feb  3 19:29 shape-lab.rsc
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9567357Z -rw-r--r-- 1 runner runner  16156 Feb  3 19:29 shape-viewer.html
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9567931Z -rw-r--r-- 1 runner runner   5558 Feb  3 19:29 shape-viewer.rsc
+deploy	Debug .vercel/output contents	2026-02-03T19:29:43.9569054Z -rw-r--r-- 2 runner runner 158400 Feb  3 19:26 styles.css
+deploy	Upload .vercel/output for diagnostics	﻿2026-02-03T19:29:43.9626572Z ##[group]Run actions/upload-artifact@v4
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9627030Z with:
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9627433Z   name: vercel-output-91a509a817084e829b8a1400074d56137bca4247
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9628219Z   path: .vercel/output
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9629045Z   if-no-files-found: ignore
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9629628Z   retention-days: 3
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9630176Z   compression-level: 6
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9630640Z   overwrite: false
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9631266Z   include-hidden-files: false
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9631813Z env:
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9632296Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:43.9632972Z ##[endgroup]
+deploy	Upload .vercel/output for diagnostics	2026-02-03T19:29:44.1807801Z No files were found with the provided path: .vercel/output. No artifacts will be uploaded.
+deploy	Install Wrangler	﻿2026-02-03T19:29:44.1951611Z ##[group]Run npm i -g wrangler@4
+deploy	Install Wrangler	2026-02-03T19:29:44.1952299Z [36;1mnpm i -g wrangler@4[0m
+deploy	Install Wrangler	2026-02-03T19:29:44.1985563Z shell: /usr/bin/bash -e {0}
+deploy	Install Wrangler	2026-02-03T19:29:44.1986082Z env:
+deploy	Install Wrangler	2026-02-03T19:29:44.1986664Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Install Wrangler	2026-02-03T19:29:44.1987367Z ##[endgroup]
+deploy	Install Wrangler	2026-02-03T19:29:48.6996167Z 
+deploy	Install Wrangler	2026-02-03T19:29:48.6997093Z added 35 packages in 4s
+deploy	Install Wrangler	2026-02-03T19:29:48.6997796Z 
+deploy	Install Wrangler	2026-02-03T19:29:48.6998252Z 7 packages are looking for funding
+deploy	Install Wrangler	2026-02-03T19:29:48.6999543Z   run `npm fund` for details
+deploy	Ensure Pages runtime flags (compat date + node compat)	﻿2026-02-03T19:29:48.7254056Z ##[group]Run set -euo pipefail
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7254848Z [36;1mset -euo pipefail[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7255519Z [36;1mgoogle_maps="$MAPS_KEY_PRIMARY"[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7256402Z [36;1mif [ -z "$google_maps" ]; then google_maps="$MAPS_KEY_LEGACY"; fi[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7257348Z [36;1mgoogle_maps_map_id="$MAP_ID_PRIMARY"[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7258362Z [36;1mif [ -z "$google_maps_map_id" ]; then google_maps_map_id="$MAP_ID_LEGACY"; fi[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7259615Z [36;1m[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7260146Z [36;1mjq -n \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7260786Z [36;1m  --arg prod "$FEEDBACK_API_URL_PROD" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7261652Z [36;1m  --arg preview "$FEEDBACK_API_URL_PREVIEW" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7262483Z [36;1m  --arg google_maps "$google_maps" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7263330Z [36;1m  --arg google_maps_map_id "$google_maps_map_id" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7264096Z [36;1m  '{[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7264659Z [36;1m    deployment_configs: {[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7265369Z [36;1m      production: {[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7266051Z [36;1m        compatibility_date: "2025-08-09",[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7267180Z [36;1m        compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7268261Z [36;1m        build_image_major_version: 3,[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7269251Z [36;1m        environment_variables: {[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7270118Z [36;1m          NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod },[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7271121Z [36;1m          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7272245Z [36;1m          NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7273183Z [36;1m        }[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7273750Z [36;1m      },[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7274329Z [36;1m      preview: {[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7275008Z [36;1m        compatibility_date: "2025-08-09",[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7276059Z [36;1m        compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7277144Z [36;1m        build_image_major_version: 3,[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7277923Z [36;1m        environment_variables: {[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7278991Z [36;1m          NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview },[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7280022Z [36;1m          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7281125Z [36;1m          NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7282026Z [36;1m        }[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7282569Z [36;1m      }[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7283095Z [36;1m    }[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7283630Z [36;1m  }' > payload.json[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7284245Z [36;1mcurl -fsS -X PATCH \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7285227Z [36;1m  -H "Authorization: ***" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7285974Z [36;1m  -H "Content-Type: application/json" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7287265Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}" \[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7288495Z [36;1m  --data @payload.json | cat[0m
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7335431Z shell: /usr/bin/bash -e {0}
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7336051Z env:
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7336673Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7337627Z   CLOUDFLARE_ACCOUNT_ID: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7338473Z   CLOUDFLARE_API_TOKEN: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7340124Z   FEEDBACK_API_URL_PREVIEW: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7340804Z   FEEDBACK_API_URL_PROD: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7341252Z   MAPS_KEY_PRIMARY: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7341688Z   MAPS_KEY_LEGACY: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7342053Z   MAP_ID_PRIMARY: ***
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7342377Z   MAP_ID_LEGACY: 
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:48.7342682Z ##[endgroup]
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3823212Z {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3824004Z   "result": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3824723Z     "id": "a5c6f199-120b-41bc-a461-8f2fce0579d9",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3825520Z     "name": "v0-spaceport-website-preview2",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3826967Z     "subdomain": "v0-spaceport-website-preview2.pages.dev",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3827716Z     "domains": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3828362Z       "v0-spaceport-website-preview2.pages.dev"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3829328Z     ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3829825Z     "build_config": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3830430Z       "web_analytics_tag": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3831097Z       "web_analytics_token": null
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3831731Z     },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3832282Z     "deployment_configs": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3832901Z       "preview": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3833451Z         "env_vars": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3834092Z           "NEXT_PUBLIC_COGNITO_REGION": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3834960Z             "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3835605Z             "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3836165Z           },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3836812Z           "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3837503Z             "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3838060Z             "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3838570Z           },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3839305Z           "NEXT_PUBLIC_COGNITO_USER_POOL_ID": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3840013Z             "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3840585Z             "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3841053Z           },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3841595Z           "NEXT_PUBLIC_PROJECTS_API_URL": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3842299Z             "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3842872Z             "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3843376Z           }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3843835Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3844317Z         "fail_open": true,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3845007Z         "always_use_latest_compatibility_date": false,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3845782Z         "compatibility_date": "2025-08-09",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3846465Z         "compatibility_flags": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3847059Z           "nodejs_compat",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3847734Z           "nodejs_compat_populate_process_env"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3848383Z         ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3849102Z         "build_image_major_version": 3,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3849752Z         "usage_model": "standard"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3850330Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3850834Z       "production": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3851398Z         "env_vars": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3851992Z         "fail_open": true,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3852664Z         "always_use_latest_compatibility_date": false,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3853422Z         "compatibility_date": "2025-08-09",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3854059Z         "compatibility_flags": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3854443Z           "nodejs_compat",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3869646Z           "nodejs_compat_populate_process_env"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3870326Z         ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3870902Z         "build_image_major_version": 3,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3871617Z         "usage_model": "standard"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3872056Z       }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3872355Z     },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3872669Z     "latest_deployment": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3873099Z       "id": "84f72b81-56ba-465e-aeaa-5a154babe7db",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3873543Z       "short_id": "84f72b81",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3874000Z       "project_id": "a5c6f199-120b-41bc-a461-8f2fce0579d9",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3874539Z       "project_name": "v0-spaceport-website-preview2",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3875020Z       "environment": "preview",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3875560Z       "url": "https://84f72b81.v0-spaceport-website-preview2.pages.dev",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3876366Z       "created_on": "2026-02-03T16:55:35.360048Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3876840Z       "modified_on": "2026-02-03T16:55:40.020111Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3877249Z       "latest_stage": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3877592Z         "name": "deploy",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3877937Z         "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3878345Z         "ended_on": "2026-02-03T16:55:40.020111Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3879033Z         "status": "success"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3879395Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3879712Z       "deployment_trigger": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3880070Z         "type": "ad_hoc",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3880579Z         "metadata": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3880985Z           "branch": "agent-60391827-pipeline-viewer",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3881532Z           "commit_hash": "b83c0d8b1f494627d481f6cc60c092c9be98ca4a",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3882112Z           "commit_message": "fix: adjust three OrbitControls import",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3882598Z           "commit_dirty": true
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3882960Z         }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3883251Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3883541Z       "stages": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3883845Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3884152Z           "name": "queued",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3884584Z           "started_on": "2026-02-03T16:55:35.360048Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3884997Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3885354Z           "status": "active"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3885694Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3885979Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3886304Z           "name": "initialize",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3886665Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3887027Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3887365Z           "status": "idle"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3887694Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3887981Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3888309Z           "name": "clone_repo",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3888862Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3889249Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3889597Z           "status": "idle"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3889922Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3890212Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3890507Z           "name": "build",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3890848Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3891202Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3891548Z           "status": "idle"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3891865Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3892150Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3892452Z           "name": "deploy",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3892789Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3893199Z           "ended_on": "2026-02-03T16:55:40.020111Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3893609Z           "status": "success"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3893945Z         }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3894227Z       ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3894532Z       "build_config": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3894895Z         "build_command": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3895278Z         "destination_dir": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3895669Z         "build_caching": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3896018Z         "root_dir": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3896396Z         "web_analytics_tag": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3896798Z         "web_analytics_token": null
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3897159Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3897458Z       "env_vars": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3897814Z         "NEXT_PUBLIC_COGNITO_REGION": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3898226Z           "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3898580Z           "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3899147Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3899526Z         "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3899970Z           "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3900322Z           "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3900629Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3900984Z         "NEXT_PUBLIC_COGNITO_USER_POOL_ID": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3901446Z           "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3901809Z           "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3902124Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3902470Z         "NEXT_PUBLIC_PROJECTS_API_URL": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3902883Z           "type": "secret_text",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3903404Z           "value": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3903715Z         }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3903996Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3904334Z       "compatibility_date": "2025-08-09",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3904749Z       "compatibility_flags": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3905109Z         "nodejs_compat",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3905499Z         "nodejs_compat_populate_process_env"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3905879Z       ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3906217Z       "build_image_major_version": 3,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3906618Z       "usage_model": "bundled",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3906973Z       "aliases": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3907680Z         "https://agent-60391827-pipeline-view.v0-spaceport-website-preview2.pages.dev"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3908250Z       ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3908553Z       "is_skipped": false,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3909137Z       "production_branch": "main",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3909526Z       "uses_functions": true
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3909862Z     },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3910167Z     "canonical_deployment": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3910606Z       "id": "9c9b7dbe-a0f9-4bc4-ba43-9df9b41c8f27",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3911023Z       "short_id": "9c9b7dbe",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3911465Z       "project_id": "a5c6f199-120b-41bc-a461-8f2fce0579d9",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3911992Z       "project_name": "v0-spaceport-website-preview2",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3912457Z       "environment": "production",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3912995Z       "url": "https://9c9b7dbe.v0-spaceport-website-preview2.pages.dev",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3913552Z       "created_on": "2025-08-10T00:03:50.008336Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3914016Z       "modified_on": "2025-08-10T00:03:52.173564Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3914426Z       "latest_stage": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3914759Z         "name": "deploy",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3915102Z         "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3915494Z         "ended_on": "2025-08-10T00:03:52.173564Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3915893Z         "status": "success"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3916216Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3916565Z       "deployment_trigger": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3916924Z         "type": "ad_hoc",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3917251Z         "metadata": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3917581Z           "branch": "main",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3918038Z           "commit_hash": "c038c0c8fc4b34d8767d53a2290ac1585168ebcb",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3919050Z           "commit_message": "ci: deploy main to known-good preview project for production serving while investigating prod",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3919739Z           "commit_dirty": true
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3920078Z         }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3920359Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3920647Z       "stages": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3920958Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3921256Z           "name": "queued",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3921659Z           "started_on": "2025-08-10T00:03:50.008336Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3922064Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3922403Z           "status": "active"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3922740Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3923021Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3923340Z           "name": "initialize",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3923704Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3924057Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3924390Z           "status": "idle"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3924715Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3924994Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3925307Z           "name": "clone_repo",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3925664Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3926010Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3926350Z           "status": "idle"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3926672Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3926955Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3927254Z           "name": "build",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3927589Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3927931Z           "ended_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3928335Z           "status": "idle"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3929015Z         },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3929311Z         {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3929606Z           "name": "deploy",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3930080Z           "started_on": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3930918Z           "ended_on": "2025-08-10T00:03:52.173564Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3931494Z           "status": "success"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3931942Z         }
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3932369Z       ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3932675Z       "build_config": {
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3933037Z         "build_command": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3933426Z         "destination_dir": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3933807Z         "build_caching": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3934153Z         "root_dir": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3934528Z         "web_analytics_tag": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3934932Z         "web_analytics_token": null
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3935433Z       },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3935727Z       "env_vars": {},
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3936102Z       "compatibility_date": "2024-11-08",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3936520Z       "compatibility_flags": [
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3936871Z         "nodejs_compat",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3937259Z         "nodejs_compat_populate_process_env"
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3937640Z       ],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3937978Z       "build_image_major_version": 3,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3938353Z       "usage_model": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3938902Z       "aliases": null,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3939278Z       "is_skipped": false,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3939658Z       "production_branch": "main",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3940030Z       "uses_functions": false
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3940371Z     },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3940717Z     "created_on": "2025-08-09T18:13:04.760505Z",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3941142Z     "production_branch": "main",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3941641Z     "production_script_name": "pages-worker--7261703-production",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3942224Z     "preview_script_name": "pages-worker--7261703-preview",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3942673Z     "uses_functions": true,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3943011Z     "framework": "",
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3943346Z     "framework_version": ""
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3943676Z   },
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3943965Z   "success": true,
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3944281Z   "errors": [],
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3944591Z   "messages": []
+deploy	Ensure Pages runtime flags (compat date + node compat)	2026-02-03T19:29:49.3944900Z }
+deploy	Deploy to Cloudflare Pages	﻿2026-02-03T19:29:49.3973956Z ##[group]Run BRANCH="agent-74621839-explore-auto-listings"
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.3974533Z [36;1mBRANCH="agent-74621839-explore-auto-listings"[0m
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.3975076Z [36;1m# Deploy the static subdir so _worker.js sits at the upload root[0m
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.3975643Z [36;1mnpx wrangler pages deploy .vercel/output/static \[0m
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.3976156Z [36;1m  --project-name "$CF_PAGES_PROJECT" \[0m
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.3976582Z [36;1m  --branch "$BRANCH"[0m
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.4007914Z shell: /usr/bin/bash -e {0}
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.4008265Z env:
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.4008609Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.4009282Z   CLOUDFLARE_ACCOUNT_ID: ***
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.4009743Z   CLOUDFLARE_API_TOKEN: ***
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:49.4010094Z ##[endgroup]
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.4649083Z 
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.4650147Z  ⛅️ wrangler 4.28.1 (update available 4.62.0)
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.4651273Z ─────────────────────────────────────────────
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.9182556Z [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mWarning: Your working directory is a git repo and has uncommitted changes[0m
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.9183661Z 
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.9184047Z   To silence this warning, pass in --commit-dirty=true
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.9184392Z 
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:50.9184400Z 
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:52.3173834Z Uploading... (486/503)
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:52.8127402Z Uploading... (491/503)
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:52.8654214Z Uploading... (497/503)
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.3268020Z Uploading... (503/503)
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.3271657Z ✨ Success! Uploaded 17 files (486 already uploaded) (1.31 sec)
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.3272290Z 
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7664144Z ✨ Uploading _headers
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7764364Z Attaching additional modules:
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7880876Z ┌──────────────────────────────────────────────────────────────────────────┬──────┬─────────────┐
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7882470Z │ Name                                                                     │ Type │ Size        │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7884454Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7886073Z │ __next-on-pages-dist__/cache/adaptor.js                                  │ esm  │ 2.29 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7887755Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7889611Z │ __next-on-pages-dist__/cache/cache-api.js                                │ esm  │ 0.43 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7891194Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7892737Z │ __next-on-pages-dist__/cache/kv.js                                       │ esm  │ 0.35 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7894462Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7896173Z │ __next-on-pages-dist__/functions/api/cancel-subscription.func.js         │ esm  │ 11.94 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7897995Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7900293Z │ __next-on-pages-dist__/functions/api/create-checkout-session.func.js     │ esm  │ 12.02 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7902045Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7903645Z │ __next-on-pages-dist__/functions/api/debug-auth.func.js                  │ esm  │ 11.21 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7905414Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7907081Z │ __next-on-pages-dist__/functions/api/debug-subscription-upstream.func.js │ esm  │ 11.05 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7909067Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7910762Z │ __next-on-pages-dist__/functions/api/elevation-proxy.func.js             │ esm  │ 27.96 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7912616Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7913973Z │ __next-on-pages-dist__/functions/api/health.func.js                      │ esm  │ 10.44 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7915326Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7916629Z │ __next-on-pages-dist__/functions/api/new-project.func.js                 │ esm  │ 10.54 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7918016Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7919574Z │ __next-on-pages-dist__/functions/api/signup.func.js                      │ esm  │ 10.74 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7920988Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7922382Z │ __next-on-pages-dist__/functions/api/subscription-status.func.js         │ esm  │ 11.95 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7923883Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7925339Z │ __next-on-pages-dist__/functions/api/test-config.func.js                 │ esm  │ 11.34 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7926864Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7928311Z │ __next-on-pages-dist__/functions/api/test-token.func.js                  │ esm  │ 11.15 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7930037Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7931419Z │ __next-on-pages-dist__/functions/auth.func.js                            │ esm  │ 29.77 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7932792Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7934133Z │ __next-on-pages-dist__/functions/create.func.js                          │ esm  │ 1636.72 KiB │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7935779Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7937411Z │ __next-on-pages-dist__/functions/explore.func.js                         │ esm  │ 30.33 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7939077Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7940218Z │ __next-on-pages-dist__/functions/index.func.js                           │ esm  │ 28.33 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7941128Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7941978Z │ __next-on-pages-dist__/functions/landing.func.js                         │ esm  │ 28.44 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7942848Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7943666Z │ __next-on-pages-dist__/functions/pricing.func.js                         │ esm  │ 30.83 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7944550Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7945417Z │ __next-on-pages-dist__/manifest/537259e2ed205f5a7994cb4f05664668.js      │ esm  │ 0.74 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7946340Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7947157Z │ __next-on-pages-dist__/manifest/__RSC_SERVER_MANIFEST.js                 │ esm  │ 0.19 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7948022Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7949013Z │ __next-on-pages-dist__/webpack/32ca52d4610c67215b767b87d04d256a.js       │ esm  │ 17.26 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7949898Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7950734Z │ __next-on-pages-dist__/webpack/3aa5b97e57f8a50bf074ef6369017f27.js       │ esm  │ 603.60 KiB  │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7951628Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7952604Z │ __next-on-pages-dist__/webpack/5850.js                                   │ esm  │ 1.40 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7953432Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7954265Z │ __next-on-pages-dist__/webpack/6ccd39f63adb394ad73444dc3339d364.js       │ esm  │ 193.33 KiB  │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7955127Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7955906Z │ __next-on-pages-dist__/webpack/852.js                                    │ esm  │ 0.85 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7956736Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7957572Z │ __next-on-pages-dist__/webpack/aaf353e6bbc0564219fed2a974333239.js       │ esm  │ 90.89 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7959259Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7960947Z │ __next-on-pages-dist__/webpack/c6b4788dbb62535b83474a18b8945340.js       │ esm  │ 3.65 KiB    │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7962667Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7964346Z │ __next-on-pages-dist__/webpack/db0eefc03493d1b76b0109889171cc6a.js       │ esm  │ 75.67 KiB   │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7966071Z ├──────────────────────────────────────────────────────────────────────────┼──────┼─────────────┤
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7967423Z │ Total (30 modules)                                                       │      │ 2915.39 KiB │
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.7969192Z └──────────────────────────────────────────────────────────────────────────┴──────┴─────────────┘
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.8612749Z ✨ Compiled Worker successfully
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.8861160Z ✨ Uploading Worker bundle
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:53.8864936Z ✨ Uploading _routes.json
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:55.9850100Z 🌎 Deploying...
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:59.6280083Z ✨ Deployment complete! Take a peek over at https://06d94877.v0-spaceport-website-preview2.pages.dev
+deploy	Deploy to Cloudflare Pages	2026-02-03T19:29:59.6283149Z ✨ Deployment alias URL: https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	﻿2026-02-03T19:29:59.7183887Z ##[group]Run set -euo pipefail
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7184339Z [36;1mset -euo pipefail[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7184757Z [36;1mBRANCH="agent-74621839-explore-auto-listings"[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7185340Z [36;1m# Get most recent deployment for the selected project (includes preview)[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7186157Z [36;1mJSON=$(curl -fsSL -H "Authorization: ***" \[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7186962Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7187751Z [36;1mHASH_URL=$(echo "$JSON" | jq -r '.result[0].url')[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7188238Z [36;1mDEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7189326Z [36;1m# Fetch aliases for that deployment (branch alias if any)[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7189981Z [36;1mDETAIL=$(curl -fsSL -H "Authorization: ***" \[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7190770Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7191635Z [36;1mALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7192142Z [36;1mecho "hash_url=$HASH_URL" >> $GITHUB_OUTPUT[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7192594Z [36;1mecho "alias_url=$ALIAS" >> $GITHUB_OUTPUT[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7193076Z [36;1mecho "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"[0m
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7224921Z shell: /usr/bin/bash -e {0}
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7225280Z env:
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7225638Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7226174Z   CLOUDFLARE_ACCOUNT_ID: ***
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7226658Z   CLOUDFLARE_API_TOKEN: ***
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:29:59.7226999Z ##[endgroup]
+deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-02-03T19:30:00.1552494Z Resolved: HASH=https://06d94877.v0-spaceport-website-preview2.pages.dev ALIAS=https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev
+deploy	Verify preview alias and hash URL with retries	﻿2026-02-03T19:30:00.1594767Z ##[group]Run set -e
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1595424Z [36;1mset -e[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1595953Z [36;1murls=""[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1596659Z [36;1mif [ -n "$ALIAS_URL" ]; then urls="$urls $ALIAS_URL"; fi[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1597584Z [36;1mif [ -n "$HASH_URL" ]; then urls="$urls $HASH_URL"; fi[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1598393Z [36;1mecho "Checking URLs: $urls"[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1599288Z [36;1mfor URL in $urls; do[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1599941Z [36;1m  echo "Probing $URL ..."[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1600624Z [36;1m  for i in $(seq 1 12); do[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1601292Z [36;1m    echo "Attempt $i"[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1602258Z [36;1m    if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1603277Z [36;1m    sleep 5[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1604045Z [36;1m    if [ $i -eq 12 ]; then echo "Timeout waiting for $URL"; exit 1; fi[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1604898Z [36;1m  done[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1605440Z [36;1mdone[0m
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1652021Z shell: /usr/bin/bash -e {0}
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1652627Z env:
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1653235Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1654300Z   HASH_URL: https://06d94877.v0-spaceport-website-preview2.pages.dev
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1655586Z   ALIAS_URL: https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1656637Z ##[endgroup]
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1717410Z Checking URLs:  https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev https://06d94877.v0-spaceport-website-preview2.pages.dev
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1719582Z Probing https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev ...
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.1821827Z Attempt 1
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.4550971Z OK https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev/health.txt
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.4552428Z Probing https://06d94877.v0-spaceport-website-preview2.pages.dev ...
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.4565180Z Attempt 1
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:00.6952552Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:05.7004692Z Attempt 2
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:05.8952396Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:10.8993721Z Attempt 3
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:11.0858936Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:16.0900755Z Attempt 4
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:16.1483478Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:21.1525133Z Attempt 5
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:21.3540539Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:26.3583083Z Attempt 6
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:26.4131106Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:31.4173537Z Attempt 7
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:31.4714993Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:36.4756349Z Attempt 8
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:36.5386668Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:41.5423249Z Attempt 9
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:41.6007465Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:46.6043760Z Attempt 10
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:46.6795802Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:51.6834287Z Attempt 11
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:51.7407368Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:56.7443547Z Attempt 12
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:30:56.8027803Z curl: (22) The requested URL returned error: 404
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:31:01.8064149Z Timeout waiting for https://06d94877.v0-spaceport-website-preview2.pages.dev
+deploy	Verify preview alias and hash URL with retries	2026-02-03T19:31:01.8079236Z ##[error]Process completed with exit code 1.
+deploy	Post Run actions/checkout@v4	﻿2026-02-03T19:31:01.8171044Z Post job cleanup.
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9103511Z [command]/usr/bin/git version
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9139307Z git version 2.52.0
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9180318Z Temporarily overriding HOME='/home/runner/work/_temp/434b7aa6-08ff-4748-bd86-0a2eb40e0040' before making global git config changes
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9181411Z Adding repository directory to the temporary git global config as a safe directory
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9185720Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/v0-spaceport-website/v0-spaceport-website
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9225435Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9256803Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9485556Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9505205Z http.https://github.com/.extraheader
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9517092Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9546433Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9764739Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+deploy	Post Run actions/checkout@v4	2026-02-03T19:31:01.9794258Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+deploy	Complete job	﻿2026-02-03T19:31:02.0136498Z Cleaning up orphan processes

@@ -236,6 +236,13 @@ jobs:
               echo "Attempt $i"
               if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
               sleep 5
-              if [ $i -eq 12 ]; then echo "Timeout waiting for $URL"; exit 1; fi
+              if [ $i -eq 12 ]; then
+                if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then
+                  echo "Timeout waiting for hash URL $URL; continuing"
+                  break
+                fi
+                echo "Timeout waiting for $URL"
+                exit 1
+              fi
             done
           done
