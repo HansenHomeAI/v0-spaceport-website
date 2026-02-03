@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const DEFAULT_COMPRESSED_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
