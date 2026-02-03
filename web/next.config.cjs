@@ -8,6 +8,9 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: { appDir: true },
   images: { unoptimized: true },
+  async rewrites() {
+    return [{ source: '/health.txt', destination: '/api/health' }];
+  },
   // Do not use static export; we deploy with @cloudflare/next-on-pages to enable Pages Functions.
   basePath,
   assetPrefix: basePath ? `${basePath}/` : undefined,
