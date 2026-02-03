@@ -78,22 +78,37 @@ def lambda_handler(event, context):
         limit = DEFAULT_LIMIT
     limit = max(1, min(limit, MAX_LIMIT))
 
+    response: Dict[str, Any] = {}
     try:
-        response = table.query(
-            IndexName=VISIBILITY_INDEX,
-            KeyConditionExpression=Key('visibility').eq(visibility),
-            Limit=limit,
-            ScanIndexForward=False,
-            ExclusiveStartKey=cursor if cursor else None,
-        )
+        query_params: Dict[str, Any] = {
+            'IndexName': VISIBILITY_INDEX,
+            'KeyConditionExpression': Key('visibility').eq(visibility),
+            'Limit': limit,
+            'ScanIndexForward': False,
+        }
+        if cursor:
+            query_params['ExclusiveStartKey'] = cursor
+        response = table.query(**query_params)
+        items = response.get('Items', []) or []
     except Exception:
-        response = table.scan(
-            FilterExpression=Attr('visibility').eq(visibility),
-            Limit=limit,
-            ExclusiveStartKey=cursor if cursor else None,
-        )
+        items = []
+        scan_start_key = cursor
+        while True:
+            scan_params: Dict[str, Any] = {
+                'FilterExpression': Attr('visibility').eq(visibility),
+                'Limit': limit,
+            }
+            if scan_start_key:
+                scan_params['ExclusiveStartKey'] = scan_start_key
+            response = table.scan(**scan_params)
+            items.extend(response.get('Items', []) or [])
+            scan_start_key = response.get('LastEvaluatedKey')
+            if len(items) >= limit or not scan_start_key:
+                break
+        items = items[:limit]
 
-    items = response.get('Items', []) or []
+    # Ensure a predictable order when we fall back to a scan.
+    items.sort(key=lambda item: item.get('updatedAt', 0), reverse=True)
     shaped = [_shape_item(item) for item in items if item.get('viewerUrl')]
     next_cursor = _encode_cursor(response.get('LastEvaluatedKey'))
 
