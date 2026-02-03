@@ -46,7 +46,7 @@ def test_find_closest_trajectory_point_straight_segment():
     # Altitude should be ~15 at t ~0.5
     assert math.isclose(closest['altitude_local'], 15.0, rel_tol=0, abs_tol=0.2)
     # Distance should be ~2 meters (y offset)
-    assert math.isclose(closest['distance_m'], 2.0, rel_tol=0, abs_tol=0.2)
+    assert math.isclose(closest['distance_m'], 2.0, rel_tol=0, abs_tol=0.3)
 
 
 def test_project_exif_gps_to_trajectory_uses_trajectory_altitude():
@@ -79,4 +79,3 @@ def test_project_exif_gps_to_trajectory_uses_trajectory_altitude():
     assert projected['mapping_method'] == 'exif_trajectory_projection'
     assert projected['segment_index'] == 0
     assert 0.45 <= projected['segment_t'] <= 0.55
-

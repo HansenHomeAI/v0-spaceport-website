@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""Full pipeline test with GPS flight path CSV data.
-Starts at SfM (OpenSfM GPS-enhanced) and runs through 3DGS → Compression.
-This validates the end-to-end pipeline with pasted CSV data supplied via the
-`csvData` field of the Start-ML-Job Lambda/API.
+"""Full pipeline test using EXIF-only GPS priors.
+Starts at SfM (OpenSfM EXIF-enhanced) and runs through 3DGS → Compression.
+This validates the end-to-end pipeline without any CSV priors.
 """
 
 import boto3
 import json
 import time
 import logging
-from textwrap import dedent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -23,20 +21,6 @@ STATE_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:Spacepor
 
 # Test inputs
 S3_URL = "s3://spaceport-ml-processing/test-data/1751413909023-l2zkyj-Battery-1.zip"
-CSV_DATA = dedent(
-    """latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval
-41.73272,-111.83423,130.0,249,14.48,0,2,-35,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73256,-111.83481,141.91,189,81.87,0,2,-33,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73201,-111.83493,156.09,351,15.54,0,2,-31,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73268,-111.83508,173.61,51,113.2,0,2,-29,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.7332,-111.83423,194.46,250,17.13,0,2,-27,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73286,-111.83547,230.78,190,158.77,0,2,-26,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73166,-111.83574,253.32,351,19.45,0,2,-24,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73312,-111.83606,294.37,51,226.98,0,2,-23,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73423,-111.83423,333.77,249,22.86,0,2,-22,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-41.73346,-111.83695,386.98,189,326.56,0,2,-22,0,8.85,41.73231,-111.83423,-35,0,3.0,0
-"""
-).strip()
 TEST_EMAIL = "gbhbyu@gmail.com"
 
 # Hyperparameter tuning configuration
@@ -71,7 +55,6 @@ def start_pipeline() -> str:
             "s3Url": S3_URL,
             "email": TEST_EMAIL,
             "pipelineStep": "sfm",
-            "csvData": CSV_DATA,
             "hyperparameters": EXPERIMENTAL_HYPERPARAMETERS
         })
     }
@@ -142,7 +125,6 @@ if __name__ == "__main__":
     logger.info("🧪 Starting GPS-Enhanced OpenSfM Pipeline Test")
     logger.info(f"📍 Test Data: {S3_URL}")
     logger.info(f"📧 Email: {TEST_EMAIL}")
-    logger.info(f"🗺️ GPS Data: {len(CSV_DATA.split(chr(10)))} waypoints")
     logger.info(f"🎛️ Hyperparameters: {json.dumps(EXPERIMENTAL_HYPERPARAMETERS, indent=2)}")
     
     try:
