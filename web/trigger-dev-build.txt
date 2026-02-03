@@ -6,3 +6,6 @@ feat: explore auto listings
 
 2026-02-02
 chore: rerun deploy after runner backlog
+
+2026-02-02
+chore: retrigger pages after snapshot
