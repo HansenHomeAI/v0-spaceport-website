@@ -294,6 +294,7 @@ class MLPipelineStack(Stack):
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
             timeout=Duration.seconds(60),
             memory_size=512,
+            role=lambda_role,
             environment={
                 "ML_BUCKET": ml_bucket.bucket_name,
                 # ECR repository names - Lambda will try branch-specific first, fallback to shared
