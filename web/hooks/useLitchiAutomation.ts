@@ -45,8 +45,10 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
   const [isTesting, setIsTesting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const fallbackApiBase = API_CONFIG.LITCHI_API_URL_FALLBACK;
-  const initialApiBase = API_CONFIG.LITCHI_API_URL || fallbackApiBase;
+  const isLocalHost = typeof window !== 'undefined'
+    && (/^(localhost|127\.0\.0\.1)$/).test(window.location.hostname);
+  const fallbackApiBase = isLocalHost ? '' : API_CONFIG.LITCHI_API_URL_FALLBACK;
+  const initialApiBase = isLocalHost ? '/api' : (API_CONFIG.LITCHI_API_URL || fallbackApiBase);
   const [apiBase, setApiBase] = useState(initialApiBase);
   const apiConfigured = useMemo(() => Boolean(initialApiBase), [initialApiBase]);
   const pollIntervalMs = options.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
@@ -75,11 +77,20 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
       const response = await fetchWithFallback('/litchi/status', {
         headers: await authHeaders(),
       });
-      if (!response.ok) {
-        throw new Error(`Status request failed (${response.status})`);
+      const payloadText = await response.text();
+      let payload: any = null;
+      if (payloadText) {
+        try {
+          payload = JSON.parse(payloadText);
+        } catch {
+          payload = null;
+        }
       }
-      const data = await response.json();
-      setStatus(data);
+      if (!response.ok) {
+        const message = payload?.error || `Status request failed (${response.status})`;
+        throw new Error(message);
+      }
+      setStatus(payload);
     } catch (fetchError: any) {
       setError(fetchError?.message || 'Unable to load Litchi status');
     }
