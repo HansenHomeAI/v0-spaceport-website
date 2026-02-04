@@ -64,6 +64,8 @@ export default function LitchiMissionControl(): JSX.Element {
 
   const statusLabel = status ? (STATUS_LABELS[status.status] || status.status) : 'Unknown';
   const statusError = localError || error;
+  const emailUnverified = /email is not verified/i.test(`${status?.message ?? ''} ${statusError ?? ''}`.trim());
+  const emailUnverifiedMessage = 'Verify your Litchi email to enable mission saving. Check your inbox (and spam) for the verification link.';
 
   if (!apiConfigured) {
     return (
@@ -85,6 +87,7 @@ export default function LitchiMissionControl(): JSX.Element {
       </div>
 
       {status?.message && <p className="litchi-status-message">{status.message}</p>}
+      {emailUnverified && <p className="litchi-error" role="status">{emailUnverifiedMessage}</p>}
       {statusError && <p className="litchi-error" role="status">{statusError}</p>}
 
       <div className="litchi-actions">

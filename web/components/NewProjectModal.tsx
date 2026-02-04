@@ -1335,11 +1335,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const litchiStatusLabel = litchiStatus ? (litchiStatusLabels[litchiStatusState] || litchiStatusState) : 'Unknown';
   const litchiNeedsReconnect = litchiStatus?.status === 'error' || litchiStatus?.status === 'expired';
   const litchiHasLoginFailure = litchiLogs.some(entry => /login failed/i.test(entry));
+  const litchiEmailUnverified = /email is not verified/i.test(
+    `${litchiStatus?.message ?? ''} ${litchiError ?? ''} ${litchiConnectMessage ?? ''}`.trim(),
+  );
   const litchiGuidance = litchiNeedsReconnect
     ? 'Login failed or expired. Re-enter your Litchi credentials to continue.'
     : litchiHasLoginFailure
       ? 'We could not verify these credentials. Please retry or re-enter your password.'
-      : litchiIsRateLimited
+      : litchiEmailUnverified
+        ? 'Verify your Litchi email to enable mission saving. Check your inbox (and spam) for the verification link.'
+        : litchiIsRateLimited
         ? 'Litchi is rate limiting uploads. We will retry automatically in a minute or two.'
       : litchiStatus?.needsTwoFactor
         ? 'Enter your 2FA code to finish connecting.'
