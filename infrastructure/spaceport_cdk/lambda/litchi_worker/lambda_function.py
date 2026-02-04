@@ -1373,6 +1373,30 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         except Exception:
             logger.warning("Unable to inspect mission context keys.")
 
+        try:
+            account_state = await page.evaluate(
+                """
+                () => {
+                  const user = window.Parse && window.Parse.User && window.Parse.User.current && window.Parse.User.current();
+                  if (!user || typeof user.get !== 'function') return null;
+                  return {
+                    email: user.get('email') || null,
+                    emailVerified: user.get('emailVerified'),
+                  };
+                }
+                """
+            )
+            logger.info("Litchi account state: %s", account_state)
+            if account_state and account_state.get("emailVerified") is False:
+                _mark_error(table, user_id, "Litchi account email not verified")
+                return {
+                    "status": "error",
+                    "message": "Litchi account email is not verified. Verify email to enable mission saving.",
+                    "waitSeconds": _jitter_seconds(),
+                }
+        except Exception as exc:
+            logger.warning("Unable to inspect Litchi account state: %s", exc)
+
         save_menu_item = page.get_by_role("menuitem", name="Save...")
         if await save_menu_item.count() == 0:
             save_menu_item = page.get_by_text("Save...")
