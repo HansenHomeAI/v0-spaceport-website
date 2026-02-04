@@ -1729,6 +1729,73 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         mission_found = bool(mission_check.get("found")) if isinstance(mission_check, dict) else False
         save_success = modal_closed or mission_found
         if login_gate_present and not save_success:
+            logger.info("Login gate still present; retrying save action.")
+            if await save_button.count() > 0:
+                await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
+                await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+            modal_closed = False
+            if await download_modal.count() == 0:
+                modal_closed = True
+            else:
+                try:
+                    await download_modal.first.wait_for(state="hidden", timeout=12000)
+                    modal_closed = True
+                except PlaywrightTimeoutError:
+                    modal_closed = False
+            logger.info("Save modal closed after retry: %s", modal_closed)
+            try:
+                mission_check = await page.evaluate(
+                    """
+                    async (missionName) => {
+                      if (!window.Parse || !window.Parse.Cloud || !window.Parse.Cloud.run) {
+                        return { ok: false, reason: 'parse_unavailable' };
+                      }
+                      const tryQuery = async () => {
+                        const query = new window.Parse.Query('Mission');
+                        query.limit(50);
+                        query.descending('updatedAt');
+                        const results = await query.find();
+                        return results.map((item) => item.get('name')).filter(Boolean);
+                      };
+                      const tryQueryV3 = async () => {
+                        const query = new window.Parse.Query('MissionV3');
+                        query.limit(50);
+                        query.descending('updatedAt');
+                        const results = await query.find();
+                        return results.map((item) => item.get('name')).filter(Boolean);
+                      };
+                      try {
+                        const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
+                        const missions = result?.missions || result?.results || result?.data || [];
+                        const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
+                        if (names.length) {
+                          return { ok: true, count: names.length, found: names.includes(missionName), source: 'list' };
+                        }
+                      } catch (err) {
+                        const error =
+                          err && typeof err === 'object'
+                            ? JSON.stringify({ message: err.message, code: err.code, detail: err })
+                            : String(err);
+                        const queryNames = await tryQuery().catch(() => tryQueryV3());
+                        return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query', error };
+                      }
+                      const queryNames = await tryQuery().catch(() => tryQueryV3());
+                      return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query' };
+                    }
+                    """,
+                    mission_name,
+                )
+                logger.info("Mission list re-check: %s", mission_check)
+            except Exception as exc:
+                logger.warning("Mission list re-check failed: %s", exc)
+            mission_found = bool(mission_check.get("found")) if isinstance(mission_check, dict) else False
+            save_success = modal_closed or mission_found
+            not_logged_in = page.locator("#save-notloggedin")
+            login_gate_button = page.locator("#downloadalert button", has_text="Log in")
+            login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
+                await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
+            )
+        if login_gate_present and not save_success:
             _mark_error(table, user_id, "Litchi session not authenticated for saving missions")
             return {
                 "status": "error",
