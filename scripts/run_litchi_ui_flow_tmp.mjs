@@ -84,12 +84,24 @@ async function waitForText(text, time = 20) {
   record('Navigate to create page', 'pass', targetUrl);
   await callTool('browser_wait_for', { textGone: 'Loading projects...', time: 30 }, { silent: true }).catch(() => {});
 
-  const loginButtonRef = tryFindRef(snapshot, 'button', ['Login', 'Log in', 'Log In']);
+  const loginLabels = ['Login', 'Log in', 'Log In', 'Sign in', 'Sign In'];
+  const refreshSnapshot = async () => {
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  };
+
+  let loginButtonRef = tryFindRef(snapshot, 'button', loginLabels)
+    || tryFindRef(snapshot, 'link', loginLabels);
+  if (!loginButtonRef) {
+    await callTool('browser_wait_for', { text: 'Login', time: 12 }, { silent: true }).catch(() => {});
+    await refreshSnapshot();
+    loginButtonRef = tryFindRef(snapshot, 'button', loginLabels)
+      || tryFindRef(snapshot, 'link', loginLabels);
+  }
   if (loginButtonRef) {
     await callTool('browser_click', { element: 'Login', ref: loginButtonRef }, { silent: true });
     record('Open login form', 'pass');
     await callTool('browser_wait_for', { text: 'Email', time: 15 }, { silent: true });
-    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+    await refreshSnapshot();
   }
 
   const emailRef = tryFindRef(snapshot, 'textbox', ['Email']);

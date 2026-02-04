@@ -1,5 +1,5 @@
-reason: Unblocked. Triggering CI/CDK deploy to recreate missing Litchi API without local Docker.
-last_step: Added local /api/litchi proxy + localhost routing and verified it returns a clear 502 when Litchi API is missing; updated local Cognito client to match staging pool.
-next_unblocked_step: Commit + push branch to trigger CDK deploy; monitor workflows; update NEXT_PUBLIC_LITCHI_API_URL from stack outputs; re-test local Litchi connect via proxy.
-owner_action_needed: none
-updated: 2026-02-03T20:05:00Z
+reason: In progress. Auth staging stack was overwritten by another branch (new user pool/client and no Litchi API output). Redeploying this branch to restore Litchi resources, then re-running UI flow.
+last_step: Litchi UI flow test timed out after login; needed more robust login detection. Updated MCP script and queued new deploy.
+next_unblocked_step: Wait for CDK + Pages workflows to finish, refresh Auth outputs, update web/.env.local, then rerun Litchi UI flow and upload verification.
+owner_action_needed: None.
+updated: 2026-02-04T00:12:30Z
