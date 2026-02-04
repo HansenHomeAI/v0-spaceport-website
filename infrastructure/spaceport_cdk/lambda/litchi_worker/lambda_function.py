@@ -146,6 +146,44 @@ async def _apply_stealth(page) -> None:
         await stealth_async(page)
 
 
+async def _attempt_gstool_save(page, mission_name: str) -> Dict[str, Any]:
+    try:
+        result = await page.evaluate(
+            """
+            async (missionName) => {
+              const response = { attempted: false, ok: false };
+              const gs = window.GStool;
+              if (!gs) return { attempted: false, ok: false, error: 'missing_gstool' };
+              try {
+                if (typeof gs.saveFlightPlanDataToMemory === 'function') {
+                  try { gs.saveFlightPlanDataToMemory(); } catch (err) {}
+                }
+                if (typeof gs.showSave === 'function') {
+                  try { gs.showSave(); } catch (err) {}
+                }
+                if (typeof gs.saveToCloud === 'function') {
+                  const output = gs.saveToCloud();
+                  if (output && typeof output.then === 'function') {
+                    await output;
+                  }
+                  response.attempted = true;
+                  response.ok = true;
+                  return response;
+                }
+                return { attempted: false, ok: false, error: 'saveToCloud_missing' };
+              } catch (err) {
+                return { attempted: true, ok: false, error: err?.message || String(err) };
+              }
+            }
+            """,
+            mission_name,
+        )
+        return result or {}
+    except Exception as exc:
+        logger.warning("GStool saveToCloud evaluation failed: %s", exc)
+        return {"attempted": False, "ok": False, "error": str(exc)}
+
+
 async def _launch_context(storage_state: Optional[Dict[str, Any]] = None):
     if async_playwright is None:
         raise RuntimeError("playwright is not installed in the runtime")
@@ -1663,6 +1701,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             save_button = page.locator("#downloadalert button", has_text="Save")
         if await save_button.count() == 0:
             save_button = page.get_by_role("button", name="Save")
+        gstool_save_result = {}
         if await save_button.count() > 0:
             try:
                 save_state = await save_button.first.evaluate(
@@ -1693,6 +1732,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             except Exception:
                 logger.warning("Unable to inspect save button state.")
             await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
+            gstool_save_result = await _attempt_gstool_save(page, mission_name)
+        else:
+            gstool_save_result = await _attempt_gstool_save(page, mission_name)
+        if gstool_save_result:
+            logger.info("GStool saveToCloud result: %s", gstool_save_result)
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
         modal_closed = False
@@ -1727,7 +1771,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     return results.map((item) => item.get('name')).filter(Boolean);
                   };
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
+                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
                     const missions = result?.missions || result?.results || result?.data || [];
                     const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                     if (names.length) {
@@ -1756,7 +1800,10 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             logger.info("Login gate still present; retrying save action.")
             if await save_button.count() > 0:
                 await _human_click(save_button.first, timeout_ms=8000, force_fallback=True)
-                await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+            gstool_retry_result = await _attempt_gstool_save(page, mission_name)
+            if gstool_retry_result:
+                logger.info("GStool saveToCloud retry result: %s", gstool_retry_result)
+            await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
             modal_closed = False
             if await download_modal.count() == 0:
                 modal_closed = True
@@ -1789,7 +1836,7 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         return results.map((item) => item.get('name')).filter(Boolean);
                       };
                       try {
-                        const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 0 });
+                        const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
                         const missions = result?.missions || result?.results || result?.data || [];
                         const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
                         if (names.length) {
