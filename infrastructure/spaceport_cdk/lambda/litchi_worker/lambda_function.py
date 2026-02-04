@@ -162,7 +162,7 @@ async def _attempt_gstool_save(page, mission_name: str) -> Dict[str, Any]:
                   try { gs.showSave(); } catch (err) {}
                 }
                 if (typeof gs.saveToCloud === 'function') {
-                  const output = gs.saveToCloud();
+                  const output = gs.saveToCloud(missionName || '');
                   if (output && typeof output.then === 'function') {
                     await output;
                   }
