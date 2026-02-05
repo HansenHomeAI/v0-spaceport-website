@@ -1451,7 +1451,17 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         if (seen.has(obj)) return [];
                         seen.add(obj);
                         const arrays = [];
-                        for (const [key, value] of Object.entries(obj)) {
+                        const keys = new Set([
+                          ...Object.keys(obj || {}),
+                          ...Object.getOwnPropertyNames(obj || {}),
+                        ]);
+                        for (const key of keys) {
+                          let value;
+                          try {
+                            value = obj[key];
+                          } catch (err) {
+                            continue;
+                          }
                           if (Array.isArray(value)) {
                             arrays.push(value);
                           } else if (value && typeof value === 'object') {
@@ -1481,7 +1491,17 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         if (seen.has(obj)) return [];
                         seen.add(obj);
                         const arrays = [];
-                        for (const [key, value] of Object.entries(obj)) {
+                        const keys = new Set([
+                          ...Object.keys(obj || {}),
+                          ...Object.getOwnPropertyNames(obj || {}),
+                        ]);
+                        for (const key of keys) {
+                          let value;
+                          try {
+                            value = obj[key];
+                          } catch (err) {
+                            continue;
+                          }
                           const nextPath = path ? `${path}.${key}` : key;
                           if (Array.isArray(value)) {
                             arrays.push({ key: nextPath, length: value.length });
@@ -1493,18 +1513,47 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                       };
                       const arrays = mission ? collectArrays(mission) : [];
                       const populated = arrays.filter((item) => item.length > 0);
-                      const sampleArrays = populated.length ? populated.slice(0, 6) : arrays.slice(0, 6);
+                      const sampleArrays = populated.length ? populated.slice(0, 8) : arrays.slice(0, 8);
                       const waypoints = mission && Array.isArray(mission.waypoints) ? mission.waypoints.length : 0;
-                      return { errorText, waypoints, sampleArrays };
+                      const missionKeys = mission ? Object.getOwnPropertyNames(mission).slice(0, 20) : [];
+                      const missionProto = mission ? Object.getPrototypeOf(mission) : null;
+                      const missionProtoKeys = missionProto ? Object.getOwnPropertyNames(missionProto).slice(0, 20) : [];
+                      const gstool = window.GStool || null;
+                      const gstoolKeys = gstool
+                        ? Object.keys(gstool).filter((key) => key.toLowerCase().includes('mission')).slice(0, 20)
+                        : [];
+                      const domSelectors = [
+                        '#waypoint-table tbody tr',
+                        '#waypointTable tbody tr',
+                        '#wpTable tbody tr',
+                        '.waypoint-table tbody tr',
+                        '.waypoint-row',
+                        '.waypoint-list li',
+                      ];
+                      const domWaypointCounts = domSelectors.map((selector) => ({
+                        selector,
+                        count: document.querySelectorAll(selector).length,
+                      }));
+                      return {
+                        errorText,
+                        waypoints,
+                        sampleArrays,
+                        missionKeys,
+                        missionProtoKeys,
+                        gstoolKeys,
+                        domWaypointCounts,
+                      };
                     }
                     """
                 )
                 logger.info("Import state: %s", import_state)
                 if import_state.get("errorText"):
                     raise RuntimeError(f"Litchi import error: {import_state.get('errorText')}")
-                if import_state.get("sampleArrays") is not None and not any(
-                    item.get("length", 0) > 0 for item in import_state.get("sampleArrays", [])
-                ):
+                has_arrays = any(item.get("length", 0) > 0 for item in import_state.get("sampleArrays", []))
+                has_dom_waypoints = any(
+                    item.get("count", 0) > 0 for item in import_state.get("domWaypointCounts", [])
+                )
+                if import_state.get("sampleArrays") is not None and not (has_arrays or has_dom_waypoints):
                     raise RuntimeError("Litchi import produced no populated waypoint arrays.")
             except RuntimeError:
                 raise
