@@ -1386,7 +1386,23 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 except Exception as exc:
                     logger.warning("Import button click failed, forcing script click: %s", exc)
                     await import_button.first.evaluate("el => el.click()")
-            await page.wait_for_timeout(int(_human_delay(0.9, 1.8) * 1000))
+            await page.wait_for_timeout(int(_human_delay(1.6, 2.6) * 1000))
+            try:
+                import_state = await page.evaluate(
+                    """
+                    () => {
+                      const errorNode = document.querySelector('#import-error-div');
+                      const errorText = errorNode ? (errorNode.textContent || '').trim() : null;
+                      const mission = window.GStool && window.GStool.currMission ? window.GStool.currMission : null;
+                      const waypoints = mission && Array.isArray(mission.waypoints) ? mission.waypoints.length : 0;
+                      return { errorText, waypoints };
+                    }
+                    """
+                )
+                logger.info("Import state: %s", import_state)
+            except Exception:
+                logger.warning("Unable to inspect import state.")
+            await page.wait_for_timeout(int(_human_delay(1.2, 2.4) * 1000))
             await page.evaluate(
                 """
                 () => {
@@ -1795,11 +1811,13 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 () => {
                   const mission = window.GStool && window.GStool.currMission ? window.GStool.currMission : null;
                   const parseMission = mission && mission.parseMission ? mission.parseMission : null;
+                  const waypoints = mission && Array.isArray(mission.waypoints) ? mission.waypoints.length : null;
                   return {
                     hasMission: Boolean(mission),
                     hasParseMission: Boolean(parseMission),
                     missionName: parseMission && typeof parseMission.get === 'function' ? parseMission.get('name') : null,
                     missionId: parseMission ? (parseMission.id || (parseMission.get && parseMission.get('objectId'))) : null,
+                    waypointCount: waypoints,
                   };
                 }
                 """
