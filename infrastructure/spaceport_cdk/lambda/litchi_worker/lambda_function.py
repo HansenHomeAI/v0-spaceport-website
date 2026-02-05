@@ -1374,6 +1374,19 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     "buffer": csv_content.encode("utf-8"),
                 }
             )
+            try:
+                file_state = await page.evaluate(
+                    """
+                    () => {
+                      const input = document.querySelector('#fileimport');
+                      if (!input || !input.files) return { count: 0, name: null };
+                      return { count: input.files.length, name: input.files[0] ? input.files[0].name : null };
+                    }
+                    """
+                )
+                logger.info("Import file input state: %s", file_state)
+            except Exception:
+                logger.warning("Unable to inspect import file input state.")
 
             import_button = page.locator("#importbtn")
             if await import_button.count() == 0:
@@ -1386,6 +1399,23 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 except Exception as exc:
                     logger.warning("Import button click failed, forcing script click: %s", exc)
                     await import_button.first.evaluate("el => el.click()")
+            try:
+                import_call = await page.evaluate(
+                    """
+                    () => {
+                      if (!window.GStool || typeof window.GStool.import !== 'function') return { called: false };
+                      try {
+                        window.GStool.import();
+                        return { called: true };
+                      } catch (err) {
+                        return { called: false, error: err?.message || String(err) };
+                      }
+                    }
+                    """
+                )
+                logger.info("GStool.import invocation: %s", import_call)
+            except Exception:
+                logger.warning("Unable to invoke GStool.import.")
             await page.wait_for_timeout(int(_human_delay(1.6, 2.6) * 1000))
             try:
                 import_state = await page.evaluate(
