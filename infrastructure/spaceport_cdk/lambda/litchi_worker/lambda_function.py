@@ -1470,7 +1470,11 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         }
                         return arrays;
                       };
-                      const arrays = collectArrays(mission);
+                      const parseMission = mission && mission.parseMission ? mission.parseMission : null;
+                      const parseAttrs = parseMission && parseMission.attributes ? parseMission.attributes : null;
+                      const gstool = window.GStool || null;
+                      const candidates = [mission, parseAttrs, gstool && gstool.missionLine, gstool && gstool.myMissions].filter(Boolean);
+                      const arrays = candidates.flatMap((candidate) => collectArrays(candidate));
                       return arrays.some((items) => items && items.length > 0);
                     }
                     """,
@@ -1518,6 +1522,37 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                       const missionKeys = mission ? Object.getOwnPropertyNames(mission).slice(0, 20) : [];
                       const missionProto = mission ? Object.getPrototypeOf(mission) : null;
                       const missionProtoKeys = missionProto ? Object.getOwnPropertyNames(missionProto).slice(0, 20) : [];
+                      const parseMission = mission && mission.parseMission ? mission.parseMission : null;
+                      const parseAttrs = parseMission && parseMission.attributes ? parseMission.attributes : null;
+                      const parseAttrKeys = parseAttrs ? Object.keys(parseAttrs).slice(0, 20) : [];
+                      const parseArrayCounts = parseAttrs
+                        ? Object.entries(parseAttrs)
+                            .filter(([, value]) => Array.isArray(value))
+                            .map(([key, value]) => ({ key, length: value.length }))
+                        : [];
+                      const parseJsonArrays = [];
+                      if (parseAttrs) {
+                        for (const [key, value] of Object.entries(parseAttrs)) {
+                          if (typeof value !== 'string') continue;
+                          const trimmed = value.trim();
+                          if (!trimmed.startsWith('[') && !trimmed.startsWith('{')) continue;
+                          try {
+                            const parsed = JSON.parse(trimmed);
+                            const arrays = Array.isArray(parsed)
+                              ? [{ key, length: parsed.length }]
+                              : Object.entries(parsed)
+                                  .filter(([, item]) => Array.isArray(item))
+                                  .map(([subKey, item]) => ({ key: `${key}.${subKey}`, length: item.length }));
+                            for (const entry of arrays) {
+                              if (entry.length > 0) {
+                                parseJsonArrays.push(entry);
+                              }
+                            }
+                          } catch (err) {
+                            // ignore parse errors
+                          }
+                        }
+                      }
                       const gstool = window.GStool || null;
                       const gstoolKeys = gstool
                         ? Object.keys(gstool).filter((key) => key.toLowerCase().includes('mission')).slice(0, 20)
@@ -1540,6 +1575,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         sampleArrays,
                         missionKeys,
                         missionProtoKeys,
+                        parseAttrKeys,
+                        parseArrayCounts: parseArrayCounts.slice(0, 8),
+                        parseJsonArrays: parseJsonArrays.slice(0, 8),
                         gstoolKeys,
                         domWaypointCounts,
                       };
@@ -1550,10 +1588,18 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 if import_state.get("errorText"):
                     raise RuntimeError(f"Litchi import error: {import_state.get('errorText')}")
                 has_arrays = any(item.get("length", 0) > 0 for item in import_state.get("sampleArrays", []))
+                has_parse_arrays = any(
+                    item.get("length", 0) > 0 for item in import_state.get("parseArrayCounts", [])
+                )
+                has_parse_json_arrays = any(
+                    item.get("length", 0) > 0 for item in import_state.get("parseJsonArrays", [])
+                )
                 has_dom_waypoints = any(
                     item.get("count", 0) > 0 for item in import_state.get("domWaypointCounts", [])
                 )
-                if import_state.get("sampleArrays") is not None and not (has_arrays or has_dom_waypoints):
+                if import_state.get("sampleArrays") is not None and not (
+                    has_arrays or has_dom_waypoints or has_parse_arrays or has_parse_json_arrays
+                ):
                     raise RuntimeError("Litchi import produced no populated waypoint arrays.")
             except RuntimeError:
                 raise
