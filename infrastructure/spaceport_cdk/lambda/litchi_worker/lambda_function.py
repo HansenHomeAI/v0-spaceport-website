@@ -1545,6 +1545,8 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                       const missionProto = mission ? Object.getPrototypeOf(mission) : null;
                       const missionProtoKeys = missionProto ? Object.getOwnPropertyNames(missionProto).slice(0, 20) : [];
                       const parseMission = mission && mission.parseMission ? mission.parseMission : null;
+                      const parseMissionType = parseMission ? typeof parseMission : null;
+                      const parseMissionCtor = parseMission && parseMission.constructor ? parseMission.constructor.name : null;
                       const parseAttrs = parseMission && parseMission.attributes ? parseMission.attributes : null;
                       const parseAttrKeys = parseAttrs ? Object.keys(parseAttrs).slice(0, 20) : [];
                       const parseArrayCounts = parseAttrs
@@ -1576,6 +1578,26 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                         }
                       }
                       const gstool = window.GStool || null;
+                      const missionLine = gstool && gstool.missionLine ? gstool.missionLine : null;
+                      let missionLinePointCount = null;
+                      try {
+                        if (missionLine && typeof missionLine.getPath === 'function') {
+                          const path = missionLine.getPath();
+                          if (path) {
+                            if (typeof path.getLength === 'function') {
+                              missionLinePointCount = path.getLength();
+                            } else if (Array.isArray(path)) {
+                              missionLinePointCount = path.length;
+                            }
+                          }
+                        }
+                      } catch (err) {
+                        missionLinePointCount = null;
+                      }
+                      const missionLineKeys = missionLine ? Object.getOwnPropertyNames(missionLine).slice(0, 15) : [];
+                      const myMissions = gstool && gstool.myMissions ? gstool.myMissions : null;
+                      const myMissionsKeys = myMissions ? Object.getOwnPropertyNames(myMissions).slice(0, 15) : [];
+                      const myMissionsModels = myMissions && Array.isArray(myMissions.models) ? myMissions.models.length : null;
                       const gstoolKeys = gstool
                         ? Object.keys(gstool).filter((key) => key.toLowerCase().includes('mission')).slice(0, 20)
                         : [];
