@@ -1440,18 +1440,74 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 logger.warning("Unable to invoke GStool.import.")
             await page.wait_for_timeout(int(_human_delay(1.6, 2.6) * 1000))
             try:
+                await page.wait_for_function(
+                    """
+                    () => {
+                      const mission = window.GStool && window.GStool.currMission ? window.GStool.currMission : null;
+                      if (!mission) return false;
+                      const seen = new Set();
+                      const collectArrays = (obj, depth = 0) => {
+                        if (!obj || typeof obj !== 'object' || depth > 2) return [];
+                        if (seen.has(obj)) return [];
+                        seen.add(obj);
+                        const arrays = [];
+                        for (const [key, value] of Object.entries(obj)) {
+                          if (Array.isArray(value)) {
+                            arrays.push(value);
+                          } else if (value && typeof value === 'object') {
+                            arrays.push(...collectArrays(value, depth + 1));
+                          }
+                        }
+                        return arrays;
+                      };
+                      const arrays = collectArrays(mission);
+                      return arrays.some((items) => items && items.length > 0);
+                    }
+                    """,
+                    timeout=20000,
+                )
+            except PlaywrightTimeoutError:
+                logger.warning("Import did not yield populated mission arrays within timeout.")
+            try:
                 import_state = await page.evaluate(
                     """
                     () => {
                       const errorNode = document.querySelector('#import-error-div');
                       const errorText = errorNode ? (errorNode.textContent || '').trim() : null;
                       const mission = window.GStool && window.GStool.currMission ? window.GStool.currMission : null;
+                      const seen = new Set();
+                      const collectArrays = (obj, depth = 0, path = '') => {
+                        if (!obj || typeof obj !== 'object' || depth > 2) return [];
+                        if (seen.has(obj)) return [];
+                        seen.add(obj);
+                        const arrays = [];
+                        for (const [key, value] of Object.entries(obj)) {
+                          const nextPath = path ? `${path}.${key}` : key;
+                          if (Array.isArray(value)) {
+                            arrays.push({ key: nextPath, length: value.length });
+                          } else if (value && typeof value === 'object') {
+                            arrays.push(...collectArrays(value, depth + 1, nextPath));
+                          }
+                        }
+                        return arrays;
+                      };
+                      const arrays = mission ? collectArrays(mission) : [];
+                      const populated = arrays.filter((item) => item.length > 0);
+                      const sampleArrays = populated.length ? populated.slice(0, 6) : arrays.slice(0, 6);
                       const waypoints = mission && Array.isArray(mission.waypoints) ? mission.waypoints.length : 0;
-                      return { errorText, waypoints };
+                      return { errorText, waypoints, sampleArrays };
                     }
                     """
                 )
                 logger.info("Import state: %s", import_state)
+                if import_state.get("errorText"):
+                    raise RuntimeError(f"Litchi import error: {import_state.get('errorText')}")
+                if import_state.get("sampleArrays") is not None and not any(
+                    item.get("length", 0) > 0 for item in import_state.get("sampleArrays", [])
+                ):
+                    raise RuntimeError("Litchi import produced no populated waypoint arrays.")
+            except RuntimeError:
+                raise
             except Exception:
                 logger.warning("Unable to inspect import state.")
             await page.wait_for_timeout(int(_human_delay(1.2, 2.4) * 1000))
