@@ -174,6 +174,28 @@ async def _refresh_litchi_user(page) -> Dict[str, Any]:
         return {"error": str(exc)}
 
 
+async def _dismiss_login_modal(page) -> None:
+    try:
+        await page.evaluate(
+            """
+            () => {
+              const modal = document.querySelector('#login-modal');
+              if (modal) {
+                modal.classList.remove('show', 'in');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.setAttribute('aria-hidden', 'true');
+              }
+              document.body.classList.remove('modal-open');
+              const backdrops = document.querySelectorAll('.modal-backdrop');
+              backdrops.forEach((node) => node.remove());
+            }
+            """
+        )
+    except Exception as exc:
+        logger.warning("Failed to dismiss login modal: %s", exc)
+
+
 async def _attempt_gstool_save(page, mission_name: str) -> Dict[str, Any]:
     try:
         result = await page.evaluate(
@@ -1790,10 +1812,12 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             if refreshed.get("litchiUser"):
                 login_gate_present = False
 
+        await _dismiss_login_modal(page)
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
             await _human_type(filename_input.first, mission_name)
 
+        await _dismiss_login_modal(page)
         save_button = page.locator("#downloadalert button#downloadbtn")
         if await save_button.count() == 0:
             save_button = page.locator("#downloadalert button", has_text="Save")
