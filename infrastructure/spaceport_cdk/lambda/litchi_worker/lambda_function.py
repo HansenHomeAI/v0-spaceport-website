@@ -1815,7 +1815,24 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         await _dismiss_login_modal(page)
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
-            await _human_type(filename_input.first, mission_name)
+            try:
+                filled = await page.evaluate(
+                    """
+                    (value) => {
+                      const input = document.querySelector('#filename');
+                      if (!input) return false;
+                      input.value = value;
+                      input.dispatchEvent(new Event('input', { bubbles: true }));
+                      input.dispatchEvent(new Event('change', { bubbles: true }));
+                      return true;
+                    }
+                    """,
+                    mission_name,
+                )
+                if not filled:
+                    await _human_type(filename_input.first, mission_name)
+            except Exception:
+                await _human_type(filename_input.first, mission_name)
 
         await _dismiss_login_modal(page)
         save_button = page.locator("#downloadalert button#downloadbtn")
