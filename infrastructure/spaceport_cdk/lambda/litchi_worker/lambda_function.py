@@ -146,6 +146,34 @@ async def _apply_stealth(page) -> None:
         await stealth_async(page)
 
 
+async def _refresh_litchi_user(page) -> Dict[str, Any]:
+    try:
+        result = await page.evaluate(
+            """
+            async () => {
+              if (window.LitchiUser && typeof window.LitchiUser.refreshUser === 'function') {
+                try { await window.LitchiUser.refreshUser(); } catch (err) {}
+              }
+              const parseUser = window.Parse && window.Parse.User && window.Parse.User.current
+                ? window.Parse.User.current()
+                : null;
+              const litchiUser = window.LitchiUser && typeof window.LitchiUser.getUser === 'function'
+                ? window.LitchiUser.getUser()
+                : null;
+              return {
+                parseUser: Boolean(parseUser),
+                litchiUser: Boolean(litchiUser),
+                parseEmail: parseUser && parseUser.get ? parseUser.get('email') : null,
+              };
+            }
+            """
+        )
+        return result if isinstance(result, dict) else {}
+    except Exception as exc:
+        logger.warning("Failed to refresh Litchi user state: %s", exc)
+        return {"error": str(exc)}
+
+
 async def _attempt_gstool_save(page, mission_name: str) -> Dict[str, Any]:
     try:
         result = await page.evaluate(
@@ -412,6 +440,8 @@ async def _login_in_page(
             )
             if parse_login and isinstance(parse_login, dict):
                 if parse_login.get("ok"):
+                    refreshed = await _refresh_litchi_user(page)
+                    logger.info("Litchi user state after parse login: %s", refreshed)
                     return "success"
                 logger.info("Parse login attempt did not succeed: %s", parse_login)
         except Exception as exc:
@@ -541,6 +571,8 @@ async def _login_in_page(
             """
         )
         if parse_user:
+            refreshed = await _refresh_litchi_user(page)
+            logger.info("Litchi user state after login: %s", refreshed)
             return "success"
 
         became_user = False
@@ -568,6 +600,8 @@ async def _login_in_page(
             became_user = False
         if became_user:
             logger.info("Attempted Parse.User.become from localStorage session token.")
+            refreshed = await _refresh_litchi_user(page)
+            logger.info("Litchi user state after become: %s", refreshed)
 
         current_user = await page.evaluate(
             """
@@ -579,6 +613,8 @@ async def _login_in_page(
             """
         )
         if current_user:
+            refreshed = await _refresh_litchi_user(page)
+            logger.info("Litchi user state after current user read: %s", refreshed)
             return "success"
 
         await page.wait_for_timeout(1000)
@@ -1435,6 +1471,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         except Exception as exc:
             logger.warning("Unable to inspect Litchi account state: %s", exc)
 
+        refreshed = await _refresh_litchi_user(page)
+        logger.info("Litchi user state before save: %s", refreshed)
+
         save_menu_item = page.get_by_role("menuitem", name="Save...")
         if await save_menu_item.count() == 0:
             save_menu_item = page.get_by_text("Save...")
@@ -1482,6 +1521,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
         ):
             login_gate_present = True
+        refreshed = await _refresh_litchi_user(page)
+        if refreshed.get("litchiUser"):
+            login_gate_present = False
             if not relogin_attempted:
                 credentials = _load_credentials(table, user_id)
                 if credentials and credentials.get("username") and credentials.get("password"):
@@ -1507,6 +1549,8 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     if login_result != "success":
                         _mark_error(table, user_id, "Login failed. Please reconnect.")
                         return {"status": "error", "message": "Login failed"}
+                    refreshed = await _refresh_litchi_user(page)
+                    logger.info("Litchi user state after in-context login: %s", refreshed)
                     local_storage = await page.evaluate(
                         """
                         () => {
@@ -1586,6 +1630,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                     login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
                         await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
                     )
+                    refreshed = await _refresh_litchi_user(page)
+                    if refreshed.get("litchiUser"):
+                        login_gate_present = False
 
         login_modal = page.locator("#login-modal")
         if await login_modal.count() > 0 and await login_modal.first.is_visible():
@@ -1628,6 +1675,8 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             if login_result != "success":
                 _mark_error(table, user_id, "Login failed. Please reconnect.")
                 return {"status": "error", "message": "Login failed"}
+            refreshed = await _refresh_litchi_user(page)
+            logger.info("Litchi user state after modal login: %s", refreshed)
             try:
                 became_after_modal_login = await page.evaluate(
                     """
@@ -1691,6 +1740,9 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
                 await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
             )
+            refreshed = await _refresh_litchi_user(page)
+            if refreshed.get("litchiUser"):
+                login_gate_present = False
 
         filename_input = page.locator("#filename")
         if await filename_input.count() > 0:
@@ -1737,6 +1789,24 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             gstool_save_result = await _attempt_gstool_save(page, mission_name)
         if gstool_save_result:
             logger.info("GStool saveToCloud result: %s", gstool_save_result)
+        try:
+            mission_state = await page.evaluate(
+                """
+                () => {
+                  const mission = window.GStool && window.GStool.currMission ? window.GStool.currMission : null;
+                  const parseMission = mission && mission.parseMission ? mission.parseMission : null;
+                  return {
+                    hasMission: Boolean(mission),
+                    hasParseMission: Boolean(parseMission),
+                    missionName: parseMission && typeof parseMission.get === 'function' ? parseMission.get('name') : null,
+                    missionId: parseMission ? (parseMission.id || (parseMission.get && parseMission.get('objectId'))) : null,
+                  };
+                }
+                """
+            )
+            logger.info("Mission state after save: %s", mission_state)
+        except Exception:
+            logger.warning("Unable to inspect mission state after save.")
 
         await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
         modal_closed = False
@@ -1753,40 +1823,40 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
             mission_check = await page.evaluate(
                 """
                 async (missionName) => {
-                  if (!window.Parse || !window.Parse.Cloud || !window.Parse.Cloud.run) {
+                  if (!window.Parse || !window.Parse.Query) {
                     return { ok: false, reason: 'parse_unavailable' };
                   }
-                  const tryQuery = async () => {
-                    const query = new window.Parse.Query('Mission');
-                    query.limit(50);
-                    query.descending('updatedAt');
-                    const results = await query.find();
-                    return results.map((item) => item.get('name')).filter(Boolean);
-                  };
-                  const tryQueryV3 = async () => {
-                    const query = new window.Parse.Query('MissionV3');
-                    query.limit(50);
-                    query.descending('updatedAt');
-                    const results = await query.find();
-                    return results.map((item) => item.get('name')).filter(Boolean);
-                  };
                   try {
-                    const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
-                    const missions = result?.missions || result?.results || result?.data || [];
-                    const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
-                    if (names.length) {
-                      return { ok: true, count: names.length, found: names.includes(missionName), source: 'list' };
+                    const query = new window.Parse.Query('Mission');
+                    query.equalTo('name', missionName);
+                    query.limit(1);
+                    const results = await query.find();
+                    if (results && results.length) {
+                      return { ok: true, count: results.length, found: true, source: 'mission', id: results[0].id };
                     }
                   } catch (err) {
                     const error =
                       err && typeof err === 'object'
                         ? JSON.stringify({ message: err.message, code: err.code, detail: err })
                         : String(err);
-                    const queryNames = await tryQuery().catch(() => tryQueryV3());
-                    return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query', error };
+                    return { ok: false, error };
                   }
-                  const queryNames = await tryQuery().catch(() => tryQueryV3());
-                  return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query' };
+                  try {
+                    const queryV3 = new window.Parse.Query('MissionV3');
+                    queryV3.equalTo('name', missionName);
+                    queryV3.limit(1);
+                    const results = await queryV3.find();
+                    if (results && results.length) {
+                      return { ok: true, count: results.length, found: true, source: 'missionV3', id: results[0].id };
+                    }
+                  } catch (err) {
+                    const error =
+                      err && typeof err === 'object'
+                        ? JSON.stringify({ message: err.message, code: err.code, detail: err })
+                        : String(err);
+                    return { ok: false, error };
+                  }
+                  return { ok: true, count: 0, found: false, source: 'query' };
                 }
                 """,
                 mission_name,
@@ -1795,6 +1865,57 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         except Exception as exc:
             logger.warning("Mission list check failed: %s", exc)
         mission_found = bool(mission_check.get("found")) if isinstance(mission_check, dict) else False
+        if not mission_found:
+            for _ in range(3):
+                await page.wait_for_timeout(int(_human_delay(0.8, 1.6) * 1000))
+                try:
+                    mission_check = await page.evaluate(
+                        """
+                        async (missionName) => {
+                          if (!window.Parse || !window.Parse.Query) {
+                            return { ok: false, reason: 'parse_unavailable' };
+                          }
+                          try {
+                            const query = new window.Parse.Query('Mission');
+                            query.equalTo('name', missionName);
+                            query.limit(1);
+                            const results = await query.find();
+                            if (results && results.length) {
+                              return { ok: true, count: results.length, found: true, source: 'mission', id: results[0].id };
+                            }
+                          } catch (err) {
+                            const error =
+                              err && typeof err === 'object'
+                                ? JSON.stringify({ message: err.message, code: err.code, detail: err })
+                                : String(err);
+                            return { ok: false, error };
+                          }
+                          try {
+                            const queryV3 = new window.Parse.Query('MissionV3');
+                            queryV3.equalTo('name', missionName);
+                            queryV3.limit(1);
+                            const results = await queryV3.find();
+                            if (results && results.length) {
+                              return { ok: true, count: results.length, found: true, source: 'missionV3', id: results[0].id };
+                            }
+                          } catch (err) {
+                            const error =
+                              err && typeof err === 'object'
+                                ? JSON.stringify({ message: err.message, code: err.code, detail: err })
+                                : String(err);
+                            return { ok: false, error };
+                          }
+                          return { ok: true, count: 0, found: false, source: 'query' };
+                        }
+                        """,
+                        mission_name,
+                    )
+                    logger.info("Mission list check (retry): %s", mission_check)
+                except Exception as exc:
+                    logger.warning("Mission list retry failed: %s", exc)
+                mission_found = bool(mission_check.get("found")) if isinstance(mission_check, dict) else False
+                if mission_found:
+                    break
         save_success = modal_closed or mission_found
         if login_gate_present and not save_success:
             logger.info("Login gate still present; retrying save action.")
@@ -1818,40 +1939,40 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
                 mission_check = await page.evaluate(
                     """
                     async (missionName) => {
-                      if (!window.Parse || !window.Parse.Cloud || !window.Parse.Cloud.run) {
+                      if (!window.Parse || !window.Parse.Query) {
                         return { ok: false, reason: 'parse_unavailable' };
                       }
-                      const tryQuery = async () => {
-                        const query = new window.Parse.Query('Mission');
-                        query.limit(50);
-                        query.descending('updatedAt');
-                        const results = await query.find();
-                        return results.map((item) => item.get('name')).filter(Boolean);
-                      };
-                      const tryQueryV3 = async () => {
-                        const query = new window.Parse.Query('MissionV3');
-                        query.limit(50);
-                        query.descending('updatedAt');
-                        const results = await query.find();
-                        return results.map((item) => item.get('name')).filter(Boolean);
-                      };
                       try {
-                        const result = await window.Parse.Cloud.run('listMissionsV3', { limit: 200, skip: 1 });
-                        const missions = result?.missions || result?.results || result?.data || [];
-                        const names = Array.isArray(missions) ? missions.map((m) => m?.name).filter(Boolean) : [];
-                        if (names.length) {
-                          return { ok: true, count: names.length, found: names.includes(missionName), source: 'list' };
+                        const query = new window.Parse.Query('Mission');
+                        query.equalTo('name', missionName);
+                        query.limit(1);
+                        const results = await query.find();
+                        if (results && results.length) {
+                          return { ok: true, count: results.length, found: true, source: 'mission', id: results[0].id };
                         }
                       } catch (err) {
                         const error =
                           err && typeof err === 'object'
                             ? JSON.stringify({ message: err.message, code: err.code, detail: err })
                             : String(err);
-                        const queryNames = await tryQuery().catch(() => tryQueryV3());
-                        return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query', error };
+                        return { ok: false, error };
                       }
-                      const queryNames = await tryQuery().catch(() => tryQueryV3());
-                      return { ok: true, count: queryNames.length, found: queryNames.includes(missionName), source: 'query' };
+                      try {
+                        const queryV3 = new window.Parse.Query('MissionV3');
+                        queryV3.equalTo('name', missionName);
+                        queryV3.limit(1);
+                        const results = await queryV3.find();
+                        if (results && results.length) {
+                          return { ok: true, count: results.length, found: true, source: 'missionV3', id: results[0].id };
+                        }
+                      } catch (err) {
+                        const error =
+                          err && typeof err === 'object'
+                            ? JSON.stringify({ message: err.message, code: err.code, detail: err })
+                            : String(err);
+                        return { ok: false, error };
+                      }
+                      return { ok: true, count: 0, found: false, source: 'query' };
                     }
                     """,
                     mission_name,
