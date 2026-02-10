@@ -98,8 +98,15 @@ class MLPipelineStack(Stack):
                         f"{ml_bucket.bucket_name}-public-access-block"
                     ),
                 ),
-                policy=cr.AwsCustomResourcePolicy.from_sdk_calls(
-                    resources=cr.AwsCustomResourcePolicy.ANY_RESOURCE
+                # Important: S3's IAM action for this API call is `s3:PutBucketPublicAccessBlock`
+                # (not `s3:PutPublicAccessBlock`). `from_sdk_calls()` generates the wrong action here.
+                policy=cr.AwsCustomResourcePolicy.from_statements(
+                    [
+                        iam.PolicyStatement(
+                            actions=["s3:PutBucketPublicAccessBlock"],
+                            resources=[ml_bucket.bucket_arn],
+                        )
+                    ]
                 ),
             )
 
