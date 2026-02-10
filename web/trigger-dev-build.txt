@@ -1,1 +1,2 @@
 2026-02-08 - Cognito preview secrets updated for staging
+2026-02-10 - Trigger Pages build for agent-82643157-exif-viewer

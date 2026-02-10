@@ -1,9 +1,8 @@
-import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import { spawn } from "node:child_process";
 import { exiftool } from "exiftool-vendored";
 import fg from "fast-glob";
-import unzipper from "unzipper";
 import { z } from "zod";
 import { lonLatToLocalMeters } from "./geo.js";
 import type { ExifIndex, ExifPoint } from "./types.js";
@@ -33,11 +32,14 @@ async function ensureDir(p: string) {
 
 async function extractZip(zipPath: string, extractedDir: string) {
   await ensureDir(extractedDir);
+  // Prefer system `unzip` for very large archives (more robust than JS unzip streams).
   await new Promise<void>((resolve, reject) => {
-    fs.createReadStream(zipPath)
-      .pipe(unzipper.Extract({ path: extractedDir }))
-      .on("close", () => resolve())
-      .on("error", reject);
+    const p = spawn("unzip", ["-q", zipPath, "-d", extractedDir], { stdio: "inherit" });
+    p.on("error", reject);
+    p.on("exit", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`unzip exited with code ${code}`));
+    });
   });
 }
 
@@ -64,8 +66,11 @@ async function buildIndex(extractedDir: string, zipPath?: string): Promise<ExifI
     dot: false
   });
 
+  console.log(`Found ${files.length} image files under extracted dir.`);
+
   const points: ExifPoint[] = [];
-  for (const fileAbs of files) {
+  for (let i = 0; i < files.length; i++) {
+    const fileAbs = files[i];
     const fileRel = path.relative(extractedDir, fileAbs);
     const fileName = path.basename(fileAbs);
 
@@ -110,6 +115,12 @@ async function buildIndex(extractedDir: string, zipPath?: string): Promise<ExifI
       cameraPitch,
       cameraRoll
     });
+
+    if ((i + 1) % 50 === 0 || i + 1 === files.length) {
+      const gps = points.filter((p) => typeof p.lat === "number" && typeof p.lon === "number").length;
+      const gimbal = points.filter((p) => typeof p.gimbalYaw === "number").length;
+      console.log(`EXIF ${i + 1}/${files.length} (gps=${gps}, gimbalYaw=${gimbal})`);
+    }
   }
 
   const withGps = points.filter((p) => typeof p.lat === "number" && typeof p.lon === "number") as Array<
@@ -183,4 +194,3 @@ main()
     // Ensure the exiftool child process is terminated.
     await exiftool.end();
   });
-

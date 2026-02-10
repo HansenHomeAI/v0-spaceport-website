@@ -171,9 +171,7 @@ export function App() {
 
       // Shape indices can shift when deleting; keep a best-effort mode map.
       const nextModeMap: Record<number, ShapeMode> = {};
-      const gd: any = plotRef.current;
-      const nextShapesRaw2 = (gd?._fullLayout?.shapes ?? []) as any[];
-      for (let i = 0; i < nextShapesRaw2.length; i++) nextModeMap[i] = shapeModes[i] ?? "include";
+      for (let i = 0; i < nextShapesRaw.length; i++) nextModeMap[i] = shapeModes[i] ?? "include";
       setShapeModes(nextModeMap);
     };
 
@@ -347,4 +345,3 @@ export function App() {
     </div>
   );
 }
-

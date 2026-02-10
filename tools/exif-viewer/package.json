@@ -17,7 +17,6 @@
     "plotly.js-dist-min": "^2.35.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "unzipper": "^0.12.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
