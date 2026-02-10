@@ -58,23 +58,49 @@ class MLPipelineStack(Stack):
         # Staging historically had S3 Public Access Block set to fully deny public reads, causing browser loads to 403.
         # Production allows public reads for model artifacts; mirror that behavior in staging for output prefixes only.
         if ml_bucket.bucket_name == "spaceport-ml-processing-staging":
-            # CDK versions in this repo don't expose a typed L1 for AWS::S3::BucketPublicAccessBlock,
-            # so we declare it as a raw CFN resource to ensure staging can serve public artifacts.
-            from aws_cdk import CfnResource
+            # CloudFormation does not support managing Bucket-level Public Access Block on an *imported* bucket via
+            # a dedicated resource type in this account/stack; use an AWS SDK custom resource call instead.
+            # This unblocks the pipeline viewer, which fetches COLMAP/3DGS artifacts via unsigned HTTPS.
+            from aws_cdk import custom_resources as cr
 
-            CfnResource(
+            staging_pab = cr.AwsCustomResource(
                 self,
                 "MLBucketStagingPublicAccessBlock",
-                type="AWS::S3::BucketPublicAccessBlock",
-                properties={
-                    "Bucket": ml_bucket.bucket_name,
-                    "PublicAccessBlockConfiguration": {
-                        "BlockPublicAcls": True,
-                        "IgnorePublicAcls": True,
-                        "BlockPublicPolicy": False,
-                        "RestrictPublicBuckets": False,
+                on_create=cr.AwsSdkCall(
+                    service="S3",
+                    action="putPublicAccessBlock",
+                    parameters={
+                        "Bucket": ml_bucket.bucket_name,
+                        "PublicAccessBlockConfiguration": {
+                            "BlockPublicAcls": True,
+                            "IgnorePublicAcls": True,
+                            "BlockPublicPolicy": False,
+                            "RestrictPublicBuckets": False,
+                        },
                     },
-                },
+                    physical_resource_id=cr.PhysicalResourceId.of(
+                        f"{ml_bucket.bucket_name}-public-access-block"
+                    ),
+                ),
+                on_update=cr.AwsSdkCall(
+                    service="S3",
+                    action="putPublicAccessBlock",
+                    parameters={
+                        "Bucket": ml_bucket.bucket_name,
+                        "PublicAccessBlockConfiguration": {
+                            "BlockPublicAcls": True,
+                            "IgnorePublicAcls": True,
+                            "BlockPublicPolicy": False,
+                            "RestrictPublicBuckets": False,
+                        },
+                    },
+                    physical_resource_id=cr.PhysicalResourceId.of(
+                        f"{ml_bucket.bucket_name}-public-access-block"
+                    ),
+                ),
+                policy=cr.AwsCustomResourcePolicy.from_sdk_calls(
+                    resources=cr.AwsCustomResourcePolicy.ANY_RESOURCE
+                ),
             )
 
             staging_public_read_policy = s3.BucketPolicy(
@@ -82,6 +108,7 @@ class MLPipelineStack(Stack):
                 "MLBucketStagingPublicReadPolicy",
                 bucket=ml_bucket,
             )
+            staging_public_read_policy.node.add_dependency(staging_pab)
             staging_public_read_policy.document.add_statements(
                 iam.PolicyStatement(
                     sid="PublicReadGetObjectOutputs",
