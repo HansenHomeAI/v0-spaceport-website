@@ -1,8 +1,9 @@
 # Production OpenSfM Container with GPS-Constrained Reconstruction - Multi-Stage Build
 # Optimized for layer caching and build efficiency
 
-# Stage 1: Base system with dependencies  
-FROM python:3.9-slim-bullseye AS base
+# Stage 1: Base system with dependencies
+# Use AWS Public ECR mirror to avoid Docker Hub unauthenticated pull rate limits in CI/CodeBuild.
+FROM public.ecr.aws/docker/library/python:3.9-slim-bullseye AS base
 
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
