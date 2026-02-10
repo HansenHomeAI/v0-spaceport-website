@@ -58,64 +58,16 @@ class MLPipelineStack(Stack):
         # Staging historically had S3 Public Access Block set to fully deny public reads, causing browser loads to 403.
         # Production allows public reads for model artifacts; mirror that behavior in staging for output prefixes only.
         if ml_bucket.bucket_name == "spaceport-ml-processing-staging":
-            # CloudFormation does not support managing Bucket-level Public Access Block on an *imported* bucket via
-            # a dedicated resource type in this account/stack; use an AWS SDK custom resource call instead.
-            # This unblocks the pipeline viewer, which fetches COLMAP/3DGS artifacts via unsigned HTTPS.
-            from aws_cdk import custom_resources as cr
-
-            staging_pab = cr.AwsCustomResource(
-                self,
-                "MLBucketStagingPublicAccessBlock",
-                on_create=cr.AwsSdkCall(
-                    service="S3",
-                    action="putPublicAccessBlock",
-                    parameters={
-                        "Bucket": ml_bucket.bucket_name,
-                        "PublicAccessBlockConfiguration": {
-                            "BlockPublicAcls": True,
-                            "IgnorePublicAcls": True,
-                            "BlockPublicPolicy": False,
-                            "RestrictPublicBuckets": False,
-                        },
-                    },
-                    physical_resource_id=cr.PhysicalResourceId.of(
-                        f"{ml_bucket.bucket_name}-public-access-block"
-                    ),
-                ),
-                on_update=cr.AwsSdkCall(
-                    service="S3",
-                    action="putPublicAccessBlock",
-                    parameters={
-                        "Bucket": ml_bucket.bucket_name,
-                        "PublicAccessBlockConfiguration": {
-                            "BlockPublicAcls": True,
-                            "IgnorePublicAcls": True,
-                            "BlockPublicPolicy": False,
-                            "RestrictPublicBuckets": False,
-                        },
-                    },
-                    physical_resource_id=cr.PhysicalResourceId.of(
-                        f"{ml_bucket.bucket_name}-public-access-block"
-                    ),
-                ),
-                # Important: S3's IAM action for this API call is `s3:PutBucketPublicAccessBlock`
-                # (not `s3:PutPublicAccessBlock`). `from_sdk_calls()` generates the wrong action here.
-                policy=cr.AwsCustomResourcePolicy.from_statements(
-                    [
-                        iam.PolicyStatement(
-                            actions=["s3:PutBucketPublicAccessBlock"],
-                            resources=[ml_bucket.bucket_arn],
-                        )
-                    ]
-                ),
-            )
-
+            # Note: Bucket-level Public Access Block is managed out-of-band for staging.
+            # CDK's `AwsCustomResourcePolicy.from_sdk_calls()` currently generates an incorrect IAM action for
+            # `putPublicAccessBlock` (it uses `s3:PutPublicAccessBlock` instead of `s3:PutBucketPublicAccessBlock`),
+            # which causes CloudFormation updates to fail. Keep the artifact public-read policy here, and manage
+            # the bucket's Public Access Block separately (it must allow public bucket policies to take effect).
             staging_public_read_policy = s3.BucketPolicy(
                 self,
                 "MLBucketStagingPublicReadPolicy",
                 bucket=ml_bucket,
             )
-            staging_public_read_policy.node.add_dependency(staging_pab)
             staging_public_read_policy.document.add_statements(
                 iam.PolicyStatement(
                     sid="PublicReadGetObjectOutputs",
