@@ -54,6 +54,39 @@ class MLPipelineStack(Stack):
         )
         print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
 
+        # The pipeline viewer fetches COLMAP / 3DGS / compressed artifacts directly from S3 (often via a simple proxy).
+        # Staging historically had S3 Public Access Block set to fully deny public reads, causing browser loads to 403.
+        # Production allows public reads for model artifacts; mirror that behavior in staging for output prefixes only.
+        if ml_bucket.bucket_name == "spaceport-ml-processing-staging":
+            s3.CfnBucketPublicAccessBlock(
+                self,
+                "MLBucketStagingPublicAccessBlock",
+                bucket=ml_bucket.bucket_name,
+                block_public_acls=True,
+                ignore_public_acls=True,
+                block_public_policy=False,
+                restrict_public_buckets=False,
+            )
+
+            staging_public_read_policy = s3.BucketPolicy(
+                self,
+                "MLBucketStagingPublicReadPolicy",
+                bucket=ml_bucket,
+            )
+            staging_public_read_policy.document.add_statements(
+                iam.PolicyStatement(
+                    sid="PublicReadGetObjectOutputs",
+                    effect=iam.Effect.ALLOW,
+                    principals=[iam.AnyPrincipal()],
+                    actions=["s3:GetObject"],
+                    resources=[
+                        ml_bucket.arn_for_objects("colmap/*"),
+                        ml_bucket.arn_for_objects("3dgs/*"),
+                        ml_bucket.arn_for_objects("compressed/*"),
+                    ],
+                )
+            )
+
         # Import upload bucket from main Spaceport stack - DO NOT CREATE
         # This bucket is owned by the main Spaceport stack, we just reference it
         upload_bucket = s3.Bucket.from_bucket_name(
