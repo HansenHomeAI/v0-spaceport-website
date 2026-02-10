@@ -177,8 +177,8 @@ echo "✅ Quality check: PASSED (>= $MIN_POINTS_REQUIRED points)"
 
 # Parse metadata for additional stats
 if [ -f "$OUTPUT_DIR/sfm_metadata.json" ]; then
-    echo "⏱️ Processing time: $(python3 -c "import json; print(json.load(open('$OUTPUT_DIR/sfm_metadata.json'))['processing_time_seconds'], 'seconds')" 2>/dev/null || echo "Unknown")"
-    echo "📈 Priors source: $(python3 -c \"import json; m=json.load(open('$OUTPUT_DIR/sfm_metadata.json')); print(m.get('priors_source') or ('csv' if m.get('gps_enhanced') else 'none'))\" 2>/dev/null || echo \"Unknown\")"
+    echo "⏱️ Processing time: $(python3 -c 'import json,sys; m=json.load(open(sys.argv[1])); print(m.get(\"processing_time_seconds\",\"Unknown\"), \"seconds\")' \"$OUTPUT_DIR/sfm_metadata.json\" 2>/dev/null || echo 'Unknown')"
+    echo "📈 Priors source: $(python3 -c 'import json,sys; m=json.load(open(sys.argv[1])); print(m.get(\"priors_source\") or (\"csv\" if m.get(\"gps_enhanced\") else \"none\"))' \"$OUTPUT_DIR/sfm_metadata.json\" 2>/dev/null || echo 'Unknown')"
 fi
 
 echo ""
