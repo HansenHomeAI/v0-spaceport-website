@@ -1,1 +1,2 @@
 2026-02-08 - Cognito preview secrets updated for staging
+2026-02-10 - Fix shape-viewer black canvas (camera far/controls)

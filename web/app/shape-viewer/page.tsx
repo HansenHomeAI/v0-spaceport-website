@@ -256,9 +256,10 @@ function Scene({ params, batteryIndex, showLabels }: { params: FlightParams; bat
       <FlightPathVisualization waypoints={waypoints} showLabels={showLabels} />
       <OrbitControls 
         makeDefault 
-        enableRotate={false}
+        // Keep top-down as the default, but allow rotate so the user can verify the path in 3D.
+        enableRotate
         mouseButtons={{
-          LEFT: THREE.MOUSE.PAN,
+          LEFT: THREE.MOUSE.ROTATE,
           MIDDLE: THREE.MOUSE.DOLLY,
           RIGHT: THREE.MOUSE.PAN
         }}
@@ -459,9 +460,12 @@ export default function ShapeViewerPage() {
       {/* 2D Shape Viewer */}
       <div style={{ flex: 1, position: 'relative' }}>
         <Canvas 
-          camera={{ position: [0, 0, 3000], fov: 50 }}
+          // Explicit near/far avoids a black canvas caused by the default camera frustum clipping the scene.
+          // (Orthographic + z=3000 can exceed the default `far` in r3f.)
+          camera={{ position: [0, 0, 1000], near: 0.1, far: 50000, zoom: 0.2 }}
           orthographic
         >
+          <color attach="background" args={['#0a0a0a']} />
           <Scene params={params} batteryIndex={batteryIndex} showLabels={showLabels} />
         </Canvas>
         
@@ -483,4 +487,3 @@ export default function ShapeViewerPage() {
     </div>
   );
 }
-
