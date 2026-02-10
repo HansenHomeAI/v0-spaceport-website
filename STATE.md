@@ -1,4 +1,4 @@
-reason: Unblocked. EXIF-only SfM priors are implemented in the SfM container and a staging SfM-only execution is currently running to validate outputs.
-last_step: Started Step Functions execution (staging) with pipelineStopAfter="sfm" on 2026-02-09 22:27 MST (execution-2fcf68f2-2fa3-4ba7-953b-1c7afc55d75b).
-next_unblocked_step: Wait for the SageMaker SfM processing job to complete; verify S3 output exists and sfm_metadata.json reports priors_source="exif" and gps_enhanced=true; if it fails or stalls, capture CloudWatch logs and iterate on run_opensfm_gps.py (timeouts/streaming).
-owner_action_needed: None (unless AWS permissions/secrets change or the pipeline needs manual stop).
+reason: Unblocked. SfM-only EXIF priors validation succeeded end-to-end in staging and the pipeline stopped after SfM as intended.
+last_step: Ran staging execution a1ae35f1-d56e-464d-8d2a-b3b5e4152c8a; outputs written to s3://spaceport-ml-processing-staging/colmap/a1ae35f1-d56e-464d-8d2a-b3b5e4152c8a/ with priors_source="exif"; Step Functions ended at SfmOnlyComplete.
+next_unblocked_step: (Optional) validate orientation/origin in the pipeline viewer using the Cloudflare preview + the new colmap prefix; then open a PR to development.
+owner_action_needed: None.

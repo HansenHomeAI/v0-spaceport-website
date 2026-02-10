@@ -57,19 +57,23 @@ Primary files:
 
 ### Most recent execution (staging)
 
+Successful validation run:
+
+- Job ID:
+  - `a1ae35f1-d56e-464d-8d2a-b3b5e4152c8a`
 - Step Functions execution:
-  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-2fcf68f2-2fa3-4ba7-953b-1c7afc55d75b`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-a1ae35f1-d56e-464d-8d2a-b3b5e4152c8a`
 - SageMaker processing job:
-  - `ml-job-20260210-052752-2fcf68f2-sfm`
-- Expected output prefix:
-  - `s3://spaceport-ml-processing-staging/colmap/2fcf68f2-2fa3-4ba7-953b-1c7afc55d75b/`
+  - `ml-job-20260210-064635-a1ae35f1-sfm`
+- Output prefix:
+  - `s3://spaceport-ml-processing-staging/colmap/a1ae35f1-d56e-464d-8d2a-b3b5e4152c8a/`
 
 Outcome:
 
-- OpenSfM completed successfully and produced outputs under the prefix above.
-- `sfm_metadata.json` confirms `priors_source: "exif"` and `gps_enhanced: true`.
-- The SageMaker processing job was marked **Failed** due to a bash quoting bug in `run_sfm.sh` after SfM completed (fixed in `infrastructure/containers/sfm/run_sfm.sh`).
-- The Step Function execution ended by taking the error-notification path (`NotifyError`), so `pipelineStopAfter="sfm"` was not validated yet as an end state.
+- Step Functions ended at `SfmOnlyComplete` (validating `pipelineStopAfter="sfm"`).
+- `sfm_metadata.json` confirms `priors_source: "exif"` and `gps_enhanced: true` (97/97 images had EXIF GPS).
+
+Prior attempt (same dataset) produced correct SfM outputs but the processing job was marked failed due to a bash quoting bug after SfM completed; this was fixed in `infrastructure/containers/sfm/run_sfm.sh`.
 
 ### Verification checklist (after completion)
 
