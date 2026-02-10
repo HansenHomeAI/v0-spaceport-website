@@ -58,14 +58,23 @@ class MLPipelineStack(Stack):
         # Staging historically had S3 Public Access Block set to fully deny public reads, causing browser loads to 403.
         # Production allows public reads for model artifacts; mirror that behavior in staging for output prefixes only.
         if ml_bucket.bucket_name == "spaceport-ml-processing-staging":
-            s3.CfnBucketPublicAccessBlock(
+            # CDK versions in this repo don't expose a typed L1 for AWS::S3::BucketPublicAccessBlock,
+            # so we declare it as a raw CFN resource to ensure staging can serve public artifacts.
+            from aws_cdk import CfnResource
+
+            CfnResource(
                 self,
                 "MLBucketStagingPublicAccessBlock",
-                bucket=ml_bucket.bucket_name,
-                block_public_acls=True,
-                ignore_public_acls=True,
-                block_public_policy=False,
-                restrict_public_buckets=False,
+                type="AWS::S3::BucketPublicAccessBlock",
+                properties={
+                    "Bucket": ml_bucket.bucket_name,
+                    "PublicAccessBlockConfiguration": {
+                        "BlockPublicAcls": True,
+                        "IgnorePublicAcls": True,
+                        "BlockPublicPolicy": False,
+                        "RestrictPublicBuckets": False,
+                    },
+                },
             )
 
             staging_public_read_policy = s3.BucketPolicy(
