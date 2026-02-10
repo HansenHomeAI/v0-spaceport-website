@@ -55,7 +55,7 @@ Primary files:
 
 ## Running / Verifying an SfM-only EXIF Job
 
-### Live execution being monitored (staging)
+### Most recent execution (staging)
 
 - Step Functions execution:
   - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-2fcf68f2-2fa3-4ba7-953b-1c7afc55d75b`
@@ -64,7 +64,12 @@ Primary files:
 - Expected output prefix:
   - `s3://spaceport-ml-processing-staging/colmap/2fcf68f2-2fa3-4ba7-953b-1c7afc55d75b/`
 
-The job logs confirm EXIF-only priors were generated and OpenSfM reached `reconstruct`.
+Outcome:
+
+- OpenSfM completed successfully and produced outputs under the prefix above.
+- `sfm_metadata.json` confirms `priors_source: "exif"` and `gps_enhanced: true`.
+- The SageMaker processing job was marked **Failed** due to a bash quoting bug in `run_sfm.sh` after SfM completed (fixed in `infrastructure/containers/sfm/run_sfm.sh`).
+- The Step Function execution ended by taking the error-notification path (`NotifyError`), so `pipelineStopAfter="sfm"` was not validated yet as an end state.
 
 ### Verification checklist (after completion)
 
@@ -93,4 +98,3 @@ Expect:
 
 - OpenSfM `reconstruct` can be the longest stage; if it stalls, add more visibility (streaming stdout/stderr) or per-step timeouts in `infrastructure/containers/sfm/run_opensfm_gps.py`.
 - EXIF gimbal fields are parsed best-effort (DJI XMP variants) and currently stored mainly for debugging, not as hard constraints.
-

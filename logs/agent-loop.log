@@ -1,2 +1,2 @@
 [2026-02-09T23:18:00-07:00] start sfm-only exif priors validation (staging) -> RUNNING -> poll processing + S3 outputs until completion
-
+[2026-02-09T23:31:00-07:00] sfm-only run produced S3 outputs with priors_source=exif + gps_enhanced=true, but ProcessingJob status FAILED due to run_sfm.sh quoting bug -> fixed run_sfm.sh -> rebuild sfm container -> rerun sfm-only to validate clean success + stop-after
