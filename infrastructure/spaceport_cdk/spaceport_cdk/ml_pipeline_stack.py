@@ -302,6 +302,7 @@ class MLPipelineStack(Stack):
         start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
             function_name=f"Spaceport-StartMLJob-{suffix}",
+            role=lambda_role,
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
@@ -316,6 +317,7 @@ class MLPipelineStack(Stack):
         notification_lambda = lambda_.Function(
             self, "NotificationFunction",
             function_name=f"Spaceport-MLNotification-{suffix}",
+            role=notification_lambda_role,
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -353,7 +355,9 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.2xlarge",
+                        # c6i.2xlarge processing-job quota is extremely tight in some accounts/environments.
+                        # Use a more broadly available instance type to reduce quota-related failures.
+                        "InstanceType": "ml.c6i.xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },
@@ -768,6 +772,18 @@ class MLPipelineStack(Stack):
                 "STATE_MACHINE_ARN": ml_pipeline.state_machine_arn,
                 "STEP_FUNCTION_ARN": ml_pipeline.state_machine_arn,
             }
+        )
+        stop_job_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "states:StopExecution",
+                    "sagemaker:ListTrainingJobs",
+                    "sagemaker:StopTrainingJob",
+                    "sagemaker:ListProcessingJobs",
+                    "sagemaker:StopProcessingJob",
+                ],
+                resources=["*"],
+            )
         )
 
         # ========== API GATEWAY ==========
