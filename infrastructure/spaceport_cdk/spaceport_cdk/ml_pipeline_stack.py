@@ -684,6 +684,7 @@ class MLPipelineStack(Stack):
         # start_ml_job Lambda expects STATE_MACHINE_ARN; keep STEP_FUNCTION_ARN for backward compatibility.
         start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
         start_job_lambda.add_environment("STEP_FUNCTION_ARN", ml_pipeline.state_machine_arn)
+        ml_pipeline.grant_start_execution(start_job_lambda)
 
         # Create Lambda function for stopping jobs
         stop_job_lambda = lambda_.Function(
