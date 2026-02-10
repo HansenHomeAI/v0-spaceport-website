@@ -3,7 +3,7 @@ name: Trigger ML Container Build
 on:
   workflow_dispatch:  # Manual trigger
   push:
-    branches: [ main, development, ml-development ]
+    branches: [ main, development, ml-development, 'agent-*' ]
     # container-only workflow; no change
     paths:
       - 'infrastructure/containers/**'
@@ -22,13 +22,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        fetch-depth: 2  # Need previous commit to detect changes
+        fetch-depth: 0  # Need push range (github.event.before) to detect changes reliably
 
     - name: Detect changed containers
       id: changes
       run: |
-        # Get list of changed files
-        CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+        # Get list of changed files across the whole push (can include multiple commits)
+        BEFORE="${{ github.event.before }}"
+        AFTER="${{ github.sha }}"
+
+        if [ -z "$BEFORE" ] || echo "$BEFORE" | grep -qE '^0+$'; then
+          # New branch / first push: fall back to the current commit's changed files
+          CHANGED_FILES=$(git show --name-only --pretty="" "$AFTER")
+        else
+          CHANGED_FILES=$(git diff --name-only "$BEFORE" "$AFTER")
+        fi
         echo "Changed files: $CHANGED_FILES"
         
         # Check which containers have changes
