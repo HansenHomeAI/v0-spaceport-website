@@ -54,6 +54,26 @@ function logLine(step, status, info = '') {
   console.log(`[${status}] ${step}${suffix}`);
 }
 
+async function readWaypointCount() {
+  const result = await callTool('browser_evaluate', {
+    function: `() => {
+      // Find a text node containing "Waypoints:" in the diagnostics box.
+      const root = document.querySelector('main') ?? document.body;
+      const text = root?.innerText ?? '';
+      const m = text.match(/Waypoints:\\s*(\\d+)\\s*per battery/i);
+      return { text: m ? m[0] : null, count: m ? Number(m[1]) : null };
+    }`
+  });
+  const text = extractText(result);
+  // Tool output is a text blob; extract the numeric count without relying on strict JSON parsing.
+  const countMatch = text.match(/"count"\s*:\s*(\d+)/);
+  const textMatch = text.match(/"text"\s*:\s*"([^"]+)"/);
+  return {
+    count: countMatch ? Number(countMatch[1]) : null,
+    raw: textMatch ? textMatch[1] : text.trim().slice(0, 200)
+  };
+}
+
 async function main() {
   try {
     await client.connect(transport);
@@ -75,12 +95,33 @@ async function main() {
 
     await callTool('browser_fill_form', {
       fields: [
-        { name: 'Number of Batteries (slices)', type: 'slider', ref: slicesRef, value: '4' },
-        { name: 'Number of Bounces (N)', type: 'slider', ref: nRef, value: '10' },
+        { name: 'Number of Bounces (N)', type: 'slider', ref: nRef, value: '6' },
         { name: 'Show Waypoint Labels', type: 'checkbox', ref: labelsRef, value: 'true' }
       ]
     });
-    logLine('Adjust controls', 'PASS', 'slices=4, N=10, labels=on');
+    logLine('Adjust controls', 'PASS', 'N=6, labels=on');
+
+    // Validate low-slice sampling: slices=1 should produce more waypoints than slices=2 and slices>=3.
+    await callTool('browser_fill_form', { fields: [{ name: 'Number of Batteries (slices)', type: 'slider', ref: slicesRef, value: '1' }] });
+    const slice1 = await readWaypointCount();
+    logLine('Waypoints @ slices=1', slice1.count ? 'PASS' : 'WARN', String(slice1.count ?? slice1.raw ?? 'unknown'));
+
+    await callTool('browser_fill_form', { fields: [{ name: 'Number of Batteries (slices)', type: 'slider', ref: slicesRef, value: '2' }] });
+    const slice2 = await readWaypointCount();
+    logLine('Waypoints @ slices=2', slice2.count ? 'PASS' : 'WARN', String(slice2.count ?? slice2.raw ?? 'unknown'));
+
+    await callTool('browser_fill_form', { fields: [{ name: 'Number of Batteries (slices)', type: 'slider', ref: slicesRef, value: '4' }] });
+    const slice4 = await readWaypointCount();
+    logLine('Waypoints @ slices=4', slice4.count ? 'PASS' : 'WARN', String(slice4.count ?? slice4.raw ?? 'unknown'));
+
+    if (typeof slice1.count === 'number' && typeof slice2.count === 'number' && typeof slice4.count === 'number') {
+      if (!(slice1.count > slice2.count && slice2.count >= slice4.count)) {
+        throw new Error(`Unexpected waypoint counts: slices=1(${slice1.count}) slices=2(${slice2.count}) slices=4(${slice4.count})`);
+      }
+      logLine('Low-slice midpoints', 'PASS', 'slices=1 > slices=2 >= slices=4');
+    } else {
+      logLine('Low-slice midpoints', 'WARN', 'Could not parse waypoint counts');
+    }
 
     // Sanity-check we have a canvas with non-zero size.
     const evalResult = await callTool('browser_evaluate', {
