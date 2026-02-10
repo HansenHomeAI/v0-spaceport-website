@@ -5,7 +5,7 @@ import math
 import numpy as np
 from pathlib import Path
 
-from infrastructure.containers.sfm.gps_processor_3d import Advanced3DPathProcessor, FlightSegment
+from infrastructure.containers.sfm.gps_processor_3d import Advanced3DPathProcessor, FlightSegment, ExifOnlyPriorBuilder
 
 
 def test_dms_to_decimal_north_east_west_south():
@@ -80,3 +80,35 @@ def test_project_exif_gps_to_trajectory_uses_trajectory_altitude():
     assert projected['segment_index'] == 0
     assert 0.45 <= projected['segment_t'] <= 0.55
 
+
+def test_exif_only_prior_builder_writes_opensfm_files(tmp_path):
+    images_dir = tmp_path / "images"
+    images_dir.mkdir()
+    (images_dir / "IMG_0001.JPG").write_bytes(b"not-a-real-jpeg")
+    (images_dir / "IMG_0002.JPG").write_bytes(b"not-a-real-jpeg")
+
+    builder = ExifOnlyPriorBuilder(images_dir=images_dir, min_images_with_gps=2)
+
+    # Monkeypatch EXIF extraction to avoid needing real JPEG EXIF blocks.
+    def _fake_extract(p: Path):
+        if p.name == "IMG_0001.JPG":
+            return {"latitude": 41.0, "longitude": -111.0, "altitude": 150.0, "timestamp": None}
+        if p.name == "IMG_0002.JPG":
+            return {"latitude": 41.0001, "longitude": -111.0001, "altitude": 151.0, "timestamp": None}
+        return None
+
+    builder._exif_proc.extract_dji_gps_from_exif = _fake_extract  # type: ignore[attr-defined]
+
+    summary = builder.build_photo_positions()
+    assert summary["ok"] is True
+    assert summary["photos_total"] == 2
+    assert summary["photos_with_exif_gps"] == 2
+    assert len(builder.photo_positions) == 2
+
+    out_dir = tmp_path / "opensfm"
+    builder.generate_opensfm_files(out_dir)
+
+    assert (out_dir / "exif_overrides.json").exists()
+    assert (out_dir / "gps_priors.json").exists()
+    assert (out_dir / "reference_lla.json").exists()
+    assert (out_dir / "reference.txt").exists()

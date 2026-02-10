@@ -26,7 +26,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import our GPS processors
 from gps_processor import DroneFlightPathProcessor
-from gps_processor_3d import Advanced3DPathProcessor
+from gps_processor_3d import Advanced3DPathProcessor, ExifOnlyPriorBuilder
 from colmap_converter import OpenSfMToCOLMAPConverter
 
 
@@ -48,6 +48,8 @@ class OpenSfMGPSPipeline:
         self.work_dir = None
         self.images_dir = None
         self.opensfm_dir = None
+        self.priors_source = None  # 'csv' | 'exif' | None
+        self.priors_summary = {}
         
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -95,12 +97,27 @@ class OpenSfMGPSPipeline:
         return image_count
     
     def process_gps_data(self) -> bool:
-        """Process GPS data if available"""
+        """Process GPS priors if available (CSV flight path or EXIF-only)."""
+        self.priors_source = None
+        self.priors_summary = {}
+
         if not self.gps_csv_path or not self.gps_csv_path.exists():
             # Check for GPS CSV in input directory
             csv_files = list(self.input_dir.glob("gps/*.csv"))
             if not csv_files:
-                logger.warning("⚠️ No GPS CSV file found, proceeding without GPS priors")
+                logger.warning("⚠️ No GPS CSV file found. Attempting EXIF-only GPS priors...")
+                try:
+                    builder = ExifOnlyPriorBuilder(self.images_dir)
+                    summary = builder.build_photo_positions()
+                    self.priors_summary = summary
+                    if summary.get("ok"):
+                        builder.generate_opensfm_files(self.opensfm_dir)
+                        self.priors_source = "exif"
+                        logger.info("✅ EXIF-only GPS priors generated")
+                        return True
+                    logger.warning("⚠️ EXIF-only GPS priors unavailable; proceeding without priors")
+                except Exception as e:
+                    logger.warning(f"⚠️ EXIF-only priors failed: {e}")
                 return False
             self.gps_csv_path = csv_files[0]
         
@@ -132,9 +149,12 @@ class OpenSfMGPSPipeline:
             
             # Generate OpenSfM files
             processor.generate_opensfm_files(self.opensfm_dir)
+
+            self.priors_source = "csv"
             
             # Get processing summary
             summary = processor.get_processing_summary()
+            self.priors_summary = summary
             logger.info(f"📊 GPS Processing Summary:")
             logger.info(f"   Photos: {summary['photos_processed']}")
             logger.info(f"   Path length: {summary['path_length_m']}m")
@@ -493,7 +513,9 @@ class OpenSfMGPSPipeline:
             'cameras_registered': num_cameras,
             'images_registered': num_cameras,  # Assuming 1:1 mapping
             'points_3d': num_points,
-            'gps_enhanced': hasattr(self, 'gps_csv_path') and self.gps_csv_path is not None,
+            'gps_enhanced': self.priors_source in {'csv', 'exif'},
+            'priors_source': self.priors_source,
+            'priors_summary': self.priors_summary,
             'quality_check_passed': num_points >= 1000,
             'colmap_format': True,
             'timestamp': time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())

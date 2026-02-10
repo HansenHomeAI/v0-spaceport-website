@@ -8,6 +8,7 @@ import os
 import csv
 import json
 import math
+import re
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -28,6 +29,17 @@ from scipy.spatial.distance import cdist
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+def calculate_bearing_deg(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Compute initial bearing from (lat1, lon1) to (lat2, lon2) in degrees [0, 360)."""
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    d_lambda = math.radians(lon2 - lon1)
+
+    y = math.sin(d_lambda) * math.cos(phi2)
+    x = math.cos(phi1) * math.sin(phi2) - math.sin(phi1) * math.cos(phi2) * math.cos(d_lambda)
+    bearing = math.degrees(math.atan2(y, x))
+    return (bearing + 360.0) % 360.0
 
 
 @dataclass
@@ -237,11 +249,14 @@ class Advanced3DPathProcessor:
         
         for i in range(len(df)):
             if i < len(df) - 1:
-                # Calculate bearing to next point
-                p1 = Point(df.iloc[i]['latitude'], df.iloc[i]['longitude'])
-                p2 = Point(df.iloc[i + 1]['latitude'], df.iloc[i + 1]['longitude'])
-                bearing = p1.bearing(p2)
-                headings.append(bearing)
+                headings.append(
+                    calculate_bearing_deg(
+                        float(df.iloc[i]['latitude']),
+                        float(df.iloc[i]['longitude']),
+                        float(df.iloc[i + 1]['latitude']),
+                        float(df.iloc[i + 1]['longitude']),
+                    )
+                )
             else:
                 # Last point uses previous heading
                 headings.append(headings[-1] if headings else 0.0)
@@ -275,7 +290,7 @@ class Advanced3DPathProcessor:
     
     def extract_dji_gps_from_exif(self, photo_path: Path) -> Optional[Dict]:
         """Extract GPS lat/lon from DJI EXIF and timestamp if available.
-        Returns: {'latitude': float, 'longitude': float, 'timestamp': Optional[datetime]}
+        Returns: {'latitude': float, 'longitude': float, 'altitude': Optional[float], 'timestamp': Optional[datetime]}
         """
         try:
             with open(photo_path, 'rb') as f:
@@ -285,6 +300,8 @@ class Advanced3DPathProcessor:
             lat_ref_tag = None
             lon_tag = None
             lon_ref_tag = None
+            alt_tag = None
+            alt_ref_tag = None
             for key in [
                 'GPS GPSLatitude', 'GPSLatitude',
             ]:
@@ -309,17 +326,47 @@ class Advanced3DPathProcessor:
                 if key in tags:
                     lon_ref_tag = str(tags[key])
                     break
+            for key in [
+                'GPS GPSAltitude', 'GPSAltitude',
+            ]:
+                if key in tags:
+                    alt_tag = tags[key]
+                    break
+            for key in [
+                'GPS GPSAltitudeRef', 'GPSAltitudeRef',
+            ]:
+                if key in tags:
+                    alt_ref_tag = tags[key]
+                    break
+
             if lat_tag and lat_ref_tag and lon_tag and lon_ref_tag:
                 # exifread returns list of 3 Ratio values for D/M/S
                 lat_vals = lat_tag.values if hasattr(lat_tag, 'values') else lat_tag
                 lon_vals = lon_tag.values if hasattr(lon_tag, 'values') else lon_tag
                 lat = self._dms_to_decimal(lat_vals, lat_ref_tag)
                 lon = self._dms_to_decimal(lon_vals, lon_ref_tag)
+
+                altitude = None
+                if alt_tag is not None:
+                    try:
+                        alt_val = alt_tag.values[0] if hasattr(alt_tag, 'values') else alt_tag
+                        altitude = float(self._ratio_to_float(alt_val))
+                        # AltitudeRef: 0=above sea level, 1=below sea level
+                        try:
+                            alt_ref = int(str(alt_ref_tag)) if alt_ref_tag is not None else 0
+                        except Exception:
+                            alt_ref = 0
+                        if alt_ref == 1:
+                            altitude = -abs(altitude)
+                    except Exception:
+                        altitude = None
+
                 # Timestamp (optional)
                 timestamp = self._extract_photo_timestamp(photo_path)
                 return {
                     'latitude': float(lat),
                     'longitude': float(lon),
+                    'altitude': altitude,
                     'timestamp': timestamp
                 }
         except Exception as e:
@@ -441,12 +488,36 @@ class Advanced3DPathProcessor:
         """
         closest_distance = float('inf')
         closest = None
-        # Sample each segment's spline to approximate closest point
+        # For linear segments we can compute the closest point analytically in XY.
+        # For curved segments, sample along the spline.
         for seg_idx, segment in enumerate(self.flight_segments):
-            # Increase sampling for better precision
-            for t in np.linspace(0.0, 1.0, 50):
+            if not segment.control_points:
+                a = segment.start_point[:2]
+                b = segment.end_point[:2]
+                v = b - a
+                denom = float(np.dot(v, v))
+                if denom > 0:
+                    t = float(np.dot(exif_xy - a, v) / denom)
+                else:
+                    t = 0.0
+                t = float(max(0.0, min(1.0, t)))
                 pt = segment.interpolate_point(t)
-                distance = np.linalg.norm(exif_xy - pt[:2])
+                distance = float(np.linalg.norm(exif_xy - pt[:2]))
+                if distance < closest_distance:
+                    closest_distance = distance
+                    closest = {
+                        'altitude_local': float(pt[2]),
+                        'confidence': float(max(0.0, 1.0 - min(distance / 50.0, 1.0))),
+                        'segment_index': int(seg_idx),
+                        'parameter_t': float(t),
+                        'distance_m': float(distance),
+                        'local_position': pt
+                    }
+                continue
+
+            for t in np.linspace(0.0, 1.0, 200):
+                pt = segment.interpolate_point(float(t))
+                distance = float(np.linalg.norm(exif_xy - pt[:2]))
                 if distance < closest_distance:
                     closest_distance = distance
                     closest = {
@@ -1061,7 +1132,7 @@ class Advanced3DPathProcessor:
                 'z': [float(positions[:, 2].min()), float(positions[:, 2].max())]
             },
             'confidence_stats': {
-                'mean': np.mean([d['confidence'] for d in self.photo_positions.values()]),
+                'mean': float(np.mean([d['confidence'] for d in self.photo_positions.values()])),
                 'min': min([d['confidence'] for d in self.photo_positions.values()]),
                 'max': max([d['confidence'] for d in self.photo_positions.values()])
             }
@@ -1103,4 +1174,245 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()
+
+
+class ExifOnlyPriorBuilder:
+    """Build OpenSfM GPS priors directly from image EXIF (no CSV flight path required)."""
+
+    DEFAULT_GPS_ACCURACY_M = 8.0
+
+    def __init__(self, images_dir: Path, min_images_with_gps: int = 5):
+        self.images_dir = Path(images_dir)
+        self.min_images_with_gps = int(min_images_with_gps)
+
+        self.photo_positions: Dict[str, Dict] = {}
+        self.local_origin: Optional[Tuple[float, float, float]] = None
+        self.utm_zone: Optional[int] = None
+        self.utm_zone_letter: Optional[str] = None
+
+        # Reuse the existing EXIF parsing helpers from Advanced3DPathProcessor.
+        # csv_path is unused for EXIF-only mode.
+        self._exif_proc = Advanced3DPathProcessor(csv_path=Path("/tmp/unused.csv"), images_dir=self.images_dir)
+
+    def _list_images(self) -> List[Path]:
+        imgs: List[Path] = []
+        for p in sorted(self.images_dir.iterdir()):
+            if p.suffix.lower() in {".jpg", ".jpeg", ".png"} and p.is_file():
+                imgs.append(p)
+        return imgs
+
+    def _extract_dji_gimbal_from_xmp(self, photo_path: Path) -> Dict[str, float]:
+        """Best-effort DJI gimbal extraction from embedded XMP.
+
+        DJI typically stores these in XMP under the `drone-dji:*` namespace.
+        We keep this intentionally forgiving: if tags aren't present, return {}.
+        """
+        try:
+            raw = photo_path.read_bytes()
+        except Exception:
+            return {}
+
+        # Decode with latin1 to avoid hard failures on arbitrary binary bytes.
+        text = raw.decode("latin1", errors="ignore")
+
+        def _find(attr: str) -> Optional[float]:
+            m = re.search(rf'{re.escape(attr)}="(-?\\d+(?:\\.\\d+)?)"', text)
+            if not m:
+                return None
+            try:
+                return float(m.group(1))
+            except Exception:
+                return None
+
+        gimbal_pitch = _find("drone-dji:GimbalPitchDegree")
+        gimbal_roll = _find("drone-dji:GimbalRollDegree")
+        gimbal_yaw = _find("drone-dji:GimbalYawDegree")
+        flight_yaw = _find("drone-dji:FlightYawDegree")
+        flight_pitch = _find("drone-dji:FlightPitchDegree")
+        flight_roll = _find("drone-dji:FlightRollDegree")
+
+        out: Dict[str, float] = {}
+        if gimbal_pitch is not None:
+            out["gimbal_pitch_deg"] = gimbal_pitch
+        if gimbal_roll is not None:
+            out["gimbal_roll_deg"] = gimbal_roll
+        if gimbal_yaw is not None:
+            out["gimbal_yaw_deg"] = gimbal_yaw
+        if flight_yaw is not None:
+            out["flight_yaw_deg"] = flight_yaw
+        if flight_pitch is not None:
+            out["flight_pitch_deg"] = flight_pitch
+        if flight_roll is not None:
+            out["flight_roll_deg"] = flight_roll
+        return out
+
+    def _setup_local_coordinate_system(self, points: List[Dict]) -> None:
+        lats = [p["latitude"] for p in points]
+        lons = [p["longitude"] for p in points]
+        alts = [p["altitude"] for p in points if p.get("altitude") is not None]
+
+        center_lat = float(np.mean(lats))
+        center_lon = float(np.mean(lons))
+        center_alt = float(np.mean(alts)) if alts else 0.0
+
+        _, _, utm_zone, utm_letter = utm.from_latlon(center_lat, center_lon)
+        self.local_origin = (center_lat, center_lon, center_alt)
+        self.utm_zone = utm_zone
+        self.utm_zone_letter = utm_letter
+
+        logger.info("🌍 EXIF-only local coordinate system:")
+        logger.info(f"   Origin: {center_lat:.6f}°, {center_lon:.6f}°, {center_alt:.1f}m")
+        logger.info(f"   UTM Zone: {utm_zone}{utm_letter}")
+
+    def _convert_to_local_3d(self, lat: float, lon: float, alt: Optional[float]) -> np.ndarray:
+        if self.local_origin is None:
+            raise ValueError("local_origin not initialized")
+        origin_lat, origin_lon, origin_alt = self.local_origin
+        utm_e, utm_n, _, _ = utm.from_latlon(lat, lon)
+        origin_e, origin_n, _, _ = utm.from_latlon(origin_lat, origin_lon)
+
+        x = utm_e - origin_e
+        y = utm_n - origin_n
+        z = (float(alt) if alt is not None else origin_alt) - origin_alt
+        return np.array([x, y, z], dtype=float)
+
+    def _compute_headings(self, ordered_points: List[Dict]) -> List[float]:
+        """Compute flight headings (bearing) from sequential EXIF GPS points."""
+        headings: List[float] = []
+        for i in range(len(ordered_points)):
+            if i < len(ordered_points) - 1:
+                headings.append(
+                    calculate_bearing_deg(
+                        float(ordered_points[i]["latitude"]),
+                        float(ordered_points[i]["longitude"]),
+                        float(ordered_points[i + 1]["latitude"]),
+                        float(ordered_points[i + 1]["longitude"]),
+                    )
+                )
+            else:
+                headings.append(headings[-1] if headings else 0.0)
+        return headings
+
+    def build_photo_positions(self) -> Dict:
+        """Collect EXIF GPS and build per-photo priors in local coordinates."""
+        images = self._list_images()
+        exif_points: List[Dict] = []
+
+        for p in images:
+            exif = self._exif_proc.extract_dji_gps_from_exif(p)
+            if not exif:
+                continue
+            exif_points.append(
+                {
+                    "name": p.name,
+                    "path": p,
+                    "latitude": exif["latitude"],
+                    "longitude": exif["longitude"],
+                    "altitude": exif.get("altitude"),
+                    "timestamp": exif.get("timestamp"),
+                }
+            )
+
+        summary = {
+            "photos_total": len(images),
+            "photos_with_exif_gps": len(exif_points),
+            "used_exif_timestamps": False,
+        }
+
+        if len(exif_points) < self.min_images_with_gps:
+            logger.warning(
+                f"⚠️ EXIF-only priors unavailable: found GPS in {len(exif_points)}/{len(images)} images "
+                f"(need >= {self.min_images_with_gps})"
+            )
+            return {**summary, "ok": False}
+
+        # Order points by EXIF time when available, otherwise filename ordering.
+        have_ts = [p for p in exif_points if p.get("timestamp") is not None]
+        if len(have_ts) >= max(3, int(0.5 * len(exif_points))):
+            exif_points.sort(key=lambda d: d.get("timestamp") or datetime.min)
+            summary["used_exif_timestamps"] = True
+            logger.info("✅ EXIF-only priors: using EXIF timestamps for ordering")
+        else:
+            exif_points.sort(key=lambda d: d["name"])
+            logger.info("⚠️ EXIF-only priors: insufficient timestamps, using filename ordering")
+
+        self._setup_local_coordinate_system(exif_points)
+        headings = self._compute_headings(exif_points)
+
+        for idx, (pt, heading) in enumerate(zip(exif_points, headings)):
+            gimbal = self._extract_dji_gimbal_from_xmp(pt["path"])
+            pos_3d = self._convert_to_local_3d(pt["latitude"], pt["longitude"], pt.get("altitude"))
+            self.photo_positions[pt["name"]] = {
+                "position_3d": pos_3d.tolist(),
+                "latitude": pt["latitude"],
+                "longitude": pt["longitude"],
+                "altitude": float(pt["altitude"]) if pt.get("altitude") is not None else (self.local_origin[2] if self.local_origin else 0.0),
+                "gps_accuracy": float(self.DEFAULT_GPS_ACCURACY_M),
+                "heading": float(heading),
+                "timestamp": pt["timestamp"].isoformat() if pt.get("timestamp") else None,
+                "order_index": idx,
+                **gimbal,
+            }
+
+        return {**summary, "ok": True}
+
+    def generate_opensfm_files(self, output_dir: Path) -> None:
+        if self.local_origin is None or self.utm_zone is None or self.utm_zone_letter is None:
+            raise ValueError("Exif-only priors not initialized (missing local origin)")
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # 1) exif_overrides.json
+        exif_overrides: Dict[str, Dict] = {}
+        for photo_name, data in self.photo_positions.items():
+            exif_overrides[photo_name] = {
+                "gps": {
+                    "latitude": data["latitude"],
+                    "longitude": data["longitude"],
+                    "altitude": data["altitude"],
+                    "dop": data.get("gps_accuracy", self.DEFAULT_GPS_ACCURACY_M),
+                },
+                "orientation": 1,
+                "heading_deg": data.get("heading", 0.0),
+            }
+            # Keep gimbal fields around for debugging (OpenSfM will ignore unknown keys).
+            for k in ("gimbal_pitch_deg", "gimbal_roll_deg", "gimbal_yaw_deg", "flight_yaw_deg", "flight_pitch_deg", "flight_roll_deg"):
+                if k in data:
+                    exif_overrides[photo_name][k] = data[k]
+
+        with open(output_dir / "exif_overrides.json", "w") as f:
+            json.dump(exif_overrides, f, indent=2)
+
+        # 2) reference_lla.json
+        reference_lla = {
+            "latitude": self.local_origin[0],
+            "longitude": self.local_origin[1],
+            "altitude": self.local_origin[2],
+        }
+        with open(output_dir / "reference_lla.json", "w") as f:
+            json.dump(reference_lla, f, indent=2)
+
+        # 3) reference.txt
+        with open(output_dir / "reference.txt", "w") as f:
+            f.write(f"WGS84 {self.local_origin[0]:.10f} {self.local_origin[1]:.10f} {self.local_origin[2]:.2f}\n")
+
+        # 4) gps_priors.json
+        gps_priors = {"points": {}, "cameras": {}}
+        for photo_name, data in self.photo_positions.items():
+            # If gimbal pitch/roll are present, include them; keep loose std to avoid hard failures.
+            pitch = float(data.get("gimbal_pitch_deg", 0.0))
+            roll = float(data.get("gimbal_roll_deg", 0.0))
+            yaw = float(data.get("heading", 0.0))
+
+            gps_priors["cameras"][photo_name] = {
+                "position": data["position_3d"],
+                "position_std": [data.get("gps_accuracy", self.DEFAULT_GPS_ACCURACY_M)] * 3,
+                "orientation": [pitch, roll, yaw],
+                "orientation_std": [180, 180, 10],
+            }
+
+        with open(output_dir / "gps_priors.json", "w") as f:
+            json.dump(gps_priors, f, indent=2)
+
+        logger.info(f"✅ Generated EXIF-only OpenSfM priors in {output_dir}")

@@ -78,7 +78,7 @@ if [ "$ZIP_COUNT" -eq 0 ]; then
 fi
 
 if [ "$CSV_COUNT" -eq 0 ]; then
-    echo "⚠️ No CSV flight path found - will use traditional SfM"
+    echo "⚠️ No CSV flight path found - will attempt EXIF-only GPS priors (if present), otherwise traditional SfM"
 else
     echo "✅ GPS flight path data available - will use GPS-constrained reconstruction"
 fi
@@ -178,7 +178,7 @@ echo "✅ Quality check: PASSED (>= $MIN_POINTS_REQUIRED points)"
 # Parse metadata for additional stats
 if [ -f "$OUTPUT_DIR/sfm_metadata.json" ]; then
     echo "⏱️ Processing time: $(python3 -c "import json; print(json.load(open('$OUTPUT_DIR/sfm_metadata.json'))['processing_time_seconds'], 'seconds')" 2>/dev/null || echo "Unknown")"
-    echo "📈 Pipeline optimization: GPS-constrained reconstruction"
+    echo "📈 Priors source: $(python3 -c \"import json; m=json.load(open('$OUTPUT_DIR/sfm_metadata.json')); print(m.get('priors_source') or ('csv' if m.get('gps_enhanced') else 'none'))\" 2>/dev/null || echo \"Unknown\")"
 fi
 
 echo ""
