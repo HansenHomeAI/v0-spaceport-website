@@ -27,6 +27,7 @@ def lambda_handler(event, context):
         s3_url = body.get('s3Url')
         email = body.get('email', 'hello@spcprt.com')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
+        pipeline_stop_after = body.get('pipelineStopAfter', 'compression')  # Which step to stop after: 'sfm', '3dgs', or 'compression'
         csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
@@ -215,6 +216,7 @@ def lambda_handler(event, context):
             "s3Url": s3_url,
             "email": email,
             "pipelineStep": pipeline_step,
+            "pipelineStopAfter": pipeline_stop_after,
             "inputS3Uri": f"s3://{bucket_name}/{object_key}",
             "colmapOutputS3Uri": colmap_output_uri,
             "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",

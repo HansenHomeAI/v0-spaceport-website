@@ -585,11 +585,31 @@ class MLPipelineStack(Stack):
             result_path="$.error"
         )
 
+        # Optional early-stop terminal states (controlled by $.pipelineStopAfter)
+        sfm_only_complete = sfn.Succeed(self, "SfmOnlyComplete")
+        gaussian_only_complete = sfn.Succeed(self, "GaussianOnlyComplete")
+
+        stop_after_sfm_choice = sfn.Choice(self, "StopAfterSfMChoice")
+        stop_after_sfm_choice.when(
+            sfn.Condition.string_equals("$.pipelineStopAfter", "sfm"),
+            sfm_only_complete
+        ).otherwise(
+            gaussian_job_with_catch
+        )
+
+        stop_after_gaussian_choice = sfn.Choice(self, "StopAfterGaussianChoice")
+        stop_after_gaussian_choice.when(
+            sfn.Condition.string_equals("$.pipelineStopAfter", "3dgs"),
+            gaussian_only_complete
+        ).otherwise(
+            compression_job_with_catch
+        )
+
         # Build the workflow with proper job completion waiting
         # SfM workflow: Start job -> Wait and poll until complete
         sfm_polling_loop = sfm_choice.when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Completed"),
-            gaussian_job_with_catch
+            stop_after_sfm_choice
         ).when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Failed"),
             notify_error
@@ -600,7 +620,7 @@ class MLPipelineStack(Stack):
         # Gaussian workflow: Start job -> Wait and poll until complete  
         gaussian_polling_loop = gaussian_choice.when(
             sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Completed"),
-            compression_job_with_catch
+            stop_after_gaussian_choice
         ).when(
             sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Failed"),
             notify_error
