@@ -1,4 +1,4 @@
-reason: Unblocked. Preview deployed; beta readiness suite failed due to missing production API endpoints (DNS resolution errors).
-last_step: Pushed branch, verified Pages/CDK deploys, captured preview snapshot via Playwright MCP.
-next_unblocked_step: Address beta readiness suite failures or confirm they can be skipped; then open PR to development.
-owner_action_needed: Confirm whether to proceed with PR despite failing beta readiness suite.
+reason: Working on EXIF spatial viewer + shape-based selection + export tool.
+last_step: Created branch agent-82643157-exif-viewer.
+next_unblocked_step: Build tools/exif-viewer (ingest zip -> extract EXIF -> spatial UI -> export selected).
+owner_action_needed: None.
