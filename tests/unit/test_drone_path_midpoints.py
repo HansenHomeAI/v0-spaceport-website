@@ -68,6 +68,22 @@ class DronePathMidpointSamplingTests(unittest.TestCase):
                 self.assertEqual(len(inbound_mids), midpoints + (6 - 1) * midpoints)
                 self.assertEqual(len(hold_mids), midpoints)
 
+    def test_single_slice_optimizer_respects_waypoint_budget(self):
+        with patch("builtins.print"):
+            optimized = self.designer.optimize_spiral_for_battery(
+                target_battery_minutes=20,
+                num_batteries=1,
+                center_lat=37.1972,
+                center_lon=-113.6187,
+            )
+
+        waypoint_budget = self.designer.MAX_TOTAL_WAYPOINTS - self.designer.RESERVED_SAFETY_WAYPOINTS
+        estimated_waypoints = self.designer.estimate_slice_waypoint_count(1, int(optimized["N"]))
+
+        self.assertLessEqual(int(optimized["N"]), self.designer.max_bounces_for_waypoint_budget(1))
+        self.assertLessEqual(estimated_waypoints, waypoint_budget)
+        self.assertGreater(float(optimized["rHold"]), float(optimized["r0"]))
+
 
 if __name__ == "__main__":
     unittest.main()
