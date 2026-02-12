@@ -2259,6 +2259,133 @@ class SpiralDesigner:
         
         return distance_along_segment
 
+    def order_boundary_corners(self, corners: List[Dict]) -> List[Dict]:
+        """Order arbitrary 4-point corners clockwise around their centroid."""
+        if len(corners) < 3:
+            return corners
+        center_lat = sum(pt["lat"] for pt in corners) / len(corners)
+        center_lon = sum(pt["lon"] for pt in corners) / len(corners)
+        return sorted(
+            corners,
+            key=lambda pt: math.atan2(pt["lat"] - center_lat, pt["lon"] - center_lon)
+        )
+
+    def boundary_radius_for_angle(self, theta: float, polygon_xy: List[Dict]) -> float:
+        """Return radial distance from origin to polygon boundary along angle theta."""
+        if len(polygon_xy) < 3:
+            return 0.0
+
+        dir_x = math.cos(theta)
+        dir_y = math.sin(theta)
+        best_t = None
+
+        for idx in range(len(polygon_xy)):
+            p1 = polygon_xy[idx]
+            p2 = polygon_xy[(idx + 1) % len(polygon_xy)]
+            edge_x = p2["x"] - p1["x"]
+            edge_y = p2["y"] - p1["y"]
+
+            denom = (dir_x * edge_y) - (dir_y * edge_x)
+            if abs(denom) < 1e-9:
+                continue
+
+            # Solve ray/segment intersection:
+            # ray(t) = t * dir, t >= 0
+            # seg(u) = p1 + u * edge, 0 <= u <= 1
+            t = ((p1["x"] * edge_y) - (p1["y"] * edge_x)) / denom
+            u = ((p1["x"] * dir_y) - (p1["y"] * dir_x)) / denom
+
+            if t >= 0 and 0 <= u <= 1:
+                if best_t is None or t < best_t:
+                    best_t = t
+
+        return best_t if best_t is not None else 0.0
+
+    def generate_boundary_plan(
+        self,
+        corners: List[Dict],
+        battery_minutes: float,
+        min_height: float = 120.0,
+        max_height: float = None,
+        expansion_rate: float = 1.0,
+        bounce_spacing: float = 1.0
+    ) -> Dict:
+        """Generate a boundary-constrained squished-circle preview path and battery estimate."""
+        if len(corners) != 4:
+            raise ValueError("Exactly four boundary corners are required")
+        if battery_minutes <= 0:
+            raise ValueError("batteryMinutes must be greater than 0")
+
+        cleaned_corners: List[Dict] = []
+        for corner in corners:
+            cleaned_corners.append({
+                "lat": float(corner["lat"]),
+                "lon": float(corner["lng"] if "lng" in corner else corner["lon"])
+            })
+
+        ordered_corners = self.order_boundary_corners(cleaned_corners)
+        center_lat = sum(pt["lat"] for pt in ordered_corners) / 4.0
+        center_lon = sum(pt["lon"] for pt in ordered_corners) / 4.0
+
+        polygon_xy = [
+            self.lat_lon_to_xy(pt["lat"], pt["lon"], center_lat, center_lon)
+            for pt in ordered_corners
+        ]
+
+        clamped_expansion = max(0.35, min(3.0, float(expansion_rate)))
+        clamped_spacing = max(0.5, min(2.5, float(bounce_spacing)))
+        revolutions = max(2.0, 4.0 * clamped_spacing)
+        sample_count = int(max(250, min(1100, 320 * clamped_spacing)))
+
+        path = []
+        total_distance_ft = 0.0
+        previous_point = None
+
+        for i in range(sample_count):
+            progress = i / max(1, sample_count - 1)
+            theta = progress * (2 * math.pi) * revolutions
+            max_radius = self.boundary_radius_for_angle(theta, polygon_xy)
+            if max_radius <= 0:
+                continue
+
+            radial_progress = progress ** (1.0 / clamped_expansion)
+            radius = max_radius * radial_progress * 0.98
+            x = radius * math.cos(theta)
+            y = radius * math.sin(theta)
+            coords = self.xy_to_lat_lon(x, y, center_lat, center_lon)
+
+            altitude_agl = min_height
+            if max_height is not None:
+                altitude_agl = min(max_height, altitude_agl)
+
+            current_point = {
+                "lat": round(coords["lat"], 7),
+                "lon": round(coords["lon"], 7),
+                "altitude_agl": round(altitude_agl, 2)
+            }
+            path.append(current_point)
+
+            if previous_point:
+                total_distance_ft += self.haversine_distance(
+                    previous_point["lat"], previous_point["lon"], current_point["lat"], current_point["lon"]
+                ) * 3.28084
+            previous_point = current_point
+
+        usable_minutes = max(3.0, battery_minutes - self.TAKEOFF_LANDING_OVERHEAD_MINUTES)
+        per_battery_distance_ft = self.FLIGHT_SPEED_MPS * 3.28084 * usable_minutes * 60 * 0.92
+        batteries_needed = max(1, int(math.ceil(total_distance_ft / max(1.0, per_battery_distance_ft))))
+
+        return {
+            "center": {"lat": center_lat, "lon": center_lon},
+            "ordered_corners": ordered_corners,
+            "path": path,
+            "total_distance_ft": round(total_distance_ft, 1),
+            "batteries_needed": batteries_needed,
+            "expansion_rate": clamped_expansion,
+            "bounce_spacing": clamped_spacing,
+            "revolutions": round(revolutions, 2),
+        }
+
 # Lambda handler function
 def lambda_handler(event, context):
     """
@@ -2269,6 +2396,7 @@ def lambda_handler(event, context):
     - /api/elevation: Get elevation data for coordinates
     - /api/csv: Generate master CSV with all waypoints
     - /api/csv/battery/{id}: Generate CSV for specific battery
+    - /api/boundary/plan: Generate boundary-constrained preview path and battery estimate
     - /DronePathREST: Legacy endpoint for existing functionality
     """
     
@@ -2311,6 +2439,8 @@ def lambda_handler(event, context):
         elif resource_path == '/api/csv/battery/{id}':
             battery_id = path_parameters.get('id')
             return handle_battery_csv_download(designer, body, battery_id, cors_headers)
+        elif resource_path == '/api/boundary/plan':
+            return handle_boundary_plan(designer, body, cors_headers)
         elif resource_path == '/DronePathREST':
             # Legacy endpoint - maintain backward compatibility
             return handle_legacy_drone_path(designer, body, cors_headers)
@@ -2581,6 +2711,38 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'statusCode': 500,
             'headers': cors_headers,
             'body': json.dumps({'error': f'Battery CSV generation failed: {str(e)}'})
+        }
+
+def handle_boundary_plan(designer, body, cors_headers):
+    """Handle /api/boundary/plan endpoint."""
+    try:
+        corners = body.get('corners') or []
+        battery_minutes = float(body.get('batteryMinutes', 0))
+        min_height = float(body.get('minHeight', 120) or 120)
+        max_height_raw = body.get('maxHeight')
+        max_height = float(max_height_raw) if max_height_raw not in (None, '') else None
+        expansion_rate = float(body.get('expansionRate', 1.0) or 1.0)
+        bounce_spacing = float(body.get('bounceSpacing', 1.0) or 1.0)
+
+        boundary_plan = designer.generate_boundary_plan(
+            corners=corners,
+            battery_minutes=battery_minutes,
+            min_height=min_height,
+            max_height=max_height,
+            expansion_rate=expansion_rate,
+            bounce_spacing=bounce_spacing
+        )
+
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps(boundary_plan)
+        }
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'headers': cors_headers,
+            'body': json.dumps({'error': f'Boundary plan generation failed: {str(e)}'})
         }
 
 def handle_legacy_drone_path(designer, body, cors_headers):

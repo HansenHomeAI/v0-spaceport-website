@@ -387,6 +387,10 @@ class SpaceportStack(Stack):
         # Battery CSV endpoint
         battery_csv_resource = csv_resource.add_resource("battery").add_resource("{id}")
         battery_csv_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))
+
+        # Boundary planning endpoint
+        boundary_plan_resource = api_resource.add_resource("boundary").add_resource("plan")
+        boundary_plan_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))
         
         # Legacy endpoint
         legacy_resource = self.drone_path_api.root.add_resource("DronePathREST")
