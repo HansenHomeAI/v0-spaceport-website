@@ -68,6 +68,7 @@ export const buildApiUrl = {
     elevation: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/elevation`,
     csv: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv`,
     batteryCsv: (batteryId: string) => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv/battery/${batteryId}`,
+    boundaryPlan: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/boundary/plan`,
     legacy: () => `${API_CONFIG.DRONE_PATH_API_URL}/DronePathREST`,
   },
   

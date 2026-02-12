@@ -2,3 +2,4 @@
 2026-02-10 - Fix shape-viewer black canvas (camera far/controls)
 2026-02-10 - Add extra midpoints for 1-2 battery shape circularity
 2026-02-11 - Harden mapbox module import in create modal
+2026-02-12 - Flight modal advanced controls, visualize button, and boundary planner

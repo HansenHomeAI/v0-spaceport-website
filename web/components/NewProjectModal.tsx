@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildApiUrl } from '../app/api-config';
+import { generateSpiralPreviewLine, type LatLng } from '../lib/flightPathPreview';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -16,6 +17,8 @@ type OptimizedParams = {
   maxHeight: number | null;
   elevationFeet: number | null;
 };
+
+type FlightMode = 'standard' | 'boundary';
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
@@ -40,6 +43,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [numBatteries, setNumBatteries] = useState<string>("");
   const [minHeightFeet, setMinHeightFeet] = useState<string>("");
   const [maxHeightFeet, setMaxHeightFeet] = useState<string>("");
+  const [flightMode, setFlightMode] = useState<FlightMode>('standard');
+  const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
+  const [advancedN, setAdvancedN] = useState<string>("");
+  const [advancedR0, setAdvancedR0] = useState<string>("");
+  const [advancedRHold, setAdvancedRHold] = useState<string>("");
+  const [boundaryCorners, setBoundaryCorners] = useState<LatLng[]>([]);
+  const [boundaryExpansionRate, setBoundaryExpansionRate] = useState<string>("1.00");
+  const [boundaryBounceSpacing, setBoundaryBounceSpacing] = useState<string>("1.00");
+  const [boundaryBatteriesNeeded, setBoundaryBatteriesNeeded] = useState<number | null>(null);
+  const [visualizationLoading, setVisualizationLoading] = useState<boolean>(false);
 
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
@@ -120,11 +133,99 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const boundaryMarkerRefs = useRef<any[]>([]);
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  const standardPathSourceId = 'flight-path-preview-source';
+  const standardPathLayerId = 'flight-path-preview-layer';
+  const boundarySourceId = 'boundary-preview-source';
+  const boundaryLayerId = 'boundary-preview-layer';
+
+  const clearMapPathPreview = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    [standardPathLayerId, boundaryLayerId].forEach((layerId) => {
+      if (map.getLayer(layerId)) {
+        map.removeLayer(layerId);
+      }
+    });
+    [standardPathSourceId, boundarySourceId].forEach((sourceId) => {
+      if (map.getSource(sourceId)) {
+        map.removeSource(sourceId);
+      }
+    });
+  }, []);
+
+  const removeBoundaryMarkers = useCallback(() => {
+    boundaryMarkerRefs.current.forEach((marker) => marker?.remove?.());
+    boundaryMarkerRefs.current = [];
+  }, []);
+
+  const drawBoundaryMarkers = useCallback(async (corners: LatLng[]) => {
+    if (!mapRef.current) return;
+    removeBoundaryMarkers();
+    if (corners.length === 0) return;
+
+    const mapboxModule = await import('mapbox-gl');
+    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+    corners.forEach((corner, idx) => {
+      const markerElement = document.createElement('div');
+      markerElement.className = 'boundary-corner-marker';
+      markerElement.textContent = String(idx + 1);
+      const marker = new mapboxgl.Marker({ element: markerElement, anchor: 'center' })
+        .setLngLat([corner.lng, corner.lat])
+        .addTo(mapRef.current);
+      boundaryMarkerRefs.current.push(marker);
+    });
+  }, [removeBoundaryMarkers]);
+
+  const hasAdvancedOverrides = useMemo(() => {
+    const n = parseInt(advancedN || '');
+    const r0 = parseFloat(advancedR0 || '');
+    const rHold = parseFloat(advancedRHold || '');
+    return Number.isFinite(n) && n > 0 && Number.isFinite(r0) && r0 > 0 && Number.isFinite(rHold) && rHold > 0;
+  }, [advancedN, advancedR0, advancedRHold]);
+
+  const effectiveStandardParams = useMemo(() => {
+    const batteries = parseInt(numBatteries || '');
+    const base = optimizedParamsRef.current;
+    const fallbackN = parseInt(advancedN || '');
+    const fallbackR0 = parseFloat(advancedR0 || '');
+    const fallbackRHold = parseFloat(advancedRHold || '');
+
+    const resolvedN = advancedOpen && Number.isFinite(fallbackN) && fallbackN > 0 ? fallbackN : base?.N;
+    const resolvedR0 = advancedOpen && Number.isFinite(fallbackR0) && fallbackR0 > 0 ? fallbackR0 : base?.r0;
+    const resolvedRHold = advancedOpen && Number.isFinite(fallbackRHold) && fallbackRHold > 0 ? fallbackRHold : base?.rHold;
+
+    if (!Number.isFinite(batteries) || batteries <= 0) return null;
+    if (!Number.isFinite(resolvedN) || resolvedN <= 0) return null;
+    if (!Number.isFinite(resolvedR0) || resolvedR0 <= 0) return null;
+    if (!Number.isFinite(resolvedRHold) || resolvedRHold <= 0) return null;
+
+    return {
+      slices: batteries,
+      N: resolvedN,
+      r0: resolvedR0,
+      rHold: resolvedRHold,
+      center: selectedCoordsRef.current ? `${selectedCoordsRef.current.lat}, ${selectedCoordsRef.current.lng}` : '',
+      minHeight: parseFloat(minHeightFeet || '120') || 120,
+      maxHeight: maxHeightFeet ? parseFloat(maxHeightFeet) : null,
+      elevationFeet: base?.elevationFeet ?? null,
+    };
+  }, [advancedOpen, advancedN, advancedR0, advancedRHold, minHeightFeet, maxHeightFeet, numBatteries, optimizedParams]);
+
+  const canVisualizeStandard = useMemo(() => {
+    return Boolean(selectedCoordsRef.current && effectiveStandardParams);
+  }, [effectiveStandardParams, selectedCoords]);
+
+  const canVisualizeBoundary = useMemo(() => {
+    const minutes = parseFloat(batteryMinutes || '');
+    return boundaryCorners.length === 4 && Number.isFinite(minutes) && minutes > 0;
+  }, [boundaryCorners, batteryMinutes]);
 
 
   // Reset state when opening/closing
@@ -140,6 +241,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadOpen(false);
     setToast(null);
     setIsFullscreen(false);
+    setAdvancedOpen(false);
+    setAdvancedN('');
+    setAdvancedR0('');
+    setAdvancedRHold('');
+    setFlightMode('standard');
+    setBoundaryCorners([]);
+    setBoundaryExpansionRate('1.00');
+    setBoundaryBounceSpacing('1.00');
+    setBoundaryBatteriesNeeded(null);
     
     // If editing, hydrate fields from project
     if (project) {
@@ -163,6 +273,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setNumBatteries(params.batteries || '');
       setMinHeightFeet(params.minHeight || '');
       setMaxHeightFeet(params.maxHeight || '');
+      setFlightMode(params.flightMode === 'boundary' ? 'boundary' : 'standard');
+      setAdvancedOpen(Boolean(params.advancedEnabled));
+      setAdvancedN(params.advancedN ? String(params.advancedN) : '');
+      setAdvancedR0(params.advancedR0 ? String(params.advancedR0) : '');
+      setAdvancedRHold(params.advancedRHold ? String(params.advancedRHold) : '');
+      setBoundaryCorners(Array.isArray(params.boundaryCorners) ? params.boundaryCorners : []);
+      setBoundaryExpansionRate(params.boundaryExpansionRate ? String(params.boundaryExpansionRate) : '1.00');
+      setBoundaryBounceSpacing(params.boundaryBounceSpacing ? String(params.boundaryBounceSpacing) : '1.00');
+      setBoundaryBatteriesNeeded(params.boundaryBatteriesNeeded ? Number(params.boundaryBatteriesNeeded) : null);
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -221,12 +340,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
               const optimizedParams: OptimizedParams = {
                 ...optData.optimized_params,
+                slices: batteries,
                 center: `${coords.lat}, ${coords.lng}`,
                 minHeight: minH,
                 maxHeight: maxH,
                 elevationFeet,
               };
               setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
+              setAdvancedN(String(optimizedParams.N ?? ''));
+              setAdvancedR0(String(optimizedParams.r0 ?? ''));
+              setAdvancedRHold(String(optimizedParams.rHold ?? ''));
             } catch (e) {
               console.warn('Failed to auto-restore optimization params:', e);
             } finally {
@@ -246,6 +369,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
+      setFlightMode('standard');
+      setAdvancedOpen(false);
+      setAdvancedN('');
+      setAdvancedR0('');
+      setAdvancedRHold('');
+      setBoundaryCorners([]);
+      setBoundaryExpansionRate('1.00');
+      setBoundaryBounceSpacing('1.00');
+      setBoundaryBatteriesNeeded(null);
       setSelectedFile(null);
       setStatus('draft');
       setCurrentProjectId(null);
@@ -293,29 +425,39 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         
         map.on('click', (e: any) => {
           const { lng, lat } = e.lngLat;
-          selectedCoordsRef.current = { lat, lng };
-          // place marker
-          if (markerRef.current) {
-            markerRef.current.remove();
+          if (flightMode === 'boundary') {
+            setBoundaryBatteriesNeeded(null);
+            setOptimizedParamsWithLogging(null, 'Boundary corners changed');
+            setBoundaryCorners((prev) => {
+              const next = prev.length < 4 ? [...prev, { lat, lng }] : [...prev.slice(1), { lat, lng }];
+              drawBoundaryMarkers(next);
+              clearMapPathPreview();
+              return next;
+            });
+          } else {
+            selectedCoordsRef.current = { lat, lng };
+            setSelectedCoords({ lat, lng });
+            if (markerRef.current) {
+              markerRef.current.remove();
+            }
+
+            const pinElement = document.createElement('div');
+            pinElement.className = 'custom-teardrop-pin';
+            pinElement.innerHTML = `
+              <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
+              </svg>
+            `;
+
+            markerRef.current = new mapboxgl.Marker({ element: pinElement, anchor: 'bottom' })
+              .setLngLat([lng, lat])
+              .addTo(map);
+
+            setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+            setOptimizedParamsWithLogging(null, 'Map coordinates changed');
+            clearMapPathPreview();
           }
-          
-          // Create custom teardrop pin element with inline SVG
-          const pinElement = document.createElement('div');
-          pinElement.className = 'custom-teardrop-pin';
-          pinElement.innerHTML = `
-            <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-            </svg>
-          `;
-          
-          markerRef.current = new mapboxgl.Marker({ element: pinElement, anchor: 'bottom' })
-            .setLngLat([lng, lat])
-            .addTo(map);
-          
-          // Fill address input with coordinates formatted
-          setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-          // Invalidate previous optimization
-          setOptimizedParamsWithLogging(null, 'Map coordinates changed');
+
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
@@ -347,13 +489,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return () => {
       isCancelled = true;
       if (mapRef.current) {
+        removeBoundaryMarkers();
         mapRef.current.remove();
         mapRef.current = null;
         markerRef.current = null;
         selectedCoordsRef.current = null;
       }
     };
-  }, [open, project]);
+  }, [open, project, flightMode, drawBoundaryMarkers, clearMapPathPreview, removeBoundaryMarkers]);
 
   // Helper function to place marker at coordinates
   const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
@@ -385,13 +528,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     
     // Invalidate previous optimization since coordinates changed
     setOptimizedParamsWithLogging(null, 'Address search coordinates changed');
+    clearMapPathPreview();
     
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
     
     // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, []);
+  }, [clearMapPathPreview]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
@@ -479,12 +623,28 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [selectedCoords]);
 
+  useEffect(() => {
+    if (!open || !mapRef.current) return;
+    if (flightMode === 'boundary') {
+      if (markerRef.current) {
+        markerRef.current.remove();
+        markerRef.current = null;
+      }
+      selectedCoordsRef.current = null;
+      setSelectedCoords(null);
+      drawBoundaryMarkers(boundaryCorners);
+    } else {
+      removeBoundaryMarkers();
+    }
+    clearMapPathPreview();
+  }, [open, flightMode, boundaryCorners, drawBoundaryMarkers, removeBoundaryMarkers, clearMapPathPreview]);
+
   const canOptimize = useMemo(() => {
     // Always use ref as source of truth for coordinates
     const coords = selectedCoordsRef.current;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
-    const isValid = Boolean(coords && minutes && batteries);
+    const isValid = flightMode === 'standard' && Boolean(coords && minutes && batteries);
     
     // Debug logging to help track state
     console.log('🔍 Optimization validation:', {
@@ -496,7 +656,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
     
     return isValid;
-  }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
+  }, [batteryMinutes, numBatteries, flightMode]); // Only depend on battery params since we use ref for coords
 
   // Rotating processing messages for optimization
   const processingMessages = [
@@ -521,6 +681,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, []);
 
   const handleOptimize = useCallback(async () => {
+    if (flightMode !== 'standard') return;
     if (!canOptimize) return;
     setOptimizationLoading(true);
     const messageInterval = startProcessingMessages();
@@ -575,12 +736,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       const params: OptimizedParams = {
         ...optData.optimized_params,
+        slices: batteries,
         center: `${coords.lat}, ${coords.lng}`,
         minHeight: minH,
         maxHeight: maxH,
         elevationFeet,
       };
       setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
+      setAdvancedN(String(params.N ?? ''));
+      setAdvancedR0(String(params.r0 ?? ''));
+      setAdvancedRHold(String(params.rHold ?? ''));
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
       console.error('Optimization failed:', e);
@@ -590,7 +755,106 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
+  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize, flightMode]);
+
+  const drawLineOnMap = useCallback((sourceId: string, layerId: string, coordinates: number[][], color: string) => {
+    const map = mapRef.current;
+    if (!map || coordinates.length < 2) return;
+
+    if (map.getLayer(layerId)) map.removeLayer(layerId);
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+    map.addSource(sourceId, {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates,
+        },
+      },
+    });
+    map.addLayer({
+      id: layerId,
+      type: 'line',
+      source: sourceId,
+      paint: {
+        'line-color': color,
+        'line-width': 3,
+        'line-opacity': 0.85,
+      },
+    });
+  }, []);
+
+  const handleVisualize = useCallback(async () => {
+    if (visualizationLoading) return;
+    setVisualizationLoading(true);
+    try {
+      clearMapPathPreview();
+      if (flightMode === 'boundary') {
+        if (!canVisualizeBoundary) {
+          showSystemNotification('error', 'Boundary mode requires 4 corners and battery duration');
+          return;
+        }
+
+        const res = await fetch(buildApiUrl.dronePath.boundaryPlan(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            corners: boundaryCorners,
+            batteryMinutes: parseFloat(batteryMinutes || '0'),
+            minHeight: parseFloat(minHeightFeet || '120') || 120,
+            maxHeight: maxHeightFeet ? parseFloat(maxHeightFeet) : null,
+            expansionRate: parseFloat(boundaryExpansionRate || '1.0') || 1.0,
+            bounceSpacing: parseFloat(boundaryBounceSpacing || '1.0') || 1.0,
+          }),
+        });
+        if (!res.ok) {
+          const text = await res.text().catch(() => 'Boundary preview failed');
+          throw new Error(text || 'Boundary preview failed');
+        }
+
+        const payload = await res.json();
+        const boundaryPath: Array<{ lat: number; lon: number }> = payload.path || [];
+        const coordinates = boundaryPath.map((pt) => [pt.lon, pt.lat]);
+        drawLineOnMap(boundarySourceId, boundaryLayerId, coordinates, '#ff8a00');
+        setBoundaryBatteriesNeeded(payload.batteries_needed ?? null);
+      } else {
+        if (!selectedCoordsRef.current || !effectiveStandardParams) {
+          showSystemNotification('error', 'Set a center point and valid spiral parameters first');
+          return;
+        }
+
+        const path = generateSpiralPreviewLine(selectedCoordsRef.current, {
+          slices: effectiveStandardParams.slices,
+          N: effectiveStandardParams.N,
+          r0: effectiveStandardParams.r0,
+          rHold: effectiveStandardParams.rHold,
+        });
+        const coordinates = path.map((pt) => [pt.lng, pt.lat]);
+        drawLineOnMap(standardPathSourceId, standardPathLayerId, coordinates, '#00d2ff');
+      }
+    } catch (e: any) {
+      showSystemNotification('error', e?.message || 'Failed to visualize flight path');
+    } finally {
+      setVisualizationLoading(false);
+    }
+  }, [
+    visualizationLoading,
+    clearMapPathPreview,
+    flightMode,
+    canVisualizeBoundary,
+    boundaryCorners,
+    batteryMinutes,
+    minHeightFeet,
+    maxHeightFeet,
+    boundaryExpansionRate,
+    boundaryBounceSpacing,
+    drawLineOnMap,
+    effectiveStandardParams,
+    showSystemNotification,
+  ]);
 
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
@@ -608,8 +872,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       return;
     }
     
-    // Use ref to get current optimized params (not stale closure)
-    const currentOptimizedParams = optimizedParamsRef.current;
+    const currentOptimizedParams = effectiveStandardParams;
     
     console.log(`🔍 downloadBatteryCsv called for battery ${batteryIndex1}:`, {
       currentOptimizedParams: currentOptimizedParams ? 'EXISTS' : 'NULL',
@@ -618,7 +881,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     
     if (!currentOptimizedParams) {
       console.log(`🔍 No optimized params found - showing error`);
-      showSystemNotification('error', 'Please optimize first');
+      showSystemNotification('error', 'Set valid flight parameters first');
       return;
     }
     
@@ -680,7 +943,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, effectiveStandardParams, showSystemNotification, status]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -704,6 +967,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         status,
         progress,
         params: {
+          flightMode,
+          advancedEnabled: advancedOpen,
+          advancedN: advancedN || null,
+          advancedR0: advancedR0 || null,
+          advancedRHold: advancedRHold || null,
+          boundaryCorners,
+          boundaryExpansionRate,
+          boundaryBounceSpacing,
+          boundaryBatteriesNeeded,
           address: addressSearch,
           batteryMinutes,
           batteries: numBatteries,
@@ -745,7 +1017,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving, flightMode, advancedOpen, advancedN, advancedR0, advancedRHold, boundaryCorners, boundaryExpansionRate, boundaryBounceSpacing, boundaryBatteriesNeeded]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -756,11 +1028,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const hasLocation = Boolean(addressSearch.trim() || selectedCoords);
     const hasBatteryData = Boolean(batteryMinutes || numBatteries);
     const hasAltitudeData = Boolean(minHeightFeet || maxHeightFeet);
+    const hasAdvancedData = advancedOpen && Boolean(advancedN || advancedR0 || advancedRHold);
+    const hasBoundaryData = flightMode === 'boundary' && boundaryCorners.length > 0;
     const hasTitleChange = projectTitle !== 'Untitled' && projectTitle.trim();
     const hasUploadData = Boolean(propertyTitle.trim() || listingDescription.trim() || contactEmail.trim() || selectedFile);
     
-    return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
-  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
+    return hasLocation || hasBatteryData || hasAltitudeData || hasAdvancedData || hasBoundaryData || hasTitleChange || hasUploadData;
+  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, advancedOpen, advancedN, advancedR0, advancedRHold, flightMode, boundaryCorners, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
 
   // SIMPLE debounced save trigger
   const triggerSave = useCallback(() => {
@@ -794,6 +1068,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       numBatteries,
       minHeightFeet,
       maxHeightFeet,
+      flightMode,
+      advancedOpen,
+      advancedN,
+      advancedR0,
+      advancedRHold,
+      boundaryCorners: boundaryCorners.length,
       status,
       selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
       optimizedParams: optimizedParams ? 'EXISTS' : 'NULL'
@@ -805,7 +1085,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, flightMode, advancedOpen, advancedN, advancedR0, advancedRHold, boundaryCorners, boundaryExpansionRate, boundaryBounceSpacing, boundaryBatteriesNeeded, status, selectedCoords]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -851,7 +1131,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const lng = parseFloat(coordsMatch[2]);
       
       if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        await placeMarkerAtCoords(lat, lng);
+        if (flightMode === 'boundary') {
+          mapRef.current.flyTo({ center: [lng, lat], zoom: 16, duration: 1200 });
+        } else {
+          await placeMarkerAtCoords(lat, lng);
+        }
         return;
       }
     }
@@ -862,12 +1146,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const data = await res.json();
       if (data?.features?.length) {
         const [lng, lat] = data.features[0].center;
-        await placeMarkerAtCoords(lat, lng);
+        if (flightMode === 'boundary') {
+          mapRef.current.flyTo({ center: [lng, lat], zoom: 16, duration: 1200 });
+        } else {
+          await placeMarkerAtCoords(lat, lng);
+        }
       }
     } catch (err) {
       console.warn('Geocoding failed:', err);
     }
-  }, [addressSearch, MAPBOX_TOKEN]);
+  }, [addressSearch, MAPBOX_TOKEN, placeMarkerAtCoords, flightMode]);
 
   // Upload flow
   const onFileChosen = useCallback((file: File | null) => {
@@ -1079,6 +1367,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             status: 'uploading',
             progress: 10,
             params: {
+              flightMode,
+              advancedEnabled: advancedOpen,
+              advancedN: advancedN || null,
+              advancedR0: advancedR0 || null,
+              advancedRHold: advancedRHold || null,
+              boundaryCorners,
+              boundaryExpansionRate,
+              boundaryBounceSpacing,
+              boundaryBatteriesNeeded,
               address: addressSearch,
               batteryMinutes: batteryMinutes,
               batteries: numBatteries,
@@ -1102,7 +1399,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       // Keep stage text visible for a few seconds after completion
       setTimeout(() => setUploadStage(''), 3000);
     }
-  }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload]);
+  }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload, flightMode, advancedOpen, advancedN, advancedR0, advancedRHold, boundaryCorners, boundaryExpansionRate, boundaryBounceSpacing, boundaryBatteriesNeeded, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle]);
 
   if (!open) return null;
 
@@ -1170,7 +1467,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <div className="map-instructions-center" id="map-instructions">
                   <div className="instruction-content">
                     <div className="instruction-pin"></div>
-                    <h3>Select the focus point for your drone flight.</h3>
+                    <h3>{flightMode === 'boundary' ? 'Place 4 boundary corners on the map.' : 'Select the focus point for your drone flight.'}</h3>
                   </div>
                 </div>
 
@@ -1187,6 +1484,28 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       style={{}}
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="category-outline">
+              <div className="popup-section">
+                <h4>Flight Mode</h4>
+                <div className="flight-mode-tabs">
+                  <button
+                    type="button"
+                    className={`flight-mode-tab${flightMode === 'standard' ? ' active' : ''}`}
+                    onClick={() => setFlightMode('standard')}
+                  >
+                    Standard
+                  </button>
+                  <button
+                    type="button"
+                    className={`flight-mode-tab${flightMode === 'boundary' ? ' active' : ''}`}
+                    onClick={() => setFlightMode('boundary')}
+                  >
+                    Boundary
+                  </button>
                 </div>
               </div>
             </div>
@@ -1297,12 +1616,123 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               </div>
             </div>
 
+            {flightMode === 'standard' && (
+              <div className="category-outline">
+                <div className="popup-section">
+                  <div className="advanced-header-row">
+                    <h4>Advanced</h4>
+                    <button
+                      type="button"
+                      className={`advanced-toggle-btn${advancedOpen ? ' active' : ''}`}
+                      onClick={() => setAdvancedOpen((v) => !v)}
+                    >
+                      {advancedOpen ? 'On' : 'Off'}
+                    </button>
+                  </div>
+                  {advancedOpen && (
+                    <div className="input-row-popup advanced-input-grid">
+                      <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                        <input
+                          type="text"
+                          className="text-fade-right"
+                          placeholder="N (bounces)"
+                          value={advancedN}
+                          onChange={(e) => setAdvancedN(e.target.value.replace(/[^0-9]/g, ''))}
+                        />
+                      </div>
+                      <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                        <input
+                          type="text"
+                          className="text-fade-right"
+                          placeholder="r0 (ft)"
+                          value={advancedR0}
+                          onChange={(e) => setAdvancedR0(e.target.value.replace(/[^0-9.]/g, ''))}
+                        />
+                      </div>
+                      <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                        <input
+                          type="text"
+                          className="text-fade-right"
+                          placeholder="rHold (ft)"
+                          value={advancedRHold}
+                          onChange={(e) => setAdvancedRHold(e.target.value.replace(/[^0-9.]/g, ''))}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {flightMode === 'boundary' && (
+              <div className="category-outline">
+                <div className="popup-section">
+                  <h4>Boundary Tuning</h4>
+                  <div className="input-row-popup">
+                    <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        className="text-fade-right"
+                        placeholder="Expansion Rate"
+                        value={boundaryExpansionRate}
+                        onChange={(e) => setBoundaryExpansionRate(e.target.value.replace(/[^0-9.]/g, ''))}
+                      />
+                    </div>
+                    <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        className="text-fade-right"
+                        placeholder="Bounce Spacing"
+                        value={boundaryBounceSpacing}
+                        onChange={(e) => setBoundaryBounceSpacing(e.target.value.replace(/[^0-9.]/g, ''))}
+                      />
+                    </div>
+                  </div>
+                  <p className="boundary-hint">
+                    Corners set: {boundaryCorners.length}/4
+                    {boundaryBatteriesNeeded ? ` • Suggested batteries: ${boundaryBatteriesNeeded}` : ''}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="category-outline">
+              <div className="popup-section">
+                <div className="flight-action-row">
+                  {flightMode === 'standard' && (
+                    <button
+                      type="button"
+                      className="flight-action-btn"
+                      onClick={handleOptimize}
+                      disabled={!canOptimize || optimizationLoading}
+                    >
+                      {optimizationLoading ? 'Optimizing...' : 'Optimize'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="flight-action-btn"
+                    onClick={handleVisualize}
+                    disabled={visualizationLoading || (flightMode === 'standard' ? !canVisualizeStandard : !canVisualizeBoundary)}
+                  >
+                    {visualizationLoading ? 'Visualizing...' : 'Visualize'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
               <div className="popup-section">
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
                   {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
                 </h4>
+                {flightMode === 'boundary' && (
+                  <p className="boundary-hint" style={{ marginBottom: 12 }}>
+                    Boundary mode uses a separate planner endpoint. Visualize to compute required batteries.
+                  </p>
+                )}
+                {flightMode === 'standard' && (
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <button
@@ -1312,60 +1742,22 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       console.log(`🔍 Battery ${idx + 1} clicked:`, {
                         optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
                         optimizedParamsRef: optimizedParamsRef.current ? 'EXISTS' : 'NULL',
+                        effectiveStandardParams: effectiveStandardParams ? 'EXISTS' : 'NULL',
                         canOptimize,
                         batteryMinutes,
                         numBatteries,
                         selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
                       });
                       
-                      // Auto-run optimization on first click if needed
-                      if (!optimizedParams) {
-                        if (!canOptimize) {
-                          // Set specific error messages for missing fields
-                          if (!selectedCoordsRef.current) {
-                            showSystemNotification('error', 'Please select a location on the map first');
-                          } else if (!batteryMinutes || !numBatteries) {
-                            showSystemNotification('error', 'Please enter battery duration and quantity first');
-                          } else {
-                            showSystemNotification('error', 'Please set location and battery params first');
-                          }
-                          return;
+                      if (!effectiveStandardParams) {
+                        if (!selectedCoordsRef.current) {
+                          showSystemNotification('error', 'Please select a location on the map first');
+                        } else if (advancedOpen && !hasAdvancedOverrides) {
+                          showSystemNotification('error', 'Please enter valid Advanced values for N, r0, and rHold');
+                        } else {
+                          showSystemNotification('error', 'Optimize first or provide valid Advanced parameters');
                         }
-                        
-                        // Run optimization first
-                        try {
-                          await handleOptimize();
-                          // Poll optimizedParams until set (max ~30s) with improved checking
-                          let checkCount = 0;
-                          const maxChecks = 60; // 30 seconds with 500ms intervals
-                          
-                          while (checkCount < maxChecks) {
-                            await new Promise(r => setTimeout(r, 500));
-                            checkCount++;
-                            
-                            // Use ref to get current optimizedParams (not stale closure)
-                            const currentOptimizedParams = optimizedParamsRef.current;
-                            if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
-                              console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
-                              break;
-                            }
-                            
-                            // Log progress every 5 seconds
-                            if (checkCount % 10 === 0) {
-                              console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
-                            }
-                          }
-                          
-                          // Final check after polling using ref
-                          const finalOptimizedParams = optimizedParamsRef.current;
-                          if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
-                            showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
-                            return;
-                          }
-                        } catch (e: any) {
-                          showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                          return;
-                        }
+                        return;
                       }
                       
                       // Add to download queue
@@ -1377,6 +1769,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   </button>
                 ))}
                 </div>
+                )}
               </div>
             </div>
           </div>
@@ -1544,4 +1937,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-
