@@ -199,7 +199,7 @@ def _send_revocation_email(recipient_email: str, project_title: str, payment_lin
         logger.warning('RESEND_API_KEY not configured; skipping revocation email.')
         return
 
-    subject = f'Hosting paused: {project_title or "Spaceport AI Project"}'
+    subject = f'Hosting paused: {project_title or "Spaceport Project"}'
     payment_line = f"\nPayment link: {payment_link}\n" if payment_link else ""
 
     text_body = (
@@ -207,7 +207,7 @@ def _send_revocation_email(recipient_email: str, project_title: str, payment_lin
         "Payment was not received within 14 days, so the viewer is temporarily offline.\n"
         "Complete payment to restore access."
         f"{payment_line}"
-        "\n- Spaceport AI"
+        "\n- Spaceport"
     )
 
     payment_button = ''
@@ -229,13 +229,13 @@ def _send_revocation_email(recipient_email: str, project_title: str, payment_lin
           The viewer has been paused until payment is completed.
         </p>
         {payment_button}
-        <p style="font-size:14px;margin-top:32px;color:rgba(255,255,255,0.6);">- Spaceport AI</p>
+        <p style="font-size:14px;margin-top:32px;color:rgba(255,255,255,0.6);">- Spaceport</p>
       </body>
     </html>
     """
 
     resend.Emails.send({
-        'from': 'Spaceport AI <hello@spcprt.com>',
+        'from': 'Spaceport <hello@spcprt.com>',
         'to': [recipient_email],
         'subject': subject,
         'html': html_body,

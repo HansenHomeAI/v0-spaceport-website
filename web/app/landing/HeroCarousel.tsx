@@ -328,7 +328,7 @@ export default function HeroCarousel(): JSX.Element {
       <iframe 
         className="landing-iframe" 
         src={currentIframeSrc} 
-        title={currentExample?.title || "Spaceport AI"}
+        title={currentExample?.title || "Spaceport"}
         style={{ opacity: 1, transition: 'opacity 0.5s ease' }}
         onFocus={handleIframeEngage}
         onPointerDown={handleIframeEngage}

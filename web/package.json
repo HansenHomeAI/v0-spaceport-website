@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "predev": "node scripts/copy-cesium-assets.cjs",
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS='--max-http-header-size=32768' next dev",
     "prebuild": "node scripts/copy-cesium-assets.cjs",
     "build": "next build",
     "prestart": "node scripts/copy-cesium-assets.cjs",

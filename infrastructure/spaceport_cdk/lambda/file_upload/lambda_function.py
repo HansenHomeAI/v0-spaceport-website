@@ -39,7 +39,7 @@ def send_email_notification(to_address, subject, body_text, body_html=None):
     
     try:
         params = {
-            "from": "Spaceport AI <hello@spcprt.com>",
+            "from": "Spaceport <hello@spcprt.com>",
             "to": [to_address],
             "subject": subject,
             "text": body_text
