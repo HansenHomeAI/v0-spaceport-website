@@ -14,8 +14,8 @@ export default function Header(): JSX.Element {
     <header className={`header${expanded ? ' expanded' : ''}`}>
       <div className="header-top">
         <div className="logo" onClick={close}>
-          <Link href="/landing" aria-label="Spaceport AI Home">
-            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="logo-image" />
+          <Link href="/landing" aria-label="Spaceport Home">
+            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="logo-image" />
           </Link>
         </div>
 

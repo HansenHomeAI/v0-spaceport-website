@@ -261,7 +261,7 @@ class SpaceportStack(Stack):
                 ),
                 "FEEDBACK_FROM_ADDRESS": os.environ.get(
                     "FEEDBACK_FROM_ADDRESS",
-                    "Spaceport AI <hello@spcprt.com>",
+                    "Spaceport <hello@spcprt.com>",
                 ),
                 "ALLOWED_ORIGINS": feedback_allowed_origin,
             },

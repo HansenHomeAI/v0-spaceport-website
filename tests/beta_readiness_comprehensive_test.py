@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Spaceport AI - Comprehensive Beta Readiness Test Suite
+🚀 Spaceport - Comprehensive Beta Readiness Test Suite
 
 This script performs thorough testing of all core functionality to ensure
 the system is ready for early beta testing with multiple users.

@@ -456,7 +456,7 @@ def _send_delivery_email(
     if not RESEND_API_KEY:
         raise RuntimeError('Resend API key is not configured')
 
-    subject = f'Your 3D model is ready: {project_title or "Spaceport AI Project"}'
+    subject = f'Your 3D model is ready: {project_title or "Spaceport Project"}'
 
     payment_section = ""
     payment_text_section = ""
@@ -498,22 +498,22 @@ def _send_delivery_email(
           <span style=\"color:#ffffff;\">{model_link}</span>
         </p>
         {payment_section}
-        <p style=\"font-size:14px;margin-top:32px;color:rgba(255,255,255,0.6);\">— Spaceport AI</p>
+        <p style=\"font-size:14px;margin-top:32px;color:rgba(255,255,255,0.6);\">— Spaceport</p>
       </body>
     </html>
     """
 
     text_body = (
         f"Your 3D model is ready.\n\n"
-        f"Project: {project_title or 'Spaceport AI Project'}\n"
+        f"Project: {project_title or 'Spaceport Project'}\n"
         f"Open the model: {model_link}\n\n"
         f"{payment_text_section}\n"
         "If the link does not open, copy and paste it into your browser.\n\n"
-        "— Spaceport AI"
+        "— Spaceport"
     )
 
     params = {
-        'from': 'Spaceport AI <hello@spcprt.com>',
+        'from': 'Spaceport <hello@spcprt.com>',
         'to': [recipient_email],
         'subject': subject,
         'html': html_body,

@@ -52,7 +52,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not recipients:
             raise ValueError("No feedback recipients configured")
         
-        from_address = os.environ.get("FEEDBACK_FROM_ADDRESS", "Spaceport AI <hello@spcprt.com>")
+        from_address = os.environ.get("FEEDBACK_FROM_ADDRESS", "Spaceport <hello@spcprt.com>")
         
         # Import Resend (will be installed via requirements.txt)
         import resend
@@ -79,7 +79,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         </blockquote>
         <hr>
         <p style="color: #666; font-size: 12px;">
-            Sent via Spaceport AI Feedback System
+            Sent via Spaceport Feedback System
         </p>
         """
         
@@ -90,7 +90,7 @@ Source: {source}
 Message: {message}
 
 ---
-Sent via Spaceport AI Feedback System
+Sent via Spaceport Feedback System
         """
         
         # Send email to all recipients
