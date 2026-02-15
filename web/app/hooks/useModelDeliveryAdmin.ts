@@ -200,7 +200,7 @@ export function useModelDeliveryAdmin() {
     }
   }, [endpoints.send]);
 
-  const publishViewer = useCallback(async (payload: { title: string; file: File; }): Promise<PublishViewerResponse> => {
+  const publishViewer = useCallback(async (payload: { title: string; file: File; slug?: string }): Promise<PublishViewerResponse> => {
     const publishUrl = buildApiUrl.spacesViewer.publish();
     if (!publishUrl) {
       throw new Error('Spaces viewer is not configured');
@@ -210,6 +210,9 @@ export function useModelDeliveryAdmin() {
     const formData = new FormData();
     formData.append('title', payload.title);
     formData.append('file', payload.file);
+    if (payload.slug?.trim()) {
+      formData.append('slug', payload.slug.trim());
+    }
 
     const response = await fetch(publishUrl, {
       method: 'POST',

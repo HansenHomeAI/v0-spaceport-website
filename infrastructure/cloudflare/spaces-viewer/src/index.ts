@@ -48,13 +48,22 @@ function jsonResponse(status: number, body: Record<string, unknown>) {
   });
 }
 
+const SLUG_MAX_LENGTH = 64;
+const VALID_SLUG_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
+
+function isValidSlug(slug: string): boolean {
+  if (!slug || typeof slug !== 'string') return false;
+  const trimmed = slug.trim();
+  return trimmed.length >= 1 && trimmed.length <= SLUG_MAX_LENGTH && VALID_SLUG_REGEX.test(trimmed);
+}
+
 function normalizeSlug(input: string): string {
   const cleaned = input
     .toLowerCase()
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 64);
+    .slice(0, SLUG_MAX_LENGTH);
   return cleaned || 'model';
 }
 
@@ -239,6 +248,7 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const formData = await request.formData();
   const titleRaw = formData.get('title');
   const file = formData.get('file');
+  const slugRaw = formData.get('slug');
 
   if (!file || !(file instanceof File)) {
     return jsonResponse(400, { error: 'Missing HTML file upload' });
@@ -250,7 +260,15 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
 
   const title = typeof titleRaw === 'string' ? titleRaw.trim() : '';
   const baseSlug = normalizeSlug(title || file.name || 'model');
-  const slug = await findAvailableSlug(env, baseSlug);
+
+  let slug: string;
+  const targetSlug = typeof slugRaw === 'string' ? slugRaw.trim() : '';
+  if (targetSlug && isValidSlug(targetSlug)) {
+    slug = targetSlug;
+  } else {
+    slug = await findAvailableSlug(env, baseSlug);
+  }
+
   const key = `models/${slug}/index.html`;
 
   await env.SPACES_BUCKET.put(key, await file.arrayBuffer(), {

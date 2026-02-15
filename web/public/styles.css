@@ -7261,6 +7261,44 @@ input.text-fade-right,
   font-size: 0.9rem;
 }
 
+.model-delivery-existing-link {
+  margin: 12px 0 16px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.model-delivery-link-display {
+  margin: 4px 0 10px 0;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.model-delivery-link-display a {
+  color: #7eb8ff;
+  text-decoration: none;
+}
+
+.model-delivery-link-display a:hover {
+  text-decoration: underline;
+}
+
+.model-delivery-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.model-delivery-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #fff;
+}
+
 .model-delivery-error {
   margin: -6px 0 0 0;
   color: #ff7b7b;
