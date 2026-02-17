@@ -1,13 +1,6 @@
 name: Deploy Spaces Viewer Worker
 
 on:
-  push:
-    branches:
-      - development
-      - "agent-*"
-    paths:
-      - "infrastructure/cloudflare/spaces-viewer/**"
-      - ".github/workflows/deploy-spaces-viewer-worker.yml"
   workflow_dispatch:
 
 jobs:

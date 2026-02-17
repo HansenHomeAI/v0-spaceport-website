@@ -3,6 +3,7 @@ import os
 import logging
 import hashlib
 import hmac
+import re
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 from decimal import Decimal
@@ -10,6 +11,8 @@ from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse, quote_plus
 
 import boto3
 from boto3.dynamodb.conditions import Key
+from botocore.config import Config
+from botocore.exceptions import ClientError
 import resend
 import stripe
 
@@ -26,6 +29,17 @@ STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_MODEL_TRAINING_PRICE = os.environ.get('STRIPE_MODEL_TRAINING_PRICE')
 STRIPE_MODEL_HOSTING_PRICE = os.environ.get('STRIPE_MODEL_HOSTING_PRICE')
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://spcprt.com')
+SPACES_VIEWER_BASE_URL = os.environ.get('SPACES_VIEWER_BASE_URL', 'https://spcprt.com/spaces')
+
+R2_ENDPOINT = os.environ.get('R2_ENDPOINT')
+R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
+R2_SECRET_ACCESS_KEY = os.environ.get('R2_SECRET_ACCESS_KEY')
+R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', 'spaces-viewers')
+R2_REGION = os.environ.get('R2_REGION', 'auto')
+
+VIEWER_SLUG_REGEX = re.compile(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?$')
+MAX_VIEWER_UPLOAD_BYTES = 2 * 1024 * 1024
+VIEWER_CACHE_CONTROL = 'public, max-age=300'
 
 
 if not USER_POOL_ID or not PROJECTS_TABLE_NAME:
@@ -43,6 +57,82 @@ cognito = boto3.client('cognito-idp')
 dynamodb = boto3.resource('dynamodb')
 projects_table = dynamodb.Table(PROJECTS_TABLE_NAME)
 permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
+
+
+def _is_valid_viewer_slug(slug: str) -> bool:
+    if not isinstance(slug, str):
+        return False
+    candidate = slug.strip()
+    if not candidate or len(candidate) > 64:
+        return False
+    return bool(VIEWER_SLUG_REGEX.match(candidate))
+
+
+def _normalize_viewer_slug(value: str) -> str:
+    candidate = (value or '').strip()
+    if _is_valid_viewer_slug(candidate):
+        return candidate
+
+    if '/spaces/' in candidate:
+        candidate = candidate.split('/spaces/', 1)[1].strip('/').split('/')[0]
+        if _is_valid_viewer_slug(candidate):
+            return candidate
+
+    parts = [part for part in candidate.split('/') if part]
+    if parts and _is_valid_viewer_slug(parts[-1]):
+        return parts[-1]
+
+    return ''
+
+
+def _get_r2_client() -> Optional[Any]:
+    if not (R2_ENDPOINT and R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY and R2_BUCKET_NAME):
+        return None
+
+    return boto3.client(
+        's3',
+        region_name=R2_REGION,
+        endpoint_url=R2_ENDPOINT,
+        aws_access_key_id=R2_ACCESS_KEY_ID,
+        aws_secret_access_key=R2_SECRET_ACCESS_KEY,
+        config=Config(signature_version='s3v4'),
+    )
+
+
+def _update_viewer_html(slug: str, html_content: str) -> Dict[str, Any]:
+    r2_client = _get_r2_client()
+    if not r2_client:
+        raise RuntimeError('R2 configuration is missing')
+
+    key = f'models/{slug}/index.html'
+    try:
+        r2_client.head_object(Bucket=R2_BUCKET_NAME, Key=key)
+    except ClientError as exc:
+        status_code = str(exc.response.get('ResponseMetadata', {}).get('HTTPStatusCode', ''))
+        error_code = str(exc.response.get('Error', {}).get('Code', '')).lower()
+        if status_code == '404' or error_code in {'404', 'notfound', 'nosuchkey'}:
+            raise FileNotFoundError(f'Viewer slug does not exist: {slug}')
+        raise
+
+    encoded = html_content.encode('utf-8')
+    if len(encoded) > MAX_VIEWER_UPLOAD_BYTES:
+        raise ValueError('Viewer HTML exceeds maximum size limit')
+
+    r2_client.put_object(
+        Bucket=R2_BUCKET_NAME,
+        Key=key,
+        Body=encoded,
+        ContentType='text/html; charset=utf-8',
+        CacheControl=VIEWER_CACHE_CONTROL,
+    )
+
+    base = SPACES_VIEWER_BASE_URL.rstrip('/')
+    return {
+        'ok': True,
+        'slug': slug,
+        'url': f'{base}/{slug}',
+        'updated': True,
+    }
 
 
 def decimal_default(obj):
@@ -690,6 +780,29 @@ def lambda_handler(event, context):
                 'client': client,
                 'projects': projects,
             })
+
+        if method == 'POST' and path.endswith('update-viewer'):
+            slug_raw = (data.get('slug') or '').strip()
+            html_content = data.get('html')
+
+            slug = _normalize_viewer_slug(slug_raw)
+            if not slug:
+                return _response(400, {'error': 'A valid viewer slug is required'})
+
+            if not isinstance(html_content, str) or not html_content.strip():
+                return _response(400, {'error': 'Viewer HTML content is required'})
+
+            try:
+                result = _update_viewer_html(slug, html_content)
+                logger.info('Updated viewer HTML for slug=%s by employee=%s', slug, employee.get('email'))
+                return _response(200, result)
+            except FileNotFoundError:
+                return _response(404, {'error': f'Viewer slug does not exist: {slug}'})
+            except ValueError as exc:
+                return _response(400, {'error': str(exc)})
+            except Exception as exc:
+                logger.error('Failed to update viewer html for slug=%s: %s', slug, exc)
+                return _response(500, {'error': 'Failed to update viewer content'})
 
         if method == 'POST' and path.endswith('send'):
             client_email = (data.get('clientEmail') or '').strip().lower()
