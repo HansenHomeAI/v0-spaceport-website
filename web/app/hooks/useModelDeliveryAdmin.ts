@@ -29,6 +29,7 @@ export type ResolveClientResponse = {
 export type PublishViewerResponse = {
   url: string;
   slug: string;
+  updated?: boolean;
 };
 
 type PermissionState = {
@@ -200,16 +201,22 @@ export function useModelDeliveryAdmin() {
     }
   }, [endpoints.send]);
 
-  const publishViewer = useCallback(async (payload: { title: string; file: File; slug?: string }): Promise<PublishViewerResponse> => {
+  const publishViewer = useCallback(async (payload: { title: string; file: File; slug?: string; mode?: 'create' | 'update' }): Promise<PublishViewerResponse> => {
     const publishUrl = buildApiUrl.spacesViewer.publish();
     if (!publishUrl) {
       throw new Error('Spaces viewer is not configured');
+    }
+
+    const mode = payload.mode || 'create';
+    if (mode === 'update' && !payload.slug?.trim()) {
+      throw new Error('Viewer slug is required to update existing content.');
     }
 
     const token = await getIdToken();
     const formData = new FormData();
     formData.append('title', payload.title);
     formData.append('file', payload.file);
+    formData.append('mode', mode);
     if (payload.slug?.trim()) {
       formData.append('slug', payload.slug.trim());
     }

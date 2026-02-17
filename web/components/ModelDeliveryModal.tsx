@@ -14,8 +14,31 @@ interface ModelDeliveryModalProps {
   onClose: () => void;
   resolveClient: (email: string) => Promise<ResolveClientResponse>;
   sendDelivery: (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string }) => Promise<any>;
-  publishViewer: (payload: { title: string; file: File; slug?: string }) => Promise<PublishViewerResponse>;
+  publishViewer: (payload: { title: string; file: File; slug?: string; mode?: 'create' | 'update' }) => Promise<PublishViewerResponse>;
   onDelivered: (project: Record<string, any>) => void;
+}
+
+const VIEWER_SLUG_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
+
+function normalizeViewerSlug(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (VIEWER_SLUG_REGEX.test(trimmed)) return trimmed;
+
+  try {
+    const parsed = new URL(trimmed);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    const candidate = segments[segments.length - 1] || '';
+    if (VIEWER_SLUG_REGEX.test(candidate)) return candidate;
+  } catch {
+    // Fall back to path-like parsing below.
+  }
+
+  const withoutQuery = trimmed.split('?')[0].split('#')[0];
+  const pathSegments = withoutQuery.split('/').filter(Boolean);
+  const fallbackCandidate = pathSegments[pathSegments.length - 1] || '';
+  return VIEWER_SLUG_REGEX.test(fallbackCandidate) ? fallbackCandidate : null;
 }
 
 export default function ModelDeliveryModal({
@@ -50,20 +73,10 @@ export default function ModelDeliveryModal({
   const existingViewerSlug = useMemo(() => {
     const d = selectedProject?.delivery;
     if (!d) return null;
-    const slug = d.viewerSlug || d.viewer_slug;
-    if (typeof slug === 'string' && slug.trim()) return slug.trim();
+    const fromDelivery = normalizeViewerSlug(d.viewerSlug || d.viewer_slug);
+    if (fromDelivery) return fromDelivery;
     const link = d.modelLink || d.model_link || selectedProject?.modelLink;
-    if (typeof link === 'string' && link.startsWith('http')) {
-      try {
-        const path = new URL(link).pathname;
-        const segments = path.split('/').filter(Boolean);
-        const last = segments[segments.length - 1];
-        if (last) return last;
-      } catch {
-        /* ignore */
-      }
-    }
-    return null;
+    return normalizeViewerSlug(link);
   }, [selectedProject]);
 
   const existingModelLink = useMemo(() => {
@@ -159,12 +172,18 @@ export default function ModelDeliveryModal({
       const publishResult = await publishViewer({
         title,
         file: viewerFile,
+        mode: isUpdate ? 'update' : 'create',
         ...(isUpdate ? { slug: existingViewerSlug! } : {}),
       });
       const finalLink = publishResult.url;
       const viewerSlug = publishResult.slug;
 
       if (isUpdate) {
+        if (!viewerSlug || viewerSlug !== existingViewerSlug) {
+          throw new Error(
+            `Update did not target the existing viewer slug (${existingViewerSlug}).`
+          );
+        }
         setSuccessState({ messageId: 'updated', updated: true });
       } else {
         const response = await sendDelivery({
