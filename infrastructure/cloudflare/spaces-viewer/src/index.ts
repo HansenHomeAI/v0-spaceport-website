@@ -48,13 +48,46 @@ function jsonResponse(status: number, body: Record<string, unknown>) {
   });
 }
 
+const SLUG_MAX_LENGTH = 64;
+const VALID_SLUG_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
+const PUBLISH_MODES = ['create', 'update'] as const;
+type PublishMode = (typeof PUBLISH_MODES)[number];
+
+function isValidSlug(slug: string): boolean {
+  if (!slug || typeof slug !== 'string') return false;
+  const trimmed = slug.trim();
+  return trimmed.length >= 1 && trimmed.length <= SLUG_MAX_LENGTH && VALID_SLUG_REGEX.test(trimmed);
+}
+
+function normalizeRequestedSlug(rawValue: unknown): string {
+  if (typeof rawValue !== 'string') return '';
+  const trimmed = rawValue.trim();
+  if (!trimmed) return '';
+  if (isValidSlug(trimmed)) return trimmed;
+
+  // Accept URL/path-like inputs and normalize them to a slug.
+  try {
+    const parsed = new URL(trimmed);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    const candidate = segments[segments.length - 1] || '';
+    if (isValidSlug(candidate)) return candidate;
+  } catch {
+    // Continue with path-like parsing below.
+  }
+
+  const withoutQuery = trimmed.split('?')[0].split('#')[0];
+  const pathSegments = withoutQuery.split('/').filter(Boolean);
+  const fallbackCandidate = pathSegments[pathSegments.length - 1] || '';
+  return isValidSlug(fallbackCandidate) ? fallbackCandidate : '';
+}
+
 function normalizeSlug(input: string): string {
   const cleaned = input
     .toLowerCase()
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 64);
+    .slice(0, SLUG_MAX_LENGTH);
   return cleaned || 'model';
 }
 
@@ -239,6 +272,8 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const formData = await request.formData();
   const titleRaw = formData.get('title');
   const file = formData.get('file');
+  const slugRaw = formData.get('slug');
+  const modeRaw = formData.get('mode');
 
   if (!file || !(file instanceof File)) {
     return jsonResponse(400, { error: 'Missing HTML file upload' });
@@ -250,7 +285,43 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
 
   const title = typeof titleRaw === 'string' ? titleRaw.trim() : '';
   const baseSlug = normalizeSlug(title || file.name || 'model');
-  const slug = await findAvailableSlug(env, baseSlug);
+  const requestedModeRaw = typeof modeRaw === 'string' ? modeRaw.trim().toLowerCase() : '';
+  let requestedMode: PublishMode | null = null;
+  if (requestedModeRaw) {
+    if (PUBLISH_MODES.includes(requestedModeRaw as PublishMode)) {
+      requestedMode = requestedModeRaw as PublishMode;
+    } else {
+      return jsonResponse(400, { error: 'Invalid publish mode' });
+    }
+  }
+
+  const slugProvided = typeof slugRaw === 'string' && slugRaw.trim().length > 0;
+  const targetSlug = normalizeRequestedSlug(slugRaw);
+  if (slugProvided && !targetSlug) {
+    return jsonResponse(400, { error: 'Invalid slug' });
+  }
+  if (requestedMode === 'update' && !targetSlug) {
+    return jsonResponse(400, { error: 'Slug is required when mode=update' });
+  }
+
+  let slug: string;
+  let updatedExisting = false;
+  if (targetSlug) {
+    const key = `models/${targetSlug}/index.html`;
+    const existing = await env.SPACES_BUCKET.head(key);
+    if (requestedMode === 'create' && existing) {
+      return jsonResponse(409, { error: 'Slug already exists; choose a different title or use update mode' });
+    }
+    if (requestedMode === 'update' && !existing) {
+      return jsonResponse(404, { error: 'Target slug does not exist; cannot update' });
+    }
+
+    slug = targetSlug;
+    updatedExisting = Boolean(existing);
+  } else {
+    slug = await findAvailableSlug(env, baseSlug);
+  }
+
   const key = `models/${slug}/index.html`;
 
   await env.SPACES_BUCKET.put(key, await file.arrayBuffer(), {
@@ -263,7 +334,7 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const baseUrl = buildBaseUrl(env, request);
   const viewerUrl = `${baseUrl}/${slug}`;
 
-  return jsonResponse(200, { ok: true, slug, url: viewerUrl });
+  return jsonResponse(200, { ok: true, slug, url: viewerUrl, updated: updatedExisting });
 }
 
 async function handleViewer(request: Request, env: Env, pathname: string): Promise<Response> {

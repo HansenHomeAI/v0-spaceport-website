@@ -647,6 +647,12 @@ class AuthStack(Stack):
                 "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
                 "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
                 "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
+                "SPACES_VIEWER_BASE_URL": os.environ.get("SPACES_VIEWER_BASE_URL", "https://spcprt.com/spaces"),
+                "R2_ENDPOINT": os.environ.get(f"R2_ENDPOINT_{suffix.upper()}", os.environ.get("R2_ENDPOINT", "")),
+                "R2_ACCESS_KEY_ID": os.environ.get(f"R2_ACCESS_KEY_ID_{suffix.upper()}", os.environ.get("R2_ACCESS_KEY_ID", "")),
+                "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
+                "R2_BUCKET_NAME": os.environ.get(f"R2_BUCKET_NAME_{suffix.upper()}", os.environ.get("R2_BUCKET_NAME", "spaces-viewers")),
+                "R2_REGION": os.environ.get(f"R2_REGION_{suffix.upper()}", os.environ.get("R2_REGION", "auto")),
             },
         )
 
@@ -694,6 +700,13 @@ class AuthStack(Stack):
         )
 
         model_delivery_resource.add_resource("send").add_method(
+            "POST",
+            apigw.LambdaIntegration(model_delivery_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=model_delivery_authorizer,
+        )
+
+        model_delivery_resource.add_resource("update-viewer").add_method(
             "POST",
             apigw.LambdaIntegration(model_delivery_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,

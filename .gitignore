@@ -73,6 +73,7 @@ tests/pipeline/*.log
 logs/*.png
 logs/*.jpg
 logs/*.jpeg
+logs/git-corrupt-pack-backup/
 .next/
 .vercel/
 web/.next/

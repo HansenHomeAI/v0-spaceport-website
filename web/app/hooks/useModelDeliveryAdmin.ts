@@ -29,6 +29,7 @@ export type ResolveClientResponse = {
 export type PublishViewerResponse = {
   url: string;
   slug: string;
+  updated?: boolean;
 };
 
 type PermissionState = {
@@ -79,6 +80,7 @@ export function useModelDeliveryAdmin() {
         check: '',
         resolve: '',
         send: '',
+        updateViewer: '',
       } as const;
     }
 
@@ -86,6 +88,7 @@ export function useModelDeliveryAdmin() {
       check: `${base}/admin/model-delivery/check-permission`,
       resolve: `${base}/admin/model-delivery/resolve-client`,
       send: `${base}/admin/model-delivery/send`,
+      updateViewer: `${base}/admin/model-delivery/update-viewer`,
     } as const;
   }, []);
 
@@ -200,7 +203,35 @@ export function useModelDeliveryAdmin() {
     }
   }, [endpoints.send]);
 
-  const publishViewer = useCallback(async (payload: { title: string; file: File; }): Promise<PublishViewerResponse> => {
+  const publishViewer = useCallback(async (payload: { title: string; file: File; slug?: string; mode?: 'create' | 'update' }): Promise<PublishViewerResponse> => {
+    const mode = payload.mode || 'create';
+    if (mode === 'update' && !payload.slug?.trim()) {
+      throw new Error('Viewer slug is required to update existing content.');
+    }
+
+    if (mode === 'update') {
+      if (!endpoints.updateViewer) {
+        throw new Error('Model delivery API is not configured for viewer updates');
+      }
+
+      const html = await payload.file.text();
+      const response = await authorizedFetch(endpoints.updateViewer, {
+        method: 'POST',
+        body: JSON.stringify({
+          title: payload.title,
+          slug: payload.slug?.trim(),
+          html,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || `Failed to update existing viewer (${response.status})`);
+      }
+
+      return data as PublishViewerResponse;
+    }
+
     const publishUrl = buildApiUrl.spacesViewer.publish();
     if (!publishUrl) {
       throw new Error('Spaces viewer is not configured');
@@ -210,6 +241,10 @@ export function useModelDeliveryAdmin() {
     const formData = new FormData();
     formData.append('title', payload.title);
     formData.append('file', payload.file);
+    formData.append('mode', mode);
+    if (payload.slug?.trim()) {
+      formData.append('slug', payload.slug.trim());
+    }
 
     const response = await fetch(publishUrl, {
       method: 'POST',
@@ -225,7 +260,7 @@ export function useModelDeliveryAdmin() {
     }
 
     return data as PublishViewerResponse;
-  }, []);
+  }, [endpoints.updateViewer]);
 
   useEffect(() => {
     checkPermission();

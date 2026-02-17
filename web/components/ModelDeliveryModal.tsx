@@ -14,8 +14,31 @@ interface ModelDeliveryModalProps {
   onClose: () => void;
   resolveClient: (email: string) => Promise<ResolveClientResponse>;
   sendDelivery: (payload: { clientEmail: string; projectId: string; modelLink: string; projectTitle?: string; viewerSlug?: string; viewerTitle?: string }) => Promise<any>;
-  publishViewer: (payload: { title: string; file: File }) => Promise<PublishViewerResponse>;
+  publishViewer: (payload: { title: string; file: File; slug?: string; mode?: 'create' | 'update' }) => Promise<PublishViewerResponse>;
   onDelivered: (project: Record<string, any>) => void;
+}
+
+const VIEWER_SLUG_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
+
+function normalizeViewerSlug(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (VIEWER_SLUG_REGEX.test(trimmed)) return trimmed;
+
+  try {
+    const parsed = new URL(trimmed);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    const candidate = segments[segments.length - 1] || '';
+    if (VIEWER_SLUG_REGEX.test(candidate)) return candidate;
+  } catch {
+    // Fall back to path-like parsing below.
+  }
+
+  const withoutQuery = trimmed.split('?')[0].split('#')[0];
+  const pathSegments = withoutQuery.split('/').filter(Boolean);
+  const fallbackCandidate = pathSegments[pathSegments.length - 1] || '';
+  return VIEWER_SLUG_REGEX.test(fallbackCandidate) ? fallbackCandidate : null;
 }
 
 export default function ModelDeliveryModal({
@@ -36,10 +59,31 @@ export default function ModelDeliveryModal({
   const [viewerFile, setViewerFile] = useState<File | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [successState, setSuccessState] = useState<{ messageId: string } | null>(null);
+  const [successState, setSuccessState] = useState<{ messageId: string; updated?: boolean } | null>(null);
   const [loadingClient, setLoadingClient] = useState(false);
   const [sending, setSending] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [updateAtExistingLink, setUpdateAtExistingLink] = useState(false);
+
+  const selectedProject = useMemo(
+    () => projects.find((p) => p.projectId === selectedProjectId) || null,
+    [projects, selectedProjectId]
+  );
+
+  const existingViewerSlug = useMemo(() => {
+    const d = selectedProject?.delivery;
+    if (!d) return null;
+    const fromDelivery = normalizeViewerSlug(d.viewerSlug || d.viewer_slug);
+    if (fromDelivery) return fromDelivery;
+    const link = d.modelLink || d.model_link || selectedProject?.modelLink;
+    return normalizeViewerSlug(link);
+  }, [selectedProject]);
+
+  const existingModelLink = useMemo(() => {
+    const d = selectedProject?.delivery;
+    const link = d?.modelLink || d?.model_link || selectedProject?.modelLink;
+    return typeof link === 'string' && link.startsWith('http') ? link : null;
+  }, [selectedProject]);
 
   useEffect(() => {
     if (!open) return;
@@ -52,12 +96,20 @@ export default function ModelDeliveryModal({
     setLookupError(null);
     setSubmissionError(null);
     setSuccessState(null);
+    setUpdateAtExistingLink(false);
   }, [open]);
 
-  const selectedProject = useMemo(
-    () => projects.find((p) => p.projectId === selectedProjectId) || null,
-    [projects, selectedProjectId]
-  );
+  useEffect(() => {
+    if (existingViewerSlug && selectedProject) {
+      const d = selectedProject.delivery;
+      const title = d?.viewerTitle || d?.viewer_title;
+      if (typeof title === 'string' && title.trim()) {
+        setPreferredTitle(title.trim());
+      } else {
+        setPreferredTitle(existingViewerSlug);
+      }
+    }
+  }, [existingViewerSlug, selectedProject?.projectId]);
 
   const handleLookup = useCallback(async () => {
     if (!clientEmail.trim()) {
@@ -99,8 +151,15 @@ export default function ModelDeliveryModal({
       return;
     }
 
-    if (!preferredTitle.trim()) {
+    const title = preferredTitle.trim();
+    if (!title) {
       setSubmissionError('Preferred URL title is required.');
+      return;
+    }
+
+    const isUpdate = updateAtExistingLink && Boolean(existingViewerSlug);
+    if (updateAtExistingLink && !existingViewerSlug) {
+      setSubmissionError('Cannot update: no existing viewer slug for this project.');
       return;
     }
 
@@ -109,37 +168,47 @@ export default function ModelDeliveryModal({
     setSuccessState(null);
 
     try {
-      let viewerSlug: string | undefined;
       setPublishing(true);
       const publishResult = await publishViewer({
-        title: preferredTitle.trim(),
+        title,
         file: viewerFile,
+        mode: isUpdate ? 'update' : 'create',
+        ...(isUpdate ? { slug: existingViewerSlug! } : {}),
       });
       const finalLink = publishResult.url;
-      viewerSlug = publishResult.slug;
+      const viewerSlug = publishResult.slug;
 
-      const response = await sendDelivery({
-        clientEmail: client.email,
-        projectId: selectedProjectId,
-        modelLink: finalLink,
-        projectTitle: selectedProject?.title,
-        viewerSlug,
-        viewerTitle: preferredTitle.trim() || undefined,
-      });
+      if (isUpdate) {
+        if (!viewerSlug || viewerSlug !== existingViewerSlug) {
+          throw new Error(
+            `Update did not target the existing viewer slug (${existingViewerSlug}).`
+          );
+        }
+        setSuccessState({ messageId: 'updated', updated: true });
+      } else {
+        const response = await sendDelivery({
+          clientEmail: client.email,
+          projectId: selectedProjectId,
+          modelLink: finalLink,
+          projectTitle: selectedProject?.title,
+          viewerSlug,
+          viewerTitle: title || undefined,
+        });
 
-      const deliveredProject = response?.project as ModelDeliveryProject | undefined;
-      if (deliveredProject) {
-        onDelivered(deliveredProject);
+        const deliveredProject = response?.project as ModelDeliveryProject | undefined;
+        if (deliveredProject) {
+          onDelivered(deliveredProject);
+        }
+
+        setSuccessState({ messageId: response?.messageId || 'unknown' });
       }
-
-      setSuccessState({ messageId: response?.messageId || 'unknown' });
     } catch (error: any) {
       setSubmissionError(error?.message || 'Unable to send model link');
     } finally {
       setSending(false);
       setPublishing(false);
     }
-  }, [client, onDelivered, preferredTitle, publishViewer, selectedProject, selectedProjectId, sendDelivery, viewerFile]);
+  }, [client, existingViewerSlug, onDelivered, preferredTitle, publishViewer, selectedProject, selectedProjectId, sendDelivery, updateAtExistingLink, viewerFile]);
 
   if (!open) return null;
 
@@ -221,6 +290,26 @@ export default function ModelDeliveryModal({
             ))}
           </select>
 
+          {existingViewerSlug && existingModelLink && (
+            <div className="model-delivery-existing-link">
+              <p className="model-delivery-label">Existing link for this project</p>
+              <p className="model-delivery-link-display" title={existingModelLink}>
+                <a href={existingModelLink} target="_blank" rel="noopener noreferrer">
+                  {existingModelLink}
+                </a>
+              </p>
+              <label className="model-delivery-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={updateAtExistingLink}
+                  onChange={(e) => setUpdateAtExistingLink(e.target.checked)}
+                  className="model-delivery-checkbox"
+                />
+                Update content at this link (keep same URL)
+              </label>
+            </div>
+          )}
+
           <label className="model-delivery-label" htmlFor="preferred-title-input">
             Preferred URL Title
           </label>
@@ -258,8 +347,14 @@ export default function ModelDeliveryModal({
           {submissionError && <p className="model-delivery-error" role="alert">{submissionError}</p>}
           {successState && (
             <div className="model-delivery-success" role="status">
-              <p>Model link sent successfully.</p>
-              <p className="model-delivery-meta">Resend message ID: {successState.messageId}</p>
+              {successState.updated ? (
+                <p>Content updated at existing link.</p>
+              ) : (
+                <>
+                  <p>Model link sent successfully.</p>
+                  <p className="model-delivery-meta">Resend message ID: {successState.messageId}</p>
+                </>
+              )}
             </div>
           )}
 
@@ -276,7 +371,7 @@ export default function ModelDeliveryModal({
               className="model-delivery-primary"
               disabled={sending || publishing || !client || !selectedProjectId || !viewerFile || !preferredTitle.trim()}
             >
-              {sending ? 'Sending…' : publishing ? 'Publishing…' : 'Send to client'}
+              {sending ? 'Sending…' : publishing ? 'Publishing…' : updateAtExistingLink ? 'Update content' : 'Send to client'}
             </button>
           </div>
         </form>

@@ -1,4 +1,7 @@
 2026-02-08 - Cognito preview secrets updated for staging
 2026-02-10 - Fix shape-viewer black canvas (camera far/controls)
+2026-02-16 - Cognito PREVIEW secrets verified and updated (us-west-2_VuNwiNkPC)
 2026-02-10 - Add extra midpoints for 1-2 battery shape circularity
 2026-02-11 - Harden mapbox module import in create modal
+2026-02-17 - Harden existing-link update flow for spaces viewer and add regression coverage
+2026-02-17 - Route existing-link viewer updates through model-delivery admin API (R2 direct)
