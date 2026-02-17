@@ -1,0 +1,37 @@
+name: Deploy Spaces Viewer Worker
+
+on:
+  push:
+    branches:
+      - development
+      - "agent-*"
+    paths:
+      - "infrastructure/cloudflare/spaces-viewer/**"
+      - ".github/workflows/deploy-spaces-viewer-worker.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Wrangler
+        run: npm i -g wrangler@4
+
+      - name: Deploy spaces-viewer worker
+        working-directory: infrastructure/cloudflare/spaces-viewer
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          wrangler deploy
