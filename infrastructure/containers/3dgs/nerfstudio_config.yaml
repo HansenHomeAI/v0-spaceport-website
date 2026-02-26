@@ -5,7 +5,7 @@
 # Model Configuration (Vincent Woo's exact setup)
 model:
   variant: "splatfacto-big"           # Vincent used splatfacto-big for maximum quality
-  sh_degree: 4                       # Ablation: higher SH capacity for view-dependent detail
+  sh_degree: 3                       # Industry standard: 16 coefficients (4^2)
   bilateral_processing: true         # Vincent's key innovation for exposure correction
   max_num_gaussians: 1500000         # Conservative limit for A10G GPU (16GB VRAM)
 
