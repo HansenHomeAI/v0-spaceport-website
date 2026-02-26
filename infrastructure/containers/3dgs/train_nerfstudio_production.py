@@ -670,12 +670,15 @@ class NerfStudioTrainer:
         sh_degree = model_config.get('sh_degree', 3)  # Industry standard (Vincent's setting)
         bilateral_processing = model_config.get('bilateral_processing', True)  # Vincent's key innovation
         log_interval = training_config.get('log_interval', 100)
+        quality_config = self.config.get('advanced', {}).get('quality_enhancement', {})
+        scale_regularization = quality_config.get('scale_regularization', False)
         
         logger.info(f"🎯 Training Configuration (Vincent Woo's methodology):")
         logger.info(f"   Model: {model_variant}")
         logger.info(f"   Max iterations: {max_iterations}")
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
+        logger.info(f"   Scale regularization: {scale_regularization}")
         logger.info(f"   Log interval: {log_interval}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
         
@@ -698,6 +701,10 @@ class NerfStudioTrainer:
             logger.info("🌈 Bilateral guided processing enabled (--pipeline.model.use-bilateral-grid True)")
         else:
             logger.info("⚠️  Bilateral guided processing disabled")
+
+        if scale_regularization:
+            cmd.extend(["--pipeline.model.use-scale-regularization", "True"])
+            logger.info("🧩 Scale regularization enabled (--pipeline.model.use-scale-regularization True)")
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
