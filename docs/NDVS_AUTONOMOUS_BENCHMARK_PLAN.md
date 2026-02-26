@@ -40,6 +40,12 @@ Updated: 2026-02-26
 
 ## Suggested Commands
 ```bash
+# 0) Deterministic CI trigger on feature branches (avoids workflow_dispatch 404 when workflow is not on default)
+printf 'ndvs control9 progress %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > benchmarks/ndvs/trigger-run.txt
+git add benchmarks/ndvs/trigger-run.txt
+git commit -m "chore: trigger ndvs benchmark gate run"
+git push origin <your-agent-branch>
+
 # 1) Prepare and upload paper-aligned datasets (dry run first)
 python3 scripts/benchmarks/ndvs_dataset_mirror.py \
   --dry-run \
