@@ -702,10 +702,10 @@ class NerfStudioTrainer:
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
         cmd.extend([
-            "--pipeline.model.max-gauss-ratio", "12.0",  # Ablation: modestly increase Gaussian budget for detail
+            "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
             "--viewer.websocket_port", "7007"  # Avoid conflicts
         ])
-        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 12.0)")
+        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
