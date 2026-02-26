@@ -229,6 +229,10 @@ def normalize_tandt_db(
         output_root = normalized_root / dataset_name
         ensure_dir(output_root, dry_run)
         if not source_root.exists():
+            if dry_run:
+                print(f"[dry-run] missing source root: {source_root}")
+                outputs.append(DatasetOutput(dataset_name=dataset_name, local_path=output_root))
+                continue
             raise FileNotFoundError(f"Missing source root: {source_root}")
 
         for scene in export_cfg["scenes"]:
