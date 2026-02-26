@@ -1,0 +1,92 @@
+name: NDVS Benchmark Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      method_name:
+        description: NDVS method name to evaluate
+        required: true
+        default: spaceport
+      subset:
+        description: Scene subset key from benchmarks/ndvs/benchmark_config.json
+        required: true
+        default: control9
+      gate:
+        description: Gate key from benchmarks/ndvs/benchmark_config.json
+        required: true
+        default: progress
+      results_json:
+        description: Path to NDVS results JSON in repo workspace (optional if eval command writes output-dir/ndvs_results.json)
+        required: false
+        default: ""
+      run_command_template:
+        description: Optional command template for per-scene NDVS runs
+        required: false
+        default: ""
+      eval_command:
+        description: Optional command that generates ndvs_results.json
+        required: false
+        default: ""
+      orientation_failures:
+        description: Orientation failure count for gate enforcement
+        required: false
+        default: "0"
+      dry_run:
+        description: Skip command execution and print planned operations
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  ndvs-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run NDVS benchmark gate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          OUT_DIR="logs/ndvs/${{ github.run_id }}-${{ github.run_attempt }}"
+          mkdir -p "$OUT_DIR"
+
+          ARGS=(
+            --method-name "${{ inputs.method_name }}"
+            --subset "${{ inputs.subset }}"
+            --gate "${{ inputs.gate }}"
+            --output-dir "$OUT_DIR"
+            --orientation-failures "${{ inputs.orientation_failures }}"
+          )
+
+          if [ -n "${{ inputs.results_json }}" ]; then
+            ARGS+=( --results-json "${{ inputs.results_json }}" )
+          fi
+
+          if [ -n "${{ inputs.run_command_template }}" ]; then
+            ARGS+=( --run-command-template "${{ inputs.run_command_template }}" )
+          fi
+
+          if [ -n "${{ inputs.eval_command }}" ]; then
+            ARGS+=( --eval-command "${{ inputs.eval_command }}" )
+          fi
+
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS+=( --dry-run )
+          fi
+
+          python3 scripts/benchmarks/run_ndvs_benchmark.py "${ARGS[@]}"
+
+      - name: Upload NDVS artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ndvs-benchmark-${{ github.run_id }}-${{ github.run_attempt }}
+          path: logs/ndvs/

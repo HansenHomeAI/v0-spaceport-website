@@ -27,6 +27,8 @@ Updated: 2026-02-26
 2. NDVS benchmark run:
 - Execute NDVS method runs on defined subsets.
 - Export scene-level result rows containing `method_name`, `dataset_name`, `scene_name`, `psnr`, `ssim`, `lpips`, `time`, `max_gpu_memory`.
+- Orchestrate with `scripts/benchmarks/run_ndvs_benchmark.py` (single command for run + gate).
+- Optional CI driver: `.github/workflows/ndvs-benchmark.yml` (`workflow_dispatch`).
 
 3. Gate evaluation:
 - Run `scripts/benchmarks/ndvs_scorecard.py` against NDVS result rows.
@@ -52,4 +54,11 @@ python3 scripts/benchmarks/ndvs_scorecard.py \
   --strict-scenes \
   --fail-on-gate \
   --output-json logs/ndvs-scorecard-progress.json
+
+# 3) Orchestrate NDVS run + gate (no manual scorecard step)
+python3 scripts/benchmarks/run_ndvs_benchmark.py \
+  --method-name spaceport \
+  --subset control9 \
+  --gate progress \
+  --results-json path/to/ndvs_results.json
 ```
