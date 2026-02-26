@@ -1,1 +1,1 @@
-control9 progress gaussian-splatting 2026-02-26T18:43:20Z
+control9 progress gaussian-splatting ablation-001-scale-regularization 2026-02-26T19:11:18Z
