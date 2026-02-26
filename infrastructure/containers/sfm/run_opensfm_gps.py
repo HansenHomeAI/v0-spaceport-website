@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 import logging
 import zipfile
 import yaml
@@ -172,6 +172,7 @@ class OpenSfMGPSPipeline:
     
     def create_opensfm_config(self) -> None:
         """Create OpenSfM configuration file"""
+        template_config = self.load_config_template()
         base_config = {
             # Feature extraction
             'feature_type': 'SIFT',
@@ -227,10 +228,17 @@ class OpenSfMGPSPipeline:
             'processes': max(4, min(16, os.cpu_count() or 4)),
         }
 
-        config = base_config.copy()
+        # Start from the checked-in template so orientation/alignment defaults are
+        # not silently dropped by runtime config generation.
+        config = template_config.copy()
+        config.update(base_config)
         if not self.has_gps_priors:
             config.update(conservative_overrides)
             logger.info("🧭 Using conservative no-CSV profile for matching/features (lower memory).")
+
+        # Guardrails for the known sideways-splat failure mode.
+        config.setdefault('align_method', 'orientation_prior')
+        config.setdefault('align_orientation_prior', 'vertical')
         
         config_path = self.opensfm_dir / "config.yaml"
         with open(config_path, 'w') as f:
@@ -243,9 +251,39 @@ class OpenSfMGPSPipeline:
             neighbors = config.get('matching_gps_neighbors', 0)
             estimated_pairs = image_count * neighbors
             logger.info(f"📈 Matching plan: images={image_count}, neighbors≈{neighbors}, est. pairs≈{estimated_pairs}")
-            print(f"CONFIG_PROFILE has_gps={self.has_gps_priors} processes={config.get('processes')} neighbors={neighbors} est_pairs={estimated_pairs} feature_process_size={config.get('feature_process_size')} max_features={config.get('feature_max_num_features')} min_frames={config.get('feature_min_frames')}", flush=True)
+            print(
+                "CONFIG_PROFILE "
+                f"has_gps={self.has_gps_priors} "
+                f"processes={config.get('processes')} "
+                f"neighbors={neighbors} "
+                f"est_pairs={estimated_pairs} "
+                f"feature_process_size={config.get('feature_process_size')} "
+                f"max_features={config.get('feature_max_num_features')} "
+                f"min_frames={config.get('feature_min_frames')} "
+                f"align_method={config.get('align_method')} "
+                f"align_orientation_prior={config.get('align_orientation_prior')}",
+                flush=True,
+            )
         except Exception:
             pass
+
+    def load_config_template(self) -> Dict[str, Any]:
+        """Load checked-in OpenSfM config template if available."""
+        template_path = Path(__file__).with_name("config_template.yaml")
+        if not template_path.exists():
+            logger.warning("⚠️ config_template.yaml missing; using runtime defaults only.")
+            return {}
+
+        try:
+            with open(template_path, "r", encoding="utf-8") as handle:
+                data = yaml.safe_load(handle) or {}
+            if not isinstance(data, dict):
+                logger.warning("⚠️ config_template.yaml is not a mapping; ignoring template.")
+                return {}
+            return data
+        except Exception as exc:
+            logger.warning(f"⚠️ Failed to load config template: {exc}")
+            return {}
     
     def copy_images_to_opensfm(self) -> None:
         """Copy images to OpenSfM directory structure"""

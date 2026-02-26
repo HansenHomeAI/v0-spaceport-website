@@ -20,6 +20,7 @@ import sys
 import json
 import yaml
 import time
+import math
 import logging
 import argparse
 import subprocess
@@ -125,6 +126,126 @@ class NerfStudioTrainer:
                 config_section[keys[-1]] = value
                 
                 logger.info(f"📝 Override {config_path} = {value} (from {env_var})")
+
+    @staticmethod
+    def _qvec_to_rotmat(qw: float, qx: float, qy: float, qz: float):
+        """Convert COLMAP quaternion to rotation matrix (world-to-camera)."""
+        return [
+            [
+                1 - 2 * (qy * qy + qz * qz),
+                2 * (qx * qy - qw * qz),
+                2 * (qx * qz + qw * qy),
+            ],
+            [
+                2 * (qx * qy + qw * qz),
+                1 - 2 * (qx * qx + qz * qz),
+                2 * (qy * qz - qw * qx),
+            ],
+            [
+                2 * (qx * qz - qw * qy),
+                2 * (qy * qz + qw * qx),
+                1 - 2 * (qx * qx + qy * qy),
+            ],
+        ]
+
+    @staticmethod
+    def _mat_vec_mul(mat, vec):
+        return [
+            mat[0][0] * vec[0] + mat[0][1] * vec[1] + mat[0][2] * vec[2],
+            mat[1][0] * vec[0] + mat[1][1] * vec[1] + mat[1][2] * vec[2],
+            mat[2][0] * vec[0] + mat[2][1] * vec[1] + mat[2][2] * vec[2],
+        ]
+
+    @staticmethod
+    def _transpose(mat):
+        return [
+            [mat[0][0], mat[1][0], mat[2][0]],
+            [mat[0][1], mat[1][1], mat[2][1]],
+            [mat[0][2], mat[1][2], mat[2][2]],
+        ]
+
+    @staticmethod
+    def _normalize(vec):
+        norm = math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2])
+        if norm < 1e-9:
+            return [0.0, 0.0, 0.0]
+        return [vec[0] / norm, vec[1] / norm, vec[2] / norm]
+
+    def orientation_validation_report(self, images_file: Path, points_file: Path) -> Dict[str, Any]:
+        """Compute orientation diagnostics to catch sideways world frames automatically."""
+        camera_up_vectors = []
+        with open(images_file, 'r') as handle:
+            lines = [line.strip() for line in handle if line.strip() and not line.startswith('#')]
+
+        for idx in range(0, len(lines), 2):
+            parts = lines[idx].split()
+            if len(parts) < 8:
+                continue
+            qw, qx, qy, qz = map(float, parts[1:5])
+            rot_wc = self._qvec_to_rotmat(qw, qx, qy, qz)
+            rot_cw = self._transpose(rot_wc)
+            # COLMAP camera frame has +Y pointing down, so world up is camera -Y transformed to world.
+            up_world = self._mat_vec_mul(rot_cw, [0.0, -1.0, 0.0])
+            camera_up_vectors.append(self._normalize(up_world))
+
+        up_abs_z = 0.0
+        mean_up = [0.0, 0.0, 0.0]
+        if camera_up_vectors:
+            mean_up = [
+                sum(v[0] for v in camera_up_vectors) / len(camera_up_vectors),
+                sum(v[1] for v in camera_up_vectors) / len(camera_up_vectors),
+                sum(v[2] for v in camera_up_vectors) / len(camera_up_vectors),
+            ]
+            mean_up = self._normalize(mean_up)
+            up_abs_z = abs(mean_up[2])
+
+        min_xyz = [float("inf"), float("inf"), float("inf")]
+        max_xyz = [float("-inf"), float("-inf"), float("-inf")]
+        point_count = 0
+        with open(points_file, 'r') as handle:
+            for raw in handle:
+                if not raw.strip() or raw.startswith('#'):
+                    continue
+                parts = raw.split()
+                if len(parts) < 4:
+                    continue
+                x, y, z = map(float, parts[1:4])
+                point_count += 1
+                min_xyz[0] = min(min_xyz[0], x)
+                min_xyz[1] = min(min_xyz[1], y)
+                min_xyz[2] = min(min_xyz[2], z)
+                max_xyz[0] = max(max_xyz[0], x)
+                max_xyz[1] = max(max_xyz[1], y)
+                max_xyz[2] = max(max_xyz[2], z)
+
+        extents = [0.0, 0.0, 0.0]
+        if point_count > 0:
+            extents = [max_xyz[i] - min_xyz[i] for i in range(3)]
+
+        axes = ["x", "y", "z"]
+        smallest_axis = axes[extents.index(min(extents))] if point_count > 0 else "unknown"
+        largest_axis = axes[extents.index(max(extents))] if point_count > 0 else "unknown"
+        up_z_min = float(os.environ.get("ORIENTATION_UP_Z_MIN", "0.35"))
+        min_cameras = int(os.environ.get("ORIENTATION_MIN_CAMERAS", "3"))
+
+        orientation_passed = True
+        reason = "ok"
+        if len(camera_up_vectors) >= min_cameras and up_abs_z < up_z_min:
+            orientation_passed = False
+            reason = f"mean_camera_up_abs_z={up_abs_z:.3f} below threshold={up_z_min:.3f}"
+
+        return {
+            "passed": orientation_passed,
+            "reason": reason,
+            "camera_count": len(camera_up_vectors),
+            "point_count": point_count,
+            "mean_camera_up_world": mean_up,
+            "mean_camera_up_abs_z": up_abs_z,
+            "up_z_min_threshold": up_z_min,
+            "point_extents_xyz": extents,
+            "smallest_extent_axis": smallest_axis,
+            "largest_extent_axis": largest_axis,
+        }
     
     def validate_input_data(self) -> bool:
         """Validate COLMAP data format and convert to NerfStudio format"""
@@ -219,6 +340,25 @@ class NerfStudioTrainer:
         
         if image_file_count < image_count * 0.8:
             logger.error(f"❌ Missing image files: {image_file_count} < {image_count * 0.8}")
+            return False
+
+        try:
+            report = self.orientation_validation_report(images_file, points_file)
+            report_path = self.output_dir / "orientation_report.json"
+            with open(report_path, "w") as handle:
+                json.dump(report, handle, indent=2)
+            logger.info(f"🧭 Orientation report: {report_path}")
+            logger.info(
+                "🧭 Orientation summary: "
+                f"passed={report['passed']} "
+                f"mean_up_abs_z={report['mean_camera_up_abs_z']:.3f} "
+                f"smallest_axis={report['smallest_extent_axis']}"
+            )
+            if not report["passed"]:
+                logger.error(f"❌ Orientation validation failed: {report['reason']}")
+                return False
+        except Exception as exc:
+            logger.error(f"❌ Orientation validation crashed: {exc}")
             return False
         
         logger.info("✅ COLMAP data validation passed - converting to NerfStudio format")
