@@ -1,1 +1,1 @@
-control9 progress gaussian-splatting 2026-02-26T18:43:20Z
+control9 progress gaussian-splatting ablation-004-max-gauss-cap 2026-02-26T21:00:14Z
