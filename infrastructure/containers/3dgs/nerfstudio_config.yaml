@@ -59,7 +59,6 @@ advanced:
     anti_aliasing: true              # Enable anti-aliasing
     depth_consistency: true          # Enforce depth consistency
     normal_regularization: true      # Surface normal regularization
-    scale_regularization: true       # Suppress stretched/spiky gaussians (low compute overhead)
 
 # Production Settings
 production:
