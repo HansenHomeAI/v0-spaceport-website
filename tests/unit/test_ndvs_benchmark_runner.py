@@ -91,3 +91,37 @@ def test_run_ndvs_benchmark_executes_gate_successfully(tmp_path: Path):
     assert scorecard_file.exists()
     scorecard = json.loads(scorecard_file.read_text(encoding="utf-8"))
     assert scorecard["gate"]["passed"] is True
+
+
+def test_run_ndvs_benchmark_dry_run_without_results_file(tmp_path: Path):
+    config = {
+        "scene_subsets": {"control9": ["mipnerf360/garden"]},
+        "gates": {"progress": {"subset": "control9", "minimums": {"psnr": 0.0}}},
+    }
+    config_path = tmp_path / "config.json"
+    output_dir = tmp_path / "ndvs-out"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+
+    cmd = [
+        sys.executable,
+        "scripts/benchmarks/run_ndvs_benchmark.py",
+        "--config",
+        str(config_path),
+        "--method-name",
+        "spaceport",
+        "--subset",
+        "control9",
+        "--gate",
+        "progress",
+        "--output-dir",
+        str(output_dir),
+        "--dry-run",
+    ]
+    completed = subprocess.run(
+        cmd,
+        cwd=_repo_root(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr or completed.stdout

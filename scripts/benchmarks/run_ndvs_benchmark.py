@@ -161,16 +161,20 @@ def main() -> int:
 
     results_json = args.results_json
     if results_json is None:
-        if not args.eval_command:
+        if args.dry_run and not args.eval_command:
+            results_json = args.output_dir / "ndvs_results.json"
+            print("Dry-run mode: skipping results JSON requirement.")
+        elif not args.eval_command:
             raise ValueError("--results-json is required when --eval-command is not provided.")
-        eval_command = args.eval_command.format(
-            method=args.method_name,
-            subset=args.subset,
-            output_dir=args.output_dir,
-        )
-        run_shell(eval_command, args.dry_run)
-        # Convention: eval command writes this file.
-        results_json = args.output_dir / "ndvs_results.json"
+        else:
+            eval_command = args.eval_command.format(
+                method=args.method_name,
+                subset=args.subset,
+                output_dir=args.output_dir,
+            )
+            run_shell(eval_command, args.dry_run)
+            # Convention: eval command writes this file.
+            results_json = args.output_dir / "ndvs_results.json"
 
     if not args.dry_run and not results_json.exists():
         raise FileNotFoundError(f"NDVS results JSON not found: {results_json}")
