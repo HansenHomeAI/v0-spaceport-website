@@ -13,5 +13,6 @@
 - Change: densification `interval` decreased from `90` to `80`.
 - Rationale: test whether more frequent densification improves fine-detail reconstruction.
 - NDVS run: `22476397336` (success) — https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/22476397336
+- Trigger ML run: `22476397349` (success) — https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/22476397349
 - Gate: `parity` passed.
 - Metrics delta vs control9 baseline: `psnr +0.0000`, `ssim +0.0000`, `lpips +0.0000`, `time +0.0000`.
