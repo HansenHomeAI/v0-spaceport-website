@@ -61,7 +61,10 @@ Suggested environment variables (placeholders):
 
 IAM (placeholder policy scope):
 
-- `s3:GetObject`, `s3:PutObject`, `s3:ListBucket` on benchmark bucket prefixes
+- `s3:PutObject` on:
+  - `arn:aws:s3:::<benchmark-bucket>/<prefix>/raw/*`
+  - `arn:aws:s3:::<benchmark-bucket>/<prefix>/manifests/*`
+- Optional: `s3:ListBucket` on `arn:aws:s3:::<benchmark-bucket>` (for preflight/list checks)
 - CloudWatch logs write permissions
 - If using SageMaker Processing, execution role trust + processing job permissions
 
@@ -69,6 +72,20 @@ ECR:
 
 - Store ingestion image in project ECR repository (placeholder: `<account>.dkr.ecr.<region>.amazonaws.com/spaceport-bench-ingest:<tag>`)
 - Image should include Python runtime and `scripts/bench/` files
+
+Local upload run example (using AWS CLI profile):
+
+```bash
+python3 scripts/bench/ingest_to_s3.py \
+  --dataset mipnerf360 \
+  --scene garden \
+  --output-dir /tmp/bench_ingest \
+  --bucket spaceport-ml-benchmarks \
+  --prefix benchmarks/dev \
+  --region us-east-1 \
+  --profile my-profile \
+  --upload
+```
 
 ## Compute Sizing (Placeholders)
 
