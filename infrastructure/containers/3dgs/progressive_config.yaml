@@ -89,7 +89,7 @@ gaussian_management:
     max_screen_size: 20              # Maximum screen size
   
   # Opacity management
-  opacity_reset_interval: 3000       # Reset low-opacity Gaussians every 3000 iterations
+  opacity_reset_interval: 2800       # Ablation-008: slightly more frequent opacity resets
     
   # Late densification recovery (Trick-GS innovation)
   late_densification:
