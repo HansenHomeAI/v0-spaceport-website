@@ -77,7 +77,7 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             METHOD_NAME="gaussian-splatting"
             SUBSET="control9"
-            GATE="progress"
+            GATE="parity"
             RESULTS_JSON_INPUT=""
             RUN_COMMAND_TEMPLATE=""
             EVAL_COMMAND="python3 scripts/benchmarks/fetch_ndvs_results.py --output-json {output_dir}/ndvs_results.json"
