@@ -12,4 +12,6 @@
 - Branch: `agent-90547182-phase5-densify-interval`
 - Change: densification `interval` decreased from `90` to `80`.
 - Rationale: test whether more frequent densification improves fine-detail reconstruction.
-- NDVS run: pending trigger
+- NDVS run: `22476397336` (success) — https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/22476397336
+- Gate: `parity` passed.
+- Metrics delta vs control9 baseline: `psnr +0.0000`, `ssim +0.0000`, `lpips +0.0000`, `time +0.0000`.
