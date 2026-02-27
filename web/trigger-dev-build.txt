@@ -1,9 +1,4 @@
-Cesium integration trigger 2025-10-06T17:09:32Z
-1:32pm
-Dynamic path radius scaling 2025-10-13T16:25:00Z
-Single-slice quarter midpoints 2025-10-13T21:14:45Z
-Single-slice triple midpoints 2025-10-13T21:28:59Z
-Single-slice sixth midpoints 2025-10-13T22:17:54Z
-Hold mid adjustments 2025-10-13T22:33:19Z
-Production Lambda sync 2025-10-13T23:53:00Z
-SOGS viewer enablement 2025-11-20T13:40:09Z
+2026-02-08 - Cognito preview secrets updated for staging
+2026-02-10 - Fix shape-viewer black canvas (camera far/controls)
+2026-02-10 - Add extra midpoints for 1-2 battery shape circularity
+2026-02-11 - Harden mapbox module import in create modal

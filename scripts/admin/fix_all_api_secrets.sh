@@ -54,6 +54,7 @@ declare -A API_URLS=(
     ["PASSWORD_RESET_API_URL_PREVIEW"]="https://mx549qsbel.execute-api.us-west-2.amazonaws.com/prod"
     ["INVITE_API_URL_PREVIEW"]="https://xtmhni13l2.execute-api.us-west-2.amazonaws.com/prod"
     ["BETA_ACCESS_API_URL_PREVIEW"]="https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod"
+    ["MODEL_DELIVERY_ADMIN_API_URL_PREVIEW"]="https://tbzxbstibh.execute-api.us-west-2.amazonaws.com/prod"
     ["SUBSCRIPTION_API_URL_PREVIEW"]="https://xduxbyklm1.execute-api.us-west-2.amazonaws.com/prod"
     ["ML_PIPELINE_API_URL_PREVIEW"]="https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod"
 )

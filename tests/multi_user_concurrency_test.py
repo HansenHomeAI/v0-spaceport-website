@@ -21,6 +21,7 @@ import concurrent.futures
 from typing import Dict, List, Tuple
 import boto3
 from datetime import datetime
+from preview_config import resolve_drone_api, resolve_projects_api
 
 class MultiUserConcurrencyTest:
     """Test multi-user scenarios and concurrency"""
@@ -28,8 +29,12 @@ class MultiUserConcurrencyTest:
     def __init__(self):
         """Initialize test with production endpoints"""
         
-        self.projects_api = 'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects'
-        self.drone_api = 'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod'
+        self.projects_api = resolve_projects_api(
+            'https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/projects'
+        )
+        self.drone_api = resolve_drone_api(
+            'https://7bidiow2t9.execute-api.us-west-2.amazonaws.com/prod'
+        )
         
         # AWS resources
         self.region = 'us-west-2'

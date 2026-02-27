@@ -77,7 +77,7 @@ def test_repeated_email():
         return False
 
 if __name__ == "__main__":
-    print("🚀 Spaceport AI - Repeated Email Test")
+    print("🚀 Spaceport - Repeated Email Test")
     print("=" * 60)
     print()
     

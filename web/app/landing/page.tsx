@@ -1,18 +1,13 @@
+import HeroCarousel from './HeroCarousel';
+import FAQ from '../../components/FAQ';
+import TeamSection from '../../components/TeamSection';
+
 export const runtime = 'edge';
 
 export default function Landing(): JSX.Element {
   return (
     <>
-      <section className="section" id="landing">
-        <iframe className="landing-iframe" src="https://hansenhomeai.github.io/WebbyDeerKnoll/" />
-        <div id="iframe-overlay" />
-        <div className="landing-content">
-          <h1>Location. Visualized in 3D.</h1>
-          <a href="/create" className="cta-button">
-            Join waitlist
-          </a>
-        </div>
-      </section>
+      <HeroCarousel />
 
       {/* Logos carousel (client logos, seamless loop) */}
       <section className="section" id="landing-carousel">
@@ -44,12 +39,11 @@ export default function Landing(): JSX.Element {
       {/* Additional value prop (legacy: landing-additional) */}
       <section className="section two-col-section" id="landing-additional">
         <div className="two-col-content">
-          <h2>Show what matters most to buyers.</h2>
+          <h2>Built for innovative brokerages.</h2>
           <div className="right-col">
-            <p>Captivate buyers for longer with interactive 3D models that capture not just a building, but its location. View your property as if you&apos;re right there—feeling the neighborhood and natural flow around it.</p>
-            <a href="https://deer-knoll-dr.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
-              View example
+            <p>Give buyers the clearest understanding of the listing. Less time on market, and much more convenient.</p>
+            <a href="/create" className="cta-button2-fixed">
+              Join waitlist
             </a>
           </div>
         </div>
@@ -60,41 +54,44 @@ export default function Landing(): JSX.Element {
         <h2>Virtual experiences work.</h2>
         <div className="stats-grid">
           <div className="stat-box">
-            <h1>95%</h1>
-            <p>Are more likely to contact listings with 3D tours.</p>
+            <h1>87%</h1>
+            <p>More listing views generated via 3D tours.</p>
           </div>
           <div className="stat-box">
-            <h1>99%</h1>
-            <p>See 3D tours as a competitive edge.</p>
+            <h1>31%</h1>
+            <p>Faster sales achieved with 3D tours.</p>
           </div>
           <div className="stat-box">
-            <h1>82%</h1>
-            <p>Consider switching agents if a 3D tour is offered.</p>
+            <h1>10x</h1>
+            <p>Higher engagement than standard photos.</p>
           </div>
         </div>
-        <p className="stats-source">National Association of Realtors</p>
+        <p className="stats-source">Sources: Redfin, Matterport & NAR (2024-2025)</p>
       </section>
 
       {/* More sections from legacy */}
-      <section className="section two-col-section" id="landing-more">
+      <section className="section two-col-section" id="landing-more2">
         <div className="two-col-content">
-          <h2>The future of property listings.</h2>
+          <h2>Works with most DJI drones.</h2>
           <div className="right-col">
-            <p>Photos and 3D tours only show parts of a property—never the full picture. We create interactive models that let you explore the land, surroundings, and location in a way <span className="inline-white">no photo or video can match.</span></p>
-            <a href="https://dolan-road.hansentour.com" className="cta-button2-fixed with-symbol" target="_blank">
-              <img src="/assets/SpaceportIcons/3D.svg" className="symbol-3d" alt="" aria-hidden="true" />
-              View example
-            </a>
+            <p>Creating your 3D tour is effortless. Fly it yourself, or share with your drone photographer.</p>
+            <a href="/create" className="cta-button2-fixed">Create your own</a>
           </div>
         </div>
       </section>
 
-      <section className="section two-col-section" id="landing-more2">
+      <FAQ />
+
+      <TeamSection />
+
+      <section className="section two-col-section" id="landing-more">
         <div className="two-col-content">
-          <h2>Effortless creation with your drone.</h2>
+          <h2>Seeing is believing.</h2>
           <div className="right-col">
-            <p>Creating your 3D model is effortless. Our system autonomously flies your drone, capturing the perfect shots with zero skill required. Simply upload your photos, and you&apos;ll receive the completed model straight to your inbox.</p>
-            <a href="/create" className="cta-button2-fixed">Create your own</a>
+            <p>Our vision is to create a listing experience better than visiting in-person. Apply to become a select partner as we reimagine real estate for the 3D future.</p>
+            <a href="/create" className="cta-button2-fixed">
+              Join waitlist
+            </a>
           </div>
         </div>
       </section>
@@ -103,3 +100,4 @@ export default function Landing(): JSX.Element {
     </>
   );
 }
+
