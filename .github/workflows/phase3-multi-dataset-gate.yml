@@ -1,0 +1,39 @@
+name: Phase 3 Multi-Dataset Gate
+
+on:
+  workflow_run:
+    workflows:
+      - CDK Deploy
+    types:
+      - completed
+
+jobs:
+  phase3-dry-run-gate:
+    # Phase 3 must execute only after CDK Deploy succeeds.
+    # workflow_run carries the exact branch+sha that CDK Deploy validated.
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout exact SHA validated by CDK Deploy
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+      - name: Verify metrics protocol doc exists
+      run: test -f docs/benchmarks/METRICS_PROTOCOL.md
+
+      - name: Run multi-dataset evaluator dry-run
+      run: |
+        python3 scripts/bench/run_multi_dataset_eval.py \
+          --dry-run \
+          --run-id ci-phase3-${{ github.event.workflow_run.run_number }} \
+          --output-dir /tmp/phase3-metrics
+
+      - name: Verify evaluator output summary
+      run: test -f /tmp/phase3-metrics/ci-phase3-${{ github.event.workflow_run.run_number }}/summary.json
