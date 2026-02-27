@@ -28,3 +28,9 @@
 - Change: `gaussian_management.densification.min_opacity` decreased from `0.005` to `0.0045`.
 - Rationale: slightly less aggressive pruning to preserve faint structure with minimal stability risk.
 - NDVS run: pending trigger
+
+## 2026-02-27 - Iteration 010 - Split Threshold 0.000045
+- Branch: `agent-90547182-phase5-densify-interval`
+- Change: `gaussian_management.densification.split_threshold` decreased from `0.00005` to `0.000045`.
+- Rationale: modestly increases split sensitivity to capture finer structure while staying close to current operating point.
+- NDVS run: pending trigger

@@ -78,7 +78,7 @@ gaussian_management:
       schedule_iterations: 7000
       
     # Advanced densification controls
-    split_threshold: 0.00005         # Threshold for splitting large Gaussians
+    split_threshold: 0.000045        # Ablation-010: slightly lower split threshold to encourage finer Gaussian refinement
     clone_threshold: 0.00002         # Threshold for cloning small Gaussians
     max_gaussians: 2000000           # Maximum number of Gaussians
     adaptive_control: true           # Enable adaptive density control

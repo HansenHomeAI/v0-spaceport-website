@@ -4,3 +4,4 @@ control9 parity gaussian-splatting ablation-006-densify-interval-80 2026-02-27T0
 control9 parity gaussian-splatting ablation-007-grad-threshold-18e6 2026-02-27T10:11:54Z
 control9 parity gaussian-splatting ablation-008-opacity-reset-2800 2026-02-27T11:52:39Z
 control9 parity gaussian-splatting ablation-009-min-opacity-0p0045 2026-02-27T12:22:19Z
+control9 parity gaussian-splatting ablation-010-split-threshold-45e6 2026-02-27T13:00:42Z
