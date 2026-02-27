@@ -9,12 +9,19 @@ on:
 
 jobs:
   phase3-dry-run-gate:
-    # Phase 3 must execute only after CDK Deploy succeeds.
-    # workflow_run carries the exact branch+sha that CDK Deploy validated.
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
     runs-on: ubuntu-latest
-
     steps:
+      - name: Guard on successful push-triggered CDK Deploy
+      env:
+        CDK_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        CDK_EVENT: ${{ github.event.workflow_run.event }}
+      run: |
+        # Phase 3 runs only after a successful CDK Deploy on a push.
+        if [ "$CDK_CONCLUSION" != "success" ] || [ "$CDK_EVENT" != "push" ]; then
+          echo "Skipping Phase 3 gate: conclusion=$CDK_CONCLUSION event=$CDK_EVENT"
+          exit 0
+        fi
+
       - name: Checkout exact SHA validated by CDK Deploy
       uses: actions/checkout@v4
       with:
