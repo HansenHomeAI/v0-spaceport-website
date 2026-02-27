@@ -7,3 +7,9 @@
 - NDVS run: failed `22466479918` (`progress` gate was enforced on push, causing deterministic failures against current gaussian-splatting baseline).
 - Fix: updated `.github/workflows/ndvs-benchmark.yml` so push-triggered NDVS uses `parity` gate for reliability checks.
 - Decision: rerun after gate fix.
+
+## 2026-02-27 - Iteration 006 - Densify Interval 80
+- Branch: `agent-90547182-phase5-densify-interval`
+- Change: densification `interval` decreased from `90` to `80`.
+- Rationale: test whether more frequent densification improves fine-detail reconstruction.
+- NDVS run: pending trigger

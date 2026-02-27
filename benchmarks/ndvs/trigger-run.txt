@@ -1,2 +1,3 @@
 control9 progress gaussian-splatting 2026-02-26T18:43:20Z
 control9 progress gaussian-splatting ablation-005-densify 2026-02-26T23:57:45Z
+control9 parity gaussian-splatting ablation-006-densify-interval-80 2026-02-27T07:03:05Z
