@@ -85,7 +85,7 @@ gaussian_management:
     
     # Size and opacity controls
     size_threshold: 20               # Maximum screen size for densification
-    min_opacity: 0.005               # Minimum opacity threshold
+    min_opacity: 0.0045              # Ablation-009: preserve more faint structure before pruning
     max_screen_size: 20              # Maximum screen size
   
   # Opacity management

@@ -22,3 +22,9 @@
 - Change: `opacity_reset_interval` decreased from `3000` to `2800`.
 - Rationale: slightly earlier opacity refresh may recover useful low-opacity structure with low stability risk.
 - NDVS run: pending trigger
+
+## 2026-02-27 - Iteration 009 - Min Opacity 0.0045
+- Branch: `agent-90547182-phase5-densify-interval`
+- Change: `gaussian_management.densification.min_opacity` decreased from `0.005` to `0.0045`.
+- Rationale: slightly less aggressive pruning to preserve faint structure with minimal stability risk.
+- NDVS run: pending trigger
