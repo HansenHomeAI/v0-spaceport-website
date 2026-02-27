@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "dataset": "mipnerf360",
+  "scene": "garden",
+  "source_url": "TBD_SOURCE_URL_MIPNERF360_GARDEN",
+  "license_url": "TBD_LICENSE_URL_MIPNERF360",
+  "download_timestamp": "2026-02-27T00:00:00Z",
+  "expected_image_dirs": [
+    "images_4"
+  ],
+  "paths": {
+    "raw_download": "benchmarks/sota_local/downloads/mipnerf360/garden/source.zip",
+    "normalized_scene": "benchmarks/sota_local/normalized/mipnerf360/garden"
+  },
+  "reproducibility": {
+    "scene_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "total_files": 2,
+    "total_bytes": 3921,
+    "files": [
+      {
+        "path": "images_4/0001.png",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "size_bytes": 1810
+      },
+      {
+        "path": "images_4/0002.png",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "size_bytes": 2111
+      }
+    ],
+    "image_dirs": {
+      "images_4": {
+        "count": 2,
+        "resolutions": [
+          {
+            "width": 1024,
+            "height": 768,
+            "count": 2
+          }
+        ]
+      }
+    }
+  }
+}
