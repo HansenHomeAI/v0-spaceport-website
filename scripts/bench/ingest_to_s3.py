@@ -28,6 +28,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--prefix", default="", help="Optional S3 prefix (for example: dev/benchmarks).")
     parser.add_argument("--region", default="us-east-1", help="AWS region for upload mode.")
     parser.add_argument("--profile", default=None, help="AWS profile for upload mode.")
+    parser.add_argument(
+        "--previous-manifest",
+        type=Path,
+        default=None,
+        help="Optional prior manifest for local drift checks.",
+    )
 
     parser.add_argument("--source-url", default=None, help="Source URL/path passed to ingest_dataset.py.")
     parser.add_argument("--license-url", default="TBD_LICENSE_URL", help="License URL passed to ingest_dataset.py.")
@@ -81,6 +87,46 @@ def run_ingest_dataset(args: argparse.Namespace, manifest_path: Path) -> None:
     subprocess.run(command, check=True)
 
 
+def compare_manifests(previous: dict, current: dict, dataset: str, scene: str) -> list[str]:
+    mismatches: list[str] = []
+    if previous.get("dataset") != dataset or previous.get("scene") != scene:
+        mismatches.append(
+            "identity mismatch "
+            f"(previous={previous.get('dataset')}/{previous.get('scene')} current={dataset}/{scene})"
+        )
+
+    prev_rep = previous.get("reproducibility", {})
+    curr_rep = current.get("reproducibility", {})
+
+    if prev_rep.get("total_files") != curr_rep.get("total_files"):
+        mismatches.append(
+            f"total_files mismatch (previous={prev_rep.get('total_files')} current={curr_rep.get('total_files')})"
+        )
+
+    prev_files = {item["path"]: item.get("sha256") for item in prev_rep.get("files", [])}
+    curr_files = {item["path"]: item.get("sha256") for item in curr_rep.get("files", [])}
+
+    if sorted(prev_files.keys()) != sorted(curr_files.keys()):
+        prev_only = sorted(set(prev_files.keys()) - set(curr_files.keys()))
+        curr_only = sorted(set(curr_files.keys()) - set(prev_files.keys()))
+        mismatches.append(
+            "file list mismatch "
+            f"(previous_only={prev_only[:5]} current_only={curr_only[:5]})"
+        )
+
+    for path in sorted(set(prev_files.keys()) & set(curr_files.keys())):
+        if prev_files[path] != curr_files[path]:
+            mismatches.append(f"checksum mismatch ({path})")
+            break
+
+    prev_dirs = prev_rep.get("image_dirs", {})
+    curr_dirs = curr_rep.get("image_dirs", {})
+    if prev_dirs != curr_dirs:
+        mismatches.append("resolution/count mismatch (reproducibility.image_dirs)")
+
+    return mismatches
+
+
 def main() -> None:
     args = parse_args()
     args.output_dir = args.output_dir.resolve()
@@ -93,6 +139,16 @@ def main() -> None:
 
     with manifest_path.open("r", encoding="utf-8") as handle:
         manifest = json.load(handle)
+
+    if args.previous_manifest:
+        previous_manifest_path = args.previous_manifest.resolve()
+        with previous_manifest_path.open("r", encoding="utf-8") as handle:
+            previous_manifest = json.load(handle)
+        mismatches = compare_manifests(previous_manifest, manifest, args.dataset, args.scene)
+        if mismatches:
+            for mismatch in mismatches:
+                print(f"drift: {mismatch}")
+            raise SystemExit(2)
 
     raw_download_path = Path(manifest["paths"]["raw_download"])
     source_name = raw_download_path.name
