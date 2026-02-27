@@ -127,6 +127,46 @@ def compare_manifests(previous: dict, current: dict, dataset: str, scene: str) -
     return mismatches
 
 
+def upload_to_s3(
+    *,
+    bucket: str,
+    region: str,
+    profile: str | None,
+    raw_entries: list[tuple[Path, str]],
+    manifest_path: Path,
+    manifest_key: str,
+) -> None:
+    try:
+        import boto3
+        from botocore.exceptions import (
+            ClientError,
+            NoCredentialsError,
+            PartialCredentialsError,
+            ProfileNotFound,
+        )
+    except ModuleNotFoundError:
+        raise SystemExit("upload error: boto3 is not installed. Install boto3 to use --upload.")
+
+    try:
+        session = boto3.Session(profile_name=profile, region_name=region)
+        client = session.client("s3")
+
+        for local_path, key in raw_entries:
+            client.upload_file(str(local_path), bucket, key)
+        client.upload_file(str(manifest_path), bucket, manifest_key)
+    except ProfileNotFound:
+        raise SystemExit(f"upload error: AWS profile not found: {profile}")
+    except (NoCredentialsError, PartialCredentialsError):
+        raise SystemExit("upload error: AWS credentials are missing or incomplete.")
+    except ClientError as exc:
+        code = str(exc.response.get("Error", {}).get("Code", ""))
+        if code in {"AccessDenied", "403"}:
+            raise SystemExit("upload error: S3 access denied (403). Check IAM permissions.")
+        if code in {"NoSuchBucket", "404"}:
+            raise SystemExit(f"upload error: S3 bucket not found: {bucket}")
+        raise SystemExit(f"upload error: {exc}")
+
+
 def main() -> None:
     args = parse_args()
     args.output_dir = args.output_dir.resolve()
@@ -150,12 +190,19 @@ def main() -> None:
                 print(f"drift: {mismatch}")
             raise SystemExit(2)
 
-    raw_download_path = Path(manifest["paths"]["raw_download"])
-    source_name = raw_download_path.name
-
     pfx = normalized_prefix(args.prefix)
-    raw_key = f"{pfx}raw/{args.dataset}/{args.scene}/{source_name}"
     manifest_key = f"{pfx}manifests/{args.dataset}/{args.scene}.manifest.json"
+
+    normalized_root = Path(manifest["paths"]["normalized_scene"])
+    file_records = manifest.get("reproducibility", {}).get("files", [])
+    raw_entries: list[tuple[Path, str]] = []
+    for item in file_records:
+        rel_path = item["path"]
+        local_path = normalized_root / rel_path
+        if not local_path.exists():
+            raise SystemExit(f"raw file missing for upload: {local_path}")
+        raw_key = f"{pfx}raw/{args.dataset}/{args.scene}/{rel_path}"
+        raw_entries.append((local_path, raw_key))
 
     local_manifest_copy = args.output_dir / "s3_dry_run" / manifest_key
     local_manifest_copy.parent.mkdir(parents=True, exist_ok=True)
@@ -165,12 +212,21 @@ def main() -> None:
     print(f"bucket={args.bucket}")
     print(f"region={args.region}")
     print(f"profile={args.profile or 'default'}")
-    print(f"would_write_raw=s3://{args.bucket}/{raw_key}")
+    for _, key in raw_entries:
+        print(f"would_write_raw=s3://{args.bucket}/{key}")
     print(f"would_write_manifest=s3://{args.bucket}/{manifest_key}")
     print(f"local_manifest_copy={local_manifest_copy}")
 
     if args.upload:
-        raise SystemExit("--upload requested, but AWS upload is not implemented yet (stub only).")
+        upload_to_s3(
+            bucket=args.bucket,
+            region=args.region,
+            profile=args.profile,
+            raw_entries=raw_entries,
+            manifest_path=manifest_path,
+            manifest_key=manifest_key,
+        )
+        print("upload complete")
 
 
 if __name__ == "__main__":
