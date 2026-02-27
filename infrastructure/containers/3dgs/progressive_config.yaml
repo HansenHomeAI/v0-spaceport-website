@@ -67,7 +67,7 @@ gaussian_management:
     interval: 80                     # Ablation-006: tighter densify cadence for more frequent detail growth
     start_iteration: 500             # Start after initial convergence
     end_iteration: 15000             # End standard densification
-    grad_threshold: 0.00002          # CRITICAL FIX: 2e-5 instead of 2e-4 for proper densification
+    grad_threshold: 0.000018         # Ablation-007: slightly lower threshold to increase detail densification sensitivity
     percent_dense: 0.02              # Aggressive densification for photorealistic quality
     
     # Progressive densification schedule (based on latest research)
