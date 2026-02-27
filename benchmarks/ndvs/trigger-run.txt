@@ -1,0 +1,7 @@
+control9 progress gaussian-splatting 2026-02-26T18:43:20Z
+control9 progress gaussian-splatting ablation-005-densify 2026-02-26T23:57:45Z
+control9 parity gaussian-splatting ablation-006-densify-interval-80 2026-02-27T07:03:05Z
+control9 parity gaussian-splatting ablation-007-grad-threshold-18e6 2026-02-27T10:11:54Z
+control9 parity gaussian-splatting ablation-008-opacity-reset-2800 2026-02-27T11:52:39Z
+control9 parity gaussian-splatting ablation-009-min-opacity-0p0045 2026-02-27T12:22:19Z
+control9 parity gaussian-splatting ablation-010-split-threshold-45e6 2026-02-27T13:00:42Z

@@ -1,14 +1,10 @@
 "use client";
 
 import React, { ChangeEvent, useCallback, useMemo, useState, useEffect, useRef } from "react";
-import Papa from "papaparse";
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";
-import { convertLitchiCSVToKMZ, downloadBlob } from "../../lib/flightConverter";
 import { buildApiUrl } from "../api-config";
 import "./styles.css";
-
-type RawFlightRow = Record<string, unknown>;
 
 interface PreparedRow {
   latitude: number;
@@ -129,35 +125,6 @@ function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number
   bearing = (bearing + 360) % 360; // Normalize to 0-360
   
   return bearing;
-}
-
-function sanitizeRow(row: RawFlightRow): PreparedRow | null {
-  const latitude = toNumber(row.latitude);
-  const longitude = toNumber(row.longitude);
-  const altitudeFt = toNumber(row["altitude(ft)"] ?? row.altitudeft ?? row.altitude);
-
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isFinite(altitudeFt)) {
-    return null;
-  }
-
-  return {
-    latitude,
-    longitude,
-    altitudeFt,
-    headingDeg: toOptionalNumber(row["heading(deg)"] ?? row.headingdeg ?? row.heading),
-    curveSizeFt: toOptionalNumber(row["curvesize(ft)"] ?? row.curvesizeft),
-    rotationDir: toOptionalNumber(row.rotationdir),
-    gimbalMode: toOptionalNumber(row.gimbalmode),
-    gimbalPitchAngle: toOptionalNumber(row.gimbalpitchangle ?? row["gimbal_pitch(deg)"]),
-    altitudeMode: toOptionalNumber(row.altitudemode),
-    speedMs: toOptionalNumber(row["speed(m/s)"] ?? row.speedms ?? row.speed),
-    poiLatitude: toOptionalNumber(row.poi_latitude ?? row.poi_latitude_deg),
-    poiLongitude: toOptionalNumber(row.poi_longitude ?? row.poi_longitude_deg),
-    poiAltitudeFt: toOptionalNumber(row["poi_altitude(ft)"] ?? row.poi_altitudeft),
-    poiAltitudeMode: toOptionalNumber(row.poi_altitudemode),
-    photoTimeInterval: toOptionalNumber(row.photo_timeinterval),
-    photoDistInterval: toOptionalNumber(row.photo_distinterval),
-  };
 }
 
 function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi: PoiData | null } {
@@ -1022,19 +989,6 @@ export default function FlightViewerPage(): JSX.Element {
   const [selectedLens, setSelectedLens] = useState("mavic3_wide");
   const [hoveredWaypoint, setHoveredWaypoint] = useState<{ flightId: string; index: number } | null>(null);
   
-  // Converter modal state
-  const [showConverter, setShowConverter] = useState(false);
-  const [converterFile, setConverterFile] = useState<File | null>(null);
-  const [converting, setConverting] = useState(false);
-  const [converterStatus, setConverterStatus] = useState<string | null>(null);
-  const [converterOptions, setConverterOptions] = useState({
-    signalLostAction: "executeLostAction" as "continue" | "executeLostAction",
-    missionSpeed: 8.85,
-    droneType: "dji_fly" as "dji_fly" | "mavic3_enterprise" | "matrice_30",
-    headingMode: "poi_or_interpolate" as "poi_or_interpolate" | "follow_wayline" | "manual",
-    allowStraightLines: false,
-  });
-
   const onFilesSelected = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;
     if (!fileList || fileList.length === 0) {
@@ -1056,27 +1010,8 @@ export default function FlightViewerPage(): JSX.Element {
 
         if (extension === "kmz") {
           prepared = await parseKMZFile(file);
-        } else if (extension === "csv") {
-          await new Promise<void>((resolve, reject) => {
-            Papa.parse<RawFlightRow>(file, {
-              header: true,
-              skipEmptyLines: true,
-              dynamicTyping: true,
-              complete: result => {
-                if (result.errors.length) {
-                  reject(new Error(`CSV parse error: ${result.errors[0].message}`));
-                  return;
-                }
-                prepared = result.data
-                  .map(sanitizeRow)
-                  .filter((value): value is PreparedRow => value !== null);
-                resolve();
-              },
-              error: err => reject(err),
-            });
-          });
         } else {
-          errors.push(`${file.name}: Unsupported format (use .csv or .kmz)`);
+          errors.push(`${file.name}: Unsupported format (use .kmz)`);
           continue;
         }
 
@@ -1140,59 +1075,23 @@ export default function FlightViewerPage(): JSX.Element {
     return { flight, sample };
   }, [hoveredWaypoint, flights]);
 
-  const handleConvertFile = useCallback(async () => {
-    if (!converterFile) return;
-    
-    setConverting(true);
-    setConverterStatus(null);
-
-    try {
-      const csvContent = await converterFile.text();
-      const kmzBlob = await convertLitchiCSVToKMZ(
-        csvContent,
-        converterFile.name,
-        converterOptions
-      );
-
-      const outputName = converterFile.name.replace(/\.csv$/i, ".kmz");
-      downloadBlob(kmzBlob, outputName);
-      
-      setConverterStatus(`Converted to ${outputName}`);
-      setTimeout(() => {
-        setShowConverter(false);
-        setConverterFile(null);
-        setConverterStatus(null);
-      }, 2000);
-    } catch (err) {
-      setConverterStatus(`Error: ${err instanceof Error ? err.message : "Conversion failed"}`);
-    } finally {
-      setConverting(false);
-    }
-  }, [converterFile, converterOptions]);
-
   return (
     <main className="flight-viewer">
       <div className="flight-viewer__intro">
         <div>
           <h1>Flight Viewer</h1>
-          <p>Upload CSV or KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.</p>
+          <p>Upload KMZ files to compare paths, inspect curvature, and verify coordinates in 3D.</p>
         </div>
-        <button 
-          className="flight-viewer__converter-btn"
-          onClick={() => setShowConverter(true)}
-        >
-          Convert CSV to KMZ
-        </button>
       </div>
 
       <section className="flight-viewer__content">
         <aside className="flight-viewer__sidebar">
           <label className="flight-viewer__upload">
             <span className="flight-viewer__upload-title">Add flight files</span>
-            <span className="flight-viewer__upload-hint">Support for CSV (Litchi/DJI) and KMZ (DJI WPML) formats. Select multiple files to overlay paths.</span>
+            <span className="flight-viewer__upload-hint">Support for KMZ (DJI WPML) formats. Select multiple files to overlay paths.</span>
             <input
               type="file"
-              accept=".csv,text/csv,.kmz,application/vnd.google-earth.kmz"
+              accept=".kmz,application/vnd.google-earth.kmz"
               multiple
               onChange={onFilesSelected}
               disabled={isParsing}
@@ -1246,7 +1145,7 @@ export default function FlightViewerPage(): JSX.Element {
             <div className="flight-viewer__details flight-viewer__details--placeholder">
               <h2>How it works</h2>
               <ul>
-                <li>Upload CSV (Litchi/DJI) or KMZ (DJI WPML) flight plans.</li>
+                <li>Upload KMZ (DJI WPML) flight plans.</li>
                 <li>All paths share a common reference point for accurate overlays.</li>
                 <li>Metric and imperial units are automatically converted.</li>
                 <li>Each flight gets a unique color for easy comparison.</li>
@@ -1313,139 +1212,6 @@ export default function FlightViewerPage(): JSX.Element {
           )}
         </div>
       </section>
-
-      {showConverter && (
-        <div className="flight-viewer__modal-overlay" onClick={() => setShowConverter(false)}>
-          <div className="flight-viewer__modal" onClick={(e) => e.stopPropagation()}>
-            <div className="flight-viewer__modal-header">
-              <h2>CSV to KMZ Converter</h2>
-              <button 
-                className="flight-viewer__modal-close"
-                onClick={() => setShowConverter(false)}
-              >
-                x
-              </button>
-            </div>
-
-            <div className="flight-viewer__modal-body">
-              <p className="flight-viewer__modal-description">
-                Convert Litchi CSV waypoint missions to DJI Fly/Pilot 2 compatible KMZ files.
-              </p>
-
-              <label className="flight-viewer__converter-upload">
-                <span>Select Litchi CSV file</span>
-                <input
-                  type="file"
-                  accept=".csv,text/csv"
-                  onChange={(e) => setConverterFile(e.target.files?.[0] || null)}
-                />
-              </label>
-
-              {converterFile && (
-                <div className="flight-viewer__converter-file">
-                  {converterFile.name}
-                </div>
-              )}
-
-              <div className="flight-viewer__converter-options">
-                <label>
-                  <span>Signal Lost Action</span>
-                  <select
-                    value={converterOptions.signalLostAction}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      signalLostAction: e.target.value as "continue" | "executeLostAction"
-                    }))}
-                  >
-                    <option value="executeLostAction">Execute Lost Action</option>
-                    <option value="continue">Continue Mission</option>
-                  </select>
-                </label>
-
-                <label>
-                  <span>Mission Speed (m/s)</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max="15"
-                    step="0.1"
-                    value={converterOptions.missionSpeed}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      missionSpeed: parseFloat(e.target.value)
-                    }))}
-                  />
-                </label>
-
-                <label>
-                  <span>Drone Type</span>
-                  <select
-                    value={converterOptions.droneType}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      droneType: e.target.value as any
-                    }))}
-                  >
-                    <option value="dji_fly">DJI Fly (Consumer)</option>
-                    <option value="mavic3_enterprise">Mavic 3 Enterprise</option>
-                    <option value="matrice_30">Matrice 30</option>
-                  </select>
-                </label>
-
-                <label>
-                  <span>Heading Mode</span>
-                  <select
-                    value={converterOptions.headingMode}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      headingMode: e.target.value as any
-                    }))}
-                  >
-                    <option value="poi_or_interpolate">Toward POI / Interpolate</option>
-                    <option value="follow_wayline">Follow Wayline</option>
-                    <option value="manual">Manual</option>
-                  </select>
-                </label>
-
-                <label className="flight-viewer__converter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={converterOptions.allowStraightLines}
-                    onChange={(e) => setConverterOptions(prev => ({
-                      ...prev,
-                      allowStraightLines: e.target.checked
-                    }))}
-                  />
-                  <span>Allow Straight Lines (may show incorrectly in DJI Fly)</span>
-                </label>
-              </div>
-
-              {converterStatus && (
-              <div className={`flight-viewer__converter-status ${converterStatus.startsWith("Converted") ? "success" : "error"}`}>
-                  {converterStatus}
-                </div>
-              )}
-
-              <div className="flight-viewer__modal-actions">
-                <button
-                  className="flight-viewer__modal-btn secondary"
-                  onClick={() => setShowConverter(false)}
-                  disabled={converting}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="flight-viewer__modal-btn primary"
-                  onClick={handleConvertFile}
-                  disabled={!converterFile || converting}
-                >
-                  {converting ? "Converting..." : "Convert & Download"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
     </main>
   );

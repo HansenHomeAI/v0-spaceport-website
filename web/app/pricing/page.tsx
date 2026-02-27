@@ -115,7 +115,7 @@ export default function Pricing(): JSX.Element {
 
               {status === 'success' && (
                 <p className="auth-success">
-                  Thanks! We'll be in touch soon.
+                  Thanks! We&apos;ll be in touch soon.
                 </p>
               )}
               {status === 'error' && (

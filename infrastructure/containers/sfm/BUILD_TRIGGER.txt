@@ -32,3 +32,6 @@ EXPECTED RESULT:
 Build timestamp: 2025-01-27-SFM-EXPORT-DIRECTORY-FIX
 
 ** READY TO TEST - TRIGGER REBUILD **
+# Cache validation: safe no-op touchpoint to exercise app-layer rebuild timing.
+
+# Rebuild trigger: 2026-02-13T17:34:43Z - EXIF-only SfM validation (no CSV)

@@ -1,17 +1,23 @@
 #!/bin/bash
 
-# Production OpenSfM GPS-Constrained SfM Processing
-# SageMaker entry point for GPS-enhanced Structure-from-Motion
-# Updated: 2025-01-27
+# Production OpenSfM EXIF-Constrained SfM Processing
+# SageMaker entry point for EXIF-enhanced Structure-from-Motion
+# Updated: 2026-02-03 (EXIF priors rebuild trigger #4)
 
 set -e  # Exit on any error
 
+log_mem() {
+    echo "MEMORY_PROBE [${1}]:"
+    cat /proc/meminfo 2>/dev/null | head -n 3 || true
+    free -h 2>/dev/null || true
+}
+
 echo "============================================================"
-echo "🚀 SPACEPORT OPENSFM GPS-CONSTRAINED SfM PROCESSING"
+echo "🚀 SPACEPORT OPENSFM EXIF-CONSTRAINED SfM PROCESSING"
 echo "============================================================"
 echo "📅 Started at: $(date)"
-echo "🔧 Pipeline: OpenSfM with GPS constraints"
-echo "📍 GPS Enhancement: Drone flight path integration"
+echo "🔧 Pipeline: OpenSfM with EXIF priors"
+echo "📍 EXIF Enhancement: Drone photo metadata integration"
 echo "🎯 Output: COLMAP-compatible format for 3DGS"
 echo "============================================================"
 
@@ -31,6 +37,7 @@ pip3 list | grep -i pandas > /dev/null || error_exit "pandas not available"
 pip3 list | grep -i numpy > /dev/null || error_exit "numpy not available"
 
 echo "✅ Environment verification completed"
+log_mem "startup"
 
 # Set Python path for our modules
 export PYTHONPATH="/opt/ml/code:$PYTHONPATH"
@@ -71,16 +78,10 @@ ZIP_COUNT=$(find "$INPUT_DIR" -name "*.zip" | wc -l)
 CSV_COUNT=$(find "$INPUT_DIR" -name "*.csv" | wc -l)
 
 echo "📦 ZIP files found: $ZIP_COUNT"
-echo "🛰️ CSV files found: $CSV_COUNT"
+echo "🛰️ CSV files found: $CSV_COUNT (ignored; EXIF-only priors)"
 
 if [ "$ZIP_COUNT" -eq 0 ]; then
     error_exit "No ZIP archive found in input directory"
-fi
-
-if [ "$CSV_COUNT" -eq 0 ]; then
-    echo "⚠️ No CSV flight path found - will use traditional SfM"
-else
-    echo "✅ GPS flight path data available - will use GPS-constrained reconstruction"
 fi
 
 # Create output directory
@@ -88,12 +89,14 @@ mkdir -p "$OUTPUT_DIR" || error_exit "Cannot create output directory"
 
 echo ""
 echo "============================================================"
-echo "🚀 LAUNCHING OPENSFM GPS PROCESSOR"
+echo "🚀 LAUNCHING OPENSFM EXIF PROCESSOR"
 echo "============================================================"
 
 # Run the main Python processing script
-echo "🔧 Executing OpenSfM GPS-constrained reconstruction..."
+echo "🔧 Executing OpenSfM EXIF-constrained reconstruction..."
+log_mem "before_python"
 python3 /opt/ml/code/run_opensfm_gps.py "$INPUT_DIR" "$OUTPUT_DIR"
+log_mem "after_python"
 
 # Check if the Python script succeeded
 PYTHON_EXIT_CODE=$?
@@ -178,15 +181,15 @@ echo "✅ Quality check: PASSED (>= $MIN_POINTS_REQUIRED points)"
 # Parse metadata for additional stats
 if [ -f "$OUTPUT_DIR/sfm_metadata.json" ]; then
     echo "⏱️ Processing time: $(python3 -c "import json; print(json.load(open('$OUTPUT_DIR/sfm_metadata.json'))['processing_time_seconds'], 'seconds')" 2>/dev/null || echo "Unknown")"
-    echo "📈 Pipeline optimization: GPS-constrained reconstruction"
+    echo "📈 Pipeline optimization: EXIF-constrained reconstruction"
 fi
 
 echo ""
 echo "============================================================"
 echo "🎉 SPACEPORT OPENSFM PROCESSING COMPLETED SUCCESSFULLY!"
 echo "============================================================"
-echo "✅ GPS-constrained Structure-from-Motion reconstruction completed"
-echo "⚡ Enhanced with drone flight path data for improved accuracy"
+echo "✅ EXIF-constrained Structure-from-Motion reconstruction completed"
+echo "⚡ Enhanced with drone photo metadata for improved accuracy"
 echo "📁 Output files ready for 3D Gaussian Splatting training"
 echo "🔗 COLMAP format compatibility maintained"
 echo "📅 Completed at: $(date)"

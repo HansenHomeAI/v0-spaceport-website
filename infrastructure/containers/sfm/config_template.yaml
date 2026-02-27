@@ -1,13 +1,13 @@
-# OpenSfM Configuration for GPS-Constrained Drone Reconstruction
+# OpenSfM Configuration for EXIF-Constrained Drone Reconstruction
 # Optimized for accuracy and 3DGS compatibility
-# Updated: 2025-01-27
+# Updated: 2026-02-03
 
 # GPS and Coordinate System Configuration
 use_altitude_tag: true
 align_method: 'orientation_prior'
 align_orientation_prior: 'vertical'
 
-# GPS Prior Configuration  
+# EXIF GPS Prior Configuration  
 use_gps: true
 gps_error_threshold: 10.0  # meters - reasonable for consumer drones
 gps_accuracy: 5.0         # assumed GPS accuracy in meters

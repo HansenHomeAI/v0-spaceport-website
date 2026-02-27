@@ -2,11 +2,23 @@
 # Official implementation using PlayCanvas SOGS package from:
 # https://github.com/playcanvas/sogs
 
-# Use NVIDIA CUDA 12.4 base image to match SageMaker host driver
-FROM nvidia/cuda:12.4.0-devel-ubuntu22.04
+# Use Ubuntu LTS base from AWS Public ECR and install CUDA 12.4 from the official NVIDIA apt repository
+FROM public.ecr.aws/lts/ubuntu:22.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Install CUDA 12.4 runtime/toolkit from NVIDIA apt repo to avoid Docker Hub rate limits
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    curl \
+    gnupg2 \
+    ca-certificates && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends cuda-toolkit-12-4 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Disable CUDA during build to avoid driver version issues
 ARG DISABLE_CUDA=""

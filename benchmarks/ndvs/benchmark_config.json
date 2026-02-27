@@ -1,0 +1,225 @@
+{
+  "version": "2026-02-26",
+  "owner": "spaceport-ml",
+  "harness": "ndvs",
+  "notes": "All benchmark evaluations must be executed through NDVS-compatible harnesses. No ad-hoc local metric runs are allowed for promotion decisions.",
+  "scene_subsets": {
+    "primary3": [
+      "mipnerf360/garden",
+      "tanksandtemples/truck",
+      "deepblending/playroom"
+    ],
+    "control9": [
+      "mipnerf360/bicycle",
+      "mipnerf360/garden",
+      "mipnerf360/stump",
+      "mipnerf360/counter",
+      "tanksandtemples/truck",
+      "tanksandtemples/train",
+      "deepblending/playroom",
+      "deepblending/drjohnson",
+      "zipnerf/alameda"
+    ],
+    "full_core13": [
+      "mipnerf360/bicycle",
+      "mipnerf360/flowers",
+      "mipnerf360/garden",
+      "mipnerf360/stump",
+      "mipnerf360/treehill",
+      "mipnerf360/room",
+      "mipnerf360/counter",
+      "mipnerf360/kitchen",
+      "mipnerf360/bonsai",
+      "tanksandtemples/truck",
+      "tanksandtemples/train",
+      "deepblending/playroom",
+      "deepblending/drjohnson"
+    ],
+    "large4": [
+      "zipnerf/alameda",
+      "zipnerf/berlin",
+      "zipnerf/london",
+      "zipnerf/nyc"
+    ]
+  },
+  "baselines": {
+    "control9": {
+      "method_name": "gaussian-splatting",
+      "source": "https://raw.githubusercontent.com/nvs-bench/nvs-bench/main/website/lib/results.json",
+      "metrics": {
+        "psnr": 26.504821300409613,
+        "ssim": 0.8416599281962532,
+        "lpips": 0.24823907291766195,
+        "time_s": 1558.0833333333333
+      }
+    },
+    "control9_best_per_scene": {
+      "source": "https://raw.githubusercontent.com/nvs-bench/nvs-bench/main/website/lib/results.json",
+      "metrics": {
+        "psnr": 26.957858715586227,
+        "ssim": 0.8610683761119593,
+        "lpips": 0.20213008145064768
+      }
+    }
+  },
+  "gates": {
+    "parity": {
+      "subset": "primary3",
+      "minimums": {
+        "psnr": 26.0,
+        "ssim": 0.84
+      },
+      "maximums": {
+        "lpips": 0.26
+      },
+      "max_orientation_failures": 0
+    },
+    "progress": {
+      "subset": "control9",
+      "minimums": {
+        "psnr": 26.7,
+        "ssim": 0.85
+      },
+      "maximums": {
+        "lpips": 0.23
+      },
+      "max_relative_cost_increase": 0.25
+    },
+    "frontier": {
+      "subset": "control9",
+      "minimums": {
+        "psnr": 26.85,
+        "ssim": 0.857
+      },
+      "maximums": {
+        "lpips": 0.215
+      },
+      "max_relative_cost_increase": 0.25
+    }
+  },
+  "datasets": [
+    {
+      "name": "mipnerf360",
+      "license_url": "https://jonbarron.info/mipnerf360/",
+      "source_archives": [
+        {
+          "filename": "360_v2.zip",
+          "url": "http://storage.googleapis.com/gresearch/refraw360/360_v2.zip"
+        },
+        {
+          "filename": "360_extra_scenes.zip",
+          "url": "https://storage.googleapis.com/gresearch/refraw360/360_extra_scenes.zip"
+        }
+      ],
+      "scene_layout": "mipnerf360",
+      "scenes": [
+        {
+          "name": "bicycle",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "flowers",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "garden",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "stump",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "treehill",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "room",
+          "image_folder": "images_2"
+        },
+        {
+          "name": "counter",
+          "image_folder": "images_2"
+        },
+        {
+          "name": "kitchen",
+          "image_folder": "images_2"
+        },
+        {
+          "name": "bonsai",
+          "image_folder": "images_2"
+        }
+      ]
+    },
+    {
+      "name": "tandt_db",
+      "license_url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/",
+      "source_archives": [
+        {
+          "filename": "tandt_db.zip",
+          "url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/input/tandt_db.zip"
+        }
+      ],
+      "scene_layout": "tandt_db",
+      "exports": [
+        {
+          "dataset_name": "tanksandtemples",
+          "source_root": "tandt",
+          "scenes": [
+            "truck",
+            "train"
+          ]
+        },
+        {
+          "dataset_name": "deepblending",
+          "source_root": "db",
+          "scenes": [
+            "playroom",
+            "drjohnson"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "zipnerf",
+      "license_url": "https://smerf-3d.github.io/#data",
+      "source_archives": [
+        {
+          "filename": "alameda.zip",
+          "url": "https://storage.googleapis.com/gresearch/refraw360/zipnerf-undistorted/alameda.zip"
+        },
+        {
+          "filename": "berlin.zip",
+          "url": "https://storage.googleapis.com/gresearch/refraw360/zipnerf-undistorted/berlin.zip"
+        },
+        {
+          "filename": "london.zip",
+          "url": "https://storage.googleapis.com/gresearch/refraw360/zipnerf-undistorted/london.zip"
+        },
+        {
+          "filename": "nyc.zip",
+          "url": "https://storage.googleapis.com/gresearch/refraw360/zipnerf-undistorted/nyc.zip"
+        }
+      ],
+      "scene_layout": "zipnerf",
+      "scenes": [
+        {
+          "name": "alameda",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "berlin",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "london",
+          "image_folder": "images_4"
+        },
+        {
+          "name": "nyc",
+          "image_folder": "images_4"
+        }
+      ]
+    }
+  ]
+}

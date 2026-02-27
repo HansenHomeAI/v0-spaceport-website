@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from urllib.parse import urlparse
 
-# Initialize AWS clients
+# Initialize AWS clients (ECR client will be initialized per-region in resolve_ecr_uri)
 stepfunctions = boto3.client('stepfunctions')
 s3 = boto3.client('s3')
 
@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         s3_url = body.get('s3Url')
         email = body.get('email', 'hello@spcprt.com')  # Optional email for notifications
         pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
-        csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
+        csv_data = body.get('csvData')  # Optional CSV data (deprecated; EXIF-only SfM priors now)
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
         if not s3_url:
@@ -94,43 +94,65 @@ def lambda_handler(event, context):
         timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
         job_name = f"ml-job-{timestamp}-{job_id[:8]}"
         
-        # Verify CSV file exists if provided
+        # CSV priors are deprecated; SfM uses EXIF-only GPS priors now.
         csv_bucket_name = None
         csv_object_key = None
         has_gps_data = False
-        
         if csv_data and pipeline_step == 'sfm':
-            # Save CSV data to S3
-            ml_bucket = os.environ['ML_BUCKET']
-            timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-            csv_object_key = f"csv-data/{job_id}/gps-flight-path-{timestamp}.csv"
-            
-            try:
-                # Upload CSV data to S3
-                s3.put_object(
-                    Bucket=ml_bucket,
-                    Key=csv_object_key,
-                    Body=csv_data.encode('utf-8'),
-                    ContentType='text/csv'
-                )
-                csv_bucket_name = ml_bucket
-                has_gps_data = True
-                print(f"✅ GPS flight path CSV saved: s3://{ml_bucket}/{csv_object_key}")
-            except Exception as e:
-                print(f"⚠️ Failed to save CSV data: {str(e)}")
-                # Continue without GPS data - don't fail the entire request
+            print("⚠️ csvData provided but ignored (EXIF-only SfM priors enabled).")
         
         # Get environment variables
         state_machine_arn = os.environ['STATE_MACHINE_ARN']
         ml_bucket = os.environ['ML_BUCKET']
         
-        # Get ECR repository URIs (these would be set during deployment)
+        # Get ECR repository names from environment variables (set by CDK)
+        # Format: "spaceport/sfm" or "spaceport/sfm-{suffix}" for branch-specific
+        # CDK will set both branch-specific and fallback names
+        sfm_repo = os.environ.get('SFM_ECR_REPO', 'spaceport/sfm')
+        gaussian_repo = os.environ.get('GAUSSIAN_ECR_REPO', 'spaceport/3dgs')
+        compressor_repo = os.environ.get('COMPRESSOR_ECR_REPO', 'spaceport/compressor')
+        
+        # Fallback repo names (shared repos without suffix)
+        sfm_repo_fallback = os.environ.get('SFM_ECR_REPO_FALLBACK', 'spaceport/sfm')
+        gaussian_repo_fallback = os.environ.get('GAUSSIAN_ECR_REPO_FALLBACK', 'spaceport/3dgs')
+        compressor_repo_fallback = os.environ.get('COMPRESSOR_ECR_REPO_FALLBACK', 'spaceport/compressor')
+        
         account_id = context.invoked_function_arn.split(':')[4]
         region = context.invoked_function_arn.split(':')[3]
         
-        sfm_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/sfm:latest"
-        gaussian_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest"
-        compressor_image_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest"
+        # Resolve ECR image URIs with fallback logic
+        # Try branch-specific repo first, fallback to shared repo if it doesn't exist
+        def resolve_ecr_uri(repo_name, fallback_repo_name):
+            """Resolve ECR URI, trying branch-specific repo first, then fallback"""
+            ecr_client = boto3.client('ecr', region_name=region)
+            # Try branch-specific repo first
+            try:
+                ecr_client.describe_repositories(repositoryNames=[repo_name])
+                print(f"Using branch-specific ECR repo: {repo_name}")
+                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repo_name}:latest"
+            except Exception as e:
+                # Check if it's a repository not found error
+                error_code = e.response.get('Error', {}).get('Code', '') if hasattr(e, 'response') else ''
+                if error_code == 'RepositoryNotFoundException':
+                    # Fallback to shared repo
+                    try:
+                        ecr_client.describe_repositories(repositoryNames=[fallback_repo_name])
+                        print(f"Branch-specific repo {repo_name} not found, using fallback: {fallback_repo_name}")
+                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                    except Exception as e2:
+                        # If fallback also doesn't exist, use it anyway (will fail at runtime with clear error)
+                        print(f"Warning: Neither {repo_name} nor {fallback_repo_name} found, using fallback")
+                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                else:
+                    # On any other error, use fallback
+                    print(f"Error checking repo {repo_name}: {str(e)}, using fallback: {fallback_repo_name}")
+                    return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+        
+        sfm_image_uri = resolve_ecr_uri(sfm_repo, sfm_repo_fallback)
+        gaussian_image_uri = resolve_ecr_uri(gaussian_repo, gaussian_repo_fallback)
+        compressor_image_uri = resolve_ecr_uri(compressor_repo, compressor_repo_fallback)
+        
+        print(f"Using ECR repos - SfM: {sfm_image_uri}, 3DGS: {gaussian_image_uri}, Compressor: {compressor_image_uri}")
         
         # Build SfM processing inputs dynamically
         sfm_processing_inputs = [{
@@ -144,18 +166,7 @@ def lambda_handler(event, context):
             }
         }]
         
-        # Add CSV input if GPS data is available
-        if has_gps_data:
-            sfm_processing_inputs.append({
-                "InputName": "gps-data",
-                "AppManaged": False,
-                "S3Input": {
-                    "S3Uri": f"s3://{csv_bucket_name}/{csv_object_key}",
-                    "LocalPath": "/opt/ml/processing/input/gps",
-                    "S3DataType": "S3Prefix",
-                    "S3InputMode": "File"
-                }
-            })
+        # CSV priors disabled; no GPS CSV input is attached.
         
         # Extract hyperparameters from request body (for tuning experiments)
         hyperparameters = body.get('hyperparameters', {})
@@ -187,6 +198,7 @@ def lambda_handler(event, context):
             # GPU Optimization for A10G (16GB)
             "MAX_NUM_GAUSSIANS": "1500000",     # Conservative limit for A10G
             "MEMORY_OPTIMIZATION": "true",      # Enable memory optimization
+            "TORCH_CUDA_ARCH_LIST": "8.0 8.6",  # Limit gsplat JIT targets to Ampere+
             
             # Legacy G-Splat parameters for backward compatibility (will be ignored by NerfStudio)
             "max_iterations": 30000,
@@ -229,10 +241,10 @@ def lambda_handler(event, context):
             "sfmProcessingInputs": sfm_processing_inputs,
             
             # GPS/CSV Enhancement Information
-            "hasGpsData": has_gps_data,
-            "csvS3Uri": f"s3://{csv_bucket_name}/{csv_object_key}" if has_gps_data else None,
-            "pipelineType": "gps_enhanced" if has_gps_data else "standard",
-            "sfmMethod": "opensfm_gps" if has_gps_data else "opensfm_standard",
+            "hasGpsData": False,
+            "csvS3Uri": None,
+            "pipelineType": "exif_priors",
+            "sfmMethod": "opensfm_exif",
             
             # Add all hyperparameters to the Step Functions input
             **final_hyperparameters

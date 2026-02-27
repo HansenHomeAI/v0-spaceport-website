@@ -4,6 +4,8 @@ env:
   variables:
     AWS_REGION: "us-west-2"
     CONTAINERS_TO_BUILD: "all"
+    CONTAINERS_TO_IMPORT: ""
+    BRANCH_SUFFIX: ""  # Branch suffix for branch-specific ECR repos (set by GitHub Actions)
     # Enable Docker BuildKit for better caching
     DOCKER_BUILDKIT: "1"
     BUILDKIT_PROGRESS: "plain"
@@ -28,16 +30,27 @@ phases:
       - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-      - echo "Logging in to Docker Hub..."
-      - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - |
+        if [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
+          echo "Logging in to Docker Hub..."
+          echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+        else
+          echo "Skipping Docker Hub login (credentials not provided)"
+        fi
       - echo "Making deployment script executable..."
       - chmod +x scripts/deployment/deploy.sh
+      - chmod +x scripts/deployment/import_containers.sh
       - 'echo "Containers to build: $CONTAINERS_TO_BUILD"'
-      # Pre-pull base images for caching
-      - echo "Pre-pulling base images for caching..."
-      - docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true
-      - docker pull nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true
-      - docker pull python:3.9-slim || true
+      - 'echo "Branch suffix: ${BRANCH_SUFFIX:-<none>}"'
+      - export BRANCH_SUFFIX
+      # If GitHub determined repos are missing images, re-tag shared containers via Docker.
+      - |
+        if [ -n "$CONTAINERS_TO_IMPORT" ]; then
+          echo "Importing shared containers: $CONTAINERS_TO_IMPORT"
+          ./scripts/deployment/import_containers.sh $CONTAINERS_TO_IMPORT
+        else
+          echo "No containers require import."
+        fi
       # Set up Docker layer caching
       - echo "Setting up Docker layer caching..."
       - mkdir -p /tmp/docker-cache
@@ -47,8 +60,13 @@ phases:
     commands:
       - echo "Starting optimized container build process..."
       - 'echo "Building with caching enabled: $CONTAINERS_TO_BUILD"'
-      # Use optimized deployment script with caching
-      - ./scripts/deployment/deploy.sh $CONTAINERS_TO_BUILD
+      # Skip expensive work when GitHub determined no container directories changed.
+      - |
+        if [ -z "$CONTAINERS_TO_BUILD" ]; then
+          echo "No containers requested for build. Skipping build.sh."
+        else
+          ./scripts/deployment/deploy.sh $CONTAINERS_TO_BUILD
+        fi
 
   post_build:
     commands:
@@ -58,9 +76,7 @@ phases:
       - docker buildx prune -f || true
 
 artifacts:
-  files:
-    - '**/*'
-  discard-paths: yes
+  files: []
 
 cache:
   paths:
@@ -68,23 +84,6 @@ cache:
     - '/root/.cache/pip'
     - '/root/.cache/pipenv'
     - '/root/.local/share/virtualenvs'
-    
-    # Docker layer caching
-    - '/root/.docker/buildx'
-    - '/tmp/docker-cache/**/*'
-    - '/var/lib/docker/image'
-    - '/var/lib/docker/overlay2'
-    
-    # Build artifacts caching
-    - 'infrastructure/containers/**/node_modules'
-    - 'infrastructure/containers/**/.cache'
-    - 'infrastructure/containers/**/build'
-    - 'infrastructure/containers/**/dist'
-    
-    # AWS CLI and other tools
-    - '/root/.aws'
-    - '/usr/local/bin'
-    
-    # Git dependencies
-    - '/root/.gitconfig'
-    - '/tmp/git-cache' 
+    # Docker/BuildKit cache data to reuse across builds
+    - '/tmp/docker-cache'
+    - '/root/.cache/buildx'

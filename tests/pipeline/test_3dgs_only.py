@@ -60,7 +60,7 @@ def test_3dgs_only():
             'S3OutputPath': f's3://spaceport-ml-processing/3dgs/{job_id}/'
         },
         'ResourceConfig': {
-            'InstanceType': 'ml.g5.xlarge',
+            'InstanceType': 'ml.g5.2xlarge',  # Upgraded to handle Vincent Woo's full methodology
             'InstanceCount': 1,
             'VolumeSizeInGB': 100
         },
@@ -71,6 +71,10 @@ def test_3dgs_only():
             'AWS_DEFAULT_REGION': 'us-west-2',
             'PYTHONUNBUFFERED': '1',
             'SAGEMAKER_PROGRAM': 'train.py',
+            'TORCH_CUDA_ARCH_LIST': '8.0 8.6',
+            'CUDA_HOME': '/usr/local/cuda',
+            'LD_LIBRARY_PATH': '/usr/local/cuda/lib64:/usr/local/cuda/lib',
+            'LIBRARY_PATH': '/usr/local/cuda/lib64:/usr/local/cuda/lib',
             
             # Vincent Woo's methodology parameters
             'MAX_ITERATIONS': '30000',
@@ -94,7 +98,7 @@ def test_3dgs_only():
     logger.info(f"   Job name: {training_job_name}")
     logger.info(f"   Input: {existing_colmap_s3_uri}")
     logger.info(f"   Output: s3://spaceport-ml-processing/3dgs/{job_id}/")
-    logger.info(f"   Instance: ml.g5.xlarge (A10G GPU)")
+    logger.info(f"   Instance: ml.g5.2xlarge (A10G GPU with 32GB RAM)")
     
     # Start the training job
     response = sagemaker.create_training_job(**training_params)
