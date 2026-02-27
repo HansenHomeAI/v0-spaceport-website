@@ -1,1 +1,2 @@
 python-jose==3.3.0
+stripe>=8.8.0

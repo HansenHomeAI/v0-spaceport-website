@@ -2,7 +2,7 @@
 
 ## Overview
 
-The waitlist system now includes an automatic confirmation email feature that sends a personalized welcome message to new users who sign up for the waitlist. This email is sent immediately after a successful signup and comes from Gabriel, the founder of Spaceport AI.
+The waitlist system now includes an automatic confirmation email feature that sends a personalized welcome message to new users who sign up for the waitlist. This email is sent immediately after a successful signup and comes from Gabriel, the founder of Spaceport.
 
 ## Features
 
@@ -17,14 +17,14 @@ The waitlist system now includes an automatic confirmation email feature that se
 
 ### 📧 Email Content
 
-**Subject**: "Welcome to Spaceport AI - You're on the Waitlist!"
+**Subject**: "Welcome to Spaceport - You're on the Waitlist!"
 
 **From**: gabriel@spcprt.com
 
 **Message Includes**:
 - Personalized greeting with user's name
 - Introduction from Gabriel as the founder
-- Information about Spaceport AI's features
+- Information about Spaceport's features
 - List of upcoming features (3D Gaussian Splatting, drone path optimization, etc.)
 - Professional signature
 - Unsubscribe information
@@ -43,7 +43,7 @@ The `waitlist/lambda_function.py` has been updated with:
 ### Email Template
 
 The email uses a responsive HTML template with:
-- Gradient header with Spaceport AI branding
+- Gradient header with Spaceport branding
 - Clean, professional styling
 - Mobile-friendly design
 - Both HTML and plain text fallback
@@ -149,7 +149,7 @@ Monitor in AWS SES console:
 1. **Dynamic Content**: Include user-specific information
 2. **Rich Media**: Add images and videos
 3. **Social Links**: Include social media links
-4. **Product Updates**: Send updates about Spaceport AI progress
+4. **Product Updates**: Send updates about Spaceport progress
 
 ## Troubleshooting
 

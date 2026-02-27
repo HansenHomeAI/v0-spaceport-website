@@ -16,7 +16,7 @@ const METADATA_TABLE_NAME = process.env.METADATA_TABLE_NAME; // Use environment 
 // Helper function to send an email via Resend
 async function sendEmailNotification(toAddress, subject, bodyText, bodyHtml = null) {
   const params = {
-    from: "Spaceport AI <hello@spcprt.com>",
+    from: "Spaceport <hello@spcprt.com>",
     to: [toAddress],
     subject: subject,
     text: bodyText,
