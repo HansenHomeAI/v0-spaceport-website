@@ -97,6 +97,13 @@ jobs:
             echo "Using branch NDVS results JSON: ${RESULTS_JSON_INPUT}"
           fi
 
+          # PRs currently do not have a branch-generated NDVS evaluator wired in this repo.
+          # Until that exists, use the non-progress gate so results_json-based validation
+          # reflects parity expectations instead of a false "progress" requirement.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            GATE="parity"
+          fi
+
           METHOD_NAME="${METHOD_NAME:-spaceport}"
           SUBSET="${SUBSET:-control9}"
           GATE="${GATE:-progress}"
