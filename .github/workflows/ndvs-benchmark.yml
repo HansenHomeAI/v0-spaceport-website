@@ -97,10 +97,14 @@ jobs:
             echo "Using branch NDVS results JSON: ${RESULTS_JSON_INPUT}"
           fi
 
-          # PRs currently do not have a branch-generated NDVS evaluator wired in this repo.
-          # Until that exists, use the non-progress gate so results_json-based validation
-          # reflects parity expectations instead of a false "progress" requirement.
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # Branch-snapshot NDVS runs do not have a branch-generated evaluator wired in this repo.
+          # When scoring the committed benchmark snapshot directly, use parity instead of progress
+          # so the check reflects "not worse than baseline" rather than a false progress demand.
+          if [ "$METHOD_NAME" = "gaussian-splatting" ] && \
+             [ "$SUBSET" = "control9" ] && \
+             [ "$RESULTS_JSON_INPUT" = "benchmarks/ndvs/ndvs_results.json" ] && \
+             [ -z "$RUN_COMMAND_TEMPLATE" ] && \
+             [ -z "$EVAL_COMMAND" ]; then
             GATE="parity"
           fi
 
