@@ -5319,7 +5319,30 @@ body.popup-open {
   min-height: 0;
 }
 
-.flight-path-download-btn {
+.flight-path-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.flight-path-view3d-btn {
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.flight-path-view3d-btn:hover {
+  background: rgba(255, 255, 255, 0.10);
+  color: #fff;
+}
+
+.flight-path-download-btn { 
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.1);

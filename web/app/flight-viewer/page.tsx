@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import React, { ChangeEvent, useCallback, useMemo, useState, useEffect, useRef } from "react";
 import Papa from "papaparse";
 import JSZip from "jszip";
@@ -486,10 +488,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
   }, []);
 
   useEffect(() => {
-    if (!apiKey) {
-      setInitError("missing-key");
-      return;
-    }
     if (!containerRef.current || viewerRef.current) {
       return;
     }
@@ -535,16 +533,36 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           }
         }
 
-        // Configure scene for photorealistic tiles only
-        viewer.scene.globe.show = false;
-        viewer.scene.skyAtmosphere.show = false;
-        viewer.scene.skyBox.show = false;
-        viewer.scene.backgroundColor = Cesium.Color.BLACK;
-        viewer.scene.fog.enabled = false;
-        viewer.imageryLayers.removeAll();
-        
-        // Enable depth testing for proper 3D rendering
-        viewer.scene.globe.depthTestAgainstTerrain = false;
+        if (apiKey) {
+          // Configure scene for photorealistic tiles only
+          viewer.scene.globe.show = false;
+          viewer.scene.skyAtmosphere.show = false;
+          viewer.scene.skyBox.show = false;
+          viewer.scene.backgroundColor = Cesium.Color.BLACK;
+          viewer.scene.fog.enabled = false;
+          viewer.imageryLayers.removeAll();
+
+          // Enable depth testing for proper 3D rendering
+          viewer.scene.globe.depthTestAgainstTerrain = false;
+        } else {
+          // No Google 3D Tiles key: fall back to a basic Cesium globe + OSM imagery
+          setInitError("no-tiles");
+          viewer.scene.globe.show = true;
+          viewer.scene.fog.enabled = true;
+          try {
+            const osm = (Cesium as any).createOpenStreetMapImageryProvider
+              ? (Cesium as any).createOpenStreetMapImageryProvider({})
+              : new (Cesium as any).OpenStreetMapImageryProvider({});
+            viewer.imageryLayers.removeAll();
+            viewer.imageryLayers.addImageryProvider(osm);
+          } catch (e) {
+            console.warn("[FlightPathScene] OSM imagery provider failed", e);
+          }
+
+          // Still render the paths above the ellipsoid
+          viewer.scene.globe.depthTestAgainstTerrain = false;
+          setViewerReady(true);
+        }
         
         viewerRef.current = viewer;
         
@@ -561,6 +579,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           resizeObserverRef.current.observe(containerRef.current);
         }
 
+        if (apiKey) {
         try {
           // Load Google Photorealistic 3D Tiles
           const tileset = await Cesium.Cesium3DTileset.fromUrl(
@@ -608,6 +627,7 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
           setInitError(message ? `tileset:${message}` : "tileset");
           // Still set viewer ready so we can show flight paths even without terrain
           setViewerReady(true);
+        }
         }
 
         // Set up mouse interaction for waypoint hover
@@ -989,14 +1009,6 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
     return () => { disposed = true; };
   }, [flights, selectedLens, viewerReady, fetchTerrainElevation]);
 
-  if (!apiKey) {
-    return (
-      <div className="flight-viewer__map-placeholder">
-        <p>Google Maps API key missing. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable photorealistic terrain.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="flight-viewer__map-container">
       <div ref={containerRef} className="flight-viewer__cesium-canvas" />
@@ -1004,8 +1016,8 @@ function FlightPathScene({ flights, selectedLens, onWaypointHover }: FlightPathS
         <div className="flight-viewer__map-warning">
           <strong>3D view unavailable.</strong>
           {" "}
-          {initError === "missing-key"
-            ? "Add a Google Maps API key to render photorealistic terrain."
+          {initError === "no-tiles"
+            ? "Google 3D tiles disabled (no API key). Showing flight path over a basic globe."
             : initError.startsWith("tileset")
             ? `Photorealistic tiles failed to load (${initError.split(":").slice(1).join(":") || "check Map Tiles API access"}).`
             : "WebGL initialization failed."}
@@ -1034,6 +1046,59 @@ export default function FlightViewerPage(): JSX.Element {
     headingMode: "poi_or_interpolate" as "poi_or_interpolate" | "follow_wayline" | "manual",
     allowStraightLines: false,
   });
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get("sessionCsvKey");
+    if (!key) return;
+
+    try {
+      const raw = sessionStorage.getItem(key);
+      if (!raw) {
+        setStatus(`Missing session CSV payload for key: ${key}`);
+        return;
+      }
+
+      const payload = JSON.parse(raw) as { csvText?: string; filename?: string };
+      if (!payload.csvText) {
+        setStatus("Invalid session CSV payload");
+        return;
+      }
+
+      const parsed = Papa.parse<RawFlightRow>(payload.csvText, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+      });
+
+      if (parsed.errors?.length) {
+        setStatus(`CSV parse error: ${parsed.errors[0].message}`);
+        return;
+      }
+
+      const prepared = (parsed.data || [])
+        .map(sanitizeRow)
+        .filter((value): value is PreparedRow => value !== null);
+
+      if (!prepared.length) {
+        setStatus("No valid waypoints found in CSV");
+        return;
+      }
+
+      const { samples, poi } = buildSamples(prepared);
+      setFlights([
+        {
+          id: `session-${Date.now()}`,
+          name: payload.filename || params.get("name") || "battery.csv",
+          color: FLIGHT_COLORS[0],
+          samples,
+          poi,
+        },
+      ]);
+      setStatus(null);
+    } catch (err) {
+      setStatus(`Failed to load session CSV: ${err instanceof Error ? err.message : "Unknown error"}`);
+    }
+  }, []);
 
   const onFilesSelected = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;

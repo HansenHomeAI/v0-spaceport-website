@@ -592,6 +592,45 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
 
+  const ensureOptimizedParamsReady = useCallback(async (): Promise<boolean> => {
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
+      return true;
+    }
+
+    if (!canOptimize) {
+      if (!selectedCoordsRef.current) {
+        showSystemNotification('error', 'Please select a location on the map first');
+      } else if (!batteryMinutes || !numBatteries) {
+        showSystemNotification('error', 'Please enter battery duration and quantity first');
+      } else {
+        showSystemNotification('error', 'Please set location and battery params first');
+      }
+      return false;
+    }
+
+    try {
+      await handleOptimize();
+
+      let checkCount = 0;
+      const maxChecks = 60; // 30s @ 500ms
+      while (checkCount < maxChecks) {
+        await new Promise((r) => setTimeout(r, 500));
+        checkCount += 1;
+        const latest = optimizedParamsRef.current;
+        if (latest && Object.keys(latest).length > 0) {
+          return true;
+        }
+      }
+
+      showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
+      return false;
+    } catch (e: any) {
+      showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
+      return false;
+    }
+  }, [batteryMinutes, canOptimize, handleOptimize, numBatteries]);
+
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
     "Running binary search optimization",
@@ -681,6 +720,46 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       });
     }
   }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+
+  const viewBatteryCsvIn3D = useCallback(async (batteryIndex1: number) => {
+    const ready = await ensureOptimizedParamsReady();
+    if (!ready) return;
+
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (!currentOptimizedParams) {
+      showSystemNotification('error', 'Please optimize first');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentOptimizedParams),
+      });
+      if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
+      const csvText = await res.text();
+
+      const safeTitle = (projectTitle && projectTitle !== 'Untitled')
+        ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
+        : 'Untitled';
+      const filename = `${safeTitle}-${batteryIndex1}.csv`;
+
+      const storageKey = `flightviewer:${Date.now()}:${batteryIndex1}`;
+      sessionStorage.setItem(storageKey, JSON.stringify({
+        csvText,
+        filename,
+        batteryIndex: batteryIndex1,
+        projectTitle: safeTitle,
+        createdAtMs: Date.now(),
+      }));
+
+      const url = `/flight-viewer?sessionCsvKey=${encodeURIComponent(storageKey)}&name=${encodeURIComponent(filename)}`;
+      window.open(url, '_blank');
+    } catch (e: any) {
+      showSystemNotification('error', e?.message || 'Failed to load 3D preview');
+    }
+  }, [API_ENHANCED_BASE, ensureOptimizedParamsReady, projectTitle]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1304,78 +1383,32 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
                 </h4>
                 <div id="batteryButtons" className="flight-path-grid">
-                {Array.from({ length: batteryCount }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
-                    onClick={async () => {
-                      console.log(`🔍 Battery ${idx + 1} clicked:`, {
-                        optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
-                        optimizedParamsRef: optimizedParamsRef.current ? 'EXISTS' : 'NULL',
-                        canOptimize,
-                        batteryMinutes,
-                        numBatteries,
-                        selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
-                      });
-                      
-                      // Auto-run optimization on first click if needed
-                      if (!optimizedParams) {
-                        if (!canOptimize) {
-                          // Set specific error messages for missing fields
-                          if (!selectedCoordsRef.current) {
-                            showSystemNotification('error', 'Please select a location on the map first');
-                          } else if (!batteryMinutes || !numBatteries) {
-                            showSystemNotification('error', 'Please enter battery duration and quantity first');
-                          } else {
-                            showSystemNotification('error', 'Please set location and battery params first');
-                          }
-                          return;
-                        }
-                        
-                        // Run optimization first
-                        try {
-                          await handleOptimize();
-                          // Poll optimizedParams until set (max ~30s) with improved checking
-                          let checkCount = 0;
-                          const maxChecks = 60; // 30 seconds with 500ms intervals
-                          
-                          while (checkCount < maxChecks) {
-                            await new Promise(r => setTimeout(r, 500));
-                            checkCount++;
-                            
-                            // Use ref to get current optimizedParams (not stale closure)
-                            const currentOptimizedParams = optimizedParamsRef.current;
-                            if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
-                              console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
-                              break;
-                            }
-                            
-                            // Log progress every 5 seconds
-                            if (checkCount % 10 === 0) {
-                              console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
-                            }
-                          }
-                          
-                          // Final check after polling using ref
-                          const finalOptimizedParams = optimizedParamsRef.current;
-                          if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
-                            showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
-                            return;
-                          }
-                        } catch (e: any) {
-                          showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                          return;
-                        }
-                      }
-                      
-                      // Add to download queue
-                      downloadBatteryCsv(idx + 1);
-                    }}
-                  >
-                    <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
-                    Battery {idx + 1}
-                  </button>
-                ))}
+                  {Array.from({ length: batteryCount }).map((_, idx) => (
+                    <div key={idx} className="flight-path-item">
+                      <button
+                        className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
+                        onClick={async () => {
+                          const ready = await ensureOptimizedParamsReady();
+                          if (!ready) return;
+                          downloadBatteryCsv(idx + 1);
+                        }}
+                      >
+                        <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
+                        Battery {idx + 1}
+                      </button>
+                      <button
+                        type="button"
+                        className="flight-path-view3d-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          viewBatteryCsvIn3D(idx + 1);
+                        }}
+                      >
+                        View in 3D
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
