@@ -70,6 +70,12 @@ class SpiralDesigner:
     MAX_ERR = 0.2           # Maximum error tolerance for calculations
     EARTH_R = 6378137       # Earth radius in meters (WGS84)
     FT2M = 0.3048          # Feet to meters conversion factor
+    MPS_TO_MPH = 2.236936  # Meters/sec to miles/hour conversion factor
+    FLIGHT_SPEED_MPS = 8.85  # 19.8 mph (matches Litchi CSV speed)
+    FLIGHT_SPEED_MPH = FLIGHT_SPEED_MPS * MPS_TO_MPH
+    TAKEOFF_LANDING_OVERHEAD_MINUTES = 2.5  # Startup/landing + maneuver buffer
+    MAX_TOTAL_WAYPOINTS = 99                # DJI/Litchi practical waypoint ceiling
+    RESERVED_SAFETY_WAYPOINTS = 12          # Keep headroom for terrain safety insertions
     
     def __init__(self):
         """
@@ -1081,7 +1087,7 @@ class SpiralDesigner:
             
             # Calculate sinusoidal gimbal pitch for varied photo angles
             progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))  # -35° to -21° range
+            gimbal_pitch = round(-35 + 20 * math.sin(progress * math.pi))  # -35° to -15° range
             
             # Calculate photo interval timing
             # Start photos at first waypoint, continue throughout flight, stop at last waypoint
@@ -1103,7 +1109,7 @@ class SpiralDesigner:
                 2,                          # Gimbal mode (focus POI)
                 gimbal_pitch,               # Camera tilt angle 
                 0,                          # Altitude mode (AGL)
-                8.85,                       # Speed (19.8 mph = 8.85 m/s)
+                self.FLIGHT_SPEED_MPS,       # Speed (19.8 mph = 8.85 m/s)
                 center['lat'],              # POI latitude (spiral center)
                 center['lon'],              # POI longitude (spiral center)
                 -35,                        # POI altitude (-35ft AGL)
@@ -1333,7 +1339,7 @@ class SpiralDesigner:
             
             # Calculate sinusoidal gimbal pitch for varied photo angles
             progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 14 * math.sin(progress * math.pi))
+            gimbal_pitch = round(-35 + 20 * math.sin(progress * math.pi))  # -35° to -15° range
             
             # Calculate photo interval timing
             # Start photos at first waypoint, continue throughout flight, stop at last waypoint
@@ -1355,7 +1361,7 @@ class SpiralDesigner:
                 2,                          # Gimbal mode (focus POI)
                 gimbal_pitch,               # Camera tilt angle 
                 0,                          # Altitude mode (AGL)
-                8.85,                       # Speed (19.8 mph = 8.85 m/s)
+                self.FLIGHT_SPEED_MPS,       # Speed (19.8 mph = 8.85 m/s)
                 center['lat'],              # POI latitude (spiral center)
                 center['lon'],              # POI longitude (spiral center)
                 -35,                        # POI altitude (-35ft AGL)
@@ -1375,7 +1381,7 @@ class SpiralDesigner:
         APPROACH:
         - Calculate actual spiral path length using mathematical integration
         - Account for all phases: outbound spiral, hold pattern, inbound spiral
-        - Use realistic drone speed (25 mph) and acceleration/deceleration
+        - Use planned mission speed (Litchi CSV) and acceleration/deceleration buffer
         - Add overhead for takeoff, landing, photos, hover time
         
         Args:
@@ -1446,16 +1452,48 @@ class SpiralDesigner:
         
         # Convert to miles and calculate flight time
         total_distance_miles = total_spiral_length_ft / 5280
-        flight_speed_mph = 25  # Realistic drone speed
+        flight_speed_mph = self.FLIGHT_SPEED_MPH  # Align with CSV speed
         
         # Base flight time
         flight_time_hours = total_distance_miles / flight_speed_mph
         flight_time_minutes = flight_time_hours * 60
         
         # Add overhead for takeoff, landing, photos, hover time, acceleration/deceleration
-        overhead_minutes = 1.5  # Reduced from 2.0 since we're more accurate now
+        overhead_minutes = self.TAKEOFF_LANDING_OVERHEAD_MINUTES
         
         return flight_time_minutes + overhead_minutes
+
+    def midpoint_density_for_slices(self, slices: int) -> int:
+        """Return extra midpoint count per segment for the given slice count."""
+        if slices == 1:
+            return 5
+        if slices == 2:
+            return 2
+        return 1
+
+    def estimate_slice_waypoint_count(self, slices: int, bounces: int) -> int:
+        """
+        Estimate waypoint count for one battery slice from build_slice() structure.
+
+        Formula:
+          total = 2 + 2*m*N + 2*N + m
+        where:
+          m = midpoints per segment
+          N = bounce count
+        """
+        m = self.midpoint_density_for_slices(slices)
+        return 2 + (2 * m * bounces) + (2 * bounces) + m
+
+    def max_bounces_for_waypoint_budget(self, slices: int) -> int:
+        """
+        Compute the largest bounce count that keeps base waypoints under budget,
+        leaving room for safety waypoints.
+        """
+        m = self.midpoint_density_for_slices(slices)
+        max_base_waypoints = max(1, self.MAX_TOTAL_WAYPOINTS - self.RESERVED_SAFETY_WAYPOINTS)
+        denominator = (2 * m) + 2
+        # total = 2 + 2*m*N + 2*N + m <= max_base_waypoints
+        return max(3, int((max_base_waypoints - (2 + m)) // denominator))
 
     def optimize_spiral_for_battery(self, target_battery_minutes: float, num_batteries: int, center_lat: float, center_lon: float) -> Dict:
         """
@@ -1529,40 +1567,53 @@ class SpiralDesigner:
         
         # Clamp to valid range for safety
         target_bounces = max(min_N, min(max_N, target_bounces))
-        
+
+        # NEW: Respect waypoint budget after slice-aware midpoint density changes.
+        # This is critical for single-slice missions (slices=1) where midpoint density is high.
+        waypoint_budget_bounce_cap = min(max_N, self.max_bounces_for_waypoint_budget(num_batteries))
+        if target_bounces > waypoint_budget_bounce_cap:
+            print(
+                f"Waypoint budget cap active: reducing bounces {target_bounces} -> {waypoint_budget_bounce_cap} "
+                f"for {num_batteries} slice(s)"
+            )
+            target_bounces = waypoint_budget_bounce_cap
+
         # Initialize base parameters with scaled bounce count
         base_params = {
             'slices': num_batteries,
             'N': target_bounces,
             'r0': 200.0  # Original start radius for proper expansion scaling
         }
+        # Ensure rHold lower-bound is strictly above r0 to avoid alpha=0 singularities.
+        effective_min_rHold = max(min_rHold, base_params['r0'] + 10.0)
         
         print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
         
         # Feasibility check: Test if minimum parameters can fit
         test_params = base_params.copy()
-        test_params['rHold'] = min_rHold
+        test_params['rHold'] = effective_min_rHold
         
         try:
             min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
             if min_time > target_battery_minutes:
                 # Minimum spiral too large - reduce bounces and retry
                 reduced_bounces = max(min_N, target_bounces - 2)
+                reduced_bounces = min(reduced_bounces, waypoint_budget_bounce_cap)
                 print(f"Minimum spiral too large, reducing bounces from {target_bounces} to {reduced_bounces}")
                 base_params['N'] = reduced_bounces
                 target_bounces = reduced_bounces
                 
                 test_params = base_params.copy()
-                test_params['rHold'] = min_rHold
+                test_params['rHold'] = effective_min_rHold
                 min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
                 
                 if min_time > target_battery_minutes:
                     # Still too large - return absolute minimum configuration
                     return {
                         'slices': num_batteries,
-                        'N': min_N,
+                        'N': min(min_N, waypoint_budget_bounce_cap),
                         'r0': 100.0,
-                        'rHold': min_rHold,
+                        'rHold': effective_min_rHold,
                         'estimated_time_minutes': min_time,
                         'battery_utilization': round((min_time / target_battery_minutes) * 100, 1)
                     }
@@ -1573,7 +1624,7 @@ class SpiralDesigner:
         best_params = None
         best_time = 0.0
         
-        low, high = min_rHold, max_rHold
+        low, high = effective_min_rHold, max_rHold
         tolerance = 25.0        # 25ft tolerance for large-scale optimization
         max_iterations = 30     # Increased iterations for large radius ranges
         iterations = 0
@@ -1604,7 +1655,11 @@ class SpiralDesigner:
                 high = mid_rHold  # Assume failure means too large
         
         # BONUS BOUNCE: Attempt to add one more bounce if significant headroom
-        if best_params and best_time < target_battery_minutes * 0.85 and target_bounces < max_N:
+        if (
+            best_params
+            and best_time < target_battery_minutes * 0.85
+            and target_bounces < min(max_N, waypoint_budget_bounce_cap)
+        ):
             test_params = best_params.copy()
             test_params['N'] = target_bounces + 1
             
@@ -1623,7 +1678,7 @@ class SpiralDesigner:
                 'slices': num_batteries,
                 'N': target_bounces,
                 'r0': 150.0,
-                'rHold': min_rHold
+                'rHold': effective_min_rHold
             }
             try:
                 best_time = self.estimate_flight_time_minutes(best_params, center_lat, center_lon)

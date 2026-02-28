@@ -1,5 +1,7 @@
 export const metadata = {
-  title: 'Spaceport AI',
+  title: 'Spaceport',
+  description: 'Transform your drone footage into 3D models with Spaceport.',
+  metadataBase: new URL('https://spcprt.com'),
   icons: {
     icon: [
       { url: '/assets/SpaceportIcons/Favicon.png' },
@@ -7,6 +9,28 @@ export const metadata = {
     ],
     shortcut: '/assets/SpaceportIcons/Favicon.png',
     apple: '/assets/SpaceportIcons/Favicon.png',
+  },
+  openGraph: {
+    title: 'Spaceport',
+    description: 'Transform your drone footage into 3D models with Spaceport.',
+    url: 'https://spcprt.com',
+    siteName: 'Spaceport',
+    images: [
+      {
+        url: '/assets/SpaceportIcons/SpcprtLarge.png',
+        width: 1200,
+        height: 630,
+        alt: 'Spaceport Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Spaceport',
+    description: 'Transform your drone footage into 3D models with Spaceport.',
+    images: ['/assets/SpaceportIcons/SpcprtLarge.png'],
   },
 };
 import './globals.css';
@@ -34,3 +58,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

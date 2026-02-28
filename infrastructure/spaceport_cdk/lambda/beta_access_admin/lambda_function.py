@@ -176,7 +176,7 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
     # Debug logging to see what email is being sent
     logger.info(f"DEBUG: Sending invitation email to: {email}, name: {name}")
     
-    subject = 'You have been invited to Spaceport AI'
+    subject = 'You have been invited to Spaceport'
     greeting = f"Hi {name},\n\n" if name else "Hi,\n\n"
     body_text = (
         greeting
@@ -184,7 +184,7 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
         + "1) Go to https://spcprt.com/create\n"
         + f"2) Sign in with your email ({email}) and the temporary password: {temp_password or '<check your email>'}\n"
         + "3) You'll be prompted to choose a new password and set your handle.\n\n"
-        + "If you need help, just reply to this email.\n\n— Spaceport AI"
+        + "If you need help, just reply to this email.\n\n— Spaceport"
     )
 
     body_html = f"""
@@ -197,13 +197,13 @@ def _send_custom_invite_email(email: str, name: str, temp_password: Optional[str
         <li>You'll be prompted to choose a new password and set your handle.</li>
       </ol>
       <p>If you need help, just reply to this email.</p>
-      <p>— Spaceport AI</p>
+      <p>— Spaceport</p>
     </body></html>
     """
 
     # Send via Resend
     params = {
-        "from": "Spaceport AI <hello@spcprt.com>",
+        "from": "Spaceport <hello@spcprt.com>",
         "to": [email],
         "subject": subject,
         "html": body_html,
