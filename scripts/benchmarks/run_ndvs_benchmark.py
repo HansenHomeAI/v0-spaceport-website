@@ -102,6 +102,11 @@ def run_shell(command: str, dry_run: bool) -> None:
     subprocess.run(command, shell=True, check=True)
 
 
+def uses_public_baseline_fetch(eval_command: str) -> bool:
+    normalized = eval_command.strip()
+    return "scripts/benchmarks/fetch_ndvs_results.py" in normalized
+
+
 def invoke_scorecard(
     args: argparse.Namespace,
     results_json: Path,
@@ -167,6 +172,13 @@ def main() -> int:
             print("Dry-run mode: skipping results JSON requirement.")
         elif not args.eval_command:
             raise ValueError("--results-json is required when --eval-command is not provided.")
+        elif uses_public_baseline_fetch(args.eval_command):
+            raise RuntimeError(
+                "Branch-specific NDVS evaluation is not wired in this repo. "
+                "Refusing to score public baseline rows from fetch_ndvs_results.py. "
+                "Provide --results-json with fresh branch results or a real --eval-command "
+                "that writes {output_dir}/ndvs_results.json."
+            )
         else:
             eval_command = args.eval_command.format(
                 method=args.method_name,

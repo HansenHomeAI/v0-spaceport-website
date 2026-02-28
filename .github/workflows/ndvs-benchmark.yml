@@ -26,7 +26,7 @@ on:
         required: true
         default: progress
       results_json:
-        description: Path to NDVS results JSON in repo workspace (optional if eval command writes output-dir/ndvs_results.json)
+        description: Path to branch-specific NDVS results JSON in repo workspace. Preferred for branch gating.
         required: false
         default: ""
       run_command_template:
@@ -34,7 +34,7 @@ on:
         required: false
         default: ""
       eval_command:
-        description: Optional command that generates ndvs_results.json
+        description: Optional real branch evaluator that writes {output_dir}/ndvs_results.json. Public baseline fetch is rejected.
         required: false
         default: ""
       orientation_failures:
