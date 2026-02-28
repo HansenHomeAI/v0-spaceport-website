@@ -64,10 +64,10 @@ gaussian_management:
   # Enhanced densification phase for complex scenes - FIXED FOR PHOTOREALISTIC TRAINING
   densification:
     enabled: true
-    interval: 100                    # Every 100 iterations
+    interval: 70                     # Ablation-011: modestly tighter cadence to add detail with limited runtime risk
     start_iteration: 500             # Start after initial convergence
     end_iteration: 15000             # End standard densification
-    grad_threshold: 0.00002          # CRITICAL FIX: 2e-5 instead of 2e-4 for proper densification
+    grad_threshold: 0.000018         # Ablation-007: slightly lower threshold to increase detail densification sensitivity
     percent_dense: 0.02              # Aggressive densification for photorealistic quality
     
     # Progressive densification schedule (based on latest research)
@@ -78,18 +78,18 @@ gaussian_management:
       schedule_iterations: 7000
       
     # Advanced densification controls
-    split_threshold: 0.00005         # Threshold for splitting large Gaussians
+    split_threshold: 0.000045        # Ablation-010: slightly lower split threshold to encourage finer Gaussian refinement
     clone_threshold: 0.00002         # Threshold for cloning small Gaussians
     max_gaussians: 2000000           # Maximum number of Gaussians
     adaptive_control: true           # Enable adaptive density control
     
     # Size and opacity controls
     size_threshold: 20               # Maximum screen size for densification
-    min_opacity: 0.005               # Minimum opacity threshold
+    min_opacity: 0.0045              # Ablation-009: preserve more faint structure before pruning
     max_screen_size: 20              # Maximum screen size
   
   # Opacity management
-  opacity_reset_interval: 3000       # Reset low-opacity Gaussians every 3000 iterations
+  opacity_reset_interval: 2800       # Ablation-008: slightly more frequent opacity resets
     
   # Late densification recovery (Trick-GS innovation)
   late_densification:

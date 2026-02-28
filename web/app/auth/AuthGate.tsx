@@ -341,7 +341,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
               {view === 'forgot_password' && (
                 <form onSubmit={handleForgotPassword} className="auth-form">
                   <p className="auth-description">
-                    Enter your email address and we'll send you a code to reset your password.
+                    Enter your email address and we&apos;ll send you a code to reset your password.
                   </p>
                   <div className="input-group">
                     <input

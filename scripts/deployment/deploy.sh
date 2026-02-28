@@ -7,7 +7,7 @@ set -e
 # --- Configuration ---
 AWS_REGION="us-west-2"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+BRANCH_SUFFIX="${BRANCH_SUFFIX:-}"
 
 # Enable Docker BuildKit for better caching and performance
 export DOCKER_BUILDKIT=1
@@ -52,8 +52,8 @@ cache_base_images() {
   
   # Pull common base images in parallel
   {
-    docker pull nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
-    docker pull nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
+    docker pull public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
+    docker pull public.ecr.aws/nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
     docker pull python:3.9-slim || true &
     wait
   }
@@ -76,11 +76,13 @@ login_ecr() {
 
 # Function to get repository name for a container
 get_repo_name() {
-    case "$1" in
+    local container_name=$1
+    
+    case "$container_name" in
         "sfm") echo "spaceport/sfm";;
         "3dgs") echo "spaceport/3dgs";;
         "compressor") echo "spaceport/compressor";;
-        *) error "Invalid container name provided to get_repo_name: $1";;
+        *) error "Invalid container name provided to get_repo_name: $container_name";;
     esac
 }
 
@@ -89,6 +91,11 @@ deploy_container() {
   local container_name=$1
   local repo_name
   repo_name=$(get_repo_name "$container_name")
+  local build_cache_ref
+  build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
+  local branch_tag="${BRANCH_SUFFIX:-}"
+  local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -102,21 +109,47 @@ deploy_container() {
   log "Building container from: ${container_dir}"
   
   # Try to pull existing image for layer caching
-  log "Pulling existing image for layer caching..."
-  docker pull "${ecr_uri}:latest" || {
-    log "No existing image found, building from scratch..."
-  }
+  log "Pulling existing image and cache for layer reuse..."
+  docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
+  docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
+  docker pull "${base_image}" || log "No base image yet for ${container_name}"
   
+  # Build base image if missing
+  if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
+    local base_file="${container_dir}/Dockerfile.base"
+    if [[ -f "$base_file" ]]; then
+      log "Building base image for ${container_name}..."
+      docker buildx build \
+        --platform linux/amd64 \
+        --file "${base_file}" \
+        --tag "${repo_name}:base" \
+        --progress plain \
+        --load \
+        "${container_dir}"
+      docker tag "${repo_name}:base" "${base_image}"
+      docker push "${base_image}"
+      log "Base image built and pushed: ${base_image}"
+      if [[ "${BUILD_BASE_ONLY:-0}" = "1" ]]; then
+        log "BUILD_BASE_ONLY=1 set; skipping app build for ${container_name}"
+        return
+      fi
+    else
+      log "No Dockerfile.base for ${container_name}; skipping base build."
+    fi
+  fi
+
   # Build with advanced caching options
   log "Building with Docker BuildKit and layer caching..."
   docker buildx build \
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
+    --build-arg BASE_IMAGE="${base_image}" \
+    --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
-    --cache-from "${ecr_uri}:latest" \
-    --cache-from "${ecr_uri}:cache" \
-    --cache-to "type=local,dest=/tmp/docker-cache/${container_name}" \
-    --cache-to "type=inline" \
+    --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
+    --cache-from "type=registry,ref=${ecr_uri}:latest" \
+    --cache-from "${base_image}" \
+    --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \
     "${container_dir}"
@@ -125,27 +158,27 @@ deploy_container() {
 
   log "Tagging images..."
   docker tag "${repo_name}:latest" "${ecr_uri}:latest"
-  docker tag "${repo_name}:latest" "${ecr_uri}:${TIMESTAMP}"
-  docker tag "${repo_name}:latest" "${ecr_uri}:cache"
-  log "Tags created: latest, ${TIMESTAMP}, cache"
+  if [ -n "$branch_tag" ]; then
+    docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
+    log "Tags created: latest, ${branch_tag}"
+  else
+    log "Tags created: latest"
+  fi
 
   log "Pushing images to ECR..."
-  # Push in parallel for faster deployment
-  {
-    docker push "${ecr_uri}:latest" &
-    docker push "${ecr_uri}:${TIMESTAMP}" &
-    docker push "${ecr_uri}:cache" &
-    wait
-  }
-  
+  docker push "${ecr_uri}:latest"
+  if [ -n "$branch_tag" ]; then
+    docker push "${ecr_uri}:${branch_tag}"
+  fi
   log "Successfully pushed to ${ecr_uri}"
   
   # Clean up local images to save space
   log "Cleaning up local images..."
   docker rmi "${repo_name}:latest" || true
   docker rmi "${ecr_uri}:latest" || true
-  docker rmi "${ecr_uri}:${TIMESTAMP}" || true
-  docker rmi "${ecr_uri}:cache" || true
+  if [ -n "$branch_tag" ]; then
+    docker rmi "${ecr_uri}:${branch_tag}" || true
+  fi
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
   echo
