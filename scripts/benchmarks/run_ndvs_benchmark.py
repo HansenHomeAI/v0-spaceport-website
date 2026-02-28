@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import shlex
+import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -178,6 +179,14 @@ def main() -> int:
 
     if not args.dry_run and not results_json.exists():
         raise FileNotFoundError(f"NDVS results JSON not found: {results_json}")
+
+    canonical_results_json = args.output_dir / "ndvs_results.json"
+    if results_json != canonical_results_json:
+        print(f"[results] source={results_json}")
+        print(f"[results] copy -> {canonical_results_json}")
+        if not args.dry_run:
+            shutil.copy2(results_json, canonical_results_json)
+        results_json = canonical_results_json
 
     gate_code = invoke_scorecard(args, results_json, scorecard_output)
     if gate_code != 0:

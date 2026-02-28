@@ -9,8 +9,8 @@ on:
       - ".github/workflows/ndvs-benchmark.yml"
       - "scripts/benchmarks/run_ndvs_benchmark.py"
       - "scripts/benchmarks/ndvs_scorecard.py"
-      - "scripts/benchmarks/fetch_ndvs_results.py"
       - "benchmarks/ndvs/benchmark_config.json"
+      - "benchmarks/ndvs/ndvs_results.json"
   workflow_dispatch:
     inputs:
       method_name:
@@ -75,14 +75,26 @@ jobs:
           DRY_RUN_INPUT="${{ github.event.inputs.dry_run }}"
 
           if [ "${{ github.event_name }}" = "push" ]; then
-            METHOD_NAME="gaussian-splatting"
-            SUBSET="control9"
-            GATE="parity"
-            RESULTS_JSON_INPUT=""
+            TRIGGER_LINE="$(tail -n 1 benchmarks/ndvs/trigger-run.txt)"
+            echo "NDVS trigger line: ${TRIGGER_LINE}"
+            read -r METHOD_SUBSET METHOD_GATE METHOD_NAME _ <<<"${TRIGGER_LINE}"
+
+            METHOD_NAME="${METHOD_NAME:-gaussian-splatting}"
+            SUBSET="${METHOD_SUBSET:-control9}"
+            GATE="${METHOD_GATE:-progress}"
+            RESULTS_JSON_INPUT="benchmarks/ndvs/ndvs_results.json"
             RUN_COMMAND_TEMPLATE=""
-            EVAL_COMMAND="python3 scripts/benchmarks/fetch_ndvs_results.py --output-json {output_dir}/ndvs_results.json"
+            EVAL_COMMAND=""
             ORIENTATION_FAILURES="0"
             DRY_RUN_INPUT="false"
+
+            if [ ! -f "${RESULTS_JSON_INPUT}" ]; then
+              echo "::error::Missing branch NDVS results JSON: ${RESULTS_JSON_INPUT}"
+              echo "::error::Generate branch results first, or dispatch this workflow with results_json/eval_command."
+              exit 1
+            fi
+
+            echo "Using branch NDVS results JSON: ${RESULTS_JSON_INPUT}"
           fi
 
           METHOD_NAME="${METHOD_NAME:-spaceport}"
@@ -125,4 +137,6 @@ jobs:
         if: always()
         with:
           name: ndvs-benchmark-${{ github.run_id }}-${{ github.run_attempt }}
-          path: logs/ndvs/
+          path: |
+            logs/ndvs/**/ndvs_results.json
+            logs/ndvs/**/scorecard.json
