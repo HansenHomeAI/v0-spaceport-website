@@ -102,3 +102,16 @@ def test_shared_repo_uses_latest_for_shared_branch():
         "",
     )
     assert uri == "123456789012.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest"
+
+
+def test_ml_development_ignores_stale_branch_repo_and_uses_shared_latest():
+    client = FakeEcrClient({"spaceport/sfm-mldevelopment", "spaceport/sfm"})
+    uri = _resolve_ecr_uri(
+        client,
+        "123456789012",
+        "us-west-2",
+        "spaceport/sfm-mldevelopment",
+        "spaceport/sfm",
+        "",
+    )
+    assert uri == "123456789012.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest"

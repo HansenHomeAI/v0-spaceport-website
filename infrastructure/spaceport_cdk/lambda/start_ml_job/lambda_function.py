@@ -43,8 +43,11 @@ def _resolve_ecr_uri(ecr_client, account_id, region, repo_name, fallback_repo_na
 
     # Branch repos are imported as :latest; branch suffix tags live on the shared repo.
     if repo_name != fallback_repo_name:
+        if requested_tag == 'latest':
+            print(f"Using shared ECR repo: {fallback_repo_name}:latest")
+            return shared_uri
         try:
-            if requested_tag != 'latest' and _tag_exists(ecr_client, fallback_repo_name, requested_tag):
+            if _tag_exists(ecr_client, fallback_repo_name, requested_tag):
                 print(f"Using shared ECR repo tag: {fallback_repo_name}:{requested_tag}")
                 return shared_uri
             if _repo_exists(ecr_client, repo_name):
