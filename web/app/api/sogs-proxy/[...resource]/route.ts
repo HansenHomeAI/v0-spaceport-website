@@ -38,6 +38,8 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }
 
+  upstreamUrl.search = request.nextUrl.search;
+
   const upstreamResponse = await fetch(upstreamUrl, {
     headers: {
       "Accept": request.headers.get("accept") ?? "*/*",

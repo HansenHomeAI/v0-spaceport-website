@@ -77,12 +77,14 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             METHOD_NAME="gaussian-splatting"
             SUBSET="control9"
-            GATE="progress"
+            GATE="parity"
             RESULTS_JSON_INPUT=""
             RUN_COMMAND_TEMPLATE=""
             EVAL_COMMAND="python3 scripts/benchmarks/fetch_ndvs_results.py --output-json {output_dir}/ndvs_results.json"
             ORIENTATION_FAILURES="0"
             DRY_RUN_INPUT="false"
+            echo "::notice::Push-mode NDVS currently uses fetch_ndvs_results.py (public baseline rows only)."
+            echo "::notice::Enforcing parity instead of progress because this path is not branch-specific evaluation."
           fi
 
           METHOD_NAME="${METHOD_NAME:-spaceport}"

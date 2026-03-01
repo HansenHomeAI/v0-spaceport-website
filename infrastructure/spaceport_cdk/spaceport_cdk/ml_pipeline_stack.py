@@ -20,7 +20,7 @@ from constructs import Construct
 import os
 import json
 import boto3
-from .branch_utils import build_scoped_name
+from .branch_utils import build_scoped_name, get_ecr_branch_suffix
 
 
 class MLPipelineStack(Stack):
@@ -286,6 +286,11 @@ class MLPipelineStack(Stack):
         gaussian_repo_fallback_name = "spaceport/3dgs"
         compressor_repo_fallback_name = "spaceport/compressor"
         
+        branch_name = env_config.get("branchName", "")
+        # Derive the ECR tag from the raw branch name so shared branches like
+        # ml-development continue to use the shared repo's latest tag.
+        ecr_image_tag = get_ecr_branch_suffix(branch_name) if branch_name else ""
+
         start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
             function_name=scoped_name("Spaceport-StartMLJob-"),
@@ -305,6 +310,7 @@ class MLPipelineStack(Stack):
                 "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
                 "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
                 "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
+                "ECR_IMAGE_TAG": ecr_image_tag,
             }
         )
 

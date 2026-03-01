@@ -22,6 +22,7 @@ if branch_name and branch_name not in ['main', 'development']:
     env_config = {
         'region': 'us-west-2',
         'resourceSuffix': sanitized_suffix,
+        'branchName': branch_name,
         'domain': f'{sanitized_suffix}.spcprt.com',  # Dynamic domain
         'useOIDC': False  # Agent branches use access keys, not OIDC
     }
@@ -32,6 +33,10 @@ else:
     env_config = predefined_environments.get(env_name)
     if not env_config:
         raise ValueError(f"Environment '{env_name}' not found in predefined environments and no branch provided")
+    env_config = {
+        **env_config,
+        'branchName': branch_name or ('main' if env_name == 'production' else 'development')
+    }
 
 print(f"Deploying to environment: {env_name}")
 if branch_name:
