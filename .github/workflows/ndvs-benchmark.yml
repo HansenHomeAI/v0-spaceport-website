@@ -85,6 +85,11 @@ jobs:
             DRY_RUN_INPUT="false"
           fi
 
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "$RESULTS_JSON_INPUT" ] && [ -z "$EVAL_COMMAND" ]; then
+            echo "::notice::workflow_dispatch without results_json/eval_command is using public NDVS baseline fetch."
+            EVAL_COMMAND="python3 scripts/benchmarks/fetch_ndvs_results.py --output-json {output_dir}/ndvs_results.json"
+          fi
+
           METHOD_NAME="${METHOD_NAME:-spaceport}"
           SUBSET="${SUBSET:-control9}"
           GATE="${GATE:-progress}"
