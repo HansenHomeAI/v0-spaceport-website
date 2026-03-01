@@ -300,6 +300,7 @@ class AuthStack(Stack):
             "SubscriptionApiGateway",  # Unique construct ID
             rest_api_name="Spaceport-SubscriptionApi",
             description="Subscription management API for Spaceport",
+            deploy=False,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
