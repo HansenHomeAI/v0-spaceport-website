@@ -201,6 +201,7 @@ jobs:
         STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
         STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
         STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
+        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         CDK_DISABLE_BOOTSTRAP_VERSION_CHECK: "1"
         # Referral system configuration - using CDK defaults (Option A)
         # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
@@ -270,8 +271,6 @@ jobs:
           --context account=$ACCOUNT \
           --context region=us-west-2 \
           --parameters "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${GOOGLE_MAPS_API_KEY}"
-      env:
-        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
     - name: Update Frontend Environment Variables
       if: github.event_name == 'push'
