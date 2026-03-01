@@ -213,6 +213,11 @@ jobs:
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
+
+        if [ -z "${GOOGLE_MAPS_API_KEY:-}" ]; then
+          echo "GOOGLE_MAPS_API_KEY secret is empty or unavailable for this workflow/environment"
+          exit 1
+        fi
         
         # Detect Lambda function changes
         LAMBDA_CHANGED="false"
@@ -264,7 +269,9 @@ jobs:
           --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
-          --parameters ${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          --parameters "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${GOOGLE_MAPS_API_KEY}"
+      env:
+        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
     - name: Update Frontend Environment Variables
       if: github.event_name == 'push'
