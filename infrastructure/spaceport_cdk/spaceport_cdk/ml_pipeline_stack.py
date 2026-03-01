@@ -669,7 +669,7 @@ class MLPipelineStack(Stack):
         sfm_polling_loop = sfm_choice.when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Completed"),
             sfn.Choice(self, "IsSfmOnlyRun")
-              .when(sfn.Condition.string_equals("$.pipelineStep", "sfm"), sfm_only_complete)
+              .when(sfn.Condition.string_equals("$.pipelineStep", "sfm_only"), sfm_only_complete)
               .otherwise(gaussian_job_with_catch)
         ).when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Failed"),
