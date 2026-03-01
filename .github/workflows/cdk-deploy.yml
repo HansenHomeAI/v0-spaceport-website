@@ -267,15 +267,7 @@ jobs:
 
         STACK_ID_SUFFIX=""
         if [ "${BRANCH_NAME}" != "main" ] && [ "${BRANCH_NAME}" != "development" ] && [ "${BRANCH_NAME}" != "ml-development" ]; then
-          STACK_ID_SUFFIX=$(BRANCH_NAME="${BRANCH_NAME}" python3 - <<'PY'
-import sys
-from pathlib import Path
-sys.path.append(str(Path.cwd()))
-from spaceport_cdk.branch_utils import sanitize_branch_name
-import os
-print(sanitize_branch_name(os.environ["BRANCH_NAME"]).title(), end="")
-PY
-)
+          STACK_ID_SUFFIX=$(BRANCH_NAME="${BRANCH_NAME}" python3 -c 'import os; from spaceport_cdk.branch_utils import sanitize_branch_name; print(sanitize_branch_name(os.environ["BRANCH_NAME"]).title(), end="")')
         fi
 
         SPACEPORT_STACK_NAME="Spaceport${ENVIRONMENT^}Stack${STACK_ID_SUFFIX}"
@@ -308,15 +300,7 @@ PY
 
         STACK_ID_SUFFIX=""
         if [ "${GITHUB_REF_NAME}" != "main" ] && [ "${GITHUB_REF_NAME}" != "development" ] && [ "${GITHUB_REF_NAME}" != "ml-development" ]; then
-          STACK_ID_SUFFIX=$(BRANCH_NAME="${GITHUB_REF_NAME}" python3 - <<'PY'
-import sys
-from pathlib import Path
-sys.path.append(str(Path.cwd()))
-from spaceport_cdk.branch_utils import sanitize_branch_name
-import os
-print(sanitize_branch_name(os.environ["BRANCH_NAME"]).title(), end="")
-PY
-)
+          STACK_ID_SUFFIX=$(BRANCH_NAME="${GITHUB_REF_NAME}" python3 -c 'import os; from spaceport_cdk.branch_utils import sanitize_branch_name; print(sanitize_branch_name(os.environ["BRANCH_NAME"]).title(), end="")')
         fi
         
         # Get CDK stack outputs
