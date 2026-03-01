@@ -28,19 +28,56 @@ globalThis.fetch = async (url) => {
   });
 };
 
-const query = "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=deadbeef";
-const encoded = "https:/spaceport-ml-processing.s3.amazonaws.com/bundles/meta.json";
-await GET(
+const cases = [
   {
-    nextUrl: new URL(`https://example.com/api/sogs-proxy/${encoded}${query}`),
-    headers: new Headers({ accept: "application/json" }),
+    encodedPath:
+      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Ffully%2520encoded%2Ffile%252Bname.json",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=encodedfeed",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/fully%20encoded/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=encodedfeed",
   },
-  { params: { resource: [encoded] } },
-);
+  {
+    encodedPath: "https:/spaceport-ml-processing.s3.amazonaws.com/bundles/meta.json",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=deadbeef",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/meta.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=deadbeef",
+  },
+  {
+    // Using request.url preserves the raw encoded object key. Rebuilding from decoded
+    // params.resource would turn this into a different path and break S3 signatures.
+    encodedPath:
+      "https:/spaceport-ml-processing.s3.amazonaws.com/bundles/folder%20name/file%2Bname.json",
+    query: "?X-Amz-Expires=300&X-Amz-Signature=beadfeed",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/folder%20name/file%2Bname.json?X-Amz-Expires=300&X-Amz-Signature=beadfeed",
+  },
+  {
+    encodedPath:
+      "https:/spaceport-ml-processing.s3.amazonaws.com/bundles/base%20path/file%2Bname.json",
+    query: "?X-Amz-Date=20260301T000000Z&X-Amz-Signature=feedface",
+    requestPath:
+      "/preview/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/bundles/base%20path/file%2Bname.json",
+    basePath: "/preview",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/base%20path/file%2Bname.json?X-Amz-Date=20260301T000000Z&X-Amz-Signature=feedface",
+  },
+];
 
-assert.equal(
-  fetchedUrl,
-  `https://spaceport-ml-processing.s3.amazonaws.com/bundles/meta.json${query}`,
-);
+for (const testCase of cases) {
+  fetchedUrl = null;
+  const requestPath = testCase.requestPath ?? `/api/sogs-proxy/${testCase.encodedPath}`;
+  const nextUrl = new URL(`https://example.com${requestPath}${testCase.query}`);
+  nextUrl.basePath = testCase.basePath ?? "";
+  await GET(
+    {
+      url: `https://example.com${requestPath}${testCase.query}`,
+      nextUrl,
+      headers: new Headers({ accept: "application/json" }),
+    },
+    { params: { resource: [testCase.encodedPath] } },
+  );
+
+  assert.equal(fetchedUrl, testCase.expected);
+}
 
 console.log("sogs proxy query passthrough ok");

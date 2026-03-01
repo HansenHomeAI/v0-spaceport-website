@@ -7,13 +7,7 @@ const ALLOWED_HOSTS = new Set([
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
 ]);
 
-const normalizeUpstreamUrl = (segments: string[]): URL | null => {
-  if (!segments.length) {
-    return null;
-  }
-
-  const joined = segments.join("/");
-  let urlString = joined;
+const normalizeUpstreamUrl = (urlString: string): URL | null => {
   if (urlString.startsWith("https:/") && !urlString.startsWith("https://")) {
     urlString = urlString.replace("https:/", "https://");
   }
@@ -32,13 +26,52 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   }
 };
 
-export async function GET(request: NextRequest, { params }: { params: { resource: string[] } }) {
-  const upstreamUrl = normalizeUpstreamUrl(params.resource ?? []);
+const getProxyPrefixes = (request: NextRequest): string[] => {
+  const basePath =
+    (typeof request.nextUrl.basePath === "string" ? request.nextUrl.basePath : "") ||
+    process.env.NEXT_PUBLIC_BASE_PATH ||
+    "";
+
+  const normalizedBasePath =
+    basePath && basePath !== "/" ? `/${basePath.replace(/^\/+|\/+$/g, "")}` : "";
+
+  return normalizedBasePath
+    ? [`${normalizedBasePath}/api/sogs-proxy/`, "/api/sogs-proxy/"]
+    : ["/api/sogs-proxy/"];
+};
+
+const getRawUpstreamUrl = (request: NextRequest): URL | null => {
+  const requestUrl = new URL(request.url);
+  let rawUpstream: string | null = null;
+
+  for (const prefix of getProxyPrefixes(request)) {
+    if (requestUrl.pathname.startsWith(prefix)) {
+      rawUpstream = requestUrl.pathname.slice(prefix.length);
+      break;
+    }
+  }
+
+  if (!rawUpstream) {
+    return null;
+  }
+
+  const looksLikeEncodedFullUrl = /^https?%3A/i.test(rawUpstream);
+  const upstreamCandidate = looksLikeEncodedFullUrl ? decodeURIComponent(rawUpstream) : rawUpstream;
+
+  const upstreamUrl = normalizeUpstreamUrl(upstreamCandidate);
   if (!upstreamUrl) {
-    return new Response("Invalid or disallowed upstream resource", { status: 400 });
+    return null;
   }
 
   upstreamUrl.search = request.nextUrl.search;
+  return upstreamUrl;
+};
+
+export async function GET(request: NextRequest, _context: { params: { resource: string[] } }) {
+  const upstreamUrl = getRawUpstreamUrl(request);
+  if (!upstreamUrl) {
+    return new Response("Invalid or disallowed upstream resource", { status: 400 });
+  }
 
   const upstreamResponse = await fetch(upstreamUrl, {
     headers: {
