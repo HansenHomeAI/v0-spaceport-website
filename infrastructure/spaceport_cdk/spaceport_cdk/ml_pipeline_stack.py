@@ -69,14 +69,15 @@ class MLPipelineStack(Stack):
             )
         print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
 
-        # Import upload bucket from main Spaceport stack - DO NOT CREATE
-        # This bucket is owned by the main Spaceport stack, we just reference it
-        upload_bucket = s3.Bucket.from_bucket_name(
-            self, "ImportedUploadBucket",
-            f"spaceport-uploads-{suffix}"
+        # Import upload bucket from main Spaceport stack, falling back to the shared bucket when
+        # a branch-specific uploads bucket does not exist yet.
+        upload_bucket = self._get_or_create_s3_bucket(
+            construct_id="ImportedUploadBucket",
+            preferred_name=f"spaceport-uploads-{suffix}",
+            fallback_name="spaceport-uploads"
         )
-        print(f"✅ Importing upload bucket from main stack: spaceport-uploads-{suffix}")
-        self._imported_resources.append({"type": "S3::Bucket", "name": f"spaceport-uploads-{suffix}", "action": "imported_from_main_stack"})
+        print(f"✅ Importing upload bucket from main stack: {upload_bucket.bucket_name}")
+        self._imported_resources.append({"type": "S3::Bucket", "name": upload_bucket.bucket_name, "action": "imported_from_main_stack"})
 
         # ========== ECR REPOSITORIES ==========
         # Dynamic ECR repositories - import if exist, create if not
