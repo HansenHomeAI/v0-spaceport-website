@@ -75,4 +75,5 @@ def test_sanitize_branch_name_preserves_uniqueness_for_punctuation_variants():
 
 def test_resource_suffix_stays_bucket_safe():
     suffix = get_resource_suffix("agent-90547182-phase5-densify-interval")
-    assert len(suffix) <= 40
+    assert len(suffix) <= 39
+    assert len(f"spaceport-ml-processing-{suffix}") <= 63

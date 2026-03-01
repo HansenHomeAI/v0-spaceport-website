@@ -66,7 +66,7 @@ def get_resource_suffix(branch_name: str) -> str:
         return "prod"
     if branch_name == "development":
         return "staging"
-    return sanitize_branch_name(branch_name, max_length=40)
+    return sanitize_branch_name(branch_name, max_length=39)
 
 
 def get_ecr_branch_suffix(branch_name: str) -> str:
