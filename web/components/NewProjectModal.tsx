@@ -715,7 +715,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist]);
 
   const clearAllBatteryPaths = useCallback(() => {
     const map = mapRef.current;
