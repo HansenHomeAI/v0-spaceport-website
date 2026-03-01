@@ -274,7 +274,7 @@ class SpiralDesigner:
             'y': point['x'] * math.sin(angle) + point['y'] * math.cos(angle)
         }
     
-    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200) -> List[Dict]:
+    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200, early_expansion_factor: float = None, late_expansion_factor: float = None) -> List[Dict]:
         """
         Generate the core exponential spiral pattern with neural network optimizations.
         
@@ -332,17 +332,21 @@ class SpiralDesigner:
         # Early bounces (first 40%): More aggressive expansion
         # Later bounces (last 60%): Normal expansion for good coverage
         
-        if radius_ratio > 20:   # Medium-large spirals need progressive approach
-            early_density_factor = 1.02   # 2% MORE expansion for early bounces (fine-tuned for 4000ft)
-            late_density_factor = 0.80    # 20% reduction for later bounces (good coverage)
+        if early_expansion_factor is not None and late_expansion_factor is not None:
+            early_density_factor = early_expansion_factor
+            late_density_factor = late_expansion_factor
+            print(f"🎯 Custom expansion: early={early_density_factor:.2f}, late={late_density_factor:.2f}, ratio={radius_ratio:.1f}")
+        elif radius_ratio > 20:
+            early_density_factor = 1.02
+            late_density_factor = 0.80
             print(f"🎯 Progressive expansion: early_boost=+2%, late_reduction=20%, ratio={radius_ratio:.1f}")
-        elif radius_ratio > 10:   # Medium spirals
-            early_density_factor = 1.05   # 5% more expansion for early bounces
-            late_density_factor = 0.85    # 15% reduction for later bounces
+        elif radius_ratio > 10:
+            early_density_factor = 1.05
+            late_density_factor = 0.85
             print(f"🎯 Progressive expansion: early_boost=+5%, late_reduction=15%, ratio={radius_ratio:.1f}")
-        else:  # Small spirals
-            early_density_factor = 1.0    # Normal expansion
-            late_density_factor = 0.90    # 10% reduction
+        else:
+            early_density_factor = 1.0
+            late_density_factor = 0.90
             print(f"🎯 Progressive expansion: early_boost=0%, late_reduction=10%, ratio={radius_ratio:.1f}")
         
         # We'll use these factors dynamically in the spiral generation below
@@ -448,7 +452,11 @@ class SpiralDesigner:
         offset = math.pi / 2 + slice_idx * dphi  # Orientation offset for this slice
         
         # Generate high-precision spiral points (1200 points for accuracy)
-        spiral_pts = self.make_spiral(dphi, params['N'], params['r0'], params['rHold'])
+        spiral_pts = self.make_spiral(
+            dphi, params['N'], params['r0'], params['rHold'],
+            early_expansion_factor=params.get('earlyExpansionFactor'),
+            late_expansion_factor=params.get('lateExpansionFactor'),
+        )
         t_out = params['N'] * dphi
         t_hold = dphi
         t_total = 2 * t_out + t_hold
@@ -2473,6 +2481,13 @@ def handle_csv_download(designer, body, cors_headers):
             'rHold': rHold
         }
         
+        early_factor = body.get('earlyExpansionFactor')
+        late_factor = body.get('lateExpansionFactor')
+        if early_factor is not None:
+            params['earlyExpansionFactor'] = float(early_factor)
+        if late_factor is not None:
+            params['lateExpansionFactor'] = float(late_factor)
+        
         # Generate CSV content
         csv_content = designer.generate_csv(params, center, min_height, max_height)
         
@@ -2561,6 +2576,13 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'r0': r0,
             'rHold': rHold
         }
+        
+        early_factor = body.get('earlyExpansionFactor')
+        late_factor = body.get('lateExpansionFactor')
+        if early_factor is not None:
+            params['earlyExpansionFactor'] = float(early_factor)
+        if late_factor is not None:
+            params['lateExpansionFactor'] = float(late_factor)
         
         # Generate battery-specific CSV content
         csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
