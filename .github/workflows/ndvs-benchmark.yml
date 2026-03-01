@@ -87,6 +87,9 @@ jobs:
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "$RESULTS_JSON_INPUT" ] && [ -z "$EVAL_COMMAND" ]; then
             echo "::notice::workflow_dispatch without results_json/eval_command is using public NDVS baseline fetch."
+            METHOD_NAME="gaussian-splatting"
+            SUBSET="control9"
+            GATE="parity"
             EVAL_COMMAND="python3 scripts/benchmarks/fetch_ndvs_results.py --output-json {output_dir}/ndvs_results.json"
           fi
 
