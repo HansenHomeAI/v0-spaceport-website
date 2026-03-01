@@ -274,128 +274,98 @@ class SpiralDesigner:
             'y': point['x'] * math.sin(angle) + point['y'] * math.cos(angle)
         }
     
-    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200, early_expansion_factor: float = None, late_expansion_factor: float = None) -> List[Dict]:
+    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200, min_expansion_dist: float = None, max_expansion_dist: float = None) -> List[Dict]:
         """
-        Generate the core exponential spiral pattern with neural network optimizations.
+        Generate the core spiral pattern.
         
-        MATHEMATICAL FOUNDATION:
-        =======================
-        
-        Exponential Spiral: r(t) = r₀ * exp(α * t)
-        
-        Original Alpha: α = ln(r_hold/r₀)/(N*Δφ)
-        OPTIMIZED Alpha: α = ln(r_hold/r₀)/(N*Δφ) * 0.86  ← 14% reduction for denser coverage
-        
-        WHY 14% REDUCTION?
-        - Creates smaller radial steps between bounces
-        - Increases waypoint density by ~14% per spiral area  
-        - Better photo overlap for neural network training
-        - Smoother flight transitions
-        
-        THREE-PHASE ALGORITHM:
-        =====================
-        
-        Phase 1 - OUTWARD SPIRAL (0 ≤ t ≤ t_out):
-        r(t) = r₀ * exp(α * t)
-        
-        Phase 2 - HOLD PATTERN (t_out < t ≤ t_out + t_hold):
-        r(t) = actual_max_radius  ← Uses ACTUAL radius reached, not original r_hold
-        
-        Phase 3 - INWARD SPIRAL (t > t_out + t_hold):
-        r(t) = actual_max_radius * exp(-α * (t - t_out - t_hold))
-        
-        CRITICAL FIX IMPLEMENTED:
-        The hold pattern now uses actual_max_radius instead of r_hold parameter.
-        This eliminates the large gap that was occurring between outbound_bounce_6 and hold_mid.
-        
-        PHASE CALCULATION:
-        Phase oscillates between 0 and 2Δφ to create the characteristic spiral bounce pattern.
+        Two modes:
+        1. DEFAULT (exponential): r(t) = r₀ * exp(α*t) with progressive alpha
+        2. CUSTOM DISTANCES: bounce-to-bounce distance progresses linearly
+           from min_expansion_dist to max_expansion_dist (both in feet).
         
         Args:
             dphi: Angular step size per bounce (radians)
             N: Number of bounces (direction changes)
             r0: Starting radius (feet)
-            r_hold: Target hold radius (feet) - used only for alpha calculation
-            steps: Number of discrete points to generate (1200 = high precision)
-            
-        Returns:
-            List of {x, y} points in feet relative to center
+            r_hold: Target hold radius (feet) - used for alpha in default mode
+            steps: Number of discrete points to generate
+            min_expansion_dist: Minimum radial distance between bounces (feet), optional
+            max_expansion_dist: Maximum radial distance between bounces (feet), optional
         """
-        # PROGRESSIVE ALPHA SYSTEM: Steeper early bounces, normal later bounces
-        # Solution: Use higher alpha for early expansion, then reduce for later bounces
+        use_custom_distances = (min_expansion_dist is not None or max_expansion_dist is not None)
         
-        # Calculate base parameters
-        base_alpha = math.log(r_hold / r0) / (N * dphi)
-        radius_ratio = r_hold / r0
+        t_out = N * dphi
+        t_hold = dphi
+        t_total = 2 * t_out + t_hold
         
-        # PROGRESSIVE EXPANSION: Different alpha for different parts of spiral
-        # Early bounces (first 40%): More aggressive expansion
-        # Later bounces (last 60%): Normal expansion for good coverage
-        
-        if early_expansion_factor is not None and late_expansion_factor is not None:
-            early_density_factor = early_expansion_factor
-            late_density_factor = late_expansion_factor
-            print(f"🎯 Custom expansion: early={early_density_factor:.2f}, late={late_density_factor:.2f}, ratio={radius_ratio:.1f}")
-        elif radius_ratio > 20:
-            early_density_factor = 1.02
-            late_density_factor = 0.80
-            print(f"🎯 Progressive expansion: early_boost=+2%, late_reduction=20%, ratio={radius_ratio:.1f}")
-        elif radius_ratio > 10:
-            early_density_factor = 1.05
-            late_density_factor = 0.85
-            print(f"🎯 Progressive expansion: early_boost=+5%, late_reduction=15%, ratio={radius_ratio:.1f}")
+        if use_custom_distances:
+            min_d = min_expansion_dist if min_expansion_dist is not None else 50.0
+            max_d = max_expansion_dist if max_expansion_dist is not None else min_d
+            
+            bounce_radii = [float(r0)]
+            for k in range(N):
+                dist = min_d + (max_d - min_d) * k / max(N - 1, 1)
+                bounce_radii.append(bounce_radii[-1] + dist)
+            custom_max_radius = bounce_radii[-1]
+            print(f"🎯 Custom expansion: min={min_d}ft, max={max_d}ft, "
+                  f"N={N}, final_radius={custom_max_radius:.1f}ft, "
+                  f"bounce_radii={[round(r, 1) for r in bounce_radii]}")
         else:
-            early_density_factor = 1.0
-            late_density_factor = 0.90
-            print(f"🎯 Progressive expansion: early_boost=0%, late_reduction=10%, ratio={radius_ratio:.1f}")
-        
-        # We'll use these factors dynamically in the spiral generation below
-        alpha_early = base_alpha * early_density_factor
-        alpha_late = base_alpha * late_density_factor
-        
-        # Time parameters
-        t_out = N * dphi          # Time to complete outward spiral
-        t_hold = dphi             # Time for hold pattern (one angular step)
-        t_total = 2 * t_out + t_hold  # Total spiral time
-        
-        # PROGRESSIVE ALPHA TRANSITION POINT
-        t_transition = t_out * 0.4  # First 40% uses early alpha, rest uses late alpha
-        
-        # Calculate ACTUAL radius with progressive alpha
-        # Early phase: r0 * exp(alpha_early * t) for t <= t_transition  
-        # Late phase: r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
-        r_transition = r0 * math.exp(alpha_early * t_transition)
-        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
+            base_alpha = math.log(r_hold / r0) / (N * dphi)
+            radius_ratio = r_hold / r0
+            
+            if radius_ratio > 20:
+                early_density_factor = 1.02
+                late_density_factor = 0.80
+            elif radius_ratio > 10:
+                early_density_factor = 1.05
+                late_density_factor = 0.85
+            else:
+                early_density_factor = 1.0
+                late_density_factor = 0.90
+            
+            alpha_early = base_alpha * early_density_factor
+            alpha_late = base_alpha * late_density_factor
+            t_transition = t_out * 0.4
+            r_transition = r0 * math.exp(alpha_early * t_transition)
+            actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
         
         spiral_points = []
         
         for i in range(steps):
-            # Convert step index to parameter t
             th = i * t_total / (steps - 1)
             
-            # Calculate radius based on current phase with PROGRESSIVE ALPHA
-            if th <= t_out:
-                # PHASE 1: Outward spiral - PROGRESSIVE expansion
-                if th <= t_transition:
-                    # Early bounces: Steeper expansion (alpha_early)
-                    r = r0 * math.exp(alpha_early * th)
+            if use_custom_distances:
+                if th <= t_out:
+                    bounce_progress = th / dphi
+                    bounce_idx = min(int(bounce_progress), N - 1)
+                    frac = bounce_progress - bounce_idx
+                    r = bounce_radii[bounce_idx] + frac * (bounce_radii[bounce_idx + 1] - bounce_radii[bounce_idx])
+                elif th <= t_out + t_hold:
+                    r = custom_max_radius
                 else:
-                    # Later bounces: Normal expansion (alpha_late) from transition point
-                    r = r_transition * math.exp(alpha_late * (th - t_transition))
-            elif th <= t_out + t_hold:
-                # PHASE 2: Hold pattern - constant radius at ACTUAL maximum reached
-                r = actual_max_radius  # ← FIXED: Use actual radius reached, not original r_hold
+                    inbound_t = th - (t_out + t_hold)
+                    inbound_progress = inbound_t / dphi
+                    bounce_idx = min(int(inbound_progress), N - 1)
+                    frac = inbound_progress - bounce_idx
+                    from_r = bounce_radii[N - bounce_idx]
+                    to_r = bounce_radii[max(N - bounce_idx - 1, 0)]
+                    r = from_r + frac * (to_r - from_r)
             else:
-                # PHASE 3: Inbound spiral - exponential contraction from actual maximum
-                inbound_t = th - (t_out + t_hold)
-                r = actual_max_radius * math.exp(-alpha_late * inbound_t)  # Use late alpha for inbound
+                if th <= t_out:
+                    if th <= t_transition:
+                        r = r0 * math.exp(alpha_early * th)
+                    else:
+                        r = r_transition * math.exp(alpha_late * (th - t_transition))
+                elif th <= t_out + t_hold:
+                    r = actual_max_radius
+                else:
+                    inbound_t = th - (t_out + t_hold)
+                    r = actual_max_radius * math.exp(-alpha_late * inbound_t)
             
-            # Calculate phase for bounce pattern
-            # Phase oscillates between 0 and 2*dphi to create directional changes
             phase = ((th / dphi) % 2 + 2) % 2
             phi = phase * dphi if phase <= 1 else (2 - phase) * dphi
             
-            # Convert polar coordinates (r, phi) to Cartesian (x, y)
             spiral_points.append({
                 'x': r * math.cos(phi),
                 'y': r * math.sin(phi)
@@ -454,8 +424,8 @@ class SpiralDesigner:
         # Generate high-precision spiral points (1200 points for accuracy)
         spiral_pts = self.make_spiral(
             dphi, params['N'], params['r0'], params['rHold'],
-            early_expansion_factor=params.get('earlyExpansionFactor'),
-            late_expansion_factor=params.get('lateExpansionFactor'),
+            min_expansion_dist=params.get('minExpansionDist'),
+            max_expansion_dist=params.get('maxExpansionDist'),
         )
         t_out = params['N'] * dphi
         t_hold = dphi
@@ -2481,12 +2451,12 @@ def handle_csv_download(designer, body, cors_headers):
             'rHold': rHold
         }
         
-        early_factor = body.get('earlyExpansionFactor')
-        late_factor = body.get('lateExpansionFactor')
-        if early_factor is not None:
-            params['earlyExpansionFactor'] = float(early_factor)
-        if late_factor is not None:
-            params['lateExpansionFactor'] = float(late_factor)
+        min_exp = body.get('minExpansionDist')
+        max_exp = body.get('maxExpansionDist')
+        if min_exp is not None:
+            params['minExpansionDist'] = float(min_exp)
+        if max_exp is not None:
+            params['maxExpansionDist'] = float(max_exp)
         
         # Generate CSV content
         csv_content = designer.generate_csv(params, center, min_height, max_height)
@@ -2577,12 +2547,12 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'rHold': rHold
         }
         
-        early_factor = body.get('earlyExpansionFactor')
-        late_factor = body.get('lateExpansionFactor')
-        if early_factor is not None:
-            params['earlyExpansionFactor'] = float(early_factor)
-        if late_factor is not None:
-            params['lateExpansionFactor'] = float(late_factor)
+        min_exp = body.get('minExpansionDist')
+        max_exp = body.get('maxExpansionDist')
+        if min_exp is not None:
+            params['minExpansionDist'] = float(min_exp)
+        if max_exp is not None:
+            params['maxExpansionDist'] = float(max_exp)
         
         # Generate battery-specific CSV content
         csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)

@@ -40,8 +40,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [numBatteries, setNumBatteries] = useState<string>("");
   const [minHeightFeet, setMinHeightFeet] = useState<string>("");
   const [maxHeightFeet, setMaxHeightFeet] = useState<string>("");
-  const [minExpansionRate, setMinExpansionRate] = useState<string>("");
-  const [maxExpansionRate, setMaxExpansionRate] = useState<string>("");
+  const [minExpansionDist, setMinExpansionDist] = useState<string>("");
+  const [maxExpansionDist, setMaxExpansionDist] = useState<string>("");
 
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
@@ -174,8 +174,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setBatteryMinutes(params.batteryMinutes || '');
       setNumBatteries(params.batteries || '');
       setMinHeightFeet(params.minHeight || '');
-      setMinExpansionRate(params.minExpansionRate || '');
-      setMaxExpansionRate(params.maxExpansionRate || '');
+      setMinExpansionDist(params.minExpansionDist || '');
+      setMaxExpansionDist(params.maxExpansionDist || '');
       setMaxHeightFeet(params.maxHeight || '');
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
@@ -257,8 +257,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setNumBatteries('');
       setMinHeightFeet('');
       setMaxHeightFeet('');
-      setMinExpansionRate('');
-      setMaxExpansionRate('');
+      setMinExpansionDist('');
+      setMaxExpansionDist('');
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
@@ -670,8 +670,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     
     try {
       const downloadBody: Record<string, any> = { ...currentOptimizedParams };
-      if (maxExpansionRate) downloadBody.earlyExpansionFactor = parseFloat(maxExpansionRate);
-      if (minExpansionRate) downloadBody.lateExpansionFactor = parseFloat(minExpansionRate);
+      if (minExpansionDist) downloadBody.minExpansionDist = parseFloat(minExpansionDist);
+      if (maxExpansionDist) downloadBody.maxExpansionDist = parseFloat(maxExpansionDist);
       console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, downloadBody);
       
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
@@ -737,8 +737,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!currentOptimizedParams) return [];
 
     const body: Record<string, any> = { ...currentOptimizedParams };
-    if (maxExpansionRate) body.earlyExpansionFactor = parseFloat(maxExpansionRate);
-    if (minExpansionRate) body.lateExpansionFactor = parseFloat(minExpansionRate);
+    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
+    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
 
     const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
       method: 'POST',
@@ -759,7 +759,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     }
     return coords;
-  }, [API_ENHANCED_BASE, minExpansionRate, maxExpansionRate]);
+  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
@@ -885,8 +885,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           batteries: numBatteries,
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
-          minExpansionRate: minExpansionRate || null,
-          maxExpansionRate: maxExpansionRate || null,
+          minExpansionDist: minExpansionDist || null,
+          maxExpansionDist: maxExpansionDist || null,
           latitude: selectedCoordsRef.current?.lat || null,
           longitude: selectedCoordsRef.current?.lng || null,
         },
@@ -923,7 +923,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, minExpansionRate, maxExpansionRate, numBatteries, onSaved, projectTitle, status, isSaving]);
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, status, isSaving]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -1475,24 +1475,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               </div>
             </div>
 
-            {/* Expansion Rate */}
+            {/* Expansion */}
             <div className="category-outline">
               <div className="popup-section">
-                <h4>Expansion Rate</h4>
+                <h4>Expansion</h4>
                 <div className="input-row-popup">
                   <div className="popup-input-wrapper" style={{ position: 'relative' }}>
                     <span className="input-icon minimum"></span>
                     <input
                       type="text"
                       className="text-fade-right"
-                      placeholder="Min Rate"
-                      value={minExpansionRate ? `${minExpansionRate}x` : ''}
+                      placeholder="Min Distance"
+                      value={minExpansionDist ? `${minExpansionDist} ft` : ''}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, '');
-                        setMinExpansionRate(value);
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setMinExpansionDist(value);
                       }}
                       onKeyDown={(e) => {
-                        if (!/[0-9.]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
                           e.preventDefault();
                         }
                       }}
@@ -1504,14 +1504,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <input
                       type="text"
                       className="text-fade-right"
-                      placeholder="Max Rate"
-                      value={maxExpansionRate ? `${maxExpansionRate}x` : ''}
+                      placeholder="Max Distance"
+                      value={maxExpansionDist ? `${maxExpansionDist} ft` : ''}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, '');
-                        setMaxExpansionRate(value);
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setMaxExpansionDist(value);
                       }}
                       onKeyDown={(e) => {
-                        if (!/[0-9.]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
                           e.preventDefault();
                         }
                       }}
