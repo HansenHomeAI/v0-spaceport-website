@@ -52,17 +52,22 @@ jobs:
         echo "ECR suffix: ${ECR_SUFFIX:-<shared>}"
         echo "ecr_suffix=$ECR_SUFFIX" >> $GITHUB_OUTPUT
 
-        if git rev-parse HEAD~1 >/dev/null 2>&1; then
-          DIFF_BASE="HEAD~1"
+        PUSH_BEFORE="${{ github.event.before }}"
+        PUSH_AFTER="${GITHUB_SHA}"
+
+        if [ "${{ github.event_name }}" = "push" ] && \
+           [ -n "$PUSH_BEFORE" ] && \
+           [ "$PUSH_BEFORE" != "0000000000000000000000000000000000000000" ] && \
+           git rev-parse "$PUSH_BEFORE" >/dev/null 2>&1; then
+          CHANGED_FILES=$(git diff --name-only "$PUSH_BEFORE" "$PUSH_AFTER")
         else
           git fetch origin development --depth=1 || true
           DIFF_BASE=$(git merge-base HEAD origin/development || echo "")
-        fi
-
-        if [ -n "$DIFF_BASE" ]; then
-          CHANGED_FILES=$(git diff --name-only "$DIFF_BASE"...HEAD || git diff --name-only "$DIFF_BASE" HEAD)
-        else
-          CHANGED_FILES=$(git diff --name-only HEAD || true)
+          if [ -n "$DIFF_BASE" ]; then
+            CHANGED_FILES=$(git diff --name-only "$DIFF_BASE"...HEAD || git diff --name-only "$DIFF_BASE" HEAD)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD || true)
+          fi
         fi
 
         echo "Changed files:"
@@ -118,20 +123,6 @@ jobs:
         elif [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
           CONTAINER_LIST="$CHANGED"
-        fi
-
-        # Guardrail: do not build multiple containers at once
-        if [ -z "$INPUT_CONTAINER" ] && [ -n "$CHANGED" ]; then
-          COUNT_CONTAINERS=$(echo "$CONTAINER_LIST" | wc -w | tr -d ' ')
-          if [ "$COUNT_CONTAINERS" -gt 1 ]; then
-            echo "Multiple container directories changed ($CONTAINER_LIST). Skipping auto-build to avoid multi-container builds."
-            echo "containers=none" >> $GITHUB_OUTPUT
-            echo "containers_to_build=" >> $GITHUB_OUTPUT
-            echo "containers_to_import=" >> $GITHUB_OUTPUT
-            echo "build_required=false" >> $GITHUB_OUTPUT
-            echo "import_required=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
         fi
 
         # Check if shared repo has latest tag
