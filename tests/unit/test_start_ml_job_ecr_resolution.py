@@ -6,7 +6,7 @@ import sys
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(REPO_ROOT / "infrastructure" / "spaceport_cdk"))
 
-from spaceport_cdk.branch_utils import get_ecr_branch_suffix
+from spaceport_cdk.branch_utils import get_ecr_branch_suffix, sanitize_branch_name
 
 
 def _load_lambda_module():
@@ -66,4 +66,8 @@ def test_branch_tag_derivation_for_ml_development_is_empty():
 
 
 def test_branch_tag_derivation_for_agent_branch_is_sanitized():
-    assert get_ecr_branch_suffix("agent-90547182-phase5-densify-interval") == "agent90547182phase5densifyinterval"
+    assert get_ecr_branch_suffix("agent-90547182-phase5-densify-interval") == "agent90547182phase5densifyintervalbfc2a7"
+
+
+def test_sanitize_branch_name_preserves_uniqueness_for_punctuation_variants():
+    assert sanitize_branch_name("agent-a-b") != sanitize_branch_name("agentab")

@@ -69,9 +69,9 @@ class MLPipelineStack(Stack):
             )
         print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
 
-        # Import upload bucket from main Spaceport stack, falling back to the shared bucket when
-        # a branch-specific uploads bucket does not exist yet.
-        upload_bucket = self._get_or_create_s3_bucket(
+        # Import upload bucket from main Spaceport stack. The ML stack only consumes this bucket
+        # and must never create it independently.
+        upload_bucket = self._import_s3_bucket_with_fallback(
             construct_id="ImportedUploadBucket",
             preferred_name=f"spaceport-uploads-{suffix}",
             fallback_name="spaceport-uploads"
@@ -905,6 +905,28 @@ class MLPipelineStack(Stack):
         )
         self._created_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "created"})
         return bucket
+
+    def _import_s3_bucket_with_fallback(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
+        """Import an existing S3 bucket, preferring the branch-specific bucket and falling back to shared."""
+
+        self._validate_s3_bucket_name(preferred_name, "preferred")
+        self._validate_s3_bucket_name(fallback_name, "fallback")
+
+        if self._bucket_exists(preferred_name):
+            print(f"✅ Importing existing S3 bucket: {preferred_name}")
+            bucket = s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
+            self._imported_resources.append({"type": "S3::Bucket", "name": preferred_name, "action": "imported"})
+            return bucket
+
+        if self._bucket_exists(fallback_name):
+            print(f"✅ Importing existing S3 bucket (fallback): {fallback_name}")
+            bucket = s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
+            self._imported_resources.append({"type": "S3::Bucket", "name": fallback_name, "action": "imported_fallback"})
+            return bucket
+
+        raise ValueError(
+            f"Required upload bucket is missing: tried '{preferred_name}' and fallback '{fallback_name}'"
+        )
 
     def _get_or_create_s3_bucket_with_fallbacks(self, construct_id: str, preferred_name: str, fallback_names: list) -> s3.IBucket:
         """Get existing S3 bucket or create new one with multiple fallback options"""

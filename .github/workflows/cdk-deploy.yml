@@ -91,63 +91,13 @@ jobs:
         # Check if CDK is bootstrapped with default qualifier
         if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
           echo "CDK already bootstrapped with default qualifier for account $ACCOUNT (SSM parameter present)"
+        elif aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
+          echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET exists but bootstrap SSM parameter could not be read."
+          echo "Refusing to delete shared bootstrap resources; retry or fix bootstrap/SSM access first."
+          exit 1
         else
-          echo "Default qualifier parameter missing or inaccessible for account $ACCOUNT."
+          echo "Bootstrap parameter and assets bucket are both missing; bootstrap is required."
           BOOTSTRAP_REQUIRED=1
-          
-          if aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
-            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET already exists."
-            echo "Removing all object versions from bootstrap bucket before deletion..."
-            
-            KEY_MARKER=""
-            VERSION_MARKER=""
-            while true; do
-              if [ -n "$KEY_MARKER" ]; then
-                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET" --key-marker "$KEY_MARKER" --version-id-marker "$VERSION_MARKER")
-              else
-                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET")
-              fi
-              
-              OBJECTS_JSON=$(echo "$RESPONSE" | jq -c '{
-                Objects: (
-                  ((.Versions // []) + (.DeleteMarkers // []))
-                  | map({Key: .Key, VersionId: .VersionId})
-                )
-              }')
-              
-              COUNT=$(echo "$OBJECTS_JSON" | jq '.Objects | length')
-              if [ "$COUNT" -gt 0 ]; then
-                echo "$OBJECTS_JSON" > /tmp/delete-bootstrap-objects.json
-                aws s3api delete-objects --bucket "$BOOTSTRAP_BUCKET" --delete file:///tmp/delete-bootstrap-objects.json >/dev/null
-              fi
-              
-              if [ "$(echo "$RESPONSE" | jq -r '.IsTruncated')" != "true" ]; then
-                break
-              fi
-              
-              KEY_MARKER=$(echo "$RESPONSE" | jq -r '.NextKeyMarker // empty')
-              VERSION_MARKER=$(echo "$RESPONSE" | jq -r '.NextVersionIdMarker // empty')
-              
-              if [ -z "$KEY_MARKER" ]; then
-                break
-              fi
-            done
-            rm -f /tmp/delete-bootstrap-objects.json
-            
-            echo "Deleting bootstrap bucket $BOOTSTRAP_BUCKET..."
-            aws s3api delete-bucket --bucket "$BOOTSTRAP_BUCKET" --region us-west-2
-          else
-            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found."
-          fi
-          
-          echo "Checking for existing CDK bootstrap stack..."
-          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
-            echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
-            aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2
-            echo "Waiting for stack deletion to complete..."
-            aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2
-            echo "Existing CDK bootstrap stack deleted successfully"
-          fi
         fi
         
         if [ "$BOOTSTRAP_REQUIRED" -eq 1 ]; then

@@ -22,8 +22,14 @@ def sanitize_branch_name(branch_name: str, max_length: int = 50) -> str:
     if not branch_name:
         return "default"
 
-    sanitized = branch_name.lower()
-    sanitized = re.sub(r"[^a-z0-9]", "", sanitized)
+    normalized_branch = branch_name.lower()
+    sanitized = re.sub(r"[^a-z0-9]", "", normalized_branch)
+    hash_suffix = hashlib.sha1(branch_name.encode("utf-8")).hexdigest()[:6]
+
+    if sanitized:
+        sanitized = f"{sanitized}{hash_suffix}"
+    else:
+        sanitized = f"default{hash_suffix}"
 
     if len(sanitized) > max_length:
         sanitized = sanitized[:max_length]
