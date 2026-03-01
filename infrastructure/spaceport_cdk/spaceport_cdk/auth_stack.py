@@ -300,7 +300,6 @@ class AuthStack(Stack):
             "SubscriptionApiGateway",  # Unique construct ID
             rest_api_name="Spaceport-SubscriptionApi",
             description="Subscription management API for Spaceport",
-            deploy=False,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -312,6 +311,7 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
+            deploy_options=apigw.StageOptions(stage_name="prod"),
         )
 
         # Add subscription endpoints
@@ -363,22 +363,6 @@ class AuthStack(Stack):
                 cognito_user_pools=[user_pool],
             ),
         )
-
-        # Explicit deployment to ensure prod stage picks up authorizer changes without
-        # requiring manual API Gateway redeploys. CfnDeployment updates the existing
-        # "prod" stage in-place, so it works with the legacy stage the stack already created.
-        subscription_deployment = apigw.CfnDeployment(
-            self,
-            f"SubscriptionApiDeployment{suffix}",
-            rest_api_id=subscription_api.rest_api_id,
-            description=f"subscription-{suffix}-deployment",
-            stage_name="prod"
-        )
-        subscription_deployment.node.add_dependency(subscription_lambda)
-        for method in (create_checkout_method, webhook_method, status_method, cancel_method):
-            default_child = method.node.default_child
-            if default_child is not None:
-                subscription_deployment.node.add_dependency(default_child)
 
         # Outputs
         subscription_api_url = (
