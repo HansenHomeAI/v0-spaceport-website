@@ -26,13 +26,12 @@ def sanitize_branch_name(branch_name: str, max_length: int = 50) -> str:
     sanitized = re.sub(r"[^a-z0-9]", "", normalized_branch)
     hash_suffix = hashlib.sha1(branch_name.encode("utf-8")).hexdigest()[:6]
 
-    if sanitized:
-        sanitized = f"{sanitized}{hash_suffix}"
+    base = sanitized or "default"
+    keep_length = max_length - len(hash_suffix)
+    if keep_length <= 0:
+        sanitized = hash_suffix[:max_length]
     else:
-        sanitized = f"default{hash_suffix}"
-
-    if len(sanitized) > max_length:
-        sanitized = sanitized[:max_length]
+        sanitized = f"{base[:keep_length]}{hash_suffix}"
 
     if len(sanitized) < 3:
         sanitized = sanitized + "br"
@@ -67,7 +66,7 @@ def get_resource_suffix(branch_name: str) -> str:
         return "prod"
     if branch_name == "development":
         return "staging"
-    return sanitize_branch_name(branch_name)
+    return sanitize_branch_name(branch_name, max_length=40)
 
 
 def get_ecr_branch_suffix(branch_name: str) -> str:
