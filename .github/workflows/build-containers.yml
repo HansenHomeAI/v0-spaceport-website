@@ -246,7 +246,7 @@ jobs:
                 "description": "Expire agent branch tags after 28d",
                 "selection": {
                   "tagStatus": "tagged",
-                  "tagPrefixList": ["agent-"],
+                  "tagPrefixList": ["agent"],
                   "countType": "sinceImagePushed",
                   "countUnit": "days",
                   "countNumber": 28
