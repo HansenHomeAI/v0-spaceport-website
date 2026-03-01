@@ -43,10 +43,14 @@ if branch_name:
     print(f"Branch name: {branch_name}")
 print(f"Environment config: {env_config}")
 
+stack_id_suffix = ""
+if branch_name and branch_name not in ['main', 'development', 'ml-development']:
+    stack_id_suffix = sanitize_branch_name(branch_name).title()
+
 # Deploy the main Spaceport stack with environment context
 spaceport_stack = SpaceportStack(
     app,
-    f"Spaceport{env_name.title()}Stack",
+    f"Spaceport{env_name.title()}Stack{stack_id_suffix}",
     env_config=env_config,
     env={
         'account': app.node.try_get_context('account') or None,  # Dynamically resolved
@@ -57,7 +61,7 @@ spaceport_stack = SpaceportStack(
 # Deploy the ML pipeline stack with environment context
 ml_pipeline_stack = MLPipelineStack(
     app,
-    f"SpaceportMLPipeline{env_name.title()}Stack",
+    f"SpaceportMLPipeline{env_name.title()}Stack{stack_id_suffix}",
     env_config=env_config,
     env={
         'account': app.node.try_get_context('account') or None,  # Dynamically resolved
@@ -68,7 +72,7 @@ ml_pipeline_stack = MLPipelineStack(
 # Deploy the Auth stack with environment context
 auth_stack = AuthStack(
     app,
-    f"SpaceportAuth{env_name.title()}Stack",
+    f"SpaceportAuth{env_name.title()}Stack{stack_id_suffix}",
     env_config=env_config,
     env={
         'account': app.node.try_get_context('account') or None,  # Dynamically resolved
