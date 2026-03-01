@@ -247,6 +247,13 @@ jobs:
         echo "Branch name: ${BRANCH_NAME}"
         echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
         echo "Lambda changed: ${LAMBDA_CHANGED}"
+
+        STACK_ID_SUFFIX=""
+        if [ "${BRANCH_NAME}" != "main" ] && [ "${BRANCH_NAME}" != "development" ] && [ "${BRANCH_NAME}" != "ml-development" ]; then
+          STACK_ID_SUFFIX="${BRANCH_SANITIZED^}"
+        fi
+
+        SPACEPORT_STACK_NAME="Spaceport${ENVIRONMENT^}Stack${STACK_ID_SUFFIX}"
         
         # Deploy all stacks with environment context and branch name
         cdk deploy --all \
@@ -257,7 +264,7 @@ jobs:
           --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
-          --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          --parameters ${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
 
     - name: Update Frontend Environment Variables
       if: github.event_name == 'push'
@@ -273,18 +280,24 @@ jobs:
           ENVIRONMENT="staging"
           SECRET_SUFFIX="PREVIEW"
         fi
+
+        BRANCH_SANITIZED=$(echo "${GITHUB_REF_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g' | cut -c1-50)
+        STACK_ID_SUFFIX=""
+        if [ "${GITHUB_REF_NAME}" != "main" ] && [ "${GITHUB_REF_NAME}" != "development" ] && [ "${GITHUB_REF_NAME}" != "ml-development" ]; then
+          STACK_ID_SUFFIX="${BRANCH_SANITIZED^}"
+        fi
         
         # Get CDK stack outputs
-        STACK_NAME="Spaceport${ENVIRONMENT^}Stack"
+        STACK_NAME="Spaceport${ENVIRONMENT^}Stack${STACK_ID_SUFFIX}"
         DRONE_PATH_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DronePathApiUrl'].OutputValue" --output text)
         FILE_UPLOAD_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FileUploadApiUrl'].OutputValue" --output text)
         
         # Get Auth stack outputs
-        AUTH_STACK_NAME="SpaceportAuth${ENVIRONMENT^}Stack"
+        AUTH_STACK_NAME="SpaceportAuth${ENVIRONMENT^}Stack${STACK_ID_SUFFIX}"
         PROJECTS_API_URL=$(aws cloudformation describe-stacks --stack-name $AUTH_STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ProjectsApiUrl'].OutputValue" --output text)
         
         # Get ML Pipeline stack outputs
-        ML_STACK_NAME="SpaceportMLPipeline${ENVIRONMENT^}Stack"
+        ML_STACK_NAME="SpaceportMLPipeline${ENVIRONMENT^}Stack${STACK_ID_SUFFIX}"
         ML_PIPELINE_API_URL=$(aws cloudformation describe-stacks --stack-name $ML_STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='MLPipelineApiUrl'].OutputValue" --output text)
         
         echo "Retrieved API URLs:"
