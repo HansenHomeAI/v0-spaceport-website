@@ -10,6 +10,53 @@ from urllib.parse import urlparse
 stepfunctions = boto3.client('stepfunctions')
 s3 = boto3.client('s3')
 
+
+def _repo_exists(ecr_client, repo_name):
+    try:
+        ecr_client.describe_repositories(repositoryNames=[repo_name])
+        return True
+    except Exception as exc:
+        error_code = exc.response.get('Error', {}).get('Code', '') if hasattr(exc, 'response') else ''
+        if error_code == 'RepositoryNotFoundException':
+            return False
+        raise
+
+
+def _tag_exists(ecr_client, repo_name, tag):
+    try:
+        ecr_client.describe_images(
+            repositoryName=repo_name,
+            imageIds=[{"imageTag": tag}],
+        )
+        return True
+    except Exception as exc:
+        error_code = exc.response.get('Error', {}).get('Code', '') if hasattr(exc, 'response') else ''
+        if error_code in {'ImageNotFoundException', 'RepositoryNotFoundException'}:
+            return False
+        raise
+
+
+def _resolve_ecr_uri(ecr_client, account_id, region, repo_name, fallback_repo_name, image_tag):
+    """Resolve image URI consistent with current build/import behavior."""
+    requested_tag = image_tag.strip() or 'latest'
+    shared_uri = f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:{requested_tag}"
+
+    # Branch repos are imported as :latest; branch suffix tags live on the shared repo.
+    if repo_name != fallback_repo_name:
+        try:
+            if requested_tag != 'latest' and _tag_exists(ecr_client, fallback_repo_name, requested_tag):
+                print(f"Using shared ECR repo tag: {fallback_repo_name}:{requested_tag}")
+                return shared_uri
+            if _repo_exists(ecr_client, repo_name):
+                print(f"Shared tag {fallback_repo_name}:{requested_tag} missing; using legacy branch repo: {repo_name}:latest")
+                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repo_name}:latest"
+        except Exception as exc:
+            print(f"Error checking repo {repo_name}: {str(exc)}, using fallback: {fallback_repo_name}")
+            return shared_uri
+
+    print(f"Using shared ECR repo: {fallback_repo_name}:{requested_tag}")
+    return shared_uri
+
 def lambda_handler(event, context):
     """
     Lambda function to start ML processing pipeline
@@ -119,38 +166,13 @@ def lambda_handler(event, context):
         
         account_id = context.invoked_function_arn.split(':')[4]
         region = context.invoked_function_arn.split(':')[3]
-        
-        # Resolve ECR image URIs with fallback logic
-        # Try branch-specific repo first, fallback to shared repo if it doesn't exist
-        def resolve_ecr_uri(repo_name, fallback_repo_name):
-            """Resolve ECR URI, trying branch-specific repo first, then fallback"""
-            ecr_client = boto3.client('ecr', region_name=region)
-            # Try branch-specific repo first
-            try:
-                ecr_client.describe_repositories(repositoryNames=[repo_name])
-                print(f"Using branch-specific ECR repo: {repo_name}")
-                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repo_name}:latest"
-            except Exception as e:
-                # Check if it's a repository not found error
-                error_code = e.response.get('Error', {}).get('Code', '') if hasattr(e, 'response') else ''
-                if error_code == 'RepositoryNotFoundException':
-                    # Fallback to shared repo
-                    try:
-                        ecr_client.describe_repositories(repositoryNames=[fallback_repo_name])
-                        print(f"Branch-specific repo {repo_name} not found, using fallback: {fallback_repo_name}")
-                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
-                    except Exception as e2:
-                        # If fallback also doesn't exist, use it anyway (will fail at runtime with clear error)
-                        print(f"Warning: Neither {repo_name} nor {fallback_repo_name} found, using fallback")
-                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
-                else:
-                    # On any other error, use fallback
-                    print(f"Error checking repo {repo_name}: {str(e)}, using fallback: {fallback_repo_name}")
-                    return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
-        
-        sfm_image_uri = resolve_ecr_uri(sfm_repo, sfm_repo_fallback)
-        gaussian_image_uri = resolve_ecr_uri(gaussian_repo, gaussian_repo_fallback)
-        compressor_image_uri = resolve_ecr_uri(compressor_repo, compressor_repo_fallback)
+        image_tag = os.environ.get('ECR_IMAGE_TAG', '').strip() or 'latest'
+
+        ecr_client = boto3.client('ecr', region_name=region)
+
+        sfm_image_uri = _resolve_ecr_uri(ecr_client, account_id, region, sfm_repo, sfm_repo_fallback, image_tag)
+        gaussian_image_uri = _resolve_ecr_uri(ecr_client, account_id, region, gaussian_repo, gaussian_repo_fallback, image_tag)
+        compressor_image_uri = _resolve_ecr_uri(ecr_client, account_id, region, compressor_repo, compressor_repo_fallback, image_tag)
         
         print(f"Using ECR repos - SfM: {sfm_image_uri}, 3DGS: {gaussian_image_uri}, Compressor: {compressor_image_uri}")
         
