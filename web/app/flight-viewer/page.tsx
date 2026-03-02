@@ -171,12 +171,12 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
     index,
   }));
 
-  // Second pass: calculate heading angles from path when missing or zero
+  // Second pass: calculate heading angles from path when missing (0 is valid for spin mode)
   for (let i = 0; i < processedSamples.length; i++) {
     const sample = processedSamples[i];
     
-    // If heading is missing, null, or zero, calculate it from the flight path
-    if (!sample.headingDeg || sample.headingDeg === 0) {
+    // Only override when heading is missing or invalid; preserve 0 (valid spin-mode start)
+    if (sample.headingDeg == null || (typeof sample.headingDeg === "number" && !Number.isFinite(sample.headingDeg))) {
       let calculatedHeading: number | null = null;
       
       if (i < processedSamples.length - 1) {

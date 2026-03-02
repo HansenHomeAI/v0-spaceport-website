@@ -1905,6 +1905,9 @@ class SpiralDesigner:
 
         for i, record in enumerate(waypoint_records):
             photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
+            # Spin mode: no POI (0) so Litchi uses per-waypoint headings; non-spin: POI at center
+            poi_lat = 0 if spin_mode else center['lat']
+            poi_lon = 0 if spin_mode else center['lon']
             row = [
                 record['latitude'],
                 record['longitude'],
@@ -1916,8 +1919,8 @@ class SpiralDesigner:
                 gimbal_pitches[i],
                 0,
                 self.FLIGHT_SPEED_MPS,
-                center['lat'],
-                center['lon'],
+                poi_lat,
+                poi_lon,
                 -35,
                 0,
                 photo_interval,
@@ -2126,6 +2129,9 @@ class SpiralDesigner:
 
         for i, record in enumerate(waypoint_records):
             photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
+            # Spin mode: no POI (0) so Litchi uses per-waypoint headings; non-spin: POI at center
+            poi_lat = 0 if spin_mode else center['lat']
+            poi_lon = 0 if spin_mode else center['lon']
             row = [
                 record['latitude'],
                 record['longitude'],
@@ -2137,8 +2143,8 @@ class SpiralDesigner:
                 gimbal_pitches[i],
                 0,
                 self.FLIGHT_SPEED_MPS,
-                center['lat'],
-                center['lon'],
+                poi_lat,
+                poi_lon,
                 -35,
                 0,
                 photo_interval,
