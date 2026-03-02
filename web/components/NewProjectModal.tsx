@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildApiUrl } from '../app/api-config';
+import { generateCurvedPath } from '../lib/curvedPath2D';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -17,7 +18,14 @@ type OptimizedParams = {
   elevationFeet: number | null;
 };
 
-import { generateCurvedPath } from '../lib/curvedPath2D';
+type EditableWaypoint = {
+  lat: number;
+  lng: number;
+  altitudeFt: number;
+  headingDeg: number;
+  curveSizeFt: number;
+  originalIndex: number;
+};
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
@@ -95,11 +103,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // Editor states
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editedWaypointsByBattery, setEditedWaypointsByBattery] = useState<Map<number, any[]>>(new Map());
-  const [undoStackByBattery, setUndoStackByBattery] = useState<Map<number, any[][]>>(new Map());
-  const [redoStackByBattery, setRedoStackByBattery] = useState<Map<number, any[][]>>(new Map());
+  const [editedWaypointsByBattery, setEditedWaypointsByBattery] = useState<Map<number, EditableWaypoint[]>>(new Map());
+  const [undoStackByBattery, setUndoStackByBattery] = useState<Map<number, EditableWaypoint[][]>>(new Map());
+  const [redoStackByBattery, setRedoStackByBattery] = useState<Map<number, EditableWaypoint[][]>>(new Map());
   const [activeEditBattery, setActiveEditBattery] = useState<number | null>(null);
   const waypointMarkersRef = useRef<any[]>([]); // mapboxgl.Marker array
+  const editedWaypointsRef = useRef<Map<number, EditableWaypoint[]>>(new Map());
 
   const BATTERY_PATH_COLORS = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
@@ -522,6 +531,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [optimizedParams]);
 
   // ----- EDITOR FUNCTIONS -----
+  useEffect(() => {
+    editedWaypointsRef.current = editedWaypointsByBattery;
+  }, [editedWaypointsByBattery]);
   
   // Set active edit battery based on visible paths
   useEffect(() => {
@@ -532,7 +544,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [visibleBatteryPaths]);
 
-  const updateBatteryPathVisuals = useCallback((batteryIdx: number, waypoints: any[]) => {
+  const updateBatteryPathVisuals = useCallback((batteryIdx: number, waypoints: EditableWaypoint[]) => {
     const map = mapRef.current;
     if (!map) return;
 
@@ -556,11 +568,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
   }, []);
 
-  const pushUndoState = useCallback((batteryIdx: number, waypoints: any[]) => {
+  const pushUndoState = useCallback((batteryIdx: number, waypoints: EditableWaypoint[]) => {
     setUndoStackByBattery(prev => {
       const next = new Map(prev);
       const stack = next.get(batteryIdx) || [];
-      next.set(batteryIdx, [...stack, waypoints.map(w => ({ ...w }))]);
+      next.set(batteryIdx, [...stack, waypoints.map((w) => ({ ...w }))]);
       return next;
     });
     // Clear redo stack on new edit
@@ -590,7 +602,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setRedoStackByBattery(prev => {
       const next = new Map(prev);
       const stack = next.get(batteryIdx) || [];
-      next.set(batteryIdx, [...stack, currentWaypoints.map(w => ({ ...w }))]);
+      next.set(batteryIdx, [...stack, currentWaypoints.map((w) => ({ ...w }))]);
       return next;
     });
 
@@ -623,7 +635,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUndoStackByBattery(prev => {
       const next = new Map(prev);
       const stack = next.get(batteryIdx) || [];
-      next.set(batteryIdx, [...stack, currentWaypoints.map(w => ({ ...w }))]);
+      next.set(batteryIdx, [...stack, currentWaypoints.map((w) => ({ ...w }))]);
       return next;
     });
 
@@ -638,7 +650,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [redoStackByBattery, editedWaypointsByBattery, updateBatteryPathVisuals]);
 
   // Handle marker render
-  const renderMarkers = useCallback(async (batteryIdx: number, waypoints: any[]) => {
+  const renderMarkers = useCallback(async (batteryIdx: number, waypoints: EditableWaypoint[]) => {
     const map = mapRef.current;
     if (!map) return;
 
@@ -670,35 +682,41 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       .addTo(map);
 
       marker.on('dragstart', () => {
-        const currentWaypoints = editedWaypointsByBattery.get(batteryIdx);
-        if (currentWaypoints) {
-          pushUndoState(batteryIdx, currentWaypoints);
+        const currentWaypoints = editedWaypointsRef.current.get(batteryIdx);
+        if (currentWaypoints && currentWaypoints.length > 0) {
+          pushUndoState(batteryIdx, currentWaypoints.map((w) => ({ ...w })));
         }
       });
 
       marker.on('drag', () => {
         const lngLat = marker.getLngLat();
+        const current = editedWaypointsRef.current.get(batteryIdx) || [];
+        if (!current[index]) return;
+
+        const updated = [...current];
+        updated[index] = { ...updated[index], lng: lngLat.lng, lat: lngLat.lat };
+
+        const nextMap = new Map(editedWaypointsRef.current);
+        nextMap.set(batteryIdx, updated);
+        editedWaypointsRef.current = nextMap;
+
+        // Keep curve rendering smooth while dragging without remounting markers.
+        requestAnimationFrame(() => updateBatteryPathVisuals(batteryIdx, updated));
+      });
+
+      marker.on('dragend', () => {
+        const latest = editedWaypointsRef.current.get(batteryIdx);
+        if (!latest) return;
         setEditedWaypointsByBattery(prev => {
           const next = new Map(prev);
-          const current = next.get(batteryIdx) || [];
-          const updated = [...current];
-          if (updated[index]) {
-            updated[index] = { ...updated[index], lng: lngLat.lng, lat: lngLat.lat };
-            next.set(batteryIdx, updated);
-            // Throttle visual update slightly to keep it smooth during drag
-            requestAnimationFrame(() => updateBatteryPathVisuals(batteryIdx, updated));
-          }
+          next.set(batteryIdx, latest.map((w) => ({ ...w })));
           return next;
         });
       });
 
-      marker.on('dragend', () => {
-        // Any final adjustments
-      });
-
       waypointMarkersRef.current.push(marker);
     });
-  }, [isEditMode, isFullscreen, editedWaypointsByBattery, pushUndoState, updateBatteryPathVisuals]);
+  }, [isEditMode, isFullscreen, pushUndoState, updateBatteryPathVisuals]);
 
   // Effect to re-render markers when toggling edit mode or fullscreen
   useEffect(() => {
@@ -710,7 +728,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [isEditMode, isFullscreen, activeEditBattery, renderMarkers]);
 
-  const fetchBatteryWaypoints = useCallback(async (batteryIndex1: number): Promise<any[]> => {
+  const fetchBatteryWaypoints = useCallback(async (batteryIndex1: number): Promise<EditableWaypoint[]> => {
     const currentOptimizedParams = optimizedParamsRef.current;
     if (!currentOptimizedParams) return [];
 
@@ -727,17 +745,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const csvText = await res.text();
 
     const lines = csvText.trim().split('\n');
-    const waypoints: any[] = [];
+    const waypoints: EditableWaypoint[] = [];
     for (let i = 1; i < lines.length; i++) {
       const parts = lines[i].split(',');
       const lat = parseFloat(parts[0]);
       const lng = parseFloat(parts[1]);
       const altitudeFt = parseFloat(parts[2]);
       const headingDeg = parseFloat(parts[3]);
-      const curveSizeFt = parseFloat(parts[4]);
+      // API CSV currently stores curvesize in meters despite the legacy header text.
+      // Convert to feet so geometry math in local-foot space matches flown curvature.
+      const curveSizeMeters = parseFloat(parts[4]);
+      const curveSizeFt = Number.isFinite(curveSizeMeters) ? curveSizeMeters * 3.28084 : 0;
       if (!isNaN(lat) && !isNaN(lng)) {
         waypoints.push({
-          lat, lng, altitudeFt, headingDeg, curveSizeFt, originalIndex: i - 1
+          lat,
+          lng,
+          altitudeFt: Number.isFinite(altitudeFt) ? altitudeFt : 0,
+          headingDeg: Number.isFinite(headingDeg) ? headingDeg : 0,
+          curveSizeFt,
+          originalIndex: i - 1
         });
       }
     }
@@ -1029,7 +1055,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist, editedWaypointsByBattery]);
 
   const clearAllBatteryPaths = useCallback(() => {
     const map = mapRef.current;
@@ -1658,6 +1684,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', cursor: 'pointer', opacity: !redoStackByBattery.get(activeEditBattery)?.length ? 0.5 : 1 }}
                         >
                           Redo
+                        </button>
+                        <button
+                          onClick={() => handleRefreshAGL(activeEditBattery)}
+                          style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                        >
+                          Refresh Altitude
                         </button>
                       </>
                     )}

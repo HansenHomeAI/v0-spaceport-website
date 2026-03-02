@@ -23,6 +23,10 @@ interface Point2D {
   y: number; // local Y (feet)
 }
 
+// Avoid unstable arc geometry for near-straight / near-180-degree turns.
+const MIN_TURN_ANGLE_RAD = 0.05; // ~2.9 deg
+const MAX_TURN_ANGLE_RAD = Math.PI - 0.05;
+
 /**
  * Projects a lat/lng to a local cartesian coordinate system (in feet)
  * centered around a reference point.
@@ -139,22 +143,26 @@ export function generateCurvedPath(waypoints: PathWaypoint[]): Array<[number, nu
     const cosPhi = Math.max(-1, Math.min(1, dot(A, B)));
     const phi = Math.acos(cosPhi);
     
-    if (!Number.isFinite(phi) || phi < 1e-3 || Math.abs(Math.PI - phi) < 1e-3) {
+    if (!Number.isFinite(phi) || phi < MIN_TURN_ANGLE_RAD || phi > MAX_TURN_ANGLE_RAD) {
       addLine(last, P1, 6);
       last = P1;
       continue;
     }
     
-    const R = Math.max(0, waypoints[i].curveSizeFt || 0);
-    if (R < 1e-3) {
+    const requestedRadius = Math.max(0, waypoints[i].curveSizeFt || 0);
+    if (requestedRadius < 1e-3) {
       addLine(last, P1, 6);
       last = P1;
       continue;
     }
     
-    let t = R * Math.tan(phi / 2);
+    let t = requestedRadius * Math.tan(phi / 2);
     const tMax = Math.min(L0, L1) * 0.49;
     t = Math.min(t, tMax);
+    // If we had to clamp tangent offset, use an effective radius that
+    // matches the clamped geometry. This prevents oversized loop-outs.
+    const tanHalfPhi = Math.tan(phi / 2);
+    const effectiveRadius = tanHalfPhi > 1e-6 ? (t / tanHalfPhi) : requestedRadius;
     
     const T0 = sub(P1, mult(A, t));
     const T1 = add(P1, mult(B, t));
@@ -171,17 +179,17 @@ export function generateCurvedPath(waypoints: PathWaypoint[]): Array<[number, nu
     }
     bis = normalize(bis);
     
-    const distToCenter = R / Math.sin(phi / 2);
+    const distToCenter = effectiveRadius / Math.sin(phi / 2);
     const C = add(P1, mult(bis, distToCenter));
     
-    const cCross = cross(W0, W1);
+    const turnCross = cross(A, B);
     
     const a0 = Math.atan2(T0.y - C.y, T0.x - C.x);
     const a1 = Math.atan2(T1.y - C.y, T1.x - C.x);
     let startAng = a0;
     let endAng = a1;
     
-    if (cCross > 0) { // CCW (left turn in map coordinate system? local y goes up (North))
+    if (turnCross > 0) {
       if (endAng < startAng) endAng += 2 * Math.PI;
     } else {
       if (endAng > startAng) endAng -= 2 * Math.PI;
@@ -194,8 +202,8 @@ export function generateCurvedPath(waypoints: PathWaypoint[]): Array<[number, nu
       const tt = k / arcSteps;
       const ang = startAng + (endAng - startAng) * tt;
       finalLocalPoints.push({
-        x: C.x + R * Math.cos(ang),
-        y: C.y + R * Math.sin(ang)
+        x: C.x + effectiveRadius * Math.cos(ang),
+        y: C.y + effectiveRadius * Math.sin(ang)
       });
     }
     
