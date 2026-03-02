@@ -54,6 +54,7 @@ yarn-error.log*
 # Next.js / Vercel (frontend)
 web/.next/
 web/.vercel/
+*.tsbuildinfo
 
 # Cloudflare Wrangler local
 .wrangler/
