@@ -115,6 +115,10 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertTrue(all(abs(v - 2.0) < 1e-9 for v in photo_intervals[:-1]))
         self.assertEqual(photo_intervals[-1], 0.0)
 
+        # Spin mode: no POI (0) so Litchi uses per-waypoint headings
+        poi_lats = [float(row["poi_latitude"]) for row in spin_rows]
+        self.assertTrue(all(v == 0 for v in poi_lats), "Spin mode should have poi_latitude=0")
+
     def test_spin_mode_also_applies_to_battery_csv(self):
         params = {"slices": 2, "N": 6, "r0": 100, "rHold": 1000}
 

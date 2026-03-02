@@ -239,9 +239,15 @@ In `generate_csv` (and `generate_battery_csv`):
 
 ---
 
+## Litchi Import Notes (Spin Mode)
+
+- **POI = 0**: In spin mode, `poi_latitude` and `poi_longitude` are set to 0 (no POI). This ensures Litchi uses the per-waypoint headings instead of defaulting to "Toward POI".
+- **Heading Mode**: Litchi's per-waypoint headings are only used when the mission global "Heading Mode" is set to "Custom". After importing a spin-mode CSV, verify this setting in Litchi Mission Hub.
+
 ## Testing
 
 1. Unit test: minimax algorithm with known segment lengths
 2. Unit test: heading assignment yields constant spin rate, max delta 179°
-3. Integration: Export CSV with spin mode, verify waypoint count <= 99, headings increase monotonically (mod 360)
-4. Field test: Verify no motion blur at recommended settings (1/200s, ISO 400-800)
+3. Unit test: spin mode has poi_latitude=0, poi_longitude=0
+4. Integration: Export CSV with spin mode, verify waypoint count <= 99, headings increase monotonically (mod 360)
+5. Field test: Verify no motion blur at recommended settings (1/200s, ISO 400-800)
