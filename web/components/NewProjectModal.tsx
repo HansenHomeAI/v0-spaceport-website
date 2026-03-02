@@ -149,7 +149,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // UNDO HANDLER
   const handleUndo = useCallback(() => {
-    if (historyIndex < 0) return;
+    if (historyIndex < 0 || !history[historyIndex]) return;
     const { batteryIndex, prevCoords } = history[historyIndex];
 
     // 1. Update Ref
@@ -179,7 +179,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // REDO HANDLER
   const handleRedo = useCallback(() => {
-    if (historyIndex >= history.length - 1) return;
+    if (historyIndex >= history.length - 1 || !history[historyIndex + 1]) return;
     const { batteryIndex, newCoords } = history[historyIndex + 1];
 
     // 1. Update Ref
@@ -223,6 +223,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
     waypointMarkersRef.current.clear();
     waypointCoordsRef.current.clear();
+    setHistory([]);
+    setHistoryIndex(-1);
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
@@ -1547,7 +1549,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       style={{ position: 'static', opacity: historyIndex < 0 ? 0.5 : 1 }}
                       title="Undo"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M9 14L4 9l5-5"/>
                         <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
                       </svg>
@@ -1559,7 +1561,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       style={{ position: 'static', opacity: historyIndex >= history.length - 1 ? 0.5 : 1 }}
                       title="Redo"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M15 14l5-5-5-5"/>
                         <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
                       </svg>
