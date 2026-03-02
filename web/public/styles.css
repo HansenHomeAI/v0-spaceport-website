@@ -5622,7 +5622,55 @@ input.text-fade-right,
 
 .map-wrapper.fullscreen .map-progressive-bottom-blur {
   border-radius: 0;
-  height: 40px; /* Slightly taller in fullscreen for better effect */
+  height: 40px;
+}
+
+/* Waypoint markers on battery paths */
+.waypoint-marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  transition: width 0.15s ease, height 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+  pointer-events: none;
+}
+.map-wrapper.fullscreen .waypoint-marker {
+  width: 12px;
+  height: 12px;
+  cursor: grab;
+  pointer-events: auto;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15);
+}
+.map-wrapper.fullscreen .waypoint-marker:active {
+  cursor: grabbing;
+}
+
+/* Drag hint pill badge */
+.waypoint-drag-hint {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(11, 14, 36, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: waypointHintFadeIn 0.4s ease;
+}
+@keyframes waypointHintFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* Instructions aligned with map margins */

@@ -132,6 +132,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const markerRef = useRef<any>(null);
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
+  // Waypoint drag refs
+  const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
+  const waypointCoordsRef = useRef<Map<number, [number, number][]>>(new Map());
+
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
@@ -148,6 +152,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setDownloadingBatteries(new Set());
     setVisibleBatteryPaths(new Map());
     setLoadingBatteryPaths(new Set());
+    waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
+    waypointMarkersRef.current.clear();
+    waypointCoordsRef.current.clear();
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
@@ -362,6 +369,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     initMap();
     return () => {
       isCancelled = true;
+      waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
+      waypointMarkersRef.current.clear();
+      waypointCoordsRef.current.clear();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -482,6 +492,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [open, isFullscreen, toggleFullscreen]);
 
+  useEffect(() => {
+    waypointMarkersRef.current.forEach((markers) => {
+      markers.forEach(m => m.setDraggable(isFullscreen));
+    });
+  }, [isFullscreen]);
+
   // Keep coordinates synchronized between state and ref
   useEffect(() => {
     console.log('🔍 Coordinate sync effect:', {
@@ -495,7 +511,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [selectedCoords]);
 
-  // Clear all battery paths from map when optimization is invalidated
+  // Clear all battery paths and waypoint markers when optimization is invalidated
   useEffect(() => {
     if (!optimizedParams) {
       const map = mapRef.current;
@@ -507,6 +523,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           } catch { /* map may not be ready yet */ }
         }
       }
+      waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
+      waypointMarkersRef.current.clear();
+      waypointCoordsRef.current.clear();
       setVisibleBatteryPaths(new Map());
     }
   }, [optimizedParams]);
@@ -761,6 +780,63 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return coords;
   }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
 
+  const removeWaypointMarkers = useCallback((batteryIndex: number) => {
+    const existing = waypointMarkersRef.current.get(batteryIndex);
+    if (existing) {
+      existing.forEach(m => m.remove());
+    }
+    waypointMarkersRef.current.delete(batteryIndex);
+    waypointCoordsRef.current.delete(batteryIndex);
+  }, []);
+
+  const createWaypointMarkers = useCallback(async (
+    batteryIndex: number,
+    coords: [number, number][],
+    color: string,
+    draggable: boolean
+  ) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    removeWaypointMarkers(batteryIndex);
+    waypointCoordsRef.current.set(batteryIndex, [...coords]);
+
+    const mapboxModule = await import('mapbox-gl');
+    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+
+    const markers: any[] = [];
+    coords.forEach((coord, i) => {
+      const el = document.createElement('div');
+      el.className = 'waypoint-marker';
+      el.style.backgroundColor = color;
+
+      const marker = new mapboxgl.Marker({ element: el, draggable, anchor: 'center' })
+        .setLngLat(coord)
+        .addTo(map);
+
+      marker.on('drag', () => {
+        const lngLat = marker.getLngLat();
+        const liveCoords = waypointCoordsRef.current.get(batteryIndex);
+        if (!liveCoords) return;
+        liveCoords[i] = [lngLat.lng, lngLat.lat];
+
+        const sourceId = `battery-path-${batteryIndex}`;
+        const source = map.getSource(sourceId);
+        if (source) {
+          source.setData({
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'LineString', coordinates: liveCoords },
+          });
+        }
+      });
+
+      markers.push(marker);
+    });
+
+    waypointMarkersRef.current.set(batteryIndex, markers);
+  }, [removeWaypointMarkers]);
+
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
     if (!map) return;
@@ -774,6 +850,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         if (map.getLayer(layerId)) map.removeLayer(layerId);
         if (map.getSource(sourceId)) map.removeSource(sourceId);
       } catch { /* ignore */ }
+      removeWaypointMarkers(batteryIndex1);
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
         next.delete(batteryIndex1);
@@ -835,6 +912,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         },
       });
 
+      createWaypointMarkers(batteryIndex1, coords, color, isFullscreen);
+
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
         next.set(batteryIndex1, coords);
@@ -856,7 +935,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return next;
       });
     }
-  }, [visibleBatteryPaths, canOptimize, handleOptimize, fetchBatteryPathCoords, showSystemNotification, BATTERY_PATH_COLORS]);
+  }, [visibleBatteryPaths, canOptimize, handleOptimize, fetchBatteryPathCoords, showSystemNotification, BATTERY_PATH_COLORS, isFullscreen, createWaypointMarkers, removeWaypointMarkers]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1339,6 +1418,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
+                {isFullscreen && visibleBatteryPaths.size > 0 && (
+                  <div className="waypoint-drag-hint">Drag waypoints to adjust path</div>
+                )}
                 <div className="map-dim-overlay"></div>
                 <div className="map-blur-background"></div>
                 <div className="map-blur-overlay top"></div>
