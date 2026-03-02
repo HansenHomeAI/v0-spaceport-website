@@ -139,6 +139,74 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  // Undo/Redo State
+  const [history, setHistory] = useState<Array<{
+    batteryIndex: number;
+    prevCoords: [number, number][];
+    newCoords: [number, number][];
+  }>>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+
+  // UNDO HANDLER
+  const handleUndo = useCallback(() => {
+    if (historyIndex < 0) return;
+    const { batteryIndex, prevCoords } = history[historyIndex];
+
+    // 1. Update Ref
+    waypointCoordsRef.current.set(batteryIndex, [...prevCoords]);
+
+    // 2. Update Map Source (Line)
+    const map = mapRef.current;
+    if (map) {
+      const source = map.getSource(`battery-path-${batteryIndex}`);
+      if (source) {
+        (source as any).setData({
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: prevCoords },
+        });
+      }
+      // 3. Update Markers (Visual Pins)
+      const markers = waypointMarkersRef.current.get(batteryIndex);
+      if (markers) {
+        markers.forEach((m: any, i: number) => {
+          if (prevCoords[i]) m.setLngLat(prevCoords[i]);
+        });
+      }
+    }
+    setHistoryIndex(prev => prev - 1);
+  }, [history, historyIndex]);
+
+  // REDO HANDLER
+  const handleRedo = useCallback(() => {
+    if (historyIndex >= history.length - 1) return;
+    const { batteryIndex, newCoords } = history[historyIndex + 1];
+
+    // 1. Update Ref
+    waypointCoordsRef.current.set(batteryIndex, [...newCoords]);
+
+    // 2. Update Map Source (Line)
+    const map = mapRef.current;
+    if (map) {
+      const source = map.getSource(`battery-path-${batteryIndex}`);
+      if (source) {
+        (source as any).setData({
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: newCoords },
+        });
+      }
+      // 3. Update Markers (Visual Pins)
+      const markers = waypointMarkersRef.current.get(batteryIndex);
+      if (markers) {
+        markers.forEach((m: any, i: number) => {
+          if (newCoords[i]) m.setLngLat(newCoords[i]);
+        });
+      }
+    }
+    setHistoryIndex(prev => prev + 1);
+  }, [history, historyIndex]);
+
 
 
   // Reset state when opening/closing
@@ -699,12 +767,40 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         body: JSON.stringify(downloadBody),
       });
       if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
-      const csvText = await res.text();
+      const originalCsvText = await res.text();
+
+      // Patch with live coordinates if they exist
+      let finalCsvText = originalCsvText;
+      const liveCoords = waypointCoordsRef.current.get(batteryIndex1);
+
+      if (liveCoords && liveCoords.length > 0) {
+        const lines = originalCsvText.trim().split('\n');
+        // CSV columns: lat,lon,alt... (lat is 0, lon is 1 based on fetchBatteryPathCoords)
+        const header = lines[0];
+        const dataLines = lines.slice(1);
+
+        if (dataLines.length === liveCoords.length) {
+          const updatedLines = dataLines.map((line, idx) => {
+            const parts = line.split(',');
+            const [newLng, newLat] = liveCoords[idx];
+            // Update CSV columns: Lat (0), Lng (1)
+            // Ensure we preserve the number of decimal places or use enough precision
+            parts[0] = newLat.toFixed(8);
+            parts[1] = newLng.toFixed(8);
+            return parts.join(',');
+          });
+          finalCsvText = [header, ...updatedLines].join('\n');
+          console.log('Using modified coordinates for CSV download');
+        } else {
+          console.warn('Live coordinates count mismatch, using original CSV');
+        }
+      }
+
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
         ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
         : 'Untitled';
       const filename = `${safeTitle}-${batteryIndex1}.csv`;
-      const blob = new Blob([csvText], { type: 'text/csv' });
+      const blob = new Blob([finalCsvText], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -805,6 +901,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
 
     const markers: any[] = [];
+    let dragStartCoords: [number, number][] | null = null;
+
     coords.forEach((coord, i) => {
       const el = document.createElement('div');
       el.className = 'waypoint-marker';
@@ -813,6 +911,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const marker = new mapboxgl.Marker({ element: el, draggable, anchor: 'center' })
         .setLngLat(coord)
         .addTo(map);
+
+      // Capture state before drag starts
+      marker.on('dragstart', () => {
+        const current = waypointCoordsRef.current.get(batteryIndex);
+        if (current) dragStartCoords = JSON.parse(JSON.stringify(current));
+      });
 
       marker.on('drag', () => {
         const lngLat = marker.getLngLat();
@@ -831,11 +935,30 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         }
       });
 
+      // Commit to history when drag ends
+      marker.on('dragend', () => {
+        const finalCoords = waypointCoordsRef.current.get(batteryIndex);
+        if (dragStartCoords && finalCoords) {
+          const newEntry = {
+            batteryIndex,
+            prevCoords: dragStartCoords,
+            newCoords: JSON.parse(JSON.stringify(finalCoords))
+          };
+          // Add to history and truncate any "redo" future
+          setHistory(prev => {
+            const truncated = prev.slice(0, historyIndex + 1);
+            return [...truncated, newEntry];
+          });
+          setHistoryIndex(prev => prev + 1);
+        }
+        dragStartCoords = null;
+      });
+
       markers.push(marker);
     });
 
     waypointMarkersRef.current.set(batteryIndex, markers);
-  }, [removeWaypointMarkers]);
+  }, [removeWaypointMarkers, historyIndex]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
@@ -1415,6 +1538,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <div id="map-container" className="map-container" ref={mapContainerRef}></div>
                 
                 {/* Map overlays and controls as siblings */}
+                {isFullscreen && (
+                  <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
+                    <button 
+                      onClick={handleUndo} 
+                      disabled={historyIndex < 0}
+                      className="expand-button"
+                      style={{ position: 'static', opacity: historyIndex < 0 ? 0.5 : 1 }}
+                      title="Undo"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 14L4 9l5-5"/>
+                        <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={handleRedo} 
+                      disabled={historyIndex >= history.length - 1}
+                      className="expand-button"
+                      style={{ position: 'static', opacity: historyIndex >= history.length - 1 ? 0.5 : 1 }}
+                      title="Redo"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15 14l5-5-5-5"/>
+                        <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
+                      </svg>
+                    </button>
+                  </div>
+                )}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
