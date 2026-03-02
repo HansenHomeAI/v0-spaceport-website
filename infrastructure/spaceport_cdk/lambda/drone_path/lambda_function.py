@@ -392,7 +392,8 @@ class SpiralDesigner:
 
     def _insert_spin_waypoints(self, waypoint_records: List[Dict]) -> List[Dict]:
         """
-        Insert non-hover spin waypoints to reduce large gaps while staying <= 99 points.
+        Insert transit spin waypoints (never hover-in-place) to reduce large gaps
+        while staying <= 99 total points.
         """
         if len(waypoint_records) < 2:
             return waypoint_records
@@ -458,6 +459,29 @@ class SpiralDesigner:
             indices[i], indices[j] = indices[j], indices[i]
 
         return [int(round(evenly_spaced[idx])) for idx in indices]
+
+    def _enforce_waypoint_record_limit(self, waypoint_records: List[Dict]) -> List[Dict]:
+        """
+        Keep waypoint records within the Litchi 99-point cap by even downsampling.
+        """
+        total = len(waypoint_records)
+        limit = self.MAX_TOTAL_WAYPOINTS
+        if total <= limit:
+            return waypoint_records
+
+        # Preserve endpoints and distribute remaining samples uniformly.
+        keep_indices = {0, total - 1}
+        interior_to_pick = limit - 2
+        if interior_to_pick > 0:
+            step = (total - 1) / (limit - 1)
+            for i in range(1, limit - 1):
+                keep_indices.add(int(round(i * step)))
+
+        ordered_indices = sorted(idx for idx in keep_indices if 0 <= idx < total)
+        if len(ordered_indices) > limit:
+            ordered_indices = ordered_indices[:limit]
+
+        return [waypoint_records[idx] for idx in ordered_indices]
 
     def _compute_path_headings(self, waypoint_records: List[Dict]) -> List[int]:
         """Compute standard forward-facing headings from local X/Y geometry."""
@@ -1862,6 +1886,7 @@ class SpiralDesigner:
             max_height=max_height,
             enhanced_waypoints_data=enhanced_waypoints_data,
         )
+        waypoint_records = self._enforce_waypoint_record_limit(waypoint_records)
 
         if spin_mode:
             waypoint_records = self._insert_spin_waypoints(waypoint_records)
@@ -2082,6 +2107,7 @@ class SpiralDesigner:
             max_height=max_height,
             enhanced_waypoints_data=enhanced_waypoints_data,
         )
+        waypoint_records = self._enforce_waypoint_record_limit(waypoint_records)
 
         if spin_mode:
             waypoint_records = self._insert_spin_waypoints(waypoint_records)
