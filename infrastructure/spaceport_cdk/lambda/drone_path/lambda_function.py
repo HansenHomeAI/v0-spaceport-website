@@ -5,7 +5,7 @@ import io
 import os
 import requests
 import time
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Union
 
 class SpiralDesigner:
     """
@@ -602,11 +602,12 @@ class SpiralDesigner:
             self.waypoint_cache.append(self.build_slice(i, params))
         return self.waypoint_cache
     
-    def parse_center(self, txt: str) -> Optional[Dict]:
+    def parse_center(self, txt: Union[str, Dict]) -> Optional[Dict]:
         """
-        Parse center coordinates from various human-readable formats.
+        Parse center coordinates from various human-readable formats or dict.
         
         SUPPORTED FORMATS:
+        - {"lat": 41.73218, "lng": -111.83979} (dict)
         - "41.73218° N, 111.83979° W" (degree notation)
         - "41.73218, -111.83979" (decimal degrees)
         - "41.73218° N, 111.83979° W" (mixed formats)
@@ -616,13 +617,26 @@ class SpiralDesigner:
         - Decimal format: ([-+]?\d+\.?\d*)\s*,\s*([-+]?\d+\.?\d*)
         
         Args:
-            txt: Coordinate string in various formats
+            txt: Coordinate string in various formats or a dictionary with lat/lng
             
         Returns:
             Dict with 'lat' and 'lon' keys, or None if parsing fails
         """
+        if isinstance(txt, dict):
+            # Try to extract from common dict formats (lat/lng or lat/lon)
+            if 'lat' in txt and ('lng' in txt or 'lon' in txt):
+                lon_key = 'lng' if 'lng' in txt else 'lon'
+                try:
+                    return {'lat': float(txt['lat']), 'lon': float(txt[lon_key])}
+                except (ValueError, TypeError):
+                    return None
+            return None
+
         import re
         
+        if not isinstance(txt, str):
+            txt = str(txt)
+            
         txt = txt.strip()
         
         # Handle formats like "41.73218° N, 111.83979° W"
