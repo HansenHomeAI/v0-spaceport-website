@@ -81,3 +81,4 @@ web/.vercel/
 
 # Cesium static assets copied at build time
 web/public/cesium/
+web/tsconfig.tsbuildinfo
