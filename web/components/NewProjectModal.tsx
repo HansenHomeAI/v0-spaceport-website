@@ -17,6 +17,8 @@ type OptimizedParams = {
   elevationFeet: number | null;
 };
 
+import { generateCurvedPath } from '../lib/curvedPath2D';
+
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
@@ -90,6 +92,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
+
+  // Editor states
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedWaypointsByBattery, setEditedWaypointsByBattery] = useState<Map<number, any[]>>(new Map());
+  const [undoStackByBattery, setUndoStackByBattery] = useState<Map<number, any[][]>>(new Map());
+  const [redoStackByBattery, setRedoStackByBattery] = useState<Map<number, any[][]>>(new Map());
+  const [activeEditBattery, setActiveEditBattery] = useState<number | null>(null);
+  const waypointMarkersRef = useRef<any[]>([]); // mapboxgl.Marker array
 
   const BATTERY_PATH_COLORS = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
@@ -511,6 +521,287 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [optimizedParams]);
 
+  // ----- EDITOR FUNCTIONS -----
+  
+  // Set active edit battery based on visible paths
+  useEffect(() => {
+    if (visibleBatteryPaths.size === 1) {
+      setActiveEditBattery(Array.from(visibleBatteryPaths.keys())[0]);
+    } else if (visibleBatteryPaths.size === 0) {
+      setActiveEditBattery(null);
+    }
+  }, [visibleBatteryPaths]);
+
+  const updateBatteryPathVisuals = useCallback((batteryIdx: number, waypoints: any[]) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const curvedCoords = generateCurvedPath(waypoints);
+    
+    // Update geojson source
+    const sourceId = `battery-path-${batteryIdx}`;
+    const source = map.getSource(sourceId);
+    if (source) {
+      source.setData({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: curvedCoords },
+      });
+    }
+
+    setVisibleBatteryPaths(prev => {
+      const next = new Map(prev);
+      next.set(batteryIdx, curvedCoords);
+      return next;
+    });
+  }, []);
+
+  const pushUndoState = useCallback((batteryIdx: number, waypoints: any[]) => {
+    setUndoStackByBattery(prev => {
+      const next = new Map(prev);
+      const stack = next.get(batteryIdx) || [];
+      next.set(batteryIdx, [...stack, waypoints.map(w => ({ ...w }))]);
+      return next;
+    });
+    // Clear redo stack on new edit
+    setRedoStackByBattery(prev => {
+      const next = new Map(prev);
+      next.set(batteryIdx, []);
+      return next;
+    });
+  }, []);
+
+  const handleUndo = useCallback((batteryIdx: number) => {
+    const undoStack = undoStackByBattery.get(batteryIdx);
+    if (!undoStack || undoStack.length === 0) return;
+
+    const currentWaypoints = editedWaypointsByBattery.get(batteryIdx);
+    if (!currentWaypoints) return;
+
+    const newUndoStack = [...undoStack];
+    const previousState = newUndoStack.pop()!;
+
+    setUndoStackByBattery(prev => {
+      const next = new Map(prev);
+      next.set(batteryIdx, newUndoStack);
+      return next;
+    });
+
+    setRedoStackByBattery(prev => {
+      const next = new Map(prev);
+      const stack = next.get(batteryIdx) || [];
+      next.set(batteryIdx, [...stack, currentWaypoints.map(w => ({ ...w }))]);
+      return next;
+    });
+
+    setEditedWaypointsByBattery(prev => {
+      const next = new Map(prev);
+      next.set(batteryIdx, previousState);
+      return next;
+    });
+
+    updateBatteryPathVisuals(batteryIdx, previousState);
+    renderMarkers(batteryIdx, previousState);
+  }, [undoStackByBattery, editedWaypointsByBattery, updateBatteryPathVisuals]);
+
+  const handleRedo = useCallback((batteryIdx: number) => {
+    const redoStack = redoStackByBattery.get(batteryIdx);
+    if (!redoStack || redoStack.length === 0) return;
+
+    const currentWaypoints = editedWaypointsByBattery.get(batteryIdx);
+    if (!currentWaypoints) return;
+
+    const newRedoStack = [...redoStack];
+    const nextState = newRedoStack.pop()!;
+
+    setRedoStackByBattery(prev => {
+      const next = new Map(prev);
+      next.set(batteryIdx, newRedoStack);
+      return next;
+    });
+
+    setUndoStackByBattery(prev => {
+      const next = new Map(prev);
+      const stack = next.get(batteryIdx) || [];
+      next.set(batteryIdx, [...stack, currentWaypoints.map(w => ({ ...w }))]);
+      return next;
+    });
+
+    setEditedWaypointsByBattery(prev => {
+      const next = new Map(prev);
+      next.set(batteryIdx, nextState);
+      return next;
+    });
+
+    updateBatteryPathVisuals(batteryIdx, nextState);
+    renderMarkers(batteryIdx, nextState);
+  }, [redoStackByBattery, editedWaypointsByBattery, updateBatteryPathVisuals]);
+
+  // Handle marker render
+  const renderMarkers = useCallback(async (batteryIdx: number, waypoints: any[]) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Clear existing markers
+    waypointMarkersRef.current.forEach(m => m.remove());
+    waypointMarkersRef.current = [];
+
+    if (!isEditMode || !isFullscreen) return;
+
+    const mapboxModule = await import('mapbox-gl');
+    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+
+    waypoints.forEach((wp, index) => {
+      const el = document.createElement('div');
+      el.className = 'waypoint-edit-marker';
+      el.style.width = '24px';
+      el.style.height = '24px';
+      el.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+      el.style.border = '3px solid #007AFF';
+      el.style.borderRadius = '50%';
+      el.style.cursor = 'grab';
+      el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+
+      const marker = new mapboxgl.Marker({
+        element: el,
+        draggable: true
+      })
+      .setLngLat([wp.lng, wp.lat])
+      .addTo(map);
+
+      marker.on('dragstart', () => {
+        const currentWaypoints = editedWaypointsByBattery.get(batteryIdx);
+        if (currentWaypoints) {
+          pushUndoState(batteryIdx, currentWaypoints);
+        }
+      });
+
+      marker.on('drag', () => {
+        const lngLat = marker.getLngLat();
+        setEditedWaypointsByBattery(prev => {
+          const next = new Map(prev);
+          const current = next.get(batteryIdx) || [];
+          const updated = [...current];
+          if (updated[index]) {
+            updated[index] = { ...updated[index], lng: lngLat.lng, lat: lngLat.lat };
+            next.set(batteryIdx, updated);
+            // Throttle visual update slightly to keep it smooth during drag
+            requestAnimationFrame(() => updateBatteryPathVisuals(batteryIdx, updated));
+          }
+          return next;
+        });
+      });
+
+      marker.on('dragend', () => {
+        // Any final adjustments
+      });
+
+      waypointMarkersRef.current.push(marker);
+    });
+  }, [isEditMode, isFullscreen, editedWaypointsByBattery, pushUndoState, updateBatteryPathVisuals]);
+
+  // Effect to re-render markers when toggling edit mode or fullscreen
+  useEffect(() => {
+    if (activeEditBattery !== null && editedWaypointsByBattery.has(activeEditBattery)) {
+      renderMarkers(activeEditBattery, editedWaypointsByBattery.get(activeEditBattery)!);
+    } else {
+      waypointMarkersRef.current.forEach(m => m.remove());
+      waypointMarkersRef.current = [];
+    }
+  }, [isEditMode, isFullscreen, activeEditBattery, renderMarkers]);
+
+  const fetchBatteryWaypoints = useCallback(async (batteryIndex1: number): Promise<any[]> => {
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (!currentOptimizedParams) return [];
+
+    const body: Record<string, any> = { ...currentOptimizedParams };
+    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
+    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+
+    const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Failed to fetch battery ${batteryIndex1} path`);
+    const csvText = await res.text();
+
+    const lines = csvText.trim().split('\n');
+    const waypoints: any[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',');
+      const lat = parseFloat(parts[0]);
+      const lng = parseFloat(parts[1]);
+      const altitudeFt = parseFloat(parts[2]);
+      const headingDeg = parseFloat(parts[3]);
+      const curveSizeFt = parseFloat(parts[4]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        waypoints.push({
+          lat, lng, altitudeFt, headingDeg, curveSizeFt, originalIndex: i - 1
+        });
+      }
+    }
+    return waypoints;
+  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
+
+  const handleRefreshAGL = useCallback(async (batteryIdx: number) => {
+    const currentWaypoints = editedWaypointsByBattery.get(batteryIdx);
+    if (!currentWaypoints || currentWaypoints.length === 0) return;
+
+    try {
+      pushUndoState(batteryIdx, currentWaypoints);
+      showSystemNotification('success', 'Refreshing altitude for new positions...');
+
+      // Fetch original waypoints to get old coordinates
+      const originalWaypoints = await fetchBatteryWaypoints(batteryIdx);
+
+      // We need elevations for both old and new coords
+      const allCoords = [
+        ...originalWaypoints.map((w: any) => ({ lat: w.lat, lng: w.lng })),
+        ...currentWaypoints.map((w: any) => ({ lat: w.lat, lng: w.lng }))
+      ];
+
+      const response = await fetch('/api/elevation-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coordinates: allCoords })
+      });
+      
+      if (!response.ok) throw new Error('Elevation API failed');
+      const data = await response.json();
+      
+      if (data.results && data.results.length === allCoords.length) {
+        const half = originalWaypoints.length;
+        
+        setEditedWaypointsByBattery(prev => {
+          const next = new Map(prev);
+          const current = next.get(batteryIdx) || [];
+          const updated = current.map((wp, i) => {
+            if (i >= half) return wp; // fallback if lengths don't match exactly
+            const oldElevMeters = data.results[i].elevation;
+            const newElevMeters = data.results[half + i].elevation;
+            
+            const elevDiffFt = (newElevMeters - oldElevMeters) * 3.28084;
+            
+            // Adjust altitude by the difference in terrain elevation
+            return {
+              ...wp,
+              altitudeFt: Number((wp.altitudeFt + elevDiffFt).toFixed(2))
+            };
+          });
+          next.set(batteryIdx, updated);
+          return next;
+        });
+        
+        showSystemNotification('success', 'Altitude adjusted for terrain');
+      }
+    } catch (e: any) {
+      showSystemNotification('error', 'Failed to refresh altitude: ' + e.message);
+    }
+  }, [editedWaypointsByBattery, pushUndoState, showSystemNotification, fetchBatteryWaypoints]);
+
+  // ----- END EDITOR FUNCTIONS -----
+
   const canOptimize = useMemo(() => {
     // Always use ref as source of truth for coordinates
     const coords = selectedCoordsRef.current;
@@ -681,11 +972,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       });
       if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
       const csvText = await res.text();
+      let finalCsvText = csvText;
+
+      // Apply any local edits to the downloaded CSV
+      const editedWaypoints = editedWaypointsByBattery.get(batteryIndex1);
+      if (editedWaypoints && editedWaypoints.length > 0) {
+        const lines = csvText.trim().split('\n');
+        if (lines.length > 1) {
+          const header = lines[0];
+          const newLines = [header];
+          for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(',');
+            const wp = editedWaypoints[i - 1];
+            if (wp) {
+              parts[0] = wp.lat.toFixed(6);
+              parts[1] = wp.lng.toFixed(6);
+              parts[2] = wp.altitudeFt.toFixed(2);
+            }
+            newLines.push(parts.join(','));
+          }
+          finalCsvText = newLines.join('\n');
+        }
+      }
+
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
         ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
         : 'Untitled';
       const filename = `${safeTitle}-${batteryIndex1}.csv`;
-      const blob = new Blob([csvText], { type: 'text/csv' });
+      const blob = new Blob([finalCsvText], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -732,35 +1046,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setVisibleBatteryPaths(new Map());
   }, [visibleBatteryPaths]);
 
-  const fetchBatteryPathCoords = useCallback(async (batteryIndex1: number): Promise<Array<[number, number]>> => {
-    const currentOptimizedParams = optimizedParamsRef.current;
-    if (!currentOptimizedParams) return [];
-
-    const body: Record<string, any> = { ...currentOptimizedParams };
-    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
-    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
-
-    const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`Failed to fetch battery ${batteryIndex1} path`);
-    const csvText = await res.text();
-
-    const lines = csvText.trim().split('\n');
-    const coords: Array<[number, number]> = [];
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(',');
-      const lat = parseFloat(parts[0]);
-      const lng = parseFloat(parts[1]);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        coords.push([lng, lat]);
-      }
-    }
-    return coords;
-  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
-
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
     if (!map) return;
@@ -802,11 +1087,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         }
       }
 
-      const coords = await fetchBatteryPathCoords(batteryIndex1);
-      if (!coords || coords.length === 0) {
+      const waypoints = await fetchBatteryWaypoints(batteryIndex1);
+      if (!waypoints || waypoints.length === 0) {
         showSystemNotification('error', 'No path data received');
         return;
       }
+      
+      const curvedCoords = generateCurvedPath(waypoints);
 
       const sourceId = `battery-path-${batteryIndex1}`;
       const layerId = `battery-path-layer-${batteryIndex1}`;
@@ -820,7 +1107,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         data: {
           type: 'Feature',
           properties: {},
-          geometry: { type: 'LineString', coordinates: coords },
+          geometry: { type: 'LineString', coordinates: curvedCoords },
         },
       });
 
@@ -837,12 +1124,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
-        next.set(batteryIndex1, coords);
+        next.set(batteryIndex1, curvedCoords);
+        return next;
+      });
+      
+      setEditedWaypointsByBattery(prev => {
+        const next = new Map(prev);
+        next.set(batteryIndex1, waypoints);
         return next;
       });
 
-      const lngs = coords.map(c => c[0]);
-      const lats = coords.map(c => c[1]);
+      const lngs = waypoints.map(w => w.lng);
+      const lats = waypoints.map(w => w.lat);
       map.fitBounds(
         [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
         { padding: 50, duration: 1000 }
@@ -856,7 +1149,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return next;
       });
     }
-  }, [visibleBatteryPaths, canOptimize, handleOptimize, fetchBatteryPathCoords, showSystemNotification, BATTERY_PATH_COLORS]);
+  }, [visibleBatteryPaths, canOptimize, handleOptimize, fetchBatteryWaypoints, showSystemNotification, BATTERY_PATH_COLORS]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1339,6 +1632,38 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
+
+                {isFullscreen && (
+                  <div className="map-editor-toolbar" style={{
+                    position: 'absolute', top: 20, left: 20, zIndex: 100, display: 'flex', gap: '8px',
+                    background: 'rgba(0,0,0,0.7)', padding: '8px', borderRadius: '8px', backdropFilter: 'blur(10px)'
+                  }}>
+                    <label style={{ display: 'flex', alignItems: 'center', color: '#fff', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+                      <input type="checkbox" checked={isEditMode} onChange={(e) => setIsEditMode(e.target.checked)} style={{ accentColor: '#007AFF' }} />
+                      Edit Path
+                    </label>
+                    
+                    {isEditMode && activeEditBattery !== null && (
+                      <>
+                        <button 
+                          disabled={!undoStackByBattery.get(activeEditBattery)?.length}
+                          onClick={() => handleUndo(activeEditBattery)}
+                          style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', cursor: 'pointer', opacity: !undoStackByBattery.get(activeEditBattery)?.length ? 0.5 : 1 }}
+                        >
+                          Undo
+                        </button>
+                        <button 
+                          disabled={!redoStackByBattery.get(activeEditBattery)?.length}
+                          onClick={() => handleRedo(activeEditBattery)}
+                          style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', cursor: 'pointer', opacity: !redoStackByBattery.get(activeEditBattery)?.length ? 0.5 : 1 }}
+                        >
+                          Redo
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+
                 <div className="map-dim-overlay"></div>
                 <div className="map-blur-background"></div>
                 <div className="map-blur-overlay top"></div>
