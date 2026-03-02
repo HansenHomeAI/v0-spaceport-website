@@ -42,6 +42,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [maxHeightFeet, setMaxHeightFeet] = useState<string>("");
   const [minExpansionDist, setMinExpansionDist] = useState<string>("");
   const [maxExpansionDist, setMaxExpansionDist] = useState<string>("");
+  const [spinMode, setSpinMode] = useState<boolean>(false);
 
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
@@ -167,6 +168,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       
       setProjectTitle(project.title || 'Untitled');
       const params = project.params || {};
+      const savedSpinMode = params.spinMode === true || params.spinMode === 'true' || params.spinMode === 1 || params.spinMode === '1';
       // Don't set address search yet if we have coordinates - restoreSavedLocation will handle it
       if (!(params.latitude && params.longitude)) {
         setAddressSearch(params.address || '');
@@ -177,6 +179,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setMinExpansionDist(params.minExpansionDist || '');
       setMaxExpansionDist(params.maxExpansionDist || '');
       setMaxHeightFeet(params.maxHeight || '');
+      setSpinMode(savedSpinMode);
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -239,6 +242,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 minHeight: minH,
                 maxHeight: maxH,
                 elevationFeet,
+                spinMode: savedSpinMode,
               };
               setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
             } catch (e) {
@@ -259,6 +263,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setMaxHeightFeet('');
       setMinExpansionDist('');
       setMaxExpansionDist('');
+      setSpinMode(false);
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
@@ -611,6 +616,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         minHeight: minH,
         maxHeight: maxH,
         elevationFeet,
+        spinMode,
       };
       setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
       console.log('Optimization completed successfully:', params);
@@ -622,7 +628,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
+  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize, spinMode]);
 
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
@@ -672,6 +678,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const downloadBody: Record<string, any> = { ...currentOptimizedParams };
       if (minExpansionDist) downloadBody.minExpansionDist = parseFloat(minExpansionDist);
       if (maxExpansionDist) downloadBody.maxExpansionDist = parseFloat(maxExpansionDist);
+      downloadBody.spinMode = spinMode;
       console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, downloadBody);
       
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
@@ -715,7 +722,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist, spinMode]);
 
   const clearAllBatteryPaths = useCallback(() => {
     const map = mapRef.current;
@@ -739,6 +746,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const body: Record<string, any> = { ...currentOptimizedParams };
     if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
     if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+    body.spinMode = spinMode;
 
     const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
       method: 'POST',
@@ -759,7 +767,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     }
     return coords;
-  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
+  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist, spinMode]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
@@ -885,6 +893,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           batteries: numBatteries,
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
+          spinMode,
           minExpansionDist: minExpansionDist || null,
           maxExpansionDist: maxExpansionDist || null,
           latitude: selectedCoordsRef.current?.lat || null,
@@ -923,7 +932,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, status, isSaving]);
+  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, status, isSaving, spinMode]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -934,11 +943,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const hasLocation = Boolean(addressSearch.trim() || selectedCoords);
     const hasBatteryData = Boolean(batteryMinutes || numBatteries);
     const hasAltitudeData = Boolean(minHeightFeet || maxHeightFeet);
+    const hasSpinMode = spinMode;
     const hasTitleChange = projectTitle !== 'Untitled' && projectTitle.trim();
     const hasUploadData = Boolean(propertyTitle.trim() || listingDescription.trim() || contactEmail.trim() || selectedFile);
     
-    return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
-  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
+    return hasLocation || hasBatteryData || hasAltitudeData || hasSpinMode || hasTitleChange || hasUploadData;
+  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, spinMode, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
 
   // SIMPLE debounced save trigger
   const triggerSave = useCallback(() => {
@@ -972,6 +982,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       numBatteries,
       minHeightFeet,
       maxHeightFeet,
+      spinMode,
       status,
       selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
       optimizedParams: optimizedParams ? 'EXISTS' : 'NULL'
@@ -983,7 +994,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, spinMode, status, selectedCoords]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -1518,6 +1529,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       style={{}}
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Capture Mode */}
+            <div className="category-outline">
+              <div className="popup-section">
+                <h4>Capture Mode</h4>
+                <div className="input-row-popup" style={{ alignItems: 'center', gap: '12px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={spinMode}
+                      onChange={(e) => setSpinMode(e.target.checked)}
+                    />
+                    <span style={{ color: 'rgba(255,255,255,0.9)' }}>
+                      Multi-angle parallax spin mode (2s interval)
+                    </span>
+                  </label>
                 </div>
               </div>
             </div>
