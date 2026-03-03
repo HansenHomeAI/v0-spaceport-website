@@ -9,7 +9,7 @@ on:
 
 jobs:
   diff:
-    if: github.event_name == 'pull_request' && github.base_ref == 'development' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && github.base_ref == 'development'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -70,7 +70,7 @@ jobs:
         fi
 
     - name: Configure AWS credentials (staging via access keys)
-      if: steps.staging-aws.outputs.available == 'true'
+      if: github.event.pull_request.head.repo.full_name == github.repository && steps.staging-aws.outputs.available == 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -78,7 +78,7 @@ jobs:
         aws-region: us-west-2
 
     - name: CDK Diff
-      if: steps.staging-aws.outputs.available == 'true'
+      if: github.event.pull_request.head.repo.full_name == github.repository && steps.staging-aws.outputs.available == 'true'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         STRIPE_SECRET_KEY_TEST: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
@@ -104,7 +104,7 @@ jobs:
           --parameters SpaceportStagingStack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
 
     - name: CDK Synth without AWS access
-      if: steps.staging-aws.outputs.available != 'true'
+      if: github.event.pull_request.head.repo.full_name != github.repository || steps.staging-aws.outputs.available != 'true'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         STRIPE_SECRET_KEY_TEST: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
