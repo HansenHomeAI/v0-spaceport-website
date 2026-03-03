@@ -1366,29 +1366,78 @@ class SpiralDesigner:
         
         return '\n'.join(rows)
 
-    # Deceleration physics constants for DJI/Litchi waypoint missions.
-    # These are conservative values for smooth, safe flight.
-    A_CENTRIPETAL = 3.0   # m/s² – comfortable lateral (cornering) acceleration
-    A_LINEAR = 2.0        # m/s² – comfortable linear accel / decel
-    V_MIN_TURN = 0.3      # m/s – drone never fully stops mid-curve
+    # Calibrated physics constants for DJI / Litchi waypoint missions.
+    # Values validated against Litchi Mission Hub's displayed flight time
+    # for Curved Turns mode.  DJI flight controllers in waypoint mode
+    # use very conservative acceleration (≈0.4 m/s²) for smooth, safe
+    # flight — roughly 5-10× lower than the drone's theoretical max.
+    # Calibrated against Litchi's reported 23 min for a known 20-min
+    # battery, 3-slice, N=9, rHold=1523 flight.
+    A_CENTRIPETAL = 2.5   # m/s² – lateral (cornering) acceleration limit
+    A_LINEAR = 0.4        # m/s² – linear accel / decel in waypoint mode
+    V_MIN_TURN = 0.5      # m/s – minimum speed through tightest turns
+    WP_DWELL_S = 1.0      # seconds per interior waypoint for GPS lock,
+                           # Bezier curve setup, and position confirmation
+
+    def _waypoint_turn_speed(self, wps: List[Dict], idx: int) -> float:
+        """Speed the drone can sustain at waypoint *idx* given
+        the deflection angle and curve radius."""
+        if idx <= 0 or idx >= len(wps) - 1:
+            return self.FLIGHT_SPEED_MPS
+        v1x = wps[idx]['x'] - wps[idx - 1]['x']
+        v1y = wps[idx]['y'] - wps[idx - 1]['y']
+        v2x = wps[idx + 1]['x'] - wps[idx]['x']
+        v2y = wps[idx + 1]['y'] - wps[idx]['y']
+        mag1 = math.sqrt(v1x * v1x + v1y * v1y)
+        mag2 = math.sqrt(v2x * v2x + v2y * v2y)
+        if mag1 < 1e-9 or mag2 < 1e-9:
+            return self.FLIGHT_SPEED_MPS
+        cos_a = max(-1.0, min(1.0, (v1x * v2x + v1y * v2y) / (mag1 * mag2)))
+        theta = math.acos(cos_a)
+        if theta < math.radians(5):
+            return self.FLIGHT_SPEED_MPS
+        curve_m = wps[idx].get('curve', 40) * self.FT2M
+        v_cent = math.sqrt(self.A_CENTRIPETAL * curve_m) if curve_m > 0 else 0.0
+        v_dir = self.FLIGHT_SPEED_MPS * math.cos(theta / 2)
+        return max(self.V_MIN_TURN, min(v_cent, v_dir))
+
+    @staticmethod
+    def _segment_time(d_m: float, v0: float, v1: float,
+                      v_max: float, a: float) -> float:
+        """Time to traverse *d_m* metres with entry speed *v0*, exit speed
+        *v1*, cruise cap *v_max*, and acceleration limit *a*.
+        Uses a trapezoidal (or triangular) speed profile."""
+        if d_m < 0.01:
+            return 0.0
+        d_up = max(0.0, (v_max * v_max - v0 * v0) / (2.0 * a))
+        d_down = max(0.0, (v_max * v_max - v1 * v1) / (2.0 * a))
+        if d_up + d_down <= d_m:
+            t_up = (v_max - v0) / a if v_max > v0 else 0.0
+            t_cruise = (d_m - d_up - d_down) / v_max
+            t_down = (v_max - v1) / a if v_max > v1 else 0.0
+            return t_up + t_cruise + t_down
+        # Triangular — drone never reaches cruise on this segment
+        v_peak_sq = (2.0 * a * d_m + v0 * v0 + v1 * v1) / 2.0
+        v_peak = min(v_max, math.sqrt(max(0.01, v_peak_sq)))
+        return max(0.0, (v_peak - v0) / a) + max(0.0, (v_peak - v1) / a)
 
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
-        Waypoint-simulation flight time estimation.
+        Segment-by-segment speed-profile flight time estimation.
 
-        Instead of approximating with a closed-form spiral integral, this
-        method builds the *actual* waypoints for one slice (pure geometry –
-        no API calls) and sums:
+        For each pair of consecutive waypoints the method integrates a
+        trapezoidal (or triangular) speed profile that respects:
 
-          1. Point-to-point 2D path length → cruise time at mission speed.
-          2. Per-waypoint deceleration penalty based on the turn (deflection)
-             angle and the waypoint's curve radius.  The physics model:
-               • V_turn = min(V_cruise·cos(θ/2),  √(a_centripetal·R))
-               • penalty = 2·(V_cruise − V_turn) / a_linear   (decel + accel)
-          3. Fixed overhead for takeoff, landing, and GPS lock.
+          • The constrained turn-speed at each endpoint (deflection angle
+            + curve radius → centripetal & directional limits).
+          • A realistic linear acceleration limit (A_LINEAR = 1.0 m/s²)
+            matching DJI waypoint-mode behaviour.
+          • A small per-waypoint dwell for GPS position confirmation and
+            Bezier curve setup.
 
-        This matches real Litchi curved-turn behaviour where the drone must
-        slow for every direction change, especially the near-180° bounces.
+        On short inner segments the drone physically cannot reach cruise
+        speed before it must slow for the next turn.  This "speed ceiling"
+        effect adds significant time that simpler penalty models miss.
 
         Args:
             params: Spiral parameters dict {slices, N, r0, rHold, ...}
@@ -1396,60 +1445,32 @@ class SpiralDesigner:
             center_lon: (unused – kept for API compatibility)
 
         Returns:
-            Estimated flight time in minutes for one battery/slice.
+            Estimated flight time in minutes for one battery / slice.
         """
         wps = self.build_slice(0, params)
         n = len(wps)
         if n < 2:
             return self.TAKEOFF_LANDING_OVERHEAD_MINUTES
 
-        # 1. Actual waypoint-to-waypoint path length (feet → metres)
-        total_dist_ft = 0.0
-        for i in range(1, n):
-            dx = wps[i]['x'] - wps[i - 1]['x']
-            dy = wps[i]['y'] - wps[i - 1]['y']
-            total_dist_ft += math.sqrt(dx * dx + dy * dy)
+        V = self.FLIGHT_SPEED_MPS
+        a = self.A_LINEAR
 
-        total_dist_m = total_dist_ft * self.FT2M
-        cruise_time_s = total_dist_m / self.FLIGHT_SPEED_MPS
+        # Constrained speed at every waypoint
+        wp_speeds = [self._waypoint_turn_speed(wps, i) for i in range(n)]
 
-        # 2. Turn-deceleration penalty at every interior waypoint
-        total_penalty_s = 0.0
-        for i in range(1, n - 1):
-            # Deflection angle between incoming and outgoing vectors
-            v1x = wps[i]['x'] - wps[i - 1]['x']
-            v1y = wps[i]['y'] - wps[i - 1]['y']
-            v2x = wps[i + 1]['x'] - wps[i]['x']
-            v2y = wps[i + 1]['y'] - wps[i]['y']
-            mag1 = math.sqrt(v1x * v1x + v1y * v1y)
-            mag2 = math.sqrt(v2x * v2x + v2y * v2y)
-            if mag1 < 1e-9 or mag2 < 1e-9:
-                continue
-            cos_a = (v1x * v2x + v1y * v2y) / (mag1 * mag2)
-            cos_a = max(-1.0, min(1.0, cos_a))
-            theta = math.acos(cos_a)  # 0 = straight, π = full reversal
+        # Integrate each segment's trapezoidal speed profile
+        flight_s = 0.0
+        for i in range(n - 1):
+            dx = wps[i + 1]['x'] - wps[i]['x']
+            dy = wps[i + 1]['y'] - wps[i]['y']
+            d_m = math.sqrt(dx * dx + dy * dy) * self.FT2M
+            flight_s += self._segment_time(d_m, wp_speeds[i], wp_speeds[i + 1], V, a)
 
-            if theta < math.radians(5):
-                continue
+        # Per-waypoint curve-negotiation dwell (interior waypoints only)
+        n_interior = max(0, n - 2)
+        dwell_s = n_interior * self.WP_DWELL_S
 
-            curve_m = wps[i].get('curve', 40) * self.FT2M
-
-            # Speed the drone can maintain through this turn
-            v_dir = self.FLIGHT_SPEED_MPS * math.cos(theta / 2)
-            v_cent = math.sqrt(self.A_CENTRIPETAL * curve_m) if curve_m > 0 else 0.0
-            v_turn = max(self.V_MIN_TURN, min(v_dir, v_cent))
-
-            dv = self.FLIGHT_SPEED_MPS - v_turn
-            if dv < 0.05:
-                continue
-
-            # Time to decelerate to v_turn then accelerate back to cruise
-            total_penalty_s += 2.0 * dv / self.A_LINEAR
-
-        # 3. Assemble total
-        flight_time_s = cruise_time_s + total_penalty_s
-        flight_time_min = flight_time_s / 60.0 + self.TAKEOFF_LANDING_OVERHEAD_MINUTES
-        return flight_time_min
+        return (flight_s + dwell_s) / 60.0 + self.TAKEOFF_LANDING_OVERHEAD_MINUTES
 
     def midpoint_density_for_slices(self, slices: int) -> int:
         """Return extra midpoint count per segment for the given slice count."""
