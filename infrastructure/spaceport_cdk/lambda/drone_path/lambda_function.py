@@ -1366,94 +1366,90 @@ class SpiralDesigner:
         
         return '\n'.join(rows)
 
+    # Deceleration physics constants for DJI/Litchi waypoint missions.
+    # These are conservative values for smooth, safe flight.
+    A_CENTRIPETAL = 3.0   # m/s² – comfortable lateral (cornering) acceleration
+    A_LINEAR = 2.0        # m/s² – comfortable linear accel / decel
+    V_MIN_TURN = 0.3      # m/s – drone never fully stops mid-curve
+
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
-        ACCURATE flight time estimation based on actual spiral path length.
-        
-        APPROACH:
-        - Calculate actual spiral path length using mathematical integration
-        - Account for all phases: outbound spiral, hold pattern, inbound spiral
-        - Use planned mission speed (Litchi CSV) and acceleration/deceleration buffer
-        - Add overhead for takeoff, landing, photos, hover time
-        
+        Waypoint-simulation flight time estimation.
+
+        Instead of approximating with a closed-form spiral integral, this
+        method builds the *actual* waypoints for one slice (pure geometry –
+        no API calls) and sums:
+
+          1. Point-to-point 2D path length → cruise time at mission speed.
+          2. Per-waypoint deceleration penalty based on the turn (deflection)
+             angle and the waypoint's curve radius.  The physics model:
+               • V_turn = min(V_cruise·cos(θ/2),  √(a_centripetal·R))
+               • penalty = 2·(V_cruise − V_turn) / a_linear   (decel + accel)
+          3. Fixed overhead for takeoff, landing, and GPS lock.
+
+        This matches real Litchi curved-turn behaviour where the drone must
+        slow for every direction change, especially the near-180° bounces.
+
         Args:
-            params: Spiral parameters dict {slices, N, r0, rHold}
-            center_lat: Center latitude for distance calculations  
-            center_lon: Center longitude for distance calculations
-            
+            params: Spiral parameters dict {slices, N, r0, rHold, ...}
+            center_lat: (unused – kept for API compatibility)
+            center_lon: (unused – kept for API compatibility)
+
         Returns:
-            Estimated flight time in minutes
+            Estimated flight time in minutes for one battery/slice.
         """
-        # Get spiral parameters
-        N = params['N']  # Number of bounces
-        r0 = params['r0']  # Starting radius
-        r_hold = params['rHold']  # Target hold radius
-        slices = params['slices']  # Number of slices
-        
-        # Calculate spiral parameters
-        dphi = 2 * math.pi / slices  # Angular step per bounce
-        base_alpha = math.log(r_hold / r0) / (N * dphi)
-        
-        # Progressive alpha factors (same as in make_spiral)
-        radius_ratio = r_hold / r0
-        if radius_ratio > 20:
-            early_density_factor = 1.02
-            late_density_factor = 0.80
-        elif radius_ratio > 10:
-            early_density_factor = 1.05
-            late_density_factor = 0.85
-        else:
-            early_density_factor = 1.0
-            late_density_factor = 0.90
-        
-        alpha_early = base_alpha * early_density_factor
-        alpha_late = base_alpha * late_density_factor
-        
-        # Time parameters
-        t_out = N * dphi  # Time to complete outward spiral
-        t_hold = dphi  # Time for hold pattern
-        t_transition = t_out * 0.4  # Progressive alpha transition point
-        
-        # Calculate actual spiral path length using mathematical integration
-        # For exponential spiral r(t) = r0 * exp(alpha * t), the arc length is:
-        # L = ∫√(r² + (dr/dt)²) dt = ∫√(r² + (alpha * r)²) dt = ∫r * √(1 + alpha²) dt
-        
-        # Outbound spiral path length (with progressive alpha)
-        # Early phase: r(t) = r0 * exp(alpha_early * t) for t <= t_transition
-        # Late phase: r(t) = r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
-        
-        r_transition = r0 * math.exp(alpha_early * t_transition)
-        
-        # Early phase length
-        early_length_factor = math.sqrt(1 + alpha_early**2)
-        early_length = (r_transition - r0) / alpha_early * early_length_factor
-        
-        # Late phase length
-        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
-        late_length_factor = math.sqrt(1 + alpha_late**2)
-        late_length = (actual_max_radius - r_transition) / alpha_late * late_length_factor
-        
-        # Hold pattern length (circular arc)
-        hold_length = actual_max_radius * t_hold
-        
-        # Inbound spiral length (using late alpha for consistency)
-        inbound_length = (actual_max_radius - r0) / alpha_late * late_length_factor
-        
-        # Total spiral path length
-        total_spiral_length_ft = early_length + late_length + hold_length + inbound_length
-        
-        # Convert to miles and calculate flight time
-        total_distance_miles = total_spiral_length_ft / 5280
-        flight_speed_mph = self.FLIGHT_SPEED_MPH  # Align with CSV speed
-        
-        # Base flight time
-        flight_time_hours = total_distance_miles / flight_speed_mph
-        flight_time_minutes = flight_time_hours * 60
-        
-        # Add overhead for takeoff, landing, photos, hover time, acceleration/deceleration
-        overhead_minutes = self.TAKEOFF_LANDING_OVERHEAD_MINUTES
-        
-        return flight_time_minutes + overhead_minutes
+        wps = self.build_slice(0, params)
+        n = len(wps)
+        if n < 2:
+            return self.TAKEOFF_LANDING_OVERHEAD_MINUTES
+
+        # 1. Actual waypoint-to-waypoint path length (feet → metres)
+        total_dist_ft = 0.0
+        for i in range(1, n):
+            dx = wps[i]['x'] - wps[i - 1]['x']
+            dy = wps[i]['y'] - wps[i - 1]['y']
+            total_dist_ft += math.sqrt(dx * dx + dy * dy)
+
+        total_dist_m = total_dist_ft * self.FT2M
+        cruise_time_s = total_dist_m / self.FLIGHT_SPEED_MPS
+
+        # 2. Turn-deceleration penalty at every interior waypoint
+        total_penalty_s = 0.0
+        for i in range(1, n - 1):
+            # Deflection angle between incoming and outgoing vectors
+            v1x = wps[i]['x'] - wps[i - 1]['x']
+            v1y = wps[i]['y'] - wps[i - 1]['y']
+            v2x = wps[i + 1]['x'] - wps[i]['x']
+            v2y = wps[i + 1]['y'] - wps[i]['y']
+            mag1 = math.sqrt(v1x * v1x + v1y * v1y)
+            mag2 = math.sqrt(v2x * v2x + v2y * v2y)
+            if mag1 < 1e-9 or mag2 < 1e-9:
+                continue
+            cos_a = (v1x * v2x + v1y * v2y) / (mag1 * mag2)
+            cos_a = max(-1.0, min(1.0, cos_a))
+            theta = math.acos(cos_a)  # 0 = straight, π = full reversal
+
+            if theta < math.radians(5):
+                continue
+
+            curve_m = wps[i].get('curve', 40) * self.FT2M
+
+            # Speed the drone can maintain through this turn
+            v_dir = self.FLIGHT_SPEED_MPS * math.cos(theta / 2)
+            v_cent = math.sqrt(self.A_CENTRIPETAL * curve_m) if curve_m > 0 else 0.0
+            v_turn = max(self.V_MIN_TURN, min(v_dir, v_cent))
+
+            dv = self.FLIGHT_SPEED_MPS - v_turn
+            if dv < 0.05:
+                continue
+
+            # Time to decelerate to v_turn then accelerate back to cruise
+            total_penalty_s += 2.0 * dv / self.A_LINEAR
+
+        # 3. Assemble total
+        flight_time_s = cruise_time_s + total_penalty_s
+        flight_time_min = flight_time_s / 60.0 + self.TAKEOFF_LANDING_OVERHEAD_MINUTES
+        return flight_time_min
 
     def midpoint_density_for_slices(self, slices: int) -> int:
         """Return extra midpoint count per segment for the given slice count."""
