@@ -146,6 +146,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     newCoords: [number, number][];
   }>>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const historyIndexRef = useRef<number>(-1);
+  useEffect(() => {
+    historyIndexRef.current = historyIndex;
+  }, [historyIndex]);
 
   // UNDO HANDLER
   const handleUndo = useCallback(() => {
@@ -158,9 +162,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // 2. Update Map Source (Line)
     const map = mapRef.current;
     if (map) {
-      const source = map.getSource(`battery-path-${batteryIndex}`);
-      if (source) {
-        (source as any).setData({
+      const sourceForUpdate = map.getSource(`battery-path-${batteryIndex}`);
+      if (sourceForUpdate) {
+        (sourceForUpdate as any).setData({
           type: 'Feature',
           properties: {},
           geometry: { type: 'LineString', coordinates: prevCoords },
@@ -946,9 +950,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             prevCoords: dragStartCoords,
             newCoords: JSON.parse(JSON.stringify(finalCoords))
           };
-          // Add to history and truncate any "redo" future
+          // Add to history and truncate any "redo" future (use ref to avoid stale closure)
+          const idx = historyIndexRef.current;
           setHistory(prev => {
-            const truncated = prev.slice(0, historyIndex + 1);
+            const truncated = prev.slice(0, idx + 1);
             return [...truncated, newEntry];
           });
           setHistoryIndex(prev => prev + 1);
@@ -960,7 +965,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     waypointMarkersRef.current.set(batteryIndex, markers);
-  }, [removeWaypointMarkers, historyIndex]);
+  }, [removeWaypointMarkers]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
