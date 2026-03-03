@@ -686,6 +686,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(downloadBody),
       });
+      const spinApplied = res.headers.get('X-Spin-Mode-Applied');
+      const poiUsed = res.headers.get('X-POI-Used');
+      if (spinApplied != null || poiUsed != null) {
+        console.log(`🔍 [Battery CSV] X-Spin-Mode-Applied: ${spinApplied ?? 'n/a'}, X-POI-Used: ${poiUsed ?? 'n/a'}`);
+      }
       if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
       const csvText = await res.text();
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
