@@ -38,6 +38,19 @@ const cases = [
   },
   {
     encodedPath:
+      "https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fbundles%2Fstaging%2520host%2Ffile%252Bname.json",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=staginghost",
+    expected:
+      "https://spaceport-ml-processing-staging.s3.amazonaws.com/bundles/staging%20host/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=staginghost",
+  },
+  {
+    encodedPath: "https:/spaceport-ml-processing-prod.s3.us-west-2.amazonaws.com/bundles/meta.json",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=prodhost",
+    expected:
+      "https://spaceport-ml-processing-prod.s3.us-west-2.amazonaws.com/bundles/meta.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=prodhost",
+  },
+  {
+    encodedPath:
       "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Fouter-query%2520only%2Ffile%252Bname.json",
     query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=outeronly",
     expected:

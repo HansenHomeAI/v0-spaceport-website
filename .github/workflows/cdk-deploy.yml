@@ -159,7 +159,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y jq
 
     - name: CDK Bootstrap (if needed)
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
@@ -193,7 +193,7 @@ jobs:
         fi
 
     - name: Verify Bootstrap
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
@@ -212,7 +212,7 @@ jobs:
     # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
     - name: Deploy CDK Stacks
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         # Stripe secrets for staging environment (CDK expects _TEST suffix for staging)
@@ -272,7 +272,7 @@ jobs:
           --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
 
     - name: Update Frontend Environment Variables
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)

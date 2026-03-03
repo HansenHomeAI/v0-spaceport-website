@@ -2,11 +2,23 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-const ALLOWED_HOSTS = new Set([
-  "spaceport-ml-processing.s3.amazonaws.com",
-  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+const ALLOWED_BUCKETS = new Set([
+  "spaceport-ml-processing",
+  "spaceport-ml-processing-staging",
+  "spaceport-ml-processing-prod",
 ]);
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
+const ALLOWED_S3_HOST_SUFFIXES = [".s3.amazonaws.com", ".s3.us-west-2.amazonaws.com"];
+
+const isAllowedUpstreamHost = (host: string): boolean =>
+  ALLOWED_S3_HOST_SUFFIXES.some((suffix) => {
+    if (!host.endsWith(suffix)) {
+      return false;
+    }
+
+    const bucketName = host.slice(0, -suffix.length);
+    return ALLOWED_BUCKETS.has(bucketName);
+  });
 
 const normalizeUpstreamUrl = (urlString: string): URL | null => {
   if (urlString.startsWith("https:/") && !urlString.startsWith("https://")) {
@@ -21,7 +33,7 @@ const normalizeUpstreamUrl = (urlString: string): URL | null => {
     if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
       return null;
     }
-    if (!ALLOWED_HOSTS.has(url.host)) {
+    if (!isAllowedUpstreamHost(url.host)) {
       return null;
     }
     return url;
