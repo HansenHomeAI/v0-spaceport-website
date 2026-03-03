@@ -133,5 +133,47 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertEqual(photo_intervals[-1], 0.0)
 
 
+    def test_normal_mode_headings_point_at_center(self):
+        """Normal mode headings should face the POI (spiral center), not the path direction."""
+        import math
+        params = {"slices": 2, "N": 6, "r0": 100, "rHold": 1000}
+        rows = self._parse_rows(self._generate_battery_csv(params, battery_index=0, spin_mode=False))
+
+        center_lat, center_lon = 37.1972, -113.6187
+
+        for row in rows:
+            poi_lat = float(row["poi_latitude"])
+            poi_lon = float(row["poi_longitude"])
+            self.assertAlmostEqual(poi_lat, center_lat, places=3, msg="Normal mode POI lat should be center")
+            self.assertAlmostEqual(poi_lon, center_lon, places=3, msg="Normal mode POI lon should be center")
+
+        for row in rows:
+            wp_lat = float(row["latitude"])
+            wp_lon = float(row["longitude"])
+            heading = float(row["heading(deg)"])
+            dlon = math.radians(center_lon - wp_lon)
+            lat1 = math.radians(wp_lat)
+            lat2 = math.radians(center_lat)
+            x = math.sin(dlon) * math.cos(lat2)
+            y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dlon)
+            bearing = (math.degrees(math.atan2(x, y)) + 360) % 360
+            diff = abs(heading - bearing)
+            if diff > 180:
+                diff = 360 - diff
+            self.assertLessEqual(diff, 1.0, f"Heading {heading} should match bearing to center {bearing:.1f}")
+
+    def test_spin_mode_poi_zero_and_headings_rotate(self):
+        """Spin mode must have POI=0 and headings that actually rotate."""
+        params = {"slices": 2, "N": 6, "r0": 100, "rHold": 1000}
+        rows = self._parse_rows(self._generate_battery_csv(params, battery_index=0, spin_mode=True))
+
+        for row in rows:
+            self.assertEqual(float(row["poi_latitude"]), 0.0, "Spin mode poi_latitude must be 0")
+            self.assertEqual(float(row["poi_longitude"]), 0.0, "Spin mode poi_longitude must be 0")
+
+        headings = [float(row["heading(deg)"]) for row in rows]
+        self.assertGreaterEqual(len(set(headings)), len(rows) // 2, "Spin headings should have many unique values")
+
+
 if __name__ == "__main__":
     unittest.main()

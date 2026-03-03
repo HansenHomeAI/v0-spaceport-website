@@ -500,6 +500,26 @@ class SpiralDesigner:
             headings.append(heading)
         return headings
 
+    def _compute_poi_headings(self, waypoint_records: List[Dict], center_lat: float, center_lon: float) -> List[int]:
+        """Compute headings that point each waypoint toward the center/POI.
+
+        Uses geodesic bearing so Litchi 'Custom' heading mode keeps the
+        camera facing the subject at all times in normal (non-spin) mode.
+        """
+        headings: List[int] = []
+        for wp in waypoint_records:
+            wp_lat = wp['latitude']
+            wp_lon = wp['longitude']
+            dlon = math.radians(center_lon - wp_lon)
+            lat1 = math.radians(wp_lat)
+            lat2 = math.radians(center_lat)
+            x = math.sin(dlon) * math.cos(lat2)
+            y = (math.cos(lat1) * math.sin(lat2)
+                 - math.sin(lat1) * math.cos(lat2) * math.cos(dlon))
+            bearing = (math.degrees(math.atan2(x, y)) + 360) % 360
+            headings.append(round(bearing))
+        return headings
+
     def _compute_spin_headings(self, waypoint_records: List[Dict]) -> List[int]:
         """
         Compute constant clockwise spin headings constrained by:
@@ -1891,11 +1911,10 @@ class SpiralDesigner:
         if spin_mode:
             waypoint_records = self._insert_spin_waypoints(waypoint_records)
 
-        headings = (
-            self._compute_spin_headings(waypoint_records)
-            if spin_mode
-            else self._compute_path_headings(waypoint_records)
-        )
+        if spin_mode:
+            headings = self._compute_spin_headings(waypoint_records)
+        else:
+            headings = self._compute_poi_headings(waypoint_records, center['lat'], center['lon'])
         gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
         active_photo_interval = (
             self.SPIN_PHOTO_INTERVAL_SECONDS
@@ -1905,7 +1924,6 @@ class SpiralDesigner:
 
         for i, record in enumerate(waypoint_records):
             photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
-            # Spin mode: no POI (0) so Litchi uses per-waypoint headings; non-spin: POI at center
             poi_lat = 0 if spin_mode else center['lat']
             poi_lon = 0 if spin_mode else center['lon']
             row = [
@@ -1914,7 +1932,7 @@ class SpiralDesigner:
                 record['altitude'],
                 headings[i],
                 record['curve_size_meters'],
-                0,                     # Rotation direction (clockwise in Litchi convention)
+                0,
                 2,
                 gimbal_pitches[i],
                 0,
@@ -2115,11 +2133,10 @@ class SpiralDesigner:
         if spin_mode:
             waypoint_records = self._insert_spin_waypoints(waypoint_records)
 
-        headings = (
-            self._compute_spin_headings(waypoint_records)
-            if spin_mode
-            else self._compute_path_headings(waypoint_records)
-        )
+        if spin_mode:
+            headings = self._compute_spin_headings(waypoint_records)
+        else:
+            headings = self._compute_poi_headings(waypoint_records, center['lat'], center['lon'])
         gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
         active_photo_interval = (
             self.SPIN_PHOTO_INTERVAL_SECONDS
@@ -2129,7 +2146,6 @@ class SpiralDesigner:
 
         for i, record in enumerate(waypoint_records):
             photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
-            # Spin mode: no POI (0) so Litchi uses per-waypoint headings; non-spin: POI at center
             poi_lat = 0 if spin_mode else center['lat']
             poi_lon = 0 if spin_mode else center['lon']
             row = [
