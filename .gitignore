@@ -74,6 +74,17 @@ tests/pipeline/*.log
 logs/*.png
 logs/*.jpg
 logs/*.jpeg
+logs/*.txt
+
+# Lambda pip-installed packages (CDK auto-bundles via Docker)
+infrastructure/**/lambda/**/bin/
+infrastructure/**/lambda/**/*.dist-info/
+infrastructure/**/lambda/**/certifi/
+infrastructure/**/lambda/**/charset_normalizer/
+infrastructure/**/lambda/**/idna/
+infrastructure/**/lambda/**/requests/
+infrastructure/**/lambda/**/urllib3/
+infrastructure/**/lambda/**/package/
 .next/
 .vercel/
 web/.next/
