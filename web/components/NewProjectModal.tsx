@@ -1542,17 +1542,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             <div className="category-outline">
               <div className="popup-section">
                 <h4>Capture Mode</h4>
-                <div className="input-row-popup" style={{ alignItems: 'center', gap: '12px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={spinMode}
-                      onChange={(e) => setSpinMode(e.target.checked)}
-                    />
-                    <span style={{ color: 'rgba(255,255,255,0.9)' }}>
-                      Multi-angle parallax spin mode (2s interval)
-                    </span>
-                  </label>
+                <div className="input-row-popup">
+                  <div
+                    className="capture-mode-toggle"
+                    data-mode={spinMode ? 'spin' : 'normal'}
+                    onClick={() => setSpinMode(!spinMode)}
+                    role="switch"
+                    aria-checked={spinMode}
+                    aria-label="Capture mode: Normal or Spin Mode (2s interval)"
+                  >
+                    <div className="capture-mode-toggle-selector" aria-hidden />
+                    <div className="capture-mode-toggle-labels">
+                      <span>Normal</span>
+                      <span>Spin Mode</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
