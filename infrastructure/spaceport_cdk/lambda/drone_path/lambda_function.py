@@ -3736,14 +3736,19 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             boundary_plan=boundary_plan,
             form_to_terrain=form_to_terrain,
         )
-        
-        # Return CSV as text/csv
+        # Debug: verify spin_mode and POI in response headers (and CloudWatch)
+        print(f"[battery-csv] spin_mode={spin_mode}, battery_id={battery_id}")
+        poi_in_csv = '0,0' if spin_mode else 'center'
+
         return {
             'statusCode': 200,
             'headers': {
                 **cors_headers,
                 'Content-Type': 'text/csv',
-                'Content-Disposition': f'attachment; filename="battery-{battery_id}.csv"'
+                'Content-Disposition': f'attachment; filename="battery-{battery_id}.csv"',
+                'Access-Control-Expose-Headers': 'X-Spin-Mode-Applied, X-POI-Used',
+                'X-Spin-Mode-Applied': 'true' if spin_mode else 'false',
+                'X-POI-Used': poi_in_csv,
             },
             'body': csv_content
         }

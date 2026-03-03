@@ -211,7 +211,13 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
   );
 
   let poi: PoiData | null = null;
-  if (firstPoiSource && firstPoiSource.poiLatitude !== null && firstPoiSource.poiLongitude !== null) {
+  // Litchi uses 0,0 for "no POI" (e.g. spin mode); don't show a marker there
+  if (
+    firstPoiSource &&
+    firstPoiSource.poiLatitude !== null &&
+    firstPoiSource.poiLongitude !== null &&
+    !(firstPoiSource.poiLatitude === 0 && firstPoiSource.poiLongitude === 0)
+  ) {
     const poiAltitudeFt = firstPoiSource.poiAltitudeFt ?? samples[0].altitudeFt;
     poi = {
       latitude: firstPoiSource.poiLatitude,

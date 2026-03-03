@@ -1708,6 +1708,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(downloadBody),
       });
+      const spinApplied = res.headers.get('X-Spin-Mode-Applied');
+      const poiUsed = res.headers.get('X-POI-Used');
+      if (spinApplied != null || poiUsed != null) {
+        console.log(`🔍 [Battery CSV] X-Spin-Mode-Applied: ${spinApplied ?? 'n/a'}, X-POI-Used: ${poiUsed ?? 'n/a'}`);
+      }
       if (!res.ok) {
         throw new Error(await readApiErrorMessage(
           res,
@@ -1725,7 +1730,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         finalCsvText = rebuildBatteryCsvWithLiveCoords(originalCsvText, liveCoords);
         console.log(`Using modified coordinates for CSV download (${liveCoords.length} waypoints)`);
       }
-
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
         ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
         : 'Untitled';
