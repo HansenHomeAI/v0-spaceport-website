@@ -6,6 +6,7 @@ const ALLOWED_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
 ]);
+const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 
 const normalizeUpstreamUrl = (urlString: string): URL | null => {
   if (urlString.startsWith("https:/") && !urlString.startsWith("https://")) {
@@ -17,6 +18,9 @@ const normalizeUpstreamUrl = (urlString: string): URL | null => {
   urlString = urlString.replace(/^https:\/\//, "https://").replace(/^http:\/\//, "http://");
   try {
     const url = new URL(urlString);
+    if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
+      return null;
+    }
     if (!ALLOWED_HOSTS.has(url.host)) {
       return null;
     }

@@ -109,4 +109,19 @@ const malformedResponse = await GET(
 assert.equal(malformedResponse.status, 400);
 assert.equal(fetchedUrl, null);
 
+fetchedUrl = null;
+const invalidSchemeResponse = await GET(
+  {
+    url: "https://example.com/api/sogs-proxy/ftp://spaceport-ml-processing.s3.amazonaws.com/broken.obj",
+    nextUrl: new URL(
+      "https://example.com/api/sogs-proxy/ftp://spaceport-ml-processing.s3.amazonaws.com/broken.obj",
+    ),
+    headers: new Headers({ accept: "application/json" }),
+  },
+  { params: { resource: ["ftp://spaceport-ml-processing.s3.amazonaws.com/broken.obj"] } },
+);
+
+assert.equal(invalidSchemeResponse.status, 400);
+assert.equal(fetchedUrl, null);
+
 console.log("sogs proxy query passthrough ok");
