@@ -1,10 +1,9 @@
 name: CDK Deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, development, 'agent-*', ml-development, email-notifications ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   deploy:
