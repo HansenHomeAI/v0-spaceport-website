@@ -7,7 +7,6 @@ const ALLOWED_BUCKETS = new Set([
   "spaceport-ml-processing-staging",
   "spaceport-ml-processing-prod",
 ]);
-const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 const ALLOWED_S3_HOST_SUFFIXES = [".s3.amazonaws.com", ".s3.us-west-2.amazonaws.com"];
 
 const isAllowedUpstreamHost = (host: string): boolean =>
@@ -21,16 +20,16 @@ const isAllowedUpstreamHost = (host: string): boolean =>
   });
 
 const normalizeUpstreamUrl = (urlString: string): URL | null => {
+  if (/^http:\//i.test(urlString)) {
+    return null;
+  }
   if (urlString.startsWith("https:/") && !urlString.startsWith("https://")) {
     urlString = urlString.replace("https:/", "https://");
   }
-  if (urlString.startsWith("http:/") && !urlString.startsWith("http://")) {
-    urlString = urlString.replace("http:/", "http://");
-  }
-  urlString = urlString.replace(/^https:\/\//, "https://").replace(/^http:\/\//, "http://");
+  urlString = urlString.replace(/^https:\/\//, "https://");
   try {
     const url = new URL(urlString);
-    if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
+    if (url.protocol !== "https:") {
       return null;
     }
     if (!isAllowedUpstreamHost(url.host)) {
@@ -95,7 +94,7 @@ const getRawUpstreamUrl = (request: NextRequest): URL | null => {
 export async function GET(request: NextRequest, _context: { params: { resource: string[] } }) {
   const upstreamUrl = getRawUpstreamUrl(request);
   if (!upstreamUrl) {
-    return new Response("Invalid or disallowed upstream resource", { status: 400 });
+    return new Response("Invalid upstream URL. Only HTTPS S3 URLs are allowed.", { status: 400 });
   }
 
   const upstreamResponse = await fetch(upstreamUrl, {

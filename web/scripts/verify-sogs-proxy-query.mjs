@@ -137,4 +137,20 @@ const invalidSchemeResponse = await GET(
 assert.equal(invalidSchemeResponse.status, 400);
 assert.equal(fetchedUrl, null);
 
+fetchedUrl = null;
+const plaintextSchemeResponse = await GET(
+  {
+    url: "https://example.com/api/sogs-proxy/http:/spaceport-ml-processing.s3.amazonaws.com/broken.obj",
+    nextUrl: new URL(
+      "https://example.com/api/sogs-proxy/http:/spaceport-ml-processing.s3.amazonaws.com/broken.obj",
+    ),
+    headers: new Headers({ accept: "application/json" }),
+  },
+  { params: { resource: ["http:/spaceport-ml-processing.s3.amazonaws.com/broken.obj"] } },
+);
+
+assert.equal(plaintextSchemeResponse.status, 400);
+assert.equal(plaintextSchemeResponse.text ? await plaintextSchemeResponse.text() : "", "Invalid upstream URL. Only HTTPS S3 URLs are allowed.");
+assert.equal(fetchedUrl, null);
+
 console.log("sogs proxy query passthrough ok");

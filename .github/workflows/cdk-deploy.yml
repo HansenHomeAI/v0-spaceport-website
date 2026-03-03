@@ -103,10 +103,29 @@ jobs:
           --context region=us-west-2 \
           --parameters SpaceportStagingStack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
 
-    - name: Skip CDK Diff without staging credentials
+    - name: CDK Synth without AWS access
       if: steps.staging-aws.outputs.available != 'true'
+      env:
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        STRIPE_SECRET_KEY_TEST: ${{ secrets.STRIPE_SECRET_KEY_STAGING }}
+        STRIPE_WEBHOOK_SECRET_STAGING: ${{ secrets.STRIPE_WEBHOOK_SECRET_STAGING }}
+        STRIPE_PRICE_SINGLE_STAGING: ${{ secrets.STRIPE_PRICE_SINGLE_STAGING }}
+        STRIPE_PRICE_STARTER_STAGING: ${{ secrets.STRIPE_PRICE_STARTER_STAGING }}
+        STRIPE_PRICE_GROWTH_STAGING: ${{ secrets.STRIPE_PRICE_GROWTH_STAGING }}
+        STRIPE_MODEL_TRAINING_PRICE_STAGING: ${{ secrets.STRIPE_MODEL_TRAINING_PRICE_STAGING }}
+        STRIPE_MODEL_HOSTING_PRICE_STAGING: ${{ secrets.STRIPE_MODEL_HOSTING_PRICE_STAGING }}
+        R2_ENDPOINT_STAGING: ${{ secrets.R2_ENDPOINT_STAGING }}
+        R2_ACCESS_KEY_ID_STAGING: ${{ secrets.R2_ACCESS_KEY_ID_STAGING }}
+        R2_SECRET_ACCESS_KEY_STAGING: ${{ secrets.R2_SECRET_ACCESS_KEY_STAGING }}
+        R2_BUCKET_NAME_STAGING: ${{ secrets.R2_BUCKET_NAME_STAGING }}
+        R2_REGION_STAGING: ${{ secrets.R2_REGION_STAGING }}
       run: |
-        echo "::notice title=CDK diff skipped::Staging AWS credentials are not available on this pull_request run. Use a same-repo branch with staging access, or run CDK validation from an allowed staging branch (agent-*, development, frontend-development, ml-development)."
+        echo "::notice title=CDK no-lookups synth::Staging AWS credentials are not available on this pull_request run. Running credential-free CDK synth with --no-lookups instead of AWS-backed diff."
+        npx cdk synth \
+          --no-lookups \
+          --context environment=staging \
+          --context region=us-west-2 \
+          --parameters SpaceportStagingStack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
 
   deploy:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
