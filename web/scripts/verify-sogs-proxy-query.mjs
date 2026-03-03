@@ -31,10 +31,24 @@ globalThis.fetch = async (url) => {
 const cases = [
   {
     encodedPath:
-      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Ffully%2520encoded%2Ffile%252Bname.json",
-    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=encodedfeed",
+      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Ffully%2520encoded%2Ffile%252Bname.json%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Signature%3Dencodedfeed",
+    query: "",
     expected:
       "https://spaceport-ml-processing.s3.amazonaws.com/bundles/fully%20encoded/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=encodedfeed",
+  },
+  {
+    encodedPath:
+      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Fouter-query%2520only%2Ffile%252Bname.json",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=outeronly",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/outer-query%20only/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=outeronly",
+  },
+  {
+    encodedPath:
+      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Fembedded-wins%2520case%2Ffile%252Bname.json%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Signature%3Dembeddedsig",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=outersig",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/embedded-wins%20case/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=embeddedsig",
   },
   {
     encodedPath: "https:/spaceport-ml-processing.s3.amazonaws.com/bundles/meta.json",
@@ -79,5 +93,20 @@ for (const testCase of cases) {
 
   assert.equal(fetchedUrl, testCase.expected);
 }
+
+fetchedUrl = null;
+const malformedResponse = await GET(
+  {
+    url: "https://example.com/api/sogs-proxy/https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbroken%ZZfile",
+    nextUrl: new URL(
+      "https://example.com/api/sogs-proxy/https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbroken%ZZfile",
+    ),
+    headers: new Headers({ accept: "application/json" }),
+  },
+  { params: { resource: [] } },
+);
+
+assert.equal(malformedResponse.status, 400);
+assert.equal(fetchedUrl, null);
 
 console.log("sogs proxy query passthrough ok");

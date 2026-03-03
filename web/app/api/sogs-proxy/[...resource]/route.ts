@@ -56,14 +56,23 @@ const getRawUpstreamUrl = (request: NextRequest): URL | null => {
   }
 
   const looksLikeEncodedFullUrl = /^https?%3A/i.test(rawUpstream);
-  const upstreamCandidate = looksLikeEncodedFullUrl ? decodeURIComponent(rawUpstream) : rawUpstream;
+  let upstreamCandidate = rawUpstream;
+  if (looksLikeEncodedFullUrl) {
+    try {
+      upstreamCandidate = decodeURIComponent(rawUpstream);
+    } catch {
+      return null;
+    }
+  }
 
   const upstreamUrl = normalizeUpstreamUrl(upstreamCandidate);
   if (!upstreamUrl) {
     return null;
   }
 
-  upstreamUrl.search = request.nextUrl.search;
+  if (request.nextUrl.search && !upstreamUrl.search) {
+    upstreamUrl.search = request.nextUrl.search;
+  }
   return upstreamUrl;
 };
 
