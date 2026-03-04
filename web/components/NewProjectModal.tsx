@@ -195,6 +195,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const isBoundaryModeRef = useRef<boolean>(false);
   const isApplyingBoundaryRef = useRef<boolean>(false);
   const isRestoringHistoryRef = useRef<boolean>(false);
+  const isMarkerInteractionActiveRef = useRef<boolean>(false);
   const pendingViewportHistoryRef = useRef<{ action: string; snapshot: MapHistorySnapshot } | null>(null);
   const handleCancelBoundaryModeRef = useRef<(() => Promise<void>) | null>(null);
   const triggerSaveRef = useRef<(() => void) | null>(null);
@@ -519,6 +520,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     let dragPanWasEnabled = false;
 
     const releaseMapPan = () => {
+      isMarkerInteractionActiveRef.current = false;
       if (dragPanWasEnabled && mapRef.current?.dragPan) {
         mapRef.current.dragPan.enable();
       }
@@ -529,6 +531,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     const handlePointerDown = (event: PointerEvent) => {
       event.stopPropagation();
+      isMarkerInteractionActiveRef.current = true;
       const map = mapRef.current;
       if (map?.dragPan?.isEnabled?.()) {
         dragPanWasEnabled = true;
@@ -652,6 +655,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setHistory([]);
     setHistoryIndex(-1);
     historyIndexRef.current = -1;
+    isMarkerInteractionActiveRef.current = false;
     pendingViewportHistoryRef.current = null;
     isRestoringHistoryRef.current = false;
     setSetupOpen(true);
@@ -842,7 +846,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         });
 
         const beginViewportHistory = (action: string, event: any) => {
-          if (!event?.originalEvent || isRestoringHistoryRef.current) {
+          if (!event?.originalEvent || isRestoringHistoryRef.current || isMarkerInteractionActiveRef.current) {
             return;
           }
           pendingViewportHistoryRef.current = {
@@ -901,6 +905,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       waypointCoordsRef.current.clear();
       Object.values(boundaryMarkersRef.current).forEach((marker) => marker?.remove?.());
       boundaryMarkersRef.current = { center: null, major: null, minor: null };
+      isMarkerInteractionActiveRef.current = false;
+      pendingViewportHistoryRef.current = null;
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
