@@ -1764,7 +1764,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (e.key !== 'Enter') return;
     e.preventDefault();
     const query = addressSearch.trim();
-    if (!query || !mapRef.current) return;
+    if (!query) return;
+
+    let waitCount = 0;
+    while (!mapRef.current && waitCount < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      waitCount += 1;
+    }
+
+    if (!mapRef.current) {
+      showSystemNotification('error', 'Map is still loading. Please try again in a moment.');
+      return;
+    }
     
     // Check if input looks like coordinates (lat, lng)
     const coordsMatch = query.match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
@@ -1791,7 +1802,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } catch (err) {
       console.warn('Geocoding failed:', err);
     }
-  }, [addressSearch, MAPBOX_TOKEN]);
+  }, [addressSearch, MAPBOX_TOKEN, showSystemNotification]);
 
   // Upload flow
   const onFileChosen = useCallback((file: File | null) => {
