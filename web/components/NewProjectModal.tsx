@@ -158,6 +158,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const markerRef = useRef<any>(null);
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
   const [mapReady, setMapReady] = useState<boolean>(false);
+  const mapReadyRef = useRef<boolean>(false);
   const boundaryMarkersRef = useRef<MapboxMarkerRefMap>({ center: null, major: null, minor: null });
   const draftBoundaryRef = useRef<BoundaryEllipse | null>(null);
   const appliedBoundaryRef = useRef<BoundaryEllipse | null>(null);
@@ -207,6 +208,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     isApplyingBoundaryRef.current = isApplyingBoundary;
   }, [isApplyingBoundary]);
 
+  useEffect(() => {
+    mapReadyRef.current = mapReady;
+  }, [mapReady]);
+
   const cloneVisiblePaths = useCallback((source: Map<number, Array<[number, number]>>) => {
     const clone = new Map<number, Array<[number, number]>>();
     source.forEach((coords, batteryIndex) => {
@@ -222,6 +227,22 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       throw new Error('Mapbox GL module did not expose Map/Marker');
     }
     return mapboxgl;
+  }, []);
+
+  const waitForMapReady = useCallback(async (timeoutMs = 5000): Promise<boolean> => {
+    if (mapReadyRef.current) {
+      return true;
+    }
+
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (mapReadyRef.current) {
+        return true;
+      }
+    }
+
+    return mapReadyRef.current;
   }, []);
 
   const createCenterPinElement = useCallback(() => {
@@ -1209,7 +1230,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [drawBatteryPathVisualization, fitMapToPreviewPaths, removeBatteryPathVisualization, visibleBatteryPaths]);
 
   const loadAllBatteryPathPreviews = useCallback(async (options?: { fitBounds?: boolean }): Promise<BoundaryPreviewPath[]> => {
-    if (!mapReady) return [];
+    const readyMap = mapReadyRef.current || await waitForMapReady();
+    if (!readyMap) return [];
 
     const batteryCount = parsedBatteryCount;
     if (!batteryCount) return [];
@@ -1228,7 +1250,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     await replaceBatteryPreviewPaths(previews, options);
     return previews;
-  }, [ensureMissionReady, fetchBatteryPathCoords, mapReady, parsedBatteryCount, replaceBatteryPreviewPaths, visibleBatteryPaths]);
+  }, [ensureMissionReady, fetchBatteryPathCoords, parsedBatteryCount, replaceBatteryPreviewPaths, visibleBatteryPaths, waitForMapReady]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
