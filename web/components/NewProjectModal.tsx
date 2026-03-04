@@ -196,6 +196,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const isApplyingBoundaryRef = useRef<boolean>(false);
   const isRestoringHistoryRef = useRef<boolean>(false);
   const isMarkerInteractionActiveRef = useRef<boolean>(false);
+  const lastMarkerInteractionEndedAtRef = useRef<number>(0);
   const markerInteractionVersionRef = useRef<number>(0);
   const pendingViewportHistoryRef = useRef<{
     action: string;
@@ -531,6 +532,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     const releaseMapPan = () => {
       isMarkerInteractionActiveRef.current = false;
+      lastMarkerInteractionEndedAtRef.current = Date.now();
       markerInteractionVersionRef.current += 1;
       if (dragPanWasEnabled && mapRef.current?.dragPan) {
         mapRef.current.dragPan.enable();
@@ -669,6 +671,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setHistoryIndex(-1);
     historyIndexRef.current = -1;
     isMarkerInteractionActiveRef.current = false;
+    lastMarkerInteractionEndedAtRef.current = 0;
     pendingViewportHistoryRef.current = null;
     isRestoringHistoryRef.current = false;
     setSetupOpen(true);
@@ -834,7 +837,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         });
         
         map.on('click', (e: any) => {
-          if (isBoundaryModeRef.current || isApplyingBoundaryRef.current || isRestoringHistoryRef.current) {
+          const clickedElement = e?.originalEvent?.target as HTMLElement | null;
+          const clickedMarkerElement = !!clickedElement?.closest?.('.waypoint-marker, .boundary-handle-marker, .mapboxgl-marker');
+          const recentMarkerInteraction = Date.now() - lastMarkerInteractionEndedAtRef.current < 300;
+          if (
+            isBoundaryModeRef.current
+            || isApplyingBoundaryRef.current
+            || isRestoringHistoryRef.current
+            || isMarkerInteractionActiveRef.current
+            || recentMarkerInteraction
+            || clickedMarkerElement
+          ) {
             return;
           }
 
@@ -937,6 +950,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       Object.values(boundaryMarkersRef.current).forEach((marker) => marker?.remove?.());
       boundaryMarkersRef.current = { center: null, major: null, minor: null };
       isMarkerInteractionActiveRef.current = false;
+      lastMarkerInteractionEndedAtRef.current = 0;
       pendingViewportHistoryRef.current = null;
       if (mapRef.current) {
         mapRef.current.remove();
