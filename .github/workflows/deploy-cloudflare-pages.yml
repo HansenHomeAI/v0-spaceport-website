@@ -106,7 +106,6 @@ jobs:
 
           echo "Timed out waiting for matching CDK Deploy run for ${GITHUB_SHA}" >&2
           exit 1
-
       - name: Resolve CloudFormation outputs
         id: stack_outputs
         run: |

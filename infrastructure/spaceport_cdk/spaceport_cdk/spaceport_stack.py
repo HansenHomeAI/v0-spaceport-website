@@ -55,7 +55,6 @@ class SpaceportStack(Stack):
                 env_config.get("sharedAuthStackName", "SpaceportAuthStagingStack"),
             )
             Tags.of(self).add("ManagedBy", "github-actions")
-        
         def scoped_name(prefix: str, max_total_length: int = 64) -> str:
             return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
