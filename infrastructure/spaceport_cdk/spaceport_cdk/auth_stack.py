@@ -28,6 +28,10 @@ class AuthStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        deployment_class = env_config.get("deploymentClass", "shared-staging")
+
+        if deployment_class == "branch-preview":
+            raise ValueError("AuthStack must not be deployed for branch-preview contexts")
         
         def scoped_name(prefix: str, max_total_length: int = 64) -> str:
             return build_scoped_name(prefix, suffix, max_total_length=max_total_length)

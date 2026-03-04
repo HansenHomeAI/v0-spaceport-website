@@ -6,10 +6,23 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: cdk-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    outputs:
+      deployment_class: ${{ steps.resolve_context.outputs.deployment_class }}
+      branch_id: ${{ steps.resolve_context.outputs.branch_id }}
+      spaceport_stack_name: ${{ steps.resolve_context.outputs.spaceport_stack_name }}
+      ml_stack_name: ${{ steps.resolve_context.outputs.ml_stack_name }}
+      auth_stack_name: ${{ steps.resolve_context.outputs.auth_stack_name }}
+      drone_path_api_url: ${{ steps.publish_outputs.outputs.drone_path_api_url }}
+      file_upload_api_url: ${{ steps.publish_outputs.outputs.file_upload_api_url }}
+      ml_pipeline_api_url: ${{ steps.publish_outputs.outputs.ml_pipeline_api_url }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -74,6 +87,22 @@ jobs:
 
     - name: Install jq
       run: sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Resolve deployment context
+      id: resolve_context
+      run: |
+        set -euo pipefail
+        python3 ../../scripts/resolve_preview_context.py --branch "${GITHUB_REF_NAME}" --format shell > /tmp/deploy-context.env
+        cat /tmp/deploy-context.env
+        while IFS='=' read -r key value; do
+          echo "${key}=${value}" >> "$GITHUB_ENV"
+        done < /tmp/deploy-context.env
+
+        echo "deployment_class=${DEPLOYMENT_CLASS:-$(grep '^DEPLOYMENT_CLASS=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "branch_id=${BRANCH_ID:-$(grep '^BRANCH_ID=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "spaceport_stack_name=${SPACEPORT_STACK_NAME:-$(grep '^SPACEPORT_STACK_NAME=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "ml_stack_name=${ML_STACK_NAME:-$(grep '^ML_STACK_NAME=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "auth_stack_name=${AUTH_STACK_NAME:-$(grep '^AUTH_STACK_NAME=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
 
     - name: CDK Bootstrap (if needed)
       if: github.event_name == 'push'
@@ -225,7 +254,7 @@ jobs:
         # EMPLOYEE_USER_ID: "" (optional)
         # FRONTEND_URL: "https://spcprt.com" (default)
       run: |
-        set -e
+        set -euo pipefail
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
         
@@ -262,56 +291,65 @@ jobs:
         echo "Branch name: ${BRANCH_NAME}"
         echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
         echo "Lambda changed: ${LAMBDA_CHANGED}"
+
+        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+        if [ "${DEPLOY_AUTH_STACK}" = "true" ]; then
+          STACKS+=("$AUTH_STACK_NAME")
+        fi
+
+        echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
         
-        # Deploy all stacks with environment context and branch name
-        cdk deploy --all \
+        cdk deploy "${STACKS[@]}" \
           --require-approval never \
           --no-fail-on-empty-changeset \
-          --context environment=$ENVIRONMENT \
-          --context branch="${BRANCH_NAME}" \
+          --context environment="${CDK_ENVIRONMENT_NAME}" \
+          --context branch_name="${BRANCH_NAME}" \
           --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
-          --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          --parameters "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}"
 
-    - name: Update Frontend Environment Variables
+    - name: Publish deployment outputs
       if: github.event_name == 'push'
+      id: publish_outputs
       run: |
-        set -e
-        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-        
-        # Determine environment based on branch
-        if [ "${GITHUB_REF_NAME}" = "main" ]; then
-          ENVIRONMENT="production"
-          SECRET_SUFFIX="PROD"
-        else
-          ENVIRONMENT="staging"
-          SECRET_SUFFIX="PREVIEW"
-        fi
-        
-        # Get CDK stack outputs
-        STACK_NAME="Spaceport${ENVIRONMENT^}Stack"
-        DRONE_PATH_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DronePathApiUrl'].OutputValue" --output text)
-        FILE_UPLOAD_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FileUploadApiUrl'].OutputValue" --output text)
-        
-        # Get Auth stack outputs
-        AUTH_STACK_NAME="SpaceportAuth${ENVIRONMENT^}Stack"
-        PROJECTS_API_URL=$(aws cloudformation describe-stacks --stack-name $AUTH_STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ProjectsApiUrl'].OutputValue" --output text)
-        
-        # Get ML Pipeline stack outputs
-        ML_STACK_NAME="SpaceportMLPipeline${ENVIRONMENT^}Stack"
-        ML_PIPELINE_API_URL=$(aws cloudformation describe-stacks --stack-name $ML_STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='MLPipelineApiUrl'].OutputValue" --output text)
-        
-        echo "Retrieved API URLs:"
+        set -euo pipefail
+
+        get_output() {
+          local stack_name="$1"
+          local output_key="$2"
+          local value
+          value=$(aws cloudformation describe-stacks \
+            --stack-name "$stack_name" \
+            --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+            --output text)
+          if [ -z "$value" ] || [ "$value" = "None" ]; then
+            echo "Missing required CloudFormation output ${output_key} on stack ${stack_name}" >&2
+            exit 1
+          fi
+          printf '%s' "$value"
+        }
+
+        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
+        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+
+        echo "Deployment class: $DEPLOYMENT_CLASS"
+        echo "Branch ID: ${BRANCH_ID:-<shared>}"
+        echo "Spaceport stack: $SPACEPORT_STACK_NAME"
+        echo "ML stack: $ML_STACK_NAME"
+        echo "Shared auth stack: $AUTH_STACK_NAME"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"
-        echo "Projects API: $PROJECTS_API_URL"
         echo "ML Pipeline API: $ML_PIPELINE_API_URL"
-        
-        # Note: In a real deployment, you would update GitHub secrets here
-        # This requires a GitHub token with appropriate permissions
-        # For now, we'll just output the values for manual update
+
+        echo "drone_path_api_url=$DRONE_PATH_API_URL" >> "$GITHUB_OUTPUT"
+        echo "file_upload_api_url=$FILE_UPLOAD_API_URL" >> "$GITHUB_OUTPUT"
+        echo "ml_pipeline_api_url=$ML_PIPELINE_API_URL" >> "$GITHUB_OUTPUT"
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
-      run: npx cdk diff 
+      run: |
+        npx cdk diff \
+          --context branch_name="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" \
+          --context environment=staging
