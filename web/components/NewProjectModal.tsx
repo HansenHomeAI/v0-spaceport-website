@@ -196,7 +196,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const isApplyingBoundaryRef = useRef<boolean>(false);
   const isRestoringHistoryRef = useRef<boolean>(false);
   const isMarkerInteractionActiveRef = useRef<boolean>(false);
-  const pendingViewportHistoryRef = useRef<{ action: string; snapshot: MapHistorySnapshot } | null>(null);
+  const markerInteractionVersionRef = useRef<number>(0);
+  const pendingViewportHistoryRef = useRef<{
+    action: string;
+    snapshot: MapHistorySnapshot;
+    markerInteractionVersion: number;
+  } | null>(null);
   const handleCancelBoundaryModeRef = useRef<(() => Promise<void>) | null>(null);
   const triggerSaveRef = useRef<(() => void) | null>(null);
   const boundaryEntryVisiblePathsRef = useRef<Map<number, Array<[number, number]>>>(new Map());
@@ -488,6 +493,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       return;
     }
 
+    if (pending.markerInteractionVersion !== markerInteractionVersionRef.current) {
+      pendingViewportHistoryRef.current = null;
+      return;
+    }
+
     pendingViewportHistoryRef.current = null;
     pushMapHistoryEntry(pending.action, pending.snapshot, captureMapHistorySnapshot());
   }, [captureMapHistorySnapshot, pushMapHistoryEntry]);
@@ -521,6 +531,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     const releaseMapPan = () => {
       isMarkerInteractionActiveRef.current = false;
+      markerInteractionVersionRef.current += 1;
       if (dragPanWasEnabled && mapRef.current?.dragPan) {
         mapRef.current.dragPan.enable();
       }
@@ -530,7 +541,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
 
     const handlePointerDown = (event: PointerEvent) => {
+      event.preventDefault();
       event.stopPropagation();
+      markerInteractionVersionRef.current += 1;
       isMarkerInteractionActiveRef.current = true;
       const map = mapRef.current;
       if (map?.dragPan?.isEnabled?.()) {
@@ -546,7 +559,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
 
     element.style.touchAction = 'none';
-    element.addEventListener('pointerdown', handlePointerDown);
+    element.addEventListener('pointerdown', handlePointerDown, true);
     element.addEventListener('click', stopClickPropagation);
 
     return releaseMapPan;
@@ -852,12 +865,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           pendingViewportHistoryRef.current = {
             action,
             snapshot: captureMapHistorySnapshotRef.current(),
+            markerInteractionVersion: markerInteractionVersionRef.current,
           };
         };
 
         const commitViewportHistory = () => {
           const pending = pendingViewportHistoryRef.current;
           if (!pending || isRestoringHistoryRef.current) {
+            pendingViewportHistoryRef.current = null;
+            return;
+          }
+          if (pending.markerInteractionVersion !== markerInteractionVersionRef.current) {
             pendingViewportHistoryRef.current = null;
             return;
           }
