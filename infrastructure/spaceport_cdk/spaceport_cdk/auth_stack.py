@@ -27,6 +27,10 @@ class AuthStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        deployment_class = env_config.get("deploymentClass", "shared-staging")
+
+        if deployment_class == "branch-preview":
+            raise ValueError("AuthStack must not be deployed for branch-preview contexts")
         
         # Initialize AWS clients for resource checking
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)

@@ -13,6 +13,7 @@ from aws_cdk import (
     RemovalPolicy,
     Duration,
     CfnOutput,
+    Tags,
     BundlingOptions,  # For installing Python dependencies
     aws_ec2 as ec2,
 )
@@ -30,12 +31,28 @@ class MLPipelineStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        self.deployment_class = env_config.get("deploymentClass", "shared-staging")
+        self.environment_name = env_config.get("environmentName", suffix)
+        self.branch_id = env_config.get("branchId", "")
+        self.branch_name = env_config.get("branchName", "")
+        self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
+        self.reuse_shared_ecr = env_config.get("reuseSharedEcr", False)
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
         self.ecr_client = boto3.client('ecr', region_name=region)
         self.cloudwatch_client = boto3.client('cloudwatch', region_name=region)
         self.iam_client = boto3.client('iam', region_name=region)
+
+        if self.deployment_class == "branch-preview":
+            Tags.of(self).add("SpaceportDeploymentClass", "branch-preview")
+            Tags.of(self).add("SpaceportBranchName", self.branch_name)
+            Tags.of(self).add("SpaceportBranchId", self.branch_id)
+            Tags.of(self).add(
+                "SpaceportSharedAuthStack",
+                env_config.get("sharedAuthStackName", "SpaceportAuthStagingStack"),
+            )
+            Tags.of(self).add("ManagedBy", "github-actions")
         
         # Track resources for validation
         self._created_resources = []
@@ -65,23 +82,28 @@ class MLPipelineStack(Stack):
 
         # ========== ECR REPOSITORIES ==========
         # Dynamic ECR repositories - import if exist, create if not
-        sfm_repo = self._get_or_create_ecr_repo(
-            construct_id="SfMRepository",
-            preferred_name=f"spaceport/sfm-{suffix}",
-            fallback_name="spaceport/sfm"
-        )
+        if self.reuse_shared_ecr:
+            sfm_repo = self._import_required_ecr_repo("SfMRepository", "spaceport/sfm")
+            gaussian_repo = self._import_required_ecr_repo("GaussianRepository", "spaceport/3dgs")
+            compressor_repo = self._import_required_ecr_repo("CompressorRepository", "spaceport/compressor")
+        else:
+            sfm_repo = self._get_or_create_ecr_repo(
+                construct_id="SfMRepository",
+                preferred_name=f"spaceport/sfm-{suffix}",
+                fallback_name="spaceport/sfm"
+            )
 
-        gaussian_repo = self._get_or_create_ecr_repo(
-            construct_id="GaussianRepository",
-            preferred_name=f"spaceport/3dgs-{suffix}",
-            fallback_name="spaceport/3dgs"
-        )
+            gaussian_repo = self._get_or_create_ecr_repo(
+                construct_id="GaussianRepository",
+                preferred_name=f"spaceport/3dgs-{suffix}",
+                fallback_name="spaceport/3dgs"
+            )
 
-        compressor_repo = self._get_or_create_ecr_repo(
-            construct_id="CompressorRepository",
-            preferred_name=f"spaceport/compressor-{suffix}",
-            fallback_name="spaceport/compressor"
-        )
+            compressor_repo = self._get_or_create_ecr_repo(
+                construct_id="CompressorRepository",
+                preferred_name=f"spaceport/compressor-{suffix}",
+                fallback_name="spaceport/compressor"
+            )
 
         # ========== IAM ROLES ==========
         # SageMaker execution role with environment-specific naming
@@ -734,6 +756,12 @@ class MLPipelineStack(Stack):
         )
 
         CfnOutput(
+            self, "MLPipelineApiUrl",
+            value=ml_api.url,
+            description="ML Pipeline API Gateway URL"
+        )
+
+        CfnOutput(
             self, "MLBucketName", 
             value=ml_bucket.bucket_name,
             description="ML Processing S3 Bucket"
@@ -761,6 +789,24 @@ class MLPipelineStack(Stack):
             self, "CompressorRepositoryUri",
             value=compressor_repo.repository_uri,
             description="Compressor ECR Repository URI"
+        )
+
+        CfnOutput(
+            self, "EnvironmentName",
+            value=self.environment_name,
+            description="Deployment environment name"
+        )
+
+        CfnOutput(
+            self, "BranchId",
+            value=self.branch_id or "shared",
+            description="Branch preview identifier"
+        )
+
+        CfnOutput(
+            self, "BranchName",
+            value=self.branch_name,
+            description="Git branch name for this deployment"
         )
 
     def _bucket_exists(self, bucket_name: str) -> bool:
@@ -797,7 +843,7 @@ class MLPipelineStack(Stack):
             return bucket
         
         # Then try fallback name (without suffix)
-        if self._bucket_exists(fallback_name):
+        if self.allow_fallback_imports and self._bucket_exists(fallback_name):
             print(f"✅ Importing existing S3 bucket (fallback): {fallback_name}")
             # Robustness: Validate fallback is accessible
             if not self._validate_bucket_accessibility(fallback_name):
@@ -845,6 +891,13 @@ class MLPipelineStack(Stack):
                 )
             ]
         )
+
+    def _import_required_ecr_repo(self, construct_id: str, repository_name: str) -> ecr.IRepository:
+        """Import a shared ECR repository or fail clearly when it is missing."""
+        if not self._ecr_repo_exists(repository_name):
+            raise ValueError(f"Required shared ECR repository does not exist: {repository_name}")
+        print(f"Importing shared ECR repository: {repository_name}")
+        return ecr.Repository.from_repository_name(self, construct_id, repository_name)
 
     # ========== ROBUSTNESS VALIDATION METHODS ==========
     
@@ -1058,4 +1111,4 @@ class MLPipelineStack(Stack):
             if fallback_count > 0:
                 print(f"⚠️  Warning: Production using {fallback_count} fallback resources")
         
-        print(f"✅ Environment requirements validated for: {suffix}") 
+        print(f"✅ Environment requirements validated for: {suffix}")

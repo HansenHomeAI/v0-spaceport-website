@@ -7,10 +7,16 @@ on:
     paths:
       - 'web/**'
 
+concurrency:
+  group: pages-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
+      id-token: write
       contents: read
     defaults:
       run:
@@ -29,6 +35,122 @@ jobs:
           echo "CF_PAGES_PROJECT=$TARGET" >> $GITHUB_ENV
           echo "project=$TARGET" >> $GITHUB_OUTPUT
           echo "Using CF Pages project: $TARGET for branch $BRANCH"
+
+      - name: Configure AWS credentials (production via OIDC)
+        if: github.ref_name == 'main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-west-2
+
+      - name: Configure AWS credentials (staging via access keys)
+        if: github.ref_name != 'main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Resolve deployment context
+        id: resolve_context
+        run: |
+          set -euo pipefail
+          python3 ../scripts/resolve_preview_context.py --branch "${GITHUB_REF_NAME}" --format shell > /tmp/pages-context.env
+          cat /tmp/pages-context.env
+          while IFS='=' read -r key value; do
+            echo "${key}=${value}" >> "$GITHUB_ENV"
+          done < /tmp/pages-context.env
+
+      - name: Resolve CloudFormation outputs
+        id: stack_outputs
+        run: |
+          set -euo pipefail
+
+          wait_for_stack() {
+            local stack_name="$1"
+            local max_attempts=120
+            local sleep_seconds=15
+            local attempt=1
+
+            while [ "$attempt" -le "$max_attempts" ]; do
+              if ! status=$(aws cloudformation describe-stacks \
+                --stack-name "$stack_name" \
+                --query 'Stacks[0].StackStatus' \
+                --output text 2>/dev/null); then
+                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to exist..."
+              elif [[ "$status" == *_IN_PROGRESS ]]; then
+                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to finish: $status"
+              elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
+                echo "Stack $stack_name is ready with status $status"
+                return 0
+              else
+                echo "Stack $stack_name reached unexpected status: $status" >&2
+                return 1
+              fi
+
+              sleep "$sleep_seconds"
+              attempt=$((attempt + 1))
+            done
+
+            echo "Timed out waiting for stack $stack_name" >&2
+            return 1
+          }
+
+          get_output() {
+            local stack_name="$1"
+            local output_key="$2"
+            local value
+            value=$(aws cloudformation describe-stacks \
+              --stack-name "$stack_name" \
+              --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+              --output text)
+            if [ -z "$value" ] || [ "$value" = "None" ]; then
+              echo "Missing required CloudFormation output ${output_key} on stack ${stack_name}" >&2
+              return 1
+            fi
+            printf '%s' "$value"
+          }
+
+          wait_for_stack "$SPACEPORT_STACK_NAME"
+          wait_for_stack "$ML_STACK_NAME"
+          wait_for_stack "$AUTH_STACK_NAME"
+
+          PROJECTS_API_URL="$(get_output "$AUTH_STACK_NAME" "ProjectsApiUrl")"
+          COGNITO_USER_POOL_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolId")"
+          COGNITO_USER_POOL_CLIENT_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolClientId")"
+          SUBSCRIPTION_API_URL="$(get_output "$AUTH_STACK_NAME" "SubscriptionApiUrl")"
+          BETA_ACCESS_API_URL="$(get_output "$AUTH_STACK_NAME" "BetaAccessAdminApiUrl")"
+          MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_STACK_NAME" "ModelDeliveryAdminApiUrl")"
+
+          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
+          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
+          WAITLIST_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "WaitlistApiUrl")"
+          FEEDBACK_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FeedbackApiUrl")"
+          ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+
+          {
+            echo "PROJECTS_API_URL=$PROJECTS_API_URL"
+            echo "COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID"
+            echo "COGNITO_USER_POOL_CLIENT_ID=$COGNITO_USER_POOL_CLIENT_ID"
+            echo "SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL"
+            echo "BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL"
+            echo "MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL"
+            echo "DRONE_PATH_API_URL=$DRONE_PATH_API_URL"
+            echo "FILE_UPLOAD_API_URL=$FILE_UPLOAD_API_URL"
+            echo "WAITLIST_API_URL=$WAITLIST_API_URL"
+            echo "FEEDBACK_API_URL=$FEEDBACK_API_URL"
+            echo "ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL"
+          } >> "$GITHUB_ENV"
+
+          echo "Resolved deployment class: $DEPLOYMENT_CLASS"
+          echo "Spaceport stack: $SPACEPORT_STACK_NAME"
+          echo "ML stack: $ML_STACK_NAME"
+          echo "Shared auth stack: $AUTH_STACK_NAME"
+          echo "Drone Path API: $DRONE_PATH_API_URL"
+          echo "File Upload API: $FILE_UPLOAD_API_URL"
+          echo "Waitlist API: $WAITLIST_API_URL"
+          echo "Feedback API: $FEEDBACK_API_URL"
+          echo "ML Pipeline API: $ML_PIPELINE_API_URL"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -57,18 +179,18 @@ jobs:
           if [ -z "$GOOGLE_MAPS_MAP_ID" ]; then GOOGLE_MAPS_MAP_ID="${MAP_ID_LEGACY:-}"; fi
 
           if [ "$BRANCH" = "main" ]; then
-            echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=${{ secrets.BETA_ACCESS_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=${{ secrets.MODEL_DELIVERY_ADMIN_API_URL_PROD }}" >> .env
-            echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PROD }}" >> .env
+            echo "NEXT_PUBLIC_PROJECTS_API_URL=$PROJECTS_API_URL" >> .env
+            echo "NEXT_PUBLIC_DRONE_PATH_API_URL=$DRONE_PATH_API_URL" >> .env
+            echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=$FILE_UPLOAD_API_URL" >> .env
+            echo "NEXT_PUBLIC_WAITLIST_API_URL=$WAITLIST_API_URL" >> .env
+            echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
+            echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
+            echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
-            echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PROD }}" >> .env
-            echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}" >> .env
-            echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PROD }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=$COGNITO_USER_POOL_CLIENT_ID" >> .env
+            echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
             echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
@@ -78,18 +200,18 @@ jobs:
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}" >> .env
           else
-            echo "NEXT_PUBLIC_PROJECTS_API_URL=${{ secrets.PROJECTS_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_DRONE_PATH_API_URL=${{ secrets.DRONE_PATH_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=${{ secrets.FILE_UPLOAD_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_WAITLIST_API_URL=${{ secrets.WAITLIST_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=${{ secrets.ML_PIPELINE_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=${{ secrets.BETA_ACCESS_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=${{ secrets.MODEL_DELIVERY_ADMIN_API_URL_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_FEEDBACK_API_URL=${{ secrets.FEEDBACK_API_URL_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_PROJECTS_API_URL=$PROJECTS_API_URL" >> .env
+            echo "NEXT_PUBLIC_DRONE_PATH_API_URL=$DRONE_PATH_API_URL" >> .env
+            echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=$FILE_UPLOAD_API_URL" >> .env
+            echo "NEXT_PUBLIC_WAITLIST_API_URL=$WAITLIST_API_URL" >> .env
+            echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
+            echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
+            echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
+            echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=${{ secrets.COGNITO_USER_POOL_CLIENT_ID_PREVIEW }}" >> .env
-            echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=${{ secrets.SUBSCRIPTION_API_URL_PREVIEW }}" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
+            echo "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=$COGNITO_USER_POOL_CLIENT_ID" >> .env
+            echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
             echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
@@ -138,8 +260,6 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          FEEDBACK_API_URL_PREVIEW: ${{ secrets.FEEDBACK_API_URL_PREVIEW }}
-          FEEDBACK_API_URL_PROD: ${{ secrets.FEEDBACK_API_URL_PROD }}
           MAPS_KEY_PRIMARY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
           MAPS_KEY_LEGACY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           MAP_ID_PRIMARY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}
@@ -152,8 +272,6 @@ jobs:
           if [ -z "$google_maps_map_id" ]; then google_maps_map_id="$MAP_ID_LEGACY"; fi
 
           jq -n \
-            --arg prod "$FEEDBACK_API_URL_PROD" \
-            --arg preview "$FEEDBACK_API_URL_PREVIEW" \
             --arg google_maps "$google_maps" \
             --arg google_maps_map_id "$google_maps_map_id" \
             '{
@@ -163,7 +281,6 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $prod },
                     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
                     NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
                   }
@@ -173,7 +290,6 @@ jobs:
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
                   environment_variables: {
-                    NEXT_PUBLIC_FEEDBACK_API_URL: { value: $preview },
                     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
                     NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
                   }
