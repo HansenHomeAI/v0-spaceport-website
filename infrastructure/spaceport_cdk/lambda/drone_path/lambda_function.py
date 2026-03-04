@@ -2918,9 +2918,9 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         print(f"[battery-csv] spin_mode={spin_mode}, battery_id={battery_id}, export_part={export_part}")
         poi_in_csv = '0,0' if spin_mode else 'center'
         if export_part == 'part1':
-            filename = f"battery-{battery_id}-part-1.csv"
+            filename = f"battery-{battery_id}-stage-1.csv"
         elif export_part == 'part2':
-            filename = f"battery-{battery_id}-part-2.csv"
+            filename = f"battery-{battery_id}-stage-2.csv"
         elif export_part == 'combined':
             filename = f"battery-{battery_id}-combined.csv"
         else:
