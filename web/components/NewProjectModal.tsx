@@ -159,6 +159,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
   const [mapReady, setMapReady] = useState<boolean>(false);
   const mapReadyRef = useRef<boolean>(false);
+  const resolvingLocationRef = useRef<boolean>(false);
   const boundaryMarkersRef = useRef<MapboxMarkerRefMap>({ center: null, major: null, minor: null });
   const draftBoundaryRef = useRef<BoundaryEllipse | null>(null);
   const appliedBoundaryRef = useRef<BoundaryEllipse | null>(null);
@@ -243,6 +244,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
 
     return mapReadyRef.current;
+  }, []);
+
+  const waitForSelectedCoords = useCallback(async (timeoutMs = 5000): Promise<{ lat: number; lng: number } | null> => {
+    if (selectedCoordsRef.current) {
+      return selectedCoordsRef.current;
+    }
+
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (selectedCoordsRef.current) {
+        return selectedCoordsRef.current;
+      }
+      if (!resolvingLocationRef.current) {
+        break;
+      }
+    }
+
+    return selectedCoordsRef.current;
   }, []);
 
   const createCenterPinElement = useCallback(() => {
@@ -722,25 +742,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [optimizedParams]);
 
-  const canOptimize = useMemo(() => {
-    // Always use ref as source of truth for coordinates
-    const coords = selectedCoords ?? selectedCoordsRef.current;
-    const minutes = parseInt(batteryMinutes || '');
-    const batteries = parseInt(numBatteries || '');
-    const isValid = Boolean(coords && minutes && batteries);
-    
-    // Debug logging to help track state
-    console.log('🔍 Optimization validation:', {
-      hasCoords: !!coords,
-      coordsValue: coords,
-      minutes,
-      batteries,
-      isValid
-    });
-    
-    return isValid;
-  }, [batteryMinutes, numBatteries, selectedCoords]);
-
   const parsedBatteryCount = useMemo(() => {
     return Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
   }, [numBatteries]);
@@ -768,15 +769,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, []);
 
   const handleOptimize = useCallback(async () => {
-    if (!canOptimize) return;
+    const coords = selectedCoordsRef.current ?? await waitForSelectedCoords();
+    const minutes = parseInt(batteryMinutes);
+    const batteries = parseInt(numBatteries);
+
+    if (!coords || !minutes || !batteries) return;
+
     setOptimizationLoading(true);
     const messageInterval = startProcessingMessages();
     console.log('Starting optimization...');
     try {
-      const coords = selectedCoordsRef.current!;
-      const minutes = parseInt(batteryMinutes);
-      const batteries = parseInt(numBatteries);
-      
       // Validate parameters to prevent API errors
       if (!coords || !coords.lat || !coords.lng) {
         throw new Error('Invalid coordinates');
@@ -837,17 +839,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
+  }, [API_ENHANCED_BASE, batteryMinutes, maxHeightFeet, minHeightFeet, numBatteries, startProcessingMessages, waitForSelectedCoords]);
 
   const ensureMissionReady = useCallback(async (): Promise<boolean> => {
     if (optimizedParamsRef.current || appliedBoundaryPlanRef.current) {
       return true;
     }
 
-    if (!canOptimize) {
-      if (!selectedCoordsRef.current) {
+    const coords = selectedCoordsRef.current ?? await waitForSelectedCoords();
+    const minutes = parseInt(batteryMinutes || '');
+    const batteries = parseInt(numBatteries || '');
+
+    if (!(coords && minutes && batteries)) {
+      if (!coords) {
         showSystemNotification('error', 'Please select a location on the map first');
-      } else if (!batteryMinutes || !numBatteries) {
+      } else if (!minutes || !batteries) {
         showSystemNotification('error', 'Please enter battery duration and quantity first');
       } else {
         showSystemNotification('error', 'Please set location and battery params first');
@@ -867,7 +873,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
     return false;
-  }, [batteryMinutes, canOptimize, handleOptimize, numBatteries, showSystemNotification]);
+  }, [batteryMinutes, handleOptimize, numBatteries, showSystemNotification, waitForSelectedCoords]);
 
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
@@ -1816,42 +1822,47 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     e.preventDefault();
     const query = addressSearch.trim();
     if (!query) return;
+    resolvingLocationRef.current = true;
 
-    let waitCount = 0;
-    while (!mapRef.current && waitCount < 50) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      waitCount += 1;
-    }
+    try {
+      let waitCount = 0;
+      while (!mapRef.current && waitCount < 50) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        waitCount += 1;
+      }
 
-    if (!mapRef.current) {
-      showSystemNotification('error', 'Map is still loading. Please try again in a moment.');
-      return;
-    }
-    
-    // Check if input looks like coordinates (lat, lng)
-    const coordsMatch = query.match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
-    
-    if (coordsMatch) {
-      // Handle direct coordinate input
-      const lat = parseFloat(coordsMatch[1]);
-      const lng = parseFloat(coordsMatch[2]);
-      
-      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        await placeMarkerAtCoords(lat, lng);
+      if (!mapRef.current) {
+        showSystemNotification('error', 'Map is still loading. Please try again in a moment.');
         return;
       }
-    }
-    
-    // Handle geocoding search
-    try {
-      const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`);
-      const data = await res.json();
-      if (data?.features?.length) {
-        const [lng, lat] = data.features[0].center;
-        await placeMarkerAtCoords(lat, lng);
+
+      // Check if input looks like coordinates (lat, lng)
+      const coordsMatch = query.match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
+
+      if (coordsMatch) {
+        // Handle direct coordinate input
+        const lat = parseFloat(coordsMatch[1]);
+        const lng = parseFloat(coordsMatch[2]);
+
+        if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+          await placeMarkerAtCoords(lat, lng);
+          return;
+        }
       }
-    } catch (err) {
-      console.warn('Geocoding failed:', err);
+
+      // Handle geocoding search
+      try {
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`);
+        const data = await res.json();
+        if (data?.features?.length) {
+          const [lng, lat] = data.features[0].center;
+          await placeMarkerAtCoords(lat, lng);
+        }
+      } catch (err) {
+        console.warn('Geocoding failed:', err);
+      }
+    } finally {
+      resolvingLocationRef.current = false;
     }
   }, [addressSearch, MAPBOX_TOKEN, showSystemNotification]);
 
