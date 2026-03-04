@@ -3731,7 +3731,6 @@ def handle_csv_download(designer, body, cors_headers):
             max_height,
             form_to_terrain=form_to_terrain,
             spin_mode=spin_mode,
-            form_to_terrain=form_to_terrain,
         )
         
         # Return CSV as text/csv

@@ -21,7 +21,6 @@ def _load_environments_context():
         return json.load(handle)["context"]["environments"]
 explicit_branch_name = app.node.try_get_context("branch_name") or os.environ.get("GITHUB_REF_NAME")
 explicit_environment = app.node.try_get_context("environment")
-
 if explicit_branch_name:
     deployment_context = resolve_deployment_context(explicit_branch_name)
 elif explicit_environment == "production":
@@ -51,7 +50,6 @@ if deploy_auth_stack and deployment_context.deployment_class == "branch-preview"
     auth_base_env_config = _load_environments_context()[auth_deployment_context.cdk_environment_name]
     auth_env_config = build_env_config(auth_base_env_config, auth_deployment_context)
     auth_env_config["deployAuthStack"] = True
-
 common_env = {
     "account": app.node.try_get_context("account") or None,
     "region": env_config["region"],
