@@ -76,6 +76,9 @@ class SpiralDesigner:
     SPEED_FT_PER_SEC = FLIGHT_SPEED_MPS * 3.28084
     TAKEOFF_LANDING_OVERHEAD_MINUTES = 2.5  # Startup/landing + maneuver buffer
     MAX_TOTAL_WAYPOINTS = 99                # DJI/Litchi practical waypoint ceiling
+    MAX_EXPORT_WAYPOINTS = 99
+    MAX_SPLIT_SPIN_WAYPOINTS = 197
+    SPIN_SPLIT_OVERLAP_WAYPOINTS = 1
     RESERVED_SAFETY_WAYPOINTS = 12          # Keep headroom for terrain safety insertions
     SPIN_MAX_HEADING_DELTA_DEG = 179.0
     MAX_ANGULAR_RATE_DEG_PER_SEC = 100.0
@@ -83,6 +86,12 @@ class SpiralDesigner:
     SPIN_PHOTO_INTERVAL_SECONDS = 2.0
     GIMBAL_MIN_PITCH_DEG = -35
     GIMBAL_MAX_PITCH_DEG = -15
+    CSV_HEADER = (
+        "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,"
+        "gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,"
+        "poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,"
+        "photo_distinterval"
+    )
     
     def __init__(self):
         """
@@ -361,15 +370,16 @@ class SpiralDesigner:
 
         return splits
 
-    def _insert_spin_waypoints(self, waypoint_records: List[Dict]) -> List[Dict]:
+    def _insert_spin_waypoints(self, waypoint_records: List[Dict], target_total: Optional[int] = None) -> List[Dict]:
         """
         Insert transit spin waypoints (never hover-in-place) to reduce large gaps
-        while staying <= 99 total points.
+        while staying within the requested total point budget.
         """
         if len(waypoint_records) < 2:
             return waypoint_records
 
-        spin_budget = self.MAX_TOTAL_WAYPOINTS - len(waypoint_records)
+        target_limit = self.MAX_TOTAL_WAYPOINTS if target_total is None else max(0, int(target_total))
+        spin_budget = target_limit - len(waypoint_records)
         if spin_budget <= 0:
             return waypoint_records
 
@@ -404,7 +414,7 @@ class SpiralDesigner:
                 with_spin.append(spin_point)
 
         with_spin.append(waypoint_records[-1])
-        return with_spin[:self.MAX_TOTAL_WAYPOINTS]
+        return with_spin[:target_limit]
 
     def _build_gimbal_pitch_series(self, total_waypoints: int) -> List[int]:
         """
@@ -431,12 +441,12 @@ class SpiralDesigner:
 
         return [int(round(evenly_spaced[idx])) for idx in indices]
 
-    def _enforce_waypoint_record_limit(self, waypoint_records: List[Dict]) -> List[Dict]:
+    def _enforce_waypoint_record_limit(self, waypoint_records: List[Dict], limit: Optional[int] = None) -> List[Dict]:
         """
         Keep waypoint records within the Litchi 99-point cap by even downsampling.
         """
         total = len(waypoint_records)
-        limit = self.MAX_TOTAL_WAYPOINTS
+        limit = self.MAX_TOTAL_WAYPOINTS if limit is None else max(1, int(limit))
         if total <= limit:
             return waypoint_records
 
@@ -453,6 +463,42 @@ class SpiralDesigner:
             ordered_indices = ordered_indices[:limit]
 
         return [waypoint_records[idx] for idx in ordered_indices]
+
+    def _compute_spin_telemetry(self, waypoint_records: List[Dict]) -> Dict[str, float]:
+        """Summarize waypoint density and yaw-rate information for spin exports."""
+        min_blur_segment_feet = (
+            self.SPIN_MAX_HEADING_DELTA_DEG
+            * self.SPEED_FT_PER_SEC
+            / max(self.MAX_ANGULAR_RATE_DEG_PER_SEC, 1e-6)
+        )
+
+        if len(waypoint_records) < 2:
+            return {
+                'combined_waypoints': len(waypoint_records),
+                'max_segment_feet': 0.0,
+                'estimated_rate_deg_s': 0.0,
+                'min_blur_segment_feet': min_blur_segment_feet,
+            }
+
+        segment_distances_ft = [
+            self._segment_distance_feet(waypoint_records[i], waypoint_records[i + 1])
+            for i in range(len(waypoint_records) - 1)
+        ]
+        longest_segment_ft = max(segment_distances_ft) if segment_distances_ft else 0.0
+        if longest_segment_ft <= 0:
+            estimated_rate_deg_s = 0.0
+        else:
+            segment_seconds = longest_segment_ft / max(self.SPEED_FT_PER_SEC, 1e-6)
+            blur_limited_delta = self.MAX_ANGULAR_RATE_DEG_PER_SEC * segment_seconds
+            max_delta = min(self.SPIN_MAX_HEADING_DELTA_DEG, blur_limited_delta)
+            estimated_rate_deg_s = max_delta / max(segment_seconds, 1e-6)
+
+        return {
+            'combined_waypoints': len(waypoint_records),
+            'max_segment_feet': longest_segment_ft,
+            'estimated_rate_deg_s': estimated_rate_deg_s,
+            'min_blur_segment_feet': min_blur_segment_feet,
+        }
 
     def _compute_path_headings(self, waypoint_records: List[Dict]) -> List[int]:
         """Compute standard forward-facing headings from local X/Y geometry."""
@@ -523,6 +569,83 @@ class SpiralDesigner:
             headings.append(heading)
 
         return headings
+
+    def _build_csv_row_data(self, waypoint_records: List[Dict], center: Dict, spin_mode: bool) -> List[Dict]:
+        """Build ordered CSV row dicts from prepared waypoint records."""
+        if spin_mode:
+            headings = self._compute_spin_headings(waypoint_records)
+        else:
+            headings = self._compute_poi_headings(waypoint_records, center['lat'], center['lon'])
+
+        gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
+        active_photo_interval = (
+            self.SPIN_PHOTO_INTERVAL_SECONDS
+            if spin_mode
+            else self.DEFAULT_PHOTO_INTERVAL_SECONDS
+        )
+
+        rows: List[Dict] = []
+        for i, record in enumerate(waypoint_records):
+            photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
+            rows.append({
+                'latitude': record['latitude'],
+                'longitude': record['longitude'],
+                'altitude': record['altitude'],
+                'heading': headings[i],
+                'curve_size_meters': record['curve_size_meters'],
+                'rotationdir': 0,
+                'gimbalmode': 2,
+                'gimbalpitchangle': gimbal_pitches[i],
+                'altitudemode': 0,
+                'speed': self.FLIGHT_SPEED_MPS,
+                'poi_latitude': 0 if spin_mode else center['lat'],
+                'poi_longitude': 0 if spin_mode else center['lon'],
+                'poi_altitude': -35,
+                'poi_altitudemode': 0,
+                'photo_timeinterval': photo_interval,
+                'photo_distinterval': 0,
+            })
+
+        return rows
+
+    def _serialize_csv_rows(self, row_data: List[Dict]) -> str:
+        """Serialize ordered row dicts to the Litchi CSV format."""
+        rows = [self.CSV_HEADER]
+        for row in row_data:
+            ordered_values = [
+                row['latitude'],
+                row['longitude'],
+                row['altitude'],
+                row['heading'],
+                row['curve_size_meters'],
+                row['rotationdir'],
+                row['gimbalmode'],
+                row['gimbalpitchangle'],
+                row['altitudemode'],
+                row['speed'],
+                row['poi_latitude'],
+                row['poi_longitude'],
+                row['poi_altitude'],
+                row['poi_altitudemode'],
+                row['photo_timeinterval'],
+                row['photo_distinterval'],
+            ]
+            rows.append(','.join(map(str, ordered_values)))
+
+        return '\n'.join(rows)
+
+    def _split_spin_row_data(self, row_data: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
+        """Split a combined spin mission into two overlapping parts for midair handoff."""
+        split_idx = self.MAX_EXPORT_WAYPOINTS - self.SPIN_SPLIT_OVERLAP_WAYPOINTS
+        part_one = [dict(row) for row in row_data[:self.MAX_EXPORT_WAYPOINTS]]
+        part_two = [dict(row) for row in row_data[split_idx:]]
+
+        if part_one:
+            part_one[-1]['photo_timeinterval'] = 0
+        if part_two:
+            part_two[-1]['photo_timeinterval'] = 0
+
+        return part_one, part_two
 
     def _build_waypoint_records(
         self,
@@ -1319,10 +1442,6 @@ class SpiralDesigner:
             print(f"✅ No terrain anomalies detected for complete mission - original flight path is safe")
             self._enhanced_waypoints_data = None
         
-        # Generate CSV content with Litchi header
-        header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
-        rows = [header]
-        
         enhanced_waypoints_data = getattr(self, '_enhanced_waypoints_data', None)
         waypoint_records = self._build_waypoint_records(
             spiral_path=spiral_path,
@@ -1333,110 +1452,43 @@ class SpiralDesigner:
             max_height=max_height,
             enhanced_waypoints_data=enhanced_waypoints_data,
         )
-        waypoint_records = self._enforce_waypoint_record_limit(waypoint_records)
+        waypoint_records = self._enforce_waypoint_record_limit(waypoint_records, self.MAX_EXPORT_WAYPOINTS)
 
         if spin_mode:
-            waypoint_records = self._insert_spin_waypoints(waypoint_records)
+            waypoint_records = self._insert_spin_waypoints(
+                waypoint_records,
+                target_total=self.MAX_EXPORT_WAYPOINTS,
+            )
 
-        if spin_mode:
-            headings = self._compute_spin_headings(waypoint_records)
-        else:
-            headings = self._compute_poi_headings(waypoint_records, center['lat'], center['lon'])
-        gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
-        active_photo_interval = (
-            self.SPIN_PHOTO_INTERVAL_SECONDS
-            if spin_mode
-            else self.DEFAULT_PHOTO_INTERVAL_SECONDS
-        )
+        row_data = self._build_csv_row_data(waypoint_records, center, spin_mode)
+        return self._serialize_csv_rows(row_data)
 
-        for i, record in enumerate(waypoint_records):
-            photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
-            poi_lat = 0 if spin_mode else center['lat']
-            poi_lon = 0 if spin_mode else center['lon']
-            row = [
-                record['latitude'],
-                record['longitude'],
-                record['altitude'],
-                headings[i],
-                record['curve_size_meters'],
-                0,
-                2,
-                gimbal_pitches[i],
-                0,
-                self.FLIGHT_SPEED_MPS,
-                poi_lat,
-                poi_lon,
-                -35,
-                0,
-                photo_interval,
-                0,
-            ]
-            rows.append(','.join(map(str, row)))
-        
-        return '\n'.join(rows)
-
-    def generate_battery_csv(
+    def _prepare_battery_waypoint_records(
         self,
         params: Dict,
         center_str: str,
         battery_index: int,
-        min_height: float = 100.0,
-        max_height: float = None,
-        spin_mode: bool = False,
-    ) -> str:
-        """
-        Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
-        
-        SINGLE-BATTERY MISSION STRATEGY:
-        ===============================
-        Each battery flies one complete slice (360°/num_batteries angular section).
-        This enables:
-        1. Parallel missions with multiple drones
-        2. Sequential flights with battery swaps
-        3. Risk distribution across separate flights
-        4. Independent mission planning per battery
-        
-        IDENTICAL ALGORITHM:
-        Uses the exact same altitude calculation as generate_csv() but for single slice.
-        Ensures consistency between individual and combined missions.
-        
-        Args:
-            params: Spiral parameters dict {slices, N, r0, rHold}
-            center_str: Center coordinates as string
-            battery_index: Battery number (0-based index)
-            min_height: Minimum flight altitude AGL (feet)
-            max_height: Maximum flight altitude AGL (feet, optional)
-            
-        Returns:
-            CSV file content for specified battery as string
-            
-        Raises:
-            ValueError: If battery_index is out of range
-        """
+        min_height: float,
+        max_height: Optional[float],
+    ) -> Tuple[Dict, List[Dict]]:
+        """Build ordered waypoint records for one battery before CSV serialization."""
         center = self.parse_center(center_str)
         if not center:
             raise ValueError("Invalid center coordinates")
-            
-        # Validate battery index range
+
         if battery_index < 0 or battery_index >= params['slices']:
             raise ValueError(f"Battery index must be between 0 and {params['slices'] - 1}")
-        
-        # Clear caches to prevent memory accumulation across battery downloads
+
         self.elevation_cache = {}
         self.waypoint_cache = []
-        
-        # Get takeoff elevation for reference
+
         takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
-        
-        # Generate waypoints for all slices, then extract the specific battery slice
         all_waypoints = self.compute_waypoints(params)
         spiral_path = all_waypoints[battery_index]
-        
-        # Ensure minimum curve radius for flight safety
+
         for wp in spiral_path:
-            wp['curve'] = max(wp['curve'], 30)  # 30ft minimum for doubled curve settings
-        
-        # Convert waypoints to lat/lon and get optimized elevations
+            wp['curve'] = max(wp['curve'], 30)
+
         locations = []
         waypoints_with_coords = []
         for wp in spiral_path:
@@ -1449,45 +1501,35 @@ class SpiralDesigner:
                 'y': wp['y'],
                 'phase': wp.get('phase', 'unknown')
             })
-        
-        # Get elevations with 15-foot proximity optimization
+
         ground_elevations = self.get_elevations_feet_optimized(locations)
-        
-        # Add elevations to waypoints_with_coords for adaptive sampling
         for i, elevation in enumerate(ground_elevations):
             waypoints_with_coords[i]['elevation'] = elevation
-        
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
-        print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+
+        print("🛡️  Starting adaptive terrain sampling for mission safety")
         safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
-        
+
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
-            # Convert safety waypoints to the format expected by CSV generation
             enhanced_waypoints_data = []
-            
+
             for i, wp in enumerate(spiral_path):
-                # Add original waypoint
                 enhanced_waypoints_data.append({
                     'waypoint': wp,
                     'coords': waypoints_with_coords[i],
                     'ground_elevation': ground_elevations[i],
                     'is_safety': False
                 })
-                
-                # Add any safety waypoints that belong after this original waypoint
+
                 segment_safety_waypoints = [swp for swp in safety_waypoints if swp['segment_idx'] == i]
                 for safety_wp in segment_safety_waypoints:
-                    # Convert safety waypoint GPS coordinates back to local X,Y coordinates  
                     safety_local_coords = self.lat_lon_to_xy(
                         safety_wp['lat'], safety_wp['lon'], center['lat'], center['lon']
                     )
-                    
-                    # Create properly positioned safety waypoint
                     safety_pseudo_wp = {
-                        'x': safety_local_coords['x'], 
-                        'y': safety_local_coords['y'], 
-                        'curve': 40, 
+                        'x': safety_local_coords['x'],
+                        'y': safety_local_coords['y'],
+                        'curve': 40,
                         'phase': f"safety_{safety_wp['type']}"
                     }
                     enhanced_waypoints_data.append({
@@ -1498,24 +1540,15 @@ class SpiralDesigner:
                         'safety_reason': safety_wp['reason'],
                         'is_safety': True
                     })
-            
-            # Update the processing arrays to include safety waypoints
+
             spiral_path = [item['waypoint'] for item in enhanced_waypoints_data]
-            locations = [(item['coords']['lat'], item['coords']['lon']) for item in enhanced_waypoints_data]
             ground_elevations = [item['ground_elevation'] for item in enhanced_waypoints_data]
-            
-            # Store enhanced waypoints data for later use
             self._enhanced_waypoints_data = enhanced_waypoints_data
-            
             print(f"✅ Enhanced mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
         else:
-            print(f"✅ No terrain anomalies detected - original flight path is safe")
+            print("✅ No terrain anomalies detected - original flight path is safe")
             self._enhanced_waypoints_data = None
-        
-        # Generate CSV content with Litchi header
-        header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
-        rows = [header]
-        
+
         enhanced_waypoints_data = getattr(self, '_enhanced_waypoints_data', None)
         waypoint_records = self._build_waypoint_records(
             spiral_path=spiral_path,
@@ -1526,47 +1559,104 @@ class SpiralDesigner:
             max_height=max_height,
             enhanced_waypoints_data=enhanced_waypoints_data,
         )
-        waypoint_records = self._enforce_waypoint_record_limit(waypoint_records)
 
-        if spin_mode:
-            waypoint_records = self._insert_spin_waypoints(waypoint_records)
+        return center, waypoint_records
 
-        if spin_mode:
-            headings = self._compute_spin_headings(waypoint_records)
-        else:
-            headings = self._compute_poi_headings(waypoint_records, center['lat'], center['lon'])
-        gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
-        active_photo_interval = (
-            self.SPIN_PHOTO_INTERVAL_SECONDS
-            if spin_mode
-            else self.DEFAULT_PHOTO_INTERVAL_SECONDS
+    def build_battery_csv_export(
+        self,
+        params: Dict,
+        center_str: str,
+        battery_index: int,
+        min_height: float = 100.0,
+        max_height: float = None,
+        spin_mode: bool = False,
+        export_part: str = "single",
+    ) -> Dict:
+        """Build CSV payload and telemetry for a battery mission export."""
+        export_part = (export_part or "single").lower()
+        allowed_export_parts = {"single", "part1", "part2", "combined"}
+        if export_part not in allowed_export_parts:
+            raise ValueError(
+                f"Invalid export_part '{export_part}'. Expected one of: "
+                "single, part1, part2, combined"
+            )
+        if export_part != "single" and not spin_mode:
+            raise ValueError("Split spin exports require spin_mode=True")
+
+        center, waypoint_records = self._prepare_battery_waypoint_records(
+            params=params,
+            center_str=center_str,
+            battery_index=battery_index,
+            min_height=min_height,
+            max_height=max_height,
         )
 
-        for i, record in enumerate(waypoint_records):
-            photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
-            poi_lat = 0 if spin_mode else center['lat']
-            poi_lon = 0 if spin_mode else center['lon']
-            row = [
-                record['latitude'],
-                record['longitude'],
-                record['altitude'],
-                headings[i],
-                record['curve_size_meters'],
-                0,
-                2,
-                gimbal_pitches[i],
-                0,
-                self.FLIGHT_SPEED_MPS,
-                poi_lat,
-                poi_lon,
-                -35,
-                0,
-                photo_interval,
-                0,
-            ]
-            rows.append(','.join(map(str, row)))
-        
-        return '\n'.join(rows)
+        if export_part == "single":
+            limited_records = self._enforce_waypoint_record_limit(
+                waypoint_records,
+                self.MAX_EXPORT_WAYPOINTS,
+            )
+            if spin_mode:
+                limited_records = self._insert_spin_waypoints(
+                    limited_records,
+                    target_total=self.MAX_EXPORT_WAYPOINTS,
+                )
+
+            row_data = self._build_csv_row_data(limited_records, center, spin_mode)
+            telemetry = self._compute_spin_telemetry(limited_records) if spin_mode else None
+            return {
+                'csv_text': self._serialize_csv_rows(row_data),
+                'row_data': row_data,
+                'telemetry': telemetry,
+            }
+
+        combined_records = self._enforce_waypoint_record_limit(
+            waypoint_records,
+            self.MAX_SPLIT_SPIN_WAYPOINTS,
+        )
+        combined_records = self._insert_spin_waypoints(
+            combined_records,
+            target_total=self.MAX_SPLIT_SPIN_WAYPOINTS,
+        )
+        combined_row_data = self._build_csv_row_data(combined_records, center, True)
+        telemetry = self._compute_spin_telemetry(combined_records)
+
+        if export_part == "combined":
+            selected_row_data = [dict(row) for row in combined_row_data]
+        else:
+            part_one, part_two = self._split_spin_row_data(combined_row_data)
+            selected_row_data = part_one if export_part == "part1" else part_two
+
+        return {
+            'csv_text': self._serialize_csv_rows(selected_row_data),
+            'row_data': selected_row_data,
+            'telemetry': telemetry,
+            'combined_row_data': combined_row_data,
+        }
+
+    def generate_battery_csv(
+        self,
+        params: Dict,
+        center_str: str,
+        battery_index: int,
+        min_height: float = 100.0,
+        max_height: float = None,
+        spin_mode: bool = False,
+        export_part: str = "single",
+    ) -> str:
+        """
+        Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
+        """
+        export_data = self.build_battery_csv_export(
+            params=params,
+            center_str=center_str,
+            battery_index=battery_index,
+            min_height=min_height,
+            max_height=max_height,
+            spin_mode=spin_mode,
+            export_part=export_part,
+        )
+        return export_data['csv_text']
 
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
@@ -2764,6 +2854,24 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        export_part = str(body.get('exportPart', 'single')).strip().lower() or 'single'
+        allowed_export_parts = {'single', 'part1', 'part2', 'combined'}
+        if export_part not in allowed_export_parts:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({
+                    'error': "exportPart must be one of: single, part1, part2, combined"
+                })
+            }
+        if export_part != 'single' and not spin_mode:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({
+                    'error': "exportPart part1/part2/combined requires spinMode=true"
+                })
+            }
         
         if not center:
             return {
@@ -2794,28 +2902,54 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         if max_exp is not None:
             params['maxExpansionDist'] = float(max_exp)
         
-        # Generate battery-specific CSV content
-        csv_content = designer.generate_battery_csv(
-            params,
-            center,
-            battery_index,
-            min_height,
-            max_height,
+        export_data = designer.build_battery_csv_export(
+            params=params,
+            center_str=center,
+            battery_index=battery_index,
+            min_height=min_height,
+            max_height=max_height,
             spin_mode=spin_mode,
+            export_part=export_part,
         )
+        csv_content = export_data['csv_text']
+        telemetry = export_data.get('telemetry') or {}
+
         # Debug: verify spin_mode and POI in response headers (and CloudWatch)
-        print(f"[battery-csv] spin_mode={spin_mode}, battery_id={battery_id}")
+        print(f"[battery-csv] spin_mode={spin_mode}, battery_id={battery_id}, export_part={export_part}")
         poi_in_csv = '0,0' if spin_mode else 'center'
+        if export_part == 'part1':
+            filename = f"battery-{battery_id}-part-1.csv"
+        elif export_part == 'part2':
+            filename = f"battery-{battery_id}-part-2.csv"
+        elif export_part == 'combined':
+            filename = f"battery-{battery_id}-combined.csv"
+        else:
+            filename = f"battery-{battery_id}.csv"
+
+        expose_headers = [
+            'X-Spin-Mode-Applied',
+            'X-POI-Used',
+            'X-Spin-Export-Part',
+            'X-Spin-Combined-Waypoints',
+            'X-Spin-Max-Segment-Feet',
+            'X-Spin-Estimated-Rate-Deg-S',
+            'X-Spin-Min-Blur-Segment-Feet',
+        ]
 
         return {
             'statusCode': 200,
             'headers': {
                 **cors_headers,
                 'Content-Type': 'text/csv',
-                'Content-Disposition': f'attachment; filename="battery-{battery_id}.csv"',
-                'Access-Control-Expose-Headers': 'X-Spin-Mode-Applied, X-POI-Used',
+                'Content-Disposition': f'attachment; filename="{filename}"',
+                'Access-Control-Expose-Headers': ', '.join(expose_headers),
                 'X-Spin-Mode-Applied': 'true' if spin_mode else 'false',
                 'X-POI-Used': poi_in_csv,
+                'X-Spin-Export-Part': export_part,
+                'X-Spin-Combined-Waypoints': str(int(telemetry.get('combined_waypoints', 0))),
+                'X-Spin-Max-Segment-Feet': f"{telemetry.get('max_segment_feet', 0.0):.2f}",
+                'X-Spin-Estimated-Rate-Deg-S': f"{telemetry.get('estimated_rate_deg_s', 0.0):.2f}",
+                'X-Spin-Min-Blur-Segment-Feet': f"{telemetry.get('min_blur_segment_feet', 0.0):.2f}",
             },
             'body': csv_content
         }

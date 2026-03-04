@@ -640,6 +640,69 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     "Finalizing flight path"
   ];
 
+  const triggerCsvDownload = useCallback((csvText: string, filename: string) => {
+    const blob = new Blob([csvText], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+  }, []);
+
+  const requestBatteryCsv = useCallback(async (
+    batteryIndex1: number,
+    exportPart: 'single' | 'part1' | 'part2' | 'combined' = 'single',
+  ): Promise<string> => {
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (!currentOptimizedParams) {
+      throw new Error('Please optimize first');
+    }
+
+    const body: Record<string, any> = { ...currentOptimizedParams };
+    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
+    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+    body.spinMode = spinMode;
+    if (exportPart !== 'single') {
+      body.exportPart = exportPart;
+    }
+
+    console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, body);
+
+    const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const spinApplied = res.headers.get('X-Spin-Mode-Applied');
+    const poiUsed = res.headers.get('X-POI-Used');
+    const spinExportPart = res.headers.get('X-Spin-Export-Part');
+    if (spinApplied != null || poiUsed != null || spinExportPart != null) {
+      console.log(
+        `🔍 [Battery CSV] X-Spin-Mode-Applied: ${spinApplied ?? 'n/a'}, `
+        + `X-POI-Used: ${poiUsed ?? 'n/a'}, `
+        + `X-Spin-Export-Part: ${spinExportPart ?? 'n/a'}`,
+      );
+    }
+
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => '');
+      let errorMessage = `Failed to generate battery ${batteryIndex1} CSV`;
+      try {
+        const parsed = JSON.parse(errorText);
+        errorMessage = parsed?.error || errorMessage;
+      } catch {
+        errorMessage = errorText || errorMessage;
+      }
+      throw new Error(errorMessage);
+    }
+
+    return await res.text();
+  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist, spinMode]);
+
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     // Check if already downloading this battery
     if (downloadingBatteries.has(batteryIndex1)) {
@@ -675,37 +738,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     
     try {
-      const downloadBody: Record<string, any> = { ...currentOptimizedParams };
-      if (minExpansionDist) downloadBody.minExpansionDist = parseFloat(minExpansionDist);
-      if (maxExpansionDist) downloadBody.maxExpansionDist = parseFloat(maxExpansionDist);
-      downloadBody.spinMode = spinMode;
-      console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, downloadBody);
-      
-      const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(downloadBody),
-      });
-      const spinApplied = res.headers.get('X-Spin-Mode-Applied');
-      const poiUsed = res.headers.get('X-POI-Used');
-      if (spinApplied != null || poiUsed != null) {
-        console.log(`🔍 [Battery CSV] X-Spin-Mode-Applied: ${spinApplied ?? 'n/a'}, X-POI-Used: ${poiUsed ?? 'n/a'}`);
-      }
-      if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
-      const csvText = await res.text();
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
         ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
         : 'Untitled';
-      const filename = `${safeTitle}-${batteryIndex1}.csv`;
-      const blob = new Blob([csvText], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+
+      if (spinMode) {
+        const partOneCsv = await requestBatteryCsv(batteryIndex1, 'part1');
+        triggerCsvDownload(partOneCsv, `${safeTitle}-${batteryIndex1}-part-1.csv`);
+
+        const partTwoCsv = await requestBatteryCsv(batteryIndex1, 'part2');
+        triggerCsvDownload(partTwoCsv, `${safeTitle}-${batteryIndex1}-part-2.csv`);
+      } else {
+        const csvText = await requestBatteryCsv(batteryIndex1, 'single');
+        triggerCsvDownload(csvText, `${safeTitle}-${batteryIndex1}.csv`);
+      }
       
       // Update project status to indicate drone path has been downloaded
       if (status === 'draft') {
@@ -727,7 +773,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist, spinMode]);
+  }, [projectTitle, downloadingBatteries, optimizedParams, spinMode, status, requestBatteryCsv, triggerCsvDownload, showSystemNotification]);
 
   const clearAllBatteryPaths = useCallback(() => {
     const map = mapRef.current;
@@ -747,19 +793,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const fetchBatteryPathCoords = useCallback(async (batteryIndex1: number): Promise<Array<[number, number]>> => {
     const currentOptimizedParams = optimizedParamsRef.current;
     if (!currentOptimizedParams) return [];
-
-    const body: Record<string, any> = { ...currentOptimizedParams };
-    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
-    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
-    body.spinMode = spinMode;
-
-    const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`Failed to fetch battery ${batteryIndex1} path`);
-    const csvText = await res.text();
+    const csvText = await requestBatteryCsv(
+      batteryIndex1,
+      spinMode ? 'combined' : 'single',
+    );
 
     const lines = csvText.trim().split('\n');
     const coords: Array<[number, number]> = [];
@@ -772,7 +809,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     }
     return coords;
-  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist, spinMode]);
+  }, [spinMode, requestBatteryCsv]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
@@ -1567,6 +1604,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
                   {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
                 </h4>
+                {spinMode && (
+                  <p
+                    className="text-fade-right"
+                    style={{ marginLeft: '6%', marginRight: '6%', marginTop: '6px', marginBottom: '10px', fontSize: '0.85rem' }}
+                  >
+                    Spin Mode downloads Part 1 and Part 2 per battery.
+                  </p>
+                )}
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <div key={idx} className="battery-segment-item">
@@ -1797,4 +1842,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-
