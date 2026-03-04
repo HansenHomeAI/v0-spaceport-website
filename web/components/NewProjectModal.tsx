@@ -865,8 +865,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           pushMapHistoryEntryRef.current(pending.action, pending.snapshot, captureMapHistorySnapshotRef.current());
         };
 
+        const finalizeViewportHistoryOnPointerRelease = (event: any) => {
+          if (!event?.originalEvent || isRestoringHistoryRef.current || isMarkerInteractionActiveRef.current) {
+            return;
+          }
+          if (!pendingViewportHistoryRef.current) {
+            return;
+          }
+          map.stop();
+          commitViewportHistory();
+        };
+
         map.on('dragstart', (event: any) => beginViewportHistory('map pan', event));
         map.on('dragend', commitViewportHistory);
+        map.on('mouseup', finalizeViewportHistoryOnPointerRelease);
+        map.on('touchend', finalizeViewportHistoryOnPointerRelease);
         map.on('zoomstart', (event: any) => beginViewportHistory('map zoom', event));
         map.on('zoomend', commitViewportHistory);
         map.on('rotatestart', (event: any) => beginViewportHistory('map rotate', event));
