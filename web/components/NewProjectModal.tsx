@@ -1452,6 +1452,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       // Commit to history when drag ends
       marker.on('dragend', () => {
         releaseMapPan();
+        // Avoid a delayed map dragend from landing after marker history and consuming the first undo.
+        pendingViewportHistoryRef.current = null;
         const nextSnapshot = captureMapHistorySnapshot();
         if (dragStartSnapshot) {
           pushMapHistoryEntry(`waypoint ${batteryIndex} drag`, dragStartSnapshot, nextSnapshot);
@@ -1773,6 +1775,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
         marker.on('dragend', () => {
           releaseMapPan();
+          // Avoid a delayed map dragend from landing after boundary history and consuming the first undo.
+          pendingViewportHistoryRef.current = null;
           setBoundaryDirty(true);
           const nextSnapshot = captureMapHistorySnapshot();
           if (dragStartSnapshot) {
