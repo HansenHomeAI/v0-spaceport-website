@@ -65,6 +65,7 @@ export const buildApiUrl = {
   // Drone Path API endpoints
   dronePath: {
     optimizeSpiral: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/optimize-spiral`,
+    optimizeBoundary: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/optimize-boundary`,
     elevation: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/elevation`,
     csv: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv`,
     batteryCsv: (batteryId: string) => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv/battery/${batteryId}`,

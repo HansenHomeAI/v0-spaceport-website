@@ -4705,6 +4705,55 @@ body.popup-open {
   background: rgba(0, 0, 0, 0.15);
 }
 
+.map-toolbar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 40;
+  display: flex;
+  gap: 8px;
+}
+
+.map-toolbar-button {
+  min-width: 50px;
+  height: 50px;
+  padding: 0 14px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 9, 20, 0.42);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.map-toolbar-button:hover:not(:disabled) {
+  background: rgba(12, 19, 38, 0.56);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.map-toolbar-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.map-toolbar-button--text {
+  min-width: 102px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.map-toolbar-button.active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 .expand-icon {
   width: 20px;
   height: 20px;
@@ -5645,6 +5694,96 @@ input.text-fade-right,
 }
 .map-wrapper.fullscreen .waypoint-marker:active {
   cursor: grabbing;
+}
+
+.boundary-handle-marker {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  background: rgba(10, 12, 24, 0.9);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12), 0 6px 20px rgba(0, 0, 0, 0.28);
+  cursor: grab;
+}
+
+.boundary-handle-marker:active {
+  cursor: grabbing;
+}
+
+.boundary-handle-marker.center {
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-color: rgba(15, 21, 38, 0.9);
+}
+
+.boundary-handle-marker.major,
+.boundary-handle-marker.minor {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.boundary-editor-bar {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 42;
+  max-width: min(760px, calc(100% - 160px));
+  padding: 10px 12px;
+  border-radius: 22px;
+  background: rgba(7, 11, 22, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
+.boundary-editor-copy {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.boundary-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.boundary-editor-button {
+  min-width: 88px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.boundary-editor-button.primary {
+  background: #ffffff;
+  color: #0b1020;
+}
+
+.boundary-editor-button.secondary {
+  background: transparent;
+  color: #ffffff;
+}
+
+.boundary-editor-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.boundary-editor-button:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 /* Drag hint pill badge */

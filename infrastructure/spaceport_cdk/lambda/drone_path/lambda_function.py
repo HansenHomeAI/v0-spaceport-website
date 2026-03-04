@@ -601,6 +601,427 @@ class SpiralDesigner:
         for i in range(params['slices']):
             self.waypoint_cache.append(self.build_slice(i, params))
         return self.waypoint_cache
+
+    @staticmethod
+    def normalize_angle_deg(angle_deg: float) -> float:
+        """Normalize an angle to the [0, 360) range."""
+        normalized = angle_deg % 360.0
+        return normalized if normalized >= 0 else normalized + 360.0
+
+    def parse_boundary(self, raw_boundary: Optional[Dict], fallback_center: Optional[Dict] = None) -> Optional[Dict]:
+        """Validate and normalize a boundary ellipse payload."""
+        if not isinstance(raw_boundary, dict):
+            return None
+
+        enabled = bool(raw_boundary.get('enabled', True))
+        center = self.parse_center({
+            'lat': raw_boundary.get('centerLat'),
+            'lng': raw_boundary.get('centerLng'),
+        }) or fallback_center
+        if not enabled or not center:
+            return None
+
+        try:
+            major_radius = max(150.0, float(raw_boundary.get('majorRadiusFt', 150.0)))
+            minor_radius = max(150.0, float(raw_boundary.get('minorRadiusFt', 150.0)))
+        except (TypeError, ValueError):
+            return None
+
+        major_radius = max(major_radius, minor_radius)
+        minor_radius = min(major_radius, minor_radius)
+
+        rotation_deg = 0.0
+        try:
+            rotation_deg = self.normalize_angle_deg(float(raw_boundary.get('rotationDeg', 0.0)))
+        except (TypeError, ValueError):
+            rotation_deg = 0.0
+
+        return {
+            'version': 1,
+            'enabled': True,
+            'centerLat': float(center['lat']),
+            'centerLng': float(center['lon']),
+            'majorRadiusFt': major_radius,
+            'minorRadiusFt': minor_radius,
+            'rotationDeg': rotation_deg,
+        }
+
+    def parse_boundary_plan(self, raw_plan: Optional[Dict], num_batteries: int) -> Optional[Dict]:
+        """Normalize a persisted boundary plan payload."""
+        if not isinstance(raw_plan, dict):
+            return None
+
+        batteries = []
+        for item in raw_plan.get('batteries', []):
+            if not isinstance(item, dict):
+                continue
+            try:
+                battery_index = int(item.get('batteryIndex'))
+                start_angle_deg = float(item.get('startAngleDeg', 0.0))
+                sweep_angle_deg = max(0.0, float(item.get('sweepAngleDeg', 0.0)))
+                bounce_count = max(1, int(item.get('bounceCount', 1)))
+                estimated_time = max(0.0, float(item.get('estimatedTimeMinutes', 0.0)))
+                waypoint_count = max(0, int(item.get('waypointCount', 0)))
+                coverage_share = max(0.0, float(item.get('coverageShare', 0.0)))
+            except (TypeError, ValueError):
+                continue
+
+            batteries.append({
+                'batteryIndex': battery_index,
+                'startAngleDeg': self.normalize_angle_deg(start_angle_deg),
+                'sweepAngleDeg': sweep_angle_deg,
+                'bounceCount': bounce_count,
+                'estimatedTimeMinutes': estimated_time,
+                'waypointCount': waypoint_count,
+                'coverageShare': coverage_share,
+                'fitStatus': item.get('fitStatus', raw_plan.get('fitStatus', 'full')),
+            })
+
+        if not batteries:
+            return None
+
+        batteries.sort(key=lambda entry: entry['batteryIndex'])
+        coverage_ratio = raw_plan.get('coverageRatio')
+        try:
+            coverage_ratio_value = min(1.0, max(0.0, float(coverage_ratio)))
+        except (TypeError, ValueError):
+            coverage_ratio_value = min(1.0, sum(entry['sweepAngleDeg'] for entry in batteries) / 360.0)
+
+        limiting_index = raw_plan.get('limitingBatteryIndex')
+        try:
+            limiting_value = int(limiting_index) if limiting_index is not None else None
+        except (TypeError, ValueError):
+            limiting_value = None
+
+        return {
+            'version': 1,
+            'fitStatus': raw_plan.get('fitStatus', 'full'),
+            'coverageRatio': coverage_ratio_value,
+            'limitingBatteryIndex': limiting_value,
+            'batteries': batteries[:num_batteries],
+        }
+
+    def boundary_plan_entry(self, boundary_plan: Dict, battery_index: int) -> Optional[Dict]:
+        """Return the 1-based battery entry from a boundary plan."""
+        for item in boundary_plan.get('batteries', []):
+            if int(item.get('batteryIndex', 0)) == battery_index:
+                return item
+        return None
+
+    def build_boundary_slice(
+        self,
+        battery_index: int,
+        total_batteries: int,
+        boundary: Dict,
+        start_angle_deg: float,
+        sweep_angle_deg: float,
+        bounce_count: int,
+        params: Dict,
+    ) -> List[Dict]:
+        """
+        Build waypoints for a boundary-fit ellipse slice with a custom angular sweep.
+        """
+        if sweep_angle_deg <= 0:
+            return []
+
+        dphi = math.radians(max(0.25, sweep_angle_deg))
+        offset = math.radians(boundary['rotationDeg'])
+        sector_start = math.radians(start_angle_deg)
+        major_radius = max(150.0, float(boundary['majorRadiusFt']))
+        minor_radius = max(150.0, min(float(boundary['minorRadiusFt']), major_radius))
+        scale_radius = max(major_radius, minor_radius, 1.0)
+
+        base_r0 = float(params.get('r0', 200.0))
+        normalized_r0 = min(0.92, max(0.05, base_r0 / scale_radius))
+
+        min_expansion = params.get('minExpansionDist')
+        max_expansion = params.get('maxExpansionDist')
+        normalized_min_expansion = (float(min_expansion) / scale_radius) if min_expansion is not None else None
+        normalized_max_expansion = (float(max_expansion) / scale_radius) if max_expansion is not None else None
+
+        spiral_pts = self.make_spiral(
+            dphi,
+            bounce_count,
+            normalized_r0,
+            1.0,
+            min_expansion_dist=normalized_min_expansion,
+            max_expansion_dist=normalized_max_expansion,
+        )
+        t_out = bounce_count * dphi
+        t_hold = dphi
+        t_total = 2 * t_out + t_hold
+
+        is_single_slice = total_batteries == 1
+        is_double_slice = total_batteries == 2
+        if is_single_slice:
+            shared_mid_fractions = [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6]
+        elif is_double_slice:
+            shared_mid_fractions = [1 / 3, 2 / 3]
+        else:
+            shared_mid_fractions = [0.5]
+
+        outbound_mid_fractions = list(reversed(shared_mid_fractions))
+        inbound_mid_fractions = shared_mid_fractions
+        hold_mid_fractions = shared_mid_fractions
+
+        def label_from_fraction(value: float) -> int:
+            return round((value + 1e-9) * 100)
+
+        def find_boundary_point(target_t: float, is_midpoint: bool = False, phase: str = 'unknown') -> Dict:
+            target_index = round(target_t * (len(spiral_pts) - 1) / t_total)
+            clamped_index = max(0, min(len(spiral_pts) - 1, target_index))
+            pt = spiral_pts[clamped_index]
+
+            rho = min(1.0, max(0.0, math.sqrt((pt['x'] ** 2) + (pt['y'] ** 2))))
+            phi = sector_start + math.atan2(pt['y'], pt['x'])
+            ellipse_x = major_radius * rho * math.cos(phi)
+            ellipse_y = minor_radius * rho * math.sin(phi)
+            rot_x = ellipse_x * math.cos(offset) - ellipse_y * math.sin(offset)
+            rot_y = ellipse_x * math.sin(offset) + ellipse_y * math.cos(offset)
+            distance_from_center = math.sqrt(rot_x**2 + rot_y**2)
+
+            if is_midpoint:
+                base_curve = 50
+                scale_factor = 1.2
+                max_curve = 1500
+                curve_radius = min(max_curve, base_curve + (distance_from_center * scale_factor))
+            else:
+                base_curve = 40
+                scale_factor = 0.05
+                max_curve = 160
+                curve_radius = min(max_curve, base_curve + (distance_from_center * scale_factor))
+
+            return {
+                'x': rot_x,
+                'y': rot_y,
+                'curve': round(curve_radius * 10) / 10,
+                'phase': phase,
+                't': target_t,
+                'id': f"boundary_{battery_index}_{phase}_{target_t:.3f}",
+            }
+
+        waypoints = [find_boundary_point(0, False, 'outbound_start')]
+
+        for bounce in range(1, bounce_count + 1):
+            for fraction in outbound_mid_fractions:
+                t_mid = (bounce - fraction) * dphi
+                progress_label = label_from_fraction(1 - fraction)
+                phase = (
+                    f'outbound_mid_{bounce}_q{progress_label}'
+                    if (is_single_slice or is_double_slice)
+                    else f'outbound_mid_{bounce}'
+                )
+                waypoints.append(find_boundary_point(t_mid, True, phase))
+
+            t_bounce = bounce * dphi
+            waypoints.append(find_boundary_point(t_bounce, False, f'outbound_bounce_{bounce}'))
+
+        t_end_hold = t_out + t_hold
+        for fraction in hold_mid_fractions:
+            t_hold_point = t_out + fraction * t_hold
+            phase = (
+                f'hold_mid_q{label_from_fraction(fraction)}'
+                if (is_single_slice or is_double_slice)
+                else 'hold_mid'
+            )
+            waypoints.append(find_boundary_point(t_hold_point, True, phase))
+
+        waypoints.append(find_boundary_point(t_end_hold, False, 'hold_end'))
+
+        for fraction in inbound_mid_fractions:
+            t_first_inbound_mid = t_end_hold + fraction * dphi
+            phase = (
+                f'inbound_mid_0_q{label_from_fraction(fraction)}'
+                if (is_single_slice or is_double_slice)
+                else 'inbound_mid_0'
+            )
+            waypoints.append(find_boundary_point(t_first_inbound_mid, True, phase))
+
+        for bounce in range(1, bounce_count + 1):
+            t_bounce = t_end_hold + bounce * dphi
+            waypoints.append(find_boundary_point(t_bounce, False, f'inbound_bounce_{bounce}'))
+
+            if bounce < bounce_count:
+                for fraction in inbound_mid_fractions:
+                    t_mid = t_end_hold + (bounce + fraction) * dphi
+                    phase = (
+                        f'inbound_mid_{bounce}_q{label_from_fraction(fraction)}'
+                        if (is_single_slice or is_double_slice)
+                        else f'inbound_mid_{bounce}'
+                    )
+                    waypoints.append(find_boundary_point(t_mid, True, phase))
+
+        return waypoints
+
+    def generate_boundary_preview_paths(self, params: Dict, boundary: Dict, boundary_plan: Dict) -> List[Dict]:
+        """Convert a boundary plan into preview line coordinates for the client."""
+        preview_paths = []
+        for entry in boundary_plan.get('batteries', []):
+            waypoints = self.build_boundary_slice(
+                entry['batteryIndex'],
+                params['slices'],
+                boundary,
+                entry['startAngleDeg'],
+                entry['sweepAngleDeg'],
+                entry['bounceCount'],
+                params,
+            )
+
+            coordinates = []
+            for waypoint in waypoints:
+                lat_lon = self.xy_to_lat_lon(
+                    waypoint['x'],
+                    waypoint['y'],
+                    boundary['centerLat'],
+                    boundary['centerLng'],
+                )
+                coordinates.append([lat_lon['lon'], lat_lon['lat']])
+
+            preview_paths.append({
+                'batteryIndex': entry['batteryIndex'],
+                'coordinates': coordinates,
+            })
+
+        return preview_paths
+
+    def default_target_bounces(self, target_battery_minutes: float) -> int:
+        """Return the base bounce count target for a battery duration."""
+        if target_battery_minutes <= 12:
+            return 7
+        if target_battery_minutes <= 18:
+            return 8
+        if target_battery_minutes <= 25:
+            return 9
+        if target_battery_minutes <= 35:
+            return 10
+        if target_battery_minutes <= 45:
+            return 12
+        return 15
+
+    def plan_boundary_mission(self, target_battery_minutes: float, num_batteries: int, boundary: Dict, params: Dict) -> Dict:
+        """Allocate unequal ellipse sectors across batteries while respecting battery limits."""
+        safe_time_limit = target_battery_minutes * 0.98
+        baseline = self.optimize_spiral_for_battery(
+            target_battery_minutes,
+            num_batteries,
+            boundary['centerLat'],
+            boundary['centerLng'],
+        )
+        max_bounces = max(1, int(min(
+            baseline.get('N', self.default_target_bounces(target_battery_minutes)),
+            self.max_bounces_for_waypoint_budget(num_batteries),
+        )))
+
+        sector_params = {
+            'slices': num_batteries,
+            'r0': float(baseline.get('r0', 200.0)),
+        }
+        if params.get('minExpansionDist') is not None:
+            sector_params['minExpansionDist'] = float(params['minExpansionDist'])
+        if params.get('maxExpansionDist') is not None:
+            sector_params['maxExpansionDist'] = float(params['maxExpansionDist'])
+
+        current_angle = 0.0
+        batteries = []
+
+        for battery_idx in range(1, num_batteries + 1):
+            remaining_angle = max(0.0, 360.0 - current_angle)
+            remaining_batteries = num_batteries - battery_idx + 1
+            reserved_angle = 0.25 * max(0, remaining_batteries - 1)
+            max_candidate_angle = remaining_angle if battery_idx == num_batteries else max(0.25, remaining_angle - reserved_angle)
+
+            best_entry = None
+            low = 0.25
+            high = max_candidate_angle
+
+            def evaluate_sweep(sweep_angle_deg: float) -> Optional[Dict]:
+                for bounce_count in range(max_bounces, 0, -1):
+                    waypoints = self.build_boundary_slice(
+                        battery_idx,
+                        num_batteries,
+                        boundary,
+                        current_angle,
+                        sweep_angle_deg,
+                        bounce_count,
+                        sector_params,
+                    )
+                    if not waypoints:
+                        continue
+
+                    estimated_time = self.estimate_generated_slice_time_minutes(waypoints)
+                    if estimated_time <= safe_time_limit:
+                        return {
+                            'batteryIndex': battery_idx,
+                            'startAngleDeg': round(current_angle, 3),
+                            'sweepAngleDeg': round(sweep_angle_deg, 3),
+                            'bounceCount': bounce_count,
+                            'estimatedTimeMinutes': round(estimated_time, 2),
+                            'waypointCount': len(waypoints),
+                            'coverageShare': round(sweep_angle_deg / 360.0, 6),
+                            'fitStatus': 'full',
+                        }
+
+                return None
+
+            if high >= low:
+                initial_candidate = evaluate_sweep(high)
+                if initial_candidate:
+                    best_entry = initial_candidate
+                else:
+                    for _ in range(18):
+                        if high - low < 0.5:
+                            break
+                        mid = (low + high) / 2.0
+                        candidate = evaluate_sweep(mid)
+                        if candidate:
+                            best_entry = candidate
+                            low = mid
+                        else:
+                            high = mid
+
+                    if not best_entry:
+                        best_entry = evaluate_sweep(low)
+
+            if not best_entry:
+                break
+
+            batteries.append(best_entry)
+            current_angle += best_entry['sweepAngleDeg']
+
+        coverage_ratio = min(1.0, current_angle / 360.0)
+        fit_status = 'full' if coverage_ratio >= 0.999 else 'best_effort'
+        limiting_battery_index = None
+        if batteries:
+            limiting_battery_index = max(
+                batteries,
+                key=lambda entry: entry.get('estimatedTimeMinutes', 0.0),
+            )['batteryIndex']
+
+        for entry in batteries:
+            entry['fitStatus'] = fit_status
+
+        if fit_status == 'best_effort':
+            print(json.dumps({
+                'event': 'boundary_best_effort',
+                'coverageRatio': round(coverage_ratio, 4),
+                'limitingBatteryIndex': limiting_battery_index,
+                'batteries': batteries,
+            }))
+        else:
+            print(json.dumps({
+                'event': 'boundary_full_fit',
+                'coverageRatio': round(coverage_ratio, 4),
+                'limitingBatteryIndex': limiting_battery_index,
+                'batteries': batteries,
+            }))
+
+        return {
+            'version': 1,
+            'fitStatus': fit_status,
+            'coverageRatio': round(coverage_ratio, 4),
+            'limitingBatteryIndex': limiting_battery_index,
+            'batteries': batteries,
+        }
     
     def parse_center(self, txt: Union[str, Dict]) -> Optional[Dict]:
         """
@@ -613,8 +1034,8 @@ class SpiralDesigner:
         - "41.73218° N, 111.83979° W" (mixed formats)
         
         REGEX PATTERNS:
-        - Degree format: (\d+\.?\d*)\s*°?\s*([NS])\s*,\s*(\d+\.?\d*)\s*°?\s*([EW])
-        - Decimal format: ([-+]?\d+\.?\d*)\s*,\s*([-+]?\d+\.?\d*)
+        - Degree format: (\\d+\\.?\\d*)\\s*°?\\s*([NS])\\s*,\\s*(\\d+\\.?\\d*)\\s*°?\\s*([EW])
+        - Decimal format: ([-+]?\\d+\\.?\\d*)\\s*,\\s*([-+]?\\d+\\.?\\d*)
         
         Args:
             txt: Coordinate string in various formats or a dictionary with lat/lng
@@ -1114,7 +1535,16 @@ class SpiralDesigner:
         
         return '\n'.join(rows)
 
-    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0, max_height: float = None) -> str:
+    def generate_battery_csv(
+        self,
+        params: Dict,
+        center_str: str,
+        battery_index: int,
+        min_height: float = 100.0,
+        max_height: float = None,
+        boundary: Optional[Dict] = None,
+        boundary_plan: Optional[Dict] = None,
+    ) -> str:
         """
         Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
         
@@ -1148,9 +1578,14 @@ class SpiralDesigner:
         if not center:
             raise ValueError("Invalid center coordinates")
             
-        # Validate battery index range
-        if battery_index < 0 or battery_index >= params['slices']:
-            raise ValueError(f"Battery index must be between 0 and {params['slices'] - 1}")
+        if boundary and boundary_plan:
+            plan_entry = self.boundary_plan_entry(boundary_plan, battery_index + 1)
+            if not plan_entry:
+                raise ValueError(f"Battery index must be between 0 and {len(boundary_plan.get('batteries', [])) - 1}")
+        else:
+            # Validate battery index range
+            if battery_index < 0 or battery_index >= params['slices']:
+                raise ValueError(f"Battery index must be between 0 and {params['slices'] - 1}")
         
         # Clear caches to prevent memory accumulation across battery downloads
         self.elevation_cache = {}
@@ -1159,9 +1594,22 @@ class SpiralDesigner:
         # Get takeoff elevation for reference
         takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
         
-        # Generate waypoints for all slices, then extract the specific battery slice
-        all_waypoints = self.compute_waypoints(params)
-        spiral_path = all_waypoints[battery_index]
+        if boundary and boundary_plan:
+            spiral_path = self.build_boundary_slice(
+                battery_index + 1,
+                params['slices'],
+                boundary,
+                plan_entry['startAngleDeg'],
+                plan_entry['sweepAngleDeg'],
+                plan_entry['bounceCount'],
+                params,
+            )
+            if not spiral_path:
+                raise ValueError(f"Battery {battery_index + 1} does not cover any boundary area")
+        else:
+            # Generate waypoints for all slices, then extract the specific battery slice
+            all_waypoints = self.compute_waypoints(params)
+            spiral_path = all_waypoints[battery_index]
         
         # Ensure minimum curve radius for flight safety
         for wp in spiral_path:
@@ -1421,6 +1869,29 @@ class SpiralDesigner:
         v_peak = min(v_max, math.sqrt(max(0.01, v_peak_sq)))
         return max(0.0, (v_peak - v0) / a) + max(0.0, (v_peak - v1) / a)
 
+    def estimate_generated_slice_time_minutes(self, waypoints: List[Dict]) -> float:
+        """
+        Estimate mission time directly from generated waypoints.
+        """
+        n = len(waypoints)
+        if n < 2:
+            return self.TAKEOFF_LANDING_OVERHEAD_MINUTES
+
+        V = self.FLIGHT_SPEED_MPS
+        a = self.A_LINEAR
+        wp_speeds = [self._waypoint_turn_speed(waypoints, i) for i in range(n)]
+
+        flight_s = 0.0
+        for i in range(n - 1):
+            dx = waypoints[i + 1]['x'] - waypoints[i]['x']
+            dy = waypoints[i + 1]['y'] - waypoints[i]['y']
+            d_m = math.sqrt(dx * dx + dy * dy) * self.FT2M
+            flight_s += self._segment_time(d_m, wp_speeds[i], wp_speeds[i + 1], V, a)
+
+        n_interior = max(0, n - 2)
+        dwell_s = n_interior * self.WP_DWELL_S
+        return (flight_s + dwell_s) / 60.0 + self.TAKEOFF_LANDING_OVERHEAD_MINUTES
+
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
         Segment-by-segment speed-profile flight time estimation.
@@ -1447,30 +1918,8 @@ class SpiralDesigner:
         Returns:
             Estimated flight time in minutes for one battery / slice.
         """
-        wps = self.build_slice(0, params)
-        n = len(wps)
-        if n < 2:
-            return self.TAKEOFF_LANDING_OVERHEAD_MINUTES
-
-        V = self.FLIGHT_SPEED_MPS
-        a = self.A_LINEAR
-
-        # Constrained speed at every waypoint
-        wp_speeds = [self._waypoint_turn_speed(wps, i) for i in range(n)]
-
-        # Integrate each segment's trapezoidal speed profile
-        flight_s = 0.0
-        for i in range(n - 1):
-            dx = wps[i + 1]['x'] - wps[i]['x']
-            dy = wps[i + 1]['y'] - wps[i]['y']
-            d_m = math.sqrt(dx * dx + dy * dy) * self.FT2M
-            flight_s += self._segment_time(d_m, wp_speeds[i], wp_speeds[i + 1], V, a)
-
-        # Per-waypoint curve-negotiation dwell (interior waypoints only)
-        n_interior = max(0, n - 2)
-        dwell_s = n_interior * self.WP_DWELL_S
-
-        return (flight_s + dwell_s) / 60.0 + self.TAKEOFF_LANDING_OVERHEAD_MINUTES
+        waypoints = self.build_slice(0, params)
+        return self.estimate_generated_slice_time_minutes(waypoints)
 
     def midpoint_density_for_slices(self, slices: int) -> int:
         """Return extra midpoint count per segment for the given slice count."""
@@ -2275,6 +2724,7 @@ def lambda_handler(event, context):
     
     Supports multiple endpoints:
     - /api/optimize-spiral: Optimize flight parameters for battery constraints
+    - /api/optimize-boundary: Optimize an ellipse-fit mission under battery constraints
     - /api/elevation: Get elevation data for coordinates
     - /api/csv: Generate master CSV with all waypoints
     - /api/csv/battery/{id}: Generate CSV for specific battery
@@ -2313,6 +2763,8 @@ def lambda_handler(event, context):
         # Route to appropriate handler based on resource path
         if resource_path == '/api/optimize-spiral':
             return handle_optimize_spiral(designer, body, cors_headers)
+        elif resource_path == '/api/optimize-boundary':
+            return handle_optimize_boundary(designer, body, cors_headers)
         elif resource_path == '/api/elevation':
             return handle_elevation(designer, body, cors_headers)
         elif resource_path == '/api/csv':
@@ -2393,6 +2845,84 @@ def handle_optimize_spiral(designer, body, cors_headers):
             'statusCode': 500,
             'headers': cors_headers,
             'body': json.dumps({'error': f'Optimization failed: {str(e)}'})
+        }
+
+def handle_optimize_boundary(designer, body, cors_headers):
+    """Handle /api/optimize-boundary endpoint."""
+    try:
+        battery_minutes = float(body.get('batteryMinutes', 20))
+        batteries = int(body.get('batteries', 3))
+        center = body.get('center', '')
+        center_coords = designer.parse_center(center)
+        boundary = designer.parse_boundary(body.get('boundary'), center_coords)
+
+        if battery_minutes <= 0:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Battery minutes must be greater than 0'})
+            }
+
+        if batteries <= 0 or batteries > 12:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Battery count must be between 1 and 12'})
+            }
+
+        if not boundary:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'A valid boundary is required'})
+            }
+
+        params = {
+            'slices': batteries,
+            'r0': 200.0,
+        }
+        min_exp = body.get('minExpansionDist')
+        max_exp = body.get('maxExpansionDist')
+        if min_exp is not None and str(min_exp).strip() != '':
+            params['minExpansionDist'] = float(min_exp)
+        if max_exp is not None and str(max_exp).strip() != '':
+            params['maxExpansionDist'] = float(max_exp)
+
+        boundary_plan = designer.plan_boundary_mission(battery_minutes, batteries, boundary, params)
+        preview_paths = designer.generate_boundary_preview_paths(params, boundary, boundary_plan)
+
+        toast_message = None
+        if boundary_plan['fitStatus'] != 'full':
+            toast_message = (
+                'Increase battery quantity or duration to better capture this area. '
+                'The current mission is the largest battery-safe fit inside the boundary.'
+            )
+
+        print(json.dumps({
+            'event': 'optimize_boundary',
+            'boundary': boundary,
+            'batteryMinutes': battery_minutes,
+            'batteries': batteries,
+            'fitStatus': boundary_plan['fitStatus'],
+            'coverageRatio': boundary_plan['coverageRatio'],
+            'limitingBatteryIndex': boundary_plan['limitingBatteryIndex'],
+        }))
+
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps({
+                'boundary': boundary,
+                'boundaryPlan': boundary_plan,
+                'previewPaths': preview_paths,
+                'toastMessage': toast_message,
+            })
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': cors_headers,
+            'body': json.dumps({'error': f'Boundary optimization failed: {str(e)}'})
         }
 
 def handle_elevation(designer, body, cors_headers):
@@ -2529,8 +3059,11 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
                 'body': json.dumps({'error': 'Invalid battery ID'})
             }
         
+        boundary = designer.parse_boundary(body.get('boundary'))
+        boundary_plan = designer.parse_boundary_plan(body.get('boundaryPlan'), int(body.get('slices', 3)))
+
         # Extract parameters from body with type conversion
-        slices = int(body.get('slices', 3))
+        slices = int(body.get('slices', len(boundary_plan.get('batteries', [])) if boundary_plan else 3))
         N = int(body.get('N', 8))
         r0 = float(body.get('r0', 150))
         rHold = float(body.get('rHold', 1595))
@@ -2586,7 +3119,15 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             params['maxExpansionDist'] = float(max_exp)
         
         # Generate battery-specific CSV content
-        csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
+        csv_content = designer.generate_battery_csv(
+            params,
+            center,
+            battery_index,
+            min_height,
+            max_height,
+            boundary=boundary,
+            boundary_plan=boundary_plan,
+        )
         
         # Return CSV as text/csv
         return {

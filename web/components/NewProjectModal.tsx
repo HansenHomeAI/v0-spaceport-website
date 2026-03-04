@@ -1,6 +1,20 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildApiUrl } from '../app/api-config';
+import {
+  BoundaryEllipse,
+  BoundaryOptimizationResponse,
+  BoundaryPlan,
+  BoundaryPreviewPath,
+  boundaryHandlePositions,
+  buildBoundaryGuideCoordinates,
+  buildEllipseOutlineCoordinates,
+  computeAutoFitCircle,
+  latLngToLocalFeet,
+  normalizeBoundary,
+  normalizeRotationDeg,
+  rotatePoint,
+} from '../lib/flightBoundary';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -15,6 +29,12 @@ type OptimizedParams = {
   minHeight: number;
   maxHeight: number | null;
   elevationFeet: number | null;
+};
+
+type MapboxMarkerRefMap = {
+  center: any | null;
+  major: any | null;
+  minor: any | null;
 };
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
@@ -87,6 +107,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [downloadingBatteries, setDownloadingBatteries] = useState<Set<number>>(new Set());
   const [processingMessage, setProcessingMessage] = useState<string>('');
+  const [isBoundaryMode, setIsBoundaryMode] = useState<boolean>(false);
+  const [draftBoundary, setDraftBoundary] = useState<BoundaryEllipse | null>(null);
+  const [appliedBoundary, setAppliedBoundary] = useState<BoundaryEllipse | null>(null);
+  const [appliedBoundaryPlan, setAppliedBoundaryPlan] = useState<BoundaryPlan | null>(null);
+  const [isApplyingBoundary, setIsApplyingBoundary] = useState<boolean>(false);
+  const [boundaryDirty, setBoundaryDirty] = useState<boolean>(false);
 
   const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
@@ -131,6 +157,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
+  const [mapReady, setMapReady] = useState<boolean>(false);
+  const boundaryMarkersRef = useRef<MapboxMarkerRefMap>({ center: null, major: null, minor: null });
+  const draftBoundaryRef = useRef<BoundaryEllipse | null>(null);
+  const appliedBoundaryRef = useRef<BoundaryEllipse | null>(null);
+  const appliedBoundaryPlanRef = useRef<BoundaryPlan | null>(null);
+  const isBoundaryModeRef = useRef<boolean>(false);
+  const isApplyingBoundaryRef = useRef<boolean>(false);
+  const handleCancelBoundaryModeRef = useRef<(() => Promise<void>) | null>(null);
+  const triggerSaveRef = useRef<(() => void) | null>(null);
+  const boundaryEntryVisiblePathsRef = useRef<Map<number, Array<[number, number]>>>(new Map());
 
   // Waypoint drag refs
   const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
@@ -150,6 +186,81 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   useEffect(() => {
     historyIndexRef.current = historyIndex;
   }, [historyIndex]);
+
+  useEffect(() => {
+    draftBoundaryRef.current = draftBoundary;
+  }, [draftBoundary]);
+
+  useEffect(() => {
+    appliedBoundaryRef.current = appliedBoundary;
+  }, [appliedBoundary]);
+
+  useEffect(() => {
+    appliedBoundaryPlanRef.current = appliedBoundaryPlan;
+  }, [appliedBoundaryPlan]);
+
+  useEffect(() => {
+    isBoundaryModeRef.current = isBoundaryMode;
+  }, [isBoundaryMode]);
+
+  useEffect(() => {
+    isApplyingBoundaryRef.current = isApplyingBoundary;
+  }, [isApplyingBoundary]);
+
+  const cloneVisiblePaths = useCallback((source: Map<number, Array<[number, number]>>) => {
+    const clone = new Map<number, Array<[number, number]>>();
+    source.forEach((coords, batteryIndex) => {
+      clone.set(batteryIndex, coords.map(([lng, lat]) => [lng, lat]));
+    });
+    return clone;
+  }, []);
+
+  const resolveMapbox = useCallback(async () => {
+    const mapboxModule = await import('mapbox-gl');
+    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+    if (!mapboxgl?.Map || !mapboxgl?.Marker) {
+      throw new Error('Mapbox GL module did not expose Map/Marker');
+    }
+    return mapboxgl;
+  }, []);
+
+  const createCenterPinElement = useCallback(() => {
+    const pinElement = document.createElement('div');
+    pinElement.className = 'custom-teardrop-pin';
+    pinElement.innerHTML = `
+      <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
+      </svg>
+    `;
+    return pinElement;
+  }, []);
+
+  const setCenterMarkerOnMap = useCallback(async (lat: number, lng: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const mapboxgl = await resolveMapbox();
+    if (markerRef.current) {
+      markerRef.current.setLngLat([lng, lat]);
+      return;
+    }
+
+    markerRef.current = new mapboxgl.Marker({ element: createCenterPinElement(), anchor: 'bottom' })
+      .setLngLat([lng, lat])
+      .addTo(map);
+  }, [createCenterPinElement, resolveMapbox]);
+
+  const clearBoundaryPlanState = useCallback((reason: string) => {
+    if (appliedBoundaryPlanRef.current) {
+      console.log(`🔍 Clearing boundary plan: ${reason}`);
+    }
+    setAppliedBoundaryPlan(null);
+    appliedBoundaryPlanRef.current = null;
+    if (!isBoundaryModeRef.current) {
+      setDraftBoundary(null);
+      setBoundaryDirty(false);
+    }
+  }, []);
 
   // UNDO HANDLER
   const handleUndo = useCallback(() => {
@@ -233,6 +344,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadOpen(false);
     setToast(null);
     setIsFullscreen(false);
+    setIsBoundaryMode(false);
+    setDraftBoundary(null);
+    setAppliedBoundary(null);
+    setAppliedBoundaryPlan(null);
+    setIsApplyingBoundary(false);
+    setBoundaryDirty(false);
+    boundaryEntryVisiblePathsRef.current = new Map();
     
     // If editing, hydrate fields from project
     if (project) {
@@ -258,6 +376,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setMinExpansionDist(params.minExpansionDist || '');
       setMaxExpansionDist(params.maxExpansionDist || '');
       setMaxHeightFeet(params.maxHeight || '');
+      if (params.boundary?.enabled) {
+        setAppliedBoundary(normalizeBoundary(params.boundary as BoundaryEllipse));
+      }
+      if (params.boundaryPlan?.batteries?.length) {
+        setAppliedBoundaryPlan(params.boundaryPlan as BoundaryPlan);
+      }
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -348,6 +472,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setCurrentProjectId(null);
       selectedCoordsRef.current = null;
       setSelectedCoords(null);
+      boundaryEntryVisiblePathsRef.current = new Map();
     }
 
     // Cleanup timeout on unmount
@@ -361,17 +486,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Initialize Mapbox on open
   useEffect(() => {
     let isCancelled = false;
-
-    const resolveMapbox = async () => {
-      const mapboxModule = await import('mapbox-gl');
-      // Mapbox export shape can differ between bundlers/runtime modes.
-      // Normalize to a single object and avoid direct `.default` chaining.
-      const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
-      if (!mapboxgl?.Map || !mapboxgl?.Marker) {
-        throw new Error('Mapbox GL module did not expose Map/Marker');
-      }
-      return mapboxgl;
-    };
 
     async function initMap() {
       if (!open) return;
@@ -389,36 +503,26 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         });
         
         map.on('click', (e: any) => {
+          if (isBoundaryModeRef.current || isApplyingBoundaryRef.current) {
+            return;
+          }
+
           const { lng, lat } = e.lngLat;
           selectedCoordsRef.current = { lat, lng };
-          // place marker
-          if (markerRef.current) {
-            markerRef.current.remove();
-          }
-          
-          // Create custom teardrop pin element with inline SVG
-          const pinElement = document.createElement('div');
-          pinElement.className = 'custom-teardrop-pin';
-          pinElement.innerHTML = `
-            <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-            </svg>
-          `;
-          
-          markerRef.current = new mapboxgl.Marker({ element: pinElement, anchor: 'bottom' })
-            .setLngLat([lng, lat])
-            .addTo(map);
-          
+          setSelectedCoords({ lat, lng });
+          void setCenterMarkerOnMap(lat, lng);
           // Fill address input with coordinates formatted
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
           setOptimizedParamsWithLogging(null, 'Map coordinates changed');
+          clearBoundaryPlanState('Map coordinates changed');
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
         });
         
         mapRef.current = map;
+        setMapReady(true);
         
         // CRITICAL FIX: Restore saved location marker if editing existing project
         if (project) {
@@ -446,14 +550,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
       waypointMarkersRef.current.clear();
       waypointCoordsRef.current.clear();
+      Object.values(boundaryMarkersRef.current).forEach((marker) => marker?.remove?.());
+      boundaryMarkersRef.current = { center: null, major: null, minor: null };
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
+        setMapReady(false);
         markerRef.current = null;
         selectedCoordsRef.current = null;
       }
     };
-  }, [open, project]);
+  }, [clearBoundaryPlanState, open, project, resolveMapbox, setCenterMarkerOnMap, setOptimizedParamsWithLogging]);
 
   // Helper function to place marker at coordinates
   const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
@@ -465,50 +572,40 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const coords = { lat, lng };
     selectedCoordsRef.current = coords;
     setSelectedCoords(coords); // This will trigger autosave
-    
-    // Place marker
-    const mapboxModule = await import('mapbox-gl');
-    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
-    if (markerRef.current) markerRef.current.remove();
-    
-    const pinElement = document.createElement('div');
-    pinElement.className = 'custom-teardrop-pin';
-    pinElement.innerHTML = `
-      <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); transform: translateY(4px);">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1896 0.32019C7.73592 0.32019 0.882812 7.17329 0.882812 15.627C0.882812 17.3862 1.17959 19.0761 1.72582 20.6494L1.7359 20.6784C1.98336 21.3865 2.2814 22.0709 2.62567 22.7272L13.3424 47.4046L13.3581 47.3897C13.8126 48.5109 14.9121 49.3016 16.1964 49.3016C17.5387 49.3016 18.6792 48.4377 19.0923 47.2355L29.8623 22.516C30.9077 20.4454 31.4965 18.105 31.4965 15.627C31.4965 7.17329 24.6434 0.32019 16.1896 0.32019ZM16.18 9.066C12.557 9.066 9.61992 12.003 9.61992 15.6261C9.61992 19.2491 12.557 22.1861 16.18 22.1861C19.803 22.1861 22.7401 19.2491 22.7401 15.6261C22.7401 12.003 19.803 9.066 16.18 9.066Z" fill="white"/>
-      </svg>
-    `;
-    
-    markerRef.current = new mapboxgl.Marker({ element: pinElement, anchor: 'bottom' })
-      .setLngLat([lng, lat])
-      .addTo(mapRef.current);
+    await setCenterMarkerOnMap(lat, lng);
     
     // Invalidate previous optimization since coordinates changed
     setOptimizedParamsWithLogging(null, 'Address search coordinates changed');
+    clearBoundaryPlanState('Address search coordinates changed');
     
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
     
     // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, []);
+  }, [clearBoundaryPlanState, setCenterMarkerOnMap, setOptimizedParamsWithLogging]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
     if (!map || !coords) return;
     
-    // Use the same function as user interaction to ensure consistency
-    await placeMarkerAtCoords(coords.lat, coords.lng);
+    map.flyTo({ center: [coords.lng, coords.lat], zoom: 15, duration: 0 });
+    selectedCoordsRef.current = coords;
+    setSelectedCoords(coords);
+    await setCenterMarkerOnMap(coords.lat, coords.lng);
     
     // Update the address search field to show the coordinates
     setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
-  }, [placeMarkerAtCoords]);
+  }, [setCenterMarkerOnMap]);
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
     if (!mapContainerRef.current) return;
     
     const newFullscreen = !isFullscreen;
+    if (!newFullscreen && isBoundaryModeRef.current) {
+      void handleCancelBoundaryModeRef.current?.();
+    }
     setIsFullscreen(newFullscreen);
     
     // Find the map-wrapper (parent of map-container)
@@ -568,9 +665,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   useEffect(() => {
     waypointMarkersRef.current.forEach((markers) => {
-      markers.forEach(m => m.setDraggable(isFullscreen));
+      markers.forEach(m => m.setDraggable(isFullscreen && !isBoundaryMode && !appliedBoundaryPlan));
     });
-  }, [isFullscreen]);
+  }, [appliedBoundaryPlan, isBoundaryMode, isFullscreen]);
 
   // Keep coordinates synchronized between state and ref
   useEffect(() => {
@@ -622,6 +719,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     
     return isValid;
   }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
+
+  const parsedBatteryCount = useMemo(() => {
+    return Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+  }, [numBatteries]);
 
   // Rotating processing messages for optimization
   const processingMessages = [
@@ -717,6 +818,36 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
 
+  const ensureMissionReady = useCallback(async (): Promise<boolean> => {
+    if (optimizedParamsRef.current || appliedBoundaryPlanRef.current) {
+      return true;
+    }
+
+    if (!canOptimize) {
+      if (!selectedCoordsRef.current) {
+        showSystemNotification('error', 'Please select a location on the map first');
+      } else if (!batteryMinutes || !numBatteries) {
+        showSystemNotification('error', 'Please enter battery duration and quantity first');
+      } else {
+        showSystemNotification('error', 'Please set location and battery params first');
+      }
+      return false;
+    }
+
+    await handleOptimize();
+    let checkCount = 0;
+    while (checkCount < 60) {
+      await new Promise(r => setTimeout(r, 500));
+      checkCount += 1;
+      if (optimizedParamsRef.current) {
+        return true;
+      }
+    }
+
+    showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
+    return false;
+  }, [batteryMinutes, canOptimize, handleOptimize, numBatteries, showSystemNotification]);
+
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
     "Running binary search optimization",
@@ -727,21 +858,56 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     "Finalizing flight path"
   ];
 
+  const buildBatteryRequestBody = useCallback((batteryIndex1: number): Record<string, any> | null => {
+    const currentOptimizedParams = optimizedParamsRef.current;
+    const boundary = appliedBoundaryRef.current;
+    const boundaryPlan = appliedBoundaryPlanRef.current;
+
+    if (!currentOptimizedParams && !(boundary && boundaryPlan)) {
+      return null;
+    }
+
+    const body: Record<string, any> = currentOptimizedParams ? { ...currentOptimizedParams } : {};
+    const minH = parseFloat(minHeightFeet || '120') || 120;
+    const maxH = maxHeightFeet ? parseFloat(maxHeightFeet) : null;
+
+    if (boundary && boundaryPlan) {
+      const planEntry = boundaryPlan.batteries.find((entry) => entry.batteryIndex === batteryIndex1);
+      body.boundary = boundary;
+      body.boundaryPlan = boundaryPlan;
+      body.center = `${boundary.centerLat}, ${boundary.centerLng}`;
+      body.slices = parsedBatteryCount || boundaryPlan.batteries.length;
+      body.r0 = body.r0 ?? 200;
+      body.rHold = body.rHold ?? boundary.majorRadiusFt;
+      if (planEntry) {
+        body.N = planEntry.bounceCount;
+      }
+    }
+
+    body.minHeight = body.minHeight ?? minH;
+    body.maxHeight = body.maxHeight ?? maxH;
+
+    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
+    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+
+    return body;
+  }, [maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, parsedBatteryCount]);
+
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     // Check if already downloading this battery
     if (downloadingBatteries.has(batteryIndex1)) {
       return;
     }
-    
-    // Use ref to get current optimized params (not stale closure)
-    const currentOptimizedParams = optimizedParamsRef.current;
-    
+
+    const downloadBody = buildBatteryRequestBody(batteryIndex1);
+
     console.log(`🔍 downloadBatteryCsv called for battery ${batteryIndex1}:`, {
-      currentOptimizedParams: currentOptimizedParams ? 'EXISTS' : 'NULL',
-      optimizedParamsState: optimizedParams ? 'EXISTS' : 'NULL'
+      hasRequestBody: !!downloadBody,
+      optimizedParamsState: optimizedParams ? 'EXISTS' : 'NULL',
+      hasBoundaryPlan: appliedBoundaryPlanRef.current ? 'YES' : 'NO',
     });
-    
-    if (!currentOptimizedParams) {
+
+    if (!downloadBody) {
       console.log(`🔍 No optimized params found - showing error`);
       showSystemNotification('error', 'Please optimize first');
       return;
@@ -762,9 +928,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     
     try {
-      const downloadBody: Record<string, any> = { ...currentOptimizedParams };
-      if (minExpansionDist) downloadBody.minExpansionDist = parseFloat(minExpansionDist);
-      if (maxExpansionDist) downloadBody.maxExpansionDist = parseFloat(maxExpansionDist);
       console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, downloadBody);
       
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
@@ -836,30 +999,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist]);
-
-  const clearAllBatteryPaths = useCallback(() => {
-    const map = mapRef.current;
-    if (map) {
-      visibleBatteryPaths.forEach((_, batteryIdx) => {
-        const layerId = `battery-path-layer-${batteryIdx}`;
-        const sourceId = `battery-path-${batteryIdx}`;
-        try {
-          if (map.getLayer(layerId)) map.removeLayer(layerId);
-          if (map.getSource(sourceId)) map.removeSource(sourceId);
-        } catch { /* map may already be removed */ }
-      });
-    }
-    setVisibleBatteryPaths(new Map());
-  }, [visibleBatteryPaths]);
+  }, [API_ENHANCED_BASE, buildBatteryRequestBody, projectTitle, downloadingBatteries, optimizedParams, showSystemNotification]);
 
   const fetchBatteryPathCoords = useCallback(async (batteryIndex1: number): Promise<Array<[number, number]>> => {
-    const currentOptimizedParams = optimizedParamsRef.current;
-    if (!currentOptimizedParams) return [];
-
-    const body: Record<string, any> = { ...currentOptimizedParams };
-    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
-    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+    const body = buildBatteryRequestBody(batteryIndex1);
+    if (!body) return [];
 
     const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
       method: 'POST',
@@ -880,7 +1024,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     }
     return coords;
-  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
+  }, [API_ENHANCED_BASE, buildBatteryRequestBody]);
 
   const removeWaypointMarkers = useCallback((batteryIndex: number) => {
     const existing = waypointMarkersRef.current.get(batteryIndex);
@@ -967,6 +1111,125 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     waypointMarkersRef.current.set(batteryIndex, markers);
   }, [removeWaypointMarkers]);
 
+  const removeBatteryPathVisualization = useCallback((batteryIndex: number) => {
+    const map = mapRef.current;
+    if (map) {
+      const layerId = `battery-path-layer-${batteryIndex}`;
+      const sourceId = `battery-path-${batteryIndex}`;
+      try {
+        if (map.getLayer(layerId)) map.removeLayer(layerId);
+        if (map.getSource(sourceId)) map.removeSource(sourceId);
+      } catch {
+        // Ignore teardown races while the map is resizing or unmounting.
+      }
+    }
+    removeWaypointMarkers(batteryIndex);
+  }, [removeWaypointMarkers]);
+
+  const drawBatteryPathVisualization = useCallback(async (
+    batteryIndex: number,
+    coords: [number, number][]
+  ) => {
+    const map = mapRef.current;
+    if (!map || !coords.length) return;
+
+    const sourceId = `battery-path-${batteryIndex}`;
+    const layerId = `battery-path-layer-${batteryIndex}`;
+    const color = BATTERY_PATH_COLORS[(batteryIndex - 1) % BATTERY_PATH_COLORS.length];
+
+    try {
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
+    } catch {
+      // Ignore replacement races while redrawing the preview.
+    }
+
+    map.addSource(sourceId, {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: coords },
+      },
+    });
+
+    map.addLayer({
+      id: layerId,
+      type: 'line',
+      source: sourceId,
+      paint: {
+        'line-color': color,
+        'line-width': 2.5,
+        'line-opacity': 0.85,
+      },
+    });
+
+    await createWaypointMarkers(batteryIndex, coords, color, isFullscreen && !isBoundaryMode && !appliedBoundaryPlanRef.current);
+  }, [BATTERY_PATH_COLORS, createWaypointMarkers, isBoundaryMode, isFullscreen]);
+
+  const fitMapToPreviewPaths = useCallback((previewPaths: BoundaryPreviewPath[]) => {
+    const map = mapRef.current;
+    if (!map || previewPaths.length === 0) return;
+
+    const allCoords = previewPaths.flatMap((path) => path.coordinates);
+    if (!allCoords.length) return;
+
+    const lngs = allCoords.map((coord) => coord[0]);
+    const lats = allCoords.map((coord) => coord[1]);
+    map.fitBounds(
+      [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+      { padding: 50, duration: 1000 }
+    );
+  }, []);
+
+  const clearAllBatteryPaths = useCallback(() => {
+    visibleBatteryPaths.forEach((_, batteryIdx) => {
+      removeBatteryPathVisualization(batteryIdx);
+    });
+    setVisibleBatteryPaths(new Map());
+  }, [removeBatteryPathVisualization, visibleBatteryPaths]);
+
+  const replaceBatteryPreviewPaths = useCallback(async (
+    previewPaths: BoundaryPreviewPath[],
+    options?: { fitBounds?: boolean }
+  ) => {
+    visibleBatteryPaths.forEach((_, batteryIdx) => {
+      removeBatteryPathVisualization(batteryIdx);
+    });
+
+    for (const previewPath of previewPaths) {
+      await drawBatteryPathVisualization(previewPath.batteryIndex, previewPath.coordinates);
+    }
+
+    setVisibleBatteryPaths(new Map(previewPaths.map((path) => [path.batteryIndex, path.coordinates])));
+
+    if (options?.fitBounds !== false) {
+      fitMapToPreviewPaths(previewPaths);
+    }
+  }, [drawBatteryPathVisualization, fitMapToPreviewPaths, removeBatteryPathVisualization, visibleBatteryPaths]);
+
+  const loadAllBatteryPathPreviews = useCallback(async (options?: { fitBounds?: boolean }): Promise<BoundaryPreviewPath[]> => {
+    if (!mapReady) return [];
+
+    const batteryCount = parsedBatteryCount;
+    if (!batteryCount) return [];
+
+    const ready = await ensureMissionReady();
+    if (!ready) return [];
+
+    const previews: BoundaryPreviewPath[] = [];
+    for (let batteryIndex = 1; batteryIndex <= batteryCount; batteryIndex += 1) {
+      const cached = visibleBatteryPaths.get(batteryIndex);
+      const coords = cached && cached.length > 0 ? cached : await fetchBatteryPathCoords(batteryIndex);
+      if (coords.length > 0) {
+        previews.push({ batteryIndex, coordinates: coords });
+      }
+    }
+
+    await replaceBatteryPreviewPaths(previews, options);
+    return previews;
+  }, [ensureMissionReady, fetchBatteryPathCoords, mapReady, parsedBatteryCount, replaceBatteryPreviewPaths, visibleBatteryPaths]);
+
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
     if (!map) return;
@@ -974,13 +1237,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const isCurrentlyVisible = visibleBatteryPaths.has(batteryIndex1);
 
     if (isCurrentlyVisible) {
-      const layerId = `battery-path-layer-${batteryIndex1}`;
-      const sourceId = `battery-path-${batteryIndex1}`;
-      try {
-        if (map.getLayer(layerId)) map.removeLayer(layerId);
-        if (map.getSource(sourceId)) map.removeSource(sourceId);
-      } catch { /* ignore */ }
-      removeWaypointMarkers(batteryIndex1);
+      removeBatteryPathVisualization(batteryIndex1);
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
         next.delete(batteryIndex1);
@@ -991,22 +1248,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     setLoadingBatteryPaths(prev => new Set([...prev, batteryIndex1]));
     try {
-      if (!optimizedParamsRef.current) {
-        if (!canOptimize) {
-          showSystemNotification('error', 'Please set location and battery params first');
-          return;
-        }
-        await handleOptimize();
-        let checkCount = 0;
-        while (checkCount < 60) {
-          await new Promise(r => setTimeout(r, 500));
-          if (optimizedParamsRef.current) break;
-          checkCount++;
-        }
-        if (!optimizedParamsRef.current) {
-          showSystemNotification('error', 'Optimization timed out');
-          return;
-        }
+      const ready = await ensureMissionReady();
+      if (!ready) {
+        return;
       }
 
       const coords = await fetchBatteryPathCoords(batteryIndex1);
@@ -1015,34 +1259,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return;
       }
 
-      const sourceId = `battery-path-${batteryIndex1}`;
-      const layerId = `battery-path-layer-${batteryIndex1}`;
-      const color = BATTERY_PATH_COLORS[(batteryIndex1 - 1) % BATTERY_PATH_COLORS.length];
-
-      if (map.getLayer(layerId)) map.removeLayer(layerId);
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
-
-      map.addSource(sourceId, {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: { type: 'LineString', coordinates: coords },
-        },
-      });
-
-      map.addLayer({
-        id: layerId,
-        type: 'line',
-        source: sourceId,
-        paint: {
-          'line-color': color,
-          'line-width': 2.5,
-          'line-opacity': 0.85,
-        },
-      });
-
-      createWaypointMarkers(batteryIndex1, coords, color, isFullscreen);
+      await drawBatteryPathVisualization(batteryIndex1, coords);
 
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
@@ -1050,12 +1267,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return next;
       });
 
-      const lngs = coords.map(c => c[0]);
-      const lats = coords.map(c => c[1]);
-      map.fitBounds(
-        [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
-        { padding: 50, duration: 1000 }
-      );
+      fitMapToPreviewPaths([{ batteryIndex: batteryIndex1, coordinates: coords }]);
     } catch (e: any) {
       showSystemNotification('error', e?.message || 'Failed to visualize path');
     } finally {
@@ -1065,7 +1277,324 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return next;
       });
     }
-  }, [visibleBatteryPaths, canOptimize, handleOptimize, fetchBatteryPathCoords, showSystemNotification, BATTERY_PATH_COLORS, isFullscreen, createWaypointMarkers, removeWaypointMarkers]);
+  }, [drawBatteryPathVisualization, ensureMissionReady, fetchBatteryPathCoords, fitMapToPreviewPaths, removeBatteryPathVisualization, showSystemNotification, visibleBatteryPaths]);
+
+  const upsertBoundaryLineLayer = useCallback((
+    sourceId: string,
+    layerId: string,
+    coordinates: Array<[number, number]>,
+    paint: Record<string, any>
+  ) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const data = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates,
+      },
+    };
+
+    const source = map.getSource(sourceId);
+    if (source) {
+      source.setData(data);
+      return;
+    }
+
+    map.addSource(sourceId, {
+      type: 'geojson',
+      data,
+    });
+
+    map.addLayer({
+      id: layerId,
+      type: 'line',
+      source: sourceId,
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
+      paint,
+    });
+  }, []);
+
+  const removeBoundaryOverlay = useCallback(() => {
+    Object.values(boundaryMarkersRef.current).forEach((marker) => marker?.remove?.());
+    boundaryMarkersRef.current = { center: null, major: null, minor: null };
+
+    const map = mapRef.current;
+    if (!map) return;
+
+    [
+      ['boundary-ellipse-layer', 'boundary-ellipse-source'],
+      ['boundary-major-guide-layer', 'boundary-major-guide-source'],
+      ['boundary-minor-guide-layer', 'boundary-minor-guide-source'],
+    ].forEach(([layerId, sourceId]) => {
+      try {
+        if (map.getLayer(layerId)) map.removeLayer(layerId);
+        if (map.getSource(sourceId)) map.removeSource(sourceId);
+      } catch {
+        // Ignore teardown races while resizing or unmounting.
+      }
+    });
+  }, []);
+
+  const ensureBoundaryMarkers = useCallback(async (boundary: BoundaryEllipse, interactive: boolean) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const mapboxgl = await resolveMapbox();
+    const handles = boundaryHandlePositions(boundary);
+    const markerDefinitions: Array<{
+      key: keyof MapboxMarkerRefMap;
+      lat: number;
+      lng: number;
+      className: string;
+    }> = [
+      { key: 'center', lat: handles.center.lat, lng: handles.center.lng, className: 'boundary-handle-marker center' },
+      { key: 'major', lat: handles.major.lat, lng: handles.major.lng, className: 'boundary-handle-marker major' },
+      { key: 'minor', lat: handles.minor.lat, lng: handles.minor.lng, className: 'boundary-handle-marker minor' },
+    ];
+
+    markerDefinitions.forEach(({ key, lat, lng, className }) => {
+      let marker = boundaryMarkersRef.current[key];
+      if (!marker) {
+        const element = document.createElement('div');
+        element.className = className;
+        marker = new mapboxgl.Marker({ element, draggable: interactive, anchor: 'center' })
+          .setLngLat([lng, lat])
+          .addTo(map);
+
+        marker.on('drag', () => {
+          const current = draftBoundaryRef.current;
+          if (!current) return;
+          const lngLat = marker.getLngLat();
+
+          if (key === 'center') {
+            setDraftBoundary(normalizeBoundary({
+              ...current,
+              centerLat: lngLat.lat,
+              centerLng: lngLat.lng,
+            }));
+          } else if (key === 'major') {
+            const local = latLngToLocalFeet(lngLat.lat, lngLat.lng, current.centerLat, current.centerLng);
+            const majorRadiusFt = Math.max(150, Math.hypot(local.xFt, local.yFt));
+            const rotationDeg = normalizeRotationDeg((Math.atan2(local.yFt, local.xFt) * 180) / Math.PI);
+            setDraftBoundary(normalizeBoundary({
+              ...current,
+              majorRadiusFt,
+              minorRadiusFt: Math.min(majorRadiusFt, current.minorRadiusFt),
+              rotationDeg,
+            }));
+          } else {
+            const local = latLngToLocalFeet(lngLat.lat, lngLat.lng, current.centerLat, current.centerLng);
+            const unrotated = rotatePoint(local, -current.rotationDeg);
+            const minorRadiusFt = Math.min(current.majorRadiusFt, Math.max(150, Math.abs(unrotated.yFt)));
+            setDraftBoundary(normalizeBoundary({
+              ...current,
+              minorRadiusFt,
+            }));
+          }
+
+          setBoundaryDirty(true);
+        });
+
+        marker.on('dragend', () => {
+          setBoundaryDirty(true);
+        });
+
+        boundaryMarkersRef.current[key] = marker;
+      }
+
+      marker.setDraggable(interactive);
+      marker.setLngLat([lng, lat]);
+    });
+  }, [resolveMapbox]);
+
+  const optimizeBoundaryMission = useCallback(async (boundary: BoundaryEllipse): Promise<BoundaryOptimizationResponse> => {
+    const minutes = parseInt(batteryMinutes);
+    const batteries = parseInt(numBatteries);
+    const minH = parseFloat(minHeightFeet || '120') || 120;
+    const maxH = maxHeightFeet ? parseFloat(maxHeightFeet) : null;
+    const centerText = `${boundary.centerLat}, ${boundary.centerLng}`;
+
+    const body: Record<string, any> = {
+      batteryMinutes: minutes,
+      batteries,
+      center: centerText,
+      minHeight: minH,
+      maxHeight: maxH,
+      boundary,
+    };
+
+    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
+    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+
+    const res = await fetch(`${API_ENHANCED_BASE}/api/optimize-boundary`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => 'Unknown error');
+      throw new Error(errorText || 'Boundary optimization failed');
+    }
+
+    return await res.json();
+  }, [API_ENHANCED_BASE, batteryMinutes, maxExpansionDist, maxHeightFeet, minExpansionDist, minHeightFeet, numBatteries]);
+
+  const handleCancelBoundaryMode = useCallback(async () => {
+    setIsBoundaryMode(false);
+    setBoundaryDirty(false);
+    setDraftBoundary(appliedBoundaryRef.current ? normalizeBoundary(appliedBoundaryRef.current) : null);
+
+    const snapshot = Array.from(boundaryEntryVisiblePathsRef.current.entries()).map(([batteryIndex, coordinates]) => ({
+      batteryIndex,
+      coordinates,
+    }));
+
+    if (snapshot.length > 0) {
+      await replaceBatteryPreviewPaths(snapshot, { fitBounds: false });
+    } else {
+      clearAllBatteryPaths();
+    }
+  }, [clearAllBatteryPaths, replaceBatteryPreviewPaths]);
+
+  useEffect(() => {
+    handleCancelBoundaryModeRef.current = handleCancelBoundaryMode;
+  }, [handleCancelBoundaryMode]);
+
+  const handleEnterBoundaryMode = useCallback(async () => {
+    if (!isFullscreen) {
+      showSystemNotification('error', 'Boundary editing is only available in fullscreen mode');
+      return;
+    }
+
+    try {
+      setIsApplyingBoundary(true);
+      boundaryEntryVisiblePathsRef.current = cloneVisiblePaths(visibleBatteryPaths);
+      const previewPaths = await loadAllBatteryPathPreviews({ fitBounds: true });
+      if (!previewPaths.length) {
+        showSystemNotification('error', 'No flight path data received');
+        return;
+      }
+
+      const currentCenter = appliedBoundaryRef.current
+        ? { lat: appliedBoundaryRef.current.centerLat, lng: appliedBoundaryRef.current.centerLng }
+        : selectedCoordsRef.current;
+      if (!currentCenter) {
+        showSystemNotification('error', 'Please select a location on the map first');
+        return;
+      }
+
+      const nextBoundary = appliedBoundaryRef.current
+        ? normalizeBoundary(appliedBoundaryRef.current)
+        : computeAutoFitCircle(
+            previewPaths.flatMap((path) => path.coordinates),
+            currentCenter.lat,
+            currentCenter.lng,
+            1.05
+          );
+
+      setDraftBoundary(nextBoundary);
+      setBoundaryDirty(!appliedBoundaryRef.current || !appliedBoundaryPlanRef.current);
+      setIsBoundaryMode(true);
+    } catch (e: any) {
+      showSystemNotification('error', e?.message || 'Failed to start boundary editing');
+    } finally {
+      setIsApplyingBoundary(false);
+    }
+  }, [cloneVisiblePaths, isFullscreen, loadAllBatteryPathPreviews, showSystemNotification, visibleBatteryPaths]);
+
+  const handleApplyBoundary = useCallback(async () => {
+    const currentDraft = draftBoundaryRef.current;
+    if (!currentDraft || isApplyingBoundary) return;
+
+    try {
+      setIsApplyingBoundary(true);
+      const response = await optimizeBoundaryMission(currentDraft);
+      const normalizedBoundary = normalizeBoundary(response.boundary);
+
+      appliedBoundaryRef.current = normalizedBoundary;
+      appliedBoundaryPlanRef.current = response.boundaryPlan;
+      setAppliedBoundary(normalizedBoundary);
+      setAppliedBoundaryPlan(response.boundaryPlan);
+      setDraftBoundary(normalizedBoundary);
+      setBoundaryDirty(false);
+      setIsBoundaryMode(false);
+
+      const updatedCenter = {
+        lat: normalizedBoundary.centerLat,
+        lng: normalizedBoundary.centerLng,
+      };
+      selectedCoordsRef.current = updatedCenter;
+      setSelectedCoords(updatedCenter);
+      setAddressSearch(`${updatedCenter.lat.toFixed(6)}, ${updatedCenter.lng.toFixed(6)}`);
+      await setCenterMarkerOnMap(updatedCenter.lat, updatedCenter.lng);
+
+      await replaceBatteryPreviewPaths(response.previewPaths, { fitBounds: true });
+      boundaryEntryVisiblePathsRef.current = new Map(
+        response.previewPaths.map((path) => [path.batteryIndex, path.coordinates])
+      );
+
+      if (response.boundaryPlan.fitStatus === 'best_effort' && response.toastMessage) {
+        showSystemNotification('error', response.toastMessage);
+      } else {
+        showSystemNotification('success', 'Boundary applied');
+      }
+
+      triggerSaveRef.current?.();
+    } catch (e: any) {
+      showSystemNotification('error', e?.message || 'Failed to apply boundary');
+    } finally {
+      setIsApplyingBoundary(false);
+    }
+  }, [isApplyingBoundary, optimizeBoundaryMission, replaceBatteryPreviewPaths, setCenterMarkerOnMap, showSystemNotification]);
+
+  useEffect(() => {
+    const activeBoundary = isFullscreen
+      ? (isBoundaryMode ? draftBoundary : appliedBoundary)
+      : null;
+
+    if (!mapReady || !activeBoundary) {
+      removeBoundaryOverlay();
+      return;
+    }
+
+    const boundary = normalizeBoundary(activeBoundary);
+    const outlineCoordinates = buildEllipseOutlineCoordinates(boundary, 120);
+    const guideCoordinates = buildBoundaryGuideCoordinates(boundary);
+
+    upsertBoundaryLineLayer('boundary-ellipse-source', 'boundary-ellipse-layer', outlineCoordinates, {
+      'line-color': '#ffffff',
+      'line-width': 2,
+      'line-opacity': 0.92,
+    });
+    upsertBoundaryLineLayer('boundary-major-guide-source', 'boundary-major-guide-layer', guideCoordinates.major, {
+      'line-color': '#ffffff',
+      'line-width': 1.5,
+      'line-opacity': 0.6,
+      'line-dasharray': [2, 2],
+    });
+    upsertBoundaryLineLayer('boundary-minor-guide-source', 'boundary-minor-guide-layer', guideCoordinates.minor, {
+      'line-color': '#ffffff',
+      'line-width': 1.5,
+      'line-opacity': 0.4,
+      'line-dasharray': [2, 2],
+    });
+    void ensureBoundaryMarkers(boundary, isBoundaryMode);
+  }, [appliedBoundary, draftBoundary, ensureBoundaryMarkers, isBoundaryMode, isFullscreen, mapReady, removeBoundaryOverlay, upsertBoundaryLineLayer]);
+
+  useEffect(() => {
+    if (!open || !mapReady || !appliedBoundary || !appliedBoundaryPlan || visibleBatteryPaths.size > 0) {
+      return;
+    }
+
+    void loadAllBatteryPathPreviews({ fitBounds: false });
+  }, [appliedBoundary, appliedBoundaryPlan, loadAllBatteryPathPreviews, mapReady, open, visibleBatteryPaths.size]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1098,6 +1627,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           maxExpansionDist: maxExpansionDist || null,
           latitude: selectedCoordsRef.current?.lat || null,
           longitude: selectedCoordsRef.current?.lng || null,
+          boundary: appliedBoundaryRef.current || null,
+          boundaryPlan: appliedBoundaryPlanRef.current || null,
         },
       };
       
@@ -1164,6 +1695,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [hasMeaningfulContent, saveProject]);
 
+  useEffect(() => {
+    triggerSaveRef.current = triggerSave;
+  }, [triggerSave]);
+
   // Simple autosave trigger - much more controlled
   useEffect(() => {
     if (!open) return;
@@ -1183,7 +1718,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       maxHeightFeet,
       status,
       selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
-      optimizedParams: optimizedParams ? 'EXISTS' : 'NULL'
+      optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
+      appliedBoundary: appliedBoundary ? 'EXISTS' : 'NULL',
+      appliedBoundaryPlan: appliedBoundaryPlan ? 'EXISTS' : 'NULL',
     });
     
     // Don't trigger save immediately, use timeout to avoid render-phase updates
@@ -1192,7 +1729,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, appliedBoundary, appliedBoundaryPlan]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -1471,6 +2008,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               batteries: numBatteries,
               minHeight: minHeightFeet,
               maxHeight: maxHeightFeet,
+              boundary: appliedBoundaryRef.current || null,
+              boundaryPlan: appliedBoundaryPlanRef.current || null,
             },
             upload: { objectKey: init.objectKey },
           }),
@@ -1493,7 +2032,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   if (!open) return null;
 
-  const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+  const batteryCount = parsedBatteryCount;
 
   return (
     <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>
@@ -1546,12 +2085,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 
                 {/* Map overlays and controls as siblings */}
                 {isFullscreen && (
-                  <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
+                  <div className="map-toolbar">
                     <button 
                       onClick={handleUndo} 
-                      disabled={historyIndex < 0}
-                      className="expand-button"
-                      style={{ position: 'static', opacity: historyIndex < 0 ? 0.5 : 1 }}
+                      disabled={historyIndex < 0 || isBoundaryMode}
+                      className="map-toolbar-button"
                       title="Undo"
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1561,9 +2099,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </button>
                     <button 
                       onClick={handleRedo} 
-                      disabled={historyIndex >= history.length - 1}
-                      className="expand-button"
-                      style={{ position: 'static', opacity: historyIndex >= history.length - 1 ? 0.5 : 1 }}
+                      disabled={historyIndex >= history.length - 1 || isBoundaryMode}
+                      className="map-toolbar-button"
                       title="Redo"
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1571,12 +2108,45 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
                       </svg>
                     </button>
+                    <button
+                      onClick={isBoundaryMode ? handleCancelBoundaryMode : handleEnterBoundaryMode}
+                      disabled={isApplyingBoundary}
+                      className={`map-toolbar-button map-toolbar-button--text${isBoundaryMode ? ' active' : ''}`}
+                      title={isBoundaryMode ? 'Cancel boundary editing' : 'Edit boundary'}
+                    >
+                      {isBoundaryMode ? 'Boundary On' : 'Boundary'}
+                    </button>
                   </div>
                 )}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
-                {isFullscreen && visibleBatteryPaths.size > 0 && (
+                {isFullscreen && isBoundaryMode && (
+                  <div className="boundary-editor-bar">
+                    <div className="boundary-editor-copy">
+                      Drag the center, long-axis, and minor-axis handles, then apply the boundary.
+                    </div>
+                    <div className="boundary-editor-actions">
+                      <button
+                        type="button"
+                        className="boundary-editor-button secondary"
+                        onClick={() => void handleCancelBoundaryMode()}
+                        disabled={isApplyingBoundary}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="boundary-editor-button primary"
+                        onClick={() => void handleApplyBoundary()}
+                        disabled={isApplyingBoundary || (!boundaryDirty && !!appliedBoundaryPlan)}
+                      >
+                        {isApplyingBoundary ? 'Applying...' : 'Apply'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {isFullscreen && !isBoundaryMode && !appliedBoundaryPlan && visibleBatteryPaths.size > 0 && (
                   <div className="waypoint-drag-hint">Drag waypoints to adjust path</div>
                 )}
                 <div className="map-dim-overlay"></div>
@@ -1626,6 +2196,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         console.log(`🔍 Battery minutes changing from "${batteryMinutes}" to "${value}"`);
                         setBatteryMinutes(value); 
                         setOptimizedParamsWithLogging(null, `Battery minutes changed to: ${value}`); 
+                        clearBoundaryPlanState(`Battery minutes changed to: ${value}`);
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1648,6 +2219,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         console.log(`🔍 Number of batteries changing from "${numBatteries}" to "${value}"`);
                         setNumBatteries(value); 
                         setOptimizedParamsWithLogging(null, `Number of batteries changed to: ${value}`); 
+                        clearBoundaryPlanState(`Number of batteries changed to: ${value}`);
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1679,6 +2251,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         console.log(`🔍 Min height changing from "${minHeightFeet}" to "${value}"`);
                         setMinHeightFeet(value); 
                         setOptimizedParamsWithLogging(null, `Min height changed to: ${value}`); 
+                        clearBoundaryPlanState(`Min height changed to: ${value}`);
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1701,6 +2274,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         console.log(`🔍 Max height changing from "${maxHeightFeet}" to "${value}"`);
                         setMaxHeightFeet(value); 
                         setOptimizedParamsWithLogging(null, `Max height changed to: ${value}`); 
+                        clearBoundaryPlanState(`Max height changed to: ${value}`);
                       }}
                       onKeyDown={(e) => {
                         // Allow only numbers, backspace, delete, arrow keys
@@ -1730,6 +2304,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, '');
                         setMinExpansionDist(value);
+                        clearBoundaryPlanState(`Min expansion changed to: ${value}`);
+                        clearAllBatteryPaths();
                       }}
                       onKeyDown={(e) => {
                         if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
@@ -1749,6 +2325,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, '');
                         setMaxExpansionDist(value);
+                        clearBoundaryPlanState(`Max expansion changed to: ${value}`);
+                        clearAllBatteryPaths();
                       }}
                       onKeyDown={(e) => {
                         if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
@@ -1774,33 +2352,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     <button
                       className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
                       onClick={async () => {
-                        if (!optimizedParams) {
-                          if (!canOptimize) {
-                            if (!selectedCoordsRef.current) {
-                              showSystemNotification('error', 'Please select a location on the map first');
-                            } else if (!batteryMinutes || !numBatteries) {
-                              showSystemNotification('error', 'Please enter battery duration and quantity first');
-                            } else {
-                              showSystemNotification('error', 'Please set location and battery params first');
-                            }
-                            return;
-                          }
-                          try {
-                            await handleOptimize();
-                            let checkCount = 0;
-                            while (checkCount < 60) {
-                              await new Promise(r => setTimeout(r, 500));
-                              checkCount++;
-                              if (optimizedParamsRef.current && Object.keys(optimizedParamsRef.current).length > 0) break;
-                            }
-                            if (!optimizedParamsRef.current || Object.keys(optimizedParamsRef.current).length === 0) {
-                              showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
-                              return;
-                            }
-                          } catch (e: any) {
-                            showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                            return;
-                          }
+                        const ready = await ensureMissionReady();
+                        if (!ready) {
+                          return;
                         }
                         downloadBatteryCsv(idx + 1);
                       }}
@@ -1998,4 +2552,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-
