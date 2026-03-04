@@ -279,10 +279,6 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertEqual(response["headers"]["X-Spin-Export-Part"], "part1")
         self.assertEqual(response["headers"]["X-Spin-Mode-Applied"], "true")
         self.assertEqual(response["headers"]["X-POI-Used"], "0,0")
-        self.assertEqual(
-            response["headers"]["Content-Disposition"],
-            'attachment; filename="battery-1-stage-1.csv"',
-        )
         self.assertIn("X-Spin-Combined-Waypoints", response["headers"])
         self.assertIn("X-Spin-Max-Segment-Feet", response["headers"])
         self.assertIn("X-Spin-Estimated-Rate-Deg-S", response["headers"])

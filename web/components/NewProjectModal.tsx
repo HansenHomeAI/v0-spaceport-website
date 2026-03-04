@@ -640,27 +640,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     "Finalizing flight path"
   ];
 
-  const buildBatteryCsvFilename = useCallback(
-    (batteryIndex1: number, stage?: 1 | 2) => {
-      const rawTitle = (projectTitle && projectTitle !== 'Untitled')
-        ? projectTitle
-        : 'Untitled';
-      const filenameTitle = rawTitle
-        .replace(/^MultiStage[-_\s]*/i, '')
-        .replace(/[^a-zA-Z0-9-_]/g, '_')
-        .replace(/_+/g, '_')
-        .replace(/^_+|_+$/g, '')
-        .substring(0, 50) || 'Untitled';
-
-      if (stage != null) {
-        return `${filenameTitle}-${batteryIndex1}-stage-${stage}.csv`;
-      }
-
-      return `${filenameTitle}-${batteryIndex1}.csv`;
-    },
-    [projectTitle],
-  );
-
   const triggerCsvDownload = useCallback((csvText: string, filename: string) => {
     const blob = new Blob([csvText], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -759,15 +738,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     
     try {
+      const safeTitle = (projectTitle && projectTitle !== 'Untitled')
+        ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
+        : 'Untitled';
+
       if (spinMode) {
         const partOneCsv = await requestBatteryCsv(batteryIndex1, 'part1');
-        triggerCsvDownload(partOneCsv, buildBatteryCsvFilename(batteryIndex1, 1));
+        triggerCsvDownload(partOneCsv, `${safeTitle}-${batteryIndex1}-part-1.csv`);
 
         const partTwoCsv = await requestBatteryCsv(batteryIndex1, 'part2');
-        triggerCsvDownload(partTwoCsv, buildBatteryCsvFilename(batteryIndex1, 2));
+        triggerCsvDownload(partTwoCsv, `${safeTitle}-${batteryIndex1}-part-2.csv`);
       } else {
         const csvText = await requestBatteryCsv(batteryIndex1, 'single');
-        triggerCsvDownload(csvText, buildBatteryCsvFilename(batteryIndex1));
+        triggerCsvDownload(csvText, `${safeTitle}-${batteryIndex1}.csv`);
       }
       
       // Update project status to indicate drone path has been downloaded
@@ -790,7 +773,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [buildBatteryCsvFilename, downloadingBatteries, optimizedParams, spinMode, status, requestBatteryCsv, triggerCsvDownload, showSystemNotification]);
+  }, [projectTitle, downloadingBatteries, optimizedParams, spinMode, status, requestBatteryCsv, triggerCsvDownload, showSystemNotification]);
 
   const clearAllBatteryPaths = useCallback(() => {
     const map = mapRef.current;
