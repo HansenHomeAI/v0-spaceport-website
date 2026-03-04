@@ -5690,6 +5690,8 @@ input.text-fade-right,
   height: 12px;
   cursor: grab;
   pointer-events: auto;
+  touch-action: none;
+  user-select: none;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15);
 }
 .map-wrapper.fullscreen .waypoint-marker:active {
@@ -5704,6 +5706,8 @@ input.text-fade-right,
   background: rgba(10, 12, 24, 0.9);
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12), 0 6px 20px rgba(0, 0, 0, 0.28);
   cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
 
 .boundary-handle-marker:active {

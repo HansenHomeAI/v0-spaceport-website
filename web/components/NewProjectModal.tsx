@@ -37,6 +37,33 @@ type MapboxMarkerRefMap = {
   minor: any | null;
 };
 
+type MapViewportState = {
+  centerLat: number;
+  centerLng: number;
+  zoom: number;
+  bearing: number;
+  pitch: number;
+};
+
+type MapHistorySnapshot = {
+  selectedCoords: { lat: number; lng: number } | null;
+  addressSearch: string;
+  optimizedParams: OptimizedParams | null;
+  appliedBoundary: BoundaryEllipse | null;
+  appliedBoundaryPlan: BoundaryPlan | null;
+  draftBoundary: BoundaryEllipse | null;
+  isBoundaryMode: boolean;
+  boundaryDirty: boolean;
+  visibleBatteryPaths: BoundaryPreviewPath[];
+  viewport: MapViewportState | null;
+};
+
+type MapHistoryEntry = {
+  action: string;
+  prev: MapHistorySnapshot;
+  next: MapHistorySnapshot;
+};
+
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
@@ -164,11 +191,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const draftBoundaryRef = useRef<BoundaryEllipse | null>(null);
   const appliedBoundaryRef = useRef<BoundaryEllipse | null>(null);
   const appliedBoundaryPlanRef = useRef<BoundaryPlan | null>(null);
+  const boundaryDirtyRef = useRef<boolean>(false);
   const isBoundaryModeRef = useRef<boolean>(false);
   const isApplyingBoundaryRef = useRef<boolean>(false);
+  const isRestoringHistoryRef = useRef<boolean>(false);
+  const pendingViewportHistoryRef = useRef<{ action: string; snapshot: MapHistorySnapshot } | null>(null);
   const handleCancelBoundaryModeRef = useRef<(() => Promise<void>) | null>(null);
   const triggerSaveRef = useRef<(() => void) | null>(null);
   const boundaryEntryVisiblePathsRef = useRef<Map<number, Array<[number, number]>>>(new Map());
+  const clearAllBatteryPathsRef = useRef<() => void>(() => {});
+  const replaceBatteryPreviewPathsRef = useRef<(previewPaths: BoundaryPreviewPath[], options?: { fitBounds?: boolean }) => Promise<void>>(async () => {});
 
   // Waypoint drag refs
   const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
@@ -178,11 +210,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Undo/Redo State
-  const [history, setHistory] = useState<Array<{
-    batteryIndex: number;
-    prevCoords: [number, number][];
-    newCoords: [number, number][];
-  }>>([]);
+  const [history, setHistory] = useState<MapHistoryEntry[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const historyIndexRef = useRef<number>(-1);
   useEffect(() => {
@@ -200,6 +228,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   useEffect(() => {
     appliedBoundaryPlanRef.current = appliedBoundaryPlan;
   }, [appliedBoundaryPlan]);
+
+  useEffect(() => {
+    boundaryDirtyRef.current = boundaryDirty;
+  }, [boundaryDirty]);
 
   useEffect(() => {
     isBoundaryModeRef.current = isBoundaryMode;
@@ -291,6 +323,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       .addTo(map);
   }, [createCenterPinElement, resolveMapbox]);
 
+  const clearCenterMarkerFromMap = useCallback(() => {
+    markerRef.current?.remove?.();
+    markerRef.current = null;
+  }, []);
+
   const clearBoundaryPlanState = useCallback((reason: string) => {
     if (appliedBoundaryPlanRef.current) {
       console.log(`🔍 Clearing boundary plan: ${reason}`);
@@ -303,65 +340,212 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, []);
 
-  // UNDO HANDLER
-  const handleUndo = useCallback(() => {
-    if (historyIndex < 0 || !history[historyIndex]) return;
-    const { batteryIndex, prevCoords } = history[historyIndex];
-
-    // 1. Update Ref
-    waypointCoordsRef.current.set(batteryIndex, [...prevCoords]);
-
-    // 2. Update Map Source (Line)
+  const captureMapViewportState = useCallback((): MapViewportState | null => {
     const map = mapRef.current;
-    if (map) {
-      const sourceForUpdate = map.getSource(`battery-path-${batteryIndex}`);
-      if (sourceForUpdate) {
-        (sourceForUpdate as any).setData({
-          type: 'Feature',
-          properties: {},
-          geometry: { type: 'LineString', coordinates: prevCoords },
-        });
-      }
-      // 3. Update Markers (Visual Pins)
-      const markers = waypointMarkersRef.current.get(batteryIndex);
-      if (markers) {
-        markers.forEach((m: any, i: number) => {
-          if (prevCoords[i]) m.setLngLat(prevCoords[i]);
-        });
-      }
+    if (!map) return null;
+
+    const center = map.getCenter();
+    return {
+      centerLat: Number(center.lat.toFixed(6)),
+      centerLng: Number(center.lng.toFixed(6)),
+      zoom: Number(map.getZoom().toFixed(4)),
+      bearing: Number(map.getBearing().toFixed(4)),
+      pitch: Number(map.getPitch().toFixed(4)),
+    };
+  }, []);
+
+  const clonePathCoords = useCallback((coords: Array<[number, number]>) => {
+    return coords.map(([lng, lat]) => [lng, lat] as [number, number]);
+  }, []);
+
+  const cloneBoundaryPreviewPaths = useCallback((paths: BoundaryPreviewPath[]) => {
+    return paths.map((path) => ({
+      batteryIndex: path.batteryIndex,
+      coordinates: clonePathCoords(path.coordinates),
+    }));
+  }, [clonePathCoords]);
+
+  const captureVisibleBatteryPreviewPaths = useCallback((): BoundaryPreviewPath[] => {
+    return Array.from(visibleBatteryPaths.entries())
+      .sort(([left], [right]) => left - right)
+      .map(([batteryIndex, coordinates]) => ({
+        batteryIndex,
+        coordinates: clonePathCoords(waypointCoordsRef.current.get(batteryIndex) ?? coordinates),
+      }));
+  }, [clonePathCoords, visibleBatteryPaths]);
+
+  const cloneOptimizedParams = useCallback((params: OptimizedParams | null): OptimizedParams | null => {
+    return params ? JSON.parse(JSON.stringify(params)) : null;
+  }, []);
+
+  const cloneBoundaryPlan = useCallback((plan: BoundaryPlan | null): BoundaryPlan | null => {
+    return plan ? JSON.parse(JSON.stringify(plan)) : null;
+  }, []);
+
+  const captureMapHistorySnapshot = useCallback((): MapHistorySnapshot => {
+    const selected = selectedCoordsRef.current ?? selectedCoords;
+
+    return {
+      selectedCoords: selected ? { ...selected } : null,
+      addressSearch,
+      optimizedParams: cloneOptimizedParams(optimizedParamsRef.current),
+      appliedBoundary: appliedBoundaryRef.current ? normalizeBoundary(appliedBoundaryRef.current) : null,
+      appliedBoundaryPlan: cloneBoundaryPlan(appliedBoundaryPlanRef.current),
+      draftBoundary: draftBoundaryRef.current ? normalizeBoundary(draftBoundaryRef.current) : null,
+      isBoundaryMode: isBoundaryModeRef.current,
+      boundaryDirty: boundaryDirtyRef.current,
+      visibleBatteryPaths: captureVisibleBatteryPreviewPaths(),
+      viewport: captureMapViewportState(),
+    };
+  }, [addressSearch, captureMapViewportState, captureVisibleBatteryPreviewPaths, cloneBoundaryPlan, cloneOptimizedParams, selectedCoords]);
+
+  const serializeMapHistorySnapshot = useCallback((snapshot: MapHistorySnapshot) => {
+    return JSON.stringify(snapshot);
+  }, []);
+
+  const pushMapHistoryEntry = useCallback((action: string, prev: MapHistorySnapshot, next: MapHistorySnapshot) => {
+    if (isRestoringHistoryRef.current) {
+      return;
     }
-    setHistoryIndex(prev => prev - 1);
-  }, [history, historyIndex]);
+
+    if (serializeMapHistorySnapshot(prev) === serializeMapHistorySnapshot(next)) {
+      return;
+    }
+
+    const nextEntry: MapHistoryEntry = { action, prev, next };
+    const nextIndex = historyIndexRef.current + 1;
+    historyIndexRef.current = nextIndex >= 100 ? 99 : nextIndex;
+    setHistory((currentHistory) => {
+      const truncated = currentHistory.slice(0, nextIndex);
+      const appended = [...truncated, nextEntry];
+      if (appended.length > 100) {
+        return appended.slice(appended.length - 100);
+      }
+      return appended;
+    });
+    setHistoryIndex((currentIndex) => {
+      const computedIndex = currentIndex + 1;
+      return computedIndex >= 100 ? 99 : computedIndex;
+    });
+  }, [serializeMapHistorySnapshot]);
+
+  const bindMarkerInteractionGuards = useCallback((element: HTMLElement) => {
+    let dragPanWasEnabled = false;
+
+    const releaseMapPan = () => {
+      if (dragPanWasEnabled && mapRef.current?.dragPan) {
+        mapRef.current.dragPan.enable();
+      }
+      dragPanWasEnabled = false;
+      window.removeEventListener('pointerup', releaseMapPan, true);
+      window.removeEventListener('pointercancel', releaseMapPan, true);
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      event.stopPropagation();
+      const map = mapRef.current;
+      if (map?.dragPan?.isEnabled?.()) {
+        dragPanWasEnabled = true;
+        map.dragPan.disable();
+      }
+      window.addEventListener('pointerup', releaseMapPan, true);
+      window.addEventListener('pointercancel', releaseMapPan, true);
+    };
+
+    const stopClickPropagation = (event: MouseEvent) => {
+      event.stopPropagation();
+    };
+
+    element.style.touchAction = 'none';
+    element.addEventListener('pointerdown', handlePointerDown);
+    element.addEventListener('click', stopClickPropagation);
+
+    return releaseMapPan;
+  }, []);
+
+  const restoreMapHistorySnapshot = useCallback(async (snapshot: MapHistorySnapshot, reason: string) => {
+    isRestoringHistoryRef.current = true;
+    pendingViewportHistoryRef.current = null;
+
+    try {
+      const selected = snapshot.selectedCoords ? { ...snapshot.selectedCoords } : null;
+      selectedCoordsRef.current = selected;
+      setSelectedCoords(selected);
+      setAddressSearch(snapshot.addressSearch);
+
+      setOptimizedParamsWithLogging(cloneOptimizedParams(snapshot.optimizedParams), reason);
+
+      const restoredAppliedBoundary = snapshot.appliedBoundary ? normalizeBoundary(snapshot.appliedBoundary) : null;
+      const restoredAppliedPlan = cloneBoundaryPlan(snapshot.appliedBoundaryPlan);
+      const restoredDraftBoundary = snapshot.draftBoundary ? normalizeBoundary(snapshot.draftBoundary) : null;
+
+      appliedBoundaryRef.current = restoredAppliedBoundary;
+      appliedBoundaryPlanRef.current = restoredAppliedPlan;
+      draftBoundaryRef.current = restoredDraftBoundary;
+
+      setAppliedBoundary(restoredAppliedBoundary);
+      setAppliedBoundaryPlan(restoredAppliedPlan);
+      setDraftBoundary(restoredDraftBoundary);
+      setIsBoundaryMode(snapshot.isBoundaryMode);
+      setBoundaryDirty(snapshot.boundaryDirty);
+
+      const restoredPaths = cloneBoundaryPreviewPaths(snapshot.visibleBatteryPaths);
+      boundaryEntryVisiblePathsRef.current = new Map(
+        restoredPaths.map((path) => [path.batteryIndex, clonePathCoords(path.coordinates)])
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      if (selected) {
+        await setCenterMarkerOnMap(selected.lat, selected.lng);
+      } else {
+        clearCenterMarkerFromMap();
+      }
+
+      if (restoredPaths.length > 0) {
+        await replaceBatteryPreviewPathsRef.current(restoredPaths, { fitBounds: false });
+      } else {
+        clearAllBatteryPathsRef.current();
+      }
+
+      if (snapshot.viewport && mapRef.current) {
+        mapRef.current.jumpTo({
+          center: [snapshot.viewport.centerLng, snapshot.viewport.centerLat],
+          zoom: snapshot.viewport.zoom,
+          bearing: snapshot.viewport.bearing,
+          pitch: snapshot.viewport.pitch,
+        });
+      }
+    } finally {
+      setTimeout(() => {
+        isRestoringHistoryRef.current = false;
+      }, 0);
+    }
+  }, [
+    clearCenterMarkerFromMap,
+    cloneBoundaryPlan,
+    cloneBoundaryPreviewPaths,
+    cloneOptimizedParams,
+    clonePathCoords,
+    setCenterMarkerOnMap,
+    setOptimizedParamsWithLogging,
+  ]);
+
+  // UNDO HANDLER
+  const handleUndo = useCallback(async () => {
+    if (historyIndex < 0 || !history[historyIndex]) return;
+    await restoreMapHistorySnapshot(history[historyIndex].prev, `Undo ${history[historyIndex].action}`);
+    historyIndexRef.current = historyIndex - 1;
+    setHistoryIndex((prev) => prev - 1);
+  }, [history, historyIndex, restoreMapHistorySnapshot]);
 
   // REDO HANDLER
-  const handleRedo = useCallback(() => {
+  const handleRedo = useCallback(async () => {
     if (historyIndex >= history.length - 1 || !history[historyIndex + 1]) return;
-    const { batteryIndex, newCoords } = history[historyIndex + 1];
-
-    // 1. Update Ref
-    waypointCoordsRef.current.set(batteryIndex, [...newCoords]);
-
-    // 2. Update Map Source (Line)
-    const map = mapRef.current;
-    if (map) {
-      const source = map.getSource(`battery-path-${batteryIndex}`);
-      if (source) {
-        (source as any).setData({
-          type: 'Feature',
-          properties: {},
-          geometry: { type: 'LineString', coordinates: newCoords },
-        });
-      }
-      // 3. Update Markers (Visual Pins)
-      const markers = waypointMarkersRef.current.get(batteryIndex);
-      if (markers) {
-        markers.forEach((m: any, i: number) => {
-          if (newCoords[i]) m.setLngLat(newCoords[i]);
-        });
-      }
-    }
-    setHistoryIndex(prev => prev + 1);
-  }, [history, historyIndex]);
+    await restoreMapHistorySnapshot(history[historyIndex + 1].next, `Redo ${history[historyIndex + 1].action}`);
+    historyIndexRef.current = historyIndex + 1;
+    setHistoryIndex((prev) => prev + 1);
+  }, [history, historyIndex, restoreMapHistorySnapshot]);
 
 
 
@@ -381,6 +565,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     waypointCoordsRef.current.clear();
     setHistory([]);
     setHistoryIndex(-1);
+    historyIndexRef.current = -1;
+    pendingViewportHistoryRef.current = null;
+    isRestoringHistoryRef.current = false;
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
@@ -544,10 +731,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         });
         
         map.on('click', (e: any) => {
-          if (isBoundaryModeRef.current || isApplyingBoundaryRef.current) {
+          if (isBoundaryModeRef.current || isApplyingBoundaryRef.current || isRestoringHistoryRef.current) {
             return;
           }
 
+          const previousSnapshot = captureMapHistorySnapshot();
           const { lng, lat } = e.lngLat;
           selectedCoordsRef.current = { lat, lng };
           setSelectedCoords({ lat, lng });
@@ -560,7 +748,40 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
+
+          setTimeout(() => {
+            pushMapHistoryEntry('map center change', previousSnapshot, captureMapHistorySnapshot());
+          }, 0);
         });
+
+        const beginViewportHistory = (action: string, event: any) => {
+          if (!event?.originalEvent || isRestoringHistoryRef.current) {
+            return;
+          }
+          pendingViewportHistoryRef.current = {
+            action,
+            snapshot: captureMapHistorySnapshot(),
+          };
+        };
+
+        const commitViewportHistory = () => {
+          const pending = pendingViewportHistoryRef.current;
+          if (!pending || isRestoringHistoryRef.current) {
+            pendingViewportHistoryRef.current = null;
+            return;
+          }
+          pendingViewportHistoryRef.current = null;
+          pushMapHistoryEntry(pending.action, pending.snapshot, captureMapHistorySnapshot());
+        };
+
+        map.on('dragstart', (event: any) => beginViewportHistory('map pan', event));
+        map.on('dragend', commitViewportHistory);
+        map.on('zoomstart', (event: any) => beginViewportHistory('map zoom', event));
+        map.on('zoomend', commitViewportHistory);
+        map.on('rotatestart', (event: any) => beginViewportHistory('map rotate', event));
+        map.on('rotateend', commitViewportHistory);
+        map.on('pitchstart', (event: any) => beginViewportHistory('map pitch', event));
+        map.on('pitchend', commitViewportHistory);
         
         mapRef.current = map;
         setMapReady(true);
@@ -601,12 +822,36 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         selectedCoordsRef.current = null;
       }
     };
-  }, [clearBoundaryPlanState, open, project, resolveMapbox, setCenterMarkerOnMap, setOptimizedParamsWithLogging]);
+  }, [
+    captureMapHistorySnapshot,
+    clearBoundaryPlanState,
+    open,
+    project,
+    pushMapHistoryEntry,
+    resolveMapbox,
+    setCenterMarkerOnMap,
+    setOptimizedParamsWithLogging,
+  ]);
 
   // Helper function to place marker at coordinates
-  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
+  const placeMarkerAtCoords = useCallback(async (
+    lat: number,
+    lng: number,
+    options?: { historyAction?: string }
+  ) => {
     if (!mapRef.current) return;
-    
+
+    const previousSnapshot = options?.historyAction && !isRestoringHistoryRef.current
+      ? captureMapHistorySnapshot()
+      : null;
+    let historyCommitted = false;
+    const commitHistory = () => {
+      if (!previousSnapshot || historyCommitted) return;
+      historyCommitted = true;
+      pushMapHistoryEntry(options!.historyAction!, previousSnapshot, captureMapHistorySnapshot());
+    };
+
+    mapRef.current.once?.('moveend', commitHistory);
     mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
     
     // Update both ref and state for coordinates
@@ -624,7 +869,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (inst) inst.style.display = 'none';
     
     // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, [clearBoundaryPlanState, setCenterMarkerOnMap, setOptimizedParamsWithLogging]);
+    if (previousSnapshot) {
+      setTimeout(commitHistory, 2100);
+    }
+  }, [captureMapHistorySnapshot, clearBoundaryPlanState, pushMapHistoryEntry, setCenterMarkerOnMap, setOptimizedParamsWithLogging]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
@@ -1078,7 +1326,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
 
     const markers: any[] = [];
-    let dragStartCoords: [number, number][] | null = null;
+    let dragStartSnapshot: MapHistorySnapshot | null = null;
 
     coords.forEach((coord, i) => {
       const el = document.createElement('div');
@@ -1088,11 +1336,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const marker = new mapboxgl.Marker({ element: el, draggable, anchor: 'center' })
         .setLngLat(coord)
         .addTo(map);
+      const releaseMapPan = bindMarkerInteractionGuards(el);
 
       // Capture state before drag starts
       marker.on('dragstart', () => {
-        const current = waypointCoordsRef.current.get(batteryIndex);
-        if (current) dragStartCoords = JSON.parse(JSON.stringify(current));
+        dragStartSnapshot = captureMapHistorySnapshot();
       });
 
       marker.on('drag', () => {
@@ -1114,29 +1362,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       // Commit to history when drag ends
       marker.on('dragend', () => {
-        const finalCoords = waypointCoordsRef.current.get(batteryIndex);
-        if (dragStartCoords && finalCoords) {
-          const newEntry = {
-            batteryIndex,
-            prevCoords: dragStartCoords,
-            newCoords: JSON.parse(JSON.stringify(finalCoords))
-          };
-          // Add to history and truncate any "redo" future (use ref to avoid stale closure)
-          const idx = historyIndexRef.current;
-          setHistory(prev => {
-            const truncated = prev.slice(0, idx + 1);
-            return [...truncated, newEntry];
-          });
-          setHistoryIndex(prev => prev + 1);
+        releaseMapPan();
+        const nextSnapshot = captureMapHistorySnapshot();
+        if (dragStartSnapshot) {
+          pushMapHistoryEntry(`waypoint ${batteryIndex} drag`, dragStartSnapshot, nextSnapshot);
         }
-        dragStartCoords = null;
+        dragStartSnapshot = null;
       });
 
       markers.push(marker);
     });
 
     waypointMarkersRef.current.set(batteryIndex, markers);
-  }, [removeWaypointMarkers]);
+  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, pushMapHistoryEntry, removeWaypointMarkers]);
 
   const removeBatteryPathVisualization = useCallback((batteryIndex: number) => {
     const map = mapRef.current;
@@ -1216,6 +1454,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setVisibleBatteryPaths(new Map());
   }, [removeBatteryPathVisualization, visibleBatteryPaths]);
 
+  useEffect(() => {
+    clearAllBatteryPathsRef.current = clearAllBatteryPaths;
+  }, [clearAllBatteryPaths]);
+
   const replaceBatteryPreviewPaths = useCallback(async (
     previewPaths: BoundaryPreviewPath[],
     options?: { fitBounds?: boolean }
@@ -1234,6 +1476,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       fitMapToPreviewPaths(previewPaths);
     }
   }, [drawBatteryPathVisualization, fitMapToPreviewPaths, removeBatteryPathVisualization, visibleBatteryPaths]);
+
+  useEffect(() => {
+    replaceBatteryPreviewPathsRef.current = replaceBatteryPreviewPaths;
+  }, [replaceBatteryPreviewPaths]);
 
   const loadAllBatteryPathPreviews = useCallback(async (options?: { fitBounds?: boolean }): Promise<BoundaryPreviewPath[]> => {
     const readyMap = mapReadyRef.current || await waitForMapReady();
@@ -1394,6 +1640,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         marker = new mapboxgl.Marker({ element, draggable: interactive, anchor: 'center' })
           .setLngLat([lng, lat])
           .addTo(map);
+        const releaseMapPan = bindMarkerInteractionGuards(element);
+        let dragStartSnapshot: MapHistorySnapshot | null = null;
+
+        marker.on('dragstart', () => {
+          dragStartSnapshot = captureMapHistorySnapshot();
+        });
 
         marker.on('drag', () => {
           const current = draftBoundaryRef.current;
@@ -1430,7 +1682,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         });
 
         marker.on('dragend', () => {
+          releaseMapPan();
           setBoundaryDirty(true);
+          const nextSnapshot = captureMapHistorySnapshot();
+          if (dragStartSnapshot) {
+            pushMapHistoryEntry(`boundary ${key} drag`, dragStartSnapshot, nextSnapshot);
+          }
+          dragStartSnapshot = null;
         });
 
         boundaryMarkersRef.current[key] = marker;
@@ -1439,7 +1697,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       marker.setDraggable(interactive);
       marker.setLngLat([lng, lat]);
     });
-  }, [resolveMapbox]);
+  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, pushMapHistoryEntry, resolveMapbox]);
 
   const optimizeBoundaryMission = useCallback(async (boundary: BoundaryEllipse): Promise<BoundaryOptimizationResponse> => {
     const minutes = parseInt(batteryMinutes);
@@ -1572,6 +1830,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     try {
       setIsApplyingBoundary(true);
+      const previousSnapshot = captureMapHistorySnapshot();
       const response = await optimizeBoundaryMission(currentDraft);
       const normalizedBoundary = normalizeBoundary(response.boundary);
 
@@ -1603,13 +1862,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         showSystemNotification('success', 'Boundary applied');
       }
 
+      setTimeout(() => {
+        pushMapHistoryEntry('boundary apply', previousSnapshot, captureMapHistorySnapshot());
+      }, 0);
       triggerSaveRef.current?.();
     } catch (e: any) {
       showSystemNotification('error', e?.message || 'Failed to apply boundary');
     } finally {
       setIsApplyingBoundary(false);
     }
-  }, [isApplyingBoundary, optimizeBoundaryMission, replaceBatteryPreviewPaths, setCenterMarkerOnMap, showSystemNotification]);
+  }, [
+    captureMapHistorySnapshot,
+    isApplyingBoundary,
+    optimizeBoundaryMission,
+    pushMapHistoryEntry,
+    replaceBatteryPreviewPaths,
+    setCenterMarkerOnMap,
+    showSystemNotification,
+  ]);
 
   useEffect(() => {
     const activeBoundary = isFullscreen
@@ -1845,9 +2115,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const lng = parseFloat(coordsMatch[2]);
 
         if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-          await placeMarkerAtCoords(lat, lng);
-          return;
-        }
+        await placeMarkerAtCoords(lat, lng, { historyAction: 'address center change' });
+        return;
+      }
       }
 
       // Handle geocoding search
@@ -1856,7 +2126,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const data = await res.json();
         if (data?.features?.length) {
           const [lng, lat] = data.features[0].center;
-          await placeMarkerAtCoords(lat, lng);
+          await placeMarkerAtCoords(lat, lng, { historyAction: 'address center change' });
         }
       } catch (err) {
         console.warn('Geocoding failed:', err);
@@ -2161,7 +2431,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   <div className="map-toolbar">
                     <button 
                       onClick={handleUndo} 
-                      disabled={historyIndex < 0 || isBoundaryMode}
+                      disabled={historyIndex < 0}
                       className="map-toolbar-button"
                       title="Undo"
                     >
@@ -2172,7 +2442,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </button>
                     <button 
                       onClick={handleRedo} 
-                      disabled={historyIndex >= history.length - 1 || isBoundaryMode}
+                      disabled={historyIndex >= history.length - 1}
                       className="map-toolbar-button"
                       title="Redo"
                     >
