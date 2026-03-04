@@ -1415,6 +1415,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     const markers: any[] = [];
     let dragStartSnapshot: MapHistorySnapshot | null = null;
+    let markerMoved = false;
 
     coords.forEach((coord, i) => {
       const el = document.createElement('div');
@@ -1425,11 +1426,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         .setLngLat(coord)
         .addTo(map);
       const releaseMapPan = bindMarkerInteractionGuards(el);
+      const captureWaypointDragStart = () => {
+        flushPendingViewportHistory();
+        dragStartSnapshot = captureMapHistorySnapshot();
+        markerMoved = false;
+      };
+      el.addEventListener('pointerdown', captureWaypointDragStart, true);
 
       // Capture state before drag starts
       marker.on('dragstart', () => {
-        flushPendingViewportHistory();
-        dragStartSnapshot = captureMapHistorySnapshot();
+        if (!dragStartSnapshot) {
+          captureWaypointDragStart();
+        }
       });
 
       marker.on('drag', () => {
@@ -1437,6 +1445,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const liveCoords = waypointCoordsRef.current.get(batteryIndex);
         if (!liveCoords) return;
         liveCoords[i] = [lngLat.lng, lngLat.lat];
+        markerMoved = true;
 
         const sourceId = `battery-path-${batteryIndex}`;
         const source = map.getSource(sourceId);
@@ -1455,10 +1464,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         // Avoid a delayed map dragend from landing after marker history and consuming the first undo.
         pendingViewportHistoryRef.current = null;
         const nextSnapshot = captureMapHistorySnapshot();
-        if (dragStartSnapshot) {
+        if (dragStartSnapshot && markerMoved) {
           pushMapHistoryEntry(`waypoint ${batteryIndex} drag`, dragStartSnapshot, nextSnapshot);
         }
         dragStartSnapshot = null;
+        markerMoved = false;
       });
 
       markers.push(marker);
@@ -1733,10 +1743,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           .addTo(map);
         const releaseMapPan = bindMarkerInteractionGuards(element);
         let dragStartSnapshot: MapHistorySnapshot | null = null;
-
-        marker.on('dragstart', () => {
+        let markerMoved = false;
+        const captureBoundaryDragStart = () => {
           flushPendingViewportHistory();
           dragStartSnapshot = captureMapHistorySnapshot();
+          markerMoved = false;
+        };
+        element.addEventListener('pointerdown', captureBoundaryDragStart, true);
+
+        marker.on('dragstart', () => {
+          if (!dragStartSnapshot) {
+            captureBoundaryDragStart();
+          }
         });
 
         marker.on('drag', () => {
@@ -1771,6 +1789,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           }
 
           setBoundaryDirty(true);
+          markerMoved = true;
         });
 
         marker.on('dragend', () => {
@@ -1779,10 +1798,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           pendingViewportHistoryRef.current = null;
           setBoundaryDirty(true);
           const nextSnapshot = captureMapHistorySnapshot();
-          if (dragStartSnapshot) {
+          if (dragStartSnapshot && markerMoved) {
             pushMapHistoryEntry(`boundary ${key} drag`, dragStartSnapshot, nextSnapshot);
           }
           dragStartSnapshot = null;
+          markerMoved = false;
         });
 
         boundaryMarkersRef.current[key] = marker;
