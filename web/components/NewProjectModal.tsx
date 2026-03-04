@@ -201,6 +201,23 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const boundaryEntryVisiblePathsRef = useRef<Map<number, Array<[number, number]>>>(new Map());
   const clearAllBatteryPathsRef = useRef<() => void>(() => {});
   const replaceBatteryPreviewPathsRef = useRef<(previewPaths: BoundaryPreviewPath[], options?: { fitBounds?: boolean }) => Promise<void>>(async () => {});
+  const captureMapHistorySnapshotRef = useRef<() => MapHistorySnapshot>(() => ({
+    selectedCoords: null,
+    addressSearch: '',
+    optimizedParams: null,
+    appliedBoundary: null,
+    appliedBoundaryPlan: null,
+    draftBoundary: null,
+    isBoundaryMode: false,
+    boundaryDirty: false,
+    visibleBatteryPaths: [],
+    viewport: null,
+  }));
+  const pushMapHistoryEntryRef = useRef<(action: string, prev: MapHistorySnapshot, next: MapHistorySnapshot) => void>(() => {});
+  const clearBoundaryPlanStateRef = useRef<(reason: string) => void>(() => {});
+  const setCenterMarkerOnMapRef = useRef<(lat: number, lng: number) => Promise<void>>(async () => {});
+  const setOptimizedParamsWithLoggingRef = useRef<(params: OptimizedParams | null, reason: string) => void>(() => {});
+  const restoreSavedLocationRef = useRef<(map: any, coords: { lat: number; lng: number }) => Promise<void>>(async () => {});
 
   // Waypoint drag refs
   const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
@@ -308,20 +325,53 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return pinElement;
   }, []);
 
+  const waitForMapCanvasHost = useCallback(async (map: any, timeoutMs = 2000): Promise<boolean> => {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (map?.getCanvasContainer?.()) {
+        return true;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+
+    return !!map?.getCanvasContainer?.();
+  }, []);
+
   const setCenterMarkerOnMap = useCallback(async (lat: number, lng: number) => {
-    const map = mapRef.current;
-    if (!map) return;
+    const initialMap = mapRef.current;
+    if (!initialMap) return;
 
     const mapboxgl = await resolveMapbox();
+    const activeMap = mapRef.current;
+    if (!activeMap || !(await waitForMapCanvasHost(activeMap))) {
+      return;
+    }
+
     if (markerRef.current) {
       markerRef.current.setLngLat([lng, lat]);
       return;
     }
 
-    markerRef.current = new mapboxgl.Marker({ element: createCenterPinElement(), anchor: 'bottom' })
+    const attachMarker = (mapInstance: any) => new mapboxgl.Marker({ element: createCenterPinElement(), anchor: 'bottom' })
       .setLngLat([lng, lat])
-      .addTo(map);
-  }, [createCenterPinElement, resolveMapbox]);
+      .addTo(mapInstance);
+
+    try {
+      markerRef.current = attachMarker(activeMap);
+    } catch (error) {
+      console.warn('Center marker attachment failed; retrying with current map instance', error);
+      markerRef.current = null;
+      const retryMap = mapRef.current;
+      if (!retryMap || !(await waitForMapCanvasHost(retryMap, 1000))) {
+        return;
+      }
+      try {
+        markerRef.current = attachMarker(retryMap);
+      } catch (retryError) {
+        console.warn('Center marker attachment failed after retry', retryError);
+      }
+    }
+  }, [createCenterPinElement, resolveMapbox, waitForMapCanvasHost]);
 
   const clearCenterMarkerFromMap = useCallback(() => {
     markerRef.current?.remove?.();
@@ -428,6 +478,26 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       return computedIndex >= 100 ? 99 : computedIndex;
     });
   }, [serializeMapHistorySnapshot]);
+
+  useEffect(() => {
+    captureMapHistorySnapshotRef.current = captureMapHistorySnapshot;
+  }, [captureMapHistorySnapshot]);
+
+  useEffect(() => {
+    pushMapHistoryEntryRef.current = pushMapHistoryEntry;
+  }, [pushMapHistoryEntry]);
+
+  useEffect(() => {
+    clearBoundaryPlanStateRef.current = clearBoundaryPlanState;
+  }, [clearBoundaryPlanState]);
+
+  useEffect(() => {
+    setCenterMarkerOnMapRef.current = setCenterMarkerOnMap;
+  }, [setCenterMarkerOnMap]);
+
+  useEffect(() => {
+    setOptimizedParamsWithLoggingRef.current = setOptimizedParamsWithLogging;
+  }, [setOptimizedParamsWithLogging]);
 
   const bindMarkerInteractionGuards = useCallback((element: HTMLElement) => {
     let dragPanWasEnabled = false;
@@ -735,22 +805,22 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             return;
           }
 
-          const previousSnapshot = captureMapHistorySnapshot();
+          const previousSnapshot = captureMapHistorySnapshotRef.current();
           const { lng, lat } = e.lngLat;
           selectedCoordsRef.current = { lat, lng };
           setSelectedCoords({ lat, lng });
-          void setCenterMarkerOnMap(lat, lng);
+          void setCenterMarkerOnMapRef.current(lat, lng);
           // Fill address input with coordinates formatted
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
-          setOptimizedParamsWithLogging(null, 'Map coordinates changed');
-          clearBoundaryPlanState('Map coordinates changed');
+          setOptimizedParamsWithLoggingRef.current(null, 'Map coordinates changed');
+          clearBoundaryPlanStateRef.current('Map coordinates changed');
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
 
           setTimeout(() => {
-            pushMapHistoryEntry('map center change', previousSnapshot, captureMapHistorySnapshot());
+            pushMapHistoryEntryRef.current('map center change', previousSnapshot, captureMapHistorySnapshotRef.current());
           }, 0);
         });
 
@@ -760,7 +830,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           }
           pendingViewportHistoryRef.current = {
             action,
-            snapshot: captureMapHistorySnapshot(),
+            snapshot: captureMapHistorySnapshotRef.current(),
           };
         };
 
@@ -771,7 +841,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             return;
           }
           pendingViewportHistoryRef.current = null;
-          pushMapHistoryEntry(pending.action, pending.snapshot, captureMapHistorySnapshot());
+          pushMapHistoryEntryRef.current(pending.action, pending.snapshot, captureMapHistorySnapshotRef.current());
         };
 
         map.on('dragstart', (event: any) => beginViewportHistory('map pan', event));
@@ -798,7 +868,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             
             // Wait a bit longer for map to be fully ready, then restore coordinates
             setTimeout(async () => {
-              await restoreSavedLocation(map, coords);
+              await restoreSavedLocationRef.current(map, coords);
             }, 1000); // Increased delay to ensure map is fully ready
           }
         }
@@ -822,16 +892,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         selectedCoordsRef.current = null;
       }
     };
-  }, [
-    captureMapHistorySnapshot,
-    clearBoundaryPlanState,
-    open,
-    project,
-    pushMapHistoryEntry,
-    resolveMapbox,
-    setCenterMarkerOnMap,
-    setOptimizedParamsWithLogging,
-  ]);
+  }, [open, project, resolveMapbox]);
 
   // Helper function to place marker at coordinates
   const placeMarkerAtCoords = useCallback(async (
@@ -886,6 +947,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Update the address search field to show the coordinates
     setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
   }, [setCenterMarkerOnMap]);
+
+  useEffect(() => {
+    restoreSavedLocationRef.current = restoreSavedLocation;
+  }, [restoreSavedLocation]);
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
