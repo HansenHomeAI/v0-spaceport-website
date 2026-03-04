@@ -2793,6 +2793,9 @@ def lambda_handler(event, context):
 def handle_optimize_spiral(designer, body, cors_headers):
     """Handle /api/optimize-spiral endpoint"""
     try:
+        if body.get('boundary') is not None:
+            return handle_optimize_boundary(designer, body, cors_headers)
+
         battery_minutes = float(body.get('batteryMinutes', 20))
         batteries = int(body.get('batteries', 3))
         center = body.get('center', '')

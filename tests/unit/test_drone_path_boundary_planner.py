@@ -2,6 +2,7 @@ import sys
 import types
 import unittest
 import importlib.util
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -119,6 +120,25 @@ class DronePathBoundaryPlannerTests(unittest.TestCase):
         self.assertEqual(impossible["fitStatus"], "best_effort")
         self.assertLess(impossible["coverageRatio"], 1.0)
         self.assertGreater(len(impossible["batteries"]), 0)
+
+    def test_optimize_spiral_endpoint_accepts_boundary_payload(self):
+        body = {
+            "batteryMinutes": 20,
+            "batteries": 3,
+            "center": f'{self.center["lat"]}, {self.center["lon"]}',
+            "minHeight": 120,
+            "maxHeight": 300,
+            "boundary": self.circle_boundary,
+        }
+
+        with patch("builtins.print"):
+            response = drone_path_module.handle_optimize_spiral(self.designer, body, {})
+
+        self.assertEqual(response["statusCode"], 200)
+        payload = json.loads(response["body"])
+        self.assertIn("boundaryPlan", payload)
+        self.assertIn("previewPaths", payload)
+        self.assertEqual(payload["boundary"]["centerLat"], self.circle_boundary["centerLat"])
 
     def test_preview_and_csv_stay_inside_boundary_and_under_time_limit(self):
         plan = self._plan(self.oblong_boundary, battery_minutes=20, batteries=3)

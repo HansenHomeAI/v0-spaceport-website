@@ -1432,18 +1432,42 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
     if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
 
-    const res = await fetch(`${API_ENHANCED_BASE}/api/optimize-boundary`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const endpoints = [
+      `${API_ENHANCED_BASE}/api/optimize-boundary`,
+      `${API_ENHANCED_BASE}/api/optimize-spiral`,
+    ];
 
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => 'Unknown error');
-      throw new Error(errorText || 'Boundary optimization failed');
+    let lastError: Error | null = null;
+
+    for (const endpoint of endpoints) {
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text().catch(() => 'Unknown error');
+          throw new Error(errorText || 'Boundary optimization failed');
+        }
+
+        const data = await res.json();
+        if (data?.boundaryPlan && Array.isArray(data?.previewPaths)) {
+          return data as BoundaryOptimizationResponse;
+        }
+
+        throw new Error('Boundary optimization response was missing boundary plan data');
+      } catch (error: any) {
+        lastError = error instanceof Error ? error : new Error(error?.message || 'Boundary optimization failed');
+        if (endpoint.endsWith('/api/optimize-boundary')) {
+          console.warn('Boundary endpoint unavailable, retrying via optimize-spiral fallback', lastError);
+          continue;
+        }
+      }
     }
 
-    return await res.json();
+    throw lastError || new Error('Boundary optimization failed');
   }, [API_ENHANCED_BASE, batteryMinutes, maxExpansionDist, maxHeightFeet, minExpansionDist, minHeightFeet, numBatteries]);
 
   const handleCancelBoundaryMode = useCallback(async () => {
