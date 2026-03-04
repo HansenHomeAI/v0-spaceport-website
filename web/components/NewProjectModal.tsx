@@ -215,6 +215,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }));
   const pushMapHistoryEntryRef = useRef<(action: string, prev: MapHistorySnapshot, next: MapHistorySnapshot) => void>(() => {});
   const clearBoundaryPlanStateRef = useRef<(reason: string) => void>(() => {});
+  const flushPendingViewportHistoryRef = useRef<() => void>(() => {});
   const setCenterMarkerOnMapRef = useRef<(lat: number, lng: number) => Promise<void>>(async () => {});
   const setOptimizedParamsWithLoggingRef = useRef<(params: OptimizedParams | null, reason: string) => void>(() => {});
   const restoreSavedLocationRef = useRef<(map: any, coords: { lat: number; lng: number }) => Promise<void>>(async () => {});
@@ -479,6 +480,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
   }, [serializeMapHistorySnapshot]);
 
+  const flushPendingViewportHistory = useCallback(() => {
+    const pending = pendingViewportHistoryRef.current;
+    if (!pending || isRestoringHistoryRef.current) {
+      pendingViewportHistoryRef.current = null;
+      return;
+    }
+
+    pendingViewportHistoryRef.current = null;
+    pushMapHistoryEntry(pending.action, pending.snapshot, captureMapHistorySnapshot());
+  }, [captureMapHistorySnapshot, pushMapHistoryEntry]);
+
   useEffect(() => {
     captureMapHistorySnapshotRef.current = captureMapHistorySnapshot;
   }, [captureMapHistorySnapshot]);
@@ -486,6 +498,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   useEffect(() => {
     pushMapHistoryEntryRef.current = pushMapHistoryEntry;
   }, [pushMapHistoryEntry]);
+
+  useEffect(() => {
+    flushPendingViewportHistoryRef.current = flushPendingViewportHistory;
+  }, [flushPendingViewportHistory]);
 
   useEffect(() => {
     clearBoundaryPlanStateRef.current = clearBoundaryPlanState;
@@ -805,6 +821,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             return;
           }
 
+          flushPendingViewportHistoryRef.current();
           const previousSnapshot = captureMapHistorySnapshotRef.current();
           const { lng, lat } = e.lngLat;
           selectedCoordsRef.current = { lat, lng };
@@ -1405,6 +1422,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       // Capture state before drag starts
       marker.on('dragstart', () => {
+        flushPendingViewportHistory();
         dragStartSnapshot = captureMapHistorySnapshot();
       });
 
@@ -1439,7 +1457,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     waypointMarkersRef.current.set(batteryIndex, markers);
-  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, pushMapHistoryEntry, removeWaypointMarkers]);
+  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, flushPendingViewportHistory, pushMapHistoryEntry, removeWaypointMarkers]);
 
   const removeBatteryPathVisualization = useCallback((batteryIndex: number) => {
     const map = mapRef.current;
@@ -1709,6 +1727,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         let dragStartSnapshot: MapHistorySnapshot | null = null;
 
         marker.on('dragstart', () => {
+          flushPendingViewportHistory();
           dragStartSnapshot = captureMapHistorySnapshot();
         });
 
@@ -1762,7 +1781,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       marker.setDraggable(interactive);
       marker.setLngLat([lng, lat]);
     });
-  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, pushMapHistoryEntry, resolveMapbox]);
+  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, flushPendingViewportHistory, pushMapHistoryEntry, resolveMapbox]);
 
   const optimizeBoundaryMission = useCallback(async (boundary: BoundaryEllipse): Promise<BoundaryOptimizationResponse> => {
     const minutes = parseInt(batteryMinutes);
@@ -1895,6 +1914,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     try {
       setIsApplyingBoundary(true);
+      flushPendingViewportHistory();
       const previousSnapshot = captureMapHistorySnapshot();
       const response = await optimizeBoundaryMission(currentDraft);
       const normalizedBoundary = normalizeBoundary(response.boundary);
@@ -1938,6 +1958,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [
     captureMapHistorySnapshot,
+    flushPendingViewportHistory,
     isApplyingBoundary,
     optimizeBoundaryMission,
     pushMapHistoryEntry,
