@@ -724,7 +724,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const canOptimize = useMemo(() => {
     // Always use ref as source of truth for coordinates
-    const coords = selectedCoordsRef.current;
+    const coords = selectedCoords ?? selectedCoordsRef.current;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
     const isValid = Boolean(coords && minutes && batteries);
@@ -739,7 +739,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
     
     return isValid;
-  }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
+  }, [batteryMinutes, numBatteries, selectedCoords]);
 
   const parsedBatteryCount = useMemo(() => {
     return Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
@@ -1521,10 +1521,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     try {
       setIsApplyingBoundary(true);
+      const ready = await ensureMissionReady();
+      if (!ready) {
+        return;
+      }
+
       boundaryEntryVisiblePathsRef.current = cloneVisiblePaths(visibleBatteryPaths);
       const previewPaths = await loadAllBatteryPathPreviews({ fitBounds: true });
       if (!previewPaths.length) {
-        showSystemNotification('error', 'No flight path data received');
+        showSystemNotification('error', 'Failed to generate flight path previews');
         return;
       }
 
@@ -1553,7 +1558,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsApplyingBoundary(false);
     }
-  }, [cloneVisiblePaths, isFullscreen, loadAllBatteryPathPreviews, showSystemNotification, visibleBatteryPaths]);
+  }, [cloneVisiblePaths, ensureMissionReady, isFullscreen, loadAllBatteryPathPreviews, showSystemNotification, visibleBatteryPaths]);
 
   const handleApplyBoundary = useCallback(async () => {
     const currentDraft = draftBoundaryRef.current;
