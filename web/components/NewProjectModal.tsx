@@ -9,12 +9,39 @@ type NewProjectModalProps = {
   onSaved?: () => void; // callback after successful save/update
 };
 
+type OptimizationInfo = {
+  adjustments?: string[];
+  requested_constraints?: {
+    batteryMinutes?: number;
+    batteries?: number;
+    minExpansionDist?: number | null;
+    maxExpansionDist?: number | null;
+  };
+  final_constraints?: {
+    N?: number;
+    r0?: number;
+    rHold?: number;
+    actualMinExpansionDist?: number | null;
+    actualMaxExpansionDist?: number | null;
+    estimated_time_minutes?: number;
+    battery_utilization?: number;
+  };
+};
+
 type OptimizedParams = {
   [key: string]: any;
   center: string;
   minHeight: number;
   maxHeight: number | null;
   elevationFeet: number | null;
+  expansionMode?: 'default' | 'custom';
+  actualMinExpansionDist?: number | null;
+  actualMaxExpansionDist?: number | null;
+  actualOuterRadius?: number;
+  requestedBounceSeed?: number;
+  adjustedBounceCount?: boolean;
+  adjustedExpansion?: boolean;
+  optimizationInfo?: OptimizationInfo | null;
 };
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
@@ -211,6 +238,135 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setHistoryIndex(prev => prev + 1);
   }, [history, historyIndex]);
 
+  const buildOptimizationRequestBody = useCallback((
+    coords: { lat: number; lng: number },
+    minutes: number,
+    batteries: number,
+    requestedMinExpansion?: string | null,
+    requestedMaxExpansion?: string | null,
+  ): Record<string, any> => {
+    const body: Record<string, any> = {
+      batteryMinutes: minutes,
+      batteries,
+      center: `${coords.lat}, ${coords.lng}`,
+    };
+
+    if (requestedMinExpansion && requestedMinExpansion.trim()) {
+      body.minExpansionDist = parseFloat(requestedMinExpansion);
+    }
+    if (requestedMaxExpansion && requestedMaxExpansion.trim()) {
+      body.maxExpansionDist = parseFloat(requestedMaxExpansion);
+    }
+
+    return body;
+  }, []);
+
+  const buildResolvedFlightRequestBody = useCallback((params: OptimizedParams): Record<string, any> => {
+    const body: Record<string, any> = { ...params };
+    const resolvedMin = params.actualMinExpansionDist ?? null;
+    const resolvedMax = params.actualMaxExpansionDist ?? null;
+
+    if (resolvedMin !== null) {
+      body.minExpansionDist = resolvedMin;
+    } else {
+      delete body.minExpansionDist;
+    }
+
+    if (resolvedMax !== null) {
+      body.maxExpansionDist = resolvedMax;
+    } else {
+      delete body.maxExpansionDist;
+    }
+
+    delete body.optimizationInfo;
+    return body;
+  }, []);
+
+  const runOptimizationRequest = useCallback(async ({
+    coords,
+    minutes,
+    batteries,
+    minHeightValue,
+    maxHeightValue,
+    requestedMinExpansion,
+    requestedMaxExpansion,
+  }: {
+    coords: { lat: number; lng: number };
+    minutes: number;
+    batteries: number;
+    minHeightValue?: string | null;
+    maxHeightValue?: string | null;
+    requestedMinExpansion?: string | null;
+    requestedMaxExpansion?: string | null;
+  }): Promise<OptimizedParams> => {
+    const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        buildOptimizationRequestBody(
+          coords,
+          minutes,
+          batteries,
+          requestedMinExpansion,
+          requestedMaxExpansion,
+        )
+      ),
+    });
+    if (!optRes.ok) {
+      const errorText = await optRes.text().catch(() => '');
+      let parsedError: string | null = null;
+      try {
+        const parsed = JSON.parse(errorText);
+        parsedError = parsed?.error || null;
+      } catch {
+        parsedError = null;
+      }
+      throw new Error(parsedError || errorText || 'Flight path optimization failed');
+    }
+    const optData = await optRes.json();
+
+    let elevationFeet: number | null = null;
+    const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
+    });
+    if (elevRes.ok) {
+      const elevData = await elevRes.json();
+      elevationFeet = elevData.elevation_feet ?? null;
+    }
+
+    const minH = parseFloat(minHeightValue || '120') || 120;
+    const maxH = maxHeightValue ? parseFloat(maxHeightValue) : null;
+
+    return {
+      ...optData.optimized_params,
+      center: `${coords.lat}, ${coords.lng}`,
+      minHeight: minH,
+      maxHeight: maxH,
+      elevationFeet,
+      optimizationInfo: optData.optimization_info ?? null,
+    };
+  }, [API_ENHANCED_BASE, buildOptimizationRequestBody]);
+
+  const formatExpansionSummary = useCallback((minValue?: string | number | null, maxValue?: string | number | null): string => {
+    const normalize = (value?: string | number | null): number | null => {
+      if (value === null || value === undefined || value === '') return null;
+      const parsed = typeof value === 'number' ? value : parseFloat(String(value));
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+
+    const minNum = normalize(minValue);
+    const maxNum = normalize(maxValue);
+    if (minNum === null && maxNum === null) return 'Default exponential';
+
+    const resolvedMin = minNum ?? maxNum;
+    const resolvedMax = maxNum ?? minNum;
+    if (resolvedMin === null || resolvedMax === null) return 'Default exponential';
+    if (Math.abs(resolvedMin - resolvedMax) < 0.01) return `${resolvedMin.toFixed(0)} ft / bounce`;
+    return `${resolvedMin.toFixed(0)} ft -> ${resolvedMax.toFixed(0)} ft`;
+  }, []);
+
 
 
   // Reset state when opening/closing
@@ -289,38 +445,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           if (coords && minutes && batteries) {
             try {
               setOptimizationLoading(true);
-              
-              // Step 1: optimize spiral
-              const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ batteryMinutes: minutes, batteries, center: `${coords.lat}, ${coords.lng}` }),
+              const optimizedParams = await runOptimizationRequest({
+                coords,
+                minutes,
+                batteries,
+                minHeightValue: params.minHeight || '120',
+                maxHeightValue: params.maxHeight || '',
+                requestedMinExpansion: params.minExpansionDist || '',
+                requestedMaxExpansion: params.maxExpansionDist || '',
               });
-              if (!optRes.ok) throw new Error('Flight path optimization failed');
-              const optData = await optRes.json();
-
-              // Step 2: elevation
-              let elevationFeet: number | null = null;
-              const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
-              });
-              if (elevRes.ok) {
-                const elevData = await elevRes.json();
-                elevationFeet = elevData.elevation_feet ?? null;
-              }
-
-              const minH = parseFloat(params.minHeight || '120') || 120;
-              const maxH = params.maxHeight ? parseFloat(params.maxHeight) : null;
-
-              const optimizedParams: OptimizedParams = {
-                ...optData.optimized_params,
-                center: `${coords.lat}, ${coords.lng}`,
-                minHeight: minH,
-                maxHeight: maxH,
-                elevationFeet,
-              };
               setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
             } catch (e) {
               console.warn('Failed to auto-restore optimization params:', e);
@@ -356,7 +489,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [open, project]);
+  }, [open, project, runOptimizationRequest]);
 
   // Initialize Mapbox on open
   useEffect(() => {
@@ -674,37 +807,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         maxHeight: maxHeightFeet 
       });
 
-      // Step 1: optimize spiral
-      const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batteryMinutes: minutes, batteries, center: `${coords.lat}, ${coords.lng}` }),
+      const params = await runOptimizationRequest({
+        coords,
+        minutes,
+        batteries,
+        minHeightValue: minHeightFeet,
+        maxHeightValue: maxHeightFeet,
+        requestedMinExpansion: minExpansionDist,
+        requestedMaxExpansion: maxExpansionDist,
       });
-      if (!optRes.ok) throw new Error('Flight path optimization failed');
-      const optData = await optRes.json();
-
-      // Step 2: elevation
-      let elevationFeet: number | null = null;
-      const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
-      });
-      if (elevRes.ok) {
-        const elevData = await elevRes.json();
-        elevationFeet = elevData.elevation_feet ?? null;
-      }
-
-      const minH = parseFloat(minHeightFeet || '120') || 120;
-      const maxH = maxHeightFeet ? parseFloat(maxHeightFeet) : null;
-
-      const params: OptimizedParams = {
-        ...optData.optimized_params,
-        center: `${coords.lat}, ${coords.lng}`,
-        minHeight: minH,
-        maxHeight: maxH,
-        elevationFeet,
-      };
       setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
@@ -715,7 +826,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
+  }, [batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, minExpansionDist, maxExpansionDist, canOptimize, runOptimizationRequest, showSystemNotification, startProcessingMessages, setOptimizedParamsWithLogging]);
 
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
@@ -762,9 +873,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     
     try {
-      const downloadBody: Record<string, any> = { ...currentOptimizedParams };
-      if (minExpansionDist) downloadBody.minExpansionDist = parseFloat(minExpansionDist);
-      if (maxExpansionDist) downloadBody.maxExpansionDist = parseFloat(maxExpansionDist);
+      const downloadBody = buildResolvedFlightRequestBody(currentOptimizedParams);
       console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, downloadBody);
       
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
@@ -836,7 +945,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, minExpansionDist, maxExpansionDist]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, buildResolvedFlightRequestBody, optimizedParams, showSystemNotification, status]);
 
   const clearAllBatteryPaths = useCallback(() => {
     const map = mapRef.current;
@@ -857,9 +966,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const currentOptimizedParams = optimizedParamsRef.current;
     if (!currentOptimizedParams) return [];
 
-    const body: Record<string, any> = { ...currentOptimizedParams };
-    if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
-    if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
+    const body = buildResolvedFlightRequestBody(currentOptimizedParams);
 
     const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
       method: 'POST',
@@ -880,7 +987,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     }
     return coords;
-  }, [API_ENHANCED_BASE, minExpansionDist, maxExpansionDist]);
+  }, [API_ENHANCED_BASE, buildResolvedFlightRequestBody]);
 
   const removeWaypointMarkers = useCallback((batteryIndex: number) => {
     const existing = waypointMarkersRef.current.get(batteryIndex);
@@ -1494,6 +1601,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   if (!open) return null;
 
   const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+  const optimizationInfo = optimizedParams?.optimizationInfo ?? null;
+  const optimizationAdjustments = optimizationInfo?.adjustments ?? [];
+  const requestedExpansionSummary = formatExpansionSummary(minExpansionDist, maxExpansionDist);
+  const actualExpansionSummary = optimizedParams
+    ? formatExpansionSummary(
+        optimizedParams.actualMinExpansionDist ?? null,
+        optimizedParams.actualMaxExpansionDist ?? null,
+      )
+    : 'Not optimized yet';
 
   return (
     <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>
@@ -1730,6 +1846,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, '');
                         setMinExpansionDist(value);
+                        setOptimizedParamsWithLogging(null, `Min expansion distance changed to: ${value}`);
                       }}
                       onKeyDown={(e) => {
                         if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
@@ -1749,6 +1866,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, '');
                         setMaxExpansionDist(value);
+                        setOptimizedParamsWithLogging(null, `Max expansion distance changed to: ${value}`);
                       }}
                       onKeyDown={(e) => {
                         if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
@@ -1762,12 +1880,91 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               </div>
             </div>
 
+            {optimizedParams && (
+              <div className="category-outline">
+                <div className="popup-section">
+                  <h4>Optimization Summary</h4>
+                  <div style={{
+                    display: 'grid',
+                    gap: 10,
+                    marginTop: 8,
+                    color: '#f5f5f5',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}>
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gap: 10,
+                    }}>
+                      <div>
+                        <strong>Requested Expansion:</strong><br />
+                        <span>{requestedExpansionSummary}</span>
+                      </div>
+                      <div>
+                        <strong>Actual Expansion Used:</strong><br />
+                        <span>{actualExpansionSummary}</span>
+                      </div>
+                      <div>
+                        <strong>Bounce Seed / Final:</strong><br />
+                        <span>{optimizedParams.requestedBounceSeed ?? '-'}{' -> '}{optimizedParams.N ?? '-'}</span>
+                      </div>
+                      <div>
+                        <strong>Estimated Time / Utilization:</strong><br />
+                        <span>
+                          {optimizedParams.estimated_time_minutes ?? '-'} min / {optimizedParams.battery_utilization ?? '-'}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {optimizationAdjustments.length > 0 && (
+                      <div style={{
+                        padding: '10px 12px',
+                        borderRadius: 10,
+                        border: '1px solid rgba(255, 205, 96, 0.45)',
+                        background: 'rgba(255, 205, 96, 0.12)',
+                        color: '#ffe8b0',
+                      }}>
+                        <strong style={{ display: 'block', marginBottom: 6 }}>Optimizer Adjustments</strong>
+                        {optimizationAdjustments.map((adjustment, index) => (
+                          <div key={`${adjustment}-${index}`}>{adjustment}</div>
+                        ))}
+                      </div>
+                    )}
+
+                    {optimizationInfo?.final_constraints?.rHold && (
+                      <div style={{ opacity: 0.82 }}>
+                        Final hold radius: {Number(optimizationInfo.final_constraints.rHold).toFixed(0)} ft
+                        {typeof optimizedParams.actualOuterRadius === 'number' && (
+                          <> | Actual outer radius: {optimizedParams.actualOuterRadius.toFixed(0)} ft</>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
               <div className="popup-section">
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
                   {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
                 </h4>
+                {optimizationAdjustments.length > 0 && (
+                  <div style={{
+                    margin: '8px 6% 12px',
+                    padding: '8px 10px',
+                    borderRadius: 10,
+                    border: '1px solid rgba(255, 205, 96, 0.35)',
+                    background: 'rgba(255, 205, 96, 0.08)',
+                    color: '#ffe8b0',
+                    fontSize: 12,
+                    lineHeight: 1.45,
+                  }}>
+                    Battery-fit notice: the optimizer adjusted bounce count and/or spacing before download.
+                  </div>
+                )}
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
                   <div key={idx} className="battery-segment-item">
@@ -1998,4 +2195,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-

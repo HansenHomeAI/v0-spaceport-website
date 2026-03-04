@@ -122,13 +122,34 @@ print("TEST 2: Optimizer battery compliance")
 print("=" * 60)
 for batt in [8, 10, 15, 20, 25, 30, 45]:
     for sl in [1, 2, 3, 6]:
-        opt = designer.optimize_spiral_for_battery(batt, sl, 41.0, -111.0)
+        try:
+            opt = designer.optimize_spiral_for_battery(batt, sl, 41.0, -111.0)
+        except ValueError as exc:
+            minimum_safe = min(
+                designer.estimate_flight_time_minutes(
+                    {'slices': sl, 'N': 3, 'r0': r0, 'rHold': max(200, r0 + 10)},
+                    41.0,
+                    -111.0,
+                )
+                for r0 in [200, 100]
+            )
+            if minimum_safe > batt * 0.98 + 0.05:
+                passed += 1
+                print(
+                    f"  NOTE: {batt}min {sl}sl infeasible within battery target "
+                    f"(minimum safe mission {minimum_safe:.2f}min)"
+                )
+                continue
+
+            failed += 1
+            print(f"  FAIL: {batt}min {sl}sl  optimizer rejected unexpectedly: {exc}")
+            continue
+
         params = {'slices': opt['slices'], 'N': opt['N'],
                   'r0': opt.get('r0', 200), 'rHold': opt['rHold']}
         est = designer.estimate_flight_time_minutes(params, 41.0, -111.0)
         margin = batt - est
-        # Allow a small tolerance for the 8min/1sl edge case
-        if margin < -0.05 and not (batt == 8 and sl == 1):
+        if margin < -0.05:
             failed += 1
             print(f"  FAIL: {batt}min {sl}sl  est={est:.2f}  OVER by {-margin:.2f}")
         else:

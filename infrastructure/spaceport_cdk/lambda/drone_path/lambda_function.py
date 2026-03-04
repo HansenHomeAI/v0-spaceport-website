@@ -274,7 +274,88 @@ class SpiralDesigner:
             'y': point['x'] * math.sin(angle) + point['y'] * math.cos(angle)
         }
     
-    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200, min_expansion_dist: float = None, max_expansion_dist: float = None) -> List[Dict]:
+    def normalize_expansion_request(
+        self,
+        min_expansion_dist: Optional[float] = None,
+        max_expansion_dist: Optional[float] = None,
+    ) -> Dict:
+        """Normalize optional expansion inputs into a single request shape."""
+        if min_expansion_dist is not None and min_expansion_dist <= 0:
+            raise ValueError("minExpansionDist must be greater than 0")
+        if max_expansion_dist is not None and max_expansion_dist <= 0:
+            raise ValueError("maxExpansionDist must be greater than 0")
+
+        if min_expansion_dist is None and max_expansion_dist is None:
+            return {
+                'mode': 'default',
+                'requested_min': None,
+                'requested_max': None,
+                'has_custom_spacing': False,
+            }
+
+        if min_expansion_dist is None:
+            min_expansion_dist = max_expansion_dist
+        if max_expansion_dist is None:
+            max_expansion_dist = min_expansion_dist
+
+        return {
+            'mode': 'custom',
+            'requested_min': float(min_expansion_dist),
+            'requested_max': float(max_expansion_dist),
+            'has_custom_spacing': True,
+        }
+
+    def build_requested_custom_intervals(
+        self,
+        N: int,
+        requested_min: Optional[float],
+        requested_max: Optional[float],
+    ) -> List[float]:
+        """Build the per-bounce expansion distances for a custom spacing request."""
+        if requested_min is None and requested_max is None:
+            return []
+
+        min_dist = requested_min if requested_min is not None else requested_max
+        max_dist = requested_max if requested_max is not None else min_dist
+        if min_dist is None or max_dist is None:
+            return []
+
+        if N <= 1:
+            return [float(min_dist)]
+
+        return [
+            float(min_dist + (max_dist - min_dist) * k / max(N - 1, 1))
+            for k in range(N)
+        ]
+
+    @staticmethod
+    def scale_custom_intervals(intervals: List[float], scale: float) -> List[float]:
+        """Scale a custom spacing profile while preserving its shape."""
+        return [float(interval * scale) for interval in intervals]
+
+    @staticmethod
+    def custom_outer_radius(r0: float, intervals: List[float]) -> float:
+        """Return the maximum radius reached by a custom interval profile."""
+        return float(r0 + sum(intervals))
+
+    def calculate_actual_outer_radius(self, params: Dict) -> float:
+        """Measure the maximum waypoint radius from the resolved path geometry."""
+        wps = self.build_slice(0, params)
+        if not wps:
+            return float(params.get('r0', 0.0))
+        return max(math.sqrt(wp['x'] * wp['x'] + wp['y'] * wp['y']) for wp in wps)
+
+    def make_spiral(
+        self,
+        dphi: float,
+        N: int,
+        r0: float,
+        r_hold: float,
+        steps: int = 1200,
+        custom_expansion_profile: Optional[List[float]] = None,
+        min_expansion_dist: float = None,
+        max_expansion_dist: float = None,
+    ) -> List[Dict]:
         """
         Generate the core spiral pattern.
         
@@ -292,21 +373,39 @@ class SpiralDesigner:
             min_expansion_dist: Minimum radial distance between bounces (feet), optional
             max_expansion_dist: Maximum radial distance between bounces (feet), optional
         """
-        use_custom_distances = (min_expansion_dist is not None or max_expansion_dist is not None)
+        interval_profile = list(custom_expansion_profile) if custom_expansion_profile is not None else None
+        if interval_profile is None:
+            expansion_request = self.normalize_expansion_request(min_expansion_dist, max_expansion_dist)
+            if expansion_request['has_custom_spacing']:
+                interval_profile = self.build_requested_custom_intervals(
+                    N,
+                    expansion_request['requested_min'],
+                    expansion_request['requested_max'],
+                )
+        else:
+            expansion_request = {
+                'mode': 'custom',
+                'requested_min': interval_profile[0] if interval_profile else None,
+                'requested_max': interval_profile[-1] if interval_profile else None,
+                'has_custom_spacing': bool(interval_profile),
+            }
+
+        use_custom_distances = interval_profile is not None and len(interval_profile) > 0
         
         t_out = N * dphi
         t_hold = dphi
         t_total = 2 * t_out + t_hold
         
         if use_custom_distances:
-            min_d = min_expansion_dist if min_expansion_dist is not None else 50.0
-            max_d = max_expansion_dist if max_expansion_dist is not None else min_d
-            
+            if len(interval_profile) != N:
+                raise ValueError(f"Custom expansion profile length {len(interval_profile)} must match N={N}")
+
             bounce_radii = [float(r0)]
-            for k in range(N):
-                dist = min_d + (max_d - min_d) * k / max(N - 1, 1)
+            for dist in interval_profile:
                 bounce_radii.append(bounce_radii[-1] + dist)
             custom_max_radius = bounce_radii[-1]
+            min_d = interval_profile[0]
+            max_d = interval_profile[-1]
             print(f"🎯 Custom expansion: min={min_d}ft, max={max_d}ft, "
                   f"N={N}, final_radius={custom_max_radius:.1f}ft, "
                   f"bounce_radii={[round(r, 1) for r in bounce_radii]}")
@@ -424,6 +523,7 @@ class SpiralDesigner:
         # Generate high-precision spiral points (1200 points for accuracy)
         spiral_pts = self.make_spiral(
             dphi, params['N'], params['r0'], params['rHold'],
+            custom_expansion_profile=params.get('customExpansionProfile'),
             min_expansion_dist=params.get('minExpansionDist'),
             max_expansion_dist=params.get('maxExpansionDist'),
         )
@@ -1504,45 +1604,50 @@ class SpiralDesigner:
         # total = 2 + 2*m*N + 2*N + m <= max_base_waypoints
         return max(3, int((max_base_waypoints - (2 + m)) // denominator))
 
-    def optimize_spiral_for_battery(self, target_battery_minutes: float, num_batteries: int, center_lat: float, center_lon: float) -> Dict:
+    def seed_bounces_for_battery(
+        self,
+        target_battery_minutes: float,
+        min_bounces: int = 3,
+        max_bounces: int = 15,
+    ) -> int:
+        """Return the heuristic bounce seed before the solver searches alternatives."""
+        if target_battery_minutes <= 12:
+            target_bounces = 7
+        elif target_battery_minutes <= 18:
+            target_bounces = 8
+        elif target_battery_minutes <= 25:
+            target_bounces = 9
+        elif target_battery_minutes <= 35:
+            target_bounces = 10
+        elif target_battery_minutes <= 45:
+            target_bounces = 12
+        else:
+            target_bounces = 15
+        return max(min_bounces, min(max_bounces, target_bounces))
+
+    def optimize_spiral_for_battery(
+        self,
+        target_battery_minutes: float,
+        num_batteries: int,
+        center_lat: float,
+        center_lon: float,
+        min_expansion_dist: Optional[float] = None,
+        max_expansion_dist: Optional[float] = None,
+    ) -> Dict:
         """
-        Battery-optimized spiral generation using intelligent balanced scaling algorithm.
+        Battery-first spiral optimization with late bounce selection.
         
-        OPTIMIZATION STRATEGY:
-        =====================
-        
-        BALANCED SCALING APPROACH:
-        1. Scale bounce count with battery duration first (quality optimization)
-        2. Binary search on radius with fixed bounce count (coverage optimization)
-        3. Bonus bounce addition if significant headroom available
-        
-        BOUNCE COUNT SCALING LOGIC:
-        - 10-12 min → 5 bounces (minimal pattern for short flights)
-        - 13-18 min → 6 bounces (balanced for medium flights)
-        - 19-25 min → 8 bounces (optimal quality/coverage balance)
-        - 26-35 min → 10 bounces (comprehensive coverage)
-        - 36+ min → 12 bounces (maximum detail capture)
-        
-        BINARY SEARCH OPTIMIZATION:
-        - O(log n) computational complexity vs O(n) brute force
-        - 98% battery utilization safety margin
-        - 10ft radius tolerance for practical purposes
-        - Maximum 20 iterations for performance
-        
-        BONUS BOUNCE LOGIC:
-        If battery utilization < 85%, attempt to add one more bounce
-        for enhanced coverage without safety risk.
-        
-        ERROR HANDLING:
-        - Graceful degradation for impossible constraints
-        - Automatic bounce reduction if minimum spiral too large
-        - Fallback to safe parameters on optimization failure
+        The time estimator always evaluates the exact final geometry that will be
+        used for CSV generation.  Custom expansion constraints are solved inside
+        the optimization pass instead of being applied as a later override.
         
         Args:
             target_battery_minutes: Target flight duration in minutes
             num_batteries: Number of battery slices to generate
             center_lat: Center latitude for flight time calculations
             center_lon: Center longitude for flight time calculations
+            min_expansion_dist: Optional requested minimum bounce spacing in feet
+            max_expansion_dist: Optional requested maximum bounce spacing in feet
             
         Returns:
             Dict with optimized parameters and performance metrics:
@@ -1555,151 +1660,233 @@ class SpiralDesigner:
                 'battery_utilization': float
             }
         """
-        # Define parameter constraints for safety and practicality
-        min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
-        min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - RESTORED ORIGINAL
-        min_N, max_N = 3, 15               # Bounce count range - RESTORED ORIGINAL
-        
-        # PROGRESSIVE BOUNCE SCALING: Longer flights = more bounces for better coverage
-        if target_battery_minutes <= 12:
-            target_bounces = 7   # Minimal for short flights
-        elif target_battery_minutes <= 18:
-            target_bounces = 8   # Good coverage for medium flights
-        elif target_battery_minutes <= 25:
-            target_bounces = 9   # Better coverage for longer flights
-        elif target_battery_minutes <= 35:
-            target_bounces = 10  # Comprehensive coverage
-        elif target_battery_minutes <= 45:
-            target_bounces = 12  # Maximum coverage
-        else:
-            target_bounces = 15  # Maximum for very long duration flights
-        
-        # Clamp to valid range for safety
-        target_bounces = max(min_N, min(max_N, target_bounces))
+        min_rHold, max_rHold = 200.0, 50000.0
+        min_N, max_N = 3, 15
+        preferred_r0 = 200.0
+        fallback_r0 = 100.0
+        start_radius_candidates = [preferred_r0, fallback_r0]
+        rhold_tolerance_ft = 25.0
+        scale_tolerance = 0.001
+        max_iterations = 30
+        target_limit = target_battery_minutes * 0.98
 
-        # NEW: Respect waypoint budget after slice-aware midpoint density changes.
-        # This is critical for single-slice missions (slices=1) where midpoint density is high.
+        expansion_request = self.normalize_expansion_request(min_expansion_dist, max_expansion_dist)
+        requested_bounce_seed = self.seed_bounces_for_battery(target_battery_minutes, min_N, max_N)
         waypoint_budget_bounce_cap = min(max_N, self.max_bounces_for_waypoint_budget(num_batteries))
-        if target_bounces > waypoint_budget_bounce_cap:
-            print(
-                f"Waypoint budget cap active: reducing bounces {target_bounces} -> {waypoint_budget_bounce_cap} "
-                f"for {num_batteries} slice(s)"
-            )
-            target_bounces = waypoint_budget_bounce_cap
+        candidate_bounces = list(range(min_N, waypoint_budget_bounce_cap + 1))
+        if not candidate_bounces:
+            raise ValueError("No valid bounce counts available for this slice configuration")
 
-        # Initialize base parameters with scaled bounce count
-        base_params = {
-            'slices': num_batteries,
-            'N': target_bounces,
-            'r0': 200.0  # Original start radius for proper expansion scaling
-        }
-        # Ensure rHold lower-bound is strictly above r0 to avoid alpha=0 singularities.
-        effective_min_rHold = max(min_rHold, base_params['r0'] + 10.0)
-        
-        print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
-        
-        # Feasibility check: Test if minimum parameters can fit
-        test_params = base_params.copy()
-        test_params['rHold'] = effective_min_rHold
-        
-        try:
-            min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-            if min_time > target_battery_minutes:
-                # Minimum spiral too large - reduce bounces and retry
-                reduced_bounces = max(min_N, target_bounces - 2)
-                reduced_bounces = min(reduced_bounces, waypoint_budget_bounce_cap)
-                print(f"Minimum spiral too large, reducing bounces from {target_bounces} to {reduced_bounces}")
-                base_params['N'] = reduced_bounces
-                target_bounces = reduced_bounces
-                
-                test_params = base_params.copy()
-                test_params['rHold'] = effective_min_rHold
-                min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                
-                if min_time > target_battery_minutes:
-                    # Still too large - return absolute minimum configuration
-                    return {
-                        'slices': num_batteries,
-                        'N': min(min_N, waypoint_budget_bounce_cap),
-                        'r0': 100.0,
-                        'rHold': effective_min_rHold,
-                        'estimated_time_minutes': min_time,
-                        'battery_utilization': round((min_time / target_battery_minutes) * 100, 1)
-                    }
-        except Exception as e:
-            print(f"Error testing minimum parameters: {e}")
-        
-        # BINARY SEARCH: Optimize hold radius with fixed bounce count
-        best_params = None
-        best_time = 0.0
-        
-        low, high = effective_min_rHold, max_rHold
-        tolerance = 25.0        # 25ft tolerance for large-scale optimization
-        max_iterations = 30     # Increased iterations for large radius ranges
-        iterations = 0
-        
-        while high - low > tolerance and iterations < max_iterations:
-            iterations += 1
-            mid_rHold = (low + high) / 2
-            
-            # Test current radius with FIXED bounce count
+        print(
+            f"Optimizing for {target_battery_minutes}min battery: seed={requested_bounce_seed}, "
+            f"search={candidate_bounces[0]}-{candidate_bounces[-1]} bounces, "
+            f"expansion_mode={expansion_request['mode']}"
+        )
+
+        def build_custom_params(start_radius: float, bounces: int, intervals: List[float]) -> Dict:
+            actual_min = intervals[0] if intervals else None
+            actual_max = intervals[-1] if intervals else None
+            return {
+                'slices': num_batteries,
+                'N': bounces,
+                'r0': start_radius,
+                'rHold': self.custom_outer_radius(start_radius, intervals),
+                'customExpansionProfile': list(intervals),
+                'minExpansionDist': actual_min,
+                'maxExpansionDist': actual_max,
+            }
+
+        def evaluate_default_candidate(start_radius: float, bounces: int) -> Optional[Dict]:
+            base_params = {
+                'slices': num_batteries,
+                'N': bounces,
+                'r0': start_radius,
+            }
+            effective_min_rHold = max(min_rHold, start_radius + 10.0)
             test_params = base_params.copy()
-            test_params['rHold'] = mid_rHold
-            
+            test_params['rHold'] = effective_min_rHold
+
             try:
-                estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                
-                # Apply 2% safety margin (98% utilization maximum) - RESTORED ORIGINAL
-                if estimated_time <= target_battery_minutes * 0.98:
-                    # Configuration fits safely - try larger radius
-                    best_params = test_params.copy()
+                min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+            except Exception as exc:
+                print(f"Error estimating minimum default candidate for N={bounces}: {exc}")
+                return None
+
+            if min_time > target_limit:
+                return None
+
+            best_params = test_params.copy()
+            best_time = min_time
+            low, high = effective_min_rHold, max_rHold
+            iterations = 0
+
+            while high - low > rhold_tolerance_ft and iterations < max_iterations:
+                iterations += 1
+                mid_rHold = (low + high) / 2.0
+                probe_params = base_params.copy()
+                probe_params['rHold'] = mid_rHold
+                try:
+                    estimated_time = self.estimate_flight_time_minutes(probe_params, center_lat, center_lon)
+                except Exception as exc:
+                    print(f"Error estimating default candidate for N={bounces}, rHold={mid_rHold}: {exc}")
+                    high = mid_rHold
+                    continue
+
+                if estimated_time <= target_limit:
+                    best_params = probe_params.copy()
                     best_time = estimated_time
                     low = mid_rHold
                 else:
-                    # Too large - try smaller radius
                     high = mid_rHold
-                    
-            except Exception as e:
-                print(f"Error estimating time for rHold={mid_rHold}: {e}")
-                high = mid_rHold  # Assume failure means too large
-        
-        # BONUS BOUNCE: Attempt to add one more bounce if significant headroom
-        if (
-            best_params
-            and best_time < target_battery_minutes * 0.85
-            and target_bounces < min(max_N, waypoint_budget_bounce_cap)
-        ):
-            test_params = best_params.copy()
-            test_params['N'] = target_bounces + 1
-            
-            try:
-                estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                if estimated_time <= target_battery_minutes * 0.98:
-                    print(f"Adding bonus bounce: {target_bounces} → {target_bounces + 1}")
-                    best_params = test_params.copy()
-                    best_time = estimated_time
-            except:
-                pass  # Keep original if bonus bounce fails
-        
-        # Final safety check: Ensure we have valid parameters
-        if not best_params:
-            best_params = {
-                'slices': num_batteries,
-                'N': target_bounces,
-                'r0': 150.0,
-                'rHold': effective_min_rHold
+
+            return {
+                'params': best_params,
+                'estimated_time': best_time,
+                'slack': target_limit - best_time,
+                'scale': 1.0,
+                'expansion_mode': 'default',
+                'actual_min': None,
+                'actual_max': None,
+                'actual_outer_radius': self.calculate_actual_outer_radius(best_params),
             }
+
+        def evaluate_custom_candidate(start_radius: float, bounces: int, intervals: List[float], scale: float) -> Optional[Dict]:
+            params = build_custom_params(start_radius, bounces, intervals)
             try:
-                best_time = self.estimate_flight_time_minutes(best_params, center_lat, center_lon)
-            except:
-                best_time = target_battery_minutes * 1.2  # Conservative estimate
-        
-        # Add performance metrics to results
-        best_params['estimated_time_minutes'] = round(best_time, 2)
-        best_params['battery_utilization'] = round((best_time / target_battery_minutes) * 100, 1)
-        
-        print(f"Final optimization: {best_params['N']} bounces, {best_params['rHold']:.0f}ft radius, {best_time:.1f}min ({best_params['battery_utilization']}%)")
-        
+                estimated_time = self.estimate_flight_time_minutes(params, center_lat, center_lon)
+            except Exception as exc:
+                print(f"Error estimating custom candidate for N={bounces}, scale={scale:.4f}: {exc}")
+                return None
+
+            return {
+                'params': params,
+                'estimated_time': estimated_time,
+                'slack': target_limit - estimated_time,
+                'scale': scale,
+                'expansion_mode': 'custom',
+                'actual_min': intervals[0] if intervals else None,
+                'actual_max': intervals[-1] if intervals else None,
+                'actual_outer_radius': params['rHold'],
+            }
+
+        best_candidate = None
+
+        if not expansion_request['has_custom_spacing']:
+            for start_radius in start_radius_candidates:
+                candidates = []
+                for bounces in candidate_bounces:
+                    candidate = evaluate_default_candidate(start_radius, bounces)
+                    if candidate is not None:
+                        candidates.append(candidate)
+
+                if candidates:
+                    best_candidate = min(
+                        candidates,
+                        key=lambda candidate: (candidate['slack'], -candidate['params']['N']),
+                    )
+                    break
+
+            if best_candidate is None:
+                raise ValueError("Battery minutes are too low for a safe default mission")
+        else:
+            for start_radius in start_radius_candidates:
+                requested_profiles = {
+                    bounces: self.build_requested_custom_intervals(
+                        bounces,
+                        expansion_request['requested_min'],
+                        expansion_request['requested_max'],
+                    )
+                    for bounces in candidate_bounces
+                }
+
+                full_spacing_candidates = []
+                for bounces, requested_profile in requested_profiles.items():
+                    candidate = evaluate_custom_candidate(start_radius, bounces, requested_profile, 1.0)
+                    if candidate is not None and candidate['estimated_time'] <= target_limit:
+                        full_spacing_candidates.append(candidate)
+
+                if full_spacing_candidates:
+                    best_candidate = min(
+                        full_spacing_candidates,
+                        key=lambda candidate: (candidate['slack'], -candidate['params']['N']),
+                    )
+                    break
+
+                scaled_candidates = []
+                for bounces, requested_profile in requested_profiles.items():
+                    zero_candidate = evaluate_custom_candidate(
+                        start_radius,
+                        bounces,
+                        self.scale_custom_intervals(requested_profile, 0.0),
+                        0.0,
+                    )
+                    if zero_candidate is None or zero_candidate['estimated_time'] > target_limit:
+                        continue
+
+                    best_for_bounces = zero_candidate
+                    low, high = 0.0, 1.0
+                    iterations = 0
+                    while high - low > scale_tolerance and iterations < max_iterations:
+                        iterations += 1
+                        mid_scale = (low + high) / 2.0
+                        scaled_profile = self.scale_custom_intervals(requested_profile, mid_scale)
+                        candidate = evaluate_custom_candidate(start_radius, bounces, scaled_profile, mid_scale)
+                        if candidate is not None and candidate['estimated_time'] <= target_limit:
+                            best_for_bounces = candidate
+                            low = mid_scale
+                        else:
+                            high = mid_scale
+
+                    scaled_candidates.append(best_for_bounces)
+
+                if scaled_candidates:
+                    best_candidate = min(
+                        scaled_candidates,
+                        key=lambda candidate: (-candidate['scale'], candidate['slack'], -candidate['params']['N']),
+                    )
+                    break
+
+            if best_candidate is None:
+                raise ValueError("Battery minutes are too low for a safe mission with the requested spacing")
+
+        best_params = best_candidate['params'].copy()
+        estimated_time = best_candidate['estimated_time']
+        final_n = int(best_params['N'])
+        actual_min = best_candidate['actual_min']
+        actual_max = best_candidate['actual_max']
+        actual_outer_radius = best_candidate['actual_outer_radius']
+
+        adjusted_bounce_count = final_n != requested_bounce_seed
+        adjusted_expansion = False
+        if expansion_request['has_custom_spacing']:
+            adjusted_expansion = (
+                actual_min is not None
+                and actual_max is not None
+                and (
+                    abs(actual_min - expansion_request['requested_min']) > 1e-6
+                    or abs(actual_max - expansion_request['requested_max']) > 1e-6
+                )
+            )
+
+        best_params.pop('customExpansionProfile', None)
+        best_params['estimated_time_minutes'] = round(estimated_time, 2)
+        best_params['battery_utilization'] = round((estimated_time / target_battery_minutes) * 100, 1)
+        best_params['expansionMode'] = best_candidate['expansion_mode']
+        best_params['actualMinExpansionDist'] = round(actual_min, 2) if actual_min is not None else None
+        best_params['actualMaxExpansionDist'] = round(actual_max, 2) if actual_max is not None else None
+        best_params['actualOuterRadius'] = round(actual_outer_radius, 2)
+        best_params['requestedBounceSeed'] = requested_bounce_seed
+        best_params['adjustedBounceCount'] = adjusted_bounce_count
+        best_params['adjustedExpansion'] = adjusted_expansion
+        best_params['minExpansionDist'] = best_params['actualMinExpansionDist']
+        best_params['maxExpansionDist'] = best_params['actualMaxExpansionDist']
+
+        print(
+            f"Final optimization: {best_params['N']} bounces, {best_params['rHold']:.0f}ft radius, "
+            f"{estimated_time:.1f}min ({best_params['battery_utilization']}%), "
+            f"mode={best_params['expansionMode']}"
+        )
+
         return best_params
 
     # ADAPTIVE TERRAIN SAMPLING SYSTEM
@@ -2338,12 +2525,94 @@ def lambda_handler(event, context):
             'body': json.dumps({'error': f'Internal server error: {str(e)}'})
         }
 
+def _parse_optional_float(value, default=None):
+    """Parse an optional numeric field, treating blank strings as missing."""
+    if value is None:
+        return default
+    if isinstance(value, (int, float)):
+        return float(value)
+    value_str = str(value).strip()
+    if value_str == "":
+        return default
+    return float(value_str)
+
+def _parse_expansion_inputs(body: Dict) -> Tuple[Optional[float], Optional[float]]:
+    """
+    Resolve expansion inputs from either raw request values or optimizer-produced
+    actual values.  Actual values take precedence when present.
+    """
+    actual_min = _parse_optional_float(body.get('actualMinExpansionDist'), None)
+    actual_max = _parse_optional_float(body.get('actualMaxExpansionDist'), None)
+
+    if actual_min is not None or actual_max is not None:
+        if actual_min is None:
+            actual_min = actual_max
+        if actual_max is None:
+            actual_max = actual_min
+        return actual_min, actual_max
+
+    return (
+        _parse_optional_float(body.get('minExpansionDist'), None),
+        _parse_optional_float(body.get('maxExpansionDist'), None),
+    )
+
+def _build_adjustment_messages(
+    optimized_params: Dict,
+    requested_expansion: Dict,
+) -> List[str]:
+    """Summarize how the optimizer changed the requested inputs."""
+    adjustments = []
+    requested_seed = int(optimized_params.get('requestedBounceSeed', optimized_params.get('N', 0)))
+    final_bounces = int(optimized_params.get('N', requested_seed))
+    adjusted_bounces = bool(optimized_params.get('adjustedBounceCount'))
+    adjusted_expansion = bool(optimized_params.get('adjustedExpansion'))
+
+    if adjusted_bounces:
+        if final_bounces < requested_seed:
+            if requested_expansion['has_custom_spacing'] and adjusted_expansion:
+                adjustments.append(
+                    f"Reduced bounces from {requested_seed} to {final_bounces} before tightening spacing to fit battery target"
+                )
+            elif requested_expansion['has_custom_spacing']:
+                adjustments.append(
+                    f"Reduced bounces from {requested_seed} to {final_bounces} to preserve requested spacing within battery target"
+                )
+            else:
+                adjustments.append(
+                    f"Reduced bounces from {requested_seed} to {final_bounces} to fit battery target"
+                )
+        else:
+            adjustments.append(
+                f"Increased bounces from {requested_seed} to {final_bounces} to improve battery usage"
+            )
+
+    if adjusted_expansion and requested_expansion['has_custom_spacing']:
+        actual_min = optimized_params.get('actualMinExpansionDist')
+        actual_max = optimized_params.get('actualMaxExpansionDist')
+        requested_min = requested_expansion.get('requested_min')
+        requested_max = requested_expansion.get('requested_max')
+        scale_candidates = []
+
+        if requested_min not in (None, 0) and actual_min is not None:
+            scale_candidates.append(actual_min / requested_min)
+        if requested_max not in (None, 0) and actual_max is not None:
+            scale_candidates.append(actual_max / requested_max)
+
+        shrink_pct = 1
+        if scale_candidates:
+            shrink_pct = max(1, round((1.0 - min(scale_candidates)) * 100))
+
+        adjustments.append(f"Tightened requested spacing by {shrink_pct}% to fit battery target")
+
+    return adjustments
+
 def handle_optimize_spiral(designer, body, cors_headers):
     """Handle /api/optimize-spiral endpoint"""
     try:
         battery_minutes = float(body.get('batteryMinutes', 20))
         batteries = int(body.get('batteries', 3))
         center = body.get('center', '')
+        min_exp, max_exp = _parse_expansion_inputs(body)
         
         # Validate battery minutes to prevent division by zero
         if battery_minutes <= 0:
@@ -2371,8 +2640,15 @@ def handle_optimize_spiral(designer, body, cors_headers):
         
         # Optimize spiral parameters
         optimized_params = designer.optimize_spiral_for_battery(
-            battery_minutes, batteries, center_coords['lat'], center_coords['lon']
+            battery_minutes,
+            batteries,
+            center_coords['lat'],
+            center_coords['lon'],
+            min_expansion_dist=min_exp,
+            max_expansion_dist=max_exp,
         )
+        requested_expansion = designer.normalize_expansion_request(min_exp, max_exp)
+        adjustments = _build_adjustment_messages(optimized_params, requested_expansion)
         
         return {
             'statusCode': 200,
@@ -2380,14 +2656,43 @@ def handle_optimize_spiral(designer, body, cors_headers):
             'body': json.dumps({
                 'optimized_params': optimized_params,
                 'optimization_info': {
-                    'algorithm': 'Intelligent Balanced Scaling with Binary Search',
-                    'pattern_type': 'Exponential Spiral with Neural Network Optimization',
-                    'bounce_scaling_reason': f"Battery duration {battery_minutes}min → {optimized_params['N']} bounces",
-                    'safety_margin': '98% battery utilization maximum'
+                    'algorithm': 'Battery-First Late Bounce Optimization',
+                    'pattern_type': (
+                        'Custom Expansion Spiral Optimization'
+                        if requested_expansion['has_custom_spacing']
+                        else 'Exponential Spiral Optimization'
+                    ),
+                    'bounce_scaling_reason': (
+                        f"Battery duration {battery_minutes}min → seed {optimized_params['requestedBounceSeed']} "
+                        f"bounces, resolved to {optimized_params['N']}"
+                    ),
+                    'safety_margin': '98% battery utilization maximum',
+                    'requested_constraints': {
+                        'batteryMinutes': battery_minutes,
+                        'batteries': batteries,
+                        'minExpansionDist': min_exp,
+                        'maxExpansionDist': max_exp,
+                    },
+                    'final_constraints': {
+                        'N': optimized_params['N'],
+                        'r0': optimized_params['r0'],
+                        'rHold': optimized_params['rHold'],
+                        'actualMinExpansionDist': optimized_params['actualMinExpansionDist'],
+                        'actualMaxExpansionDist': optimized_params['actualMaxExpansionDist'],
+                        'estimated_time_minutes': optimized_params['estimated_time_minutes'],
+                        'battery_utilization': optimized_params['battery_utilization'],
+                    },
+                    'adjustments': adjustments,
                 }
             })
         }
         
+    except ValueError as e:
+        return {
+            'statusCode': 400,
+            'headers': cors_headers,
+            'body': json.dumps({'error': f'Optimization failed: {str(e)}'})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -2482,12 +2787,11 @@ def handle_csv_download(designer, body, cors_headers):
             'rHold': rHold
         }
         
-        min_exp = body.get('minExpansionDist')
-        max_exp = body.get('maxExpansionDist')
+        min_exp, max_exp = _parse_expansion_inputs(body)
         if min_exp is not None:
-            params['minExpansionDist'] = float(min_exp)
+            params['minExpansionDist'] = min_exp
         if max_exp is not None:
-            params['maxExpansionDist'] = float(max_exp)
+            params['maxExpansionDist'] = max_exp
         
         # Generate CSV content
         csv_content = designer.generate_csv(params, center, min_height, max_height)
@@ -2578,12 +2882,11 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'rHold': rHold
         }
         
-        min_exp = body.get('minExpansionDist')
-        max_exp = body.get('maxExpansionDist')
+        min_exp, max_exp = _parse_expansion_inputs(body)
         if min_exp is not None:
-            params['minExpansionDist'] = float(min_exp)
+            params['minExpansionDist'] = min_exp
         if max_exp is not None:
-            params['maxExpansionDist'] = float(max_exp)
+            params['maxExpansionDist'] = max_exp
         
         # Generate battery-specific CSV content
         csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
