@@ -88,6 +88,20 @@ const cases = [
     expected:
       "https://spaceport-ml-processing.s3.amazonaws.com/bundles/base%20path/file%2Bname.json?X-Amz-Date=20260301T000000Z&X-Amz-Signature=feedface",
   },
+  {
+    encodedPath:
+      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Ffragment-preserved%2520case%2Ffile%252Bname.json%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Signature%3Dfragsig%23viewer-state",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=outerfrag",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/fragment-preserved%20case/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=fragsig#viewer-state",
+  },
+  {
+    encodedPath:
+      "https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fbundles%2Ffragment-only%2520case%2Ffile%252Bname.json%23camera-bookmark",
+    query: "?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=fromouterquery",
+    expected:
+      "https://spaceport-ml-processing.s3.amazonaws.com/bundles/fragment-only%20case/file%2Bname.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=fromouterquery#camera-bookmark",
+  },
 ];
 
 for (const testCase of cases) {
