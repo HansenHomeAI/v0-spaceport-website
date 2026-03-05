@@ -3,3 +3,4 @@
 2026-02-10 - Add extra midpoints for 1-2 battery shape circularity
 2026-02-11 - Harden mapbox module import in create modal
 2026-03-04 - Split spin mode battery exports into part 1 and part 2 downloads
+2026-03-04 - Spin mode blur mitigation: reduce yaw cap to 25 deg/s
