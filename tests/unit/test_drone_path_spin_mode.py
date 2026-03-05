@@ -180,6 +180,10 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertGreater(telemetry["combined_waypoints"], self.designer.MAX_EXPORT_WAYPOINTS)
         self.assertGreater(telemetry["max_segment_feet"], 0.0)
         self.assertGreater(telemetry["estimated_rate_deg_s"], 0.0)
+        self.assertLessEqual(
+            telemetry["estimated_rate_deg_s"],
+            self.designer.MAX_ANGULAR_RATE_DEG_PER_SEC + 0.5,
+        )
         self.assertAlmostEqual(
             telemetry["min_blur_segment_feet"],
             self.designer.SPIN_MAX_HEADING_DELTA_DEG * self.designer.SPEED_FT_PER_SEC / self.designer.MAX_ANGULAR_RATE_DEG_PER_SEC,
