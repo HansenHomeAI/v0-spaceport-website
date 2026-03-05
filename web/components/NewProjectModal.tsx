@@ -543,8 +543,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
 
     const handlePointerDown = (event: PointerEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
+      // Do NOT preventDefault/stopPropagation - Mapbox Marker needs the event to initiate drag.
+      // We only disable map dragPan to prevent map panning during marker drag.
       markerInteractionVersionRef.current += 1;
       isMarkerInteractionActiveRef.current = true;
       const map = mapRef.current;
@@ -1087,9 +1087,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   useEffect(() => {
     waypointMarkersRef.current.forEach((markers) => {
-      markers.forEach(m => m.setDraggable(isFullscreen && !isBoundaryMode && !appliedBoundaryPlan));
+      markers.forEach(m => m.setDraggable(isFullscreen));
     });
-  }, [appliedBoundaryPlan, isBoundaryMode, isFullscreen]);
+  }, [isFullscreen]);
 
   // Keep coordinates synchronized between state and ref
   useEffect(() => {
@@ -1575,8 +1575,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       },
     });
 
-    await createWaypointMarkers(batteryIndex, coords, color, isFullscreen && !isBoundaryMode && !appliedBoundaryPlanRef.current);
-  }, [BATTERY_PATH_COLORS, createWaypointMarkers, isBoundaryMode, isFullscreen]);
+    await createWaypointMarkers(batteryIndex, coords, color, isFullscreen);
+  }, [BATTERY_PATH_COLORS, createWaypointMarkers, isFullscreen]);
 
   const fitMapToPreviewPaths = useCallback((previewPaths: BoundaryPreviewPath[]) => {
     const map = mapRef.current;
@@ -2650,7 +2650,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </div>
                   </div>
                 )}
-                {isFullscreen && !isBoundaryMode && !appliedBoundaryPlan && visibleBatteryPaths.size > 0 && (
+                {isFullscreen && visibleBatteryPaths.size > 0 && (
                   <div className="waypoint-drag-hint">Drag waypoints to adjust path</div>
                 )}
                 <div className="map-dim-overlay"></div>
