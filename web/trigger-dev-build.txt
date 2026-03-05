@@ -24,3 +24,4 @@
 2026-03-05 - Trigger preview deploy for waypoint override + inline waypoint editing rollout
 2026-03-05T10:17:00-07:00 waypoint-override rollout retrigger
 2026-03-05T11:35:00-07:00 fix waypoint marker draggable state source
+2026-03-05T16:55:00-07:00 force waypoint markers draggable at creation
