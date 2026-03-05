@@ -22,3 +22,4 @@
 2026-03-05 - Add inline segment insert (+) and same-path hold-to-merge waypoint interactions
 2026-03-05 - Rebuild CSV rows from edited waypoint geometry for count-changing path edits
 2026-03-05 - Trigger preview deploy for waypoint override + inline waypoint editing rollout
+2026-03-05T10:17:00-07:00 waypoint-override rollout retrigger
