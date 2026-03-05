@@ -73,9 +73,25 @@ class SpiralDesigner:
     MPS_TO_MPH = 2.236936  # Meters/sec to miles/hour conversion factor
     FLIGHT_SPEED_MPS = 8.85  # 19.8 mph (matches Litchi CSV speed)
     FLIGHT_SPEED_MPH = FLIGHT_SPEED_MPS * MPS_TO_MPH
+    SPEED_FT_PER_SEC = FLIGHT_SPEED_MPS * 3.28084
     TAKEOFF_LANDING_OVERHEAD_MINUTES = 2.5  # Startup/landing + maneuver buffer
     MAX_TOTAL_WAYPOINTS = 99                # DJI/Litchi practical waypoint ceiling
+    MAX_EXPORT_WAYPOINTS = 99
+    MAX_SPLIT_SPIN_WAYPOINTS = 197
+    SPIN_SPLIT_OVERLAP_WAYPOINTS = 1
     RESERVED_SAFETY_WAYPOINTS = 12          # Keep headroom for terrain safety insertions
+    SPIN_MAX_HEADING_DELTA_DEG = 179.0
+    MAX_ANGULAR_RATE_DEG_PER_SEC = 25.0
+    DEFAULT_PHOTO_INTERVAL_SECONDS = 3.0
+    SPIN_PHOTO_INTERVAL_SECONDS = 2.0
+    GIMBAL_MIN_PITCH_DEG = -35
+    GIMBAL_MAX_PITCH_DEG = -15
+    CSV_HEADER = (
+        "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,"
+        "gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,"
+        "poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,"
+        "photo_distinterval"
+    )
     
     def __init__(self):
         """
@@ -273,125 +289,559 @@ class SpiralDesigner:
             'x': point['x'] * math.cos(angle) - point['y'] * math.sin(angle),
             'y': point['x'] * math.sin(angle) + point['y'] * math.cos(angle)
         }
-    
-    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200) -> List[Dict]:
+
+    def _segment_distance_feet(self, start: Dict, end: Dict) -> float:
+        """Compute ground distance in feet between two waypoint records."""
+        return self.haversine_distance(
+            start['latitude'],
+            start['longitude'],
+            end['latitude'],
+            end['longitude'],
+        ) * 3.28084
+
+    def _required_spin_splits(self, distances_ft: List[float], max_gap_ft: float) -> List[int]:
+        """Calculate splits needed per segment to keep all segments under max_gap_ft."""
+        if max_gap_ft <= 0:
+            return [0] * len(distances_ft)
+
+        splits: List[int] = []
+        for distance in distances_ft:
+            if distance <= 0:
+                splits.append(0)
+            else:
+                splits.append(max(0, int(math.ceil(distance / max_gap_ft)) - 1))
+        return splits
+
+    def _allocate_spin_splits(self, distances_ft: List[float], spin_budget: int) -> List[int]:
         """
-        Generate the core exponential spiral pattern with neural network optimizations.
+        Allocate spin insertions to minimize the longest segment (minimax).
+
+        Uses binary search to find the smallest feasible max segment length and then
+        spends any remaining budget on currently-longest segments.
+        """
+        if spin_budget <= 0 or not distances_ft:
+            return [0] * len(distances_ft)
+
+        max_distance = max(distances_ft)
+        if max_distance <= 0:
+            return [0] * len(distances_ft)
+
+        # Theoretical best lower bound if all extra points were perfectly distributed.
+        low = max_distance / (spin_budget + 1)
+        high = max_distance
+
+        for _ in range(40):
+            mid = (low + high) / 2.0
+            required = sum(self._required_spin_splits(distances_ft, mid))
+            if required > spin_budget:
+                low = mid
+            else:
+                high = mid
+
+        splits = self._required_spin_splits(distances_ft, high)
+        total_used = sum(splits)
+
+        # Safety fallback for floating-point edge cases.
+        if total_used > spin_budget:
+            for idx in sorted(range(len(splits)), key=lambda i: distances_ft[i]):
+                while splits[idx] > 0 and total_used > spin_budget:
+                    splits[idx] -= 1
+                    total_used -= 1
+
+        # Use remaining budget to further reduce the largest resulting segment.
+        remaining = spin_budget - total_used
+        while remaining > 0:
+            best_idx = -1
+            best_segment = -1.0
+            for i, distance in enumerate(distances_ft):
+                if distance <= 0:
+                    continue
+                # After n splits, segment is split into n+1 pieces.
+                segment_size = distance / (splits[i] + 1)
+                if segment_size > best_segment:
+                    best_segment = segment_size
+                    best_idx = i
+
+            if best_idx < 0:
+                break
+
+            splits[best_idx] += 1
+            remaining -= 1
+
+        return splits
+
+    def _insert_spin_waypoints(self, waypoint_records: List[Dict], target_total: Optional[int] = None) -> List[Dict]:
+        """
+        Insert transit spin waypoints (never hover-in-place) to reduce large gaps
+        while staying within the requested total point budget.
+        """
+        if len(waypoint_records) < 2:
+            return waypoint_records
+
+        target_limit = self.MAX_TOTAL_WAYPOINTS if target_total is None else max(0, int(target_total))
+        spin_budget = target_limit - len(waypoint_records)
+        if spin_budget <= 0:
+            return waypoint_records
+
+        distances_ft = [
+            self._segment_distance_feet(waypoint_records[i], waypoint_records[i + 1])
+            for i in range(len(waypoint_records) - 1)
+        ]
+        splits = self._allocate_spin_splits(distances_ft, spin_budget)
+
+        with_spin: List[Dict] = []
+        for i in range(len(waypoint_records) - 1):
+            start = waypoint_records[i]
+            end = waypoint_records[i + 1]
+            with_spin.append(start)
+
+            segment_splits = splits[i]
+            for split_idx in range(1, segment_splits + 1):
+                fraction = split_idx / (segment_splits + 1)
+                spin_point = {
+                    'latitude': start['latitude'] + fraction * (end['latitude'] - start['latitude']),
+                    'longitude': start['longitude'] + fraction * (end['longitude'] - start['longitude']),
+                    'altitude': round(start['altitude'] + fraction * (end['altitude'] - start['altitude']), 2),
+                    'curve_size_meters': round(
+                        start['curve_size_meters'] + fraction * (end['curve_size_meters'] - start['curve_size_meters']),
+                        2,
+                    ),
+                    'x': start['x'] + fraction * (end['x'] - start['x']),
+                    'y': start['y'] + fraction * (end['y'] - start['y']),
+                    'phase': 'spin',
+                    'is_spin': True,
+                }
+                with_spin.append(spin_point)
+
+        with_spin.append(waypoint_records[-1])
+        return with_spin[:target_limit]
+
+    def _build_gimbal_pitch_series(self, total_waypoints: int) -> List[int]:
+        """
+        Build a deterministic shuffled even distribution across gimbal range.
+        """
+        if total_waypoints <= 0:
+            return []
+        if total_waypoints == 1:
+            return [self.GIMBAL_MIN_PITCH_DEG]
+
+        span = self.GIMBAL_MAX_PITCH_DEG - self.GIMBAL_MIN_PITCH_DEG
+        evenly_spaced = [
+            self.GIMBAL_MIN_PITCH_DEG + (span * i / (total_waypoints - 1))
+            for i in range(total_waypoints)
+        ]
+
+        # Deterministic Fisher-Yates shuffle with an LCG seed.
+        indices = list(range(total_waypoints))
+        seed = total_waypoints * 7919 + 104729
+        for i in range(total_waypoints - 1, 0, -1):
+            seed = (1103515245 * seed + 12345) & 0x7fffffff
+            j = seed % (i + 1)
+            indices[i], indices[j] = indices[j], indices[i]
+
+        return [int(round(evenly_spaced[idx])) for idx in indices]
+
+    def _enforce_waypoint_record_limit(self, waypoint_records: List[Dict], limit: Optional[int] = None) -> List[Dict]:
+        """
+        Keep waypoint records within the Litchi 99-point cap by even downsampling.
+        """
+        total = len(waypoint_records)
+        limit = self.MAX_TOTAL_WAYPOINTS if limit is None else max(1, int(limit))
+        if total <= limit:
+            return waypoint_records
+
+        # Preserve endpoints and distribute remaining samples uniformly.
+        keep_indices = {0, total - 1}
+        interior_to_pick = limit - 2
+        if interior_to_pick > 0:
+            step = (total - 1) / (limit - 1)
+            for i in range(1, limit - 1):
+                keep_indices.add(int(round(i * step)))
+
+        ordered_indices = sorted(idx for idx in keep_indices if 0 <= idx < total)
+        if len(ordered_indices) > limit:
+            ordered_indices = ordered_indices[:limit]
+
+        return [waypoint_records[idx] for idx in ordered_indices]
+
+    def _compute_spin_telemetry(self, waypoint_records: List[Dict]) -> Dict[str, float]:
+        """Summarize waypoint density and yaw-rate information for spin exports."""
+        min_blur_segment_feet = (
+            self.SPIN_MAX_HEADING_DELTA_DEG
+            * self.SPEED_FT_PER_SEC
+            / max(self.MAX_ANGULAR_RATE_DEG_PER_SEC, 1e-6)
+        )
+
+        if len(waypoint_records) < 2:
+            return {
+                'combined_waypoints': len(waypoint_records),
+                'max_segment_feet': 0.0,
+                'estimated_rate_deg_s': 0.0,
+                'min_blur_segment_feet': min_blur_segment_feet,
+            }
+
+        segment_distances_ft = [
+            self._segment_distance_feet(waypoint_records[i], waypoint_records[i + 1])
+            for i in range(len(waypoint_records) - 1)
+        ]
+        longest_segment_ft = max(segment_distances_ft) if segment_distances_ft else 0.0
+        if longest_segment_ft <= 0:
+            estimated_rate_deg_s = 0.0
+        else:
+            segment_seconds = longest_segment_ft / max(self.SPEED_FT_PER_SEC, 1e-6)
+            blur_limited_delta = self.MAX_ANGULAR_RATE_DEG_PER_SEC * segment_seconds
+            max_delta = min(self.SPIN_MAX_HEADING_DELTA_DEG, blur_limited_delta)
+            estimated_rate_deg_s = max_delta / max(segment_seconds, 1e-6)
+
+        return {
+            'combined_waypoints': len(waypoint_records),
+            'max_segment_feet': longest_segment_ft,
+            'estimated_rate_deg_s': estimated_rate_deg_s,
+            'min_blur_segment_feet': min_blur_segment_feet,
+        }
+
+    def _compute_path_headings(self, waypoint_records: List[Dict]) -> List[int]:
+        """Compute standard forward-facing headings from local X/Y geometry."""
+        headings: List[int] = []
+        for i, wp in enumerate(waypoint_records):
+            if i < len(waypoint_records) - 1:
+                next_wp = waypoint_records[i + 1]
+                dx = next_wp['x'] - wp['x']
+                dy = next_wp['y'] - wp['y']
+                if abs(dx) < 1e-9 and abs(dy) < 1e-9:
+                    heading = headings[-1] if headings else 0
+                else:
+                    heading = round(((math.atan2(dx, dy) * 180 / math.pi) + 360) % 360)
+            else:
+                heading = headings[-1] if headings else 0
+            headings.append(heading)
+        return headings
+
+    def _compute_poi_headings(self, waypoint_records: List[Dict], center_lat: float, center_lon: float) -> List[int]:
+        """Compute headings that point each waypoint toward the center/POI.
+
+        Uses geodesic bearing so Litchi 'Custom' heading mode keeps the
+        camera facing the subject at all times in normal (non-spin) mode.
+        """
+        headings: List[int] = []
+        for wp in waypoint_records:
+            wp_lat = wp['latitude']
+            wp_lon = wp['longitude']
+            dlon = math.radians(center_lon - wp_lon)
+            lat1 = math.radians(wp_lat)
+            lat2 = math.radians(center_lat)
+            x = math.sin(dlon) * math.cos(lat2)
+            y = (math.cos(lat1) * math.sin(lat2)
+                 - math.sin(lat1) * math.cos(lat2) * math.cos(dlon))
+            bearing = (math.degrees(math.atan2(x, y)) + 360) % 360
+            headings.append(round(bearing))
+        return headings
+
+    def _compute_spin_headings(self, waypoint_records: List[Dict]) -> List[int]:
+        """
+        Compute constant clockwise spin headings constrained by:
+        - Litchi shortest-path delta ceiling (179 deg)
+        - Motion-blur angular velocity ceiling (100 deg/s)
+        """
+        if not waypoint_records:
+            return []
+        if len(waypoint_records) == 1:
+            return [0]
+
+        segment_distances_ft = [
+            self._segment_distance_feet(waypoint_records[i], waypoint_records[i + 1])
+            for i in range(len(waypoint_records) - 1)
+        ]
+        longest_segment_ft = max(segment_distances_ft) if segment_distances_ft else 0.0
+        if longest_segment_ft <= 0:
+            return [0] * len(waypoint_records)
+
+        longest_segment_seconds = longest_segment_ft / max(self.SPEED_FT_PER_SEC, 1e-6)
+        blur_limited_delta = self.MAX_ANGULAR_RATE_DEG_PER_SEC * longest_segment_seconds
+        max_delta = min(self.SPIN_MAX_HEADING_DELTA_DEG, blur_limited_delta)
+        spin_rate_deg_per_ft = max_delta / longest_segment_ft
+
+        headings = [0]
+        cumulative_distance_ft = 0.0
+        for distance_ft in segment_distances_ft:
+            cumulative_distance_ft += distance_ft
+            heading = round((cumulative_distance_ft * spin_rate_deg_per_ft) % 360)
+            headings.append(heading)
+
+        return headings
+
+    def _build_csv_row_data(self, waypoint_records: List[Dict], center: Dict, spin_mode: bool) -> List[Dict]:
+        """Build ordered CSV row dicts from prepared waypoint records."""
+        if spin_mode:
+            headings = self._compute_spin_headings(waypoint_records)
+        else:
+            headings = self._compute_poi_headings(waypoint_records, center['lat'], center['lon'])
+
+        gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
+        active_photo_interval = (
+            self.SPIN_PHOTO_INTERVAL_SECONDS
+            if spin_mode
+            else self.DEFAULT_PHOTO_INTERVAL_SECONDS
+        )
+
+        rows: List[Dict] = []
+        for i, record in enumerate(waypoint_records):
+            photo_interval = 0 if i == len(waypoint_records) - 1 else active_photo_interval
+            rows.append({
+                'latitude': record['latitude'],
+                'longitude': record['longitude'],
+                'altitude': record['altitude'],
+                'heading': headings[i],
+                'curve_size_meters': record['curve_size_meters'],
+                'rotationdir': 0,
+                'gimbalmode': 2,
+                'gimbalpitchangle': gimbal_pitches[i],
+                'altitudemode': 0,
+                'speed': self.FLIGHT_SPEED_MPS,
+                'poi_latitude': 0 if spin_mode else center['lat'],
+                'poi_longitude': 0 if spin_mode else center['lon'],
+                'poi_altitude': -35,
+                'poi_altitudemode': 0,
+                'photo_timeinterval': photo_interval,
+                'photo_distinterval': 0,
+            })
+
+        return rows
+
+    def _serialize_csv_rows(self, row_data: List[Dict]) -> str:
+        """Serialize ordered row dicts to the Litchi CSV format."""
+        rows = [self.CSV_HEADER]
+        for row in row_data:
+            ordered_values = [
+                row['latitude'],
+                row['longitude'],
+                row['altitude'],
+                row['heading'],
+                row['curve_size_meters'],
+                row['rotationdir'],
+                row['gimbalmode'],
+                row['gimbalpitchangle'],
+                row['altitudemode'],
+                row['speed'],
+                row['poi_latitude'],
+                row['poi_longitude'],
+                row['poi_altitude'],
+                row['poi_altitudemode'],
+                row['photo_timeinterval'],
+                row['photo_distinterval'],
+            ]
+            rows.append(','.join(map(str, ordered_values)))
+
+        return '\n'.join(rows)
+
+    def _split_spin_row_data(self, row_data: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
+        """Split a combined spin mission into two overlapping parts for midair handoff."""
+        split_idx = self.MAX_EXPORT_WAYPOINTS - self.SPIN_SPLIT_OVERLAP_WAYPOINTS
+        part_one = [dict(row) for row in row_data[:self.MAX_EXPORT_WAYPOINTS]]
+        part_two = [dict(row) for row in row_data[split_idx:]]
+
+        if part_one:
+            part_one[-1]['photo_timeinterval'] = 0
+        if part_two:
+            part_two[-1]['photo_timeinterval'] = 0
+
+        return part_one, part_two
+
+    def _build_waypoint_records(
+        self,
+        spiral_path: List[Dict],
+        center: Dict,
+        ground_elevations: List[float],
+        takeoff_elevation_feet: float,
+        min_height: float,
+        max_height: Optional[float],
+        enhanced_waypoints_data: Optional[List[Dict]] = None,
+    ) -> List[Dict]:
+        """
+        Build per-waypoint records (lat/lon/alt/curve/x/y) before heading/gimbal assignment.
+        """
+        first_waypoint_distance = 0
+        max_outbound_altitude = 0
+        max_outbound_distance = 0
+        records: List[Dict] = []
+
+        for i, wp in enumerate(spiral_path):
+            is_safety_waypoint = bool(
+                enhanced_waypoints_data
+                and i < len(enhanced_waypoints_data)
+                and enhanced_waypoints_data[i].get('is_safety', False)
+            )
+
+            phase = wp.get('phase', 'unknown')
+
+            if is_safety_waypoint:
+                safety_data = enhanced_waypoints_data[i]
+                latitude = round(safety_data['coords']['lat'] * 100000) / 100000
+                longitude = round(safety_data['coords']['lon'] * 100000) / 100000
+                altitude_agl = safety_data['safety_altitude'] - takeoff_elevation_feet
+                if altitude_agl < min_height:
+                    altitude_agl = min_height
+                altitude = round(altitude_agl * 100) / 100
+            else:
+                coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
+                latitude = round(coords['lat'] * 100000) / 100000
+                longitude = round(coords['lon'] * 100000) / 100000
+
+                ground_elevation = ground_elevations[i]
+                local_ground_offset = ground_elevation - takeoff_elevation_feet
+                if local_ground_offset < 0:
+                    local_ground_offset = 0
+
+                dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
+
+                if i == 0:
+                    first_waypoint_distance = dist_from_center
+                    desired_agl = min_height
+                    max_outbound_altitude = min_height
+                    max_outbound_distance = dist_from_center
+                elif 'outbound' in phase or 'hold' in phase:
+                    additional_distance = dist_from_center - first_waypoint_distance
+                    if additional_distance < 0:
+                        additional_distance = 0
+                    agl_increment = additional_distance * 0.20
+                    desired_agl = min_height + agl_increment
+
+                    if desired_agl > max_outbound_altitude:
+                        max_outbound_altitude = desired_agl
+                        max_outbound_distance = dist_from_center
+                elif 'inbound' in phase:
+                    distance_from_max = max_outbound_distance - dist_from_center
+                    if distance_from_max < 0:
+                        distance_from_max = 0
+                    altitude_increase = distance_from_max * 0.1
+                    desired_agl = max_outbound_altitude + altitude_increase
+
+                    if desired_agl < min_height:
+                        desired_agl = min_height
+                else:
+                    additional_distance = dist_from_center - first_waypoint_distance
+                    if additional_distance < 0:
+                        additional_distance = 0
+                    agl_increment = additional_distance * 0.20
+                    desired_agl = min_height + agl_increment
+
+                final_altitude = local_ground_offset + desired_agl
+
+                if max_height is not None:
+                    adjusted_max_height = max_height - takeoff_elevation_feet
+                    current_agl = final_altitude - ground_elevation
+                    if current_agl > adjusted_max_height:
+                        final_altitude = ground_elevation + adjusted_max_height
+
+                altitude = round(final_altitude * 100) / 100
+
+            curve_size_meters = round((wp['curve'] * self.FT2M) * 100) / 100
+
+            records.append({
+                'latitude': latitude,
+                'longitude': longitude,
+                'altitude': altitude,
+                'curve_size_meters': curve_size_meters,
+                'x': wp['x'],
+                'y': wp['y'],
+                'phase': phase,
+                'is_spin': False,
+            })
+
+        return records
+    
+    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200, min_expansion_dist: float = None, max_expansion_dist: float = None) -> List[Dict]:
+        """
+        Generate the core spiral pattern.
         
-        MATHEMATICAL FOUNDATION:
-        =======================
-        
-        Exponential Spiral: r(t) = r₀ * exp(α * t)
-        
-        Original Alpha: α = ln(r_hold/r₀)/(N*Δφ)
-        OPTIMIZED Alpha: α = ln(r_hold/r₀)/(N*Δφ) * 0.86  ← 14% reduction for denser coverage
-        
-        WHY 14% REDUCTION?
-        - Creates smaller radial steps between bounces
-        - Increases waypoint density by ~14% per spiral area  
-        - Better photo overlap for neural network training
-        - Smoother flight transitions
-        
-        THREE-PHASE ALGORITHM:
-        =====================
-        
-        Phase 1 - OUTWARD SPIRAL (0 ≤ t ≤ t_out):
-        r(t) = r₀ * exp(α * t)
-        
-        Phase 2 - HOLD PATTERN (t_out < t ≤ t_out + t_hold):
-        r(t) = actual_max_radius  ← Uses ACTUAL radius reached, not original r_hold
-        
-        Phase 3 - INWARD SPIRAL (t > t_out + t_hold):
-        r(t) = actual_max_radius * exp(-α * (t - t_out - t_hold))
-        
-        CRITICAL FIX IMPLEMENTED:
-        The hold pattern now uses actual_max_radius instead of r_hold parameter.
-        This eliminates the large gap that was occurring between outbound_bounce_6 and hold_mid.
-        
-        PHASE CALCULATION:
-        Phase oscillates between 0 and 2Δφ to create the characteristic spiral bounce pattern.
+        Two modes:
+        1. DEFAULT (exponential): r(t) = r₀ * exp(α*t) with progressive alpha
+        2. CUSTOM DISTANCES: bounce-to-bounce distance progresses linearly
+           from min_expansion_dist to max_expansion_dist (both in feet).
         
         Args:
             dphi: Angular step size per bounce (radians)
             N: Number of bounces (direction changes)
             r0: Starting radius (feet)
-            r_hold: Target hold radius (feet) - used only for alpha calculation
-            steps: Number of discrete points to generate (1200 = high precision)
-            
-        Returns:
-            List of {x, y} points in feet relative to center
+            r_hold: Target hold radius (feet) - used for alpha in default mode
+            steps: Number of discrete points to generate
+            min_expansion_dist: Minimum radial distance between bounces (feet), optional
+            max_expansion_dist: Maximum radial distance between bounces (feet), optional
         """
-        # PROGRESSIVE ALPHA SYSTEM: Steeper early bounces, normal later bounces
-        # Solution: Use higher alpha for early expansion, then reduce for later bounces
+        use_custom_distances = (min_expansion_dist is not None or max_expansion_dist is not None)
         
-        # Calculate base parameters
-        base_alpha = math.log(r_hold / r0) / (N * dphi)
-        radius_ratio = r_hold / r0
+        t_out = N * dphi
+        t_hold = dphi
+        t_total = 2 * t_out + t_hold
         
-        # PROGRESSIVE EXPANSION: Different alpha for different parts of spiral
-        # Early bounces (first 40%): More aggressive expansion
-        # Later bounces (last 60%): Normal expansion for good coverage
-        
-        if radius_ratio > 20:   # Medium-large spirals need progressive approach
-            early_density_factor = 1.02   # 2% MORE expansion for early bounces (fine-tuned for 4000ft)
-            late_density_factor = 0.80    # 20% reduction for later bounces (good coverage)
-            print(f"🎯 Progressive expansion: early_boost=+2%, late_reduction=20%, ratio={radius_ratio:.1f}")
-        elif radius_ratio > 10:   # Medium spirals
-            early_density_factor = 1.05   # 5% more expansion for early bounces
-            late_density_factor = 0.85    # 15% reduction for later bounces
-            print(f"🎯 Progressive expansion: early_boost=+5%, late_reduction=15%, ratio={radius_ratio:.1f}")
-        else:  # Small spirals
-            early_density_factor = 1.0    # Normal expansion
-            late_density_factor = 0.90    # 10% reduction
-            print(f"🎯 Progressive expansion: early_boost=0%, late_reduction=10%, ratio={radius_ratio:.1f}")
-        
-        # We'll use these factors dynamically in the spiral generation below
-        alpha_early = base_alpha * early_density_factor
-        alpha_late = base_alpha * late_density_factor
-        
-        # Time parameters
-        t_out = N * dphi          # Time to complete outward spiral
-        t_hold = dphi             # Time for hold pattern (one angular step)
-        t_total = 2 * t_out + t_hold  # Total spiral time
-        
-        # PROGRESSIVE ALPHA TRANSITION POINT
-        t_transition = t_out * 0.4  # First 40% uses early alpha, rest uses late alpha
-        
-        # Calculate ACTUAL radius with progressive alpha
-        # Early phase: r0 * exp(alpha_early * t) for t <= t_transition  
-        # Late phase: r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
-        r_transition = r0 * math.exp(alpha_early * t_transition)
-        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
+        if use_custom_distances:
+            min_d = min_expansion_dist if min_expansion_dist is not None else 50.0
+            max_d = max_expansion_dist if max_expansion_dist is not None else min_d
+            
+            bounce_radii = [float(r0)]
+            for k in range(N):
+                dist = min_d + (max_d - min_d) * k / max(N - 1, 1)
+                bounce_radii.append(bounce_radii[-1] + dist)
+            custom_max_radius = bounce_radii[-1]
+            print(f"🎯 Custom expansion: min={min_d}ft, max={max_d}ft, "
+                  f"N={N}, final_radius={custom_max_radius:.1f}ft, "
+                  f"bounce_radii={[round(r, 1) for r in bounce_radii]}")
+        else:
+            base_alpha = math.log(r_hold / r0) / (N * dphi)
+            radius_ratio = r_hold / r0
+            
+            if radius_ratio > 20:
+                early_density_factor = 1.02
+                late_density_factor = 0.80
+            elif radius_ratio > 10:
+                early_density_factor = 1.05
+                late_density_factor = 0.85
+            else:
+                early_density_factor = 1.0
+                late_density_factor = 0.90
+            
+            alpha_early = base_alpha * early_density_factor
+            alpha_late = base_alpha * late_density_factor
+            t_transition = t_out * 0.4
+            r_transition = r0 * math.exp(alpha_early * t_transition)
+            actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
         
         spiral_points = []
         
         for i in range(steps):
-            # Convert step index to parameter t
             th = i * t_total / (steps - 1)
             
-            # Calculate radius based on current phase with PROGRESSIVE ALPHA
-            if th <= t_out:
-                # PHASE 1: Outward spiral - PROGRESSIVE expansion
-                if th <= t_transition:
-                    # Early bounces: Steeper expansion (alpha_early)
-                    r = r0 * math.exp(alpha_early * th)
+            if use_custom_distances:
+                if th <= t_out:
+                    bounce_progress = th / dphi
+                    bounce_idx = min(int(bounce_progress), N - 1)
+                    frac = bounce_progress - bounce_idx
+                    r = bounce_radii[bounce_idx] + frac * (bounce_radii[bounce_idx + 1] - bounce_radii[bounce_idx])
+                elif th <= t_out + t_hold:
+                    r = custom_max_radius
                 else:
-                    # Later bounces: Normal expansion (alpha_late) from transition point
-                    r = r_transition * math.exp(alpha_late * (th - t_transition))
-            elif th <= t_out + t_hold:
-                # PHASE 2: Hold pattern - constant radius at ACTUAL maximum reached
-                r = actual_max_radius  # ← FIXED: Use actual radius reached, not original r_hold
+                    inbound_t = th - (t_out + t_hold)
+                    inbound_progress = inbound_t / dphi
+                    bounce_idx = min(int(inbound_progress), N - 1)
+                    frac = inbound_progress - bounce_idx
+                    from_r = bounce_radii[N - bounce_idx]
+                    to_r = bounce_radii[max(N - bounce_idx - 1, 0)]
+                    r = from_r + frac * (to_r - from_r)
             else:
-                # PHASE 3: Inbound spiral - exponential contraction from actual maximum
-                inbound_t = th - (t_out + t_hold)
-                r = actual_max_radius * math.exp(-alpha_late * inbound_t)  # Use late alpha for inbound
+                if th <= t_out:
+                    if th <= t_transition:
+                        r = r0 * math.exp(alpha_early * th)
+                    else:
+                        r = r_transition * math.exp(alpha_late * (th - t_transition))
+                elif th <= t_out + t_hold:
+                    r = actual_max_radius
+                else:
+                    inbound_t = th - (t_out + t_hold)
+                    r = actual_max_radius * math.exp(-alpha_late * inbound_t)
             
-            # Calculate phase for bounce pattern
-            # Phase oscillates between 0 and 2*dphi to create directional changes
             phase = ((th / dphi) % 2 + 2) % 2
             phi = phase * dphi if phase <= 1 else (2 - phase) * dphi
             
-            # Convert polar coordinates (r, phi) to Cartesian (x, y)
             spiral_points.append({
                 'x': r * math.cos(phi),
                 'y': r * math.sin(phi)
@@ -448,7 +898,11 @@ class SpiralDesigner:
         offset = math.pi / 2 + slice_idx * dphi  # Orientation offset for this slice
         
         # Generate high-precision spiral points (1200 points for accuracy)
-        spiral_pts = self.make_spiral(dphi, params['N'], params['r0'], params['rHold'])
+        spiral_pts = self.make_spiral(
+            dphi, params['N'], params['r0'], params['rHold'],
+            min_expansion_dist=params.get('minExpansionDist'),
+            max_expansion_dist=params.get('maxExpansionDist'),
+        )
         t_out = params['N'] * dphi
         t_hold = dphi
         t_total = 2 * t_out + t_hold
@@ -805,7 +1259,16 @@ class SpiralDesigner:
         
         return {'traces': traces}
 
-    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None, debug_mode: bool = False, debug_angle: float = 0) -> str:
+    def generate_csv(
+        self,
+        params: Dict,
+        center_str: str,
+        min_height: float = 100.0,
+        max_height: float = None,
+        debug_mode: bool = False,
+        debug_angle: float = 0,
+        spin_mode: bool = False,
+    ) -> str:
         """
         Generate complete Litchi CSV mission file with elevation-aware altitudes and neural network optimizations.
         
@@ -853,6 +1316,7 @@ class SpiralDesigner:
             max_height: Maximum flight altitude AGL (feet, optional)
             debug_mode: Generate single slice only
             debug_angle: Specific angle for debug slice (degrees)
+            spin_mode: Enable continuous spin-optimized waypoint densification
             
         Returns:
             Complete CSV file content as string
@@ -978,204 +1442,53 @@ class SpiralDesigner:
             print(f"✅ No terrain anomalies detected for complete mission - original flight path is safe")
             self._enhanced_waypoints_data = None
         
-        # Generate CSV content with Litchi header
-        header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
-        rows = [header]
-        
-        # Track altitude calculation state for neural network optimization
-        first_waypoint_distance = 0
-        max_outbound_altitude = 0
-        max_outbound_distance = 0
-        
         enhanced_waypoints_data = getattr(self, '_enhanced_waypoints_data', None)
-        
-        for i, wp in enumerate(spiral_path):
-            # Check if this is a safety waypoint
-            is_safety_waypoint = (enhanced_waypoints_data and 
-                                  i < len(enhanced_waypoints_data) and 
-                                  enhanced_waypoints_data[i].get('is_safety', False))
-            
-            if is_safety_waypoint:
-                # Safety waypoint - use pre-calculated coordinates and altitude
-                safety_data = enhanced_waypoints_data[i]
-                latitude = round(safety_data['coords']['lat'] * 100000) / 100000
-                longitude = round(safety_data['coords']['lon'] * 100000) / 100000
-                # Safety waypoint altitude is stored as absolute MSL. Convert to the
-                # same reference frame used by regular waypoints (feet above take-off).
-                altitude_agl = safety_data['safety_altitude'] - takeoff_elevation_feet
-                if altitude_agl < min_height:
-                    altitude_agl = min_height  # Never below minimum flight height
-                altitude = round(altitude_agl * 100) / 100
-                
-                print(f"🚨 Safety waypoint {i+1}: {safety_data['safety_reason']} at {altitude:.1f}ft")
-            else:
-                # Regular waypoint - normal processing
-                coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
-                latitude = round(coords['lat'] * 100000) / 100000  # 5 decimal places (~1m accuracy)
-                longitude = round(coords['lon'] * 100000) / 100000
-                
-                # Calculate elevation-aware altitude with terrain following
-                ground_elevation = ground_elevations[i]
-                local_ground_offset = ground_elevation - takeoff_elevation_feet
-                if local_ground_offset < 0:
-                    local_ground_offset = 0  # Never fly below takeoff elevation
-                
-                # NEURAL NETWORK ALTITUDE CALCULATION ALGORITHM
-                # =============================================
-                dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
-                phase = wp.get('phase', 'unknown')
-                
-                if i == 0:
-                    # FIRST WAYPOINT: Always starts at min_height
-                    first_waypoint_distance = dist_from_center
-                    desired_agl = min_height
-                    max_outbound_altitude = min_height
-                    max_outbound_distance = dist_from_center
-                elif 'outbound' in phase or 'hold' in phase:
-                    # OUTBOUND & HOLD: Balanced climb with 0.20ft per foot climb rate
-                    additional_distance = dist_from_center - first_waypoint_distance
-                    if additional_distance < 0:
-                        additional_distance = 0
-                    agl_increment = additional_distance * 0.20  # ShapeLab optimized rate
-                    desired_agl = min_height + agl_increment
-                    
-                    # Track maximum for inbound ascent calculations
-                    if desired_agl > max_outbound_altitude:
-                        max_outbound_altitude = desired_agl
-                        max_outbound_distance = dist_from_center
-                elif 'inbound' in phase:
-                    # INBOUND: Continued climb with 0.1ft per foot ascent rate
-                    distance_from_max = max_outbound_distance - dist_from_center
-                    if distance_from_max < 0:
-                        distance_from_max = 0
-                    altitude_increase = distance_from_max * 0.1  # Gentle continued ascent
-                    desired_agl = max_outbound_altitude + altitude_increase
-                    
-                    # Safety floor: never below min_height
-                    if desired_agl < min_height:
-                        desired_agl = min_height
-                else:
-                    # Fallback for unknown phases (should not occur in normal operation)
-                    additional_distance = dist_from_center - first_waypoint_distance
-                    if additional_distance < 0:
-                        additional_distance = 0
-                    agl_increment = additional_distance * 0.20
-                    desired_agl = min_height + agl_increment
-                
-                # Calculate final MSL altitude (terrain following)
-                final_altitude = local_ground_offset + desired_agl
-                
-                # Apply maximum height constraint if specified
-                if max_height is not None:
-                    adjusted_max_height = max_height - takeoff_elevation_feet
-                    current_agl = final_altitude - ground_elevation
-                    if current_agl > adjusted_max_height:
-                        final_altitude = ground_elevation + adjusted_max_height
-                
-                altitude = round(final_altitude * 100) / 100  # Round to cm precision
-            
-            # Calculate forward-looking heading using atan2
-            heading = 0
-            if i < len(spiral_path) - 1:
-                next_wp = spiral_path[i + 1]
-                dx = next_wp['x'] - wp['x']
-                dy = next_wp['y'] - wp['y']
-                heading = round(((math.atan2(dx, dy) * 180 / math.pi) + 360) % 360)
-            
-            # Convert curve radius from feet to meters (Litchi requirement)
-            curve_size_meters = round((wp['curve'] * self.FT2M) * 100) / 100
-            
-            # Calculate sinusoidal gimbal pitch for varied photo angles
-            progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 20 * math.sin(progress * math.pi))  # -35° to -15° range
-            
-            # Calculate photo interval timing
-            # Start photos at first waypoint, continue throughout flight, stop at last waypoint
-            if i == 0:
-                photo_interval = 3.0  # Start taking photos at 3-second intervals
-            elif i == len(spiral_path) - 1:
-                photo_interval = 0    # Stop taking photos at the last waypoint
-            else:
-                photo_interval = 3.0  # Continue 3-second intervals throughout flight
-            
-            # Create CSV row with all 16 Litchi columns
-            row = [
-                latitude,                   # GPS latitude
-                longitude,                  # GPS longitude  
-                altitude,                   # Flight altitude (MSL feet)
-                heading,                    # Forward direction (degrees)
-                curve_size_meters,          # Turn radius (meters)
-                0,                          # Rotation direction (none)
-                2,                          # Gimbal mode (focus POI)
-                gimbal_pitch,               # Camera tilt angle 
-                0,                          # Altitude mode (AGL)
-                self.FLIGHT_SPEED_MPS,       # Speed (19.8 mph = 8.85 m/s)
-                center['lat'],              # POI latitude (spiral center)
-                center['lon'],              # POI longitude (spiral center)
-                -35,                        # POI altitude (-35ft AGL)
-                0,                          # POI altitude mode (AGL)
-                photo_interval,             # Photo interval (3s start/middle, 0s stop)
-                0                           # Photo distance interval (disabled)
-            ]
-            
-            rows.append(','.join(map(str, row)))
-        
-        return '\n'.join(rows)
+        waypoint_records = self._build_waypoint_records(
+            spiral_path=spiral_path,
+            center=center,
+            ground_elevations=ground_elevations,
+            takeoff_elevation_feet=takeoff_elevation_feet,
+            min_height=min_height,
+            max_height=max_height,
+            enhanced_waypoints_data=enhanced_waypoints_data,
+        )
+        waypoint_records = self._enforce_waypoint_record_limit(waypoint_records, self.MAX_EXPORT_WAYPOINTS)
 
-    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0, max_height: float = None) -> str:
-        """
-        Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
-        
-        SINGLE-BATTERY MISSION STRATEGY:
-        ===============================
-        Each battery flies one complete slice (360°/num_batteries angular section).
-        This enables:
-        1. Parallel missions with multiple drones
-        2. Sequential flights with battery swaps
-        3. Risk distribution across separate flights
-        4. Independent mission planning per battery
-        
-        IDENTICAL ALGORITHM:
-        Uses the exact same altitude calculation as generate_csv() but for single slice.
-        Ensures consistency between individual and combined missions.
-        
-        Args:
-            params: Spiral parameters dict {slices, N, r0, rHold}
-            center_str: Center coordinates as string
-            battery_index: Battery number (0-based index)
-            min_height: Minimum flight altitude AGL (feet)
-            max_height: Maximum flight altitude AGL (feet, optional)
-            
-        Returns:
-            CSV file content for specified battery as string
-            
-        Raises:
-            ValueError: If battery_index is out of range
-        """
+        if spin_mode:
+            waypoint_records = self._insert_spin_waypoints(
+                waypoint_records,
+                target_total=self.MAX_EXPORT_WAYPOINTS,
+            )
+
+        row_data = self._build_csv_row_data(waypoint_records, center, spin_mode)
+        return self._serialize_csv_rows(row_data)
+
+    def _prepare_battery_waypoint_records(
+        self,
+        params: Dict,
+        center_str: str,
+        battery_index: int,
+        min_height: float,
+        max_height: Optional[float],
+    ) -> Tuple[Dict, List[Dict]]:
+        """Build ordered waypoint records for one battery before CSV serialization."""
         center = self.parse_center(center_str)
         if not center:
             raise ValueError("Invalid center coordinates")
-            
-        # Validate battery index range
+
         if battery_index < 0 or battery_index >= params['slices']:
             raise ValueError(f"Battery index must be between 0 and {params['slices'] - 1}")
-        
-        # Clear caches to prevent memory accumulation across battery downloads
+
         self.elevation_cache = {}
         self.waypoint_cache = []
-        
-        # Get takeoff elevation for reference
+
         takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
-        
-        # Generate waypoints for all slices, then extract the specific battery slice
         all_waypoints = self.compute_waypoints(params)
         spiral_path = all_waypoints[battery_index]
-        
-        # Ensure minimum curve radius for flight safety
+
         for wp in spiral_path:
-            wp['curve'] = max(wp['curve'], 30)  # 30ft minimum for doubled curve settings
-        
-        # Convert waypoints to lat/lon and get optimized elevations
+            wp['curve'] = max(wp['curve'], 30)
+
         locations = []
         waypoints_with_coords = []
         for wp in spiral_path:
@@ -1188,45 +1501,35 @@ class SpiralDesigner:
                 'y': wp['y'],
                 'phase': wp.get('phase', 'unknown')
             })
-        
-        # Get elevations with 15-foot proximity optimization
+
         ground_elevations = self.get_elevations_feet_optimized(locations)
-        
-        # Add elevations to waypoints_with_coords for adaptive sampling
         for i, elevation in enumerate(ground_elevations):
             waypoints_with_coords[i]['elevation'] = elevation
-        
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
-        print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+
+        print("🛡️  Starting adaptive terrain sampling for mission safety")
         safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
-        
+
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
-            # Convert safety waypoints to the format expected by CSV generation
             enhanced_waypoints_data = []
-            
+
             for i, wp in enumerate(spiral_path):
-                # Add original waypoint
                 enhanced_waypoints_data.append({
                     'waypoint': wp,
                     'coords': waypoints_with_coords[i],
                     'ground_elevation': ground_elevations[i],
                     'is_safety': False
                 })
-                
-                # Add any safety waypoints that belong after this original waypoint
+
                 segment_safety_waypoints = [swp for swp in safety_waypoints if swp['segment_idx'] == i]
                 for safety_wp in segment_safety_waypoints:
-                    # Convert safety waypoint GPS coordinates back to local X,Y coordinates  
                     safety_local_coords = self.lat_lon_to_xy(
                         safety_wp['lat'], safety_wp['lon'], center['lat'], center['lon']
                     )
-                    
-                    # Create properly positioned safety waypoint
                     safety_pseudo_wp = {
-                        'x': safety_local_coords['x'], 
-                        'y': safety_local_coords['y'], 
-                        'curve': 40, 
+                        'x': safety_local_coords['x'],
+                        'y': safety_local_coords['y'],
+                        'curve': 40,
                         'phase': f"safety_{safety_wp['type']}"
                     }
                     enhanced_waypoints_data.append({
@@ -1237,142 +1540,123 @@ class SpiralDesigner:
                         'safety_reason': safety_wp['reason'],
                         'is_safety': True
                     })
-            
-            # Update the processing arrays to include safety waypoints
+
             spiral_path = [item['waypoint'] for item in enhanced_waypoints_data]
-            locations = [(item['coords']['lat'], item['coords']['lon']) for item in enhanced_waypoints_data]
             ground_elevations = [item['ground_elevation'] for item in enhanced_waypoints_data]
-            
-            # Store enhanced waypoints data for later use
             self._enhanced_waypoints_data = enhanced_waypoints_data
-            
             print(f"✅ Enhanced mission: {len(spiral_path)} total waypoints ({len(safety_waypoints)} safety additions)")
         else:
-            print(f"✅ No terrain anomalies detected - original flight path is safe")
+            print("✅ No terrain anomalies detected - original flight path is safe")
             self._enhanced_waypoints_data = None
-        
-        # Generate CSV content with Litchi header
-        header = "latitude,longitude,altitude(ft),heading(deg),curvesize(ft),rotationdir,gimbalmode,gimbalpitchangle,altitudemode,speed(m/s),poi_latitude,poi_longitude,poi_altitude(ft),poi_altitudemode,photo_timeinterval,photo_distinterval"
-        rows = [header]
-        
-        # Track altitude calculation state (IDENTICAL to generate_csv logic)
-        first_waypoint_distance = 0
-        max_outbound_altitude = 0
-        max_outbound_distance = 0
-        
-        # Process waypoints with identical algorithm to ensure consistency
-        for i, wp in enumerate(spiral_path):
-            # Convert to GPS coordinates with high precision
-            coords = self.xy_to_lat_lon(wp['x'], wp['y'], center['lat'], center['lon'])
-            latitude = round(coords['lat'] * 100000) / 100000
-            longitude = round(coords['lon'] * 100000) / 100000
-            
-            # Calculate elevation-aware altitude with terrain following
-            ground_elevation = ground_elevations[i]
-            local_ground_offset = ground_elevation - takeoff_elevation_feet
-            if local_ground_offset < 0:
-                local_ground_offset = 0
-            
-            # NEURAL NETWORK ALTITUDE CALCULATION (identical to generate_csv)
-            dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
-            phase = wp.get('phase', 'unknown')
-            
-            if i == 0:
-                # FIRST WAYPOINT: Always starts at min_height
-                first_waypoint_distance = dist_from_center
-                desired_agl = min_height
-                max_outbound_altitude = min_height
-                max_outbound_distance = dist_from_center
-            elif 'outbound' in phase or 'hold' in phase:
-                # OUTBOUND & HOLD: Balanced climb with 0.20ft per foot climb rate
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.20  # ShapeLab optimized rate
-                desired_agl = min_height + agl_increment
-                
-                # Track maximum for inbound ascent calculations
-                if desired_agl > max_outbound_altitude:
-                    max_outbound_altitude = desired_agl
-                    max_outbound_distance = dist_from_center
-            elif 'inbound' in phase:
-                # INBOUND: Continued climb with 0.1ft per foot ascent rate
-                distance_from_max = max_outbound_distance - dist_from_center
-                if distance_from_max < 0:
-                    distance_from_max = 0
-                altitude_increase = distance_from_max * 0.1  # Gentle continued ascent
-                desired_agl = max_outbound_altitude + altitude_increase
-                
-                # Safety floor: never below min_height
-                if desired_agl < min_height:
-                    desired_agl = min_height
-            else:
-                # Fallback for unknown phases
-                additional_distance = dist_from_center - first_waypoint_distance
-                if additional_distance < 0:
-                    additional_distance = 0
-                agl_increment = additional_distance * 0.20
-                desired_agl = min_height + agl_increment
-            
-            # Calculate final MSL altitude (terrain following)
-            final_altitude = local_ground_offset + desired_agl
-            
-            # Apply maximum height constraint if specified
-            if max_height is not None:
-                adjusted_max_height = max_height - takeoff_elevation_feet
-                current_agl = final_altitude - ground_elevation
-                if current_agl > adjusted_max_height:
-                    final_altitude = ground_elevation + adjusted_max_height
-            
-            altitude = round(final_altitude * 100) / 100
-            
-            # Calculate forward-looking heading using atan2
-            heading = 0
-            if i < len(spiral_path) - 1:
-                next_wp = spiral_path[i + 1]
-                dx = next_wp['x'] - wp['x']
-                dy = next_wp['y'] - wp['y']
-                heading = round(((math.atan2(dx, dy) * 180 / math.pi) + 360) % 360)
-            
-            # Convert curve radius from feet to meters
-            curve_size_meters = round((wp['curve'] * self.FT2M) * 100) / 100
-            
-            # Calculate sinusoidal gimbal pitch for varied photo angles
-            progress = i / (len(spiral_path) - 1) if len(spiral_path) > 1 else 0
-            gimbal_pitch = round(-35 + 20 * math.sin(progress * math.pi))  # -35° to -15° range
-            
-            # Calculate photo interval timing
-            # Start photos at first waypoint, continue throughout flight, stop at last waypoint
-            if i == 0:
-                photo_interval = 3.0  # Start taking photos at 3-second intervals
-            elif i == len(spiral_path) - 1:
-                photo_interval = 0    # Stop taking photos at the last waypoint
-            else:
-                photo_interval = 3.0  # Continue 3-second intervals throughout flight
-            
-            # Create CSV row (identical format to generate_csv)
-            row = [
-                latitude,                   # GPS latitude
-                longitude,                  # GPS longitude  
-                altitude,                   # Flight altitude (MSL feet)
-                heading,                    # Forward direction (degrees)
-                curve_size_meters,          # Turn radius (meters)
-                0,                          # Rotation direction (none)
-                2,                          # Gimbal mode (focus POI)
-                gimbal_pitch,               # Camera tilt angle 
-                0,                          # Altitude mode (AGL)
-                self.FLIGHT_SPEED_MPS,       # Speed (19.8 mph = 8.85 m/s)
-                center['lat'],              # POI latitude (spiral center)
-                center['lon'],              # POI longitude (spiral center)
-                -35,                        # POI altitude (-35ft AGL)
-                0,                          # POI altitude mode (AGL)
-                photo_interval,             # Photo interval (3s start/middle, 0s stop)
-                0                           # Photo distance interval (disabled)
-            ]
-            
-            rows.append(','.join(map(str, row)))
-        
-        return '\n'.join(rows)
+
+        enhanced_waypoints_data = getattr(self, '_enhanced_waypoints_data', None)
+        waypoint_records = self._build_waypoint_records(
+            spiral_path=spiral_path,
+            center=center,
+            ground_elevations=ground_elevations,
+            takeoff_elevation_feet=takeoff_elevation_feet,
+            min_height=min_height,
+            max_height=max_height,
+            enhanced_waypoints_data=enhanced_waypoints_data,
+        )
+
+        return center, waypoint_records
+
+    def build_battery_csv_export(
+        self,
+        params: Dict,
+        center_str: str,
+        battery_index: int,
+        min_height: float = 100.0,
+        max_height: float = None,
+        spin_mode: bool = False,
+        export_part: str = "single",
+    ) -> Dict:
+        """Build CSV payload and telemetry for a battery mission export."""
+        export_part = (export_part or "single").lower()
+        allowed_export_parts = {"single", "part1", "part2", "combined"}
+        if export_part not in allowed_export_parts:
+            raise ValueError(
+                f"Invalid export_part '{export_part}'. Expected one of: "
+                "single, part1, part2, combined"
+            )
+        if export_part != "single" and not spin_mode:
+            raise ValueError("Split spin exports require spin_mode=True")
+
+        center, waypoint_records = self._prepare_battery_waypoint_records(
+            params=params,
+            center_str=center_str,
+            battery_index=battery_index,
+            min_height=min_height,
+            max_height=max_height,
+        )
+
+        if export_part == "single":
+            limited_records = self._enforce_waypoint_record_limit(
+                waypoint_records,
+                self.MAX_EXPORT_WAYPOINTS,
+            )
+            if spin_mode:
+                limited_records = self._insert_spin_waypoints(
+                    limited_records,
+                    target_total=self.MAX_EXPORT_WAYPOINTS,
+                )
+
+            row_data = self._build_csv_row_data(limited_records, center, spin_mode)
+            telemetry = self._compute_spin_telemetry(limited_records) if spin_mode else None
+            return {
+                'csv_text': self._serialize_csv_rows(row_data),
+                'row_data': row_data,
+                'telemetry': telemetry,
+            }
+
+        combined_records = self._enforce_waypoint_record_limit(
+            waypoint_records,
+            self.MAX_SPLIT_SPIN_WAYPOINTS,
+        )
+        combined_records = self._insert_spin_waypoints(
+            combined_records,
+            target_total=self.MAX_SPLIT_SPIN_WAYPOINTS,
+        )
+        combined_row_data = self._build_csv_row_data(combined_records, center, True)
+        telemetry = self._compute_spin_telemetry(combined_records)
+
+        if export_part == "combined":
+            selected_row_data = [dict(row) for row in combined_row_data]
+        else:
+            part_one, part_two = self._split_spin_row_data(combined_row_data)
+            selected_row_data = part_one if export_part == "part1" else part_two
+
+        return {
+            'csv_text': self._serialize_csv_rows(selected_row_data),
+            'row_data': selected_row_data,
+            'telemetry': telemetry,
+            'combined_row_data': combined_row_data,
+        }
+
+    def generate_battery_csv(
+        self,
+        params: Dict,
+        center_str: str,
+        battery_index: int,
+        min_height: float = 100.0,
+        max_height: float = None,
+        spin_mode: bool = False,
+        export_part: str = "single",
+    ) -> str:
+        """
+        Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
+        """
+        export_data = self.build_battery_csv_export(
+            params=params,
+            center_str=center_str,
+            battery_index=battery_index,
+            min_height=min_height,
+            max_height=max_height,
+            spin_mode=spin_mode,
+            export_part=export_part,
+        )
+        return export_data['csv_text']
 
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
@@ -2428,6 +2712,22 @@ def handle_elevation(designer, body, cors_headers):
             'body': json.dumps({'error': f'Elevation lookup failed: {str(e)}'})
         }
 
+def _parse_bool_field(value, default: bool = False) -> bool:
+    """Parse API boolean values from bool/int/string payloads."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+
+    normalized = str(value).strip().lower()
+    if normalized in {'true', '1', 'yes', 'y', 'on'}:
+        return True
+    if normalized in {'false', '0', 'no', 'n', 'off'}:
+        return False
+    return default
+
 def handle_csv_download(designer, body, cors_headers):
     """Handle /api/csv endpoint"""
     try:
@@ -2457,6 +2757,7 @@ def handle_csv_download(designer, body, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        spin_mode = _parse_bool_field(body.get('spinMode'), False)
         
         if not center:
             return {
@@ -2473,8 +2774,21 @@ def handle_csv_download(designer, body, cors_headers):
             'rHold': rHold
         }
         
+        min_exp = body.get('minExpansionDist')
+        max_exp = body.get('maxExpansionDist')
+        if min_exp is not None:
+            params['minExpansionDist'] = float(min_exp)
+        if max_exp is not None:
+            params['maxExpansionDist'] = float(max_exp)
+        
         # Generate CSV content
-        csv_content = designer.generate_csv(params, center, min_height, max_height)
+        csv_content = designer.generate_csv(
+            params,
+            center,
+            min_height,
+            max_height,
+            spin_mode=spin_mode,
+        )
         
         # Return CSV as text/csv
         return {
@@ -2539,6 +2853,25 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        export_part = str(body.get('exportPart', 'single')).strip().lower() or 'single'
+        allowed_export_parts = {'single', 'part1', 'part2', 'combined'}
+        if export_part not in allowed_export_parts:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({
+                    'error': "exportPart must be one of: single, part1, part2, combined"
+                })
+            }
+        if export_part != 'single' and not spin_mode:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({
+                    'error': "exportPart part1/part2/combined requires spinMode=true"
+                })
+            }
         
         if not center:
             return {
@@ -2562,16 +2895,61 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'rHold': rHold
         }
         
-        # Generate battery-specific CSV content
-        csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
+        min_exp = body.get('minExpansionDist')
+        max_exp = body.get('maxExpansionDist')
+        if min_exp is not None:
+            params['minExpansionDist'] = float(min_exp)
+        if max_exp is not None:
+            params['maxExpansionDist'] = float(max_exp)
         
-        # Return CSV as text/csv
+        export_data = designer.build_battery_csv_export(
+            params=params,
+            center_str=center,
+            battery_index=battery_index,
+            min_height=min_height,
+            max_height=max_height,
+            spin_mode=spin_mode,
+            export_part=export_part,
+        )
+        csv_content = export_data['csv_text']
+        telemetry = export_data.get('telemetry') or {}
+
+        # Debug: verify spin_mode and POI in response headers (and CloudWatch)
+        print(f"[battery-csv] spin_mode={spin_mode}, battery_id={battery_id}, export_part={export_part}")
+        poi_in_csv = '0,0' if spin_mode else 'center'
+        if export_part == 'part1':
+            filename = f"battery-{battery_id}-part-1.csv"
+        elif export_part == 'part2':
+            filename = f"battery-{battery_id}-part-2.csv"
+        elif export_part == 'combined':
+            filename = f"battery-{battery_id}-combined.csv"
+        else:
+            filename = f"battery-{battery_id}.csv"
+
+        expose_headers = [
+            'X-Spin-Mode-Applied',
+            'X-POI-Used',
+            'X-Spin-Export-Part',
+            'X-Spin-Combined-Waypoints',
+            'X-Spin-Max-Segment-Feet',
+            'X-Spin-Estimated-Rate-Deg-S',
+            'X-Spin-Min-Blur-Segment-Feet',
+        ]
+
         return {
             'statusCode': 200,
             'headers': {
                 **cors_headers,
                 'Content-Type': 'text/csv',
-                'Content-Disposition': f'attachment; filename="battery-{battery_id}.csv"'
+                'Content-Disposition': f'attachment; filename="{filename}"',
+                'Access-Control-Expose-Headers': ', '.join(expose_headers),
+                'X-Spin-Mode-Applied': 'true' if spin_mode else 'false',
+                'X-POI-Used': poi_in_csv,
+                'X-Spin-Export-Part': export_part,
+                'X-Spin-Combined-Waypoints': str(int(telemetry.get('combined_waypoints', 0))),
+                'X-Spin-Max-Segment-Feet': f"{telemetry.get('max_segment_feet', 0.0):.2f}",
+                'X-Spin-Estimated-Rate-Deg-S': f"{telemetry.get('estimated_rate_deg_s', 0.0):.2f}",
+                'X-Spin-Min-Blur-Segment-Feet': f"{telemetry.get('min_blur_segment_feet', 0.0):.2f}",
             },
             'body': csv_content
         }

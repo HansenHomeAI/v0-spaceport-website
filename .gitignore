@@ -35,6 +35,9 @@ env/
 .cdk.staging/
 cdk.out/
 
+# Lambda package artifacts (manual deploy)
+**/function.zip
+
 # AWS
 .aws-sam/
 
