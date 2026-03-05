@@ -5698,6 +5698,39 @@ input.text-fade-right,
   cursor: grabbing;
 }
 
+.map-wrapper.fullscreen .waypoint-marker.merge-target {
+  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.45), 0 0 10px rgba(255, 193, 7, 0.6);
+}
+
+.map-wrapper.fullscreen .waypoint-marker.merge-armed {
+  box-shadow: 0 0 0 5px rgba(255, 88, 88, 0.7), 0 0 14px rgba(255, 88, 88, 0.65);
+}
+
+.waypoint-insert-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(7, 11, 22, 0.85);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32), 0 0 0 2px rgba(255, 255, 255, 0.14);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.waypoint-insert-marker:hover {
+  transform: scale(1.06);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.38), 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
 .boundary-handle-marker {
   width: 18px;
   height: 18px;

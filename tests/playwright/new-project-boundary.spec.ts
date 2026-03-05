@@ -29,11 +29,22 @@ const dragLocatorBy = async (
   await page.mouse.up();
 };
 
+const locatorCenter = async (
+  locator: import('@playwright/test').Locator
+): Promise<{ x: number; y: number }> => {
+  const box = await locator.boundingBox();
+  if (!box) {
+    throw new Error('Could not resolve locator bounding box');
+  }
+  return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+};
+
 test('fullscreen boundary editor applies a boundary-aware mission', async ({ page }) => {
   requireEnv();
 
   const optimizeBoundaryPayloads: any[] = [];
   const batteryCsvPayloads: any[] = [];
+  const projectSavePayloads: any[] = [];
 
   page.on('request', (request) => {
     if (request.method() !== 'POST') return;
@@ -42,6 +53,9 @@ test('fullscreen boundary editor applies a boundary-aware mission', async ({ pag
     }
     if (request.url().includes('/api/csv/battery/')) {
       batteryCsvPayloads.push(request.postDataJSON());
+    }
+    if (request.url().includes('/projects')) {
+      projectSavePayloads.push(request.postDataJSON());
     }
   });
 
@@ -94,4 +108,32 @@ test('fullscreen boundary editor applies a boundary-aware mission', async ({ pag
   await expect.poll(() => batteryCsvPayloads.length, { timeout: 20_000 }).toBeGreaterThan(0);
   expect(batteryCsvPayloads.at(-1)?.boundary).toBeTruthy();
   expect(batteryCsvPayloads.at(-1)?.boundaryPlan).toBeTruthy();
+
+  const markerBeforeInsert = await page.locator('.waypoint-marker').count();
+  expect(markerBeforeInsert).toBeGreaterThan(3);
+
+  const firstMarker = page.locator('.waypoint-marker').nth(0);
+  const secondMarker = page.locator('.waypoint-marker').nth(1);
+  const firstCenter = await locatorCenter(firstMarker);
+  const secondCenter = await locatorCenter(secondMarker);
+
+  await page.mouse.move((firstCenter.x + secondCenter.x) / 2, (firstCenter.y + secondCenter.y) / 2);
+  await expect(page.locator('.waypoint-insert-marker')).toBeVisible({ timeout: 10_000 });
+  await page.locator('.waypoint-insert-marker').click();
+  await expect(page.locator('.waypoint-marker')).toHaveCount(markerBeforeInsert + 1);
+
+  const draggedMarkerCenter = await locatorCenter(firstMarker);
+  const targetMarkerCenter = await locatorCenter(secondMarker);
+  await page.mouse.move(draggedMarkerCenter.x, draggedMarkerCenter.y);
+  await page.mouse.down();
+  await page.mouse.move(targetMarkerCenter.x, targetMarkerCenter.y, { steps: 24 });
+  await page.waitForTimeout(700);
+  await page.mouse.up();
+  await expect(page.locator('.waypoint-marker')).toHaveCount(markerBeforeInsert);
+
+  await page.getByPlaceholder('Min Distance').fill('300');
+  await expect.poll(
+    () => projectSavePayloads.some((payload) => payload?.params?.waypointOverrides?.batteries?.['1']),
+    { timeout: 20_000 }
+  ).toBeTruthy();
 });

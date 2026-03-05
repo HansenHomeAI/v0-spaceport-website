@@ -15,6 +15,17 @@ import {
   normalizeRotationDeg,
   rotatePoint,
 } from '../lib/flightBoundary';
+import {
+  WaypointOverrides,
+  applyWaypointOverridesToPreviewPaths,
+  buildBoundarySignature,
+  clearWaypointOverrides,
+  cloneWaypointOverrides,
+  createEmptyWaypointOverrides,
+  normalizeWaypointOverrides,
+  rebuildBatteryCsvWithLiveCoords,
+  upsertBatteryWaypointOverride,
+} from '../lib/waypointOverrides';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -54,6 +65,7 @@ type MapHistorySnapshot = {
   draftBoundary: BoundaryEllipse | null;
   isBoundaryMode: boolean;
   boundaryDirty: boolean;
+  waypointOverrides: WaypointOverrides;
   visibleBatteryPaths: BoundaryPreviewPath[];
   viewport: MapViewportState | null;
 };
@@ -62,6 +74,12 @@ type MapHistoryEntry = {
   action: string;
   prev: MapHistorySnapshot;
   next: MapHistorySnapshot;
+};
+
+type WaypointInsertCandidate = {
+  batteryIndex: number;
+  segmentIndex: number;
+  coord: [number, number];
 };
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
@@ -140,6 +158,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [appliedBoundaryPlan, setAppliedBoundaryPlan] = useState<BoundaryPlan | null>(null);
   const [isApplyingBoundary, setIsApplyingBoundary] = useState<boolean>(false);
   const [boundaryDirty, setBoundaryDirty] = useState<boolean>(false);
+  const [waypointOverrides, setWaypointOverrides] = useState<WaypointOverrides>(() => createEmptyWaypointOverrides(null));
 
   const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
@@ -207,7 +226,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const triggerSaveRef = useRef<(() => void) | null>(null);
   const boundaryEntryVisiblePathsRef = useRef<Map<number, Array<[number, number]>>>(new Map());
   const clearAllBatteryPathsRef = useRef<() => void>(() => {});
-  const replaceBatteryPreviewPathsRef = useRef<(previewPaths: BoundaryPreviewPath[], options?: { fitBounds?: boolean }) => Promise<void>>(async () => {});
+  const replaceBatteryPreviewPathsRef = useRef<(
+    previewPaths: BoundaryPreviewPath[],
+    options?: { fitBounds?: boolean; useOverrides?: boolean }
+  ) => Promise<void>>(async () => {});
+  const insertionCandidateRef = useRef<WaypointInsertCandidate | null>(null);
+  const insertionMarkerRef = useRef<any | null>(null);
+  const insertionTouchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const insertionTouchStartPointRef = useRef<{ x: number; y: number } | null>(null);
+  const handleMapPointerMoveForInsertionRef = useRef<(event: any) => void>(() => {});
+  const handleMapTouchStartForInsertionRef = useRef<(event: any) => void>(() => {});
+  const handleMapTouchMoveForInsertionRef = useRef<(event: any) => void>(() => {});
+  const handleMapTouchEndForInsertionRef = useRef<() => void>(() => {});
   const captureMapHistorySnapshotRef = useRef<() => MapHistorySnapshot>(() => ({
     selectedCoords: null,
     addressSearch: '',
@@ -217,6 +247,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     draftBoundary: null,
     isBoundaryMode: false,
     boundaryDirty: false,
+    waypointOverrides: createEmptyWaypointOverrides(null),
     visibleBatteryPaths: [],
     viewport: null,
   }));
@@ -230,6 +261,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Waypoint drag refs
   const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
   const waypointCoordsRef = useRef<Map<number, [number, number][]>>(new Map());
+  const waypointOverridesRef = useRef<WaypointOverrides>(createEmptyWaypointOverrides(null));
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -257,6 +289,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   useEffect(() => {
     boundaryDirtyRef.current = boundaryDirty;
   }, [boundaryDirty]);
+
+  useEffect(() => {
+    waypointOverridesRef.current = waypointOverrides;
+  }, [waypointOverrides]);
 
   useEffect(() => {
     isBoundaryModeRef.current = isBoundaryMode;
@@ -423,6 +459,45 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }));
   }, [clonePathCoords]);
 
+  const clearPendingInsertionTouchTimer = useCallback(() => {
+    if (insertionTouchTimerRef.current) {
+      clearTimeout(insertionTouchTimerRef.current);
+      insertionTouchTimerRef.current = null;
+    }
+  }, []);
+
+  const clearInsertionCandidateMarker = useCallback(() => {
+    clearPendingInsertionTouchTimer();
+    insertionTouchStartPointRef.current = null;
+    insertionCandidateRef.current = null;
+    insertionMarkerRef.current?.remove?.();
+    insertionMarkerRef.current = null;
+  }, [clearPendingInsertionTouchTimer]);
+
+  const updateWaypointOverridesForBattery = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
+    const boundarySignature = buildBoundarySignature(appliedBoundaryRef.current);
+    setWaypointOverrides((current) => {
+      const next = upsertBatteryWaypointOverride(current, batteryIndex, coords, boundarySignature);
+      waypointOverridesRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const resetWaypointOverrides = useCallback((boundarySignature: string | null = null) => {
+    const next = clearWaypointOverrides(boundarySignature);
+    waypointOverridesRef.current = next;
+    setWaypointOverrides(next);
+  }, []);
+
+  const cloneWaypointOverridesState = useCallback((overrides: WaypointOverrides) => {
+    return cloneWaypointOverrides(overrides);
+  }, []);
+
+  const resolvePreviewPathsWithOverrides = useCallback((paths: BoundaryPreviewPath[]) => {
+    const currentSignature = buildBoundarySignature(appliedBoundaryRef.current);
+    return applyWaypointOverridesToPreviewPaths(paths, waypointOverridesRef.current, currentSignature);
+  }, []);
+
   const captureVisibleBatteryPreviewPaths = useCallback((): BoundaryPreviewPath[] => {
     return Array.from(visibleBatteryPaths.entries())
       .sort(([left], [right]) => left - right)
@@ -452,10 +527,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       draftBoundary: draftBoundaryRef.current ? normalizeBoundary(draftBoundaryRef.current) : null,
       isBoundaryMode: isBoundaryModeRef.current,
       boundaryDirty: boundaryDirtyRef.current,
+      waypointOverrides: cloneWaypointOverridesState(waypointOverridesRef.current),
       visibleBatteryPaths: captureVisibleBatteryPreviewPaths(),
       viewport: captureMapViewportState(),
     };
-  }, [addressSearch, captureMapViewportState, captureVisibleBatteryPreviewPaths, cloneBoundaryPlan, cloneOptimizedParams, selectedCoords]);
+  }, [
+    addressSearch,
+    captureMapViewportState,
+    captureVisibleBatteryPreviewPaths,
+    cloneBoundaryPlan,
+    cloneOptimizedParams,
+    cloneWaypointOverridesState,
+    selectedCoords,
+  ]);
 
   const serializeMapHistorySnapshot = useCallback((snapshot: MapHistorySnapshot) => {
     return JSON.stringify(snapshot);
@@ -582,16 +666,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const restoredAppliedBoundary = snapshot.appliedBoundary ? normalizeBoundary(snapshot.appliedBoundary) : null;
       const restoredAppliedPlan = cloneBoundaryPlan(snapshot.appliedBoundaryPlan);
       const restoredDraftBoundary = snapshot.draftBoundary ? normalizeBoundary(snapshot.draftBoundary) : null;
+      const restoredWaypointOverrides = cloneWaypointOverridesState(snapshot.waypointOverrides ?? createEmptyWaypointOverrides(null));
 
       appliedBoundaryRef.current = restoredAppliedBoundary;
       appliedBoundaryPlanRef.current = restoredAppliedPlan;
       draftBoundaryRef.current = restoredDraftBoundary;
+      waypointOverridesRef.current = restoredWaypointOverrides;
 
       setAppliedBoundary(restoredAppliedBoundary);
       setAppliedBoundaryPlan(restoredAppliedPlan);
       setDraftBoundary(restoredDraftBoundary);
       setIsBoundaryMode(snapshot.isBoundaryMode);
       setBoundaryDirty(snapshot.boundaryDirty);
+      setWaypointOverrides(restoredWaypointOverrides);
 
       const restoredPaths = cloneBoundaryPreviewPaths(snapshot.visibleBatteryPaths);
       boundaryEntryVisiblePathsRef.current = new Map(
@@ -607,7 +694,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
 
       if (restoredPaths.length > 0) {
-        await replaceBatteryPreviewPathsRef.current(restoredPaths, { fitBounds: false });
+        await replaceBatteryPreviewPathsRef.current(restoredPaths, { fitBounds: false, useOverrides: false });
       } else {
         clearAllBatteryPathsRef.current();
       }
@@ -630,6 +717,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     cloneBoundaryPlan,
     cloneBoundaryPreviewPaths,
     cloneOptimizedParams,
+    cloneWaypointOverridesState,
     clonePathCoords,
     setCenterMarkerOnMap,
     setOptimizedParamsWithLogging,
@@ -684,6 +772,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setAppliedBoundaryPlan(null);
     setIsApplyingBoundary(false);
     setBoundaryDirty(false);
+    resetWaypointOverrides(null);
+    clearInsertionCandidateMarker();
     boundaryEntryVisiblePathsRef.current = new Map();
     
     // If editing, hydrate fields from project
@@ -716,6 +806,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (params.boundaryPlan?.batteries?.length) {
         setAppliedBoundaryPlan(params.boundaryPlan as BoundaryPlan);
       }
+      const normalizedWaypointOverrides = normalizeWaypointOverrides(params.waypointOverrides);
+      setWaypointOverrides(normalizedWaypointOverrides);
+      waypointOverridesRef.current = normalizedWaypointOverrides;
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -804,6 +897,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setSelectedFile(null);
       setStatus('draft');
       setCurrentProjectId(null);
+      resetWaypointOverrides(null);
       selectedCoordsRef.current = null;
       setSelectedCoords(null);
       boundaryEntryVisiblePathsRef.current = new Map();
@@ -815,7 +909,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [open, project]);
+  }, [clearInsertionCandidateMarker, open, project, resetWaypointOverrides]);
 
   // Initialize Mapbox on open
   useEffect(() => {
@@ -862,6 +956,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           // Invalidate previous optimization
           setOptimizedParamsWithLoggingRef.current(null, 'Map coordinates changed');
           clearBoundaryPlanStateRef.current('Map coordinates changed');
+          resetWaypointOverrides(null);
+          clearInsertionCandidateMarker();
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
@@ -917,6 +1013,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         map.on('rotateend', commitViewportHistory);
         map.on('pitchstart', (event: any) => beginViewportHistory('map pitch', event));
         map.on('pitchend', commitViewportHistory);
+        map.on('mousemove', (event: any) => handleMapPointerMoveForInsertionRef.current(event));
+        map.on('dragstart', clearInsertionCandidateMarker);
+        map.on('movestart', clearInsertionCandidateMarker);
+        map.on('zoomstart', clearInsertionCandidateMarker);
+        map.on('touchstart', (event: any) => handleMapTouchStartForInsertionRef.current(event));
+        map.on('touchmove', (event: any) => handleMapTouchMoveForInsertionRef.current(event));
+        map.on('touchend', () => handleMapTouchEndForInsertionRef.current());
+        map.on('touchcancel', () => handleMapTouchEndForInsertionRef.current());
         
         mapRef.current = map;
         setMapReady(true);
@@ -947,6 +1051,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
       waypointMarkersRef.current.clear();
       waypointCoordsRef.current.clear();
+      clearInsertionCandidateMarker();
       Object.values(boundaryMarkersRef.current).forEach((marker) => marker?.remove?.());
       boundaryMarkersRef.current = { center: null, major: null, minor: null };
       isMarkerInteractionActiveRef.current = false;
@@ -960,7 +1065,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         selectedCoordsRef.current = null;
       }
     };
-  }, [open, project, resolveMapbox]);
+  }, [
+    clearInsertionCandidateMarker,
+    open,
+    project,
+    resetWaypointOverrides,
+    resolveMapbox,
+  ]);
 
   // Helper function to place marker at coordinates
   const placeMarkerAtCoords = useCallback(async (
@@ -992,6 +1103,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Invalidate previous optimization since coordinates changed
     setOptimizedParamsWithLogging(null, 'Address search coordinates changed');
     clearBoundaryPlanState('Address search coordinates changed');
+    resetWaypointOverrides(null);
+    clearInsertionCandidateMarker();
     
     // Hide instructions
     const inst = document.getElementById('map-instructions');
@@ -1001,7 +1114,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (previousSnapshot) {
       setTimeout(commitHistory, 2100);
     }
-  }, [captureMapHistorySnapshot, clearBoundaryPlanState, pushMapHistoryEntry, setCenterMarkerOnMap, setOptimizedParamsWithLogging]);
+  }, [
+    captureMapHistorySnapshot,
+    clearBoundaryPlanState,
+    clearInsertionCandidateMarker,
+    pushMapHistoryEntry,
+    resetWaypointOverrides,
+    setCenterMarkerOnMap,
+    setOptimizedParamsWithLogging,
+  ]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
@@ -1107,6 +1228,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Clear all battery paths and waypoint markers when optimization is invalidated
   useEffect(() => {
     if (!optimizedParams) {
+      clearInsertionCandidateMarker();
       const map = mapRef.current;
       if (map) {
         for (let i = 1; i <= 12; i++) {
@@ -1121,7 +1243,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       waypointCoordsRef.current.clear();
       setVisibleBatteryPaths(new Map());
     }
-  }, [optimizedParams]);
+  }, [clearInsertionCandidateMarker, optimizedParams]);
 
   const parsedBatteryCount = useMemo(() => {
     return Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
@@ -1348,29 +1470,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       // Patch with live coordinates if they exist
       let finalCsvText = originalCsvText;
-      const liveCoords = waypointCoordsRef.current.get(batteryIndex1);
+      const liveCoords = waypointCoordsRef.current.get(batteryIndex1)
+        ?? waypointOverridesRef.current.batteries[String(batteryIndex1)];
 
       if (liveCoords && liveCoords.length > 0) {
-        const lines = originalCsvText.trim().split('\n');
-        // CSV columns: lat,lon,alt... (lat is 0, lon is 1 based on fetchBatteryPathCoords)
-        const header = lines[0];
-        const dataLines = lines.slice(1);
-
-        if (dataLines.length === liveCoords.length) {
-          const updatedLines = dataLines.map((line, idx) => {
-            const parts = line.split(',');
-            const [newLng, newLat] = liveCoords[idx];
-            // Update CSV columns: Lat (0), Lng (1)
-            // Ensure we preserve the number of decimal places or use enough precision
-            parts[0] = newLat.toFixed(8);
-            parts[1] = newLng.toFixed(8);
-            return parts.join(',');
-          });
-          finalCsvText = [header, ...updatedLines].join('\n');
-          console.log('Using modified coordinates for CSV download');
-        } else {
-          console.warn('Live coordinates count mismatch, using original CSV');
-        }
+        finalCsvText = rebuildBatteryCsvWithLiveCoords(originalCsvText, liveCoords);
+        console.log(`Using modified coordinates for CSV download (${liveCoords.length} waypoints)`);
       }
 
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
@@ -1443,6 +1548,29 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     waypointCoordsRef.current.delete(batteryIndex);
   }, []);
 
+  const setBatteryPathSourceData = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const source = map.getSource(`battery-path-${batteryIndex}`);
+    if (!source) return;
+    source.setData({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: coords },
+    });
+  }, []);
+
+  const setVisibleBatteryPathCoords = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
+    const cloned = clonePathCoords(coords);
+    waypointCoordsRef.current.set(batteryIndex, cloned);
+    setVisibleBatteryPaths((current) => {
+      const next = new Map(current);
+      next.set(batteryIndex, cloned);
+      return next;
+    });
+  }, [clonePathCoords]);
+
   const createWaypointMarkers = useCallback(async (
     batteryIndex: number,
     coords: [number, number][],
@@ -1453,16 +1581,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!map) return;
 
     removeWaypointMarkers(batteryIndex);
-    waypointCoordsRef.current.set(batteryIndex, [...coords]);
+    waypointCoordsRef.current.set(batteryIndex, clonePathCoords(coords));
 
     const mapboxModule = await import('mapbox-gl');
     const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
 
     const markers: any[] = [];
-    let dragStartSnapshot: MapHistorySnapshot | null = null;
-    let markerMoved = false;
 
-    coords.forEach((coord, i) => {
+    coords.forEach((coord, markerIndex) => {
       const el = document.createElement('div');
       el.className = 'waypoint-marker';
       el.style.backgroundColor = color;
@@ -1471,10 +1597,90 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         .setLngLat(coord)
         .addTo(map);
       const releaseMapPan = bindMarkerInteractionGuards(el);
+
+      let dragStartSnapshot: MapHistorySnapshot | null = null;
+      let markerMoved = false;
+      let mergeTargetIndex: number | null = null;
+      let mergeArmed = false;
+      let mergeHoldTimer: ReturnType<typeof setTimeout> | null = null;
+
+      const clearMergeHoldTimer = () => {
+        if (mergeHoldTimer) {
+          clearTimeout(mergeHoldTimer);
+          mergeHoldTimer = null;
+        }
+      };
+
+      const clearMergeTargetStyles = () => {
+        if (mergeTargetIndex === null) return;
+        const targetMarker = markers[mergeTargetIndex];
+        const targetElement = targetMarker?.getElement?.();
+        targetElement?.classList.remove('merge-target');
+        targetElement?.classList.remove('merge-armed');
+      };
+
+      const resetMergeState = () => {
+        clearMergeHoldTimer();
+        clearMergeTargetStyles();
+        mergeTargetIndex = null;
+        mergeArmed = false;
+      };
+
+      const setMergeCandidate = (nextTargetIndex: number | null) => {
+        if (nextTargetIndex === mergeTargetIndex) {
+          return;
+        }
+
+        clearMergeHoldTimer();
+        clearMergeTargetStyles();
+        mergeTargetIndex = nextTargetIndex;
+        mergeArmed = false;
+
+        if (mergeTargetIndex === null) {
+          return;
+        }
+
+        const targetMarker = markers[mergeTargetIndex];
+        const targetElement = targetMarker?.getElement?.();
+        if (!targetElement) {
+          mergeTargetIndex = null;
+          return;
+        }
+
+        targetElement.classList.add('merge-target');
+        mergeHoldTimer = setTimeout(() => {
+          mergeArmed = true;
+          targetElement.classList.add('merge-armed');
+        }, 500);
+      };
+
+      const findMergeCandidateIndex = (liveCoords: Array<[number, number]>, lngLat: { lng: number; lat: number }): number | null => {
+        if (liveCoords.length <= 2) {
+          return null;
+        }
+
+        const markerPoint = map.project([lngLat.lng, lngLat.lat]);
+        let bestIndex: number | null = null;
+        let bestDistance = Number.POSITIVE_INFINITY;
+
+        liveCoords.forEach(([lng, lat], idx) => {
+          if (idx === markerIndex) return;
+          const point = map.project([lng, lat]);
+          const distance = Math.hypot(point.x - markerPoint.x, point.y - markerPoint.y);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestIndex = idx;
+          }
+        });
+
+        return bestDistance <= 18 ? bestIndex : null;
+      };
+
       const captureWaypointDragStart = () => {
         flushPendingViewportHistory();
         dragStartSnapshot = captureMapHistorySnapshot();
         markerMoved = false;
+        resetMergeState();
       };
       el.addEventListener('pointerdown', captureWaypointDragStart, true);
 
@@ -1489,29 +1695,46 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const lngLat = marker.getLngLat();
         const liveCoords = waypointCoordsRef.current.get(batteryIndex);
         if (!liveCoords) return;
-        liveCoords[i] = [lngLat.lng, lngLat.lat];
+        liveCoords[markerIndex] = [lngLat.lng, lngLat.lat];
         markerMoved = true;
+        setBatteryPathSourceData(batteryIndex, liveCoords);
 
-        const sourceId = `battery-path-${batteryIndex}`;
-        const source = map.getSource(sourceId);
-        if (source) {
-          source.setData({
-            type: 'Feature',
-            properties: {},
-            geometry: { type: 'LineString', coordinates: liveCoords },
-          });
-        }
+        const candidate = findMergeCandidateIndex(liveCoords, lngLat);
+        setMergeCandidate(candidate);
       });
 
       // Commit to history when drag ends
-      marker.on('dragend', () => {
+      marker.on('dragend', async () => {
         releaseMapPan();
         // Avoid a delayed map dragend from landing after marker history and consuming the first undo.
         pendingViewportHistoryRef.current = null;
+        const liveCoords = waypointCoordsRef.current.get(batteryIndex) ?? [];
+        let finalCoords = clonePathCoords(liveCoords);
+        let historyAction = `waypoint ${batteryIndex} drag`;
+
+        if (mergeArmed && mergeTargetIndex !== null && markerMoved) {
+          if (liveCoords.length <= 2) {
+            showSystemNotification('error', 'A flight segment needs at least two waypoints');
+          } else {
+            finalCoords = liveCoords.filter((_, idx) => idx !== markerIndex);
+            historyAction = `waypoint ${batteryIndex} merge`;
+            waypointCoordsRef.current.set(batteryIndex, finalCoords);
+            setBatteryPathSourceData(batteryIndex, finalCoords);
+            setVisibleBatteryPathCoords(batteryIndex, finalCoords);
+            updateWaypointOverridesForBattery(batteryIndex, finalCoords);
+            await createWaypointMarkers(batteryIndex, finalCoords, color, draggable);
+          }
+        } else if (markerMoved) {
+          setVisibleBatteryPathCoords(batteryIndex, liveCoords);
+          updateWaypointOverridesForBattery(batteryIndex, liveCoords);
+        }
+
         const nextSnapshot = captureMapHistorySnapshot();
         if (dragStartSnapshot && markerMoved) {
-          pushMapHistoryEntry(`waypoint ${batteryIndex} drag`, dragStartSnapshot, nextSnapshot);
+          pushMapHistoryEntry(historyAction, dragStartSnapshot, nextSnapshot);
+          triggerSaveRef.current?.();
         }
+        resetMergeState();
         dragStartSnapshot = null;
         markerMoved = false;
       });
@@ -1520,15 +1743,225 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     waypointMarkersRef.current.set(batteryIndex, markers);
-  }, [bindMarkerInteractionGuards, captureMapHistorySnapshot, flushPendingViewportHistory, pushMapHistoryEntry, removeWaypointMarkers]);
+  }, [
+    bindMarkerInteractionGuards,
+    captureMapHistorySnapshot,
+    clonePathCoords,
+    flushPendingViewportHistory,
+    pushMapHistoryEntry,
+    removeWaypointMarkers,
+    setBatteryPathSourceData,
+    setVisibleBatteryPathCoords,
+    showSystemNotification,
+    updateWaypointOverridesForBattery,
+  ]);
+
+  const findNearestInsertionCandidate = useCallback((point: { x: number; y: number }): WaypointInsertCandidate | null => {
+    const map = mapRef.current;
+    if (!map) return null;
+
+    const pathEntries = waypointCoordsRef.current.size > 0
+      ? Array.from(waypointCoordsRef.current.entries())
+      : Array.from(visibleBatteryPaths.entries());
+
+    let bestCandidate: WaypointInsertCandidate | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    pathEntries.forEach(([batteryIndex, coords]) => {
+      if (!coords || coords.length < 2) return;
+
+      for (let segmentIndex = 0; segmentIndex < coords.length - 1; segmentIndex += 1) {
+        const [startLng, startLat] = coords[segmentIndex];
+        const [endLng, endLat] = coords[segmentIndex + 1];
+        const startPoint = map.project([startLng, startLat]);
+        const endPoint = map.project([endLng, endLat]);
+        const segmentDx = endPoint.x - startPoint.x;
+        const segmentDy = endPoint.y - startPoint.y;
+        const segmentLengthSq = segmentDx * segmentDx + segmentDy * segmentDy;
+
+        if (segmentLengthSq <= Number.EPSILON) {
+          continue;
+        }
+
+        const pointerDx = point.x - startPoint.x;
+        const pointerDy = point.y - startPoint.y;
+        const t = Math.max(0, Math.min(1, (pointerDx * segmentDx + pointerDy * segmentDy) / segmentLengthSq));
+        const projectedX = startPoint.x + segmentDx * t;
+        const projectedY = startPoint.y + segmentDy * t;
+        const distance = Math.hypot(point.x - projectedX, point.y - projectedY);
+
+        if (distance < bestDistance) {
+          const projectedLngLat = map.unproject([projectedX, projectedY]);
+          bestDistance = distance;
+          bestCandidate = {
+            batteryIndex,
+            segmentIndex,
+            coord: [projectedLngLat.lng, projectedLngLat.lat],
+          };
+        }
+      }
+    });
+
+    return bestDistance <= 16 ? bestCandidate : null;
+  }, [visibleBatteryPaths]);
+
+  const insertWaypointAtCandidate = useCallback(async (candidate: WaypointInsertCandidate) => {
+    const existingCoords = waypointCoordsRef.current.get(candidate.batteryIndex)
+      ?? visibleBatteryPaths.get(candidate.batteryIndex);
+    if (!existingCoords || existingCoords.length < 2) {
+      return;
+    }
+
+    const previousSnapshot = captureMapHistorySnapshot();
+    const nextCoords = clonePathCoords(existingCoords);
+    nextCoords.splice(candidate.segmentIndex + 1, 0, candidate.coord);
+
+    setBatteryPathSourceData(candidate.batteryIndex, nextCoords);
+    setVisibleBatteryPathCoords(candidate.batteryIndex, nextCoords);
+    updateWaypointOverridesForBattery(candidate.batteryIndex, nextCoords);
+
+    const color = BATTERY_PATH_COLORS[(candidate.batteryIndex - 1) % BATTERY_PATH_COLORS.length];
+    await createWaypointMarkers(candidate.batteryIndex, nextCoords, color, isFullscreen);
+
+    const nextSnapshot = captureMapHistorySnapshot();
+    pushMapHistoryEntry(`waypoint ${candidate.batteryIndex} insert`, previousSnapshot, nextSnapshot);
+    triggerSaveRef.current?.();
+    clearInsertionCandidateMarker();
+  }, [
+    BATTERY_PATH_COLORS,
+    captureMapHistorySnapshot,
+    clearInsertionCandidateMarker,
+    clonePathCoords,
+    createWaypointMarkers,
+    isFullscreen,
+    pushMapHistoryEntry,
+    setBatteryPathSourceData,
+    setVisibleBatteryPathCoords,
+    updateWaypointOverridesForBattery,
+    visibleBatteryPaths,
+  ]);
+
+  const showInsertionCandidateMarker = useCallback(async (candidate: WaypointInsertCandidate) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    insertionCandidateRef.current = candidate;
+    const mapboxgl = await resolveMapbox();
+
+    if (!insertionMarkerRef.current) {
+      const element = document.createElement('div');
+      element.className = 'waypoint-insert-marker';
+      element.textContent = '+';
+      element.addEventListener('pointerdown', (event) => {
+        event.stopPropagation();
+      }, true);
+      element.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const activeCandidate = insertionCandidateRef.current;
+        if (activeCandidate) {
+          void insertWaypointAtCandidate(activeCandidate);
+        }
+      });
+
+      insertionMarkerRef.current = new mapboxgl.Marker({ element, anchor: 'center' })
+        .setLngLat(candidate.coord)
+        .addTo(map);
+      return;
+    }
+
+    insertionMarkerRef.current.setLngLat(candidate.coord);
+  }, [insertWaypointAtCandidate, resolveMapbox]);
+
+  const handleMapPointerMoveForInsertion = useCallback((event: any) => {
+    if (!isFullscreen || isBoundaryModeRef.current || isApplyingBoundaryRef.current || isMarkerInteractionActiveRef.current) {
+      clearInsertionCandidateMarker();
+      return;
+    }
+    const candidate = event?.point ? findNearestInsertionCandidate(event.point) : null;
+    if (!candidate) {
+      clearInsertionCandidateMarker();
+      return;
+    }
+    void showInsertionCandidateMarker(candidate);
+  }, [clearInsertionCandidateMarker, findNearestInsertionCandidate, isFullscreen, showInsertionCandidateMarker]);
+
+  const handleMapTouchStartForInsertion = useCallback((event: any) => {
+    if (!isFullscreen || isBoundaryModeRef.current || isApplyingBoundaryRef.current || isMarkerInteractionActiveRef.current) {
+      clearInsertionCandidateMarker();
+      return;
+    }
+    if (!event?.point) {
+      return;
+    }
+
+    clearPendingInsertionTouchTimer();
+    insertionTouchStartPointRef.current = { x: event.point.x, y: event.point.y };
+    insertionTouchTimerRef.current = setTimeout(() => {
+      const candidate = findNearestInsertionCandidate(event.point);
+      if (candidate) {
+        void showInsertionCandidateMarker(candidate);
+      }
+    }, 450);
+  }, [
+    clearInsertionCandidateMarker,
+    clearPendingInsertionTouchTimer,
+    findNearestInsertionCandidate,
+    isFullscreen,
+    showInsertionCandidateMarker,
+  ]);
+
+  const handleMapTouchMoveForInsertion = useCallback((event: any) => {
+    if (!insertionTouchStartPointRef.current || !event?.point) {
+      return;
+    }
+
+    const moved = Math.hypot(
+      event.point.x - insertionTouchStartPointRef.current.x,
+      event.point.y - insertionTouchStartPointRef.current.y
+    );
+
+    if (moved > 8) {
+      clearPendingInsertionTouchTimer();
+    }
+  }, [clearPendingInsertionTouchTimer]);
+
+  const handleMapTouchEndForInsertion = useCallback(() => {
+    clearPendingInsertionTouchTimer();
+    insertionTouchStartPointRef.current = null;
+  }, [clearPendingInsertionTouchTimer]);
+
+  useEffect(() => {
+    handleMapPointerMoveForInsertionRef.current = handleMapPointerMoveForInsertion;
+  }, [handleMapPointerMoveForInsertion]);
+
+  useEffect(() => {
+    handleMapTouchStartForInsertionRef.current = handleMapTouchStartForInsertion;
+  }, [handleMapTouchStartForInsertion]);
+
+  useEffect(() => {
+    handleMapTouchMoveForInsertionRef.current = handleMapTouchMoveForInsertion;
+  }, [handleMapTouchMoveForInsertion]);
+
+  useEffect(() => {
+    handleMapTouchEndForInsertionRef.current = handleMapTouchEndForInsertion;
+  }, [handleMapTouchEndForInsertion]);
+
+  useEffect(() => {
+    if (!open || !isFullscreen || isBoundaryMode || isApplyingBoundary) {
+      clearInsertionCandidateMarker();
+    }
+  }, [clearInsertionCandidateMarker, isApplyingBoundary, isBoundaryMode, isFullscreen, open]);
 
   const removeBatteryPathVisualization = useCallback((batteryIndex: number) => {
     const map = mapRef.current;
     if (map) {
       const layerId = `battery-path-layer-${batteryIndex}`;
+      const hitLayerId = `battery-path-hit-layer-${batteryIndex}`;
       const sourceId = `battery-path-${batteryIndex}`;
       try {
         if (map.getLayer(layerId)) map.removeLayer(layerId);
+        if (map.getLayer(hitLayerId)) map.removeLayer(hitLayerId);
         if (map.getSource(sourceId)) map.removeSource(sourceId);
       } catch {
         // Ignore teardown races while the map is resizing or unmounting.
@@ -1550,6 +1983,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     try {
       if (map.getLayer(layerId)) map.removeLayer(layerId);
+      if (map.getLayer(`battery-path-hit-layer-${batteryIndex}`)) map.removeLayer(`battery-path-hit-layer-${batteryIndex}`);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     } catch {
       // Ignore replacement races while redrawing the preview.
@@ -1575,6 +2009,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       },
     });
 
+    map.addLayer({
+      id: `battery-path-hit-layer-${batteryIndex}`,
+      type: 'line',
+      source: sourceId,
+      paint: {
+        'line-color': '#ffffff',
+        'line-width': 18,
+        'line-opacity': 0.001,
+      },
+    });
+
     await createWaypointMarkers(batteryIndex, coords, color, isFullscreen);
   }, [BATTERY_PATH_COLORS, createWaypointMarkers, isFullscreen]);
 
@@ -1594,11 +2039,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, []);
 
   const clearAllBatteryPaths = useCallback(() => {
+    clearInsertionCandidateMarker();
     visibleBatteryPaths.forEach((_, batteryIdx) => {
       removeBatteryPathVisualization(batteryIdx);
     });
     setVisibleBatteryPaths(new Map());
-  }, [removeBatteryPathVisualization, visibleBatteryPaths]);
+  }, [clearInsertionCandidateMarker, removeBatteryPathVisualization, visibleBatteryPaths]);
 
   useEffect(() => {
     clearAllBatteryPathsRef.current = clearAllBatteryPaths;
@@ -1606,22 +2052,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const replaceBatteryPreviewPaths = useCallback(async (
     previewPaths: BoundaryPreviewPath[],
-    options?: { fitBounds?: boolean }
+    options?: { fitBounds?: boolean; useOverrides?: boolean }
   ) => {
+    const nextPaths = options?.useOverrides === false
+      ? cloneBoundaryPreviewPaths(previewPaths)
+      : resolvePreviewPathsWithOverrides(previewPaths);
+
     visibleBatteryPaths.forEach((_, batteryIdx) => {
       removeBatteryPathVisualization(batteryIdx);
     });
 
-    for (const previewPath of previewPaths) {
+    for (const previewPath of nextPaths) {
       await drawBatteryPathVisualization(previewPath.batteryIndex, previewPath.coordinates);
     }
 
-    setVisibleBatteryPaths(new Map(previewPaths.map((path) => [path.batteryIndex, path.coordinates])));
+    setVisibleBatteryPaths(new Map(nextPaths.map((path) => [path.batteryIndex, clonePathCoords(path.coordinates)])));
 
     if (options?.fitBounds !== false) {
-      fitMapToPreviewPaths(previewPaths);
+      fitMapToPreviewPaths(nextPaths);
     }
-  }, [drawBatteryPathVisualization, fitMapToPreviewPaths, removeBatteryPathVisualization, visibleBatteryPaths]);
+  }, [
+    cloneBoundaryPreviewPaths,
+    clonePathCoords,
+    drawBatteryPathVisualization,
+    fitMapToPreviewPaths,
+    removeBatteryPathVisualization,
+    resolvePreviewPathsWithOverrides,
+    visibleBatteryPaths,
+  ]);
 
   useEffect(() => {
     replaceBatteryPreviewPathsRef.current = replaceBatteryPreviewPaths;
@@ -1646,9 +2104,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     }
 
-    await replaceBatteryPreviewPaths(previews, options);
-    return previews;
-  }, [ensureMissionReady, fetchBatteryPathCoords, parsedBatteryCount, replaceBatteryPreviewPaths, visibleBatteryPaths, waitForMapReady]);
+    const resolvedPreviews = resolvePreviewPathsWithOverrides(previews);
+    await replaceBatteryPreviewPaths(resolvedPreviews, { ...options, useOverrides: false });
+    return resolvedPreviews;
+  }, [
+    ensureMissionReady,
+    fetchBatteryPathCoords,
+    parsedBatteryCount,
+    replaceBatteryPreviewPaths,
+    resolvePreviewPathsWithOverrides,
+    visibleBatteryPaths,
+    waitForMapReady,
+  ]);
 
   const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
     const map = mapRef.current;
@@ -1661,6 +2128,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
         next.delete(batteryIndex1);
+        if (next.size === 0) {
+          clearInsertionCandidateMarker();
+        }
         return next;
       });
       return;
@@ -1679,15 +2149,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return;
       }
 
-      await drawBatteryPathVisualization(batteryIndex1, coords);
+      const resolvedPath = resolvePreviewPathsWithOverrides([
+        { batteryIndex: batteryIndex1, coordinates: coords },
+      ])[0];
+      const resolvedCoords = resolvedPath?.coordinates ?? coords;
+      await drawBatteryPathVisualization(batteryIndex1, resolvedCoords);
 
       setVisibleBatteryPaths(prev => {
         const next = new Map(prev);
-        next.set(batteryIndex1, coords);
+        next.set(batteryIndex1, clonePathCoords(resolvedCoords));
         return next;
       });
 
-      fitMapToPreviewPaths([{ batteryIndex: batteryIndex1, coordinates: coords }]);
+      fitMapToPreviewPaths([{ batteryIndex: batteryIndex1, coordinates: resolvedCoords }]);
     } catch (e: any) {
       showSystemNotification('error', e?.message || 'Failed to visualize path');
     } finally {
@@ -1697,7 +2171,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return next;
       });
     }
-  }, [drawBatteryPathVisualization, ensureMissionReady, fetchBatteryPathCoords, fitMapToPreviewPaths, removeBatteryPathVisualization, showSystemNotification, visibleBatteryPaths]);
+  }, [
+    clonePathCoords,
+    clearInsertionCandidateMarker,
+    drawBatteryPathVisualization,
+    ensureMissionReady,
+    fetchBatteryPathCoords,
+    fitMapToPreviewPaths,
+    removeBatteryPathVisualization,
+    resolvePreviewPathsWithOverrides,
+    showSystemNotification,
+    visibleBatteryPaths,
+  ]);
 
   const upsertBoundaryLineLayer = useCallback((
     sourceId: string,
@@ -1926,7 +2411,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }));
 
     if (snapshot.length > 0) {
-      await replaceBatteryPreviewPaths(snapshot, { fitBounds: false });
+      await replaceBatteryPreviewPaths(snapshot, { fitBounds: false, useOverrides: false });
     } else {
       clearAllBatteryPaths();
     }
@@ -1993,6 +2478,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const previousSnapshot = captureMapHistorySnapshot();
       const response = await optimizeBoundaryMission(currentDraft);
       const normalizedBoundary = normalizeBoundary(response.boundary);
+      const previousBoundarySignature = buildBoundarySignature(appliedBoundaryRef.current);
+      const nextBoundarySignature = buildBoundarySignature(normalizedBoundary);
+      const boundaryGeometryChanged = previousBoundarySignature !== nextBoundarySignature;
 
       appliedBoundaryRef.current = normalizedBoundary;
       appliedBoundaryPlanRef.current = response.boundaryPlan;
@@ -2011,9 +2499,23 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setAddressSearch(`${updatedCenter.lat.toFixed(6)}, ${updatedCenter.lng.toFixed(6)}`);
       await setCenterMarkerOnMap(updatedCenter.lat, updatedCenter.lng);
 
-      await replaceBatteryPreviewPaths(response.previewPaths, { fitBounds: true });
+      if (boundaryGeometryChanged) {
+        resetWaypointOverrides(nextBoundarySignature);
+      } else {
+        setWaypointOverrides((current) => {
+          const next = cloneWaypointOverrides(current);
+          next.boundarySignature = nextBoundarySignature;
+          waypointOverridesRef.current = next;
+          return next;
+        });
+      }
+
+      const previewPaths = boundaryGeometryChanged
+        ? response.previewPaths
+        : resolvePreviewPathsWithOverrides(response.previewPaths);
+      await replaceBatteryPreviewPaths(previewPaths, { fitBounds: true, useOverrides: false });
       boundaryEntryVisiblePathsRef.current = new Map(
-        response.previewPaths.map((path) => [path.batteryIndex, path.coordinates])
+        previewPaths.map((path) => [path.batteryIndex, clonePathCoords(path.coordinates)])
       );
 
       if (response.boundaryPlan.fitStatus === 'best_effort' && response.toastMessage) {
@@ -2033,11 +2535,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [
     captureMapHistorySnapshot,
+    clonePathCoords,
     flushPendingViewportHistory,
     isApplyingBoundary,
     optimizeBoundaryMission,
     pushMapHistoryEntry,
     replaceBatteryPreviewPaths,
+    resetWaypointOverrides,
+    resolvePreviewPathsWithOverrides,
     setCenterMarkerOnMap,
     showSystemNotification,
   ]);
@@ -2117,6 +2622,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           longitude: selectedCoordsRef.current?.lng || null,
           boundary: appliedBoundaryRef.current || null,
           boundaryPlan: appliedBoundaryPlanRef.current || null,
+          waypointOverrides: waypointOverridesRef.current,
         },
       };
       
@@ -2207,9 +2713,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       status,
       selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
       optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
-      appliedBoundary: appliedBoundary ? 'EXISTS' : 'NULL',
-      appliedBoundaryPlan: appliedBoundaryPlan ? 'EXISTS' : 'NULL',
-    });
+          appliedBoundary: appliedBoundary ? 'EXISTS' : 'NULL',
+          appliedBoundaryPlan: appliedBoundaryPlan ? 'EXISTS' : 'NULL',
+          waypointOverridesCount: Object.keys(waypointOverridesRef.current?.batteries || {}).length,
+        });
     
     // Don't trigger save immediately, use timeout to avoid render-phase updates
     const timer = setTimeout(() => {
@@ -2217,7 +2724,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, appliedBoundary, appliedBoundaryPlan]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords, appliedBoundary, appliedBoundaryPlan, waypointOverrides]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -2514,6 +3021,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               maxHeight: maxHeightFeet,
               boundary: appliedBoundaryRef.current || null,
               boundaryPlan: appliedBoundaryPlanRef.current || null,
+              waypointOverrides: waypointOverridesRef.current,
             },
             upload: { objectKey: init.objectKey },
           }),
