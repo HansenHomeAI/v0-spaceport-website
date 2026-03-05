@@ -265,6 +265,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const isFullscreenRef = useRef<boolean>(false);
 
   // Undo/Redo State
   const [history, setHistory] = useState<MapHistoryEntry[]>([]);
@@ -1207,6 +1208,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [open, isFullscreen, toggleFullscreen]);
 
   useEffect(() => {
+    isFullscreenRef.current = isFullscreen;
     waypointMarkersRef.current.forEach((markers) => {
       markers.forEach(m => m.setDraggable(isFullscreen));
     });
@@ -1574,8 +1576,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const createWaypointMarkers = useCallback(async (
     batteryIndex: number,
     coords: [number, number][],
-    color: string,
-    draggable: boolean
+    color: string
   ) => {
     const map = mapRef.current;
     if (!map) return;
@@ -1585,6 +1586,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     const mapboxModule = await import('mapbox-gl');
     const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+    const markerDraggable = isFullscreenRef.current;
 
     const markers: any[] = [];
 
@@ -1593,10 +1595,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       el.className = 'waypoint-marker';
       el.style.backgroundColor = color;
 
-      const marker = new mapboxgl.Marker({ element: el, draggable, anchor: 'center' })
+      const marker = new mapboxgl.Marker({ element: el, draggable: markerDraggable, anchor: 'center' })
         .setLngLat(coord)
         .addTo(map);
-      const releaseMapPan = bindMarkerInteractionGuards(el);
+      const releaseMapPan = markerDraggable ? bindMarkerInteractionGuards(el) : () => {};
 
       let dragStartSnapshot: MapHistorySnapshot | null = null;
       let markerMoved = false;
@@ -1722,7 +1724,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             setBatteryPathSourceData(batteryIndex, finalCoords);
             setVisibleBatteryPathCoords(batteryIndex, finalCoords);
             updateWaypointOverridesForBattery(batteryIndex, finalCoords);
-            await createWaypointMarkers(batteryIndex, finalCoords, color, draggable);
+            await createWaypointMarkers(batteryIndex, finalCoords, color);
           }
         } else if (markerMoved) {
           setVisibleBatteryPathCoords(batteryIndex, liveCoords);
@@ -1821,7 +1823,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     updateWaypointOverridesForBattery(candidate.batteryIndex, nextCoords);
 
     const color = BATTERY_PATH_COLORS[(candidate.batteryIndex - 1) % BATTERY_PATH_COLORS.length];
-    await createWaypointMarkers(candidate.batteryIndex, nextCoords, color, isFullscreen);
+    await createWaypointMarkers(candidate.batteryIndex, nextCoords, color);
 
     const nextSnapshot = captureMapHistorySnapshot();
     pushMapHistoryEntry(`waypoint ${candidate.batteryIndex} insert`, previousSnapshot, nextSnapshot);
@@ -1833,7 +1835,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     clearInsertionCandidateMarker,
     clonePathCoords,
     createWaypointMarkers,
-    isFullscreen,
     pushMapHistoryEntry,
     setBatteryPathSourceData,
     setVisibleBatteryPathCoords,
@@ -2020,8 +2021,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       },
     });
 
-    await createWaypointMarkers(batteryIndex, coords, color, isFullscreen);
-  }, [BATTERY_PATH_COLORS, createWaypointMarkers, isFullscreen]);
+    await createWaypointMarkers(batteryIndex, coords, color);
+  }, [BATTERY_PATH_COLORS, createWaypointMarkers]);
 
   const fitMapToPreviewPaths = useCallback((previewPaths: BoundaryPreviewPath[]) => {
     const map = mapRef.current;
