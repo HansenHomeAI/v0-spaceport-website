@@ -75,6 +75,10 @@ logs/*.png
 logs/*.jpg
 logs/*.jpeg
 logs/*.txt
+logs/*.json
+
+# Playwright / test artifacts
+test-results/
 
 # Lambda pip-installed packages (CDK auto-bundles via Docker)
 infrastructure/**/lambda/**/bin/
