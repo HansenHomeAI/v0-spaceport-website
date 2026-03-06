@@ -306,6 +306,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     mapReadyRef.current = mapReady;
   }, [mapReady]);
 
+  const buildTouchInsertionEventFromDom = useCallback((target: HTMLCanvasElement | null, touch: Touch | null) => {
+    if (!target || !touch) {
+      return null;
+    }
+
+    const rect = target.getBoundingClientRect();
+    return {
+      point: {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+      },
+    };
+  }, []);
+
   const cloneVisiblePaths = useCallback((source: Map<number, Array<[number, number]>>) => {
     const clone = new Map<number, Array<[number, number]>>();
     source.forEach((coords, batteryIndex) => {
@@ -919,6 +933,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Initialize Mapbox on open
   useEffect(() => {
     let isCancelled = false;
+    let touchTarget: HTMLCanvasElement | null = null;
+    let handleTouchStart: ((event: TouchEvent) => void) | null = null;
+    let handleTouchMove: ((event: TouchEvent) => void) | null = null;
+    let handleTouchEnd: (() => void) | null = null;
 
     async function initMap() {
       if (!open) return;
@@ -1026,10 +1044,26 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         map.on('dragstart', clearInsertionCandidateMarker);
         map.on('movestart', clearInsertionCandidateMarker);
         map.on('zoomstart', clearInsertionCandidateMarker);
-        map.on('touchstart', (event: any) => handleMapTouchStartForInsertionRef.current(event));
-        map.on('touchmove', (event: any) => handleMapTouchMoveForInsertionRef.current(event));
-        map.on('touchend', () => handleMapTouchEndForInsertionRef.current());
-        map.on('touchcancel', () => handleMapTouchEndForInsertionRef.current());
+        touchTarget = map.getCanvas();
+        handleTouchStart = (event: TouchEvent) => {
+          const mappedEvent = buildTouchInsertionEventFromDom(touchTarget, event.touches[0] ?? null);
+          if (mappedEvent) {
+            handleMapTouchStartForInsertionRef.current(mappedEvent);
+          }
+        };
+        handleTouchMove = (event: TouchEvent) => {
+          const mappedEvent = buildTouchInsertionEventFromDom(touchTarget, event.touches[0] ?? null);
+          if (mappedEvent) {
+            handleMapTouchMoveForInsertionRef.current(mappedEvent);
+          }
+        };
+        handleTouchEnd = () => {
+          handleMapTouchEndForInsertionRef.current();
+        };
+        touchTarget.addEventListener('touchstart', handleTouchStart, { passive: true });
+        touchTarget.addEventListener('touchmove', handleTouchMove, { passive: true });
+        touchTarget.addEventListener('touchend', handleTouchEnd, { passive: true });
+        touchTarget.addEventListener('touchcancel', handleTouchEnd, { passive: true });
         
         mapRef.current = map;
         setMapReady(true);
@@ -1057,6 +1091,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     initMap();
     return () => {
       isCancelled = true;
+      if (touchTarget && handleTouchStart && handleTouchMove && handleTouchEnd) {
+        touchTarget.removeEventListener('touchstart', handleTouchStart);
+        touchTarget.removeEventListener('touchmove', handleTouchMove);
+        touchTarget.removeEventListener('touchend', handleTouchEnd);
+        touchTarget.removeEventListener('touchcancel', handleTouchEnd);
+      }
       waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
       waypointMarkersRef.current.clear();
       waypointCoordsRef.current.clear();
@@ -1075,6 +1115,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     };
   }, [
+    buildTouchInsertionEventFromDom,
     clearInsertionCandidateMarker,
     open,
     project,
