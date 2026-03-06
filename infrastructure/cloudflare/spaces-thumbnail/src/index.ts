@@ -80,9 +80,19 @@ async function renderThumbnail(viewerUrl: string, env: Env): Promise<Uint8Array>
   try {
     page = await browser.newPage();
     await page.setViewport(VIEWPORT);
-    await page.goto(viewerUrl, { waitUntil: 'networkidle2', timeout: 60000 });
-    await page.waitForSelector('canvas, model-viewer, iframe', { timeout: 15000 }).catch(() => undefined);
-    await page.waitForTimeout(2000);
+    await page.goto(viewerUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page
+      .waitForFunction(
+        () => {
+          const target = document.querySelector('canvas, model-viewer, iframe') as HTMLElement | null;
+          if (!target) return false;
+          const rect = target.getBoundingClientRect();
+          return rect.width >= 200 && rect.height >= 150;
+        },
+        { timeout: 30000 }
+      )
+      .catch(() => undefined);
+    await page.waitForTimeout(5000);
 
     const target = await chooseLargestElement(page);
     if (target) {

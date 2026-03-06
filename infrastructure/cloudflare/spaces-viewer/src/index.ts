@@ -11,6 +11,8 @@ interface Env {
   SPACES_PUBLISH_TOKEN?: string;
   COGNITO_REGION?: string;
   COGNITO_USER_POOL_ID?: string;
+  THUMBNAIL_TRIGGER_URL?: string;
+  THUMBNAIL_TOKEN?: string;
 }
 
 type JwtPayload = {
@@ -115,6 +117,42 @@ function buildBaseUrl(env: Env, request: Request): string {
     return `https://${host}`;
   }
   return `https://${host}${prefix}`;
+}
+
+function isThumbKey(key: string): boolean {
+  return key.endsWith('/thumb.jpg');
+}
+
+function isImageContentType(contentType?: string | null): boolean {
+  return Boolean(contentType && contentType.toLowerCase().startsWith('image/'));
+}
+
+async function triggerThumbnailGeneration(env: Env, request: Request, slug: string): Promise<void> {
+  const triggerUrl = (env.THUMBNAIL_TRIGGER_URL || 'https://spaces-thumbnail.hello-462.workers.dev/thumbnail').trim();
+  if (!triggerUrl) {
+    return;
+  }
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (env.THUMBNAIL_TOKEN) {
+    headers['X-Spaces-Token'] = env.THUMBNAIL_TOKEN;
+  }
+
+  const response = await fetch(triggerUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      slug,
+      viewerUrl: `${buildBaseUrl(env, request).replace(/\/$/, '')}/${slug}`,
+      force: true,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Thumbnail trigger failed with status ${response.status}`);
+  }
 }
 
 function base64UrlToBytes(input: string): Uint8Array {
@@ -296,8 +334,21 @@ async function handleViewer(request: Request, env: Env, pathname: string): Promi
   }
 
   const key = resolved.key;
-  const object = await env.SPACES_BUCKET.get(key);
+  let object = await env.SPACES_BUCKET.get(key);
+  if (isThumbKey(key) && (!object || !isImageContentType(object.httpMetadata?.contentType))) {
+    try {
+      await triggerThumbnailGeneration(env, request, slug);
+      object = await env.SPACES_BUCKET.get(key);
+    } catch (error) {
+      console.warn(`Failed to generate thumbnail for ${slug}:`, error);
+    }
+  }
+
   if (!object) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  if (isThumbKey(key) && !isImageContentType(object.httpMetadata?.contentType)) {
     return new Response('Not found', { status: 404 });
   }
 

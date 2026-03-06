@@ -750,7 +750,7 @@ class AuthStack(Stack):
                 "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
                 "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
                 "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
-                "SPACES_THUMBNAIL_URL": os.environ.get("SPACES_THUMBNAIL_URL", ""),
+                "SPACES_THUMBNAIL_URL": os.environ.get("SPACES_THUMBNAIL_URL") or "https://spaces-thumbnail.hello-462.workers.dev/thumbnail",
                 "SPACES_THUMBNAIL_TOKEN": os.environ.get("SPACES_THUMBNAIL_TOKEN", ""),
             },
         )

@@ -246,6 +246,8 @@ jobs:
         R2_SECRET_ACCESS_KEY_PROD: ${{ secrets.R2_SECRET_ACCESS_KEY_PROD }}
         R2_BUCKET_NAME_PROD: ${{ secrets.R2_BUCKET_NAME_PROD }}
         R2_REGION_PROD: ${{ secrets.R2_REGION_PROD }}
+        SPACES_THUMBNAIL_URL: ${{ secrets.SPACES_THUMBNAIL_URL }}
+        SPACES_THUMBNAIL_TOKEN: ${{ secrets.SPACES_THUMBNAIL_TOKEN }}
         # Referral system configuration - using CDK defaults (Option A)
         # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
         # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
