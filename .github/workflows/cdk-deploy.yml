@@ -269,7 +269,7 @@ jobs:
             echo "Lambda functions changed - will deploy branch-specific Lambda versions"
           fi
 
-          if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/|\.github/workflows/deploy-cloudflare-pages\.yml)"; then
+          if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/app\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\.py|infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/|\.github/workflows/deploy-cloudflare-pages\.yml)"; then
             AUTH_STACK_CHANGED="true"
             echo "Auth-backed explore files changed - will deploy shared auth stack for this branch"
           fi
