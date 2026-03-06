@@ -732,7 +732,7 @@ class AuthStack(Stack):
         # ========== MODEL PAYMENT ENFORCEMENT ==========
         enforce_model_payments_lambda = lambda_.Function(
             self, "Spaceport-EnforceModelPaymentsFunction",
-            function_name=f"Spaceport-EnforceModelPayments-{suffix}",
+            function_name=scoped_name("Spaceport-EnforceModelPayments-"),
             runtime=lambda_.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
