@@ -60,11 +60,11 @@ class _FakeTable:
 
 
 class _FakeDynamoResource:
-    def __init__(self, table):
-        self.table = table
+    def __init__(self, tables):
+        self.tables = tables
 
     def Table(self, name):
-        return self.table
+        return self.tables[name]
 
 
 class ExplorePublicLambdaTests(unittest.TestCase):
@@ -123,7 +123,8 @@ class ExplorePublicLambdaTests(unittest.TestCase):
             ],
         )
         explore_public_module.TABLE_NAME = "ExploreListings"
-        explore_public_module.dynamodb = _FakeDynamoResource(table)
+        explore_public_module.PROJECTS_TABLE_NAME = None
+        explore_public_module.dynamodb = _FakeDynamoResource({"ExploreListings": table})
 
         response = explore_public_module.lambda_handler(
             {
@@ -137,6 +138,84 @@ class ExplorePublicLambdaTests(unittest.TestCase):
         body = json.loads(response["body"])
         self.assertEqual([item["id"] for item in body["items"]], ["newer", "older"])
         self.assertEqual(body["items"][0]["updatedAt"], 20)
+        self.assertIsNone(body["nextCursor"])
+
+    def test_projects_fallback_supplements_sparse_listing_results(self):
+        listings_table = _FakeTable(
+            query_response={
+                "Items": [
+                    {
+                        "listingId": "listed",
+                        "viewerTitle": "Listed Model",
+                        "viewerUrl": "https://spcprt.com/spaces/listed-model",
+                        "thumbnailUrl": "https://spcprt.com/spaces/listed-model/thumb.jpg",
+                        "updatedAt": Decimal("30"),
+                    }
+                ]
+            }
+        )
+        projects_table = _FakeTable(
+            scan_responses=[
+                {
+                    "Items": [
+                        {
+                            "projectId": "proj-new",
+                            "status": "delivered",
+                            "paymentStatus": "paid",
+                            "title": "Newest Project",
+                            "modelLink": "https://spcprt.com/spaces/newest-project",
+                            "updatedAt": Decimal("50"),
+                            "createdAt": Decimal("40"),
+                        },
+                        {
+                            "projectId": "proj-dup",
+                            "status": "delivered",
+                            "paymentStatus": "paid",
+                            "title": "Duplicate Project",
+                            "modelLink": "https://spcprt.com/spaces/listed-model",
+                            "updatedAt": Decimal("45"),
+                            "createdAt": Decimal("45"),
+                        },
+                        {
+                            "projectId": "proj-unpaid",
+                            "status": "delivered",
+                            "paymentStatus": "pending",
+                            "title": "Unpaid Project",
+                            "modelLink": "https://spcprt.com/spaces/unpaid-project",
+                            "updatedAt": Decimal("60"),
+                            "createdAt": Decimal("60"),
+                        },
+                    ]
+                }
+            ]
+        )
+        explore_public_module.TABLE_NAME = "ExploreListings"
+        explore_public_module.PROJECTS_TABLE_NAME = "Projects"
+        explore_public_module.dynamodb = _FakeDynamoResource(
+            {
+                "ExploreListings": listings_table,
+                "Projects": projects_table,
+            }
+        )
+
+        response = explore_public_module.lambda_handler(
+            {
+                "httpMethod": "GET",
+                "queryStringParameters": {"visibility": "public", "limit": "5"},
+            },
+            None,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        body = json.loads(response["body"])
+        self.assertEqual(
+            [item["id"] for item in body["items"]],
+            ["proj-new", "listed"],
+        )
+        self.assertEqual(
+            body["items"][0]["thumbnailUrl"],
+            "https://spcprt.com/spaces/newest-project/thumb.jpg",
+        )
         self.assertIsNone(body["nextCursor"])
 
 

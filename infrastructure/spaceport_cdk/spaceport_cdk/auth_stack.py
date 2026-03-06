@@ -307,10 +307,12 @@ class AuthStack(Stack):
             environment={
                 "EXPLORE_LISTINGS_TABLE_NAME": explore_listings_table.table_name,
                 "EXPLORE_LISTINGS_VISIBILITY_INDEX": "visibility-updatedAt-index",
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
             },
         )
 
         explore_listings_table.grant_read_data(explore_public_lambda)
+        projects_table.grant_read_data(explore_public_lambda)
 
         explore_api = apigw.RestApi(
             self,
