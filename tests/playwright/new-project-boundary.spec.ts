@@ -104,10 +104,18 @@ test('fullscreen boundary editor applies a boundary-aware mission', async ({ pag
   await expect.poll(() => optimizeBoundaryPayloads.length, { timeout: 20_000 }).toBeGreaterThan(0);
   expect(optimizeBoundaryPayloads[0]?.boundary).toBeTruthy();
 
+  const batteryPayloadCheckpoint = batteryCsvPayloads.length;
   await page.getByRole('button', { name: /^Battery 1$/ }).first().click();
-  await expect.poll(() => batteryCsvPayloads.length, { timeout: 20_000 }).toBeGreaterThan(0);
-  expect(batteryCsvPayloads.at(-1)?.boundary).toBeTruthy();
-  expect(batteryCsvPayloads.at(-1)?.boundaryPlan).toBeTruthy();
+  await expect
+    .poll(() => batteryCsvPayloads.slice(batteryPayloadCheckpoint).find((payload) => payload?.boundary && payload?.boundaryPlan), {
+      timeout: 20_000,
+    })
+    .toBeTruthy();
+  const boundaryBatteryPayload = batteryCsvPayloads
+    .slice(batteryPayloadCheckpoint)
+    .find((payload) => payload?.boundary && payload?.boundaryPlan);
+  expect(boundaryBatteryPayload?.boundary).toBeTruthy();
+  expect(boundaryBatteryPayload?.boundaryPlan).toBeTruthy();
 
   const markerBeforeInsert = await page.locator('.waypoint-marker').count();
   expect(markerBeforeInsert).toBeGreaterThan(3);

@@ -28,3 +28,4 @@
 2026-03-06T00:12:53Z - Keep fullscreen map in-modal, harden marker drag pan guards, and add fullscreen Battery quick actions
 2026-03-06T00:27:00Z - Guard fullscreen boundary controls from map click invalidation and widen merge capture
 2026-03-06 - Propagate preview backend isolation and branch-specific stack routing
+2026-03-06T16:24:00Z - Persist waypoint override ref synchronously before autosave and scope boundary CSV assertions to explicit battery downloads

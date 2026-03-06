@@ -476,11 +476,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const updateWaypointOverridesForBattery = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
     const boundarySignature = buildBoundarySignature(appliedBoundaryRef.current);
-    setWaypointOverrides((current) => {
-      const next = upsertBatteryWaypointOverride(current, batteryIndex, coords, boundarySignature);
-      waypointOverridesRef.current = next;
-      return next;
-    });
+    const next = upsertBatteryWaypointOverride(
+      waypointOverridesRef.current,
+      batteryIndex,
+      coords,
+      boundarySignature
+    );
+    waypointOverridesRef.current = next;
+    setWaypointOverrides(next);
   }, []);
 
   const resetWaypointOverrides = useCallback((boundarySignature: string | null = null) => {
@@ -2514,12 +2517,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (boundaryGeometryChanged) {
         resetWaypointOverrides(nextBoundarySignature);
       } else {
-        setWaypointOverrides((current) => {
-          const next = cloneWaypointOverrides(current);
-          next.boundarySignature = nextBoundarySignature;
-          waypointOverridesRef.current = next;
-          return next;
-        });
+        const next = cloneWaypointOverrides(waypointOverridesRef.current);
+        next.boundarySignature = nextBoundarySignature;
+        waypointOverridesRef.current = next;
+        setWaypointOverrides(next);
       }
 
       const previewPaths = boundaryGeometryChanged
