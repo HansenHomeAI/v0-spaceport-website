@@ -7,14 +7,28 @@
         "region": "us-west-2",
         "resourceSuffix": "prod",
         "domain": "spcprt.com",
-        "useOIDC": true
+        "useOIDC": true,
+        "deploymentClass": "production",
+        "environmentName": "production",
+        "sharedAuthStackName": "SpaceportAuthProductionStack",
+        "reuseSharedEcr": false,
+        "allowFallbackImports": true,
+        "branchName": "main",
+        "branchId": ""
       },
       "staging": {
         "region": "us-west-2",
         "resourceSuffix": "staging",
         "domain": "staging.spcprt.com",
-        "useOIDC": false
+        "useOIDC": false,
+        "deploymentClass": "shared-staging",
+        "environmentName": "staging",
+        "sharedAuthStackName": "SpaceportAuthStagingStack",
+        "reuseSharedEcr": false,
+        "allowFallbackImports": true,
+        "branchName": "development",
+        "branchId": ""
       }
     }
   }
-} 
+}

@@ -27,8 +27,8 @@ export default function Header(): JSX.Element {
         </div>
 
         <div className={`toggle${expanded ? ' rotated' : ''}`} onClick={() => setExpanded(v => !v)}>
-          <img 
-            src="/assets/SpaceportIcons/Arrow.svg" 
+          <img
+            src="/assets/SpaceportIcons/Arrow.svg"
             alt={expanded ? 'Close menu' : 'Open menu'}
             className="toggle-arrow"
           />

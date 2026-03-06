@@ -43,23 +43,23 @@ export default function FAQ(): JSX.Element {
   return (
     <section className="section" id="faq" style={{ padding: '70px 20px 40px' }}>
       <div className="faq-content">
-        <h2 style={{ 
-          textAlign: 'left', 
-          marginBottom: '2rem', 
-          fontSize: '2rem', 
+        <h2 style={{
+          textAlign: 'left',
+          marginBottom: '2rem',
+          fontSize: '2rem',
           fontWeight: 500, // Matched with .section h2
           color: 'white'
         }}>
           Common questions.
         </h2>
-        
+
         <div className="faq-list">
           {FAQ_ITEMS.map((item, index) => (
-            <FAQItem 
-              key={index} 
-              item={item} 
-              isOpen={openIndex === index} 
-              onClick={() => toggleItem(index)} 
+            <FAQItem
+              key={index}
+              item={item}
+              isOpen={openIndex === index}
+              onClick={() => toggleItem(index)}
             />
           ))}
         </div>
@@ -131,7 +131,7 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
 
     // Capture current position relative to viewport before state change
     const startTop = button.getBoundingClientRect().top;
-    
+
     onClick();
 
     // Continuously correct scroll position during the transition to "stick" the element
@@ -157,11 +157,11 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
   };
 
   return (
-    <div style={{ 
+    <div style={{
       borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       marginBottom: '10px'
     }}>
-      <button 
+      <button
         ref={buttonRef}
         onClick={handleClick}
         style={{
@@ -183,7 +183,7 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
         aria-expanded={isOpen}
       >
         <span style={{ opacity: 1 }}>{item.question}</span>
-        <div style={{ 
+        <div style={{
           transform: isOpen ? 'rotate(270deg)' : 'rotate(90deg)',
           transition: 'transform 0.3s ease',
           display: 'flex',
@@ -193,25 +193,25 @@ function FAQItem({ item, isOpen, onClick }: { item: FAQItem, isOpen: boolean, on
           height: '24px',
           opacity: 0.5
         }}>
-          <img 
-            src="/assets/SpaceportIcons/Arrow.svg" 
-            alt="" 
-            style={{ width: '12px', height: '12px', filter: 'brightness(0) invert(1)' }} 
+          <img
+            src="/assets/SpaceportIcons/Arrow.svg"
+            alt=""
+            style={{ width: '12px', height: '12px', filter: 'brightness(0) invert(1)' }}
           />
         </div>
       </button>
-      
-      <div 
-        style={{ 
-          height: `${height}px`, 
-          overflow: 'hidden', 
+
+      <div
+        style={{
+          height: `${height}px`,
+          overflow: 'hidden',
           transition: 'height 0.3s ease-in-out',
         }}
       >
-        <div 
-          ref={contentRef} 
-          style={{ 
-            paddingBottom: '24px', 
+        <div
+          ref={contentRef}
+          style={{
+            paddingBottom: '24px',
             ...answerBaseStyle,
             whiteSpace: hasEmphasis ? 'normal' : 'pre-line'
           }}
