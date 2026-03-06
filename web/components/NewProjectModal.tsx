@@ -82,6 +82,10 @@ type WaypointInsertCandidate = {
   coord: [number, number];
 };
 
+const WAYPOINT_INSERT_HOVER_DISTANCE_PX = 16;
+const WAYPOINT_INSERT_TOUCH_DISTANCE_PX = 30;
+const WAYPOINT_INSERT_TOUCH_CANCEL_DISTANCE_PX = 16;
+
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
@@ -1772,7 +1776,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     updateWaypointOverridesForBattery,
   ]);
 
-  const findNearestInsertionCandidate = useCallback((point: { x: number; y: number }): WaypointInsertCandidate | null => {
+  const findNearestInsertionCandidate = useCallback((
+    point: { x: number; y: number },
+    maxDistancePx = WAYPOINT_INSERT_HOVER_DISTANCE_PX
+  ): WaypointInsertCandidate | null => {
     const map = mapRef.current;
     if (!map) return null;
 
@@ -1818,7 +1825,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
     });
 
-    return bestDistance <= 16 ? bestCandidate : null;
+    return bestDistance <= maxDistancePx ? bestCandidate : null;
   }, [visibleBatteryPaths]);
 
   const insertWaypointAtCandidate = useCallback(async (candidate: WaypointInsertCandidate) => {
@@ -1867,16 +1874,41 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const element = document.createElement('div');
       element.className = 'waypoint-insert-marker';
       element.textContent = '+';
+      let lastInsertHandledAt = 0;
+      const triggerInsert = () => {
+        const now = Date.now();
+        if (now - lastInsertHandledAt < 250) {
+          return;
+        }
+        lastInsertHandledAt = now;
+        const activeCandidate = insertionCandidateRef.current;
+        if (activeCandidate) {
+          void insertWaypointAtCandidate(activeCandidate);
+        }
+      };
       element.addEventListener('pointerdown', (event) => {
         event.stopPropagation();
       }, true);
       element.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const activeCandidate = insertionCandidateRef.current;
-        if (activeCandidate) {
-          void insertWaypointAtCandidate(activeCandidate);
+        if ((event as MouseEvent).detail === 0) {
+          return;
         }
+        triggerInsert();
+      });
+      element.addEventListener('touchend', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        triggerInsert();
+      }, { passive: false });
+      element.addEventListener('pointerup', (event) => {
+        if ((event as PointerEvent).pointerType !== 'touch') {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        triggerInsert();
       });
 
       insertionMarkerRef.current = new mapboxgl.Marker({ element, anchor: 'center' })
@@ -1910,10 +1942,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       return;
     }
 
+    const touchPoint = { x: event.point.x, y: event.point.y };
     clearPendingInsertionTouchTimer();
-    insertionTouchStartPointRef.current = { x: event.point.x, y: event.point.y };
+    insertionTouchStartPointRef.current = touchPoint;
     insertionTouchTimerRef.current = setTimeout(() => {
-      const candidate = findNearestInsertionCandidate(event.point);
+      const candidate = findNearestInsertionCandidate(touchPoint, WAYPOINT_INSERT_TOUCH_DISTANCE_PX);
       if (candidate) {
         void showInsertionCandidateMarker(candidate);
       }
@@ -1936,7 +1969,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       event.point.y - insertionTouchStartPointRef.current.y
     );
 
-    if (moved > 8) {
+    if (moved > WAYPOINT_INSERT_TOUCH_CANCEL_DISTANCE_PX) {
       clearPendingInsertionTouchTimer();
     }
   }, [clearPendingInsertionTouchTimer]);
