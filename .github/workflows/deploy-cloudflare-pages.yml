@@ -114,7 +114,7 @@ jobs:
                 return 0
               fi
 
-              echo "[$attempt/$max_attempts] Waiting for output ${output_key} on stack ${stack_name}..."
+              echo "[$attempt/$max_attempts] Waiting for output ${output_key} on stack ${stack_name}..." >&2
               sleep "$sleep_seconds"
               attempt=$((attempt + 1))
             done
