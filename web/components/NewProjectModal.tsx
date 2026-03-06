@@ -499,8 +499,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [selectedCoords]);
 
   const canOptimize = useMemo(() => {
-    // Always use ref as source of truth for coordinates
-    const coords = selectedCoordsRef.current;
+    // Read the latest coordinates from the ref, but still recompute when the
+    // selected state changes so optimization becomes available after a map pick.
+    const coords = selectedCoordsRef.current ?? selectedCoords;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
     const isValid = Boolean(coords && minutes && batteries);
@@ -515,7 +516,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
     
     return isValid;
-  }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
+  }, [batteryMinutes, numBatteries, selectedCoords]);
 
   // Rotating processing messages for optimization
   const processingMessages = useMemo(() => [
