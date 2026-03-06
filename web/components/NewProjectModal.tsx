@@ -933,6 +933,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         map.on('click', (e: any) => {
           const clickedElement = e?.originalEvent?.target as HTMLElement | null;
           const clickedMarkerElement = !!clickedElement?.closest?.('.waypoint-marker, .boundary-handle-marker, .mapboxgl-marker');
+          const clickedOverlayControl = !!clickedElement?.closest?.(
+            '.map-toolbar, .map-toolbar-button, .map-battery-panel, .map-battery-button, .expand-button, .boundary-editor-bar, .boundary-editor-button, .address-search-overlay, .address-search-wrapper, .waypoint-insert-marker'
+          );
           const recentMarkerInteraction = Date.now() - lastMarkerInteractionEndedAtRef.current < 300;
           if (
             isBoundaryModeRef.current
@@ -941,6 +944,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             || isMarkerInteractionActiveRef.current
             || recentMarkerInteraction
             || clickedMarkerElement
+            || clickedOverlayControl
           ) {
             return;
           }
@@ -1667,7 +1671,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           }
         });
 
-        return bestDistance <= 18 ? bestIndex : null;
+        return bestDistance <= 24 ? bestIndex : null;
       };
 
       const captureWaypointDragStart = () => {
