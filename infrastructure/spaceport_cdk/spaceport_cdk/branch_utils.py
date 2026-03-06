@@ -61,7 +61,9 @@ def get_resource_suffix(branch_name: str) -> str:
         return "prod"
     if branch_name == "development":
         return "staging"
-    return sanitize_branch_name(branch_name)
+    # Bucket-backed resources cap the usable suffix length below the generic
+    # sanitize limit, so keep dynamic branch suffixes short and deterministic.
+    return get_limited_suffix(branch_name, 39)
 
 
 def get_ecr_branch_suffix(branch_name: str) -> str:
