@@ -99,16 +99,28 @@ jobs:
           get_output() {
             local stack_name="$1"
             local output_key="$2"
-            local value
-            value=$(aws cloudformation describe-stacks \
-              --stack-name "$stack_name" \
-              --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
-              --output text)
-            if [ -z "$value" ] || [ "$value" = "None" ]; then
-              echo "Missing required CloudFormation output ${output_key} on stack ${stack_name}" >&2
-              return 1
-            fi
-            printf '%s' "$value"
+            local max_attempts=120
+            local sleep_seconds=5
+            local attempt=1
+            local value=""
+
+            while [ "$attempt" -le "$max_attempts" ]; do
+              value=$(aws cloudformation describe-stacks \
+                --stack-name "$stack_name" \
+                --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+                --output text 2>/dev/null || true)
+              if [ -n "$value" ] && [ "$value" != "None" ]; then
+                printf '%s' "$value"
+                return 0
+              fi
+
+              echo "[$attempt/$max_attempts] Waiting for output ${output_key} on stack ${stack_name}..."
+              sleep "$sleep_seconds"
+              attempt=$((attempt + 1))
+            done
+
+            echo "Missing required CloudFormation output ${output_key} on stack ${stack_name}" >&2
+            return 1
           }
 
           wait_for_stack "$SPACEPORT_STACK_NAME"
