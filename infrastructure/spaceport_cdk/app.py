@@ -42,6 +42,7 @@ deploy_auth_stack_override = str(
     or os.environ.get("DEPLOY_AUTH_STACK_OVERRIDE", "")
 ).lower() == "true"
 deploy_auth_stack = deployment_context.deploy_auth_stack or deploy_auth_stack_override
+env_config["deployAuthStack"] = deploy_auth_stack
 
 common_env = {
     "account": app.node.try_get_context("account") or None,
