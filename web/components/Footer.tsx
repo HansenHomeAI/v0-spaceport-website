@@ -81,7 +81,7 @@ export default function Footer(): JSX.Element {
         <div className="stats-grid">
           <div className="stat-box2 grainy">
             <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport Logo" />
-            
+
             {/* Nested Feedback Form */}
             <div className="feedback-inner-content">
               <form onSubmit={handleFeedbackSubmit} className="feedback-form">
@@ -132,8 +132,8 @@ export default function Footer(): JSX.Element {
         <div className="footer-content">
           <p>
             © 2026 Spaceport ·{' '}
-            <button 
-              className="terms-link" 
+            <button
+              className="terms-link"
               onClick={() => setIsTermsModalOpen(true)}
             >
               Terms of Service
@@ -143,9 +143,9 @@ export default function Footer(): JSX.Element {
       </footer>
 
       {/* Terms of Service Modal */}
-      <TermsOfServiceModal 
-        isOpen={isTermsModalOpen} 
-        onClose={() => setIsTermsModalOpen(false)} 
+      <TermsOfServiceModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
       />
     </>
   );

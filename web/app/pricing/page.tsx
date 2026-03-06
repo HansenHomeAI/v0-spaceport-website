@@ -31,7 +31,7 @@ export default function Pricing(): JSX.Element {
       }
 
       const endpoint = `${feedbackEndpoint.replace(/\/$/, '')}/feedback`;
-      
+
       const message = `Name: ${formData.name}\nPhone: ${formData.phone}\nListing/Address: ${formData.listingInfo}`;
 
       const response = await fetch(endpoint, {
@@ -49,7 +49,7 @@ export default function Pricing(): JSX.Element {
 
       setStatus('success');
       setFormData({ name: '', phone: '', listingInfo: '' });
-      
+
       // Reset success message after 5 seconds
       setTimeout(() => setStatus('idle'), 5000);
     } catch (err) {
@@ -71,7 +71,7 @@ export default function Pricing(): JSX.Element {
               <h2>Contact Sales</h2>
               <p>Fill out the form below and our team will get back to you shortly.</p>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="input-group">
                 <input
@@ -103,10 +103,9 @@ export default function Pricing(): JSX.Element {
                   required
                 />
               </div>
-              
-              <button 
-                type="submit" 
-                className="cta-button2" 
+              <button
+                type="submit"
+                className="cta-button2"
                 disabled={status === 'submitting'}
                 style={{ width: '100%', marginLeft: 0, marginTop: '10px', fontWeight: 500 }}
               >
@@ -115,7 +114,7 @@ export default function Pricing(): JSX.Element {
 
               {status === 'success' && (
                 <p className="auth-success">
-                  Thanks! We'll be in touch soon.
+                  Thanks! We&apos;ll be in touch soon.
                 </p>
               )}
               {status === 'error' && (
