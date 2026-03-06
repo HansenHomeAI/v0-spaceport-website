@@ -1,3 +1,4 @@
 2026-03-06 - Add explicit terrain toggle for drone path generation
 2026-03-06 - Wire real Google Maps key into terrain-following lambda
 2026-03-06 - Recompute optimization readiness after selecting a map location
+2026-03-06 - Wait for matching CDK deploy before resolving preview auth outputs
