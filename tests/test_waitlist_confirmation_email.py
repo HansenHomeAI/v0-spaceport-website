@@ -119,7 +119,7 @@ def test_ses_send_email_directly():
             },
             Message={
                 'Subject': {
-                    'Data': 'Test Email from Spaceport AI'
+                    'Data': 'Test Email from Spaceport'
                 },
                 'Body': {
                     'Text': {
@@ -142,7 +142,7 @@ def test_ses_send_email_directly():
         return False
 
 if __name__ == "__main__":
-    print("🚀 Spaceport AI - Waitlist Confirmation Email Test")
+    print("🚀 Spaceport - Waitlist Confirmation Email Test")
     print("=" * 60)
     print()
     

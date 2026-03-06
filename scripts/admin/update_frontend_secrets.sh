@@ -53,6 +53,7 @@ SECRETS=(
     "FILE_UPLOAD_API_URL_PREVIEW"
     "ML_PIPELINE_API_URL_PREVIEW"
     "BETA_ACCESS_API_URL_PREVIEW"
+    "MODEL_DELIVERY_ADMIN_API_URL_PREVIEW"
 )
 
 URLS=(
@@ -62,6 +63,7 @@ URLS=(
     "https://xv4bpkwlb8.execute-api.us-west-2.amazonaws.com/prod"
     "https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod"
     "https://y5fej7zgx8.execute-api.us-west-2.amazonaws.com/prod"
+    "https://tbzxbstibh.execute-api.us-west-2.amazonaws.com/prod"
 )
 
 # Update each frontend-used secret
@@ -95,6 +97,7 @@ echo "   • DRONE_PATH_API_URL_PREVIEW - Flight path optimization"
 echo "   • FILE_UPLOAD_API_URL_PREVIEW - File uploads"
 echo "   • ML_PIPELINE_API_URL_PREVIEW - ML processing"
 echo "   • BETA_ACCESS_API_URL_PREVIEW - Employee beta access management"
+echo "   • MODEL_DELIVERY_ADMIN_API_URL_PREVIEW - Model delivery admin"
 echo ""
 echo "❌ NOT USED by Frontend (Skipped):"
 echo "   • PASSWORD_RESET_API_URL_PREVIEW - Frontend uses Cognito directly"

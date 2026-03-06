@@ -264,14 +264,26 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Initialize Mapbox on open
   useEffect(() => {
     let isCancelled = false;
+
+    const resolveMapbox = async () => {
+      const mapboxModule = await import('mapbox-gl');
+      // Mapbox export shape can differ between bundlers/runtime modes.
+      // Normalize to a single object and avoid direct `.default` chaining.
+      const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+      if (!mapboxgl?.Map || !mapboxgl?.Marker) {
+        throw new Error('Mapbox GL module did not expose Map/Marker');
+      }
+      return mapboxgl;
+    };
+
     async function initMap() {
       if (!open) return;
       if (!mapContainerRef.current) return;
       try {
-        const mapboxgl = await import('mapbox-gl');
-        mapboxgl.default.accessToken = MAPBOX_TOKEN;
+        const mapboxgl = await resolveMapbox();
+        mapboxgl.accessToken = MAPBOX_TOKEN;
         if (isCancelled) return;
-        const map = new mapboxgl.default.Map({
+        const map = new mapboxgl.Map({
           container: mapContainerRef.current,
           style: 'mapbox://styles/mapbox/satellite-v9',
           center: [-98.5795, 39.8283],
@@ -296,7 +308,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             </svg>
           `;
           
-          markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
+          markerRef.current = new mapboxgl.Marker({ element: pinElement, anchor: 'bottom' })
             .setLngLat([lng, lat])
             .addTo(map);
           
@@ -355,7 +367,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setSelectedCoords(coords); // This will trigger autosave
     
     // Place marker
-    const mapboxgl = await import('mapbox-gl');
+    const mapboxModule = await import('mapbox-gl');
+    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
     if (markerRef.current) markerRef.current.remove();
     
     const pinElement = document.createElement('div');
@@ -366,7 +379,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       </svg>
     `;
     
-    markerRef.current = new mapboxgl.default.Marker({ element: pinElement, anchor: 'bottom' })
+    markerRef.current = new mapboxgl.Marker({ element: pinElement, anchor: 'bottom' })
       .setLngLat([lng, lat])
       .addTo(mapRef.current);
     
@@ -1531,5 +1544,4 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-
 

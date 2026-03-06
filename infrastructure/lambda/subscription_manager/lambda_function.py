@@ -8,6 +8,8 @@ from typing import Dict, Any, Optional, Tuple, Union
 from decimal import Decimal
 import logging
 from botocore.exceptions import ClientError
+from botocore.config import Config
+from urllib.parse import urlparse
 
 # Sentry for error tracking
 try:
@@ -89,6 +91,14 @@ def _coerce_decimal(value: Union[Dict[str, Any], list, Decimal, Any]) -> Any:
 
 # Table names - using existing users table
 USERS_TABLE = os.environ.get('USERS_TABLE', 'Spaceport-Users')
+PROJECTS_TABLE_NAME = os.environ.get('PROJECTS_TABLE_NAME', 'Spaceport-Projects')
+
+# R2 configuration (S3-compatible)
+R2_ENDPOINT = os.environ.get('R2_ENDPOINT')
+R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
+R2_SECRET_ACCESS_KEY = os.environ.get('R2_SECRET_ACCESS_KEY')
+R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', 'spaces-viewers')
+R2_REGION = os.environ.get('R2_REGION', 'auto')
 
 # Referral configuration - UPDATED FOR NEW STRUCTURE
 REFERRAL_KICKBACK_PERCENTAGE = int(os.environ.get('REFERRAL_KICKBACK_PERCENTAGE', '10'))
@@ -98,6 +108,151 @@ REFERRAL_DURATION_MONTHS = int(os.environ.get('REFERRAL_DURATION_MONTHS', '6'))
 
 # Employee user ID (you'll need to set this)
 EMPLOYEE_USER_ID = os.environ.get('EMPLOYEE_USER_ID', '')
+
+
+def _get_projects_table() -> Optional[Any]:
+    if not PROJECTS_TABLE_NAME:
+        return None
+    return dynamodb.Table(PROJECTS_TABLE_NAME)
+
+
+def _get_r2_client() -> Optional[Any]:
+    if not (R2_ENDPOINT and R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY):
+        logger.warning("R2 configuration missing; restore operations disabled.")
+        return None
+
+    return boto3.client(
+        's3',
+        region_name=R2_REGION,
+        endpoint_url=R2_ENDPOINT,
+        aws_access_key_id=R2_ACCESS_KEY_ID,
+        aws_secret_access_key=R2_SECRET_ACCESS_KEY,
+        config=Config(signature_version='s3v4'),
+    )
+
+
+def _r2_object_exists(client: Any, bucket: str, key: str) -> bool:
+    try:
+        client.head_object(Bucket=bucket, Key=key)
+        return True
+    except ClientError as exc:
+        code = exc.response.get('Error', {}).get('Code')
+        if code in ('404', 'NoSuchKey', 'NotFound'):
+            return False
+        raise
+
+
+def _resolve_viewer_slug(project: Dict[str, Any]) -> Optional[str]:
+    for key in ('viewerSlug', 'viewer_slug', 'slug'):
+        slug = project.get(key)
+        if slug:
+            return slug
+
+    delivery = project.get('delivery') or {}
+    for key in ('viewerSlug', 'viewer_slug'):
+        slug = delivery.get(key)
+        if slug:
+            return slug
+
+    model_link = delivery.get('modelLink') or project.get('modelLink')
+    if model_link:
+        parsed = urlparse(model_link)
+        path = parsed.path or ''
+        if '/spaces/' in path:
+            slug = path.split('/spaces/', 1)[1].strip('/').split('/')[0]
+            if slug:
+                return slug
+        parts = [part for part in path.split('/') if part]
+        if parts:
+            return parts[-1]
+
+    return None
+
+
+def _restore_revoked_model(project: Dict[str, Any]) -> None:
+    if not R2_BUCKET_NAME:
+        logger.warning("R2_BUCKET_NAME is missing; cannot restore model viewer.")
+        return
+
+    slug = _resolve_viewer_slug(project)
+    if not slug:
+        logger.warning("Unable to resolve viewer slug for project restore.")
+        return
+
+    client = _get_r2_client()
+    if not client:
+        return
+
+    original_key = f"models/{slug}/original.html"
+    index_key = f"models/{slug}/index.html"
+
+    if not _r2_object_exists(client, R2_BUCKET_NAME, original_key):
+        logger.warning("original.html missing for slug %s; skipping restore.", slug)
+        return
+
+    try:
+        client.copy_object(
+            Bucket=R2_BUCKET_NAME,
+            CopySource={'Bucket': R2_BUCKET_NAME, 'Key': original_key},
+            Key=index_key,
+        )
+        client.delete_object(Bucket=R2_BUCKET_NAME, Key=original_key)
+        logger.info("Restored viewer for slug %s", slug)
+    except ClientError as exc:
+        logger.error("Failed to restore viewer for slug %s: %s", slug, exc)
+
+
+def _handle_project_checkout_completed(session: Dict[str, Any]) -> None:
+    metadata = session.get('metadata') or {}
+    project_id = metadata.get('projectId')
+    user_sub = metadata.get('userSub') or metadata.get('user_id')
+
+    if not project_id or not user_sub:
+        logger.warning("Checkout session missing project metadata.")
+        return
+
+    table = _get_projects_table()
+    if not table:
+        logger.warning("Projects table is unavailable; cannot update payment state.")
+        return
+
+    project = table.get_item(Key={'userSub': user_sub, 'projectId': project_id}).get('Item')
+    if not project:
+        logger.warning("Project not found for payment update: %s", project_id)
+        return
+
+    was_revoked = (project.get('status') or '').lower() == 'revoked'
+    now_epoch = int(datetime.utcnow().timestamp())
+
+    update_expression_parts = ['SET paymentStatus = :paid', 'updatedAt = :updatedAt']
+    expr_attr_values = {
+        ':paid': 'paid',
+        ':updatedAt': now_epoch,
+    }
+    expr_attr_names = {}
+
+    subscription_id = session.get('subscription')
+    if subscription_id:
+        update_expression_parts.append('paymentSubscriptionId = :subscriptionId')
+        expr_attr_values[':subscriptionId'] = subscription_id
+
+    if was_revoked:
+        update_expression_parts.append('#status = :status')
+        expr_attr_names['#status'] = 'status'
+        expr_attr_values[':status'] = 'delivered'
+
+    update_kwargs = {
+        'Key': {'userSub': user_sub, 'projectId': project_id},
+        'UpdateExpression': ', '.join(update_expression_parts),
+        'ExpressionAttributeValues': expr_attr_values,
+    }
+    if expr_attr_names:
+        update_kwargs['ExpressionAttributeNames'] = expr_attr_names
+
+    table.update_item(**update_kwargs)
+
+    if was_revoked:
+        _restore_revoked_model(project)
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
@@ -292,9 +447,14 @@ def handle_checkout_completed(session: Dict[str, Any]) -> None:
     Handle successful checkout completion
     """
     try:
-        user_id = session['metadata'].get('user_id')
-        plan_type = session['metadata'].get('plan_type')
-        referral_code = session['metadata'].get('referral_code')
+        metadata = session.get('metadata') or {}
+        if metadata.get('projectId'):
+            _handle_project_checkout_completed(session)
+            return
+
+        user_id = metadata.get('user_id')
+        plan_type = metadata.get('plan_type')
+        referral_code = metadata.get('referral_code')
         
         if user_id and plan_type:
             # Update user subscription status
@@ -499,7 +659,7 @@ def update_user_subscription(user_sub: str, subscription_id: Optional[str], plan
 # SUBSCRIPTION TIERS CONFIGURATION - ADDITIVE MODEL LIMITS
 SUBSCRIPTION_TIERS = {
     'beta': {
-        'maxModels': 5,  # Beta users start with 5 models
+        'maxModels': -1,  # Unlimited beta models
         'support': 'email',
         'price': 0,
         'displayName': 'Beta Plan',
@@ -536,7 +696,7 @@ SUBSCRIPTION_TIERS = {
 }
 
 ACTIVE_SUBSCRIPTION_STATUSES = {'active', 'trialing', 'past_due'}
-DEFAULT_PLAN_TYPE = 'beta'
+DEFAULT_PLAN_TYPE = 'enterprise'
 
 def get_plan_features_new_structure(plan_type: str) -> Dict[str, Any]:
     """

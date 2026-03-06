@@ -56,7 +56,7 @@ export default function BetaAccessInvite({ className = '' }: BetaAccessInvitePro
     <div className={`beta-access-invite ${className}`}>
       <div className="beta-access-header">
         <h4>Beta Access Management</h4>
-        <p>Invite new users to access Spaceport AI</p>
+        <p>Invite new users to access Spaceport</p>
       </div>
       
       <form onSubmit={handleSubmit} className="beta-access-form">

@@ -84,6 +84,7 @@ gh secret set DRONE_PATH_API_URL_PROD --body 'PRODUCTION_DRONE_PATH_URL'
 gh secret set FILE_UPLOAD_API_URL_PROD --body 'PRODUCTION_FILE_UPLOAD_URL'
 gh secret set ML_PIPELINE_API_URL_PROD --body 'PRODUCTION_ML_PIPELINE_URL'
 gh secret set BETA_ACCESS_API_URL_PROD --body 'PRODUCTION_BETA_ACCESS_URL'
+gh secret set MODEL_DELIVERY_ADMIN_API_URL_PROD --body 'PRODUCTION_MODEL_DELIVERY_ADMIN_URL'
 
 # Example:
 # gh secret set WAITLIST_API_URL_PROD --body 'https://abc123.execute-api.us-west-2.amazonaws.com/prod'

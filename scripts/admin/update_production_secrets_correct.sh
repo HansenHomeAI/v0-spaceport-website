@@ -14,6 +14,7 @@ INVITE_API_URL="https://8adwxdkuef.execute-api.us-west-2.amazonaws.com/prod/invi
 PASSWORD_RESET_API_URL="https://mnhdu2xab0.execute-api.us-west-2.amazonaws.com/prod/"
 SUBSCRIPTION_API_URL="https://cizfkb4o4f.execute-api.us-west-2.amazonaws.com/prod/"
 BETA_ACCESS_API_URL="https://84ufey2j0g.execute-api.us-west-2.amazonaws.com/prod/"
+MODEL_DELIVERY_ADMIN_API_URL="" # TODO: set from SpaceportAuthProductionStack output
 
 # Cognito Configuration (Production)
 COGNITO_USER_POOL_ID="us-west-2_SnOJuAJXa"
@@ -34,6 +35,7 @@ echo "  Invite API: $INVITE_API_URL"
 echo "  Password Reset API: $PASSWORD_RESET_API_URL"
 echo "  Subscription API: $SUBSCRIPTION_API_URL"
 echo "  Beta Access API: $BETA_ACCESS_API_URL"
+echo "  Model Delivery Admin API: ${MODEL_DELIVERY_ADMIN_API_URL:-<unset>}"
 echo "  Drone Path API: $DRONE_PATH_API_URL"
 echo "  File Upload API: $FILE_UPLOAD_API_URL"
 echo "  ML Pipeline API: $ML_PIPELINE_API_URL"
@@ -84,6 +86,13 @@ echo "✅ Updated BETA_ACCESS_API_URL_PROD"
 
 gh secret set SUBSCRIPTION_API_URL_PROD --body "$SUBSCRIPTION_API_URL"
 echo "✅ Updated SUBSCRIPTION_API_URL_PROD"
+
+if [ -n "${MODEL_DELIVERY_ADMIN_API_URL:-}" ]; then
+  gh secret set MODEL_DELIVERY_ADMIN_API_URL_PROD --body "$MODEL_DELIVERY_ADMIN_API_URL"
+  echo "✅ Updated MODEL_DELIVERY_ADMIN_API_URL_PROD"
+else
+  echo "⚠️  MODEL_DELIVERY_ADMIN_API_URL is empty; skipping secret update"
+fi
 
 echo ""
 echo "🎉 All production secrets updated with CORRECT URLs!"

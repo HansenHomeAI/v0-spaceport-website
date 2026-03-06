@@ -22,6 +22,7 @@ NEXT_PUBLIC_DRONE_PATH_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.co
 NEXT_PUBLIC_FILE_UPLOAD_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 NEXT_PUBLIC_WAITLIST_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod/waitlist
 NEXT_PUBLIC_ML_PIPELINE_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
+NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 
 # Development (development branch)  
 NEXT_PUBLIC_PROJECTS_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod/projects
@@ -29,6 +30,7 @@ NEXT_PUBLIC_DRONE_PATH_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaw
 NEXT_PUBLIC_FILE_UPLOAD_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod
 NEXT_PUBLIC_WAITLIST_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod/waitlist
 NEXT_PUBLIC_ML_PIPELINE_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod
+NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod
 ```
 
 ---
@@ -115,6 +117,7 @@ DRONE_PATH_API_URL_PROD=https://0r3y4bx7lc.execute-api.us-west-2.amazonaws.com/p
 FILE_UPLOAD_API_URL_PROD=https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod
 WAITLIST_API_URL_PROD=https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod/waitlist
 ML_PIPELINE_API_URL_PROD=https://rf3fnnejg2.execute-api.us-west-2.amazonaws.com/prod
+MODEL_DELIVERY_ADMIN_API_URL_PROD=https://API_ID.execute-api.us-west-2.amazonaws.com/prod
 ```
 
 ### **Required Secrets for Development (development branch):**
@@ -124,6 +127,7 @@ DRONE_PATH_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.co
 FILE_UPLOAD_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod
 WAITLIST_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod/waitlist
 ML_PIPELINE_API_URL_PREVIEW=https://34ap3qgem7.execute-api.us-west-2.amazonaws.com/prod
+MODEL_DELIVERY_ADMIN_API_URL_PREVIEW=https://DEV_API_ID.execute-api.us-west-2.amazonaws.com/prod
 ```
 
 ---

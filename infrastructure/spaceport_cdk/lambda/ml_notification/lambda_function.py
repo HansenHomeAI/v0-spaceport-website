@@ -66,7 +66,7 @@ def lambda_handler(event, context):
         
         # Send email via Resend
         params = {
-            "from": "Spaceport AI <hello@spcprt.com>",
+            "from": "Spaceport <hello@spcprt.com>",
             "to": [email],
             "subject": subject,
             "html": body_html,

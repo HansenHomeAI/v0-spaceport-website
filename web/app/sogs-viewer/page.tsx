@@ -20,10 +20,6 @@ const SAMPLE_BUNDLES = [
     label: "Local mirror · sogs-test-1763664401",
     url: LOCAL_MIRROR_BUNDLE,
   },
-  {
-    label: "Legacy local demo",
-    url: "/test-sogs-bundle/meta.json",
-  },
 ];
 
 const pillInputStyles: CSSProperties = {

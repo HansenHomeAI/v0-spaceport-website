@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 
 interface TermsOfServiceModalProps {
   isOpen: boolean;
@@ -73,7 +72,7 @@ export default function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceM
           <h2>10. Entire Agreement</h2>
           <p>This Agreement represents the full understanding between the parties and supersedes all prior agreements. No modifications are valid unless in writing and signed by the Company.</p>
 
-          <p className="terms-conclusion">By using Spaceport AI&rsquo;s services, you acknowledge and agree to these terms in full.</p>
+          <p className="terms-conclusion">By using Spaceport&apos;s services, you acknowledge and agree to these terms in full.</p>
         </div>
       </div>
     </div>

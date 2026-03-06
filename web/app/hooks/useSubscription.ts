@@ -172,28 +172,21 @@ export const useSubscription = () => {
   }, [fetchSubscription]);
 
   // Check if user can create more models
-  const canCreateModel = useCallback((currentModelCount: number = 0) => {
-    if (!subscription) return true; // Default to allowing creation (beta access)
-    
-    const { planFeatures } = subscription;
-    if (planFeatures.maxModels === -1) return true; // Unlimited
-    
-    return currentModelCount < planFeatures.maxModels;
-  }, [subscription]);
+  const canCreateModel = useCallback((_currentModelCount: number = 0) => {
+    return true;
+  }, []);
 
   // Get plan features
   const getPlanFeatures = useCallback(() => {
     if (!subscription) {
-      // Default beta plan features
       return {
-        maxModels: 5,
-        support: 'email'
+        maxModels: -1,
+        support: 'email',
       };
     }
-    // Return the actual maxModels from the user's subscription (additive total)
     return {
-      maxModels: subscription.maxModels || subscription.planFeatures?.maxModels || 5,
-      support: subscription.support || subscription.planFeatures?.support || 'email'
+      maxModels: subscription.maxModels ?? subscription.planFeatures?.maxModels ?? -1,
+      support: subscription.support || subscription.planFeatures?.support || 'email',
     };
   }, [subscription]);
 

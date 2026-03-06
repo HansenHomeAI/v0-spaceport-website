@@ -6,7 +6,7 @@
 EMAIL_ADDRESS="gabriel@spcprt.com"
 REGION="us-west-2"
 
-echo "🔍 SES Email Verification for Spaceport AI"
+echo "🔍 SES Email Verification for Spaceport"
 echo "=========================================="
 echo ""
 
