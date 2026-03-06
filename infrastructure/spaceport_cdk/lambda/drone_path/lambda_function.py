@@ -96,11 +96,13 @@ class SpiralDesigner:
         # This key is rate-limited and for development/testing only
         dev_api_key = "AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU"
 
-        # Priority: Environment variable > Development key
-        self.api_key = os.environ.get("GOOGLE_MAPS_API_KEY", dev_api_key)
+        # Treat a blank env var the same as missing so preview/staging never silently
+        # switches from the intended production key to an unusable empty string.
+        configured_api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+        self.api_key = configured_api_key or dev_api_key
 
         # Log which API key is being used (mask for security)
-        key_source = "PRODUCTION" if "GOOGLE_MAPS_API_KEY" in os.environ else "DEV (RATE LIMITED)"
+        key_source = "PRODUCTION" if configured_api_key else "DEV (RATE LIMITED)"
         masked_key = self.api_key[:10] + "..." + self.api_key[-4:] if self.api_key else "None"
         print(f"🔑 Using {key_source} API key: {masked_key}")
 

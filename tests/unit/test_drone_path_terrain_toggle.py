@@ -2,6 +2,7 @@ import sys
 import types
 import unittest
 import importlib.util
+import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -67,6 +68,20 @@ class DronePathTerrainToggleTests(unittest.TestCase):
         rows = csv_content.splitlines()
         self.assertTrue(rows[0].startswith("latitude,longitude,altitude(ft)"))
         self.assertGreater(len(rows), 2)
+
+    def test_spiral_designer_uses_real_google_key_when_present(self):
+        with patch.dict(os.environ, {"GOOGLE_MAPS_API_KEY": "prod-key-123"}, clear=False), \
+             patch("builtins.print"):
+            designer = drone_path_module.SpiralDesigner()
+
+        self.assertEqual(designer.api_key, "prod-key-123")
+
+    def test_spiral_designer_falls_back_when_google_key_is_blank(self):
+        with patch.dict(os.environ, {"GOOGLE_MAPS_API_KEY": ""}, clear=False), \
+             patch("builtins.print"):
+            designer = drone_path_module.SpiralDesigner()
+
+        self.assertEqual(designer.api_key, "AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU")
 
 
 if __name__ == "__main__":
