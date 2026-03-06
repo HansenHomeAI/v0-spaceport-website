@@ -1154,21 +1154,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Find the map-wrapper (parent of map-container)
     const mapWrapper = mapContainerRef.current.parentElement;
     if (!mapWrapper) return;
-    
+
     if (newFullscreen) {
-      // Enter fullscreen - move wrapper to body
-      document.body.appendChild(mapWrapper);
       mapWrapper.classList.add('fullscreen');
     } else {
-      // Exit fullscreen - move wrapper back to original parent
-      const mapSection = document.querySelector('.popup-map-section');
-      if (mapSection) {
-        mapSection.appendChild(mapWrapper);
-      }
       mapWrapper.classList.remove('fullscreen');
     }
     
-    // Force Mapbox to recalculate after DOM move
+    // Force Mapbox to recalculate after fullscreen layout change
     setTimeout(() => {
       if (mapRef.current) {
         mapRef.current.resize();
@@ -1603,6 +1596,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       let mergeTargetIndex: number | null = null;
       let mergeArmed = false;
       let mergeHoldTimer: ReturnType<typeof setTimeout> | null = null;
+      let markerDragPanWasEnabled = false;
 
       const clearMergeHoldTimer = () => {
         if (mergeHoldTimer) {
@@ -1686,6 +1680,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       // Capture state before drag starts
       marker.on('dragstart', () => {
+        isMarkerInteractionActiveRef.current = true;
+        markerInteractionVersionRef.current += 1;
+        const mapInstance = mapRef.current;
+        if (mapInstance?.dragPan?.isEnabled?.()) {
+          markerDragPanWasEnabled = true;
+          mapInstance.dragPan.disable();
+        }
         if (!dragStartSnapshot) {
           captureWaypointDragStart();
         }
@@ -1706,6 +1707,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       // Commit to history when drag ends
       marker.on('dragend', async () => {
         releaseMapPan();
+        isMarkerInteractionActiveRef.current = false;
+        lastMarkerInteractionEndedAtRef.current = Date.now();
+        markerInteractionVersionRef.current += 1;
+        const mapInstance = mapRef.current;
+        if (markerDragPanWasEnabled && mapInstance?.dragPan) {
+          mapInstance.dragPan.enable();
+        }
+        markerDragPanWasEnabled = false;
         // Avoid a delayed map dragend from landing after marker history and consuming the first undo.
         pendingViewportHistoryRef.current = null;
         const liveCoords = waypointCoordsRef.current.get(batteryIndex) ?? [];
@@ -3127,6 +3136,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     >
                       {isBoundaryMode ? 'Boundary On' : 'Boundary'}
                     </button>
+                  </div>
+                )}
+                {isFullscreen && batteryCount > 0 && (
+                  <div className="map-battery-panel">
+                    {Array.from({ length: batteryCount }).map((_, idx) => (
+                      <button
+                        key={`fullscreen-battery-${idx + 1}`}
+                        className={`map-battery-button${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
+                        onClick={async () => {
+                          const ready = await ensureMissionReady();
+                          if (!ready) {
+                            return;
+                          }
+                          downloadBatteryCsv(idx + 1);
+                        }}
+                      >
+                        {downloadingBatteries.has(idx + 1) ? `Battery ${idx + 1}...` : `Battery ${idx + 1}`}
+                      </button>
+                    ))}
                   </div>
                 )}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>

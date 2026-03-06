@@ -25,3 +25,4 @@
 2026-03-05T10:17:00-07:00 waypoint-override rollout retrigger
 2026-03-05T11:35:00-07:00 fix waypoint marker draggable state source
 2026-03-05T16:55:00-07:00 force waypoint markers draggable at creation
+2026-03-06T00:12:53Z - Keep fullscreen map in-modal, harden marker drag pan guards, and add fullscreen Battery quick actions

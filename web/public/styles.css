@@ -4714,6 +4714,47 @@ body.popup-open {
   gap: 8px;
 }
 
+.map-battery-panel {
+  position: absolute;
+  top: 16px;
+  right: 76px;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.map-battery-button {
+  min-width: 104px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 9, 20, 0.42);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.map-battery-button:hover:not(.loading) {
+  background: rgba(12, 19, 38, 0.56);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.map-battery-button.loading {
+  opacity: 0.75;
+  cursor: wait;
+}
+
 .map-toolbar-button {
   min-width: 50px;
   height: 50px;
