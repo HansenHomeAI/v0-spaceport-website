@@ -805,7 +805,8 @@ class SpiralDesigner:
 
         return {'traces': traces}
 
-    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None, debug_mode: bool = False, debug_angle: float = 0) -> str:
+    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None,
+                     debug_mode: bool = False, debug_angle: float = 0, form_to_terrain: bool = True) -> str:
         """
         Generate complete Litchi CSV mission file with elevation-aware altitudes and neural network optimizations.
 
@@ -861,8 +862,12 @@ class SpiralDesigner:
         if not center:
             raise ValueError("Invalid center coordinates")
 
-        # Get takeoff elevation for reference
-        takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        if form_to_terrain:
+            # Get takeoff elevation for reference
+            takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        else:
+            print("🛫 Terrain following disabled - generating flat mission altitudes")
+            takeoff_elevation_feet = 0.0
 
         # Generate waypoints using the same algorithm as the designer
         spiral_path = []
@@ -916,16 +921,20 @@ class SpiralDesigner:
                 'phase': wp.get('phase', 'unknown')
             })
 
-        # Get elevations with 15-foot proximity optimization
-        ground_elevations = self.get_elevations_feet_optimized(locations)
+        if form_to_terrain:
+            # Get elevations with 15-foot proximity optimization
+            ground_elevations = self.get_elevations_feet_optimized(locations)
 
-        # Add elevations to waypoints_with_coords for adaptive sampling
-        for i, elevation in enumerate(ground_elevations):
-            waypoints_with_coords[i]['elevation'] = elevation
+            # Add elevations to waypoints_with_coords for adaptive sampling
+            for i, elevation in enumerate(ground_elevations):
+                waypoints_with_coords[i]['elevation'] = elevation
 
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
-        print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
+            print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
+            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        else:
+            ground_elevations = [0.0] * len(locations)
+            safety_waypoints = []
 
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into complete mission flight path")
@@ -1122,7 +1131,8 @@ class SpiralDesigner:
 
         return '\n'.join(rows)
 
-    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0, max_height: float = None) -> str:
+    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0,
+                             max_height: float = None, form_to_terrain: bool = True) -> str:
         """
         Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
 
@@ -1164,8 +1174,12 @@ class SpiralDesigner:
         self.elevation_cache = {}
         self.waypoint_cache = []
 
-        # Get takeoff elevation for reference
-        takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        if form_to_terrain:
+            # Get takeoff elevation for reference
+            takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        else:
+            print("🛫 Terrain following disabled - generating flat battery mission altitudes")
+            takeoff_elevation_feet = 0.0
 
         # Generate waypoints for all slices, then extract the specific battery slice
         all_waypoints = self.compute_waypoints(params)
@@ -1189,16 +1203,20 @@ class SpiralDesigner:
                 'phase': wp.get('phase', 'unknown')
             })
 
-        # Get elevations with 15-foot proximity optimization
-        ground_elevations = self.get_elevations_feet_optimized(locations)
+        if form_to_terrain:
+            # Get elevations with 15-foot proximity optimization
+            ground_elevations = self.get_elevations_feet_optimized(locations)
 
-        # Add elevations to waypoints_with_coords for adaptive sampling
-        for i, elevation in enumerate(ground_elevations):
-            waypoints_with_coords[i]['elevation'] = elevation
+            # Add elevations to waypoints_with_coords for adaptive sampling
+            for i, elevation in enumerate(ground_elevations):
+                waypoints_with_coords[i]['elevation'] = elevation
 
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
-        print(f"🛡️  Starting adaptive terrain sampling for mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
+            print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        else:
+            ground_elevations = [0.0] * len(locations)
+            safety_waypoints = []
 
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
@@ -2428,6 +2446,21 @@ def handle_elevation(designer, body, cors_headers):
             'body': json.dumps({'error': f'Elevation lookup failed: {str(e)}'})
         }
 
+
+def _parse_bool(value, default=True):
+    """Parse API boolean fields without treating the string 'false' as truthy."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "off"}:
+            return False
+    return bool(value)
+
 def handle_csv_download(designer, body, cors_headers):
     """Handle /api/csv endpoint"""
     try:
@@ -2457,6 +2490,7 @@ def handle_csv_download(designer, body, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
 
         if not center:
             return {
@@ -2474,7 +2508,13 @@ def handle_csv_download(designer, body, cors_headers):
         }
 
         # Generate CSV content
-        csv_content = designer.generate_csv(params, center, min_height, max_height)
+        csv_content = designer.generate_csv(
+            params,
+            center,
+            min_height,
+            max_height,
+            form_to_terrain=form_to_terrain,
+        )
 
         # Return CSV as text/csv
         return {
@@ -2539,6 +2579,7 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
 
         if not center:
             return {
@@ -2563,7 +2604,14 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         }
 
         # Generate battery-specific CSV content
-        csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
+        csv_content = designer.generate_battery_csv(
+            params,
+            center,
+            battery_index,
+            min_height,
+            max_height,
+            form_to_terrain=form_to_terrain,
+        )
 
         # Return CSV as text/csv
         return {

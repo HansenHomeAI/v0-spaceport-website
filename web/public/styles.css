@@ -5025,6 +5025,87 @@ body.popup-open {
   margin-bottom: 0;
 }
 
+.terrain-toggle-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 0 auto 6px;
+  min-height: 126px;
+  padding: 18px 22px 20px;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.terrain-toggle-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 320px;
+}
+
+.terrain-toggle-title {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.terrain-toggle-description {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.terrain-toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 58px;
+  height: 34px;
+  padding: 3px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.terrain-toggle-switch:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.terrain-toggle-switch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16);
+}
+
+.terrain-toggle-switch:active {
+  transform: scale(0.98);
+}
+
+.terrain-toggle-switch.is-on {
+  background: #34c759;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 10px 24px rgba(52, 199, 89, 0.24);
+}
+
+.terrain-toggle-switch-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+  transition: transform 0.25s ease;
+}
+
+.terrain-toggle-switch.is-on .terrain-toggle-switch-thumb {
+  transform: translateX(24px);
+}
+
 .popup-input-wrapper {
   flex: 1 1 0;
   min-width: 0;
