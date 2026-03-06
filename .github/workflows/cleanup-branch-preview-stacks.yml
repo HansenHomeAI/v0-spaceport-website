@@ -1,0 +1,180 @@
+name: Cleanup Branch Preview Stacks
+
+on:
+  delete:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: Branch name to clean up. Leave empty with sweep=true for a stale-stack sweep.
+        required: false
+        type: string
+      sweep:
+        description: Sweep stale branch preview stacks.
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: '23 7 * * *'
+
+concurrency:
+  group: cleanup-branch-preview-stacks
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Resolve cleanup mode
+        id: mode
+        env:
+          DELETE_REF: ${{ github.event.ref }}
+          INPUT_BRANCH_NAME: ${{ inputs.branch_name }}
+          INPUT_SWEEP: ${{ inputs.sweep }}
+        run: |
+          set -euo pipefail
+
+          MODE=""
+          BRANCH_NAME=""
+
+          if [ "${GITHUB_EVENT_NAME}" = "delete" ]; then
+            MODE="single"
+            BRANCH_NAME="${DELETE_REF}"
+          elif [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            MODE="single"
+            BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            if [ "${INPUT_SWEEP}" = "true" ]; then
+              MODE="sweep"
+            elif [ -n "${INPUT_BRANCH_NAME}" ]; then
+              MODE="single"
+              BRANCH_NAME="${INPUT_BRANCH_NAME}"
+            else
+              echo "Provide branch_name or set sweep=true for workflow_dispatch" >&2
+              exit 1
+            fi
+          else
+            MODE="sweep"
+          fi
+
+          echo "mode=${MODE}" >> "$GITHUB_OUTPUT"
+          echo "branch_name=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Delete one branch preview stack pair
+        if: steps.mode.outputs.mode == 'single'
+        env:
+          TARGET_BRANCH: ${{ steps.mode.outputs.branch_name }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${TARGET_BRANCH}" ]; then
+            echo "No branch name supplied for single cleanup mode" >&2
+            exit 1
+          fi
+
+          python3 scripts/resolve_preview_context.py --branch "${TARGET_BRANCH}" --format shell > /tmp/cleanup-context.env
+          cat /tmp/cleanup-context.env
+          while IFS='=' read -r key value; do
+            export "${key}=${value}"
+          done < /tmp/cleanup-context.env
+
+          if [ "${DEPLOYMENT_CLASS}" != "branch-preview" ]; then
+            echo "Skipping cleanup for ${TARGET_BRANCH}; deployment class is ${DEPLOYMENT_CLASS}"
+            exit 0
+          fi
+
+          for stack in "$SPACEPORT_STACK_NAME" "$ML_STACK_NAME"; do
+            if aws cloudformation describe-stacks --stack-name "$stack" >/dev/null 2>&1; then
+              echo "Deleting $stack"
+              aws cloudformation delete-stack --stack-name "$stack"
+              aws cloudformation wait stack-delete-complete --stack-name "$stack"
+            else
+              echo "Stack $stack does not exist; nothing to do"
+            fi
+          done
+
+      - name: Sweep stale branch preview stacks
+        if: steps.mode.outputs.mode == 'sweep'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" \
+            --jq '.[] | [.name, (.protected | tostring)] | @tsv' > /tmp/branches.tsv
+          aws cloudformation describe-stacks --output json > /tmp/stacks.json
+
+          python3 - <<'PY' > /tmp/stacks-to-delete.txt
+          import json
+          from datetime import datetime, timedelta, timezone
+
+          with open("/tmp/stacks.json", "r", encoding="utf-8") as fh:
+              stacks = json.load(fh)["Stacks"]
+
+          branch_state = {}
+          with open("/tmp/branches.tsv", "r", encoding="utf-8") as fh:
+              for line in fh:
+                  name, protected = line.rstrip("\n").split("\t")
+                  branch_state[name] = protected == "true"
+
+          now = datetime.now(timezone.utc)
+          safe_stack_names = {
+              "SpaceportStagingStack",
+              "SpaceportMLPipelineStagingStack",
+              "SpaceportAuthStagingStack",
+              "SpaceportProductionStack",
+              "SpaceportMLPipelineProductionStack",
+              "SpaceportAuthProductionStack",
+          }
+
+          for stack in stacks:
+              stack_name = stack["StackName"]
+              if stack_name in safe_stack_names:
+                  continue
+              status = stack["StackStatus"]
+              if status == "DELETE_COMPLETE" or status.endswith("_IN_PROGRESS"):
+                  continue
+              tags = {item["Key"]: item["Value"] for item in stack.get("Tags", [])}
+              if tags.get("SpaceportDeploymentClass") != "branch-preview":
+                  continue
+              branch_name = tags.get("SpaceportBranchName", "")
+              if not branch_name:
+                  continue
+
+              last_seen = stack.get("LastUpdatedTime") or stack["CreationTime"]
+              age = now - datetime.fromisoformat(last_seen.replace("Z", "+00:00"))
+
+              is_active = branch_name in branch_state
+              is_protected = branch_state.get(branch_name, False)
+              should_delete = (not is_active) or (age > timedelta(days=14) and not is_protected)
+
+              if should_delete:
+                  print(stack_name)
+          PY
+
+          if [ ! -s /tmp/stacks-to-delete.txt ]; then
+            echo "No stale branch preview stacks found"
+            exit 0
+          fi
+
+          cat /tmp/stacks-to-delete.txt
+          while IFS= read -r stack_name; do
+            [ -n "$stack_name" ] || continue
+            echo "Deleting stale stack $stack_name"
+            aws cloudformation delete-stack --stack-name "$stack_name"
+            aws cloudformation wait stack-delete-complete --stack-name "$stack_name"
+          done < /tmp/stacks-to-delete.txt

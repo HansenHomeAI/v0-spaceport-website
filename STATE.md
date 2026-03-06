@@ -1,4 +1,5 @@
-reason: Unblocked. Working on boundary-fit UX for low-level flights in the New Project fullscreen map.
-last_step: Implemented boundary-aware backend planning and CSV generation, added fullscreen ellipse editing in NewProjectModal, and validated with boundary planner unit tests plus a web production build.
-next_unblocked_step: Commit boundary-fit changes, bump the Pages trigger file, push codex/agent-20260304-boundary-fit-ux, watch Cloudflare Pages + CDK Deploy to green, resolve PREVIEW_URL, and run boundary browser validation against the preview.
+reason: In progress. Merging origin/development into codex/agent-20260304-boundary-fit-ux, then updating preview auth secrets and validating boundary UX on the branch preview.
+last_step: Resolved the merge conflicts by keeping the boundary-fit drone-path lambda, preserving the trigger history, and preparing the branch for a fresh deploy/validation loop.
+next_unblocked_step: Finish the merge commit, update preview Cognito secrets, push the branch, watch Pages and CDK deploys to green, resolve the preview URL, and complete authenticated desktop plus touch validation.
 owner_action_needed: None.
+updated: 2026-03-06T23:00:00Z

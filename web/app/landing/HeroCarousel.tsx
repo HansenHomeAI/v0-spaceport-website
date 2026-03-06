@@ -34,16 +34,16 @@ const EXAMPLES = [
 export default function HeroCarousel(): JSX.Element {
   const [isActive, setIsActive] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1); // -1 means default state
-  
+
   // Subtitle animation state
   const [subtitleText, setSubtitleText] = useState(DEFAULT_SUBTITLE);
   const [isTextVisible, setIsTextVisible] = useState(true);
-  
+
   // Interaction state
   const [hasInteracted, setHasInteracted] = useState(false);
   const prevIndexRef = useRef(-1);
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
-  
+
   // Refs for dynamic blocking layer positioning
   const controlContainerRef = useRef<HTMLDivElement>(null);
   const blockingLayerRef = useRef<HTMLDivElement>(null);
@@ -54,11 +54,11 @@ export default function HeroCarousel(): JSX.Element {
     timeoutsRef.current.forEach(t => clearTimeout(t));
     timeoutsRef.current = [];
   };
-  
+
   // Handle user interaction (clears tooltip, marks interacted)
   const handleInteraction = () => {
     if (hasInteracted) return; // Already marked
-    
+
     // Clear any pending tooltip timers immediately
     clearTimeouts();
     setHasInteracted(true);
@@ -71,7 +71,7 @@ export default function HeroCarousel(): JSX.Element {
       // Assuming blur means user clicked iframe
       if (isActive) handleInteraction();
     };
-    
+
     const onMessage = (e: MessageEvent) => {
       // Listen for generic interaction messages if the iframe sends them
       // Also can listen for "scroll", "touch" if passed
@@ -79,10 +79,10 @@ export default function HeroCarousel(): JSX.Element {
         handleInteraction();
       }
     };
-    
+
     window.addEventListener('blur', onBlur);
     window.addEventListener('message', onMessage);
-    
+
     return () => {
       window.removeEventListener('blur', onBlur);
       window.removeEventListener('message', onMessage);
@@ -97,13 +97,13 @@ export default function HeroCarousel(): JSX.Element {
         // Measure the first child (the actual button/controls) if available, otherwise the container
         // This accounts for margins/padding that might push the visual controls down inside the container
         const targetEl = controlContainerRef.current.firstElementChild || controlContainerRef.current;
-        
+
         const controlRect = targetEl.getBoundingClientRect();
         const landingRect = landing.getBoundingClientRect();
-        
+
         // Calculate offset relative to the #landing container
         const relativeTop = controlRect.top - landingRect.top;
-        
+
         blockingLayerRef.current.style.top = `${relativeTop}px`;
         if (topTriggerRef.current) {
           topTriggerRef.current.style.height = `${relativeTop}px`;
@@ -115,10 +115,10 @@ export default function HeroCarousel(): JSX.Element {
     updatePosition();
     window.addEventListener('resize', updatePosition);
     window.addEventListener('scroll', updatePosition); // Also update on scroll just in case
-    
+
     // Also update after a short delay to allow for transitions (H1 collapse)
-    const t = setTimeout(updatePosition, 550); 
-    
+    const t = setTimeout(updatePosition, 550);
+
     return () => {
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition);
@@ -131,10 +131,10 @@ export default function HeroCarousel(): JSX.Element {
   useEffect(() => {
     const targetTitle = activeIndex === -1 ? DEFAULT_SUBTITLE : EXAMPLES[activeIndex].title;
     const prevIndex = prevIndexRef.current;
-    
+
     // Determine if we are switching modes (Default <-> Carousel)
     const isModeChange = (prevIndex === -1 && activeIndex !== -1) || (prevIndex !== -1 && activeIndex === -1);
-    
+
     // When carousel/iframe position changes: clear tooltip timers and reset displayed text
     // so the tooltip never sticks for 5s; the 2.75s buffer restarts for the new slide.
     if (prevIndex !== activeIndex) {
@@ -178,39 +178,39 @@ export default function HeroCarousel(): JSX.Element {
     if (subtitleText !== targetTitle && (subtitleText !== TIP_TEXT || hasInteracted)) {
       // Fade out immediately
       setIsTextVisible(false);
-      
+
       const delay = isModeChange ? 500 : 250;
-      
+
       const t1 = setTimeout(() => {
         setSubtitleText(targetTitle);
         setIsTextVisible(true);
-        
+
         // 2. Queue Tooltip Logic (if active, not interacted, and not default)
         if (activeIndex !== -1 && !hasInteracted) {
           // Wait 2.75s after title appears
           const t2 = setTimeout(() => {
             // Fade out title
             setIsTextVisible(false);
-            
+
             const t3 = setTimeout(() => {
               // Show Tooltip
               setSubtitleText(TIP_TEXT);
               setIsTextVisible(true);
-              
+
               // Wait 5s
               const t4 = setTimeout(() => {
                 // Fade out tooltip
                 setIsTextVisible(false);
-                
+
                 const t5 = setTimeout(() => {
                   // Revert to Title
                   setSubtitleText(targetTitle);
                   setIsTextVisible(true);
-                  // Cycle complete. Next model will restart logic because logic runs on activeIndex change 
+                  // Cycle complete. Next model will restart logic because logic runs on activeIndex change
                   // or we can recurse? "repeats until a model is interacted with"
                   // Since logic is tied to activeIndex, navigating to next model restarts this effect.
-                  // If user stays on SAME model, does it repeat? "repeats until a model is interacted with" 
-                  // usually implies across session (next model). 
+                  // If user stays on SAME model, does it repeat? "repeats until a model is interacted with"
+                  // usually implies across session (next model).
                   // "If that 7.75 second tooltip cycle completes ... the next model they interact with will also show"
                   // implies single cycle per model view.
                 }, 500);
@@ -222,7 +222,7 @@ export default function HeroCarousel(): JSX.Element {
           }, 2750); // Wait 2.75s
           timeoutsRef.current.push(t2);
         }
-        
+
       }, delay);
       timeoutsRef.current.push(t1);
     } else if (activeIndex !== -1 && !hasInteracted && subtitleText === targetTitle) {
@@ -235,18 +235,18 @@ export default function HeroCarousel(): JSX.Element {
       // If they match initially, we might miss it.
       // But `subtitleText` usually starts as something else or previous value.
     }
-    
+
     prevIndexRef.current = activeIndex;
-    
+
     // Cleanup on unmount only, not every render, because we manually manage timeouts via ref
     return () => {
       // We don't clear timeouts here because we want them to persist during minor re-renders
       // unless activeIndex changes (handled at top of effect)
     };
-  }, [activeIndex, hasInteracted]); // Dependencies: if interaction happens, effect runs? 
+  }, [activeIndex, hasInteracted]); // Dependencies: if interaction happens, effect runs?
   // If `hasInteracted` changes to true, we want to stop the cycle.
   // `handleInteraction` calls `clearTimeouts`, which stops the cycle.
-  // So we don't necessarily need `hasInteracted` in dependency array to trigger effect, 
+  // So we don't necessarily need `hasInteracted` in dependency array to trigger effect,
   // but `handleInteraction` handles the cleanup.
   // However, if we add `hasInteracted` to deps, this effect runs again.
   // If `hasInteracted` is true, `!hasInteracted` block is skipped.
@@ -325,9 +325,9 @@ export default function HeroCarousel(): JSX.Element {
 
   return (
     <section className="section" id="landing">
-      <iframe 
-        className="landing-iframe" 
-        src={currentIframeSrc} 
+      <iframe
+        className="landing-iframe"
+        src={currentIframeSrc}
         title={currentExample?.title || "Spaceport"}
         style={{ opacity: 1, transition: 'opacity 0.5s ease' }}
         onFocus={handleIframeEngage}
@@ -351,13 +351,13 @@ export default function HeroCarousel(): JSX.Element {
         className="active"
         aria-hidden="true"
       />
-      
+
       <div className={`landing-content ${isActive ? 'carousel-active' : ''}`}>
-        
+
         {/* Title logic: Fade in/out in sync with subtitle (same timing) */}
-        <h1 style={{ 
-          opacity: isTitleVisible ? 1 : 0, 
-          maxHeight: isTitleVisible ? '100px' : 0, 
+        <h1 style={{
+          opacity: isTitleVisible ? 1 : 0,
+          maxHeight: isTitleVisible ? '100px' : 0,
           overflow: 'hidden',
           marginBottom: isTitleVisible ? '6px' : 0,
           transition: 'opacity 0.5s ease, maxHeight 0.5s ease, margin-bottom 0.5s ease',
@@ -382,8 +382,8 @@ export default function HeroCarousel(): JSX.Element {
         {/* Button / Carousel Control */}
         <div className="carousel-control-container" ref={controlContainerRef}>
           {isDefaultState ? (
-            <button 
-              className="cta-button with-symbol" 
+            <button
+              className="cta-button with-symbol"
               onClick={() => {
                 setIsTextVisible(false); // Fade out title + subtitle together
                 setActiveIndex(0);
@@ -399,11 +399,11 @@ export default function HeroCarousel(): JSX.Element {
               <button onClick={handlePrev} className="carousel-arrow left" aria-label="Previous example">
                  <img src="/assets/SpaceportIcons/Arrow.svg" alt="Previous" style={{ transform: 'rotate(180deg)' }} />
               </button>
-              
+
               <div className="carousel-dots">
                 {EXAMPLES.map((_, idx) => (
-                  <button 
-                    key={idx} 
+                  <button
+                    key={idx}
                     className={`dot ${idx === activeIndex ? 'active' : ''}`}
                     onClick={(e) => { e.stopPropagation(); handleDotClick(idx); }}
                     aria-label={`Go to example ${idx + 1}`}

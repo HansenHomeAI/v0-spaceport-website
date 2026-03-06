@@ -6,10 +6,23 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: cdk-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    outputs:
+      deployment_class: ${{ steps.resolve_context.outputs.deployment_class }}
+      branch_id: ${{ steps.resolve_context.outputs.branch_id }}
+      spaceport_stack_name: ${{ steps.resolve_context.outputs.spaceport_stack_name }}
+      ml_stack_name: ${{ steps.resolve_context.outputs.ml_stack_name }}
+      auth_stack_name: ${{ steps.resolve_context.outputs.auth_stack_name }}
+      drone_path_api_url: ${{ steps.publish_outputs.outputs.drone_path_api_url }}
+      file_upload_api_url: ${{ steps.publish_outputs.outputs.file_upload_api_url }}
+      ml_pipeline_api_url: ${{ steps.publish_outputs.outputs.ml_pipeline_api_url }}
     permissions:
       id-token: write   # for GitHub OIDC
       contents: read
@@ -75,27 +88,97 @@ jobs:
     - name: Install jq
       run: sudo apt-get update && sudo apt-get install -y jq
 
+    - name: Resolve deployment context
+      id: resolve_context
+      run: |
+        set -euo pipefail
+        python3 ../../scripts/resolve_preview_context.py --branch "${GITHUB_REF_NAME}" --format shell > /tmp/deploy-context.env
+        cat /tmp/deploy-context.env
+        while IFS='=' read -r key value; do
+          echo "${key}=${value}" >> "$GITHUB_ENV"
+        done < /tmp/deploy-context.env
+
+        echo "deployment_class=${DEPLOYMENT_CLASS:-$(grep '^DEPLOYMENT_CLASS=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "branch_id=${BRANCH_ID:-$(grep '^BRANCH_ID=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "spaceport_stack_name=${SPACEPORT_STACK_NAME:-$(grep '^SPACEPORT_STACK_NAME=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "ml_stack_name=${ML_STACK_NAME:-$(grep '^ML_STACK_NAME=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+        echo "auth_stack_name=${AUTH_STACK_NAME:-$(grep '^AUTH_STACK_NAME=' /tmp/deploy-context.env | cut -d= -f2-)}" >> "$GITHUB_OUTPUT"
+
     - name: CDK Bootstrap (if needed)
       if: github.event_name == 'push'
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         
+        BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
+        BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
+        
+        BOOTSTRAP_REQUIRED=0
+        
         # Check if CDK is bootstrapped with default qualifier
-        if ! aws ssm get-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 2>/dev/null; then
-          echo "CDK not bootstrapped with default qualifier. Bootstrapping for account $ACCOUNT..."
+        if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
+          echo "CDK already bootstrapped with default qualifier for account $ACCOUNT (SSM parameter present)"
+        else
+          echo "Default qualifier parameter missing or inaccessible for account $ACCOUNT."
+          BOOTSTRAP_REQUIRED=1
           
-          # Clean up any existing non-standard bootstrap first
+          if aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
+            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET already exists."
+            echo "Removing all object versions from bootstrap bucket before deletion..."
+            
+            KEY_MARKER=""
+            VERSION_MARKER=""
+            while true; do
+              if [ -n "$KEY_MARKER" ]; then
+                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET" --key-marker "$KEY_MARKER" --version-id-marker "$VERSION_MARKER")
+              else
+                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET")
+              fi
+              
+              OBJECTS_JSON=$(echo "$RESPONSE" | jq -c '{
+                Objects: (
+                  ((.Versions // []) + (.DeleteMarkers // []))
+                  | map({Key: .Key, VersionId: .VersionId})
+                )
+              }')
+              
+              COUNT=$(echo "$OBJECTS_JSON" | jq '.Objects | length')
+              if [ "$COUNT" -gt 0 ]; then
+                echo "$OBJECTS_JSON" > /tmp/delete-bootstrap-objects.json
+                aws s3api delete-objects --bucket "$BOOTSTRAP_BUCKET" --delete file:///tmp/delete-bootstrap-objects.json >/dev/null
+              fi
+              
+              if [ "$(echo "$RESPONSE" | jq -r '.IsTruncated')" != "true" ]; then
+                break
+              fi
+              
+              KEY_MARKER=$(echo "$RESPONSE" | jq -r '.NextKeyMarker // empty')
+              VERSION_MARKER=$(echo "$RESPONSE" | jq -r '.NextVersionIdMarker // empty')
+              
+              if [ -z "$KEY_MARKER" ]; then
+                break
+              fi
+            done
+            rm -f /tmp/delete-bootstrap-objects.json
+            
+            echo "Deleting bootstrap bucket $BOOTSTRAP_BUCKET..."
+            aws s3api delete-bucket --bucket "$BOOTSTRAP_BUCKET" --region us-west-2
+          else
+            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found."
+          fi
+          
           echo "Checking for existing CDK bootstrap stack..."
-          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 2>/dev/null; then
+          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
             echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
             aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2
             echo "Waiting for stack deletion to complete..."
             aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2
             echo "Existing CDK bootstrap stack deleted successfully"
           fi
-          
-          # Bootstrap with default qualifier for consistency between dev and prod
+        fi
+        
+        if [ "$BOOTSTRAP_REQUIRED" -eq 1 ]; then
+          echo "Bootstrapping environment $ACCOUNT/us-west-2 with default qualifier resources..."
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "Production bootstrap with OIDC role trust and default qualifier"
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
@@ -105,8 +188,6 @@ jobs:
             echo "Development bootstrap with default qualifier"
             cdk bootstrap aws://$ACCOUNT/us-west-2
           fi
-        else
-          echo "CDK already bootstrapped with default qualifier for account $ACCOUNT"
         fi
 
     - name: Verify Bootstrap
@@ -116,13 +197,18 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Verifying CDK bootstrap for account $ACCOUNT"
 
-        # Simple verification - check for default qualifier SSM parameter
-        echo "Checking for default qualifier bootstrap parameter..."
-        if aws ssm get-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 >/dev/null 2>&1; then
-          echo "✅ CDK bootstrap verified successfully with default qualifier"
+        BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
+        BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
+        
+        # Simple verification - prefer SSM parameter, fall back to bucket existence
+        echo "Checking for default qualifier bootstrap artifacts..."
+        if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
+          echo "✅ CDK bootstrap verified successfully via SSM parameter"
+        elif aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
+          echo "✅ CDK bootstrap assets bucket exists; treating environment as bootstrapped"
         else
-          echo "❌ CDK bootstrap verification failed - default qualifier not found"
-          echo "This should not happen after the bootstrap step above"
+          echo "❌ Unable to verify CDK bootstrap state (missing SSM parameter and assets bucket)"
+          echo "Manual intervention required before continuing deployment"
           exit 1
         fi
 
@@ -146,6 +232,7 @@ jobs:
         STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
         STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
         STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
+        CDK_DISABLE_BOOTSTRAP_VERSION_CHECK: "1"
         STRIPE_MODEL_TRAINING_PRICE_PROD: ${{ secrets.STRIPE_MODEL_TRAINING_PRICE_PROD }}
         STRIPE_MODEL_HOSTING_PRICE_PROD: ${{ secrets.STRIPE_MODEL_HOSTING_PRICE_PROD }}
         # R2 S3 access credentials
@@ -167,65 +254,102 @@ jobs:
         # EMPLOYEE_USER_ID: "" (optional)
         # FRONTEND_URL: "https://spcprt.com" (default)
       run: |
-        set -e
+        set -euo pipefail
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        BRANCH_NAME="${GITHUB_REF_NAME}"
+        
+        # Detect Lambda function changes
+        LAMBDA_CHANGED="false"
+        if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          # Check if any Lambda files changed
+          if git diff --name-only HEAD~1 HEAD | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
+            LAMBDA_CHANGED="true"
+            echo "Lambda functions changed - will deploy branch-specific Lambda versions"
+          fi
+        fi
         
         # Determine environment based on branch
-        if [ "${GITHUB_REF_NAME}" = "main" ]; then
+        if [ "${BRANCH_NAME}" = "main" ]; then
           ENVIRONMENT="production"
           echo "Deploying to production environment"
-        else
+        elif [ "${BRANCH_NAME}" = "development" ]; then
           ENVIRONMENT="staging"
           echo "Deploying to staging environment"
+        else
+          # For agent/feature branches, use staging as base but with branch-specific suffix
+          ENVIRONMENT="staging"
+          echo "Deploying agent branch: ${BRANCH_NAME} (using staging environment with branch-specific resources)"
         fi
         
-        # Deploy all stacks with environment context
-        cdk deploy --all \
+        # Sanitize branch name for AWS resource naming (remove invalid chars, lowercase)
+        # This matches the Python sanitize_branch_name function logic
+        BRANCH_SANITIZED=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g' | cut -c1-50)
+        if [ -z "${BRANCH_SANITIZED}" ]; then
+          BRANCH_SANITIZED="default"
+        fi
+        
+        echo "Branch name: ${BRANCH_NAME}"
+        echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
+        echo "Lambda changed: ${LAMBDA_CHANGED}"
+
+        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+        if [ "${DEPLOY_AUTH_STACK}" = "true" ]; then
+          STACKS+=("$AUTH_STACK_NAME")
+        fi
+
+        echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
+        
+        cdk deploy "${STACKS[@]}" \
           --require-approval never \
           --no-fail-on-empty-changeset \
-          --context environment=$ENVIRONMENT \
+          --context environment="${CDK_ENVIRONMENT_NAME}" \
+          --context branch_name="${BRANCH_NAME}" \
+          --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
-          --parameters Spaceport${ENVIRONMENT^}Stack:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          --parameters "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}"
 
-    - name: Update Frontend Environment Variables
+    - name: Publish deployment outputs
       if: github.event_name == 'push'
+      id: publish_outputs
       run: |
-        set -e
-        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-        
-        # Determine environment based on branch
-        if [ "${GITHUB_REF_NAME}" = "main" ]; then
-          ENVIRONMENT="production"
-          SECRET_SUFFIX="PROD"
-        else
-          ENVIRONMENT="staging"
-          SECRET_SUFFIX="PREVIEW"
-        fi
-        
-        # Get CDK stack outputs
-        STACK_NAME="Spaceport${ENVIRONMENT^}Stack"
-        DRONE_PATH_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DronePathApiUrl'].OutputValue" --output text)
-        FILE_UPLOAD_API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FileUploadApiUrl'].OutputValue" --output text)
-        
-        # Get Auth stack outputs
-        AUTH_STACK_NAME="SpaceportAuth${ENVIRONMENT^}Stack"
-        PROJECTS_API_URL=$(aws cloudformation describe-stacks --stack-name $AUTH_STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ProjectsApiUrl'].OutputValue" --output text)
-        
-        # Get ML Pipeline stack outputs
-        ML_STACK_NAME="SpaceportMLPipeline${ENVIRONMENT^}Stack"
-        ML_PIPELINE_API_URL=$(aws cloudformation describe-stacks --stack-name $ML_STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='MLPipelineApiUrl'].OutputValue" --output text)
-        
-        echo "Retrieved API URLs:"
+        set -euo pipefail
+
+        get_output() {
+          local stack_name="$1"
+          local output_key="$2"
+          local value
+          value=$(aws cloudformation describe-stacks \
+            --stack-name "$stack_name" \
+            --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+            --output text)
+          if [ -z "$value" ] || [ "$value" = "None" ]; then
+            echo "Missing required CloudFormation output ${output_key} on stack ${stack_name}" >&2
+            exit 1
+          fi
+          printf '%s' "$value"
+        }
+
+        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
+        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+
+        echo "Deployment class: $DEPLOYMENT_CLASS"
+        echo "Branch ID: ${BRANCH_ID:-<shared>}"
+        echo "Spaceport stack: $SPACEPORT_STACK_NAME"
+        echo "ML stack: $ML_STACK_NAME"
+        echo "Shared auth stack: $AUTH_STACK_NAME"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"
-        echo "Projects API: $PROJECTS_API_URL"
         echo "ML Pipeline API: $ML_PIPELINE_API_URL"
-        
-        # Note: In a real deployment, you would update GitHub secrets here
-        # This requires a GitHub token with appropriate permissions
-        # For now, we'll just output the values for manual update
+
+        echo "drone_path_api_url=$DRONE_PATH_API_URL" >> "$GITHUB_OUTPUT"
+        echo "file_upload_api_url=$FILE_UPLOAD_API_URL" >> "$GITHUB_OUTPUT"
+        echo "ml_pipeline_api_url=$ML_PIPELINE_API_URL" >> "$GITHUB_OUTPUT"
 
     - name: CDK Diff
       if: github.event_name == 'pull_request'
-      run: npx cdk diff 
+      run: |
+        npx cdk diff \
+          --context branch_name="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" \
+          --context environment=staging

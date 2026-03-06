@@ -1,0 +1,38 @@
+# Base image for sfm (apt deps + Python deps)
+ARG BASE_IMAGE=public.ecr.aws/docker/library/python:3.9-slim-bullseye
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        curl \
+        unzip \
+        ca-certificates \
+        pkg-config \
+        libeigen3-dev \
+        libopencv-dev \
+        libceres-dev \
+        libgoogle-glog-dev \
+        libgflags-dev \
+        libopenblas-dev \
+        libsuitesparse-dev \
+        libproj-dev \
+        libgdal-dev \
+        python3-dev \
+        libboost-all-dev \
+        libyaml-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+WORKDIR /opt/ml/code
+
+COPY requirements.txt /opt/ml/code/
+RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
+    && pip3 install --no-cache-dir sphinx==4.5.0 \
+    && pip3 cache purge \
+    && rm -rf ~/.cache/pip
