@@ -10,6 +10,7 @@ from aws_cdk import (
     Duration,
     CfnOutput,
     CfnParameter,
+    Tags,
     BundlingOptions,  # For installing Python dependencies
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
@@ -28,6 +29,7 @@ from constructs import Construct
 import os
 import aws_cdk as cdk
 import boto3
+from .branch_utils import build_scoped_name
 
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
@@ -37,7 +39,25 @@ class SpaceportStack(Stack):
         self.env_config = env_config
         suffix = env_config['resourceSuffix']
         region = env_config['region']
+        self.deployment_class = env_config.get("deploymentClass", "shared-staging")
+        self.environment_name = env_config.get("environmentName", suffix)
+        self.branch_id = env_config.get("branchId", "")
+        self.branch_name = env_config.get("branchName", "")
+        self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
         # Account will be dynamically resolved from deployment context
+
+        if self.deployment_class == "branch-preview":
+            Tags.of(self).add("SpaceportDeploymentClass", "branch-preview")
+            Tags.of(self).add("SpaceportBranchName", self.branch_name)
+            Tags.of(self).add("SpaceportBranchId", self.branch_id)
+            Tags.of(self).add(
+                "SpaceportSharedAuthStack",
+                env_config.get("sharedAuthStackName", "SpaceportAuthStagingStack"),
+            )
+            Tags.of(self).add("ManagedBy", "github-actions")
+        
+        def scoped_name(prefix: str, max_total_length: int = 64) -> str:
+            return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
@@ -89,7 +109,7 @@ class SpaceportStack(Stack):
         self.lambda_role = iam.Role(
             self, 
             "SpaceportLambdaRole",
-            role_name=f"Spaceport-Lambda-Role-{suffix}",
+            role_name=scoped_name("Spaceport-Lambda-Role-"),
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -142,7 +162,7 @@ class SpaceportStack(Stack):
         self.drone_path_lambda = lambda_.Function(
             self, 
             "SpaceportDronePathFunction",
-            function_name=f"Spaceport-DronePathFunction-{suffix}",
+            function_name=scoped_name("Spaceport-DronePathFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -169,7 +189,7 @@ class SpaceportStack(Stack):
         self.file_upload_lambda = lambda_.Function(
             self, 
             "SpaceportFileUploadFunction",
-            function_name=f"Spaceport-FileUploadFunction-{suffix}",
+            function_name=scoped_name("Spaceport-FileUploadFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -195,7 +215,7 @@ class SpaceportStack(Stack):
         self.csv_upload_lambda = lambda_.Function(
             self, 
             "SpaceportCsvUploadFunction",
-            function_name=f"Spaceport-CsvUploadFunction-{suffix}",
+            function_name=scoped_name("Spaceport-CsvUploadFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/csv_upload_url"),
@@ -210,7 +230,7 @@ class SpaceportStack(Stack):
         self.waitlist_lambda = lambda_.Function(
             self, 
             "SpaceportWaitlistFunction",
-            function_name=f"Spaceport-WaitlistFunction-{suffix}",
+            function_name=scoped_name("Spaceport-WaitlistFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -236,7 +256,7 @@ class SpaceportStack(Stack):
         self.feedback_lambda = lambda_.Function(
             self,
             "SpaceportFeedbackFunction",
-            function_name=f"Spaceport-FeedbackFunction-{suffix}",
+            function_name=scoped_name("Spaceport-FeedbackFunction-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset(
@@ -261,7 +281,7 @@ class SpaceportStack(Stack):
                 ),
                 "FEEDBACK_FROM_ADDRESS": os.environ.get(
                     "FEEDBACK_FROM_ADDRESS",
-                    "Spaceport AI <hello@spcprt.com>",
+                    "Spaceport <hello@spcprt.com>",
                 ),
                 "ALLOWED_ORIGINS": feedback_allowed_origin,
             },
@@ -363,8 +383,22 @@ class SpaceportStack(Stack):
         CfnOutput(
             self,
             "EnvironmentName",
-            value=suffix,
-            description=f"Environment suffix: {suffix}"
+            value=self.environment_name,
+            description=f"Deployment environment name for {suffix}"
+        )
+
+        CfnOutput(
+            self,
+            "BranchId",
+            value=self.branch_id or "shared",
+            description="Branch preview identifier"
+        )
+
+        CfnOutput(
+            self,
+            "BranchName",
+            value=self.branch_name,
+            description="Git branch name for this deployment"
         )
 
     def _create_drone_path_endpoints(self):
@@ -454,7 +488,7 @@ class SpaceportStack(Stack):
             return s3.Bucket.from_bucket_name(self, construct_id, preferred_name)
         
         # Then try fallback name (without suffix)
-        if self._bucket_exists(fallback_name):
+        if self.allow_fallback_imports and self._bucket_exists(fallback_name):
             print(f"Importing existing S3 bucket: {fallback_name}")
             return s3.Bucket.from_bucket_name(self, construct_id, fallback_name)
         
@@ -479,7 +513,7 @@ class SpaceportStack(Stack):
             return dynamodb.Table.from_table_name(self, construct_id, preferred_name)
         
         # Then try fallback name (without suffix)
-        if self._dynamodb_table_exists(fallback_name):
+        if self.allow_fallback_imports and self._dynamodb_table_exists(fallback_name):
             print(f"Importing existing DynamoDB table: {fallback_name}")
             return dynamodb.Table.from_table_name(self, construct_id, fallback_name)
         

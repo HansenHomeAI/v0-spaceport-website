@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Dict, List, Any
 import boto3
 
-# Configure logging
+# Configure logging so container diagnostics are surfaced consistently.
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'

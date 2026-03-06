@@ -6,6 +6,12 @@
 
 set -e  # Exit on any error
 
+log_mem() {
+    echo "MEMORY_PROBE [${1}]:"
+    cat /proc/meminfo 2>/dev/null | head -n 3 || true
+    free -h 2>/dev/null || true
+}
+
 echo "============================================================"
 echo "🚀 SPACEPORT OPENSFM GPS-CONSTRAINED SfM PROCESSING"
 echo "============================================================"
@@ -31,6 +37,7 @@ pip3 list | grep -i pandas > /dev/null || error_exit "pandas not available"
 pip3 list | grep -i numpy > /dev/null || error_exit "numpy not available"
 
 echo "✅ Environment verification completed"
+log_mem "startup"
 
 # Set Python path for our modules
 export PYTHONPATH="/opt/ml/code:$PYTHONPATH"
@@ -93,7 +100,9 @@ echo "============================================================"
 
 # Run the main Python processing script
 echo "🔧 Executing OpenSfM GPS-constrained reconstruction..."
+log_mem "before_python"
 python3 /opt/ml/code/run_opensfm_gps.py "$INPUT_DIR" "$OUTPUT_DIR"
+log_mem "after_python"
 
 # Check if the Python script succeeded
 PYTHON_EXIT_CODE=$?

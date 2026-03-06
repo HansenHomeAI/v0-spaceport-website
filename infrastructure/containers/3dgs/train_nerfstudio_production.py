@@ -40,6 +40,23 @@ except AttributeError:
 # Also disable torch.compile entirely 
 os.environ['TORCH_COMPILE_DISABLE'] = '1'
 print("✅ TORCH_COMPILE_DISABLE=1 set")
+
+# Limit CUDA arch targets so gsplat JIT skips older SM versions that lack
+# cooperative_groups::labeled_partition (prevents nvcc build failures).
+os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '8.0 8.6')
+print(f"✅ TORCH_CUDA_ARCH_LIST={os.environ['TORCH_CUDA_ARCH_LIST']}")
+
+# Ensure CUDA toolkit paths are exposed so nvcc/ninja can link libcudart
+cuda_home = os.environ.setdefault('CUDA_HOME', '/usr/local/cuda')
+cuda_lib_paths = [f"{cuda_home}/lib64", f"{cuda_home}/lib"]
+for var in ('LD_LIBRARY_PATH', 'LIBRARY_PATH'):
+    existing = os.environ.get(var, '')
+    parts = [p for p in existing.split(':') if p]
+    for path in cuda_lib_paths:
+        if path not in parts and os.path.isdir(path):
+            parts.insert(0, path)
+    os.environ[var] = ':'.join(parts) if parts else ':'.join(cuda_lib_paths)
+    print(f"✅ {var}={os.environ[var]}")
 from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil

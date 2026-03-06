@@ -207,11 +207,11 @@ def send_confirmation_email(name, email):
     Send confirmation email to new waitlist signup
     """
     
-    subject = 'Welcome to Spaceport AI - You\'re on the Waitlist!'
+    subject = 'Welcome to Spaceport - You\'re on the Waitlist!'
     
     body_text = f"""Hi {name},
 
-This is Gabriel, the founder of Spaceport AI. On behalf of our team, thanks for signing up for our waitlist!
+This is Gabriel, the founder of Spaceport. On behalf of our team, thanks for signing up for our waitlist!
 
 You'll be among the first to know when we launch and get early access to our features. If selected, you'll have the option to become one of our early beta users.
 
@@ -221,7 +221,7 @@ Best regards,
 
 Gabriel Hansen
 Founder, CEO
-Spaceport AI
+Spaceport
 
 Follow us:
 Instagram: https://instagram.com/Spaceport_AI
@@ -273,7 +273,7 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
         <div class="content">
             <p>Hi {name},</p>
             
-            <p>This is Gabriel, the founder of Spaceport AI. On behalf of our team, thanks for signing up for our waitlist!</p>
+            <p>This is Gabriel, the founder of Spaceport. On behalf of our team, thanks for signing up for our waitlist!</p>
             
             <p>You'll be among the first to know when we launch and get early access to our features. If selected, you'll have the option to become one of our early beta users.</p>
             
@@ -283,7 +283,7 @@ You can unsubscribe from these emails by replying with "unsubscribe"."""
                 <p><strong>Best regards,</strong></p>
                 <p>Gabriel Hansen<br>
                 Founder, CEO<br>
-                Spaceport AI</p>
+                Spaceport</p>
             </div>
             
             <div class="social-links">
@@ -331,14 +331,14 @@ def send_admin_notification(name, email):
     Send notification email to admin about new waitlist signup
     """
     
-    subject = 'New Waitlist Signup - Spaceport AI'
+    subject = 'New Waitlist Signup - Spaceport'
     body_text = f"""New waitlist signup:
     
 Name: {name}
 Email: {email}
 Date: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
 
-This person will be notified when Spaceport AI launches."""
+This person will be notified when Spaceport launches."""
 
     body_html = f"""<html>
 <head></head>
@@ -347,14 +347,14 @@ This person will be notified when Spaceport AI launches."""
     <p><strong>Name:</strong> {name}</p>
     <p><strong>Email:</strong> {email}</p>
     <p><strong>Date:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
-    <p>This person will be notified when Spaceport AI launches.</p>
+    <p>This person will be notified when Spaceport launches.</p>
 </body>
 </html>"""
 
     try:
         # Send via Resend
         params = {
-            "from": "Spaceport AI <hello@spcprt.com>",
+            "from": "Spaceport <hello@spcprt.com>",
             "to": ['gabriel@spcprt.com', 'ethan@spcprt.com'],
             "subject": subject,
             "html": body_html,

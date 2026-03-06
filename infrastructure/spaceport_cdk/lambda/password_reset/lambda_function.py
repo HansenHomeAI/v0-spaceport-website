@@ -99,12 +99,12 @@ def store_reset_code(email: str, reset_code: str) -> None:
 
 def send_password_reset_email(email: str, reset_code: str) -> None:
     """Send password reset email with code via Resend"""
-    subject = 'Reset your Spaceport AI password'
+    subject = 'Reset your Spaceport password'
     
     body_text = f"""
 Hi,
 
-You requested to reset your password for Spaceport AI.
+You requested to reset your password for Spaceport.
 
 Your password reset code is: {reset_code}
 
@@ -119,18 +119,18 @@ To reset your password:
 If you didn't request this password reset, please ignore this email.
 
 Best regards,
-Spaceport AI Team
+Spaceport Team
     """.strip()
     
     body_html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #2563eb;">Reset your Spaceport AI password</h2>
+            <h2 style="color: #2563eb;">Reset your Spaceport password</h2>
             
             <p>Hi,</p>
             
-            <p>You requested to reset your password for Spaceport AI.</p>
+            <p>You requested to reset your password for Spaceport.</p>
             
             <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
                 <h3 style="margin: 0; color: #2563eb; font-size: 24px; letter-spacing: 4px;">{reset_code}</h3>
@@ -149,7 +149,7 @@ Spaceport AI Team
             
             <p>If you didn't request this password reset, please ignore this email.</p>
             
-            <p>Best regards,<br>Spaceport AI Team</p>
+            <p>Best regards,<br>Spaceport Team</p>
         </div>
     </body>
     </html>
@@ -157,7 +157,7 @@ Spaceport AI Team
     
     # Send via Resend
     params = {
-        "from": "Spaceport AI <hello@spcprt.com>",
+        "from": "Spaceport <hello@spcprt.com>",
         "to": [email],
         "subject": subject,
         "html": body_html,
