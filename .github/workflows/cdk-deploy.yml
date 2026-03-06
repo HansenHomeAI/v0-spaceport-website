@@ -257,18 +257,19 @@ jobs:
         set -euo pipefail
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
+        CHANGED_FILES="$(git show --name-only --format= HEAD)"
         
         # Detect Lambda function changes
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
         if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
           # Check if any Lambda files changed
-          if git diff --name-only HEAD~1 HEAD | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
+          if printf '%s\n' "${CHANGED_FILES}" | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
             LAMBDA_CHANGED="true"
             echo "Lambda functions changed - will deploy branch-specific Lambda versions"
           fi
 
-          if git diff --name-only HEAD~1 HEAD | grep -Eq "^(infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/|\.github/workflows/deploy-cloudflare-pages\.yml)"; then
+          if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/|\.github/workflows/deploy-cloudflare-pages\.yml)"; then
             AUTH_STACK_CHANGED="true"
             echo "Auth-backed explore files changed - will deploy shared auth stack for this branch"
           fi
