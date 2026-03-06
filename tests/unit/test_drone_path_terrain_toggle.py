@@ -83,6 +83,67 @@ class DronePathTerrainToggleTests(unittest.TestCase):
 
         self.assertEqual(designer.api_key, "AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU")
 
+    def test_get_elevation_raises_when_live_terrain_is_required_and_google_denies(self):
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {
+                    "status": "REQUEST_DENIED",
+                    "error_message": "This API project is not authorized to use this API."
+                }
+
+        self.designer.require_live_elevation = True
+
+        with patch.object(drone_path_module.requests, "get", return_value=FakeResponse()):
+            with self.assertRaises(drone_path_module.TerrainElevationUnavailableError):
+                self.designer.get_elevation_feet(39.6654, -105.2057)
+
+    def test_handle_elevation_returns_service_unavailable_when_google_denies(self):
+        with patch.object(
+            self.designer,
+            "get_elevation_feet",
+            side_effect=drone_path_module.TerrainElevationUnavailableError(
+                "Terrain following is unavailable because Google Elevation returned REQUEST_DENIED"
+            ),
+        ):
+            response = drone_path_module.handle_elevation(
+                self.designer,
+                {"center": self.center},
+                {},
+            )
+
+        self.assertEqual(response["statusCode"], 503)
+        self.assertIn("REQUEST_DENIED", response["body"])
+
+    def test_battery_csv_returns_service_unavailable_when_google_denies(self):
+        with patch.object(
+            self.designer,
+            "generate_battery_csv",
+            side_effect=drone_path_module.TerrainElevationUnavailableError(
+                "Terrain following is unavailable because Google Elevation returned REQUEST_DENIED"
+            ),
+        ):
+            response = drone_path_module.handle_battery_csv_download(
+                self.designer,
+                {
+                    "slices": 1,
+                    "N": 4,
+                    "r0": 200,
+                    "rHold": 355.869140625,
+                    "center": self.center,
+                    "minHeight": 120,
+                    "maxHeight": "",
+                    "formToTerrain": True,
+                },
+                "1",
+                {},
+            )
+
+        self.assertEqual(response["statusCode"], 503)
+        self.assertIn("REQUEST_DENIED", response["body"])
+
 
 if __name__ == "__main__":
     unittest.main()

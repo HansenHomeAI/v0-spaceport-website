@@ -7,6 +7,11 @@ import requests
 import time
 from typing import List, Dict, Tuple, Optional
 
+
+class TerrainElevationUnavailableError(RuntimeError):
+    """Raised when terrain-following requires live elevation data but Google is unavailable."""
+
+
 class SpiralDesigner:
     """
     Bounded Spiral Designer - Advanced Drone Flight Pattern Generator
@@ -91,6 +96,7 @@ class SpiralDesigner:
         """
         self.waypoint_cache = []
         self.elevation_cache = {}  # Cache for elevation data with coordinate keys
+        self.require_live_elevation = False
 
         # DEVELOPMENT API KEY - Replace with environment variable for production
         # This key is rate-limited and for development/testing only
@@ -105,6 +111,11 @@ class SpiralDesigner:
         key_source = "PRODUCTION" if configured_api_key else "DEV (RATE LIMITED)"
         masked_key = self.api_key[:10] + "..." + self.api_key[-4:] if self.api_key else "None"
         print(f"🔑 Using {key_source} API key: {masked_key}")
+
+    def _handle_elevation_failure(self, message: str, default_elevation: float) -> float:
+        if self.require_live_elevation:
+            raise TerrainElevationUnavailableError(message)
+        return default_elevation
 
     def haversine_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         """
@@ -172,7 +183,10 @@ class SpiralDesigner:
         if not self.api_key:
             # Graceful degradation when no API key available
             print("Warning: No Google Maps API key available, using default elevation")
-            return 4500.0  # Default elevation in feet
+            return self._handle_elevation_failure(
+                "Terrain following is unavailable because GOOGLE_MAPS_API_KEY is not configured.",
+                4500.0,
+            )
 
         try:
             # Google Maps Elevation API endpoint
@@ -180,12 +194,22 @@ class SpiralDesigner:
             response = requests.get(url, timeout=10)
 
             if response.status_code != 200:
-                raise ValueError(f"Elevation HTTP error {response.status_code}")
+                return self._handle_elevation_failure(
+                    f"Terrain following is unavailable because the Google Elevation API returned HTTP {response.status_code}.",
+                    1000.0,
+                )
 
             data = response.json()
             if data["status"] != "OK" or not data["results"]:
-                print(f"Google Elevation API error: {data.get('status', 'Unknown error')}")
-                return 1000.0  # Default to 1000ft if API fails
+                status = data.get("status", "Unknown error")
+                detail = data.get("error_message")
+                print(f"Google Elevation API error: {status}")
+                if detail:
+                    print(f"Google Elevation API detail: {detail}")
+                message = f"Terrain following is unavailable because Google Elevation returned {status}"
+                if detail:
+                    message = f"{message}: {detail}"
+                return self._handle_elevation_failure(message, 1000.0)
 
             # Convert meters to feet (Google returns meters)
             elevation_meters = data["results"][0]["elevation"]
@@ -199,7 +223,10 @@ class SpiralDesigner:
         except Exception as e:
             print(f"Elevation API error for {lat},{lon}: {str(e)}")
             # Return reasonable default elevation on any error
-            return 1000.0
+            return self._handle_elevation_failure(
+                f"Terrain following is unavailable because the Google Elevation request failed: {str(e)}",
+                1000.0,
+            )
 
     def get_elevations_feet_optimized(self, locations: List[Tuple[float, float]]) -> List[float]:
         """
@@ -2409,6 +2436,7 @@ def handle_optimize_spiral(designer, body, cors_headers):
 def handle_elevation(designer, body, cors_headers):
     """Handle /api/elevation endpoint"""
     try:
+        designer.require_live_elevation = True
         center = body.get('center', '')
 
         if not center:
@@ -2441,6 +2469,12 @@ def handle_elevation(designer, body, cors_headers):
             })
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -2493,6 +2527,7 @@ def handle_csv_download(designer, body, cors_headers):
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
         form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
+        designer.require_live_elevation = form_to_terrain
 
         if not center:
             return {
@@ -2529,6 +2564,12 @@ def handle_csv_download(designer, body, cors_headers):
             'body': csv_content
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -2582,6 +2623,7 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
         form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
+        designer.require_live_elevation = form_to_terrain
 
         if not center:
             return {
@@ -2626,6 +2668,12 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'body': csv_content
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,

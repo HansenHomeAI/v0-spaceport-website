@@ -22,6 +22,16 @@ function normalizeTerrainToggle(value: unknown): boolean {
   return value === true || value === "true";
 }
 
+async function readApiErrorMessage(response: Response, fallback: string): Promise<string> {
+  try {
+    const payload = await response.json();
+    if (typeof payload?.error === "string" && payload.error.trim()) {
+      return payload.error;
+    }
+  } catch {}
+  return fallback;
+}
+
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
 
@@ -600,10 +610,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
         });
-        if (elevRes.ok) {
-          const elevData = await elevRes.json();
-          elevationFeet = elevData.elevation_feet ?? null;
+        if (!elevRes.ok) {
+          throw new Error(await readApiErrorMessage(
+            elevRes,
+            'Terrain following is unavailable right now. Please try again later.'
+          ));
         }
+        const elevData = await elevRes.json();
+        elevationFeet = elevData.elevation_feet ?? null;
       }
 
       const minH = parseFloat(minHeightFeet || '120') || 120;
@@ -681,7 +695,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentOptimizedParams),
       });
-      if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
+      if (!res.ok) {
+        throw new Error(await readApiErrorMessage(
+          res,
+          `Failed to generate battery ${batteryIndex1} CSV`
+        ));
+      }
       const csvText = await res.text();
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
         ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
