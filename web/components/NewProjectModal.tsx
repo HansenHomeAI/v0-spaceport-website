@@ -158,7 +158,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [appliedBoundaryPlan, setAppliedBoundaryPlan] = useState<BoundaryPlan | null>(null);
   const [isApplyingBoundary, setIsApplyingBoundary] = useState<boolean>(false);
   const [boundaryDirty, setBoundaryDirty] = useState<boolean>(false);
-  const [waypointOverrides, setWaypointOverrides] = useState<WaypointOverrides>(() => createEmptyWaypointOverrides(null));
+  const [waypointOverrides, setWaypointOverridesState] = useState<WaypointOverrides>(() => createEmptyWaypointOverrides(null));
 
   const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
@@ -291,10 +291,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [boundaryDirty]);
 
   useEffect(() => {
-    waypointOverridesRef.current = waypointOverrides;
-  }, [waypointOverrides]);
-
-  useEffect(() => {
     isBoundaryModeRef.current = isBoundaryMode;
   }, [isBoundaryMode]);
 
@@ -321,6 +317,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       throw new Error('Mapbox GL module did not expose Map/Marker');
     }
     return mapboxgl;
+  }, []);
+
+  const commitWaypointOverrides = useCallback((next: WaypointOverrides) => {
+    waypointOverridesRef.current = next;
+    setWaypointOverridesState(next);
   }, []);
 
   const waitForMapReady = useCallback(async (timeoutMs = 5000): Promise<boolean> => {
@@ -482,15 +483,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       coords,
       boundarySignature
     );
-    waypointOverridesRef.current = next;
-    setWaypointOverrides(next);
-  }, []);
+    commitWaypointOverrides(next);
+  }, [commitWaypointOverrides]);
 
   const resetWaypointOverrides = useCallback((boundarySignature: string | null = null) => {
     const next = clearWaypointOverrides(boundarySignature);
-    waypointOverridesRef.current = next;
-    setWaypointOverrides(next);
-  }, []);
+    commitWaypointOverrides(next);
+  }, [commitWaypointOverrides]);
 
   const cloneWaypointOverridesState = useCallback((overrides: WaypointOverrides) => {
     return cloneWaypointOverrides(overrides);
@@ -674,14 +673,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       appliedBoundaryRef.current = restoredAppliedBoundary;
       appliedBoundaryPlanRef.current = restoredAppliedPlan;
       draftBoundaryRef.current = restoredDraftBoundary;
-      waypointOverridesRef.current = restoredWaypointOverrides;
 
       setAppliedBoundary(restoredAppliedBoundary);
       setAppliedBoundaryPlan(restoredAppliedPlan);
       setDraftBoundary(restoredDraftBoundary);
       setIsBoundaryMode(snapshot.isBoundaryMode);
       setBoundaryDirty(snapshot.boundaryDirty);
-      setWaypointOverrides(restoredWaypointOverrides);
+      commitWaypointOverrides(restoredWaypointOverrides);
 
       const restoredPaths = cloneBoundaryPreviewPaths(snapshot.visibleBatteryPaths);
       boundaryEntryVisiblePathsRef.current = new Map(
@@ -717,6 +715,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [
     clearCenterMarkerFromMap,
+    commitWaypointOverrides,
     cloneBoundaryPlan,
     cloneBoundaryPreviewPaths,
     cloneOptimizedParams,
@@ -810,8 +809,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         setAppliedBoundaryPlan(params.boundaryPlan as BoundaryPlan);
       }
       const normalizedWaypointOverrides = normalizeWaypointOverrides(params.waypointOverrides);
-      setWaypointOverrides(normalizedWaypointOverrides);
-      waypointOverridesRef.current = normalizedWaypointOverrides;
+      commitWaypointOverrides(normalizedWaypointOverrides);
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -912,7 +910,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [clearInsertionCandidateMarker, open, project, resetWaypointOverrides]);
+  }, [clearInsertionCandidateMarker, commitWaypointOverrides, open, project, resetWaypointOverrides]);
 
   // Initialize Mapbox on open
   useEffect(() => {
@@ -1591,6 +1589,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     coords.forEach((coord, markerIndex) => {
       const el = document.createElement('div');
       el.className = 'waypoint-marker';
+      el.dataset.batteryIndex = String(batteryIndex);
+      el.dataset.waypointIndex = String(markerIndex);
       el.style.backgroundColor = color;
 
       const marker = new mapboxgl.Marker({ element: el, draggable: markerDraggable, anchor: 'center' })
@@ -2519,8 +2519,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       } else {
         const next = cloneWaypointOverrides(waypointOverridesRef.current);
         next.boundarySignature = nextBoundarySignature;
-        waypointOverridesRef.current = next;
-        setWaypointOverrides(next);
+        commitWaypointOverrides(next);
       }
 
       const previewPaths = boundaryGeometryChanged
@@ -2549,6 +2548,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [
     captureMapHistorySnapshot,
     clonePathCoords,
+    commitWaypointOverrides,
     flushPendingViewportHistory,
     isApplyingBoundary,
     optimizeBoundaryMission,
