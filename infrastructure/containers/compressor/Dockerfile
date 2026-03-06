@@ -58,8 +58,8 @@ RUN pip3 install --no-cache-dir \
 # Force install NumPy 1.24.4 AFTER PyTorch to override any newer version
 RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.24.4"
 
-# Install CUDA-specific dependencies for CUDA 12.x
-RUN pip3 install --no-cache-dir cupy-cuda12x
+# Pin CuPy below v14 so it remains compatible with the image's NumPy 1.26 runtime.
+RUN pip3 install --no-cache-dir "cupy-cuda12x==13.6.0"
 
 # Install TorchPQ (required by SOGS)
 RUN pip3 install --no-cache-dir torchpq

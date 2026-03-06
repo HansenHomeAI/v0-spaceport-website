@@ -111,6 +111,10 @@ jobs:
         CONTAINERS_TO_IMPORT=""
         CONTAINER_LIST="sfm 3dgs compressor"
 
+        normalize_container_list() {
+          echo "$1" | xargs -n1 2>/dev/null | awk 'NF && !seen[$0]++' | xargs 2>/dev/null || true
+        }
+
         if [ -n "$INPUT_CONTAINER" ]; then
           echo "Container override provided: $INPUT_CONTAINER"
           CONTAINERS_TO_BUILD="$INPUT_CONTAINER"
@@ -118,20 +122,6 @@ jobs:
         elif [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
           CONTAINER_LIST="$CHANGED"
-        fi
-
-        # Guardrail: do not build multiple containers at once
-        if [ -z "$INPUT_CONTAINER" ] && [ -n "$CHANGED" ]; then
-          COUNT_CONTAINERS=$(echo "$CONTAINER_LIST" | wc -w | tr -d ' ')
-          if [ "$COUNT_CONTAINERS" -gt 1 ]; then
-            echo "Multiple container directories changed ($CONTAINER_LIST). Skipping auto-build to avoid multi-container builds."
-            echo "containers=none" >> $GITHUB_OUTPUT
-            echo "containers_to_build=" >> $GITHUB_OUTPUT
-            echo "containers_to_import=" >> $GITHUB_OUTPUT
-            echo "build_required=false" >> $GITHUB_OUTPUT
-            echo "import_required=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
         fi
 
         # Check if shared repo has latest tag
@@ -196,8 +186,8 @@ jobs:
           ensure_repo_ready "$container"
         done
 
-        UNIQUE_CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
-        UNIQUE_CONTAINERS_TO_IMPORT=$(echo "$CONTAINERS_TO_IMPORT" | xargs -n1 2>/dev/null | sort -u | xargs 2>/dev/null || true)
+        UNIQUE_CONTAINERS_TO_BUILD=$(normalize_container_list "$CONTAINERS_TO_BUILD")
+        UNIQUE_CONTAINERS_TO_IMPORT=$(normalize_container_list "$CONTAINERS_TO_IMPORT")
 
         if [ -z "$UNIQUE_CONTAINERS_TO_BUILD" ] && [ -z "$UNIQUE_CONTAINERS_TO_IMPORT" ]; then
           echo "No container build or import required for this branch"
@@ -373,20 +363,23 @@ jobs:
           --service-role "$ROLE_ARN" \
           >/dev/null
 
-    - name: Trigger CodeBuild for container builds/imports
+    - name: Trigger CodeBuild for container builds sequentially
       if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
+        set -euo pipefail
         echo "🚀 Triggering AWS CodeBuild for ML container builds..."
-        echo "Building containers: ${{ steps.build_plan.outputs.containers_to_build }}"
+        CONTAINER_SEQUENCE="${{ steps.build_plan.outputs.containers_to_build }}"
+        echo "Building containers sequentially: ${CONTAINER_SEQUENCE}"
         SOURCE_REPO="https://github.com/${{ github.repository }}.git"
         COMPUTE_TYPE_INPUT="${{ inputs.compute_type }}"
         DEFAULT_COMPUTE="BUILD_GENERAL1_LARGE"
         BASE_COMPUTE="BUILD_GENERAL1_2XLARGE"
+        BUILD_BASE_ONLY="${{ inputs.base_only == 'true' && '1' || '0' }}"
 
         if [ -n "$COMPUTE_TYPE_INPUT" ]; then
           echo "Compute override requested: $COMPUTE_TYPE_INPUT"
           COMPUTE_ARGS=(--compute-type-override "$COMPUTE_TYPE_INPUT")
-        elif [ "${{ inputs.base_only }}" = "true" ]; then
+        elif [ "$BUILD_BASE_ONLY" = "1" ]; then
           echo "Base-only build detected; using $BASE_COMPUTE for extra headroom"
           COMPUTE_ARGS=(--compute-type-override "$BASE_COMPUTE")
         else
@@ -419,45 +412,43 @@ jobs:
           done
         }
 
-        wait_for_capacity
-        
-        BUILD_ID=$(aws codebuild start-build \
-          --project-name spaceport-ml-containers \
-          --source-version ${{ github.sha }} \
-          --source-type-override GITHUB \
-          --source-location-override "${SOURCE_REPO}" \
-          --timeout-in-minutes-override 120 \
-          "${COMPUTE_ARGS[@]}" \
-          --environment-variables-override \
-            name=CONTAINERS_TO_BUILD,value="${{ steps.build_plan.outputs.containers_to_build }}" \
-            name=CONTAINERS_TO_IMPORT,value="${{ steps.build_plan.outputs.containers_to_import }}" \
-            name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
-            name=BUILD_BASE_ONLY,value="${{ inputs.base_only == 'true' && '1' || '0' }}" \
-          --query 'build.id' \
-          --output text)
-        
-        echo "✅ CodeBuild triggered successfully!"
-        echo "Build ID: $BUILD_ID"
-        echo "Monitor progress: https://console.aws.amazon.com/codesuite/codebuild/projects/spaceport-ml-containers/build/$BUILD_ID"
-        
-        # Wait for build to complete (optional - can be removed for async)
-        echo "⏳ Waiting for CodeBuild to complete..."
-        aws codebuild batch-get-builds --ids $BUILD_ID --query 'builds[0].buildStatus' --output text
-        
-        # Poll for completion
-        while true; do
-          STATUS=$(aws codebuild batch-get-builds --ids $BUILD_ID --query 'builds[0].buildStatus' --output text)
-          echo "Build status: $STATUS"
-          
-          if [ "$STATUS" = "SUCCEEDED" ]; then
-            echo "✅ CodeBuild completed successfully!"
-            break
-          elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "FAULT" ] || [ "$STATUS" = "STOPPED" ] || [ "$STATUS" = "TIMED_OUT" ]; then
-            echo "❌ CodeBuild failed with status: $STATUS"
-            exit 1
-          fi
-          
-          sleep 30
+        for CONTAINER in $CONTAINER_SEQUENCE; do
+          echo "Preparing CodeBuild for container: $CONTAINER"
+          wait_for_capacity
+
+          BUILD_ID=$(aws codebuild start-build \
+            --project-name spaceport-ml-containers \
+            --source-version ${{ github.sha }} \
+            --source-type-override GITHUB \
+            --source-location-override "${SOURCE_REPO}" \
+            --timeout-in-minutes-override 120 \
+            "${COMPUTE_ARGS[@]}" \
+            --environment-variables-override \
+              name=CONTAINERS_TO_BUILD,value="$CONTAINER" \
+              name=CONTAINERS_TO_IMPORT,value="" \
+              name=BRANCH_SUFFIX,value="${{ steps.branch.outputs.ecr_suffix }}" \
+              name=BUILD_BASE_ONLY,value="$BUILD_BASE_ONLY" \
+            --query 'build.id' \
+            --output text)
+
+          echo "✅ CodeBuild triggered successfully for $CONTAINER"
+          echo "Build ID: $BUILD_ID"
+          echo "Monitor progress: https://console.aws.amazon.com/codesuite/codebuild/projects/spaceport-ml-containers/build/$BUILD_ID"
+
+          while true; do
+            STATUS=$(aws codebuild batch-get-builds --ids $BUILD_ID --query 'builds[0].buildStatus' --output text)
+            echo "Build status for $CONTAINER ($BUILD_ID): $STATUS"
+
+            if [ "$STATUS" = "SUCCEEDED" ]; then
+              echo "✅ CodeBuild completed successfully for $CONTAINER"
+              break
+            elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "FAULT" ] || [ "$STATUS" = "STOPPED" ] || [ "$STATUS" = "TIMED_OUT" ]; then
+              echo "❌ CodeBuild failed for $CONTAINER with status: $STATUS"
+              exit 1
+            fi
+
+            sleep 30
+          done
         done
 
     - name: Output container URIs
