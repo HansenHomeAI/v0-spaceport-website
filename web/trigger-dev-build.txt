@@ -1,1 +1,1 @@
-2026-03-06T20:47:00Z retrigger pages after thumbnail automation repair
+2026-03-06T23:45:00Z retrigger pages after skybox thumbnail fast-path repair
