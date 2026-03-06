@@ -1,5 +1,5 @@
-reason: sogs viewer now defaults to the remote sogs-test-1763664401 bundle and passes local + preview runs
-last_step: re-uploaded the supersplat textures to S3 with SSE-S3, updated the viewer defaults/samples, and re-ran Next build plus chromium+webkit Playwright against localhost and the CF preview alias
-next_unblocked_step: keep exercising new sogs outputs (drop them in S3 or public/), then rerun scripts/test-sogs-viewer.mjs with SOGS_BUNDLE_URL pointing to each dataset
-owner_action_needed: optional – provide any additional bundles or viewer tweaks to verify
-updated: 2025-11-20T19:08:00Z
+reason: executing branch-sync safeguard by converting multi-container changes into sequential CodeBuild runs and enabling codex agent branch CI coverage
+last_step: patched the container workflow plus Pages/CDK branch filters and bumped sfm/compressor trigger files for queue validation
+next_unblocked_step: commit and push the safeguard branch, watch Trigger ML Container Build and CDK Deploy to completion, then merge into ml-development if green
+owner_action_needed: none
+updated: 2026-03-06T00:00:00Z
