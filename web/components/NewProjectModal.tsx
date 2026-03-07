@@ -1975,6 +1975,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         if ((event as MouseEvent).detail === 0) {
           return;
         }
+        if (Date.now() < ignoreInsertionMarkerTouchUntilRef.current) {
+          return;
+        }
         triggerInsert();
       });
       element.addEventListener('touchend', (event) => {
