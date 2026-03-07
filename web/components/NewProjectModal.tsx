@@ -238,6 +238,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const insertionMarkerRef = useRef<any | null>(null);
   const insertionTouchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const insertionTouchStartPointRef = useRef<{ x: number; y: number } | null>(null);
+  const ignoreInsertionPointerHoverUntilRef = useRef<number>(0);
   const handleMapPointerMoveForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchStartForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchMoveForInsertionRef = useRef<(event: any) => void>(() => {});
@@ -1997,6 +1998,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       clearInsertionCandidateMarker();
       return;
     }
+    if (Date.now() < ignoreInsertionPointerHoverUntilRef.current) {
+      return;
+    }
     const candidate = event?.point ? findNearestInsertionCandidate(event.point) : null;
     if (!candidate) {
       clearInsertionCandidateMarker();
@@ -2022,6 +2026,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
 
     const touchPoint = { x: event.point.x, y: event.point.y };
+    ignoreInsertionPointerHoverUntilRef.current = Date.now() + 1200;
     clearPendingInsertionTouchTimer();
     insertionTouchStartPointRef.current = touchPoint;
     insertionTouchTimerRef.current = setTimeout(() => {
@@ -2047,6 +2052,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!insertionTouchStartPointRef.current || !event?.point) {
       return;
     }
+    ignoreInsertionPointerHoverUntilRef.current = Date.now() + 1200;
 
     const moved = Math.hypot(
       event.point.x - insertionTouchStartPointRef.current.x,
@@ -2064,6 +2070,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [clearPendingInsertionTouchTimer, logTouchInsertionDebug]);
 
   const handleMapTouchEndForInsertion = useCallback(() => {
+    ignoreInsertionPointerHoverUntilRef.current = Date.now() + 1200;
     logTouchInsertionDebug('touchend', {
       hadTimer: Boolean(insertionTouchTimerRef.current),
       hadTouchStart: Boolean(insertionTouchStartPointRef.current),
