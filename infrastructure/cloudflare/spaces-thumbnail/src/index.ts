@@ -3,7 +3,7 @@ import puppeteer from '@cloudflare/puppeteer';
 const DEFAULT_CACHE_CONTROL = 'public, max-age=86400';
 const VIEWPORT = { width: 1200, height: 900, deviceScaleFactor: 1 };
 const SCREENSHOT_QUALITY = 82;
-const RENDER_SETTLE_MS = 16000;
+const RENDER_SETTLE_MS = 10000;
 const HTML_FETCH_HEADERS = {
   'User-Agent':
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
