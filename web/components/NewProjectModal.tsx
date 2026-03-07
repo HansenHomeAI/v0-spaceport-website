@@ -306,7 +306,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     mapReadyRef.current = mapReady;
   }, [mapReady]);
 
-  const buildTouchInsertionEventFromDom = useCallback((target: HTMLCanvasElement | null, touch: Touch | null) => {
+  const buildTouchInsertionEventFromDom = useCallback((target: HTMLElement | null, touch: Touch | null) => {
     if (!target || !touch) {
       return null;
     }
@@ -933,7 +933,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   // Initialize Mapbox on open
   useEffect(() => {
     let isCancelled = false;
-    let touchTarget: HTMLCanvasElement | null = null;
+    let touchTarget: HTMLElement | null = null;
     let handleTouchStart: ((event: TouchEvent) => void) | null = null;
     let handleTouchMove: ((event: TouchEvent) => void) | null = null;
     let handleTouchEnd: (() => void) | null = null;
@@ -1044,7 +1044,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         map.on('dragstart', clearInsertionCandidateMarker);
         map.on('movestart', clearInsertionCandidateMarker);
         map.on('zoomstart', clearInsertionCandidateMarker);
-        touchTarget = map.getCanvas();
+        touchTarget = map.getCanvasContainer();
         handleTouchStart = (event: TouchEvent) => {
           const mappedEvent = buildTouchInsertionEventFromDom(touchTarget, event.touches[0] ?? null);
           if (mappedEvent) {
