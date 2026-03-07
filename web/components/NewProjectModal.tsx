@@ -239,6 +239,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const insertionTouchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const insertionTouchStartPointRef = useRef<{ x: number; y: number } | null>(null);
   const ignoreInsertionPointerHoverUntilRef = useRef<number>(0);
+  const ignoreInsertionMarkerTouchUntilRef = useRef<number>(0);
   const handleMapPointerMoveForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchStartForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchMoveForInsertionRef = useRef<(event: any) => void>(() => {});
@@ -1935,12 +1936,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     visibleBatteryPaths,
   ]);
 
-  const showInsertionCandidateMarker = useCallback(async (candidate: WaypointInsertCandidate) => {
+  const showInsertionCandidateMarker = useCallback(async (
+    candidate: WaypointInsertCandidate,
+    options?: { suppressImmediateTouchTap?: boolean }
+  ) => {
     const map = mapRef.current;
     if (!map) return;
 
     logTouchInsertionDebug('show-marker', candidate);
     insertionCandidateRef.current = candidate;
+    if (options?.suppressImmediateTouchTap) {
+      ignoreInsertionMarkerTouchUntilRef.current = Date.now() + 500;
+    }
     const mapboxgl = await resolveMapbox();
 
     if (!insertionMarkerRef.current) {
@@ -1973,6 +1980,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       element.addEventListener('touchend', (event) => {
         event.preventDefault();
         event.stopPropagation();
+        if (Date.now() < ignoreInsertionMarkerTouchUntilRef.current) {
+          return;
+        }
         triggerInsert();
       }, { passive: false });
       element.addEventListener('pointerup', (event) => {
@@ -1981,6 +1991,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         }
         event.preventDefault();
         event.stopPropagation();
+        if (Date.now() < ignoreInsertionMarkerTouchUntilRef.current) {
+          return;
+        }
         triggerInsert();
       });
 
@@ -2036,7 +2049,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         candidate,
       });
       if (candidate) {
-        void showInsertionCandidateMarker(candidate);
+        void showInsertionCandidateMarker(candidate, { suppressImmediateTouchTap: true });
       }
     }, 450);
   }, [
