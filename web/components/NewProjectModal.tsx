@@ -239,7 +239,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const insertionTouchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const insertionTouchStartPointRef = useRef<{ x: number; y: number } | null>(null);
   const ignoreInsertionPointerHoverUntilRef = useRef<number>(0);
-  const ignoreInsertionMarkerTouchUntilRef = useRef<number>(0);
+  const ignoreInsertionMarkerActivationUntilTouchStartRef = useRef<boolean>(false);
   const handleMapPointerMoveForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchStartForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchMoveForInsertionRef = useRef<(event: any) => void>(() => {});
@@ -1946,7 +1946,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     logTouchInsertionDebug('show-marker', candidate);
     insertionCandidateRef.current = candidate;
     if (options?.suppressImmediateTouchTap) {
-      ignoreInsertionMarkerTouchUntilRef.current = Date.now() + 500;
+      ignoreInsertionMarkerActivationUntilTouchStartRef.current = true;
     }
     const mapboxgl = await resolveMapbox();
 
@@ -1967,15 +1967,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         }
       };
       element.addEventListener('pointerdown', (event) => {
+        if ((event as PointerEvent).pointerType === 'touch' && ignoreInsertionMarkerActivationUntilTouchStartRef.current) {
+          ignoreInsertionMarkerActivationUntilTouchStartRef.current = false;
+        }
         event.stopPropagation();
       }, true);
+      element.addEventListener('touchstart', (event) => {
+        if (ignoreInsertionMarkerActivationUntilTouchStartRef.current) {
+          ignoreInsertionMarkerActivationUntilTouchStartRef.current = false;
+        }
+        event.stopPropagation();
+      }, { passive: true, capture: true });
       element.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
         if ((event as MouseEvent).detail === 0) {
           return;
         }
-        if (Date.now() < ignoreInsertionMarkerTouchUntilRef.current) {
+        if (ignoreInsertionMarkerActivationUntilTouchStartRef.current) {
           return;
         }
         triggerInsert();
@@ -1983,7 +1992,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       element.addEventListener('touchend', (event) => {
         event.preventDefault();
         event.stopPropagation();
-        if (Date.now() < ignoreInsertionMarkerTouchUntilRef.current) {
+        if (ignoreInsertionMarkerActivationUntilTouchStartRef.current) {
           return;
         }
         triggerInsert();
@@ -1994,7 +2003,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         }
         event.preventDefault();
         event.stopPropagation();
-        if (Date.now() < ignoreInsertionMarkerTouchUntilRef.current) {
+        if (ignoreInsertionMarkerActivationUntilTouchStartRef.current) {
           return;
         }
         triggerInsert();
