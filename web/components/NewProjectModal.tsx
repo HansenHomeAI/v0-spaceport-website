@@ -493,6 +493,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     insertionMarkerRef.current = null;
   }, [clearPendingInsertionTouchTimer]);
 
+  const clearInsertionCandidateMarkerOnMapMove = useCallback(() => {
+    const preservePendingTouchHold = Boolean(insertionTouchTimerRef.current && insertionTouchStartPointRef.current);
+    if (!preservePendingTouchHold) {
+      clearPendingInsertionTouchTimer();
+      insertionTouchStartPointRef.current = null;
+    }
+    insertionCandidateRef.current = null;
+    insertionMarkerRef.current?.remove?.();
+    insertionMarkerRef.current = null;
+  }, [clearPendingInsertionTouchTimer]);
+
   const updateWaypointOverridesForBattery = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
     const boundarySignature = buildBoundarySignature(appliedBoundaryRef.current);
     const next = upsertBatteryWaypointOverride(
@@ -1041,9 +1052,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         map.on('pitchstart', (event: any) => beginViewportHistory('map pitch', event));
         map.on('pitchend', commitViewportHistory);
         map.on('mousemove', (event: any) => handleMapPointerMoveForInsertionRef.current(event));
-        map.on('dragstart', clearInsertionCandidateMarker);
-        map.on('movestart', clearInsertionCandidateMarker);
-        map.on('zoomstart', clearInsertionCandidateMarker);
+        map.on('dragstart', clearInsertionCandidateMarkerOnMapMove);
+        map.on('movestart', clearInsertionCandidateMarkerOnMapMove);
+        map.on('zoomstart', clearInsertionCandidateMarkerOnMapMove);
         touchTarget = map.getCanvasContainer();
         handleTouchStart = (event: TouchEvent) => {
           const mappedEvent = buildTouchInsertionEventFromDom(touchTarget, event.touches[0] ?? null);
@@ -1117,6 +1128,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [
     buildTouchInsertionEventFromDom,
     clearInsertionCandidateMarker,
+    clearInsertionCandidateMarkerOnMapMove,
     open,
     project,
     resetWaypointOverrides,
