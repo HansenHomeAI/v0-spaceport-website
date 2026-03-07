@@ -485,16 +485,34 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, []);
 
+  const logTouchInsertionDebug = useCallback((event: string, detail?: Record<string, unknown>) => {
+    if (typeof window === 'undefined' || !(window as any).__BOUNDARY_TOUCH_DEBUG) {
+      return;
+    }
+    console.log('[boundary-touch-debug]', event, detail ?? {});
+  }, []);
+
   const clearInsertionCandidateMarker = useCallback(() => {
+    logTouchInsertionDebug('clear-marker', {
+      hadTimer: Boolean(insertionTouchTimerRef.current),
+      hadTouchStart: Boolean(insertionTouchStartPointRef.current),
+      hadMarker: Boolean(insertionMarkerRef.current),
+    });
     clearPendingInsertionTouchTimer();
     insertionTouchStartPointRef.current = null;
     insertionCandidateRef.current = null;
     insertionMarkerRef.current?.remove?.();
     insertionMarkerRef.current = null;
-  }, [clearPendingInsertionTouchTimer]);
+  }, [clearPendingInsertionTouchTimer, logTouchInsertionDebug]);
 
   const clearInsertionCandidateMarkerOnMapMove = useCallback(() => {
     const preservePendingTouchHold = Boolean(insertionTouchTimerRef.current && insertionTouchStartPointRef.current);
+    logTouchInsertionDebug('clear-on-map-move', {
+      preservePendingTouchHold,
+      hadTimer: Boolean(insertionTouchTimerRef.current),
+      hadTouchStart: Boolean(insertionTouchStartPointRef.current),
+      hadMarker: Boolean(insertionMarkerRef.current),
+    });
     if (!preservePendingTouchHold) {
       clearPendingInsertionTouchTimer();
       insertionTouchStartPointRef.current = null;
@@ -502,7 +520,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     insertionCandidateRef.current = null;
     insertionMarkerRef.current?.remove?.();
     insertionMarkerRef.current = null;
-  }, [clearPendingInsertionTouchTimer]);
+  }, [clearPendingInsertionTouchTimer, logTouchInsertionDebug]);
 
   const updateWaypointOverridesForBattery = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
     const boundarySignature = buildBoundarySignature(appliedBoundaryRef.current);
@@ -1920,6 +1938,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const map = mapRef.current;
     if (!map) return;
 
+    logTouchInsertionDebug('show-marker', candidate);
     insertionCandidateRef.current = candidate;
     const mapboxgl = await resolveMapbox();
 
@@ -1971,7 +1990,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
 
     insertionMarkerRef.current.setLngLat(candidate.coord);
-  }, [insertWaypointAtCandidate, resolveMapbox]);
+  }, [insertWaypointAtCandidate, logTouchInsertionDebug, resolveMapbox]);
 
   const handleMapPointerMoveForInsertion = useCallback((event: any) => {
     if (!isFullscreen || isBoundaryModeRef.current || isApplyingBoundaryRef.current || isMarkerInteractionActiveRef.current) {
@@ -1987,6 +2006,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [clearInsertionCandidateMarker, findNearestInsertionCandidate, isFullscreen, showInsertionCandidateMarker]);
 
   const handleMapTouchStartForInsertion = useCallback((event: any) => {
+    logTouchInsertionDebug('touchstart', {
+      isFullscreen,
+      isBoundaryMode: isBoundaryModeRef.current,
+      isApplyingBoundary: isApplyingBoundaryRef.current,
+      isMarkerInteractionActive: isMarkerInteractionActiveRef.current,
+      point: event?.point ?? null,
+    });
     if (!isFullscreen || isBoundaryModeRef.current || isApplyingBoundaryRef.current || isMarkerInteractionActiveRef.current) {
       clearInsertionCandidateMarker();
       return;
@@ -2000,6 +2026,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     insertionTouchStartPointRef.current = touchPoint;
     insertionTouchTimerRef.current = setTimeout(() => {
       const candidate = findNearestInsertionCandidate(touchPoint, WAYPOINT_INSERT_TOUCH_DISTANCE_PX);
+      logTouchInsertionDebug('touch-hold-fired', {
+        touchPoint,
+        candidate,
+      });
       if (candidate) {
         void showInsertionCandidateMarker(candidate);
       }
@@ -2009,6 +2039,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     clearPendingInsertionTouchTimer,
     findNearestInsertionCandidate,
     isFullscreen,
+    logTouchInsertionDebug,
     showInsertionCandidateMarker,
   ]);
 
@@ -2022,15 +2053,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       event.point.y - insertionTouchStartPointRef.current.y
     );
 
+    logTouchInsertionDebug('touchmove', {
+      moved,
+      point: event.point,
+      touchStartPoint: insertionTouchStartPointRef.current,
+    });
     if (moved > WAYPOINT_INSERT_TOUCH_CANCEL_DISTANCE_PX) {
       clearPendingInsertionTouchTimer();
     }
-  }, [clearPendingInsertionTouchTimer]);
+  }, [clearPendingInsertionTouchTimer, logTouchInsertionDebug]);
 
   const handleMapTouchEndForInsertion = useCallback(() => {
+    logTouchInsertionDebug('touchend', {
+      hadTimer: Boolean(insertionTouchTimerRef.current),
+      hadTouchStart: Boolean(insertionTouchStartPointRef.current),
+    });
     clearPendingInsertionTouchTimer();
     insertionTouchStartPointRef.current = null;
-  }, [clearPendingInsertionTouchTimer]);
+  }, [clearPendingInsertionTouchTimer, logTouchInsertionDebug]);
 
   useEffect(() => {
     handleMapPointerMoveForInsertionRef.current = handleMapPointerMoveForInsertion;
