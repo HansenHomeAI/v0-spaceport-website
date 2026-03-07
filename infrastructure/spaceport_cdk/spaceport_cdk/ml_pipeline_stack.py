@@ -1210,4 +1210,4 @@ class MLPipelineStack(Stack):
             if fallback_count > 0:
                 print(f"⚠️  Warning: Production using {fallback_count} fallback resources")
         
-        print(f"✅ Environment requirements validated for: {suffix}") 
+        print(f"✅ Environment requirements validated for: {suffix}")

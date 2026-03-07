@@ -33,7 +33,6 @@ class AuthStack(Stack):
 
         if deployment_class == "branch-preview" and not deploy_auth_stack:
             raise ValueError("AuthStack must not be deployed for branch-preview contexts")
-        
         def scoped_name(prefix: str, max_total_length: int = 64) -> str:
             return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         

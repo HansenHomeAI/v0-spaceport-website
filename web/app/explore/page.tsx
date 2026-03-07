@@ -16,6 +16,14 @@ type ExploreCard = {
   thumbnailUrl?: string;
 };
 
+function normalizePublicApiUrl(rawUrl: string | undefined): string {
+  if (!rawUrl) return '';
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed.replace(/^\/+/, '')}`;
+}
+
 function logVisitButtonEvent(
   event: 'enter' | 'leave',
   propertyId: string,
@@ -59,7 +67,7 @@ export default function ExplorePage(): JSX.Element {
   const [properties, setProperties] = useState<ExploreCard[]>(fallbackCards);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_EXPLORE_API_URL;
+    const apiUrl = normalizePublicApiUrl(process.env.NEXT_PUBLIC_EXPLORE_API_URL);
     if (!apiUrl) return;
 
     let cancelled = false;

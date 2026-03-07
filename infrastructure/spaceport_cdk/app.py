@@ -19,7 +19,6 @@ def _load_environments_context():
     cdk_config_path = Path(__file__).with_name("cdk.json")
     with cdk_config_path.open("r", encoding="utf-8") as handle:
         return json.load(handle)["context"]["environments"]
-
 explicit_branch_name = app.node.try_get_context("branch_name") or os.environ.get("GITHUB_REF_NAME")
 explicit_environment = app.node.try_get_context("environment")
 
