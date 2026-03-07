@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
+      actions: read
       id-token: write
       contents: read
     defaults:
@@ -61,6 +62,50 @@ jobs:
             echo "${key}=${value}" >> "$GITHUB_ENV"
           done < /tmp/pages-context.env
 
+      - name: Wait for matching CDK Deploy run
+        if: github.event_name == 'push'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          max_attempts=120
+          sleep_seconds=10
+          attempt=1
+
+          while [ "$attempt" -le "$max_attempts" ]; do
+            response=$(curl -fsSL \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/cdk-deploy.yml/runs?head_sha=${GITHUB_SHA}&branch=${GITHUB_REF_NAME}&event=push&per_page=10")
+
+            run_count=$(echo "$response" | jq '.workflow_runs | length')
+            if [ "$run_count" -eq 0 ]; then
+              echo "[$attempt/$max_attempts] Waiting for CDK Deploy run to appear for ${GITHUB_SHA}..."
+            else
+              status=$(echo "$response" | jq -r '.workflow_runs[0].status')
+              conclusion=$(echo "$response" | jq -r '.workflow_runs[0].conclusion // empty')
+              run_url=$(echo "$response" | jq -r '.workflow_runs[0].html_url')
+
+              echo "[$attempt/$max_attempts] CDK Deploy status=${status} conclusion=${conclusion:-<pending>} url=${run_url}"
+
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" = "success" ]; then
+                  echo "Matching CDK Deploy run completed successfully."
+                  exit 0
+                fi
+
+                echo "Matching CDK Deploy run did not succeed." >&2
+                exit 1
+              fi
+            fi
+
+            sleep "$sleep_seconds"
+            attempt=$((attempt + 1))
+          done
+
+          echo "Timed out waiting for matching CDK Deploy run for ${GITHUB_SHA}" >&2
+          exit 1
       - name: Resolve CloudFormation outputs
         id: stack_outputs
         run: |
