@@ -76,6 +76,7 @@ FROM opensfm-build AS app-build
 # Copy processing scripts (most frequently changed)
 COPY run_sfm.sh /opt/ml/code/run_sfm.sh
 COPY run_opensfm_gps.py /opt/ml/code/run_opensfm_gps.py
+COPY sfm_scaling.py /opt/ml/code/sfm_scaling.py
 COPY gps_processor.py /opt/ml/code/gps_processor.py
 COPY gps_processor_3d.py /opt/ml/code/gps_processor_3d.py
 COPY colmap_converter.py /opt/ml/code/colmap_converter.py
