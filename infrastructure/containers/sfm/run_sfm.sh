@@ -64,6 +64,8 @@ OUTPUT_DIR="/opt/ml/processing/output"
 
 echo "📁 Input directory: $INPUT_DIR"
 echo "📁 Output directory: $OUTPUT_DIR"
+SFM_ONLY="${SPACEPORT_SFM_ONLY:-false}"
+echo "🎛️ SfM-only mode: $SFM_ONLY"
 
 if [ ! -d "$INPUT_DIR" ]; then
     error_exit "Input directory not found: $INPUT_DIR"
@@ -120,9 +122,12 @@ REQUIRED_OUTPUT_FILES=(
     "$OUTPUT_DIR/sparse/0/cameras.txt"
     "$OUTPUT_DIR/sparse/0/images.txt"
     "$OUTPUT_DIR/sparse/0/points3D.txt"
-    "$OUTPUT_DIR/images"
     "$OUTPUT_DIR/sfm_metadata.json"
 )
+
+if [ "$SFM_ONLY" != "true" ]; then
+    REQUIRED_OUTPUT_FILES+=("$OUTPUT_DIR/images")
+fi
 
 echo "🔍 Checking required output files..."
 ALL_FILES_PRESENT=true
@@ -170,9 +175,6 @@ fi
 
 echo "✅ COLMAP format validation passed"
 
-# Count copied images
-COPIED_IMAGE_COUNT=$(find "$OUTPUT_DIR/images" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
-
 echo ""
 echo "============================================================"
 echo "📊 PROCESSING STATISTICS"
@@ -180,7 +182,12 @@ echo "============================================================"
 
 echo "📷 Cameras registered: $CAMERA_COUNT"
 echo "🖼️ Images registered: $IMAGE_COUNT"
-echo "🖼️ Images copied for 3DGS: $COPIED_IMAGE_COUNT"
+if [ "$SFM_ONLY" != "true" ]; then
+    COPIED_IMAGE_COUNT=$(find "$OUTPUT_DIR/images" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
+    echo "🖼️ Images copied for 3DGS: $COPIED_IMAGE_COUNT"
+else
+    echo "🖼️ Images copied for 3DGS: skipped (SfM-only run)"
+fi
 echo "🎯 3D points: $POINT_COUNT"
 echo "✅ Quality check: PASSED (>= $MIN_POINTS_REQUIRED points)"
 

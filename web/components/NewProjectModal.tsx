@@ -1186,7 +1186,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const mlRes = await fetch(API_UPLOAD.START_ML_PROCESSING, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ s3Url, email: contactEmail.trim(), pipelineStep: 'sfm' }),
+        body: JSON.stringify({ s3Url, email: contactEmail.trim(), pipelineStep: 'full' }),
       });
       if (!mlRes.ok) {
         const errData = await mlRes.json().catch(() => ({}));

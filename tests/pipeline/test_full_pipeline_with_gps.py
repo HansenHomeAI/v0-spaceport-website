@@ -70,7 +70,7 @@ def start_pipeline() -> str:
         "body": json.dumps({
             "s3Url": S3_URL,
             "email": TEST_EMAIL,
-            "pipelineStep": "sfm",
+            "pipelineStep": "full",
             "csvData": CSV_DATA,
             "hyperparameters": EXPERIMENTAL_HYPERPARAMETERS
         })
@@ -160,4 +160,4 @@ if __name__ == "__main__":
             
     except Exception as e:
         logger.error(f"💥 Test failed with exception: {e}")
-        exit(1) 
+        exit(1)

@@ -6,6 +6,8 @@ import uuid
 from datetime import datetime
 from urllib.parse import urlparse
 
+from request_options import normalize_pipeline_step, normalize_sfm_options
+
 # Initialize AWS clients (ECR client will be initialized per-region in resolve_ecr_uri)
 stepfunctions = boto3.client('stepfunctions')
 s3 = boto3.client('s3')
@@ -26,7 +28,8 @@ def lambda_handler(event, context):
             
         s3_url = body.get('s3Url')
         email = body.get('email', 'hello@spcprt.com')  # Optional email for notifications
-        pipeline_step = body.get('pipelineStep', 'sfm')  # Which step to start from: 'sfm', '3dgs', or 'compression'
+        pipeline_step = normalize_pipeline_step(body.get('pipelineStep'))
+        sfm_options = normalize_sfm_options(body.get('sfmOptions'))
         csv_data = body.get('csvData')  # Optional CSV data as string for GPS-enhanced processing
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
@@ -99,7 +102,7 @@ def lambda_handler(event, context):
         csv_object_key = None
         has_gps_data = False
         
-        if csv_data and pipeline_step == 'sfm':
+        if csv_data and pipeline_step in {'sfm', 'full'}:
             # Save CSV data to S3
             ml_bucket = os.environ['ML_BUCKET']
             timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
@@ -121,7 +124,7 @@ def lambda_handler(event, context):
                 # Continue without GPS data - don't fail the entire request
         
         # Get environment variables
-        state_machine_arn = os.environ['STATE_MACHINE_ARN']
+        state_machine_arn = os.environ['STEP_FUNCTION_ARN']
         ml_bucket = os.environ['ML_BUCKET']
         
         # Get ECR repository names from environment variables (set by CDK)
@@ -172,6 +175,10 @@ def lambda_handler(event, context):
         compressor_image_uri = resolve_ecr_uri(compressor_repo, compressor_repo_fallback)
         
         print(f"Using ECR repos - SfM: {sfm_image_uri}, 3DGS: {gaussian_image_uri}, Compressor: {compressor_image_uri}")
+        print(
+            f"Using SfM runtime options - instanceType: {sfm_options['instanceType']}, "
+            f"profileOverride: {sfm_options['profileOverride']}, pipelineStep: {pipeline_step}"
+        )
         
         # Build SfM processing inputs dynamically
         sfm_processing_inputs = [{
@@ -257,6 +264,9 @@ def lambda_handler(event, context):
             "s3Url": s3_url,
             "email": email,
             "pipelineStep": pipeline_step,
+            "sfmOnly": "true" if pipeline_step == "sfm" else "false",
+            "sfmInstanceType": sfm_options["instanceType"],
+            "sfmProfileOverride": sfm_options["profileOverride"],
             "inputS3Uri": f"s3://{bucket_name}/{object_key}",
             "colmapOutputS3Uri": colmap_output_uri,
             "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",
@@ -301,6 +311,20 @@ def lambda_handler(event, context):
             })
         }
         
+    except ValueError as e:
+        print(f"Validation error: {str(e)}")
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            'body': json.dumps({
+                'error': str(e)
+            })
+        }
+
     except Exception as e:
         print(f"Error: {str(e)}")
         return {

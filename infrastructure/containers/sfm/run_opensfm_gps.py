@@ -9,9 +9,10 @@ import sys
 import json
 import shutil
 import subprocess
+import select
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 import logging
 import zipfile
 import yaml
@@ -28,11 +29,56 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gps_processor import DroneFlightPathProcessor
 from gps_processor_3d import Advanced3DPathProcessor
 from colmap_converter import OpenSfMToCOLMAPConverter
+from sfm_scaling import normalize_profile_override, select_sfm_runtime_plan
 
 
-def log_memory_usage(stage: str) -> None:
-    """Log current process and system memory usage in MB."""
+def _read_process_tree_rss_mb(root_pid: int) -> Optional[float]:
+    """Return RSS for the process tree rooted at root_pid."""
+    try:
+        result = subprocess.run(
+            ["ps", "-eo", "pid=,ppid=,rss="],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return None
+
+    children: Dict[int, List[int]] = {}
+    rss_by_pid: Dict[int, float] = {}
+    for line in result.stdout.splitlines():
+        parts = line.split()
+        if len(parts) != 3:
+            continue
+        try:
+            pid = int(parts[0])
+            ppid = int(parts[1])
+            rss_kb = float(parts[2])
+        except ValueError:
+            continue
+        children.setdefault(ppid, []).append(pid)
+        rss_by_pid[pid] = rss_kb
+
+    total_kb = 0.0
+    pending = [root_pid]
+    seen = set()
+    while pending:
+        pid = pending.pop()
+        if pid in seen:
+            continue
+        seen.add(pid)
+        total_kb += rss_by_pid.get(pid, 0.0)
+        pending.extend(children.get(pid, ()))
+
+    if total_kb <= 0:
+        return None
+    return total_kb / 1024.0
+
+
+def log_memory_usage(stage: str, root_pid: Optional[int] = None) -> Dict[str, Optional[float]]:
+    """Log current process, process-tree, and system memory usage in MB."""
     rss_mb = None
+    tree_rss_mb = None
     mem_total_mb = None
     mem_avail_mb = None
 
@@ -59,9 +105,14 @@ def log_memory_usage(stage: str) -> None:
     except Exception:
         pass
 
+    if root_pid is not None:
+        tree_rss_mb = _read_process_tree_rss_mb(root_pid)
+
     pieces = []
     if rss_mb is not None:
         pieces.append(f"rss={rss_mb:.1f}MB")
+    if tree_rss_mb is not None:
+        pieces.append(f"tree_rss={tree_rss_mb:.1f}MB")
     if mem_total_mb is not None:
         pieces.append(f"total={mem_total_mb:.0f}MB")
     if mem_avail_mb is not None:
@@ -71,6 +122,13 @@ def log_memory_usage(stage: str) -> None:
         msg = " | ".join(pieces)
         print(f"MEMORY_PROBE [{stage}]: {msg}", flush=True)
         logger.info(f"🧠 Memory ({stage}): {msg}")
+
+    return {
+        "rss_mb": rss_mb,
+        "tree_rss_mb": tree_rss_mb,
+        "mem_total_mb": mem_total_mb,
+        "mem_avail_mb": mem_avail_mb,
+    }
 
 
 class OpenSfMGPSPipeline:
@@ -94,9 +152,33 @@ class OpenSfMGPSPipeline:
         self.has_gps_priors = False
         self.image_count = 0
         self.feature_stats = {}
+        self.stage_metrics: Dict[str, Dict[str, object]] = {}
+        self.peak_memory_mb = 0.0
+        self.sfm_only = os.environ.get("SPACEPORT_SFM_ONLY", "").strip().lower() == "true"
+        self.profile_override = normalize_profile_override(
+            os.environ.get("SPACEPORT_SFM_PROFILE_OVERRIDE")
+        )
+        self.sfm_instance_type = (
+            os.environ.get("SPACEPORT_SFM_INSTANCE_TYPE", "").strip() or "unknown"
+        )
 
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+    def _remember_peak_memory(self, sample: Dict[str, Optional[float]], stage_key: Optional[str] = None) -> None:
+        peak_candidate = sample.get("tree_rss_mb") or sample.get("rss_mb")
+        if peak_candidate is None:
+            return
+
+        self.peak_memory_mb = max(self.peak_memory_mb, peak_candidate)
+        if stage_key:
+            stage_metrics = self.stage_metrics.setdefault(stage_key, {})
+            current_peak = float(stage_metrics.get("peak_memory_mb") or 0.0)
+            stage_metrics["peak_memory_mb"] = max(current_peak, peak_candidate)
+
+    def _sample_memory(self, stage: str, root_pid: Optional[int] = None, stage_key: Optional[str] = None) -> None:
+        sample = log_memory_usage(stage, root_pid=root_pid)
+        self._remember_peak_memory(sample, stage_key=stage_key)
     
     def setup_workspace(self) -> Path:
         """Set up temporary workspace for processing"""
@@ -197,78 +279,44 @@ class OpenSfMGPSPipeline:
     
     def create_opensfm_config(self) -> None:
         """Create OpenSfM configuration file"""
-        base_config = {
-            # Feature extraction
-            'feature_type': 'SIFT',
-            'feature_process_size': 2048,
-            'feature_max_num_features': 20000,
-            'feature_min_frames': 4000,
-            'sift_peak_threshold': 0.006,
-            
-            # Matching
-            'matching_gps_neighbors': 30,
-            'matching_gps_distance': 300,
-            'matching_graph_rounds': 80,
-            'robust_matching_min_match': 8,
-            
-            # Reconstruction
-            'min_ray_angle_degrees': 1.0,
-            'reconstruction_min_ratio': 0.6,
-            'triangulation_min_ray_angle_degrees': 1.0,
-            
-            # GPS integration
-            'use_altitude_tag': True,
-            'gps_accuracy': 5.0,
-            
-            # Bundle adjustment
-            'bundle_use_gps': True,
-            'bundle_use_gcp': False,
-            
-            # Optimization
-            'optimize_camera_parameters': True,
-            'bundle_max_iterations': 100,
-            
-            # Output
-            'processes': 4,
-            
-            # Train/test split for 3DGS
-            'reconstruction_split_ratio': 0.8,
-            'reconstruction_split_method': 'sequential',
-            'save_partial_reconstructions': True,
-        }
+        runtime_plan = select_sfm_runtime_plan(
+            self.image_count,
+            has_gps_priors=self.has_gps_priors,
+            profile_override=self.profile_override,
+            cpu_count=os.cpu_count() or 1,
+        )
+        config = runtime_plan["config"]
+        self.feature_stats = runtime_plan
 
-        conservative_overrides = {
-            'feature_process_size': 1200,
-            'feature_max_num_features': 6000,
-            'feature_min_frames': 1200,
-            'sift_peak_threshold': 0.01,  # reduce feature count
-            'matching_gps_neighbors': 10,
-            'matching_gps_distance': 120,
-            'matching_graph_rounds': 16,
-            'robust_matching_min_match': 12,
-            # Use more CPU when running without GPS priors; default up to 16 cores when available.
-            'processes': max(4, min(16, os.cpu_count() or 4)),
-        }
-
-        config = base_config.copy()
-        if not self.has_gps_priors:
-            config.update(conservative_overrides)
-            logger.info("🧭 Using conservative no-CSV profile for matching/features (lower memory).")
-        
         config_path = self.opensfm_dir / "config.yaml"
         with open(config_path, 'w') as f:
             yaml.dump(config, f)
         
         logger.info(f"✅ Created OpenSfM config: {config_path}")
-
-        try:
-            image_count = self.image_count or len(list(self.images_dir.iterdir()))
-            neighbors = config.get('matching_gps_neighbors', 0)
-            estimated_pairs = image_count * neighbors
-            logger.info(f"📈 Matching plan: images={image_count}, neighbors≈{neighbors}, est. pairs≈{estimated_pairs}")
-            print(f"CONFIG_PROFILE has_gps={self.has_gps_priors} processes={config.get('processes')} neighbors={neighbors} est_pairs={estimated_pairs} feature_process_size={config.get('feature_process_size')} max_features={config.get('feature_max_num_features')} min_frames={config.get('feature_min_frames')}", flush=True)
-        except Exception:
-            pass
+        logger.info(
+            "📈 Matching plan: profile=%s images=%s neighbors≈%s est. pairs≈%s match_timeout=%ss reconstruct_timeout=%ss",
+            runtime_plan["selected_profile"],
+            runtime_plan["image_count"],
+            runtime_plan["selected_neighbors"],
+            runtime_plan["estimated_pairs"],
+            runtime_plan["stage_timeouts"]["match_features"],
+            runtime_plan["stage_timeouts"]["reconstruct"],
+        )
+        print(
+            "CONFIG_PROFILE "
+            f"name={runtime_plan['selected_profile']} "
+            f"has_gps={self.has_gps_priors} "
+            f"override={self.profile_override} "
+            f"processes={config.get('processes')} "
+            f"neighbors={runtime_plan['selected_neighbors']} "
+            f"est_pairs={runtime_plan['estimated_pairs']} "
+            f"feature_process_size={config.get('feature_process_size')} "
+            f"max_features={config.get('feature_max_num_features')} "
+            f"min_frames={config.get('feature_min_frames')} "
+            f"match_timeout={runtime_plan['stage_timeouts']['match_features']} "
+            f"reconstruct_timeout={runtime_plan['stage_timeouts']['reconstruct']}",
+            flush=True,
+        )
     
     def copy_images_to_opensfm(self) -> None:
         """Copy images to OpenSfM directory structure"""
@@ -277,6 +325,97 @@ class OpenSfMGPSPipeline:
             shutil.rmtree(opensfm_images)
         shutil.copytree(self.images_dir, opensfm_images)
         logger.info(f"✅ Copied {len(list(opensfm_images.iterdir()))} images to OpenSfM")
+
+    def _run_opensfm_command(
+        self,
+        cmd: str,
+        description: str,
+        *,
+        max_seconds: Optional[int] = None,
+    ) -> bool:
+        stage_metrics = self.stage_metrics.setdefault(
+            cmd,
+            {
+                "description": description,
+                "max_runtime_seconds": max_seconds,
+            },
+        )
+        stage_metrics["started_at_epoch"] = round(time.time(), 3)
+        stage_metrics["timed_out"] = False
+
+        logger.info(f"🔧 {description}...")
+        self._sample_memory(f"before_{cmd}", stage_key=cmd)
+
+        proc = subprocess.Popen(
+            ["opensfm", cmd, str(self.opensfm_dir)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+        )
+        assert proc.stdout is not None
+
+        start = time.time()
+        last_heartbeat = start
+        tag = cmd.upper()
+
+        try:
+            while True:
+                now = time.time()
+                if max_seconds is not None and now - start > max_seconds:
+                    proc.kill()
+                    proc.wait()
+                    stage_metrics["timed_out"] = True
+                    stage_metrics["duration_seconds"] = round(now - start, 2)
+                    stage_metrics["return_code"] = -9
+                    logger.error("❌ OpenSfM %s timed out after %ss", cmd, max_seconds)
+                    return False
+
+                ready, _, _ = select.select([proc.stdout], [], [], 15)
+                if ready:
+                    line = proc.stdout.readline()
+                    if line:
+                        print(f"OPENSFM_{tag}: {line.rstrip()}", flush=True)
+                else:
+                    self._sample_memory(
+                        f"{cmd}_progress_{int(now - start)}s",
+                        root_pid=proc.pid,
+                        stage_key=cmd,
+                    )
+
+                if now - last_heartbeat >= 300:
+                    self._sample_memory(
+                        f"{cmd}_heartbeat_{int(now - start)}s",
+                        root_pid=proc.pid,
+                        stage_key=cmd,
+                    )
+                    last_heartbeat = now
+
+                if proc.poll() is not None:
+                    break
+
+            remaining = proc.stdout.read()
+            if remaining:
+                for line in remaining.splitlines():
+                    print(f"OPENSFM_{tag}: {line}", flush=True)
+
+            return_code = proc.wait()
+            duration_seconds = round(time.time() - start, 2)
+            stage_metrics["duration_seconds"] = duration_seconds
+            stage_metrics["return_code"] = return_code
+            stage_metrics["completed"] = return_code == 0
+
+            if return_code != 0:
+                logger.error(f"❌ OpenSfM {cmd} failed with code {return_code}")
+                return False
+
+            logger.info(f"✅ {description} completed in {duration_seconds}s")
+            self._sample_memory(f"after_{cmd}", root_pid=proc.pid, stage_key=cmd)
+            return True
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
     
     def run_opensfm_commands(self) -> bool:
         """Run OpenSfM reconstruction pipeline"""
@@ -290,57 +429,8 @@ class OpenSfMGPSPipeline:
         ]
         
         for cmd, description in commands:
-            logger.info(f"🔧 {description}...")
-            log_memory_usage(f"before_{cmd}")
-            
-            try:
-                if cmd in {"match_features", "reconstruct"}:
-                    # Stream output and enforce a max duration for reconstruct to detect hangs
-                    max_seconds = 7200 if cmd == "reconstruct" else 2400  # reconstruct up to 120m, match up to 40m
-                    proc = subprocess.Popen(
-                        ["opensfm", cmd, str(self.opensfm_dir)],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        text=True,
-                    )
-                    start = time.time()
-                    last_log = start
-                    while True:
-                        line = proc.stdout.readline()
-                        if line:
-                            line = line.rstrip()
-                            tag = "RECONSTRUCT" if cmd == "reconstruct" else "MATCH"
-                            print(f"OPENSFM_{tag}: {line}", flush=True)
-                        now = time.time()
-                        if now - last_log > 300:  # heartbeat every 5 minutes
-                            log_memory_usage(f"{cmd}_heartbeat_{int(now-start)}s")
-                            last_log = now
-                        if now - start > max_seconds:
-                            proc.kill()
-                            logger.error(f"❌ OpenSfM {cmd} timed out")
-                            return False
-                        if line == '' and proc.poll() is not None:
-                            break
-                    ret = proc.wait()
-                    if ret != 0:
-                        logger.error(f"❌ OpenSfM {cmd} failed with code {ret}")
-                        return False
-                else:
-                    subprocess.run(
-                        ["opensfm", cmd, str(self.opensfm_dir)],
-                        check=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        text=True,
-                    )
-
-                logger.info(f"✅ {description} completed")
-                log_memory_usage(f"after_{cmd}")
-                
-            except subprocess.CalledProcessError as e:
-                logger.error(f"❌ OpenSfM {cmd} failed:")
-                logger.error(f"   stdout: {e.stdout}")
-                logger.error(f"   stderr: {e.stderr}")
+            max_seconds = self.feature_stats.get("stage_timeouts", {}).get(cmd)
+            if not self._run_opensfm_command(cmd, description, max_seconds=max_seconds):
                 return False
         
         return True
@@ -600,12 +690,21 @@ class OpenSfMGPSPipeline:
         metadata = {
             'pipeline': 'OpenSfM GPS-Enhanced Structure-from-Motion',
             'processing_time_seconds': round(processing_time, 2),
+            'input_images': self.image_count,
             'cameras_registered': num_cameras,
             'images_registered': num_cameras,  # Assuming 1:1 mapping
             'points_3d': num_points,
             'gps_enhanced': hasattr(self, 'gps_csv_path') and self.gps_csv_path is not None,
+            'sfm_only': self.sfm_only,
             'quality_check_passed': num_points >= 1000,
             'colmap_format': True,
+            'instance_type': self.sfm_instance_type,
+            'selected_profile': self.feature_stats.get('selected_profile'),
+            'selected_neighbors': self.feature_stats.get('selected_neighbors'),
+            'estimated_pairs': self.feature_stats.get('estimated_pairs'),
+            'stage_timeouts_seconds': self.feature_stats.get('stage_timeouts', {}),
+            'stage_metrics': self.stage_metrics,
+            'peak_memory_mb': round(self.peak_memory_mb, 2),
             'timestamp': time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
         }
         
@@ -741,12 +840,12 @@ class OpenSfMGPSPipeline:
             
             # Set up workspace
             self.setup_workspace()
-            log_memory_usage("setup_workspace")
+            self._sample_memory("setup_workspace")
             
             # Extract images
             image_count = self.extract_images()
             self.image_count = image_count
-            log_memory_usage("after_extract_images")
+            self._sample_memory("after_extract_images")
             if image_count == 0:
                 logger.error("❌ No images found to process")
                 return 1
@@ -754,40 +853,43 @@ class OpenSfMGPSPipeline:
             # Process GPS data (if available)
             has_gps = self.process_gps_data()
             self.has_gps_priors = has_gps
-            log_memory_usage("after_gps_processing")
+            self._sample_memory("after_gps_processing")
             
             # Create OpenSfM config
             self.create_opensfm_config()
-            log_memory_usage("after_config_creation")
+            self._sample_memory("after_config_creation")
             
             # Copy images
             self.copy_images_to_opensfm()
-            log_memory_usage("after_copy_images")
+            self._sample_memory("after_copy_images")
             
             # Run OpenSfM
             logger.info("🔄 Running OpenSfM reconstruction...")
             if not self.run_opensfm_commands():
                 logger.error("❌ OpenSfM reconstruction failed")
                 return 1
-            log_memory_usage("after_opensfm_commands")
+            self._sample_memory("after_opensfm_commands")
             
             # Validate reconstruction
             if not self.validate_reconstruction():
                 return 1
-            log_memory_usage("after_reconstruction_validation")
+            self._sample_memory("after_reconstruction_validation")
             
             # Convert to COLMAP format
             logger.info("🔄 Converting to COLMAP format...")
             if not self.convert_to_colmap():
                 return 1
-            log_memory_usage("after_colmap_conversion")
+            self._sample_memory("after_colmap_conversion")
             
             # Generate additional artifacts for 3DGS compatibility
             logger.info("🔄 Generating additional artifacts for 3DGS compatibility...")
-            self.copy_images_for_3dgs()
+            if self.sfm_only:
+                logger.info("⏭️ Skipping downstream image copy because SPACEPORT_SFM_ONLY=true")
+            else:
+                self.copy_images_for_3dgs()
             self.generate_metadata_json()
             self.create_stub_database()
-            log_memory_usage("after_artifact_generation")
+            self._sample_memory("after_artifact_generation")
             
             logger.info("✅ OpenSfM GPS pipeline completed successfully")
             return 0
