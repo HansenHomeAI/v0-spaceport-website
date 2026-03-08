@@ -4,4 +4,5 @@
 2026-03-06 - Recompute optimization readiness after selecting a map location
 2026-03-06 - Wait for matching CDK deploy before resolving preview auth outputs
 2026-03-06 - Force fresh branch redeploy after correcting Google Maps API key
+2026-03-08T01:12:00Z refresh development preview for explore thumbnails
 2026-03-07T05:18:00Z restore explore api preview routing after dead api gateway hostname
