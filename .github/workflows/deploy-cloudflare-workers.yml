@@ -1,0 +1,54 @@
+name: Deploy Cloudflare Workers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, development ]
+    paths:
+      - '.github/workflows/deploy-cloudflare-workers.yml'
+      - 'infrastructure/cloudflare/spaces-thumbnail/**'
+      - 'infrastructure/cloudflare/spaces-viewer/**'
+
+concurrency:
+  group: cf-workers-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Wrangler
+        run: npm install -g wrangler@4
+
+      - name: Deploy spaces-viewer worker
+        working-directory: infrastructure/cloudflare/spaces-viewer
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: wrangler deploy
+
+      - name: Install spaces-thumbnail dependencies
+        working-directory: infrastructure/cloudflare/spaces-thumbnail
+        run: npm install --package-lock=false
+
+      - name: Deploy spaces-thumbnail worker
+        working-directory: infrastructure/cloudflare/spaces-thumbnail
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: wrangler deploy
+
+      - name: Verify worker health endpoints
+        run: |
+          curl -fsS https://spcprt.com/spaces/health
+          curl -fsS https://spcprt.com/spaces-thumb/health

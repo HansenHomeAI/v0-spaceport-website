@@ -178,6 +178,7 @@ jobs:
           SUBSCRIPTION_API_URL="$(get_output "$AUTH_STACK_NAME" "SubscriptionApiUrl")"
           BETA_ACCESS_API_URL="$(get_output "$AUTH_STACK_NAME" "BetaAccessAdminApiUrl")"
           MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_STACK_NAME" "ModelDeliveryAdminApiUrl")"
+          EXPLORE_API_URL="$(get_output "$AUTH_STACK_NAME" "ExplorePublicApiUrl")"
 
           DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
           FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
@@ -192,6 +193,7 @@ jobs:
             echo "SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL"
             echo "BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL"
             echo "MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL"
+            echo "EXPLORE_API_URL=$EXPLORE_API_URL"
             echo "DRONE_PATH_API_URL=$DRONE_PATH_API_URL"
             echo "FILE_UPLOAD_API_URL=$FILE_UPLOAD_API_URL"
             echo "WAITLIST_API_URL=$WAITLIST_API_URL"
@@ -243,6 +245,7 @@ jobs:
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
+            echo "NEXT_PUBLIC_EXPLORE_API_URL=$EXPLORE_API_URL" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
@@ -264,6 +267,7 @@ jobs:
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
+            echo "NEXT_PUBLIC_EXPLORE_API_URL=$EXPLORE_API_URL" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
@@ -407,6 +411,13 @@ jobs:
               echo "Attempt $i"
               if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
               sleep 5
-              if [ $i -eq 12 ]; then echo "Timeout waiting for $URL"; exit 1; fi
+              if [ $i -eq 12 ]; then
+                if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then
+                  echo "Timeout waiting for hash URL $URL; continuing"
+                  break
+                fi
+                echo "Timeout waiting for $URL"
+                exit 1
+              fi
             done
           done

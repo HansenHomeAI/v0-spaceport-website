@@ -36,6 +36,22 @@ print(f"Deploying for branch: {deployment_context.branch_name}")
 print(f"Resolved deployment context: {deployment_context.to_dict()}")
 print(f"Resolved environment config: {env_config}")
 
+deploy_auth_stack_override = str(
+    app.node.try_get_context("deploy_auth_stack")
+    or os.environ.get("DEPLOY_AUTH_STACK_OVERRIDE", "")
+).lower() == "true"
+deploy_auth_stack = deployment_context.deploy_auth_stack or deploy_auth_stack_override
+env_config["deployAuthStack"] = deploy_auth_stack
+
+auth_deployment_context = deployment_context
+auth_env_config = env_config
+if deploy_auth_stack and deployment_context.deployment_class == "branch-preview":
+    # Branch previews reuse the shared staging auth stack and its shared data.
+    auth_deployment_context = resolve_deployment_context("development")
+    auth_base_env_config = _load_environments_context()[auth_deployment_context.cdk_environment_name]
+    auth_env_config = build_env_config(auth_base_env_config, auth_deployment_context)
+    auth_env_config["deployAuthStack"] = True
+
 common_env = {
     "account": app.node.try_get_context("account") or None,
     "region": env_config["region"],
@@ -55,11 +71,11 @@ MLPipelineStack(
     env=common_env,
 )
 
-if deployment_context.deploy_auth_stack:
+if deploy_auth_stack:
     AuthStack(
         app,
-        deployment_context.auth_stack_name,
-        env_config=env_config,
+        auth_deployment_context.auth_stack_name,
+        env_config=auth_env_config,
         env=common_env,
     )
 
