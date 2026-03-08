@@ -15,12 +15,14 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
   buildSfmFileUrls,
   derivePipelineFromCompressed,
+  isSpaceportMlS3Host,
   mergeBounds,
   normalizeUrl,
   parseImages,
   parsePoints,
   withProxyIfNeeded,
 } from "../../lib/pipeline-viewer-utils.js";
+import { buildApiUrl } from "../api-config";
 
 const DEFAULT_COMPRESSED_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
@@ -39,6 +41,13 @@ type SfmData = {
 };
 
 type TransformOption = "native" | "rotateX90" | "rotateX-90" | "rotateY90" | "rotateZ90";
+
+type ArtifactUrlResponse = {
+  artifacts?: Array<{
+    sourceUrl: string;
+    signedUrl: string;
+  }>;
+};
 
 type SupersplatPanelProps = {
   label: string;
@@ -590,15 +599,37 @@ export default function PipelineViewerPage() {
     try {
       const imagesUrl = normalizeUrl(fileUrls.images) ?? new URL(fileUrls.images);
       const pointsUrl = normalizeUrl(fileUrls.points) ?? new URL(fileUrls.points);
+      const requestedUrls = [imagesUrl.toString(), pointsUrl.toString()];
+      const usesMlBucketUrls = [imagesUrl, pointsUrl].some((url) => isSpaceportMlS3Host(url.host));
+      let resolvedUrls = new Map<string, string>();
+
+      if (usesMlBucketUrls) {
+        const presignResponse = await fetch(buildApiUrl.mlPipeline.artifactUrls(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ urls: requestedUrls }),
+        });
+
+        if (!presignResponse.ok) {
+          throw new Error(`Artifact URL signing failed (${presignResponse.status})`);
+        }
+
+        const payload = (await presignResponse.json()) as ArtifactUrlResponse;
+        resolvedUrls = new Map(
+          (payload.artifacts ?? []).map((artifact) => [artifact.sourceUrl, artifact.signedUrl])
+        );
+      }
 
       const [imagesText, pointsText] = await Promise.all([
-        fetch(withProxyIfNeeded(imagesUrl)).then((res) => {
+        fetch(resolvedUrls.get(imagesUrl.toString()) ?? withProxyIfNeeded(imagesUrl)).then((res) => {
           if (!res.ok) {
             throw new Error(`images.txt fetch failed (${res.status})`);
           }
           return res.text();
         }),
-        fetch(withProxyIfNeeded(pointsUrl)).then((res) => {
+        fetch(resolvedUrls.get(pointsUrl.toString()) ?? withProxyIfNeeded(pointsUrl)).then((res) => {
           if (!res.ok) {
             throw new Error(`points3D.txt fetch failed (${res.status})`);
           }

@@ -89,6 +89,7 @@ export const buildApiUrl = {
   mlPipeline: {
     startJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/start-job`,
     stopJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/stop-job`,
+    artifactUrls: () => `${API_CONFIG.ML_PIPELINE_API_URL}/artifact-urls`,
   },
   
   // Beta Access Admin API endpoints
