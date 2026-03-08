@@ -3,9 +3,10 @@ import os
 from urllib.parse import urlparse
 
 import boto3
+from botocore.config import Config
 
 
-s3 = boto3.client("s3")
+s3 = boto3.client("s3", config=Config(signature_version="s3v4"))
 
 
 def _response(status_code, body):
