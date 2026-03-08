@@ -328,6 +328,20 @@ class MLPipelineStack(Stack):
             }
         )
 
+        presign_artifact_lambda = lambda_.Function(
+            self, "PresignMlArtifactFunction",
+            function_name=scoped_name("Spaceport-PresignMlArtifact-"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/presign_ml_artifact"),
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            role=lambda_role,
+            environment={
+                "ML_BUCKET": ml_bucket.bucket_name,
+            }
+        )
+
         # Create Notification Lambda
         notification_lambda = lambda_.Function(
             self, "NotificationFunction",
@@ -813,6 +827,15 @@ class MLPipelineStack(Stack):
             "POST",
             apigw.LambdaIntegration(
                 stop_job_lambda,
+                proxy=True
+            )
+        )
+
+        artifact_urls_resource = ml_api.root.add_resource("artifact-urls")
+        artifact_urls_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(
+                presign_artifact_lambda,
                 proxy=True
             )
         )

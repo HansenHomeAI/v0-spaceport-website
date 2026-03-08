@@ -85,6 +85,15 @@ class MlPipelineSfmFlowTests(unittest.TestCase):
         self.assertIn('"StringEquals":"sfm"', definition)
         self.assertIn('"InstanceType.$":"$.sfmInstanceType"', definition)
 
+        api_resources = [
+            resource
+            for resource in template["Resources"].values()
+            if resource["Type"] == "AWS::ApiGateway::Resource"
+        ]
+        self.assertTrue(
+            any(resource["Properties"].get("PathPart") == "artifact-urls" for resource in api_resources)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
