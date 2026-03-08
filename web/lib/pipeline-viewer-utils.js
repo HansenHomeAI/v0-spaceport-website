@@ -1,13 +1,7 @@
 import * as THREE from "three";
+import { buildProxyPath, isSpaceportMlS3Host } from "./ml-storage-proxy.js";
 
-export const PROXY_HOSTS = new Set([
-  "spaceport-ml-processing.s3.amazonaws.com",
-  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
-  "spaceport-ml-processing-staging.s3.amazonaws.com",
-  "spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com",
-  "spaceport-ml-processing-prod.s3.amazonaws.com",
-  "spaceport-ml-processing-prod.s3.us-west-2.amazonaws.com",
-]);
+export { isSpaceportMlS3Host } from "./ml-storage-proxy.js";
 
 export const toHttpsFromS3 = (raw) => {
   if (!raw.startsWith("s3://")) {
@@ -50,10 +44,8 @@ export const normalizeUrl = (rawValue, options = {}) => {
 };
 
 export const withProxyIfNeeded = (url) => {
-  if (PROXY_HOSTS.has(url.host)) {
-    const base = `${url.protocol}//${url.host}`;
-    const encodedBase = base.replace("://", ":/");
-    return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
+  if (isSpaceportMlS3Host(url.host)) {
+    return buildProxyPath(url);
   }
   return url.toString();
 };

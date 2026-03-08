@@ -9,3 +9,4 @@
 2026-03-07 compact terrain toggle panel
 2026-03-07 terrain-toggle-row align/justify flex-start
 2026-03-08T00:00:00Z stabilize sfm-only pipeline and restore pipeline-viewer preview
+2026-03-08T02:00:00Z allow pipeline-viewer proxy access for staging and preview ml buckets
