@@ -4,8 +4,10 @@ import assert from "node:assert/strict";
 import {
   buildSfmFileUrls,
   derivePipelineFromCompressed,
+  isSpaceportMlS3Host,
   parseImages,
   parsePoints,
+  withProxyIfNeeded,
 } from "../lib/pipeline-viewer-utils.js";
 
 test("derivePipelineFromCompressed supports s3 urls", () => {
@@ -39,6 +41,27 @@ test("buildSfmFileUrls normalizes sparse path", () => {
     images: "https://spaceport-ml-processing.s3.amazonaws.com/colmap/job-123/sparse/0/images.txt",
     points: "https://spaceport-ml-processing.s3.amazonaws.com/colmap/job-123/sparse/0/points3D.txt",
   });
+});
+
+test("withProxyIfNeeded routes all spaceport ml s3 buckets through the proxy", () => {
+  const stagingUrl = new URL(
+    "https://spaceport-ml-processing-staging.s3.amazonaws.com/colmap/job-123/sparse/0/images.txt"
+  );
+  const previewUrl = new URL(
+    "https://spaceport-ml-processing-8989f2959f.s3.amazonaws.com/colmap/job-123/sparse/0/images.txt"
+  );
+
+  assert.equal(isSpaceportMlS3Host(stagingUrl.host), true);
+  assert.equal(isSpaceportMlS3Host(previewUrl.host), true);
+  assert.equal(
+    withProxyIfNeeded(stagingUrl),
+    "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/colmap/job-123/sparse/0/images.txt"
+  );
+  assert.equal(
+    withProxyIfNeeded(previewUrl),
+    "/api/sogs-proxy/https:/spaceport-ml-processing-8989f2959f.s3.amazonaws.com/colmap/job-123/sparse/0/images.txt"
+  );
+  assert.equal(isSpaceportMlS3Host("example-bucket.s3.amazonaws.com"), false);
 });
 
 test("parsePoints enforces max point count and bounds", () => {

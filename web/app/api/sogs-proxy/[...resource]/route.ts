@@ -1,11 +1,7 @@
 import { NextRequest } from "next/server";
+import { isSpaceportMlS3Host } from "../../../../lib/ml-storage-proxy.js";
 
 export const runtime = "edge";
-
-const ALLOWED_HOSTS = new Set([
-  "spaceport-ml-processing.s3.amazonaws.com",
-  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
-]);
 
 const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   if (!segments.length) {
@@ -23,7 +19,7 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   urlString = urlString.replace(/^https:\/\//, "https://").replace(/^http:\/\//, "http://");
   try {
     const url = new URL(urlString);
-    if (!ALLOWED_HOSTS.has(url.host)) {
+    if (!isSpaceportMlS3Host(url.host)) {
       return null;
     }
     return url;
