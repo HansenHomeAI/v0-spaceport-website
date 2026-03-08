@@ -43,7 +43,10 @@ def build_stage_timeouts(image_count: int) -> Dict[str, int]:
     if image_count > 700:
         return {
             "match_features": 4 * 60 * 60,
-            "reconstruct": 4 * 60 * 60,
+            # Large reconstructions stayed memory-stable at 898 images but were still
+            # actively registering shots when the 4 hour cap fired, so allow a longer
+            # reconstruction window without changing the cheaper matching budget.
+            "reconstruct": 6 * 60 * 60,
         }
     if image_count > 350:
         return {

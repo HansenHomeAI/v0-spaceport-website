@@ -55,7 +55,22 @@ class SfmScalingTests(unittest.TestCase):
         self.assertLessEqual(plan["estimated_pairs"], 10776)
         self.assertEqual(plan["config"]["processes"], 4)
         self.assertEqual(plan["stage_timeouts"]["match_features"], 14400)
-        self.assertEqual(plan["stage_timeouts"]["reconstruct"], 14400)
+        self.assertEqual(plan["stage_timeouts"]["reconstruct"], 21600)
+
+    def test_large_no_gps_dataset_extends_reconstruct_budget(self):
+        plan = select_sfm_runtime_plan(
+            898,
+            has_gps_priors=False,
+            profile_override="auto",
+            cpu_count=16,
+        )
+
+        self.assertEqual(plan["selected_profile"], "no_gps_large_dataset")
+        self.assertLessEqual(plan["selected_neighbors"], 8)
+        self.assertGreaterEqual(plan["selected_neighbors"], 6)
+        self.assertLessEqual(plan["estimated_pairs"], 7184)
+        self.assertEqual(plan["stage_timeouts"]["match_features"], 14400)
+        self.assertEqual(plan["stage_timeouts"]["reconstruct"], 21600)
 
     def test_quality_override_respects_requested_profile(self):
         plan = select_sfm_runtime_plan(
