@@ -19,6 +19,11 @@ MODULE_PATH = (
 
 
 def load_module():
+    botocore_stub = types.ModuleType("botocore")
+    botocore_config_stub = types.ModuleType("botocore.config")
+    botocore_config_stub.Config = lambda **kwargs: kwargs
+    sys.modules["botocore"] = botocore_stub
+    sys.modules["botocore.config"] = botocore_config_stub
     boto3_stub = types.ModuleType("boto3")
     boto3_stub.client = lambda *_args, **_kwargs: types.SimpleNamespace(generate_presigned_url=lambda **_kw: "")
     sys.modules["boto3"] = boto3_stub
