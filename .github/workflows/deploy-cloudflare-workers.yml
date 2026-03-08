@@ -90,7 +90,7 @@ jobs:
             "compatibility_flags": ["nodejs_compat"],
             "bindings": [
               { "type": "r2_bucket", "name": "SPACES_BUCKET", "bucket_name": "spaces-viewers" },
-              { "type": "browser_rendering", "name": "BROWSER" },
+              { "type": "browser", "name": "BROWSER" },
               { "type": "plain_text", "name": "SPACES_HOST", "text": "spcprt.com" },
               { "type": "plain_text", "name": "SPACES_PATH_PREFIX", "text": "/spaces" }
             ]
