@@ -1431,29 +1431,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               </div>
             </div>
 
-            <div className="category-outline">
-              <div className="popup-section">
-                <h4>Terrain</h4>
-                <div className="terrain-toggle-panel">
-                  <div className="terrain-toggle-copy">
-                    <span className="terrain-toggle-title">Form to the Terrain</span>
-                    <span className="terrain-toggle-description">
-                      {formToTerrain
-                        ? "Terrain-aware elevation sampling is enabled for safer terrain following."
-                        : "Flat mode skips Google Elevation usage and keeps the path at your entered AGL heights."}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={formToTerrain}
-                    aria-label="Form to the terrain"
-                    className={`terrain-toggle-switch${formToTerrain ? ' is-on' : ''}`}
-                    onClick={handleTerrainToggle}
-                  >
-                    <span className="terrain-toggle-switch-thumb" />
-                  </button>
-                </div>
+            <div className="category-outline category-outline--hug">
+              <div className="popup-section terrain-toggle-row">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formToTerrain}
+                  aria-label="Terrain avoidance"
+                  className={`terrain-toggle-switch${formToTerrain ? ' is-on' : ''}`}
+                  onClick={handleTerrainToggle}
+                >
+                  <span className="terrain-toggle-switch-thumb" />
+                </button>
+                <span className="terrain-toggle-label">Terrain avoidance</span>
               </div>
             </div>
 

@@ -6,3 +6,5 @@
 2026-03-06 - Force fresh branch redeploy after correcting Google Maps API key
 2026-03-08T01:12:00Z refresh development preview for explore thumbnails
 2026-03-07T05:18:00Z restore explore api preview routing after dead api gateway hostname
+2026-03-07 compact terrain toggle panel
+2026-03-07 terrain-toggle-row align/justify flex-start

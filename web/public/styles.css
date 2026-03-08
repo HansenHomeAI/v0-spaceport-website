@@ -4978,6 +4978,12 @@ body.popup-open {
   margin-bottom: 0;
 }
 
+.category-outline--hug {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Add margin above the upload zone container in Property Upload section */
 .accordion-section[data-section="upload"] .category-outline:first-child {
   margin-top: 16px;
@@ -5022,39 +5028,19 @@ body.popup-open {
   margin-bottom: 0;
 }
 
-.terrain-toggle-panel {
+.terrain-toggle-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 14px;
-  margin: 0 auto 6px;
-  min-height: 126px;
-  padding: 18px 22px 20px;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.08);
-  text-align: center;
 }
 
-.terrain-toggle-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  max-width: 320px;
-}
-
-.terrain-toggle-title {
+.terrain-toggle-label {
   color: #fff;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 500;
-  letter-spacing: 0.01em;
-}
-
-.terrain-toggle-description {
-  color: rgba(255, 255, 255, 0.66);
-  font-size: 0.88rem;
-  line-height: 1.45;
+  margin-right: 12px;
 }
 
 .terrain-toggle-switch {
