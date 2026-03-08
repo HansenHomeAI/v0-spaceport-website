@@ -28,7 +28,7 @@ jobs:
           node-version: '20'
 
       - name: Install Wrangler
-        run: npm install -g wrangler@4
+        run: npm install -g wrangler@3.114.8
 
       - name: Deploy spaces-viewer worker
         working-directory: infrastructure/cloudflare/spaces-viewer
