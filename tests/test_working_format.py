@@ -34,7 +34,7 @@ def test_working_format():
         "inputS3Uri": "s3://spaceport-uploads/1748664812459-5woqcu-Archive.zip",
         "email": "test@spaceport.com",
         "timestamp": datetime.now().isoformat(),
-        "pipelineStep": "sfm",
+        "pipelineStep": "full",
         
         # Pre-defined S3 URIs (this was the key!)
         "extractedS3Uri": f"s3://spaceport-ml-pipeline/jobs/{job_id}/extracted/",
@@ -238,4 +238,4 @@ def main():
 
 if __name__ == "__main__":
     success = main()
-    exit(0 if success else 1) 
+    exit(0 if success else 1)

@@ -369,7 +369,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.2xlarge",
+                        "InstanceType": sfn.JsonPath.string_at("$.sfmInstanceType"),
                         "VolumeSizeInGB": 100
                     }
                 },
@@ -389,7 +389,10 @@ class MLPipelineStack(Stack):
                 # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
                 "Environment": {
                     "AWS_DEFAULT_REGION": self.region,
-                    "PYTHONUNBUFFERED": "1"
+                    "PYTHONUNBUFFERED": "1",
+                    "SPACEPORT_SFM_ONLY": sfn.JsonPath.string_at("$.sfmOnly"),
+                    "SPACEPORT_SFM_PROFILE_OVERRIDE": sfn.JsonPath.string_at("$.sfmProfileOverride"),
+                    "SPACEPORT_SFM_INSTANCE_TYPE": sfn.JsonPath.string_at("$.sfmInstanceType"),
                 },
                 "Tags": [
                     {"Key": "Project", "Value": "Spaceport"},
@@ -426,6 +429,8 @@ class MLPipelineStack(Stack):
             self, "WaitForSfM",
             time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
         )
+        sfm_only_complete = sfn.Succeed(self, "SfMOnlyComplete")
+        sfm_completion_mode = sfn.Choice(self, "SfMCompletionMode")
 
         # NerfStudio 3DGS Training Job - Vincent Woo's Sutro Tower Methodology
         gaussian_job = sfn_tasks.CallAwsService(
@@ -681,12 +686,19 @@ class MLPipelineStack(Stack):
         # SfM workflow: Start job -> Wait and poll until complete
         sfm_polling_loop = sfm_choice.when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Completed"),
-            gaussian_job_with_catch
+            sfm_completion_mode
         ).when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Failed"),
             notify_error
         ).otherwise(
             sfm_wait.next(wait_for_sfm_with_catch)
+        )
+
+        sfm_completion_mode.when(
+            sfn.Condition.string_equals("$.pipelineStep", "sfm"),
+            sfm_only_complete
+        ).otherwise(
+            gaussian_job_with_catch
         )
 
         # Gaussian workflow: Start job -> Wait and poll until complete  
@@ -727,6 +739,9 @@ class MLPipelineStack(Stack):
         # Pipeline step conditional logic
         definition = pipeline_step_choice.when(
             sfn.Condition.string_equals("$.pipelineStep", "sfm"),
+            sfm_workflow
+        ).when(
+            sfn.Condition.string_equals("$.pipelineStep", "full"),
             sfm_workflow
         ).when(
             sfn.Condition.string_equals("$.pipelineStep", "3dgs"),

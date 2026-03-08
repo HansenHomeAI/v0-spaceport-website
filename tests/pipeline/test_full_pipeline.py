@@ -53,7 +53,7 @@ def test_full_pipeline():
         "gaussianImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/3dgs:latest",  # OUR OPTIMIZED CONTAINER
         "compressorImageUri": f"{account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest",
         "inputS3Uri": dataset_uri,
-        "pipelineStep": "sfm",
+        "pipelineStep": "full",
         "colmapOutputS3Uri": f"s3://{ml_bucket}/colmap/{job_id}/",
         "gaussianOutputS3Uri": f"s3://{ml_bucket}/3dgs/{job_id}/",
         "compressedOutputS3Uri": f"s3://{ml_bucket}/compressed/{job_id}/",

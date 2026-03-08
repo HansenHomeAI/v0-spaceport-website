@@ -44,7 +44,7 @@ class OptimizedPipelineTest:
             "timestamp": datetime.now().isoformat(),
             
             # Required field for Step Functions choice logic
-            "pipelineStep": "sfm",  # Start from beginning (full pipeline)
+            "pipelineStep": "full",  # Start from beginning (full pipeline)
             
             # S3 paths for pipeline stages
             "extractedS3Uri": f"s3://spaceport-ml-pipeline/jobs/{job_id}/extracted/",
@@ -236,4 +236,4 @@ def main():
 
 if __name__ == "__main__":
     import sys
-    sys.exit(main()) 
+    sys.exit(main())
