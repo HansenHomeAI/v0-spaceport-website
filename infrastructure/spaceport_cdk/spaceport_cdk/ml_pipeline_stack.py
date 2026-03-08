@@ -234,6 +234,15 @@ class MLPipelineStack(Stack):
                                 f"{upload_bucket.bucket_arn}/*",
                                 f"{ml_bucket.bucket_arn}/*"
                             ]
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "s3:GetObject",
+                                "s3:HeadObject"
+                            ],
+                            resources=[
+                                "arn:aws:s3:::spaceport-uploads*/*"
+                            ]
                         )
                     ]
                 )
