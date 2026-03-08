@@ -30,23 +30,78 @@ jobs:
       - name: Install Wrangler
         run: npm install -g wrangler@3.114.8
 
-      - name: Deploy spaces-viewer worker
-        working-directory: infrastructure/cloudflare/spaces-viewer
+      - name: Bundle and upload spaces-viewer worker
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: wrangler deploy
+        run: |
+          set -euo pipefail
+          OUT_DIR="${RUNNER_TEMP}/spaces-viewer"
+          mkdir -p "${OUT_DIR}"
+
+          (
+            cd infrastructure/cloudflare/spaces-viewer
+            wrangler deploy --dry-run --outdir "${OUT_DIR}"
+          )
+
+          cat > "${OUT_DIR}/metadata.json" <<'JSON'
+          {
+            "main_module": "index.js",
+            "compatibility_date": "2025-01-07",
+            "bindings": [
+              { "type": "r2_bucket", "name": "SPACES_BUCKET", "bucket_name": "spaces-viewers" },
+              { "type": "plain_text", "name": "SPACES_HOST", "text": "spcprt.com" },
+              { "type": "plain_text", "name": "SPACES_PATH_PREFIX", "text": "/spaces" },
+              { "type": "plain_text", "name": "ADMIN_EMAIL_DOMAIN", "text": "spcprt.com" },
+              { "type": "plain_text", "name": "ADMIN_EMAIL_ALLOWLIST", "text": "gbhbyu@gmail.com" },
+              { "type": "plain_text", "name": "THUMBNAIL_TRIGGER_URL", "text": "https://spaces-thumbnail.hello-462.workers.dev/thumbnail" }
+            ]
+          }
+          JSON
+
+          curl --fail-with-body -X PUT \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/spaces-viewer" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -F "metadata=@${OUT_DIR}/metadata.json;type=application/json" \
+            -F "index.js=@${OUT_DIR}/index.js;type=application/javascript+module"
 
       - name: Install spaces-thumbnail dependencies
         working-directory: infrastructure/cloudflare/spaces-thumbnail
         run: npm install --package-lock=false
 
-      - name: Deploy spaces-thumbnail worker
-        working-directory: infrastructure/cloudflare/spaces-thumbnail
+      - name: Bundle and upload spaces-thumbnail worker
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: wrangler deploy
+        run: |
+          set -euo pipefail
+          OUT_DIR="${RUNNER_TEMP}/spaces-thumbnail"
+          mkdir -p "${OUT_DIR}"
+
+          (
+            cd infrastructure/cloudflare/spaces-thumbnail
+            wrangler deploy --dry-run --outdir "${OUT_DIR}"
+          )
+
+          cat > "${OUT_DIR}/metadata.json" <<'JSON'
+          {
+            "main_module": "index.js",
+            "compatibility_date": "2025-01-07",
+            "compatibility_flags": ["nodejs_compat"],
+            "bindings": [
+              { "type": "r2_bucket", "name": "SPACES_BUCKET", "bucket_name": "spaces-viewers" },
+              { "type": "browser_rendering", "name": "BROWSER" },
+              { "type": "plain_text", "name": "SPACES_HOST", "text": "spcprt.com" },
+              { "type": "plain_text", "name": "SPACES_PATH_PREFIX", "text": "/spaces" }
+            ]
+          }
+          JSON
+
+          curl --fail-with-body -X PUT \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/spaces-thumbnail" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -F "metadata=@${OUT_DIR}/metadata.json;type=application/json" \
+            -F "index.js=@${OUT_DIR}/index.js;type=application/javascript+module"
 
       - name: Verify worker health endpoints
         run: |
