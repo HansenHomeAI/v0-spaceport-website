@@ -6,6 +6,7 @@ Hosts per-model HTML viewer files from Cloudflare R2 at branded URLs.
 - Accept HTML uploads at `POST /spaces/publish` (admin-only).
 - Store files in R2 under `models/{slug}/index.html`.
 - Serve viewer pages at `GET /spaces/{slug}`.
+- Serve viewer assets at `GET /spaces/{slug}/{asset}` (e.g., `thumb.jpg`).
 
 ## Configuration
 - **R2 bucket**: `spaces-viewers` (binding `SPACES_BUCKET`)
