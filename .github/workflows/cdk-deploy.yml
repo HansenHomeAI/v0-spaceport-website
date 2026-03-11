@@ -2,7 +2,7 @@ name: CDK Deploy
 
 on:
   push:
-    branches: [ main, development, 'agent-*', 'codex/agent-*', ml-development, email-notifications ]
+    branches: [ main, development, 'agent-*', 'codex/*', ml-development, email-notifications ]
   pull_request:
     branches: [ main ]
 
@@ -109,23 +109,23 @@ jobs:
       run: |
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-        
+
         BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
         BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
-        
+
         BOOTSTRAP_REQUIRED=0
-        
+
         # Check if CDK is bootstrapped with default qualifier
         if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
           echo "CDK already bootstrapped with default qualifier for account $ACCOUNT (SSM parameter present)"
         else
           echo "Default qualifier parameter missing or inaccessible for account $ACCOUNT."
           BOOTSTRAP_REQUIRED=1
-          
+
           if aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
             echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET already exists."
             echo "Removing all object versions from bootstrap bucket before deletion..."
-            
+
             KEY_MARKER=""
             VERSION_MARKER=""
             while true; do
@@ -134,39 +134,39 @@ jobs:
               else
                 RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET")
               fi
-              
+
               OBJECTS_JSON=$(echo "$RESPONSE" | jq -c '{
                 Objects: (
                   ((.Versions // []) + (.DeleteMarkers // []))
                   | map({Key: .Key, VersionId: .VersionId})
                 )
               }')
-              
+
               COUNT=$(echo "$OBJECTS_JSON" | jq '.Objects | length')
               if [ "$COUNT" -gt 0 ]; then
                 echo "$OBJECTS_JSON" > /tmp/delete-bootstrap-objects.json
                 aws s3api delete-objects --bucket "$BOOTSTRAP_BUCKET" --delete file:///tmp/delete-bootstrap-objects.json >/dev/null
               fi
-              
+
               if [ "$(echo "$RESPONSE" | jq -r '.IsTruncated')" != "true" ]; then
                 break
               fi
-              
+
               KEY_MARKER=$(echo "$RESPONSE" | jq -r '.NextKeyMarker // empty')
               VERSION_MARKER=$(echo "$RESPONSE" | jq -r '.NextVersionIdMarker // empty')
-              
+
               if [ -z "$KEY_MARKER" ]; then
                 break
               fi
             done
             rm -f /tmp/delete-bootstrap-objects.json
-            
+
             echo "Deleting bootstrap bucket $BOOTSTRAP_BUCKET..."
             aws s3api delete-bucket --bucket "$BOOTSTRAP_BUCKET" --region us-west-2
           else
             echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found."
           fi
-          
+
           echo "Checking for existing CDK bootstrap stack..."
           if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
             echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
@@ -176,7 +176,7 @@ jobs:
             echo "Existing CDK bootstrap stack deleted successfully"
           fi
         fi
-        
+
         if [ "$BOOTSTRAP_REQUIRED" -eq 1 ]; then
           echo "Bootstrapping environment $ACCOUNT/us-west-2 with default qualifier resources..."
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
@@ -199,7 +199,7 @@ jobs:
 
         BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
         BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
-        
+
         # Simple verification - prefer SSM parameter, fall back to bucket existence
         echo "Checking for default qualifier bootstrap artifacts..."
         if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
@@ -250,7 +250,7 @@ jobs:
         SPACES_THUMBNAIL_TOKEN: ${{ secrets.SPACES_THUMBNAIL_TOKEN }}
         # Referral system configuration - using CDK defaults (Option A)
         # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
-        # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
+        # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default)
         # COMPANY_KICKBACK_PERCENTAGE: 70 (default)
         # REFERRAL_DURATION_MONTHS: 6 (default)
         # EMPLOYEE_USER_ID: "" (optional)
@@ -260,7 +260,7 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
         CHANGED_FILES="$(git show --name-only --format= HEAD)"
-        
+
         # Detect Lambda function changes
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
@@ -289,7 +289,7 @@ jobs:
             fi
           fi
         fi
-        
+
         # Determine environment based on branch
         if [ "${BRANCH_NAME}" = "main" ]; then
           ENVIRONMENT="production"
@@ -302,14 +302,14 @@ jobs:
           ENVIRONMENT="staging"
           echo "Deploying agent branch: ${BRANCH_NAME} (using staging environment with branch-specific resources)"
         fi
-        
+
         # Sanitize branch name for AWS resource naming (remove invalid chars, lowercase)
         # This matches the Python sanitize_branch_name function logic
         BRANCH_SANITIZED=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g' | cut -c1-50)
         if [ -z "${BRANCH_SANITIZED}" ]; then
           BRANCH_SANITIZED="default"
         fi
-        
+
         echo "Branch name: ${BRANCH_NAME}"
         echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
         echo "Lambda changed: ${LAMBDA_CHANGED}"
@@ -329,7 +329,7 @@ jobs:
         fi
 
         echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
-        
+
         export DEPLOY_AUTH_STACK_OVERRIDE="${DEPLOY_AUTH_STACK_EFFECTIVE}"
         cdk deploy "${STACKS[@]}" \
           --require-approval never \
