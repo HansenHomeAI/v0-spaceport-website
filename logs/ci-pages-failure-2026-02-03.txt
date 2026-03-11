@@ -1,0 +1,280 @@
+deploy	Set up job	﻿2026-02-03T19:03:09.0945273Z Current runner version: '2.331.0'
+deploy	Set up job	2026-02-03T19:03:09.0974375Z ##[group]Runner Image Provisioner
+deploy	Set up job	2026-02-03T19:03:09.0975595Z Hosted Compute Agent
+deploy	Set up job	2026-02-03T19:03:09.0976570Z Version: 20260123.484
+deploy	Set up job	2026-02-03T19:03:09.0977815Z Commit: 6bd6555ca37d84114959e1c76d2c01448ff61c5d
+deploy	Set up job	2026-02-03T19:03:09.0978988Z Build Date: 2026-01-23T19:41:17Z
+deploy	Set up job	2026-02-03T19:03:09.0980059Z Worker ID: {471aa42e-c622-483a-8b5e-ac41ad9a5e20}
+deploy	Set up job	2026-02-03T19:03:09.0981103Z Azure Region: centralus
+deploy	Set up job	2026-02-03T19:03:09.0982019Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:03:09.0983908Z ##[group]Operating System
+deploy	Set up job	2026-02-03T19:03:09.0984998Z Ubuntu
+deploy	Set up job	2026-02-03T19:03:09.0985839Z 24.04.3
+deploy	Set up job	2026-02-03T19:03:09.0986591Z LTS
+deploy	Set up job	2026-02-03T19:03:09.0987646Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:03:09.0988543Z ##[group]Runner Image
+deploy	Set up job	2026-02-03T19:03:09.0989423Z Image: ubuntu-24.04
+deploy	Set up job	2026-02-03T19:03:09.0990311Z Version: 20260126.10.1
+deploy	Set up job	2026-02-03T19:03:09.0991781Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260126.10/images/ubuntu/Ubuntu2404-Readme.md
+deploy	Set up job	2026-02-03T19:03:09.0993867Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260126.10
+deploy	Set up job	2026-02-03T19:03:09.0995163Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:03:09.0996813Z ##[group]GITHUB_TOKEN Permissions
+deploy	Set up job	2026-02-03T19:03:09.0999614Z Contents: read
+deploy	Set up job	2026-02-03T19:03:09.1000501Z Metadata: read
+deploy	Set up job	2026-02-03T19:03:09.1001444Z ##[endgroup]
+deploy	Set up job	2026-02-03T19:03:09.1004465Z Secret source: Actions
+deploy	Set up job	2026-02-03T19:03:09.1005811Z Prepare workflow directory
+deploy	Set up job	2026-02-03T19:03:09.1417972Z Prepare all required actions
+deploy	Set up job	2026-02-03T19:03:09.1456234Z Getting action download info
+deploy	Set up job	2026-02-03T19:03:09.5447463Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+deploy	Set up job	2026-02-03T19:03:09.6689179Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+deploy	Set up job	2026-02-03T19:03:09.7617794Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+deploy	Set up job	2026-02-03T19:03:09.9791537Z Complete job name: deploy
+deploy	Run actions/checkout@v4	﻿2026-02-03T19:03:10.0715309Z ##[group]Run actions/checkout@v4
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0717895Z with:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0719272Z   repository: HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0721002Z   token: ***
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0722221Z   ssh-strict: true
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0723482Z   ssh-user: git
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0724782Z   persist-credentials: true
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0726244Z   clean: true
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0727910Z   sparse-checkout-cone-mode: true
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0729466Z   fetch-depth: 1
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0730640Z   fetch-tags: false
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0731794Z   show-progress: true
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0732899Z   lfs: false
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0734119Z   submodules: false
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0735422Z   set-safe-directory: true
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.0737552Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.1889359Z Syncing repository: HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.1893300Z ##[group]Getting Git version info
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.1895430Z Working directory is '/home/runner/work/v0-spaceport-website/v0-spaceport-website'
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.1898756Z [command]/usr/bin/git version
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.1972168Z git version 2.52.0
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.1999864Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2014847Z Temporarily overriding HOME='/home/runner/work/_temp/8f97662c-040a-47c8-9a7e-4451679cdc0b' before making global git config changes
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2016731Z Adding repository directory to the temporary git global config as a safe directory
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2028891Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/v0-spaceport-website/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2072079Z Deleting the contents of '/home/runner/work/v0-spaceport-website/v0-spaceport-website'
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2075816Z ##[group]Initializing the repository
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2080191Z [command]/usr/bin/git init /home/runner/work/v0-spaceport-website/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2187892Z hint: Using 'master' as the name for the initial branch. This default branch name
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2190234Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2192868Z hint: to use in all of your new repositories, which will suppress this warning,
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2194466Z hint: call:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2195396Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2196724Z hint: 	git config --global init.defaultBranch <name>
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2198748Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2200038Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2202044Z hint: 'development'. The just-created branch can be renamed via this command:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2203631Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2204362Z hint: 	git branch -m <name>
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2205152Z hint:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2206112Z hint: Disable this message with "git config set advice.defaultBranchName false"
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2208226Z Initialized empty Git repository in /home/runner/work/v0-spaceport-website/v0-spaceport-website/.git/
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2211512Z [command]/usr/bin/git remote add origin https://github.com/HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2240430Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2244546Z ##[group]Disabling automatic garbage collection
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2245676Z [command]/usr/bin/git config --local gc.auto 0
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2275524Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2276760Z ##[group]Setting up auth
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2282338Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2313719Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2666382Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2698032Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2922656Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.2953776Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.3208100Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.3244534Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.3246818Z ##[group]Fetching the repository
+deploy	Run actions/checkout@v4	2026-02-03T19:03:10.3255641Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6ec02ee2a649b732d4e2065b6fa87c5e2c2c34f7:refs/remotes/origin/agent-74621839-explore-auto-listings
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4390387Z From https://github.com/HansenHomeAI/v0-spaceport-website
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4393026Z  * [new ref]         6ec02ee2a649b732d4e2065b6fa87c5e2c2c34f7 -> origin/agent-74621839-explore-auto-listings
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4425171Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4427553Z ##[group]Determining the checkout info
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4429388Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4431504Z [command]/usr/bin/git sparse-checkout disable
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4475002Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4503012Z ##[group]Checking out the ref
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.4507697Z [command]/usr/bin/git checkout --progress --force -B agent-74621839-explore-auto-listings refs/remotes/origin/agent-74621839-explore-auto-listings
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.7269864Z Switched to a new branch 'agent-74621839-explore-auto-listings'
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.7275282Z branch 'agent-74621839-explore-auto-listings' set up to track 'origin/agent-74621839-explore-auto-listings'.
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.7296183Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.7332054Z [command]/usr/bin/git log -1 --format=%H
+deploy	Run actions/checkout@v4	2026-02-03T19:03:11.7354761Z 6ec02ee2a649b732d4e2065b6fa87c5e2c2c34f7
+deploy	Select target Pages project per branch	﻿2026-02-03T19:03:11.7615258Z ##[group]Run BRANCH="agent-74621839-explore-auto-listings"
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7618205Z [36;1mBRANCH="agent-74621839-explore-auto-listings"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7620224Z [36;1mif [ "$BRANCH" = "main" ]; then[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7622168Z [36;1m  TARGET="v0-spaceport-website-prod-fresh"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7624058Z [36;1melse[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7625565Z [36;1m  TARGET="v0-spaceport-website-preview2"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7627476Z [36;1mfi[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7629003Z [36;1mecho "CF_PAGES_PROJECT=$TARGET" >> $GITHUB_ENV[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7631038Z [36;1mecho "project=$TARGET" >> $GITHUB_OUTPUT[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7633261Z [36;1mecho "Using CF Pages project: $TARGET for branch $BRANCH"[0m
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7673410Z shell: /usr/bin/bash -e {0}
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7674993Z ##[endgroup]
+deploy	Select target Pages project per branch	2026-02-03T19:03:11.7772545Z Using CF Pages project: v0-spaceport-website-preview2 for branch agent-74621839-explore-auto-listings
+deploy	Setup Node	﻿2026-02-03T19:03:11.8009474Z ##[group]Run actions/setup-node@v4
+deploy	Setup Node	2026-02-03T19:03:11.8011065Z with:
+deploy	Setup Node	2026-02-03T19:03:11.8012285Z   node-version: 20
+deploy	Setup Node	2026-02-03T19:03:11.8013558Z   cache: npm
+deploy	Setup Node	2026-02-03T19:03:11.8014933Z   cache-dependency-path: web/package-lock.json
+deploy	Setup Node	2026-02-03T19:03:11.8016644Z   always-auth: false
+deploy	Setup Node	2026-02-03T19:03:11.8018144Z   check-latest: false
+deploy	Setup Node	2026-02-03T19:03:11.8019802Z   token: ***
+deploy	Setup Node	2026-02-03T19:03:11.8021020Z env:
+deploy	Setup Node	2026-02-03T19:03:11.8022365Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Setup Node	2026-02-03T19:03:11.8024109Z ##[endgroup]
+deploy	Setup Node	2026-02-03T19:03:11.9815933Z Found in cache @ /opt/hostedtoolcache/node/20.20.0/x64
+deploy	Setup Node	2026-02-03T19:03:11.9820883Z ##[group]Environment details
+deploy	Setup Node	2026-02-03T19:03:12.3497972Z node: v20.20.0
+deploy	Setup Node	2026-02-03T19:03:12.3498897Z npm: 10.8.2
+deploy	Setup Node	2026-02-03T19:03:12.3499427Z yarn: 1.22.22
+deploy	Setup Node	2026-02-03T19:03:12.3500532Z ##[endgroup]
+deploy	Setup Node	2026-02-03T19:03:12.3524119Z [command]/opt/hostedtoolcache/node/20.20.0/x64/bin/npm config get cache
+deploy	Setup Node	2026-02-03T19:03:12.4708148Z /home/runner/.npm
+deploy	Setup Node	2026-02-03T19:03:12.7155326Z Cache hit for: node-cache-Linux-x64-npm-0019596879e84280eeafff29e0a0ea29ebb5e7dc5ee399a57ec5a5cb216cb3e9
+deploy	Setup Node	2026-02-03T19:03:13.8598481Z Received 96468992 of 455636485 (21.2%), 92.0 MBs/sec
+deploy	Setup Node	2026-02-03T19:03:14.8605937Z Received 251658240 of 455636485 (55.2%), 119.9 MBs/sec
+deploy	Setup Node	2026-02-03T19:03:15.9345282Z Received 402653184 of 455636485 (88.4%), 124.9 MBs/sec
+deploy	Setup Node	2026-02-03T19:03:16.2841878Z Received 455636485 of 455636485 (100.0%), 126.9 MBs/sec
+deploy	Setup Node	2026-02-03T19:03:16.2845975Z Cache Size: ~435 MB (455636485 B)
+deploy	Setup Node	2026-02-03T19:03:16.2914253Z [command]/usr/bin/tar -xf /home/runner/work/_temp/fdad82ac-4f7d-4ee0-8251-0b9acac5234d/cache.tzst -P -C /home/runner/work/v0-spaceport-website/v0-spaceport-website --use-compress-program unzstd
+deploy	Setup Node	2026-02-03T19:03:17.1987500Z Cache restored successfully
+deploy	Setup Node	2026-02-03T19:03:17.2853302Z Cache restored from key: node-cache-Linux-x64-npm-0019596879e84280eeafff29e0a0ea29ebb5e7dc5ee399a57ec5a5cb216cb3e9
+deploy	Install deps (tolerant to peer conflicts in CI)	﻿2026-02-03T19:03:17.3011732Z ##[group]Run npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:17.3012481Z [36;1mnpm ci --legacy-peer-deps || npm install --legacy-peer-deps[0m
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:17.3052411Z shell: /usr/bin/bash -e {0}
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:17.3052810Z env:
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:17.3053186Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:17.3053655Z ##[endgroup]
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:27.5198915Z npm warn deprecated path-match@1.2.4: This package is archived and no longer maintained. For support, visit https://github.com/expressjs/express/discussions
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:27.5260125Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:27.8287949Z npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:27.8987405Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.1731386Z npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.1840497Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.1849090Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.1882069Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.1943386Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.2273553Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.6148159Z npm warn deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:28.9111091Z npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:32.0638242Z npm warn deprecated three-mesh-bvh@0.7.8: Deprecated due to three.js version incompatibility. Please use v0.8.0, instead.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:34.1612969Z npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.0954138Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.0955327Z added 1603 packages, and audited 1604 packages in 32s
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.0955967Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.0956341Z 93 packages are looking for funding
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.0957239Z   run `npm fund` for details
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3118765Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3119784Z 35 vulnerabilities (2 low, 13 moderate, 20 high)
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3120371Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3120861Z To address issues that do not require attention, run:
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3121660Z   npm audit fix
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3121978Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3122348Z To address all issues possible, run:
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3123138Z   npm audit fix --force
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3123505Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3123948Z Some issues need review, and may require choosing
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3124703Z a different dependency.
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3125078Z 
+deploy	Install deps (tolerant to peer conflicts in CI)	2026-02-03T19:03:49.3125408Z Run `npm audit` for details.
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	﻿2026-02-03T19:03:49.4685069Z ##[group]Run set -euo pipefail
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4685587Z [36;1mset -euo pipefail[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4686008Z [36;1mBRANCH="agent-74621839-explore-auto-listings"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4686493Z [36;1mecho "Preparing .env for branch $BRANCH"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4686918Z [36;1m: > .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4698808Z [36;1mGOOGLE_MAPS_KEY="${MAPS_KEY_PRIMARY:-}"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4699399Z [36;1mif [ -z "$GOOGLE_MAPS_KEY" ]; then GOOGLE_MAPS_KEY="${MAPS_KEY_LEGACY:-}"; fi[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4699989Z [36;1mGOOGLE_MAPS_MAP_ID="${MAP_ID_PRIMARY:-}"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4700565Z [36;1mif [ -z "$GOOGLE_MAPS_MAP_ID" ]; then GOOGLE_MAPS_MAP_ID="${MAP_ID_LEGACY:-}"; fi[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4701098Z [36;1m[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4701406Z [36;1mif [ "$BRANCH" = "main" ]; then[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4702695Z [36;1m  echo "NEXT_PUBLIC_PROJECTS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4703525Z [36;1m  echo "NEXT_PUBLIC_DRONE_PATH_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4704392Z [36;1m  echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4705298Z [36;1m  echo "NEXT_PUBLIC_WAITLIST_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4706123Z [36;1mecho "NEXT_PUBLIC_ML_PIPELINE_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4706964Z [36;1mecho "NEXT_PUBLIC_BETA_ACCESS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4708080Z [36;1mecho "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4708653Z [36;1mecho "NEXT_PUBLIC_EXPLORE_API_URL=" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4709481Z [36;1mecho "NEXT_PUBLIC_FEEDBACK_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4710036Z [36;1mecho "NEXT_PUBLIC_COGNITO_REGION=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4710649Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4711571Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4712433Z [36;1m  echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4713542Z [36;1m  echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4714214Z [36;1m  echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4714877Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4715466Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4715975Z [36;1m  # Analytics environment variables[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4716754Z [36;1m  echo "NEXT_PUBLIC_SENTRY_DSN=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4717639Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4718182Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_HOST=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4718580Z [36;1melse[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4719202Z [36;1m  echo "NEXT_PUBLIC_PROJECTS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4719925Z [36;1m  echo "NEXT_PUBLIC_DRONE_PATH_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4720663Z [36;1m  echo "NEXT_PUBLIC_FILE_UPLOAD_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4721378Z [36;1m  echo "NEXT_PUBLIC_WAITLIST_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4722083Z [36;1mecho "NEXT_PUBLIC_ML_PIPELINE_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4722797Z [36;1mecho "NEXT_PUBLIC_BETA_ACCESS_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4723565Z [36;1mecho "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4724079Z [36;1mecho "NEXT_PUBLIC_EXPLORE_API_URL=" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4724766Z [36;1mecho "NEXT_PUBLIC_FEEDBACK_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4725265Z [36;1mecho "NEXT_PUBLIC_COGNITO_REGION=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4725802Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4726393Z [36;1mecho "NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4727367Z [36;1m  echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4728507Z [36;1m  echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4729333Z [36;1m  echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4729966Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4730548Z [36;1mecho "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4731060Z [36;1m  # Analytics environment variables[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4731844Z [36;1m  echo "NEXT_PUBLIC_SENTRY_DSN=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4732469Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_KEY=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4733005Z [36;1m  echo "NEXT_PUBLIC_POSTHOG_HOST=***" >> .env[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4733401Z [36;1mfi[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4733742Z [36;1mecho "Wrote $(wc -l < .env) vars to .env"[0m
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4765961Z shell: /usr/bin/bash -e {0}
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4766307Z env:
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4766644Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4767432Z   MAPS_KEY_PRIMARY: ***
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4767882Z   MAPS_KEY_LEGACY: ***
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4768227Z   MAP_ID_PRIMARY: ***
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4768536Z   MAP_ID_LEGACY: 
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4768861Z ##[endgroup]
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4830015Z Preparing .env for branch agent-74621839-explore-auto-listings
+deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-02-03T19:03:49.4859577Z Wrote 20 vars to .env
+deploy	Verify injected env values	﻿2026-02-03T19:03:49.4888602Z ##[group]Run if ! [ -s .env ]; then
+deploy	Verify injected env values	2026-02-03T19:03:49.4889048Z [36;1mif ! [ -s .env ]; then[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4889426Z [36;1m  echo ".env missing or empty" >&2[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4889810Z [36;1m  exit 1[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4890100Z [36;1mfi[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4890472Z [36;1mif grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env; then[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4891010Z [36;1m  echo "Detected empty NEXT_PUBLIC variables in .env" >&2[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4891658Z [36;1m  exit 1[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4891948Z [36;1mfi[0m
+deploy	Verify injected env values	2026-02-03T19:03:49.4922616Z shell: /usr/bin/bash -e {0}
+deploy	Verify injected env values	2026-02-03T19:03:49.4922966Z env:
+deploy	Verify injected env values	2026-02-03T19:03:49.4923305Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+deploy	Verify injected env values	2026-02-03T19:03:49.4923716Z ##[endgroup]
+deploy	Verify injected env values	2026-02-03T19:03:49.4991874Z NEXT_PUBLIC_EXPLORE_API_URL=
+deploy	Verify injected env values	2026-02-03T19:03:49.4994492Z Detected empty NEXT_PUBLIC variables in .env
+deploy	Verify injected env values	2026-02-03T19:03:49.5007749Z ##[error]Process completed with exit code 1.
+deploy	Post Run actions/checkout@v4	﻿2026-02-03T19:03:49.5169082Z Post job cleanup.
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6193495Z [command]/usr/bin/git version
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6234017Z git version 2.52.0
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6280539Z Temporarily overriding HOME='/home/runner/work/_temp/41aa2101-26b5-4dbe-9e18-8251f78ad4c4' before making global git config changes
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6282868Z Adding repository directory to the temporary git global config as a safe directory
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6286812Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/v0-spaceport-website/v0-spaceport-website
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6327421Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6364179Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6613586Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6638708Z http.https://github.com/.extraheader
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6653315Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6691731Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6935004Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+deploy	Post Run actions/checkout@v4	2026-02-03T19:03:49.6971275Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+deploy	Complete job	﻿2026-02-03T19:03:49.7325596Z Cleaning up orphan processes

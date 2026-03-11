@@ -33,3 +33,6 @@
 2026-03-06T10:40:00-07:00 stabilize touch waypoint insertion hit testing and long-press point capture
 2026-03-06T11:00:00-07:00 move touch waypoint insertion long-press detection onto native canvas touch listeners
 touch-retest 2026-03-07T04:05:55Z
+2026-03-07 compact terrain toggle panel
+2026-03-07 terrain-toggle-row align/justify flex-start
+2026-03-10T23:00:00Z boundary-fit branch merge verification retrigger
