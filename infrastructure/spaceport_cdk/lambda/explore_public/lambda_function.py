@@ -220,7 +220,7 @@ def lambda_handler(event, context):
     )
 
     shaped = [_shape_item(item) for item in items if item.get('viewerUrl')]
-    if len(shaped) < limit:
+    if not shaped:
         project_fallbacks = _load_project_fallback_items(limit)
         by_viewer_url = {
             item['viewerUrl']: item
