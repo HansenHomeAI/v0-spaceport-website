@@ -432,7 +432,14 @@ def _detect_rate_limit(content: str) -> bool:
     if not content:
         return False
     lowered = content.lower()
-    return "too many requests" in lowered or "rate limit" in lowered or "rate limited" in lowered
+    return (
+        "too many requests" in lowered
+        or "rate limit" in lowered
+        or "rate limited" in lowered
+        or "http 429" in lowered
+        or "status 429" in lowered
+        or " 429" in lowered
+    )
 
 
 async def _login_in_page(

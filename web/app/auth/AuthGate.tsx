@@ -241,11 +241,11 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
         {/* Modal Content */}
         <div className="auth-modal-content">
           <div className="auth-modal-header">
-            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport AI" className="auth-logo" />
+            <img src="/assets/SpaceportIcons/SpaceportFullLogoWhite.svg" alt="Spaceport" className="auth-logo" />
             {authMode === 'waitlist' ? (
               <>
                 <h2>New here?</h2>
-                <p>Join the waitlist to be among the first to access Spaceport AI.</p>
+                <p>Join the waitlist to be among the first to access Spaceport.</p>
               </>
             ) : (
               <>
@@ -341,7 +341,7 @@ export default function AuthGate({ children, onAuthenticated }: AuthGateProps): 
               {view === 'forgot_password' && (
                 <form onSubmit={handleForgotPassword} className="auth-form">
                   <p className="auth-description">
-                    Enter your email address and we'll send you a code to reset your password.
+                    Enter your email address and we&apos;ll send you a code to reset your password.
                   </p>
                   <div className="input-group">
                     <input

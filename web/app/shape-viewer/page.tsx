@@ -92,6 +92,22 @@ class SpiralGenerator {
     const t_out = params.N * dphi;
     const t_hold = dphi;
     const t_total = 2 * t_out + t_hold;
+
+    // When slices is very small, a single midpoint (0.5) can collapse the perceived arc
+    // (e.g. slices=1 puts the midpoint at 180 degrees and all bounce points at 0 degrees).
+    // Add extra sampling so the path retains circularity for 1-2 battery flights.
+    const isSingleSlice = params.slices === 1;
+    const isDoubleSlice = params.slices === 2;
+    const sharedMidFractions = isSingleSlice
+      ? [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6]
+      : isDoubleSlice
+        ? [1 / 3, 2 / 3]
+        : [0.5];
+    const outboundMidFractions = (isSingleSlice || isDoubleSlice)
+      ? [...sharedMidFractions].reverse()
+      : sharedMidFractions;
+    const inboundMidFractions = sharedMidFractions;
+    const holdMidFractions = sharedMidFractions;
     
     const waypoints: Waypoint[] = [];
     
@@ -116,29 +132,49 @@ class SpiralGenerator {
     waypoints.push(findSpiralPoint(0, 'outbound_start', index++));
     
     for (let bounce = 1; bounce <= params.N; bounce++) {
-      const t_mid = (bounce - 0.5) * dphi;
-      waypoints.push(findSpiralPoint(t_mid, `outbound_mid_${bounce}`, index++));
+      outboundMidFractions.forEach((fraction) => {
+        const t_mid = (bounce - fraction) * dphi;
+        const label = Math.round(fraction * 100);
+        const phase = (isSingleSlice || isDoubleSlice)
+          ? `outbound_mid_${bounce}_q${label}`
+          : `outbound_mid_${bounce}`;
+        waypoints.push(findSpiralPoint(t_mid, phase, index++));
+      });
       
       const t_bounce = bounce * dphi;
       waypoints.push(findSpiralPoint(t_bounce, `outbound_bounce_${bounce}`, index++));
     }
     
-    const t_mid_hold = t_out + t_hold / 2;
     const t_end_hold = t_out + t_hold;
     
-    waypoints.push(findSpiralPoint(t_mid_hold, 'hold_mid', index++));
+    holdMidFractions.forEach((fraction) => {
+      const t_hold_point = t_out + fraction * t_hold;
+      const label = Math.round(fraction * 100);
+      const phase = (isSingleSlice || isDoubleSlice) ? `hold_mid_q${label}` : 'hold_mid';
+      waypoints.push(findSpiralPoint(t_hold_point, phase, index++));
+    });
     waypoints.push(findSpiralPoint(t_end_hold, 'hold_end', index++));
     
-    const t_first_inbound_mid = t_end_hold + 0.5 * dphi;
-    waypoints.push(findSpiralPoint(t_first_inbound_mid, 'inbound_mid_0', index++));
+    inboundMidFractions.forEach((fraction) => {
+      const t_first_inbound_mid = t_end_hold + fraction * dphi;
+      const label = Math.round(fraction * 100);
+      const phase = (isSingleSlice || isDoubleSlice) ? `inbound_mid_0_q${label}` : 'inbound_mid_0';
+      waypoints.push(findSpiralPoint(t_first_inbound_mid, phase, index++));
+    });
     
     for (let bounce = 1; bounce <= params.N; bounce++) {
       const t_bounce = t_end_hold + bounce * dphi;
       waypoints.push(findSpiralPoint(t_bounce, `inbound_bounce_${bounce}`, index++));
       
       if (bounce < params.N) {
-        const t_mid = t_end_hold + (bounce + 0.5) * dphi;
-        waypoints.push(findSpiralPoint(t_mid, `inbound_mid_${bounce}`, index++));
+        inboundMidFractions.forEach((fraction) => {
+          const t_mid = t_end_hold + (bounce + fraction) * dphi;
+          const label = Math.round(fraction * 100);
+          const phase = (isSingleSlice || isDoubleSlice)
+            ? `inbound_mid_${bounce}_q${label}`
+            : `inbound_mid_${bounce}`;
+          waypoints.push(findSpiralPoint(t_mid, phase, index++));
+        });
       }
     }
     
@@ -256,9 +292,10 @@ function Scene({ params, batteryIndex, showLabels }: { params: FlightParams; bat
       <FlightPathVisualization waypoints={waypoints} showLabels={showLabels} />
       <OrbitControls 
         makeDefault 
-        enableRotate={false}
+        // Keep top-down as the default, but allow rotate so the user can verify the path in 3D.
+        enableRotate
         mouseButtons={{
-          LEFT: THREE.MOUSE.PAN,
+          LEFT: THREE.MOUSE.ROTATE,
           MIDDLE: THREE.MOUSE.DOLLY,
           RIGHT: THREE.MOUSE.PAN
         }}
@@ -278,6 +315,7 @@ export default function ShapeViewerPage() {
   
   const [batteryIndex, setBatteryIndex] = useState(0);
   const [showLabels, setShowLabels] = useState(false);
+  const [waypointCount, setWaypointCount] = useState<number | null>(null);
   
   const updateParam = (key: keyof FlightParams, value: number) => {
     setParams(prev => ({ ...prev, [key]: value }));
@@ -285,6 +323,12 @@ export default function ShapeViewerPage() {
       setBatteryIndex(Math.max(0, value - 1));
     }
   };
+
+  useEffect(() => {
+    const generator = new SpiralGenerator();
+    const path = generator.generateFlightPath(params, batteryIndex);
+    setWaypointCount(path.length);
+  }, [params, batteryIndex]);
   
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#0a0a0a', display: 'flex' }}>
@@ -307,7 +351,7 @@ export default function ShapeViewerPage() {
           <div style={{ fontSize: '11px' }}>
             <div>dphi: {(2 * Math.PI / params.slices).toFixed(4)} rad</div>
             <div>dphi: {(360 / params.slices).toFixed(2)}°</div>
-            <div>Waypoints: {(2 * params.N + 5)} per battery</div>
+            <div>Waypoints: {waypointCount ?? '...'} per battery</div>
           </div>
         </div>
         
@@ -451,17 +495,20 @@ export default function ShapeViewerPage() {
           lineHeight: '1.6',
           border: '1px solid #ff4444'
         }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#ff6666' }}>Bug Description:</div>
-          <div>At slices=1, dphi=2π causes phase oscillation to span full circle, collapsing all waypoints onto same radial line.</div>
+          <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#ff6666' }}>Note:</div>
+          <div>For 1-2 battery flights we add multiple midpoints per bounce segment to preserve circularity; 3+ batteries keep the original single-midpoint sampling.</div>
         </div>
       </div>
       
       {/* 2D Shape Viewer */}
       <div style={{ flex: 1, position: 'relative' }}>
         <Canvas 
-          camera={{ position: [0, 0, 3000], fov: 50 }}
+          // Explicit near/far avoids a black canvas caused by the default camera frustum clipping the scene.
+          // (Orthographic + z=3000 can exceed the default `far` in r3f.)
+          camera={{ position: [0, 0, 1000], near: 0.1, far: 50000, zoom: 0.2 }}
           orthographic
         >
+          <color attach="background" args={['#0a0a0a']} />
           <Scene params={params} batteryIndex={batteryIndex} showLabels={showLabels} />
         </Canvas>
         
@@ -483,4 +530,3 @@ export default function ShapeViewerPage() {
     </div>
   );
 }
-

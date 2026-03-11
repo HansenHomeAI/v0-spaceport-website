@@ -69,6 +69,11 @@ logs/local-dev-server.pid
 
 # Test logs
 *.log
+
+# Agent artifacts
+logs/*.png
+logs/*.jpg
+logs/*.jpeg
 .next/
 .vercel/
 web/.next/
@@ -77,3 +82,6 @@ web/.vercel/
 
 # Cesium static assets copied at build time
 web/public/cesium/
+
+# 3D model files (large binary files)
+*.ply

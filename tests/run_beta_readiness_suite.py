@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Spaceport AI - Complete Beta Readiness Test Runner
+🚀 Spaceport - Complete Beta Readiness Test Runner
 
 This script runs all beta readiness tests in the correct order and provides
 a comprehensive assessment of your system's readiness for early beta testing.
@@ -379,7 +379,7 @@ class BetaReadinessRunner:
 def main():
     """Main execution function"""
     
-    parser = argparse.ArgumentParser(description='Run Spaceport AI Beta Readiness Test Suite')
+    parser = argparse.ArgumentParser(description='Run Spaceport Beta Readiness Test Suite')
     parser.add_argument('--quick', action='store_true', help='Run essential tests only')
     parser.add_argument('--verbose', action='store_true', help='Show detailed output')
     

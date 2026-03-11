@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Spaceport AI waitlist system is a production-ready solution that stores user submissions in DynamoDB and sends email notifications to administrators.
+The Spaceport waitlist system is a production-ready solution that stores user submissions in DynamoDB and sends email notifications to administrators.
 
 ## Architecture
 

@@ -1,5 +1,5 @@
-reason: In progress. Auth staging stack was overwritten by another branch (new user pool/client and no Litchi API output). Redeploying this branch to restore Litchi resources, then re-running UI flow.
-last_step: Litchi UI flow test timed out after login; needed more robust login detection. Updated MCP script and queued new deploy.
-next_unblocked_step: Wait for CDK + Pages workflows to finish, refresh Auth outputs, update web/.env.local, then rerun Litchi UI flow and upload verification.
-owner_action_needed: None.
-updated: 2026-02-04T00:12:30Z
+reason: merging origin/development into agent-49231687-litchi-connection-fix, restoring preview Litchi env wiring, and validating the integrated branch end to end
+last_step: created an isolated worktree for the feature branch, merged origin/development, and identified conflicts in Pages env injection, infra app selection, and the project modal UI
+next_unblocked_step: finish conflict resolution, run local verification for the Litchi flow, push the branch, and monitor Pages/CDK checks until the preview is green
+owner_action_needed: none
+updated: 2026-03-11T00:20:00Z
