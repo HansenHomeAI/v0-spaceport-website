@@ -878,6 +878,8 @@ class AuthStack(Stack):
         self.model_delivery_api = model_delivery_api
 
         # ========== LITCHI AUTOMATION ==========
+        # Branch previews share the staging auth stack, so these resources must
+        # stay on the shared stack for preview Pages builds to resolve LitchiApiUrl.
         litchi_credentials_table = self._get_or_create_dynamodb_table(
             construct_id="Spaceport-LitchiCredentialsTable",
             preferred_name=f"Spaceport-LitchiCredentials-{suffix}",
