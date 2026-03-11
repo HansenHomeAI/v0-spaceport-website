@@ -55,7 +55,6 @@ class SpaceportStack(Stack):
                 env_config.get("sharedAuthStackName", "SpaceportAuthStagingStack"),
             )
             Tags.of(self).add("ManagedBy", "github-actions")
-        
         def scoped_name(prefix: str, max_total_length: int = 64) -> str:
             return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
@@ -64,7 +63,7 @@ class SpaceportStack(Stack):
         self.dynamodb_client = boto3.client('dynamodb', region_name=region)
 
         # Create a CloudFormation parameter for the API key
-        api_key_param = CfnParameter(
+        google_maps_api_key_param = CfnParameter(
             self, "GoogleMapsApiKey",
             type="String",
             description="Google Maps API Key",
@@ -182,7 +181,8 @@ class SpaceportStack(Stack):
                 "UPLOAD_BUCKET": self.upload_bucket.bucket_name,
                 "FILE_METADATA_TABLE": self.file_metadata_table.table_name,
                 "DRONE_PATH_TABLE": self.drone_path_table.table_name,
-                "ML_BUCKET": f"spaceport-ml-processing-{suffix}"
+                "ML_BUCKET": f"spaceport-ml-processing-{suffix}",
+                "GOOGLE_MAPS_API_KEY": google_maps_api_key_param.value_as_string,
             }
         )
         

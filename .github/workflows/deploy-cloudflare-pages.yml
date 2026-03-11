@@ -3,7 +3,7 @@ name: Deploy Next.js to Cloudflare Pages
 on:
   workflow_dispatch:
   push:
-    branches: [ main, development, 'agent-*', 'codex/agent-*' ]
+    branches: [ main, development, 'agent-*', 'codex/*' ]
     paths:
       - 'web/**'
 
@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
+      actions: read
       id-token: write
       contents: read
     defaults:
@@ -61,6 +62,50 @@ jobs:
             echo "${key}=${value}" >> "$GITHUB_ENV"
           done < /tmp/pages-context.env
 
+      - name: Wait for matching CDK Deploy run
+        if: github.event_name == 'push'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          max_attempts=120
+          sleep_seconds=10
+          attempt=1
+
+          while [ "$attempt" -le "$max_attempts" ]; do
+            response=$(curl -fsSL \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/cdk-deploy.yml/runs?head_sha=${GITHUB_SHA}&branch=${GITHUB_REF_NAME}&event=push&per_page=10")
+
+            run_count=$(echo "$response" | jq '.workflow_runs | length')
+            if [ "$run_count" -eq 0 ]; then
+              echo "[$attempt/$max_attempts] Waiting for CDK Deploy run to appear for ${GITHUB_SHA}..."
+            else
+              status=$(echo "$response" | jq -r '.workflow_runs[0].status')
+              conclusion=$(echo "$response" | jq -r '.workflow_runs[0].conclusion // empty')
+              run_url=$(echo "$response" | jq -r '.workflow_runs[0].html_url')
+
+              echo "[$attempt/$max_attempts] CDK Deploy status=${status} conclusion=${conclusion:-<pending>} url=${run_url}"
+
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" = "success" ]; then
+                  echo "Matching CDK Deploy run completed successfully."
+                  exit 0
+                fi
+
+                echo "Matching CDK Deploy run did not succeed." >&2
+                exit 1
+              fi
+            fi
+
+            sleep "$sleep_seconds"
+            attempt=$((attempt + 1))
+          done
+
+          echo "Timed out waiting for matching CDK Deploy run for ${GITHUB_SHA}" >&2
+          exit 1
       - name: Resolve CloudFormation outputs
         id: stack_outputs
         run: |
@@ -133,6 +178,7 @@ jobs:
           SUBSCRIPTION_API_URL="$(get_output "$AUTH_STACK_NAME" "SubscriptionApiUrl")"
           BETA_ACCESS_API_URL="$(get_output "$AUTH_STACK_NAME" "BetaAccessAdminApiUrl")"
           MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_STACK_NAME" "ModelDeliveryAdminApiUrl")"
+          EXPLORE_API_URL="$(get_output "$AUTH_STACK_NAME" "ExplorePublicApiUrl")"
 
           DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
           FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
@@ -147,6 +193,7 @@ jobs:
             echo "SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL"
             echo "BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL"
             echo "MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL"
+            echo "EXPLORE_API_URL=$EXPLORE_API_URL"
             echo "DRONE_PATH_API_URL=$DRONE_PATH_API_URL"
             echo "FILE_UPLOAD_API_URL=$FILE_UPLOAD_API_URL"
             echo "WAITLIST_API_URL=$WAITLIST_API_URL"
@@ -198,6 +245,7 @@ jobs:
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
+            echo "NEXT_PUBLIC_EXPLORE_API_URL=$EXPLORE_API_URL" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PROD }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
@@ -219,6 +267,7 @@ jobs:
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
+            echo "NEXT_PUBLIC_EXPLORE_API_URL=$EXPLORE_API_URL" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
             echo "NEXT_PUBLIC_COGNITO_REGION=${{ secrets.COGNITO_REGION_PREVIEW }}" >> .env
             echo "NEXT_PUBLIC_COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
@@ -362,6 +411,13 @@ jobs:
               echo "Attempt $i"
               if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
               sleep 5
-              if [ $i -eq 12 ]; then echo "Timeout waiting for $URL"; exit 1; fi
+              if [ $i -eq 12 ]; then
+                if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then
+                  echo "Timeout waiting for hash URL $URL; continuing"
+                  break
+                fi
+                echo "Timeout waiting for $URL"
+                exit 1
+              fi
             done
           done

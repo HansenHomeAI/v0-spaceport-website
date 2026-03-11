@@ -5,7 +5,12 @@ import io
 import os
 import requests
 import time
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Union
+
+
+class TerrainElevationUnavailableError(RuntimeError):
+    """Raised when terrain-following requires live elevation data but Google is unavailable."""
+
 
 class SpiralDesigner:
     """
@@ -91,18 +96,26 @@ class SpiralDesigner:
         """
         self.waypoint_cache = []
         self.elevation_cache = {}  # Cache for elevation data with coordinate keys
+        self.require_live_elevation = False
 
         # DEVELOPMENT API KEY - Replace with environment variable for production
         # This key is rate-limited and for development/testing only
         dev_api_key = "AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU"
 
-        # Priority: Environment variable > Development key
-        self.api_key = os.environ.get("GOOGLE_MAPS_API_KEY", dev_api_key)
+        # Treat a blank env var the same as missing so preview/staging never silently
+        # switches from the intended production key to an unusable empty string.
+        configured_api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+        self.api_key = configured_api_key or dev_api_key
 
         # Log which API key is being used (mask for security)
-        key_source = "PRODUCTION" if "GOOGLE_MAPS_API_KEY" in os.environ else "DEV (RATE LIMITED)"
+        key_source = "PRODUCTION" if configured_api_key else "DEV (RATE LIMITED)"
         masked_key = self.api_key[:10] + "..." + self.api_key[-4:] if self.api_key else "None"
         print(f"🔑 Using {key_source} API key: {masked_key}")
+
+    def _handle_elevation_failure(self, message: str, default_elevation: float) -> float:
+        if self.require_live_elevation:
+            raise TerrainElevationUnavailableError(message)
+        return default_elevation
 
     def haversine_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         """
@@ -170,7 +183,10 @@ class SpiralDesigner:
         if not self.api_key:
             # Graceful degradation when no API key available
             print("Warning: No Google Maps API key available, using default elevation")
-            return 4500.0  # Default elevation in feet
+            return self._handle_elevation_failure(
+                "Terrain following is unavailable because GOOGLE_MAPS_API_KEY is not configured.",
+                4500.0,
+            )
 
         try:
             # Google Maps Elevation API endpoint
@@ -178,12 +194,22 @@ class SpiralDesigner:
             response = requests.get(url, timeout=10)
 
             if response.status_code != 200:
-                raise ValueError(f"Elevation HTTP error {response.status_code}")
+                return self._handle_elevation_failure(
+                    f"Terrain following is unavailable because the Google Elevation API returned HTTP {response.status_code}.",
+                    1000.0,
+                )
 
             data = response.json()
             if data["status"] != "OK" or not data["results"]:
-                print(f"Google Elevation API error: {data.get('status', 'Unknown error')}")
-                return 1000.0  # Default to 1000ft if API fails
+                status = data.get("status", "Unknown error")
+                detail = data.get("error_message")
+                print(f"Google Elevation API error: {status}")
+                if detail:
+                    print(f"Google Elevation API detail: {detail}")
+                message = f"Terrain following is unavailable because Google Elevation returned {status}"
+                if detail:
+                    message = f"{message}: {detail}"
+                return self._handle_elevation_failure(message, 1000.0)
 
             # Convert meters to feet (Google returns meters)
             elevation_meters = data["results"][0]["elevation"]
@@ -197,7 +223,10 @@ class SpiralDesigner:
         except Exception as e:
             print(f"Elevation API error for {lat},{lon}: {str(e)}")
             # Return reasonable default elevation on any error
-            return 1000.0
+            return self._handle_elevation_failure(
+                f"Terrain following is unavailable because the Google Elevation request failed: {str(e)}",
+                1000.0,
+            )
 
     def get_elevations_feet_optimized(self, locations: List[Tuple[float, float]]) -> List[float]:
         """
@@ -273,125 +302,197 @@ class SpiralDesigner:
             'x': point['x'] * math.cos(angle) - point['y'] * math.sin(angle),
             'y': point['x'] * math.sin(angle) + point['y'] * math.cos(angle)
         }
+    def normalize_expansion_request(
+        self,
+        min_expansion_dist: Optional[float] = None,
+        max_expansion_dist: Optional[float] = None,
+    ) -> Dict:
+        """Normalize optional expansion inputs into a single request shape."""
+        if min_expansion_dist is not None and min_expansion_dist <= 0:
+            raise ValueError("minExpansionDist must be greater than 0")
+        if max_expansion_dist is not None and max_expansion_dist <= 0:
+            raise ValueError("maxExpansionDist must be greater than 0")
 
-    def make_spiral(self, dphi: float, N: int, r0: float, r_hold: float, steps: int = 1200) -> List[Dict]:
+        if min_expansion_dist is None and max_expansion_dist is None:
+            return {
+                'mode': 'default',
+                'requested_min': None,
+                'requested_max': None,
+                'has_custom_spacing': False,
+            }
+
+        if min_expansion_dist is None:
+            min_expansion_dist = max_expansion_dist
+        if max_expansion_dist is None:
+            max_expansion_dist = min_expansion_dist
+
+        return {
+            'mode': 'custom',
+            'requested_min': float(min_expansion_dist),
+            'requested_max': float(max_expansion_dist),
+            'has_custom_spacing': True,
+        }
+
+    def build_requested_custom_intervals(
+        self,
+        N: int,
+        requested_min: Optional[float],
+        requested_max: Optional[float],
+    ) -> List[float]:
+        """Build the per-bounce expansion distances for a custom spacing request."""
+        if requested_min is None and requested_max is None:
+            return []
+
+        min_dist = requested_min if requested_min is not None else requested_max
+        max_dist = requested_max if requested_max is not None else min_dist
+        if min_dist is None or max_dist is None:
+            return []
+
+        if N <= 1:
+            return [float(min_dist)]
+
+        return [
+            float(min_dist + (max_dist - min_dist) * k / max(N - 1, 1))
+            for k in range(N)
+        ]
+
+    @staticmethod
+    def scale_custom_intervals(intervals: List[float], scale: float) -> List[float]:
+        """Scale a custom spacing profile while preserving its shape."""
+        return [float(interval * scale) for interval in intervals]
+
+    @staticmethod
+    def custom_outer_radius(r0: float, intervals: List[float]) -> float:
+        """Return the maximum radius reached by a custom interval profile."""
+        return float(r0 + sum(intervals))
+
+    def calculate_actual_outer_radius(self, params: Dict) -> float:
+        """Measure the maximum waypoint radius from the resolved path geometry."""
+        wps = self.build_slice(0, params)
+        if not wps:
+            return float(params.get('r0', 0.0))
+        return max(math.sqrt(wp['x'] * wp['x'] + wp['y'] * wp['y']) for wp in wps)
+
+    def make_spiral(
+        self,
+        dphi: float,
+        N: int,
+        r0: float,
+        r_hold: float,
+        steps: int = 1200,
+        custom_expansion_profile: Optional[List[float]] = None,
+        min_expansion_dist: float = None,
+        max_expansion_dist: float = None,
+    ) -> List[Dict]:
         """
-        Generate the core exponential spiral pattern with neural network optimizations.
+        Generate the core spiral pattern.
 
-        MATHEMATICAL FOUNDATION:
-        =======================
-
-        Exponential Spiral: r(t) = r₀ * exp(α * t)
-
-        Original Alpha: α = ln(r_hold/r₀)/(N*Δφ)
-        OPTIMIZED Alpha: α = ln(r_hold/r₀)/(N*Δφ) * 0.86  ← 14% reduction for denser coverage
-
-        WHY 14% REDUCTION?
-        - Creates smaller radial steps between bounces
-        - Increases waypoint density by ~14% per spiral area
-        - Better photo overlap for neural network training
-        - Smoother flight transitions
-
-        THREE-PHASE ALGORITHM:
-        =====================
-
-        Phase 1 - OUTWARD SPIRAL (0 ≤ t ≤ t_out):
-        r(t) = r₀ * exp(α * t)
-
-        Phase 2 - HOLD PATTERN (t_out < t ≤ t_out + t_hold):
-        r(t) = actual_max_radius  ← Uses ACTUAL radius reached, not original r_hold
-
-        Phase 3 - INWARD SPIRAL (t > t_out + t_hold):
-        r(t) = actual_max_radius * exp(-α * (t - t_out - t_hold))
-
-        CRITICAL FIX IMPLEMENTED:
-        The hold pattern now uses actual_max_radius instead of r_hold parameter.
-        This eliminates the large gap that was occurring between outbound_bounce_6 and hold_mid.
-
-        PHASE CALCULATION:
-        Phase oscillates between 0 and 2Δφ to create the characteristic spiral bounce pattern.
+        Two modes:
+        1. DEFAULT (exponential): r(t) = r₀ * exp(α*t) with progressive alpha
+        2. CUSTOM DISTANCES: bounce-to-bounce distance progresses linearly
+           from min_expansion_dist to max_expansion_dist (both in feet).
 
         Args:
             dphi: Angular step size per bounce (radians)
             N: Number of bounces (direction changes)
             r0: Starting radius (feet)
-            r_hold: Target hold radius (feet) - used only for alpha calculation
-            steps: Number of discrete points to generate (1200 = high precision)
-
-        Returns:
-            List of {x, y} points in feet relative to center
+            r_hold: Target hold radius (feet) - used for alpha in default mode
+            steps: Number of discrete points to generate
+            min_expansion_dist: Minimum radial distance between bounces (feet), optional
+            max_expansion_dist: Maximum radial distance between bounces (feet), optional
         """
-        # PROGRESSIVE ALPHA SYSTEM: Steeper early bounces, normal later bounces
-        # Solution: Use higher alpha for early expansion, then reduce for later bounces
+        interval_profile = list(custom_expansion_profile) if custom_expansion_profile is not None else None
+        if interval_profile is None:
+            expansion_request = self.normalize_expansion_request(min_expansion_dist, max_expansion_dist)
+            if expansion_request['has_custom_spacing']:
+                interval_profile = self.build_requested_custom_intervals(
+                    N,
+                    expansion_request['requested_min'],
+                    expansion_request['requested_max'],
+                )
+        else:
+            expansion_request = {
+                'mode': 'custom',
+                'requested_min': interval_profile[0] if interval_profile else None,
+                'requested_max': interval_profile[-1] if interval_profile else None,
+                'has_custom_spacing': bool(interval_profile),
+            }
 
-        # Calculate base parameters
-        base_alpha = math.log(r_hold / r0) / (N * dphi)
-        radius_ratio = r_hold / r0
+        use_custom_distances = interval_profile is not None and len(interval_profile) > 0
 
-        # PROGRESSIVE EXPANSION: Different alpha for different parts of spiral
-        # Early bounces (first 40%): More aggressive expansion
-        # Later bounces (last 60%): Normal expansion for good coverage
+        t_out = N * dphi
+        t_hold = dphi
+        t_total = 2 * t_out + t_hold
 
-        if radius_ratio > 20:   # Medium-large spirals need progressive approach
-            early_density_factor = 1.02   # 2% MORE expansion for early bounces (fine-tuned for 4000ft)
-            late_density_factor = 0.80    # 20% reduction for later bounces (good coverage)
-            print(f"🎯 Progressive expansion: early_boost=+2%, late_reduction=20%, ratio={radius_ratio:.1f}")
-        elif radius_ratio > 10:   # Medium spirals
-            early_density_factor = 1.05   # 5% more expansion for early bounces
-            late_density_factor = 0.85    # 15% reduction for later bounces
-            print(f"🎯 Progressive expansion: early_boost=+5%, late_reduction=15%, ratio={radius_ratio:.1f}")
-        else:  # Small spirals
-            early_density_factor = 1.0    # Normal expansion
-            late_density_factor = 0.90    # 10% reduction
-            print(f"🎯 Progressive expansion: early_boost=0%, late_reduction=10%, ratio={radius_ratio:.1f}")
+        if use_custom_distances:
+            if len(interval_profile) != N:
+                raise ValueError(f"Custom expansion profile length {len(interval_profile)} must match N={N}")
 
-        # We'll use these factors dynamically in the spiral generation below
-        alpha_early = base_alpha * early_density_factor
-        alpha_late = base_alpha * late_density_factor
+            bounce_radii = [float(r0)]
+            for dist in interval_profile:
+                bounce_radii.append(bounce_radii[-1] + dist)
+            custom_max_radius = bounce_radii[-1]
+            min_d = interval_profile[0]
+            max_d = interval_profile[-1]
+            print(f"🎯 Custom expansion: min={min_d}ft, max={max_d}ft, "
+                  f"N={N}, final_radius={custom_max_radius:.1f}ft, "
+                  f"bounce_radii={[round(r, 1) for r in bounce_radii]}")
+        else:
+            base_alpha = math.log(r_hold / r0) / (N * dphi)
+            radius_ratio = r_hold / r0
 
-        # Time parameters
-        t_out = N * dphi          # Time to complete outward spiral
-        t_hold = dphi             # Time for hold pattern (one angular step)
-        t_total = 2 * t_out + t_hold  # Total spiral time
+            if radius_ratio > 20:
+                early_density_factor = 1.02
+                late_density_factor = 0.80
+            elif radius_ratio > 10:
+                early_density_factor = 1.05
+                late_density_factor = 0.85
+            else:
+                early_density_factor = 1.0
+                late_density_factor = 0.90
 
-        # PROGRESSIVE ALPHA TRANSITION POINT
-        t_transition = t_out * 0.4  # First 40% uses early alpha, rest uses late alpha
-
-        # Calculate ACTUAL radius with progressive alpha
-        # Early phase: r0 * exp(alpha_early * t) for t <= t_transition
-        # Late phase: r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
-        r_transition = r0 * math.exp(alpha_early * t_transition)
-        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
+            alpha_early = base_alpha * early_density_factor
+            alpha_late = base_alpha * late_density_factor
+            t_transition = t_out * 0.4
+            r_transition = r0 * math.exp(alpha_early * t_transition)
+            actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
 
         spiral_points = []
 
         for i in range(steps):
-            # Convert step index to parameter t
             th = i * t_total / (steps - 1)
 
-            # Calculate radius based on current phase with PROGRESSIVE ALPHA
-            if th <= t_out:
-                # PHASE 1: Outward spiral - PROGRESSIVE expansion
-                if th <= t_transition:
-                    # Early bounces: Steeper expansion (alpha_early)
-                    r = r0 * math.exp(alpha_early * th)
+            if use_custom_distances:
+                if th <= t_out:
+                    bounce_progress = th / dphi
+                    bounce_idx = min(int(bounce_progress), N - 1)
+                    frac = bounce_progress - bounce_idx
+                    r = bounce_radii[bounce_idx] + frac * (bounce_radii[bounce_idx + 1] - bounce_radii[bounce_idx])
+                elif th <= t_out + t_hold:
+                    r = custom_max_radius
                 else:
-                    # Later bounces: Normal expansion (alpha_late) from transition point
-                    r = r_transition * math.exp(alpha_late * (th - t_transition))
-            elif th <= t_out + t_hold:
-                # PHASE 2: Hold pattern - constant radius at ACTUAL maximum reached
-                r = actual_max_radius  # ← FIXED: Use actual radius reached, not original r_hold
+                    inbound_t = th - (t_out + t_hold)
+                    inbound_progress = inbound_t / dphi
+                    bounce_idx = min(int(inbound_progress), N - 1)
+                    frac = inbound_progress - bounce_idx
+                    from_r = bounce_radii[N - bounce_idx]
+                    to_r = bounce_radii[max(N - bounce_idx - 1, 0)]
+                    r = from_r + frac * (to_r - from_r)
             else:
-                # PHASE 3: Inbound spiral - exponential contraction from actual maximum
-                inbound_t = th - (t_out + t_hold)
-                r = actual_max_radius * math.exp(-alpha_late * inbound_t)  # Use late alpha for inbound
+                if th <= t_out:
+                    if th <= t_transition:
+                        r = r0 * math.exp(alpha_early * th)
+                    else:
+                        r = r_transition * math.exp(alpha_late * (th - t_transition))
+                elif th <= t_out + t_hold:
+                    r = actual_max_radius
+                else:
+                    inbound_t = th - (t_out + t_hold)
+                    r = actual_max_radius * math.exp(-alpha_late * inbound_t)
 
-            # Calculate phase for bounce pattern
-            # Phase oscillates between 0 and 2*dphi to create directional changes
             phase = ((th / dphi) % 2 + 2) % 2
             phi = phase * dphi if phase <= 1 else (2 - phase) * dphi
 
-            # Convert polar coordinates (r, phi) to Cartesian (x, y)
             spiral_points.append({
                 'x': r * math.cos(phi),
                 'y': r * math.sin(phi)
@@ -448,7 +549,12 @@ class SpiralDesigner:
         offset = math.pi / 2 + slice_idx * dphi  # Orientation offset for this slice
 
         # Generate high-precision spiral points (1200 points for accuracy)
-        spiral_pts = self.make_spiral(dphi, params['N'], params['r0'], params['rHold'])
+        spiral_pts = self.make_spiral(
+            dphi, params['N'], params['r0'], params['rHold'],
+            custom_expansion_profile=params.get('customExpansionProfile'),
+            min_expansion_dist=params.get('minExpansionDist'),
+            max_expansion_dist=params.get('maxExpansionDist'),
+        )
         t_out = params['N'] * dphi
         t_hold = dphi
         t_total = 2 * t_out + t_hold
@@ -623,12 +729,11 @@ class SpiralDesigner:
         for i in range(params['slices']):
             self.waypoint_cache.append(self.build_slice(i, params))
         return self.waypoint_cache
-
-    def parse_center(self, txt: str) -> Optional[Dict]:
+    def parse_center(self, txt: Union[str, Dict]) -> Optional[Dict]:
         """
-        Parse center coordinates from various human-readable formats.
-
+        Parse center coordinates from various human-readable formats or dict.
         SUPPORTED FORMATS:
+        - {"lat": 41.73218, "lng": -111.83979} (dict)
         - "41.73218° N, 111.83979° W" (degree notation)
         - "41.73218, -111.83979" (decimal degrees)
         - "41.73218° N, 111.83979° W" (mixed formats)
@@ -638,13 +743,24 @@ class SpiralDesigner:
         - Decimal format: ([-+]?\d+\.?\d*)\s*,\s*([-+]?\d+\.?\d*)
 
         Args:
-            txt: Coordinate string in various formats
-
+            txt: Coordinate string in various formats or a dictionary with lat/lng
         Returns:
             Dict with 'lat' and 'lon' keys, or None if parsing fails
         """
+        if isinstance(txt, dict):
+            # Try to extract from common dict formats (lat/lng or lat/lon)
+            if 'lat' in txt and ('lng' in txt or 'lon' in txt):
+                lon_key = 'lng' if 'lng' in txt else 'lon'
+                try:
+                    return {'lat': float(txt['lat']), 'lon': float(txt[lon_key])}
+                except (ValueError, TypeError):
+                    return None
+            return None
+
         import re
 
+        if not isinstance(txt, str):
+            txt = str(txt)
         txt = txt.strip()
 
         # Handle formats like "41.73218° N, 111.83979° W"
@@ -805,7 +921,8 @@ class SpiralDesigner:
 
         return {'traces': traces}
 
-    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None, debug_mode: bool = False, debug_angle: float = 0) -> str:
+    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None,
+                     debug_mode: bool = False, debug_angle: float = 0, form_to_terrain: bool = True) -> str:
         """
         Generate complete Litchi CSV mission file with elevation-aware altitudes and neural network optimizations.
 
@@ -861,8 +978,12 @@ class SpiralDesigner:
         if not center:
             raise ValueError("Invalid center coordinates")
 
-        # Get takeoff elevation for reference
-        takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        if form_to_terrain:
+            # Get takeoff elevation for reference
+            takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        else:
+            print("🛫 Terrain following disabled - generating flat mission altitudes")
+            takeoff_elevation_feet = 0.0
 
         # Generate waypoints using the same algorithm as the designer
         spiral_path = []
@@ -916,16 +1037,20 @@ class SpiralDesigner:
                 'phase': wp.get('phase', 'unknown')
             })
 
-        # Get elevations with 15-foot proximity optimization
-        ground_elevations = self.get_elevations_feet_optimized(locations)
+        if form_to_terrain:
+            # Get elevations with 15-foot proximity optimization
+            ground_elevations = self.get_elevations_feet_optimized(locations)
 
-        # Add elevations to waypoints_with_coords for adaptive sampling
-        for i, elevation in enumerate(ground_elevations):
-            waypoints_with_coords[i]['elevation'] = elevation
+            # Add elevations to waypoints_with_coords for adaptive sampling
+            for i, elevation in enumerate(ground_elevations):
+                waypoints_with_coords[i]['elevation'] = elevation
 
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
-        print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
+            print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
+            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        else:
+            ground_elevations = [0.0] * len(locations)
+            safety_waypoints = []
 
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into complete mission flight path")
@@ -1122,7 +1247,8 @@ class SpiralDesigner:
 
         return '\n'.join(rows)
 
-    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0, max_height: float = None) -> str:
+    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0,
+                             max_height: float = None, form_to_terrain: bool = True) -> str:
         """
         Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
 
@@ -1164,8 +1290,12 @@ class SpiralDesigner:
         self.elevation_cache = {}
         self.waypoint_cache = []
 
-        # Get takeoff elevation for reference
-        takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        if form_to_terrain:
+            # Get takeoff elevation for reference
+            takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        else:
+            print("🛫 Terrain following disabled - generating flat battery mission altitudes")
+            takeoff_elevation_feet = 0.0
 
         # Generate waypoints for all slices, then extract the specific battery slice
         all_waypoints = self.compute_waypoints(params)
@@ -1189,16 +1319,20 @@ class SpiralDesigner:
                 'phase': wp.get('phase', 'unknown')
             })
 
-        # Get elevations with 15-foot proximity optimization
-        ground_elevations = self.get_elevations_feet_optimized(locations)
+        if form_to_terrain:
+            # Get elevations with 15-foot proximity optimization
+            ground_elevations = self.get_elevations_feet_optimized(locations)
 
-        # Add elevations to waypoints_with_coords for adaptive sampling
-        for i, elevation in enumerate(ground_elevations):
-            waypoints_with_coords[i]['elevation'] = elevation
+            # Add elevations to waypoints_with_coords for adaptive sampling
+            for i, elevation in enumerate(ground_elevations):
+                waypoints_with_coords[i]['elevation'] = elevation
 
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
-        print(f"🛡️  Starting adaptive terrain sampling for mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
+            print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        else:
+            ground_elevations = [0.0] * len(locations)
+            safety_waypoints = []
 
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
@@ -1374,94 +1508,111 @@ class SpiralDesigner:
 
         return '\n'.join(rows)
 
+    # Calibrated physics constants for DJI / Litchi waypoint missions.
+    # Values validated against Litchi Mission Hub's displayed flight time
+    # for Curved Turns mode.  DJI flight controllers in waypoint mode
+    # use very conservative acceleration (≈0.4 m/s²) for smooth, safe
+    # flight — roughly 5-10× lower than the drone's theoretical max.
+    # Calibrated against Litchi's reported 23 min for a known 20-min
+    # battery, 3-slice, N=9, rHold=1523 flight.
+    A_CENTRIPETAL = 2.5   # m/s² – lateral (cornering) acceleration limit
+    A_LINEAR = 0.4        # m/s² – linear accel / decel in waypoint mode
+    V_MIN_TURN = 0.5      # m/s – minimum speed through tightest turns
+    WP_DWELL_S = 1.0      # seconds per interior waypoint for GPS lock,
+                           # Bezier curve setup, and position confirmation
+
+    def _waypoint_turn_speed(self, wps: List[Dict], idx: int) -> float:
+        """Speed the drone can sustain at waypoint *idx* given
+        the deflection angle and curve radius."""
+        if idx <= 0 or idx >= len(wps) - 1:
+            return self.FLIGHT_SPEED_MPS
+        v1x = wps[idx]['x'] - wps[idx - 1]['x']
+        v1y = wps[idx]['y'] - wps[idx - 1]['y']
+        v2x = wps[idx + 1]['x'] - wps[idx]['x']
+        v2y = wps[idx + 1]['y'] - wps[idx]['y']
+        mag1 = math.sqrt(v1x * v1x + v1y * v1y)
+        mag2 = math.sqrt(v2x * v2x + v2y * v2y)
+        if mag1 < 1e-9 or mag2 < 1e-9:
+            return self.FLIGHT_SPEED_MPS
+        cos_a = max(-1.0, min(1.0, (v1x * v2x + v1y * v2y) / (mag1 * mag2)))
+        theta = math.acos(cos_a)
+        if theta < math.radians(5):
+            return self.FLIGHT_SPEED_MPS
+        curve_m = wps[idx].get('curve', 40) * self.FT2M
+        v_cent = math.sqrt(self.A_CENTRIPETAL * curve_m) if curve_m > 0 else 0.0
+        v_dir = self.FLIGHT_SPEED_MPS * math.cos(theta / 2)
+        return max(self.V_MIN_TURN, min(v_cent, v_dir))
+
+    @staticmethod
+    def _segment_time(d_m: float, v0: float, v1: float,
+                      v_max: float, a: float) -> float:
+        """Time to traverse *d_m* metres with entry speed *v0*, exit speed
+        *v1*, cruise cap *v_max*, and acceleration limit *a*.
+        Uses a trapezoidal (or triangular) speed profile."""
+        if d_m < 0.01:
+            return 0.0
+        d_up = max(0.0, (v_max * v_max - v0 * v0) / (2.0 * a))
+        d_down = max(0.0, (v_max * v_max - v1 * v1) / (2.0 * a))
+        if d_up + d_down <= d_m:
+            t_up = (v_max - v0) / a if v_max > v0 else 0.0
+            t_cruise = (d_m - d_up - d_down) / v_max
+            t_down = (v_max - v1) / a if v_max > v1 else 0.0
+            return t_up + t_cruise + t_down
+        # Triangular — drone never reaches cruise on this segment
+        v_peak_sq = (2.0 * a * d_m + v0 * v0 + v1 * v1) / 2.0
+        v_peak = min(v_max, math.sqrt(max(0.01, v_peak_sq)))
+        return max(0.0, (v_peak - v0) / a) + max(0.0, (v_peak - v1) / a)
+
     def estimate_flight_time_minutes(self, params: Dict, center_lat: float, center_lon: float) -> float:
         """
-        ACCURATE flight time estimation based on actual spiral path length.
+        Segment-by-segment speed-profile flight time estimation.
 
-        APPROACH:
-        - Calculate actual spiral path length using mathematical integration
-        - Account for all phases: outbound spiral, hold pattern, inbound spiral
-        - Use planned mission speed (Litchi CSV) and acceleration/deceleration buffer
-        - Add overhead for takeoff, landing, photos, hover time
+        For each pair of consecutive waypoints the method integrates a
+        trapezoidal (or triangular) speed profile that respects:
+
+          • The constrained turn-speed at each endpoint (deflection angle
+            + curve radius → centripetal & directional limits).
+          • A realistic linear acceleration limit (A_LINEAR = 1.0 m/s²)
+            matching DJI waypoint-mode behaviour.
+          • A small per-waypoint dwell for GPS position confirmation and
+            Bezier curve setup.
+
+        On short inner segments the drone physically cannot reach cruise
+        speed before it must slow for the next turn.  This "speed ceiling"
+        effect adds significant time that simpler penalty models miss.
 
         Args:
-            params: Spiral parameters dict {slices, N, r0, rHold}
-            center_lat: Center latitude for distance calculations
-            center_lon: Center longitude for distance calculations
+            params: Spiral parameters dict {slices, N, r0, rHold, ...}
+            center_lat: (unused – kept for API compatibility)
+            center_lon: (unused – kept for API compatibility)
 
         Returns:
-            Estimated flight time in minutes
+            Estimated flight time in minutes for one battery / slice.
         """
-        # Get spiral parameters
-        N = params['N']  # Number of bounces
-        r0 = params['r0']  # Starting radius
-        r_hold = params['rHold']  # Target hold radius
-        slices = params['slices']  # Number of slices
+        wps = self.build_slice(0, params)
+        n = len(wps)
+        if n < 2:
+            return self.TAKEOFF_LANDING_OVERHEAD_MINUTES
 
-        # Calculate spiral parameters
-        dphi = 2 * math.pi / slices  # Angular step per bounce
-        base_alpha = math.log(r_hold / r0) / (N * dphi)
+        V = self.FLIGHT_SPEED_MPS
+        a = self.A_LINEAR
 
-        # Progressive alpha factors (same as in make_spiral)
-        radius_ratio = r_hold / r0
-        if radius_ratio > 20:
-            early_density_factor = 1.02
-            late_density_factor = 0.80
-        elif radius_ratio > 10:
-            early_density_factor = 1.05
-            late_density_factor = 0.85
-        else:
-            early_density_factor = 1.0
-            late_density_factor = 0.90
+        # Constrained speed at every waypoint
+        wp_speeds = [self._waypoint_turn_speed(wps, i) for i in range(n)]
 
-        alpha_early = base_alpha * early_density_factor
-        alpha_late = base_alpha * late_density_factor
+        # Integrate each segment's trapezoidal speed profile
+        flight_s = 0.0
+        for i in range(n - 1):
+            dx = wps[i + 1]['x'] - wps[i]['x']
+            dy = wps[i + 1]['y'] - wps[i]['y']
+            d_m = math.sqrt(dx * dx + dy * dy) * self.FT2M
+            flight_s += self._segment_time(d_m, wp_speeds[i], wp_speeds[i + 1], V, a)
 
-        # Time parameters
-        t_out = N * dphi  # Time to complete outward spiral
-        t_hold = dphi  # Time for hold pattern
-        t_transition = t_out * 0.4  # Progressive alpha transition point
+        # Per-waypoint curve-negotiation dwell (interior waypoints only)
+        n_interior = max(0, n - 2)
+        dwell_s = n_interior * self.WP_DWELL_S
 
-        # Calculate actual spiral path length using mathematical integration
-        # For exponential spiral r(t) = r0 * exp(alpha * t), the arc length is:
-        # L = ∫√(r² + (dr/dt)²) dt = ∫√(r² + (alpha * r)²) dt = ∫r * √(1 + alpha²) dt
-
-        # Outbound spiral path length (with progressive alpha)
-        # Early phase: r(t) = r0 * exp(alpha_early * t) for t <= t_transition
-        # Late phase: r(t) = r_transition * exp(alpha_late * (t - t_transition)) for t > t_transition
-
-        r_transition = r0 * math.exp(alpha_early * t_transition)
-
-        # Early phase length
-        early_length_factor = math.sqrt(1 + alpha_early**2)
-        early_length = (r_transition - r0) / alpha_early * early_length_factor
-
-        # Late phase length
-        actual_max_radius = r_transition * math.exp(alpha_late * (t_out - t_transition))
-        late_length_factor = math.sqrt(1 + alpha_late**2)
-        late_length = (actual_max_radius - r_transition) / alpha_late * late_length_factor
-
-        # Hold pattern length (circular arc)
-        hold_length = actual_max_radius * t_hold
-
-        # Inbound spiral length (using late alpha for consistency)
-        inbound_length = (actual_max_radius - r0) / alpha_late * late_length_factor
-
-        # Total spiral path length
-        total_spiral_length_ft = early_length + late_length + hold_length + inbound_length
-
-        # Convert to miles and calculate flight time
-        total_distance_miles = total_spiral_length_ft / 5280
-        flight_speed_mph = self.FLIGHT_SPEED_MPH  # Align with CSV speed
-
-        # Base flight time
-        flight_time_hours = total_distance_miles / flight_speed_mph
-        flight_time_minutes = flight_time_hours * 60
-
-        # Add overhead for takeoff, landing, photos, hover time, acceleration/deceleration
-        overhead_minutes = self.TAKEOFF_LANDING_OVERHEAD_MINUTES
-
-        return flight_time_minutes + overhead_minutes
+        return (flight_s + dwell_s) / 60.0 + self.TAKEOFF_LANDING_OVERHEAD_MINUTES
 
     def midpoint_density_for_slices(self, slices: int) -> int:
         """Return extra midpoint count per segment for the given slice count."""
@@ -1495,46 +1646,49 @@ class SpiralDesigner:
         # total = 2 + 2*m*N + 2*N + m <= max_base_waypoints
         return max(3, int((max_base_waypoints - (2 + m)) // denominator))
 
-    def optimize_spiral_for_battery(self, target_battery_minutes: float, num_batteries: int, center_lat: float, center_lon: float) -> Dict:
+    def seed_bounces_for_battery(
+        self,
+        target_battery_minutes: float,
+        min_bounces: int = 3,
+        max_bounces: int = 15,
+    ) -> int:
+        """Return the heuristic bounce seed before the solver searches alternatives."""
+        if target_battery_minutes <= 12:
+            target_bounces = 7
+        elif target_battery_minutes <= 18:
+            target_bounces = 8
+        elif target_battery_minutes <= 25:
+            target_bounces = 9
+        elif target_battery_minutes <= 35:
+            target_bounces = 10
+        elif target_battery_minutes <= 45:
+            target_bounces = 12
+        else:
+            target_bounces = 15
+        return max(min_bounces, min(max_bounces, target_bounces))
+
+    def optimize_spiral_for_battery(
+        self,
+        target_battery_minutes: float,
+        num_batteries: int,
+        center_lat: float,
+        center_lon: float,
+        min_expansion_dist: Optional[float] = None,
+        max_expansion_dist: Optional[float] = None,
+    ) -> Dict:
         """
-        Battery-optimized spiral generation using intelligent balanced scaling algorithm.
+        Battery-first spiral optimization with late bounce selection.
 
-        OPTIMIZATION STRATEGY:
-        =====================
-
-        BALANCED SCALING APPROACH:
-        1. Scale bounce count with battery duration first (quality optimization)
-        2. Binary search on radius with fixed bounce count (coverage optimization)
-        3. Bonus bounce addition if significant headroom available
-
-        BOUNCE COUNT SCALING LOGIC:
-        - 10-12 min → 5 bounces (minimal pattern for short flights)
-        - 13-18 min → 6 bounces (balanced for medium flights)
-        - 19-25 min → 8 bounces (optimal quality/coverage balance)
-        - 26-35 min → 10 bounces (comprehensive coverage)
-        - 36+ min → 12 bounces (maximum detail capture)
-
-        BINARY SEARCH OPTIMIZATION:
-        - O(log n) computational complexity vs O(n) brute force
-        - 98% battery utilization safety margin
-        - 10ft radius tolerance for practical purposes
-        - Maximum 20 iterations for performance
-
-        BONUS BOUNCE LOGIC:
-        If battery utilization < 85%, attempt to add one more bounce
-        for enhanced coverage without safety risk.
-
-        ERROR HANDLING:
-        - Graceful degradation for impossible constraints
-        - Automatic bounce reduction if minimum spiral too large
-        - Fallback to safe parameters on optimization failure
-
+        The time estimator always evaluates the exact final geometry that will be
+        used for CSV generation.  Custom expansion constraints are solved inside
+        the optimization pass instead of being applied as a later override.
         Args:
             target_battery_minutes: Target flight duration in minutes
             num_batteries: Number of battery slices to generate
             center_lat: Center latitude for flight time calculations
             center_lon: Center longitude for flight time calculations
-
+            min_expansion_dist: Optional requested minimum bounce spacing in feet
+            max_expansion_dist: Optional requested maximum bounce spacing in feet
         Returns:
             Dict with optimized parameters and performance metrics:
             {
@@ -1546,150 +1700,232 @@ class SpiralDesigner:
                 'battery_utilization': float
             }
         """
-        # Define parameter constraints for safety and practicality
-        min_r0, max_r0 = 50.0, 500.0       # Start radius range (feet)
-        min_rHold, max_rHold = 200.0, 50000.0  # Hold radius range (feet) - RESTORED ORIGINAL
-        min_N, max_N = 3, 15               # Bounce count range - RESTORED ORIGINAL
+        min_rHold, max_rHold = 200.0, 50000.0
+        min_N, max_N = 3, 15
+        preferred_r0 = 200.0
+        fallback_r0 = 100.0
+        start_radius_candidates = [preferred_r0, fallback_r0]
+        rhold_tolerance_ft = 25.0
+        scale_tolerance = 0.001
+        max_iterations = 30
+        target_limit = target_battery_minutes * 0.98
 
-        # PROGRESSIVE BOUNCE SCALING: Longer flights = more bounces for better coverage
-        if target_battery_minutes <= 12:
-            target_bounces = 7   # Minimal for short flights
-        elif target_battery_minutes <= 18:
-            target_bounces = 8   # Good coverage for medium flights
-        elif target_battery_minutes <= 25:
-            target_bounces = 9   # Better coverage for longer flights
-        elif target_battery_minutes <= 35:
-            target_bounces = 10  # Comprehensive coverage
-        elif target_battery_minutes <= 45:
-            target_bounces = 12  # Maximum coverage
-        else:
-            target_bounces = 15  # Maximum for very long duration flights
-
-        # Clamp to valid range for safety
-        target_bounces = max(min_N, min(max_N, target_bounces))
-
-        # NEW: Respect waypoint budget after slice-aware midpoint density changes.
-        # This is critical for single-slice missions (slices=1) where midpoint density is high.
+        expansion_request = self.normalize_expansion_request(min_expansion_dist, max_expansion_dist)
+        requested_bounce_seed = self.seed_bounces_for_battery(target_battery_minutes, min_N, max_N)
         waypoint_budget_bounce_cap = min(max_N, self.max_bounces_for_waypoint_budget(num_batteries))
-        if target_bounces > waypoint_budget_bounce_cap:
-            print(
-                f"Waypoint budget cap active: reducing bounces {target_bounces} -> {waypoint_budget_bounce_cap} "
-                f"for {num_batteries} slice(s)"
-            )
-            target_bounces = waypoint_budget_bounce_cap
+        candidate_bounces = list(range(min_N, waypoint_budget_bounce_cap + 1))
+        if not candidate_bounces:
+            raise ValueError("No valid bounce counts available for this slice configuration")
 
-        # Initialize base parameters with scaled bounce count
-        base_params = {
-            'slices': num_batteries,
-            'N': target_bounces,
-            'r0': 200.0  # Original start radius for proper expansion scaling
-        }
-        # Ensure rHold lower-bound is strictly above r0 to avoid alpha=0 singularities.
-        effective_min_rHold = max(min_rHold, base_params['r0'] + 10.0)
+        print(
+            f"Optimizing for {target_battery_minutes}min battery: seed={requested_bounce_seed}, "
+            f"search={candidate_bounces[0]}-{candidate_bounces[-1]} bounces, "
+            f"expansion_mode={expansion_request['mode']}"
+        )
 
-        print(f"Optimizing for {target_battery_minutes}min battery: targeting {target_bounces} bounces")
+        def build_custom_params(start_radius: float, bounces: int, intervals: List[float]) -> Dict:
+            actual_min = intervals[0] if intervals else None
+            actual_max = intervals[-1] if intervals else None
+            return {
+                'slices': num_batteries,
+                'N': bounces,
+                'r0': start_radius,
+                'rHold': self.custom_outer_radius(start_radius, intervals),
+                'customExpansionProfile': list(intervals),
+                'minExpansionDist': actual_min,
+                'maxExpansionDist': actual_max,
+            }
 
-        # Feasibility check: Test if minimum parameters can fit
-        test_params = base_params.copy()
-        test_params['rHold'] = effective_min_rHold
-
-        try:
-            min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-            if min_time > target_battery_minutes:
-                # Minimum spiral too large - reduce bounces and retry
-                reduced_bounces = max(min_N, target_bounces - 2)
-                reduced_bounces = min(reduced_bounces, waypoint_budget_bounce_cap)
-                print(f"Minimum spiral too large, reducing bounces from {target_bounces} to {reduced_bounces}")
-                base_params['N'] = reduced_bounces
-                target_bounces = reduced_bounces
-
-                test_params = base_params.copy()
-                test_params['rHold'] = effective_min_rHold
-                min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-
-                if min_time > target_battery_minutes:
-                    # Still too large - return absolute minimum configuration
-                    return {
-                        'slices': num_batteries,
-                        'N': min(min_N, waypoint_budget_bounce_cap),
-                        'r0': 100.0,
-                        'rHold': effective_min_rHold,
-                        'estimated_time_minutes': min_time,
-                        'battery_utilization': round((min_time / target_battery_minutes) * 100, 1)
-                    }
-        except Exception as e:
-            print(f"Error testing minimum parameters: {e}")
-
-        # BINARY SEARCH: Optimize hold radius with fixed bounce count
-        best_params = None
-        best_time = 0.0
-
-        low, high = effective_min_rHold, max_rHold
-        tolerance = 25.0        # 25ft tolerance for large-scale optimization
-        max_iterations = 30     # Increased iterations for large radius ranges
-        iterations = 0
-
-        while high - low > tolerance and iterations < max_iterations:
-            iterations += 1
-            mid_rHold = (low + high) / 2
-
-            # Test current radius with FIXED bounce count
+        def evaluate_default_candidate(start_radius: float, bounces: int) -> Optional[Dict]:
+            base_params = {
+                'slices': num_batteries,
+                'N': bounces,
+                'r0': start_radius,
+            }
+            effective_min_rHold = max(min_rHold, start_radius + 10.0)
             test_params = base_params.copy()
-            test_params['rHold'] = mid_rHold
+            test_params['rHold'] = effective_min_rHold
 
             try:
-                estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+                min_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
+            except Exception as exc:
+                print(f"Error estimating minimum default candidate for N={bounces}: {exc}")
+                return None
 
-                # Apply 2% safety margin (98% utilization maximum) - RESTORED ORIGINAL
-                if estimated_time <= target_battery_minutes * 0.98:
-                    # Configuration fits safely - try larger radius
-                    best_params = test_params.copy()
+            if min_time > target_limit:
+                return None
+
+            best_params = test_params.copy()
+            best_time = min_time
+            low, high = effective_min_rHold, max_rHold
+            iterations = 0
+
+            while high - low > rhold_tolerance_ft and iterations < max_iterations:
+                iterations += 1
+                mid_rHold = (low + high) / 2.0
+                probe_params = base_params.copy()
+                probe_params['rHold'] = mid_rHold
+                try:
+                    estimated_time = self.estimate_flight_time_minutes(probe_params, center_lat, center_lon)
+                except Exception as exc:
+                    print(f"Error estimating default candidate for N={bounces}, rHold={mid_rHold}: {exc}")
+                    high = mid_rHold
+                    continue
+
+                if estimated_time <= target_limit:
+                    best_params = probe_params.copy()
                     best_time = estimated_time
                     low = mid_rHold
                 else:
-                    # Too large - try smaller radius
                     high = mid_rHold
 
-            except Exception as e:
-                print(f"Error estimating time for rHold={mid_rHold}: {e}")
-                high = mid_rHold  # Assume failure means too large
-
-        # BONUS BOUNCE: Attempt to add one more bounce if significant headroom
-        if (
-            best_params
-            and best_time < target_battery_minutes * 0.85
-            and target_bounces < min(max_N, waypoint_budget_bounce_cap)
-        ):
-            test_params = best_params.copy()
-            test_params['N'] = target_bounces + 1
-
-            try:
-                estimated_time = self.estimate_flight_time_minutes(test_params, center_lat, center_lon)
-                if estimated_time <= target_battery_minutes * 0.98:
-                    print(f"Adding bonus bounce: {target_bounces} → {target_bounces + 1}")
-                    best_params = test_params.copy()
-                    best_time = estimated_time
-            except:
-                pass  # Keep original if bonus bounce fails
-
-        # Final safety check: Ensure we have valid parameters
-        if not best_params:
-            best_params = {
-                'slices': num_batteries,
-                'N': target_bounces,
-                'r0': 150.0,
-                'rHold': effective_min_rHold
+            return {
+                'params': best_params,
+                'estimated_time': best_time,
+                'slack': target_limit - best_time,
+                'scale': 1.0,
+                'expansion_mode': 'default',
+                'actual_min': None,
+                'actual_max': None,
+                'actual_outer_radius': self.calculate_actual_outer_radius(best_params),
             }
+
+        def evaluate_custom_candidate(start_radius: float, bounces: int, intervals: List[float], scale: float) -> Optional[Dict]:
+            params = build_custom_params(start_radius, bounces, intervals)
             try:
-                best_time = self.estimate_flight_time_minutes(best_params, center_lat, center_lon)
-            except:
-                best_time = target_battery_minutes * 1.2  # Conservative estimate
+                estimated_time = self.estimate_flight_time_minutes(params, center_lat, center_lon)
+            except Exception as exc:
+                print(f"Error estimating custom candidate for N={bounces}, scale={scale:.4f}: {exc}")
+                return None
 
-        # Add performance metrics to results
-        best_params['estimated_time_minutes'] = round(best_time, 2)
-        best_params['battery_utilization'] = round((best_time / target_battery_minutes) * 100, 1)
+            return {
+                'params': params,
+                'estimated_time': estimated_time,
+                'slack': target_limit - estimated_time,
+                'scale': scale,
+                'expansion_mode': 'custom',
+                'actual_min': intervals[0] if intervals else None,
+                'actual_max': intervals[-1] if intervals else None,
+                'actual_outer_radius': params['rHold'],
+            }
 
-        print(f"Final optimization: {best_params['N']} bounces, {best_params['rHold']:.0f}ft radius, {best_time:.1f}min ({best_params['battery_utilization']}%)")
+        best_candidate = None
+
+        if not expansion_request['has_custom_spacing']:
+            for start_radius in start_radius_candidates:
+                candidates = []
+                for bounces in candidate_bounces:
+                    candidate = evaluate_default_candidate(start_radius, bounces)
+                    if candidate is not None:
+                        candidates.append(candidate)
+
+                if candidates:
+                    best_candidate = min(
+                        candidates,
+                        key=lambda candidate: (candidate['slack'], -candidate['params']['N']),
+                    )
+                    break
+
+            if best_candidate is None:
+                raise ValueError("Battery minutes are too low for a safe default mission")
+        else:
+            for start_radius in start_radius_candidates:
+                requested_profiles = {
+                    bounces: self.build_requested_custom_intervals(
+                        bounces,
+                        expansion_request['requested_min'],
+                        expansion_request['requested_max'],
+                    )
+                    for bounces in candidate_bounces
+                }
+
+                full_spacing_candidates = []
+                for bounces, requested_profile in requested_profiles.items():
+                    candidate = evaluate_custom_candidate(start_radius, bounces, requested_profile, 1.0)
+                    if candidate is not None and candidate['estimated_time'] <= target_limit:
+                        full_spacing_candidates.append(candidate)
+
+                if full_spacing_candidates:
+                    best_candidate = min(
+                        full_spacing_candidates,
+                        key=lambda candidate: (candidate['slack'], -candidate['params']['N']),
+                    )
+                    break
+
+                scaled_candidates = []
+                for bounces, requested_profile in requested_profiles.items():
+                    zero_candidate = evaluate_custom_candidate(
+                        start_radius,
+                        bounces,
+                        self.scale_custom_intervals(requested_profile, 0.0),
+                        0.0,
+                    )
+                    if zero_candidate is None or zero_candidate['estimated_time'] > target_limit:
+                        continue
+
+                    best_for_bounces = zero_candidate
+                    low, high = 0.0, 1.0
+                    iterations = 0
+                    while high - low > scale_tolerance and iterations < max_iterations:
+                        iterations += 1
+                        mid_scale = (low + high) / 2.0
+                        scaled_profile = self.scale_custom_intervals(requested_profile, mid_scale)
+                        candidate = evaluate_custom_candidate(start_radius, bounces, scaled_profile, mid_scale)
+                        if candidate is not None and candidate['estimated_time'] <= target_limit:
+                            best_for_bounces = candidate
+                            low = mid_scale
+                        else:
+                            high = mid_scale
+
+                    scaled_candidates.append(best_for_bounces)
+
+                if scaled_candidates:
+                    best_candidate = min(
+                        scaled_candidates,
+                        key=lambda candidate: (-candidate['scale'], candidate['slack'], -candidate['params']['N']),
+                    )
+                    break
+
+            if best_candidate is None:
+                raise ValueError("Battery minutes are too low for a safe mission with the requested spacing")
+
+        best_params = best_candidate['params'].copy()
+        estimated_time = best_candidate['estimated_time']
+        final_n = int(best_params['N'])
+        actual_min = best_candidate['actual_min']
+        actual_max = best_candidate['actual_max']
+        actual_outer_radius = best_candidate['actual_outer_radius']
+
+        adjusted_bounce_count = final_n != requested_bounce_seed
+        adjusted_expansion = False
+        if expansion_request['has_custom_spacing']:
+            adjusted_expansion = (
+                actual_min is not None
+                and actual_max is not None
+                and (
+                    abs(actual_min - expansion_request['requested_min']) > 1e-6
+                    or abs(actual_max - expansion_request['requested_max']) > 1e-6
+                )
+            )
+
+        best_params.pop('customExpansionProfile', None)
+        best_params['estimated_time_minutes'] = round(estimated_time, 2)
+        best_params['battery_utilization'] = round((estimated_time / target_battery_minutes) * 100, 1)
+        best_params['expansionMode'] = best_candidate['expansion_mode']
+        best_params['actualMinExpansionDist'] = round(actual_min, 2) if actual_min is not None else None
+        best_params['actualMaxExpansionDist'] = round(actual_max, 2) if actual_max is not None else None
+        best_params['actualOuterRadius'] = round(actual_outer_radius, 2)
+        best_params['requestedBounceSeed'] = requested_bounce_seed
+        best_params['adjustedBounceCount'] = adjusted_bounce_count
+        best_params['adjustedExpansion'] = adjusted_expansion
+        best_params['minExpansionDist'] = best_params['actualMinExpansionDist']
+        best_params['maxExpansionDist'] = best_params['actualMaxExpansionDist']
+
+        print(
+            f"Final optimization: {best_params['N']} bounces, {best_params['rHold']:.0f}ft radius, "
+            f"{estimated_time:.1f}min ({best_params['battery_utilization']}%), "
+            f"mode={best_params['expansionMode']}"
+        )
 
         return best_params
 
@@ -2329,13 +2565,94 @@ def lambda_handler(event, context):
             'body': json.dumps({'error': f'Internal server error: {str(e)}'})
         }
 
+def _parse_optional_float(value, default=None):
+    """Parse an optional numeric field, treating blank strings as missing."""
+    if value is None:
+        return default
+    if isinstance(value, (int, float)):
+        return float(value)
+    value_str = str(value).strip()
+    if value_str == "":
+        return default
+    return float(value_str)
+
+def _parse_expansion_inputs(body: Dict) -> Tuple[Optional[float], Optional[float]]:
+    """
+    Resolve expansion inputs from either raw request values or optimizer-produced
+    actual values.  Actual values take precedence when present.
+    """
+    actual_min = _parse_optional_float(body.get('actualMinExpansionDist'), None)
+    actual_max = _parse_optional_float(body.get('actualMaxExpansionDist'), None)
+
+    if actual_min is not None or actual_max is not None:
+        if actual_min is None:
+            actual_min = actual_max
+        if actual_max is None:
+            actual_max = actual_min
+        return actual_min, actual_max
+
+    return (
+        _parse_optional_float(body.get('minExpansionDist'), None),
+        _parse_optional_float(body.get('maxExpansionDist'), None),
+    )
+
+def _build_adjustment_messages(
+    optimized_params: Dict,
+    requested_expansion: Dict,
+) -> List[str]:
+    """Summarize how the optimizer changed the requested inputs."""
+    adjustments = []
+    requested_seed = int(optimized_params.get('requestedBounceSeed', optimized_params.get('N', 0)))
+    final_bounces = int(optimized_params.get('N', requested_seed))
+    adjusted_bounces = bool(optimized_params.get('adjustedBounceCount'))
+    adjusted_expansion = bool(optimized_params.get('adjustedExpansion'))
+
+    if adjusted_bounces:
+        if final_bounces < requested_seed:
+            if requested_expansion['has_custom_spacing'] and adjusted_expansion:
+                adjustments.append(
+                    f"Reduced bounces from {requested_seed} to {final_bounces} before tightening spacing to fit battery target"
+                )
+            elif requested_expansion['has_custom_spacing']:
+                adjustments.append(
+                    f"Reduced bounces from {requested_seed} to {final_bounces} to preserve requested spacing within battery target"
+                )
+            else:
+                adjustments.append(
+                    f"Reduced bounces from {requested_seed} to {final_bounces} to fit battery target"
+                )
+        else:
+            adjustments.append(
+                f"Increased bounces from {requested_seed} to {final_bounces} to improve battery usage"
+            )
+
+    if adjusted_expansion and requested_expansion['has_custom_spacing']:
+        actual_min = optimized_params.get('actualMinExpansionDist')
+        actual_max = optimized_params.get('actualMaxExpansionDist')
+        requested_min = requested_expansion.get('requested_min')
+        requested_max = requested_expansion.get('requested_max')
+        scale_candidates = []
+
+        if requested_min not in (None, 0) and actual_min is not None:
+            scale_candidates.append(actual_min / requested_min)
+        if requested_max not in (None, 0) and actual_max is not None:
+            scale_candidates.append(actual_max / requested_max)
+
+        shrink_pct = 1
+        if scale_candidates:
+            shrink_pct = max(1, round((1.0 - min(scale_candidates)) * 100))
+
+        adjustments.append(f"Tightened requested spacing by {shrink_pct}% to fit battery target")
+
+    return adjustments
+
 def handle_optimize_spiral(designer, body, cors_headers):
     """Handle /api/optimize-spiral endpoint"""
     try:
         battery_minutes = float(body.get('batteryMinutes', 20))
         batteries = int(body.get('batteries', 3))
         center = body.get('center', '')
-
+        min_exp, max_exp = _parse_expansion_inputs(body)
         # Validate battery minutes to prevent division by zero
         if battery_minutes <= 0:
             return {
@@ -2362,23 +2679,58 @@ def handle_optimize_spiral(designer, body, cors_headers):
 
         # Optimize spiral parameters
         optimized_params = designer.optimize_spiral_for_battery(
-            battery_minutes, batteries, center_coords['lat'], center_coords['lon']
+            battery_minutes,
+            batteries,
+            center_coords['lat'],
+            center_coords['lon'],
+            min_expansion_dist=min_exp,
+            max_expansion_dist=max_exp,
         )
-
+        requested_expansion = designer.normalize_expansion_request(min_exp, max_exp)
+        adjustments = _build_adjustment_messages(optimized_params, requested_expansion)
         return {
             'statusCode': 200,
             'headers': cors_headers,
             'body': json.dumps({
                 'optimized_params': optimized_params,
                 'optimization_info': {
-                    'algorithm': 'Intelligent Balanced Scaling with Binary Search',
-                    'pattern_type': 'Exponential Spiral with Neural Network Optimization',
-                    'bounce_scaling_reason': f"Battery duration {battery_minutes}min → {optimized_params['N']} bounces",
-                    'safety_margin': '98% battery utilization maximum'
+                    'algorithm': 'Battery-First Late Bounce Optimization',
+                    'pattern_type': (
+                        'Custom Expansion Spiral Optimization'
+                        if requested_expansion['has_custom_spacing']
+                        else 'Exponential Spiral Optimization'
+                    ),
+                    'bounce_scaling_reason': (
+                        f"Battery duration {battery_minutes}min → seed {optimized_params['requestedBounceSeed']} "
+                        f"bounces, resolved to {optimized_params['N']}"
+                    ),
+                    'safety_margin': '98% battery utilization maximum',
+                    'requested_constraints': {
+                        'batteryMinutes': battery_minutes,
+                        'batteries': batteries,
+                        'minExpansionDist': min_exp,
+                        'maxExpansionDist': max_exp,
+                    },
+                    'final_constraints': {
+                        'N': optimized_params['N'],
+                        'r0': optimized_params['r0'],
+                        'rHold': optimized_params['rHold'],
+                        'actualMinExpansionDist': optimized_params['actualMinExpansionDist'],
+                        'actualMaxExpansionDist': optimized_params['actualMaxExpansionDist'],
+                        'estimated_time_minutes': optimized_params['estimated_time_minutes'],
+                        'battery_utilization': optimized_params['battery_utilization'],
+                    },
+                    'adjustments': adjustments,
                 }
             })
         }
 
+    except ValueError as e:
+        return {
+            'statusCode': 400,
+            'headers': cors_headers,
+            'body': json.dumps({'error': f'Optimization failed: {str(e)}'})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -2389,6 +2741,7 @@ def handle_optimize_spiral(designer, body, cors_headers):
 def handle_elevation(designer, body, cors_headers):
     """Handle /api/elevation endpoint"""
     try:
+        designer.require_live_elevation = True
         center = body.get('center', '')
 
         if not center:
@@ -2421,12 +2774,33 @@ def handle_elevation(designer, body, cors_headers):
             })
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
             'headers': cors_headers,
             'body': json.dumps({'error': f'Elevation lookup failed: {str(e)}'})
         }
+
+
+def _parse_bool(value, default=True):
+    """Parse API boolean fields without treating the string 'false' as truthy."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "off"}:
+            return False
+    return bool(value)
 
 def handle_csv_download(designer, body, cors_headers):
     """Handle /api/csv endpoint"""
@@ -2457,6 +2831,8 @@ def handle_csv_download(designer, body, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
+        designer.require_live_elevation = form_to_terrain
 
         if not center:
             return {
@@ -2472,9 +2848,19 @@ def handle_csv_download(designer, body, cors_headers):
             'r0': r0,
             'rHold': rHold
         }
-
+        min_exp, max_exp = _parse_expansion_inputs(body)
+        if min_exp is not None:
+            params['minExpansionDist'] = min_exp
+        if max_exp is not None:
+            params['maxExpansionDist'] = max_exp
         # Generate CSV content
-        csv_content = designer.generate_csv(params, center, min_height, max_height)
+        csv_content = designer.generate_csv(
+            params,
+            center,
+            min_height,
+            max_height,
+            form_to_terrain=form_to_terrain,
+        )
 
         # Return CSV as text/csv
         return {
@@ -2487,6 +2873,12 @@ def handle_csv_download(designer, body, cors_headers):
             'body': csv_content
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -2539,6 +2931,8 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
+        designer.require_live_elevation = form_to_terrain
 
         if not center:
             return {
@@ -2561,9 +2955,20 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'r0': r0,
             'rHold': rHold
         }
-
+        min_exp, max_exp = _parse_expansion_inputs(body)
+        if min_exp is not None:
+            params['minExpansionDist'] = min_exp
+        if max_exp is not None:
+            params['maxExpansionDist'] = max_exp
         # Generate battery-specific CSV content
-        csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
+        csv_content = designer.generate_battery_csv(
+            params,
+            center,
+            battery_index,
+            min_height,
+            max_height,
+            form_to_terrain=form_to_terrain,
+        )
 
         # Return CSV as text/csv
         return {
@@ -2576,6 +2981,12 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'body': csv_content
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,

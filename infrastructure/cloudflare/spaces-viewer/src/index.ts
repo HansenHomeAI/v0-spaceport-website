@@ -1,5 +1,6 @@
 const DEFAULT_CACHE_CONTROL = 'public, max-age=300';
 const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+const DISALLOWED_PATH_SEGMENTS = new Set(['..', '.']);
 
 interface Env {
   SPACES_BUCKET: R2Bucket;
@@ -10,6 +11,8 @@ interface Env {
   SPACES_PUBLISH_TOKEN?: string;
   COGNITO_REGION?: string;
   COGNITO_USER_POOL_ID?: string;
+  THUMBNAIL_TRIGGER_URL?: string;
+  THUMBNAIL_TOKEN?: string;
 }
 
 type JwtPayload = {
@@ -114,6 +117,42 @@ function buildBaseUrl(env: Env, request: Request): string {
     return `https://${host}`;
   }
   return `https://${host}${prefix}`;
+}
+
+function isThumbKey(key: string): boolean {
+  return key.endsWith('/thumb.jpg');
+}
+
+function isImageContentType(contentType?: string | null): boolean {
+  return Boolean(contentType && contentType.toLowerCase().startsWith('image/'));
+}
+
+async function triggerThumbnailGeneration(env: Env, request: Request, slug: string): Promise<void> {
+  const triggerUrl = (env.THUMBNAIL_TRIGGER_URL || 'https://spaces-thumbnail.hello-462.workers.dev/thumbnail').trim();
+  if (!triggerUrl) {
+    return;
+  }
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (env.THUMBNAIL_TOKEN) {
+    headers['X-Spaces-Token'] = env.THUMBNAIL_TOKEN;
+  }
+
+  const response = await fetch(triggerUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      slug,
+      viewerUrl: `${buildBaseUrl(env, request).replace(/\/$/, '')}/${slug}`,
+      force: true,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Thumbnail trigger failed with status ${response.status}`);
+  }
 }
 
 function base64UrlToBytes(input: string): Uint8Array {
@@ -252,8 +291,13 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const baseSlug = normalizeSlug(title || file.name || 'model');
   const slug = await findAvailableSlug(env, baseSlug);
   const key = `models/${slug}/index.html`;
+  const fileBuffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
+  const hashHex = Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
 
-  await env.SPACES_BUCKET.put(key, await file.arrayBuffer(), {
+  await env.SPACES_BUCKET.put(key, fileBuffer, {
     httpMetadata: {
       contentType: 'text/html; charset=utf-8',
       cacheControl: DEFAULT_CACHE_CONTROL,
@@ -263,18 +307,48 @@ async function handlePublish(request: Request, env: Env): Promise<Response> {
   const baseUrl = buildBaseUrl(env, request);
   const viewerUrl = `${baseUrl}/${slug}`;
 
-  return jsonResponse(200, { ok: true, slug, url: viewerUrl });
+  return jsonResponse(200, { ok: true, slug, url: viewerUrl, hash: hashHex });
+}
+
+function resolveViewerKey(pathname: string): { slug: string; key: string } | null {
+  const parts = pathname.replace(/^\/+/, '').split('/').filter(Boolean);
+  if (!parts.length) return null;
+  if (parts.some((segment) => DISALLOWED_PATH_SEGMENTS.has(segment) || segment.startsWith('.'))) {
+    return null;
+  }
+  const slug = parts[0];
+  const assetPath = parts.slice(1).join('/');
+  const key = assetPath ? `models/${slug}/${assetPath}` : `models/${slug}/index.html`;
+  return { slug, key };
 }
 
 async function handleViewer(request: Request, env: Env, pathname: string): Promise<Response> {
-  const slug = pathname.replace(/^\/+/, '').split('/')[0];
+  const resolved = resolveViewerKey(pathname);
+  const slug = resolved?.slug;
   if (!slug || slug === 'health') {
     return new Response('Not found', { status: 404 });
   }
 
-  const key = `models/${slug}/index.html`;
-  const object = await env.SPACES_BUCKET.get(key);
+  if (!resolved) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const key = resolved.key;
+  let object = await env.SPACES_BUCKET.get(key);
+  if (isThumbKey(key) && (!object || !isImageContentType(object.httpMetadata?.contentType))) {
+    try {
+      await triggerThumbnailGeneration(env, request, slug);
+      object = await env.SPACES_BUCKET.get(key);
+    } catch (error) {
+      console.warn(`Failed to generate thumbnail for ${slug}:`, error);
+    }
+  }
+
   if (!object) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  if (isThumbKey(key) && !isImageContentType(object.httpMetadata?.contentType)) {
     return new Response('Not found', { status: 404 });
   }
 

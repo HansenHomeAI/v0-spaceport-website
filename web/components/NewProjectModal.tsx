@@ -9,13 +9,55 @@ type NewProjectModalProps = {
   onSaved?: () => void; // callback after successful save/update
 };
 
+type OptimizationInfo = {
+  adjustments?: string[];
+  requested_constraints?: {
+    batteryMinutes?: number;
+    batteries?: number;
+    minExpansionDist?: number | null;
+    maxExpansionDist?: number | null;
+  };
+  final_constraints?: {
+    N?: number;
+    r0?: number;
+    rHold?: number;
+    actualMinExpansionDist?: number | null;
+    actualMaxExpansionDist?: number | null;
+    estimated_time_minutes?: number;
+    battery_utilization?: number;
+  };
+};
+
 type OptimizedParams = {
   [key: string]: any;
   center: string;
   minHeight: number;
   maxHeight: number | null;
   elevationFeet: number | null;
+  formToTerrain: boolean;
+  expansionMode?: 'default' | 'custom';
+  actualMinExpansionDist?: number | null;
+  actualMaxExpansionDist?: number | null;
+  actualOuterRadius?: number;
+  requestedBounceSeed?: number;
+  adjustedBounceCount?: boolean;
+  adjustedExpansion?: boolean;
+  optimizationInfo?: OptimizationInfo | null;
 };
+
+function normalizeTerrainToggle(value: unknown): boolean {
+  return value === true || value === "true";
+}
+
+async function readApiErrorMessage(response: Response, fallback: string): Promise<string> {
+  try {
+    const payload = await response.json();
+    if (typeof payload?.error === "string" && payload.error.trim()) {
+      return payload.error;
+    }
+  } catch {}
+  return fallback;
+}
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
   const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3BhY2Vwb3J0IiwiYSI6ImNtY3F6MW5jYjBsY2wyanEwbHVnd3BrN2sifQ.z2mk_LJg-ey2xqxZW1vW6Q';
@@ -40,10 +82,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [numBatteries, setNumBatteries] = useState<string>("");
   const [minHeightFeet, setMinHeightFeet] = useState<string>("");
   const [maxHeightFeet, setMaxHeightFeet] = useState<string>("");
+  const [minExpansionDist, setMinExpansionDist] = useState<string>("");
+  const [maxExpansionDist, setMaxExpansionDist] = useState<string>("");
+  const [formToTerrain, setFormToTerrain] = useState<boolean>(false);
 
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
   const [contactEmail, setContactEmail] = useState<string>("");
+  const [locationCity, setLocationCity] = useState<string>("");
+  const [locationState, setLocationState] = useState<string>("");
+  const [locationCityState, setLocationCityState] = useState<string>("");
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -75,7 +123,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         N: newParams.N,
         center: newParams.center,
         minHeight: newParams.minHeight,
-        maxHeight: newParams.maxHeight
+        maxHeight: newParams.maxHeight,
+        formToTerrain: newParams.formToTerrain
       });
     }
     
@@ -85,6 +134,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [downloadingBatteries, setDownloadingBatteries] = useState<Set<number>>(new Set());
   const [processingMessage, setProcessingMessage] = useState<string>('');
+
+  const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
+  const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
+
+  const BATTERY_PATH_COLORS = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F0B27A', '#AED6F1',
+  ];
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -122,8 +179,258 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const markerRef = useRef<any>(null);
   const selectedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
+  // Waypoint drag refs
+  const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
+  const waypointCoordsRef = useRef<Map<number, [number, number][]>>(new Map());
+
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  // Undo/Redo State
+  const [history, setHistory] = useState<Array<{
+    batteryIndex: number;
+    prevCoords: [number, number][];
+    newCoords: [number, number][];
+  }>>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const historyIndexRef = useRef<number>(-1);
+  useEffect(() => {
+    historyIndexRef.current = historyIndex;
+  }, [historyIndex]);
+
+  // UNDO HANDLER
+  const handleUndo = useCallback(() => {
+    if (historyIndex < 0 || !history[historyIndex]) return;
+    const { batteryIndex, prevCoords } = history[historyIndex];
+
+    // 1. Update Ref
+    waypointCoordsRef.current.set(batteryIndex, [...prevCoords]);
+
+    // 2. Update Map Source (Line)
+    const map = mapRef.current;
+    if (map) {
+      const sourceForUpdate = map.getSource(`battery-path-${batteryIndex}`);
+      if (sourceForUpdate) {
+        (sourceForUpdate as any).setData({
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: prevCoords },
+        });
+      }
+      // 3. Update Markers (Visual Pins)
+      const markers = waypointMarkersRef.current.get(batteryIndex);
+      if (markers) {
+        markers.forEach((m: any, i: number) => {
+          if (prevCoords[i]) m.setLngLat(prevCoords[i]);
+        });
+      }
+    }
+    setHistoryIndex(prev => prev - 1);
+  }, [history, historyIndex]);
+
+  // REDO HANDLER
+  const handleRedo = useCallback(() => {
+    if (historyIndex >= history.length - 1 || !history[historyIndex + 1]) return;
+    const { batteryIndex, newCoords } = history[historyIndex + 1];
+
+    // 1. Update Ref
+    waypointCoordsRef.current.set(batteryIndex, [...newCoords]);
+
+    // 2. Update Map Source (Line)
+    const map = mapRef.current;
+    if (map) {
+      const source = map.getSource(`battery-path-${batteryIndex}`);
+      if (source) {
+        (source as any).setData({
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: newCoords },
+        });
+      }
+      // 3. Update Markers (Visual Pins)
+      const markers = waypointMarkersRef.current.get(batteryIndex);
+      if (markers) {
+        markers.forEach((m: any, i: number) => {
+          if (newCoords[i]) m.setLngLat(newCoords[i]);
+        });
+      }
+    }
+    setHistoryIndex(prev => prev + 1);
+  }, [history, historyIndex]);
+
+  const buildOptimizationRequestBody = useCallback((
+    coords: { lat: number; lng: number },
+    minutes: number,
+    batteries: number,
+    terrainEnabled: boolean,
+    requestedMinExpansion?: string | null,
+    requestedMaxExpansion?: string | null,
+  ): Record<string, any> => {
+    const body: Record<string, any> = {
+      batteryMinutes: minutes,
+      batteries,
+      center: `${coords.lat}, ${coords.lng}`,
+      formToTerrain: terrainEnabled,
+    };
+
+    if (requestedMinExpansion && requestedMinExpansion.trim()) {
+      body.minExpansionDist = parseFloat(requestedMinExpansion);
+    }
+    if (requestedMaxExpansion && requestedMaxExpansion.trim()) {
+      body.maxExpansionDist = parseFloat(requestedMaxExpansion);
+    }
+
+    return body;
+  }, []);
+
+  const buildResolvedFlightRequestBody = useCallback((params: OptimizedParams): Record<string, any> => {
+    const body: Record<string, any> = { ...params };
+    const resolvedMin = params.actualMinExpansionDist ?? null;
+    const resolvedMax = params.actualMaxExpansionDist ?? null;
+
+    if (resolvedMin !== null) {
+      body.minExpansionDist = resolvedMin;
+    } else {
+      delete body.minExpansionDist;
+    }
+
+    if (resolvedMax !== null) {
+      body.maxExpansionDist = resolvedMax;
+    } else {
+      delete body.maxExpansionDist;
+    }
+
+    delete body.optimizationInfo;
+    return body;
+  }, []);
+
+  const runOptimizationRequest = useCallback(async ({
+    coords,
+    minutes,
+    batteries,
+    terrainEnabled,
+    minHeightValue,
+    maxHeightValue,
+    requestedMinExpansion,
+    requestedMaxExpansion,
+  }: {
+    coords: { lat: number; lng: number };
+    minutes: number;
+    batteries: number;
+    terrainEnabled: boolean;
+    minHeightValue?: string | null;
+    maxHeightValue?: string | null;
+    requestedMinExpansion?: string | null;
+    requestedMaxExpansion?: string | null;
+  }): Promise<OptimizedParams> => {
+    const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        buildOptimizationRequestBody(
+          coords,
+          minutes,
+          batteries,
+          terrainEnabled,
+          requestedMinExpansion,
+          requestedMaxExpansion,
+        )
+      ),
+    });
+    if (!optRes.ok) {
+      throw new Error(await readApiErrorMessage(optRes, 'Flight path optimization failed'));
+    }
+    const optData = await optRes.json();
+
+    let elevationFeet: number | null = null;
+    if (terrainEnabled) {
+      const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
+      });
+      if (!elevRes.ok) {
+        throw new Error(await readApiErrorMessage(
+          elevRes,
+          'Terrain following is unavailable right now. Please try again later.'
+        ));
+      }
+      const elevData = await elevRes.json();
+      elevationFeet = elevData.elevation_feet ?? null;
+    }
+
+    const minH = parseFloat(minHeightValue || '120') || 120;
+    const maxH = maxHeightValue ? parseFloat(maxHeightValue) : null;
+
+    return {
+      ...optData.optimized_params,
+      center: `${coords.lat}, ${coords.lng}`,
+      minHeight: minH,
+      maxHeight: maxH,
+      elevationFeet,
+      formToTerrain: terrainEnabled,
+      optimizationInfo: optData.optimization_info ?? null,
+    };
+  }, [API_ENHANCED_BASE, buildOptimizationRequestBody]);
+
+  const formatExpansionSummary = useCallback((minValue?: string | number | null, maxValue?: string | number | null): string => {
+    const normalize = (value?: string | number | null): number | null => {
+      if (value === null || value === undefined || value === '') return null;
+      const parsed = typeof value === 'number' ? value : parseFloat(String(value));
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+
+    const minNum = normalize(minValue);
+    const maxNum = normalize(maxValue);
+    if (minNum === null && maxNum === null) return 'Default exponential';
+
+    const resolvedMin = minNum ?? maxNum;
+    const resolvedMax = maxNum ?? minNum;
+    if (resolvedMin === null || resolvedMax === null) return 'Default exponential';
+    if (Math.abs(resolvedMin - resolvedMax) < 0.01) return `${resolvedMin.toFixed(0)} ft / bounce`;
+    return `${resolvedMin.toFixed(0)} ft -> ${resolvedMax.toFixed(0)} ft`;
+  }, []);
+
+  const normalizeState = useCallback((value?: string) => {
+    if (!value) return '';
+    const cleaned = value.trim();
+    if (cleaned.toLowerCase().startsWith('us-')) {
+      return cleaned.split('-')[1]?.toUpperCase() || cleaned.toUpperCase();
+    }
+    return cleaned.length <= 3 ? cleaned.toUpperCase() : cleaned;
+  }, []);
+
+  const updateLocationParts = useCallback((parts: { city?: string; state?: string }) => {
+    const city = (parts.city || '').trim();
+    const state = normalizeState(parts.state || '');
+    const cityState = city && state ? `${city}, ${state}` : city || state;
+    setLocationCity(city);
+    setLocationState(state);
+    setLocationCityState(cityState);
+  }, [normalizeState]);
+
+  const extractCityStateFromFeature = useCallback((feature: any) => {
+    if (!feature) return { city: '', state: '' };
+    const context = feature.context || [];
+    const place = context.find((item: any) => typeof item?.id === 'string' && (item.id.startsWith('place.') || item.id.startsWith('locality.')));
+    const region = context.find((item: any) => typeof item?.id === 'string' && item.id.startsWith('region.'));
+    const city = place?.text || (feature.place_type?.includes('place') ? feature.text : '');
+    const state = region?.short_code || region?.text || '';
+    return { city, state };
+  }, []);
+
+  const reverseGeocodeCityState = useCallback(async (lat: number, lng: number) => {
+    try {
+      const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}&types=place,locality,region&limit=1`);
+      const data = await res.json();
+      if (data?.features?.length) {
+        const parts = extractCityStateFromFeature(data.features[0]);
+        updateLocationParts(parts);
+      }
+    } catch (err) {
+      console.warn('Reverse geocoding failed:', err);
+    }
+  }, [MAPBOX_TOKEN, extractCityStateFromFeature, updateLocationParts]);
 
 
 
@@ -136,6 +443,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadStage('');
     setOptimizedParamsWithLogging(null, 'Modal opened/reset');
     setDownloadingBatteries(new Set());
+    setVisibleBatteryPaths(new Map());
+    setLoadingBatteryPaths(new Set());
+    waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
+    waypointMarkersRef.current.clear();
+    waypointCoordsRef.current.clear();
+    setHistory([]);
+    setHistoryIndex(-1);
     setSetupOpen(true);
     setUploadOpen(false);
     setToast(null);
@@ -150,6 +464,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         savedBatteries: project.params?.batteries,
         savedMinHeight: project.params?.minHeight,
         savedMaxHeight: project.params?.maxHeight,
+        savedFormToTerrain: project.params?.formToTerrain,
         hasCoordinates: !!(project.params?.latitude && project.params?.longitude)
       });
       
@@ -159,10 +474,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!(params.latitude && params.longitude)) {
         setAddressSearch(params.address || '');
       }
+      setLocationCity(params.city || '');
+      setLocationState(params.state || '');
+      setLocationCityState(params.cityState || '');
       setBatteryMinutes(params.batteryMinutes || '');
       setNumBatteries(params.batteries || '');
       setMinHeightFeet(params.minHeight || '');
+      setMinExpansionDist(params.minExpansionDist || '');
+      setMaxExpansionDist(params.maxExpansionDist || '');
       setMaxHeightFeet(params.maxHeight || '');
+      setFormToTerrain(normalizeTerrainToggle(params.formToTerrain));
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -194,38 +515,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           if (coords && minutes && batteries) {
             try {
               setOptimizationLoading(true);
-              
-              // Step 1: optimize spiral
-              const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ batteryMinutes: minutes, batteries, center: `${coords.lat}, ${coords.lng}` }),
+              const terrainEnabled = normalizeTerrainToggle(params.formToTerrain);
+              const optimizedParams = await runOptimizationRequest({
+                coords,
+                minutes,
+                batteries,
+                terrainEnabled,
+                minHeightValue: params.minHeight || '120',
+                maxHeightValue: params.maxHeight || '',
+                requestedMinExpansion: params.minExpansionDist || '',
+                requestedMaxExpansion: params.maxExpansionDist || '',
               });
-              if (!optRes.ok) throw new Error('Flight path optimization failed');
-              const optData = await optRes.json();
-
-              // Step 2: elevation
-              let elevationFeet: number | null = null;
-              const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
-              });
-              if (elevRes.ok) {
-                const elevData = await elevRes.json();
-                elevationFeet = elevData.elevation_feet ?? null;
-              }
-
-              const minH = parseFloat(params.minHeight || '120') || 120;
-              const maxH = params.maxHeight ? parseFloat(params.maxHeight) : null;
-
-              const optimizedParams: OptimizedParams = {
-                ...optData.optimized_params,
-                center: `${coords.lat}, ${coords.lng}`,
-                minHeight: minH,
-                maxHeight: maxH,
-                elevationFeet,
-              };
               setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
             } catch (e) {
               console.warn('Failed to auto-restore optimization params:', e);
@@ -243,9 +543,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setNumBatteries('');
       setMinHeightFeet('');
       setMaxHeightFeet('');
+      setMinExpansionDist('');
+      setMaxExpansionDist('');
+      setFormToTerrain(false);
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
+      setLocationCity('');
+      setLocationState('');
+      setLocationCityState('');
       setSelectedFile(null);
       setStatus('draft');
       setCurrentProjectId(null);
@@ -259,7 +565,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [open, project]);
+  }, [open, project, runOptimizationRequest]);
 
   // Initialize Mapbox on open
   useEffect(() => {
@@ -316,6 +622,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           setAddressSearch(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
           // Invalidate previous optimization
           setOptimizedParamsWithLogging(null, 'Map coordinates changed');
+          reverseGeocodeCityState(lat, lng);
           // Hide instructions after first click
           const inst = document.getElementById('map-instructions');
           if (inst) inst.style.display = 'none';
@@ -346,6 +653,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     initMap();
     return () => {
       isCancelled = true;
+      waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
+      waypointMarkersRef.current.clear();
+      waypointCoordsRef.current.clear();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -356,7 +666,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [open, project]);
 
   // Helper function to place marker at coordinates
-  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number) => {
+  const placeMarkerAtCoords = useCallback(async (lat: number, lng: number, options?: { skipReverse?: boolean }) => {
     if (!mapRef.current) return;
     
     mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 2000 });
@@ -389,16 +699,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     // Hide instructions
     const inst = document.getElementById('map-instructions');
     if (inst) inst.style.display = 'none';
-    
+
+    if (!options?.skipReverse) {
+      reverseGeocodeCityState(lat, lng);
+    }
+
     // Save will be triggered by autosave useEffect when selectedCoords changes
-  }, []);
+  }, [reverseGeocodeCityState]);
 
   // Function to restore saved location on map - now uses placeMarkerAtCoords for consistency
   const restoreSavedLocation = useCallback(async (map: any, coords: { lat: number; lng: number }) => {
     if (!map || !coords) return;
     
     // Use the same function as user interaction to ensure consistency
-    await placeMarkerAtCoords(coords.lat, coords.lng);
+    await placeMarkerAtCoords(coords.lat, coords.lng, { skipReverse: true });
     
     // Update the address search field to show the coordinates
     setAddressSearch(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
@@ -466,6 +780,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [open, isFullscreen, toggleFullscreen]);
 
+  useEffect(() => {
+    waypointMarkersRef.current.forEach((markers) => {
+      markers.forEach(m => m.setDraggable(isFullscreen));
+    });
+  }, [isFullscreen]);
+
   // Keep coordinates synchronized between state and ref
   useEffect(() => {
     console.log('🔍 Coordinate sync effect:', {
@@ -479,9 +799,29 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [selectedCoords]);
 
+  // Clear all battery paths and waypoint markers when optimization is invalidated
+  useEffect(() => {
+    if (!optimizedParams) {
+      const map = mapRef.current;
+      if (map) {
+        for (let i = 1; i <= 12; i++) {
+          try {
+            if (map.getLayer(`battery-path-layer-${i}`)) map.removeLayer(`battery-path-layer-${i}`);
+            if (map.getSource(`battery-path-${i}`)) map.removeSource(`battery-path-${i}`);
+          } catch { /* map may not be ready yet */ }
+        }
+      }
+      waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
+      waypointMarkersRef.current.clear();
+      waypointCoordsRef.current.clear();
+      setVisibleBatteryPaths(new Map());
+    }
+  }, [optimizedParams]);
+
   const canOptimize = useMemo(() => {
-    // Always use ref as source of truth for coordinates
-    const coords = selectedCoordsRef.current;
+    // Read the latest coordinates from the ref, but still recompute when the
+    // selected state changes so optimization becomes available after a map pick.
+    const coords = selectedCoordsRef.current ?? selectedCoords;
     const minutes = parseInt(batteryMinutes || '');
     const batteries = parseInt(numBatteries || '');
     const isValid = Boolean(coords && minutes && batteries);
@@ -496,17 +836,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
     
     return isValid;
-  }, [batteryMinutes, numBatteries]); // Only depend on battery params since we use ref for coords
+  }, [batteryMinutes, numBatteries, selectedCoords]);
 
   // Rotating processing messages for optimization
-  const processingMessages = [
+  const processingMessages = useMemo(() => [
     "This may take a moment...",
     "Running binary search optimization",
-    "Forming to elevation data", 
+    formToTerrain ? "Forming to the terrain" : "Skipping terrain sampling",
     "Maximizing battery usage",
     "Calculating optimal flight paths",
-    "Analyzing terrain features"
-  ];
+    formToTerrain ? "Analyzing terrain features" : "Preparing flat flight path"
+  ], [formToTerrain]);
 
   const startProcessingMessages = useCallback(() => {
     let messageIndex = 0;
@@ -518,7 +858,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 2000); // Change message every 2 seconds
     
     return interval;
-  }, []);
+  }, [processingMessages]);
+
+  const handleTerrainToggle = useCallback(() => {
+    setFormToTerrain((prev) => {
+      const next = !prev;
+      setOptimizedParamsWithLogging(null, `Form to terrain toggled ${next ? 'on' : 'off'}`);
+      return next;
+    });
+  }, [setOptimizedParamsWithLogging]);
 
   const handleOptimize = useCallback(async () => {
     if (!canOptimize) return;
@@ -545,41 +893,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         coords, 
         minutes, 
         batteries, 
+        formToTerrain,
         minHeight: minHeightFeet, 
         maxHeight: maxHeightFeet 
       });
 
-      // Step 1: optimize spiral
-      const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batteryMinutes: minutes, batteries, center: `${coords.lat}, ${coords.lng}` }),
+      const params = await runOptimizationRequest({
+        coords,
+        minutes,
+        batteries,
+        terrainEnabled: formToTerrain,
+        minHeightValue: minHeightFeet,
+        maxHeightValue: maxHeightFeet,
+        requestedMinExpansion: minExpansionDist,
+        requestedMaxExpansion: maxExpansionDist,
       });
-      if (!optRes.ok) throw new Error('Flight path optimization failed');
-      const optData = await optRes.json();
-
-      // Step 2: elevation
-      let elevationFeet: number | null = null;
-      const elevRes = await fetch(`${API_ENHANCED_BASE}/api/elevation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ center: `${coords.lat}, ${coords.lng}` }),
-      });
-      if (elevRes.ok) {
-        const elevData = await elevRes.json();
-        elevationFeet = elevData.elevation_feet ?? null;
-      }
-
-      const minH = parseFloat(minHeightFeet || '120') || 120;
-      const maxH = maxHeightFeet ? parseFloat(maxHeightFeet) : null;
-
-      const params: OptimizedParams = {
-        ...optData.optimized_params,
-        center: `${coords.lat}, ${coords.lng}`,
-        minHeight: minH,
-        maxHeight: maxH,
-        elevationFeet,
-      };
       setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
@@ -590,7 +918,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [API_ENHANCED_BASE, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, canOptimize]);
+  }, [batteryMinutes, numBatteries, formToTerrain, minHeightFeet, maxHeightFeet, minExpansionDist, maxExpansionDist, canOptimize, runOptimizationRequest, showSystemNotification, startProcessingMessages, setOptimizedParamsWithLogging]);
 
   // Processing messages for battery downloads
   const batteryProcessingMessages = [
@@ -637,20 +965,54 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     
     try {
-      console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, currentOptimizedParams);
+      const downloadBody = buildResolvedFlightRequestBody(currentOptimizedParams);
+      console.log(`🔍 Sending to API for battery ${batteryIndex1}:`, downloadBody);
       
       const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentOptimizedParams),
+        body: JSON.stringify(downloadBody),
       });
-      if (!res.ok) throw new Error(`Failed to generate battery ${batteryIndex1} CSV`);
-      const csvText = await res.text();
+      if (!res.ok) {
+        throw new Error(await readApiErrorMessage(
+          res,
+          `Failed to generate battery ${batteryIndex1} CSV`
+        ));
+      }
+      const originalCsvText = await res.text();
+
+      // Patch with live coordinates if they exist
+      let finalCsvText = originalCsvText;
+      const liveCoords = waypointCoordsRef.current.get(batteryIndex1);
+
+      if (liveCoords && liveCoords.length > 0) {
+        const lines = originalCsvText.trim().split('\n');
+        // CSV columns: lat,lon,alt... (lat is 0, lon is 1 based on fetchBatteryPathCoords)
+        const header = lines[0];
+        const dataLines = lines.slice(1);
+
+        if (dataLines.length === liveCoords.length) {
+          const updatedLines = dataLines.map((line, idx) => {
+            const parts = line.split(',');
+            const [newLng, newLat] = liveCoords[idx];
+            // Update CSV columns: Lat (0), Lng (1)
+            // Ensure we preserve the number of decimal places or use enough precision
+            parts[0] = newLat.toFixed(8);
+            parts[1] = newLng.toFixed(8);
+            return parts.join(',');
+          });
+          finalCsvText = [header, ...updatedLines].join('\n');
+          console.log('Using modified coordinates for CSV download');
+        } else {
+          console.warn('Live coordinates count mismatch, using original CSV');
+        }
+      }
+
       const safeTitle = (projectTitle && projectTitle !== 'Untitled')
         ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
         : 'Untitled';
       const filename = `${safeTitle}-${batteryIndex1}.csv`;
-      const blob = new Blob([csvText], { type: 'text/csv' });
+      const blob = new Blob([finalCsvText], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -680,7 +1042,234 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries, buildResolvedFlightRequestBody, optimizedParams, showSystemNotification, status]);
+
+  const clearAllBatteryPaths = useCallback(() => {
+    const map = mapRef.current;
+    if (map) {
+      visibleBatteryPaths.forEach((_, batteryIdx) => {
+        const layerId = `battery-path-layer-${batteryIdx}`;
+        const sourceId = `battery-path-${batteryIdx}`;
+        try {
+          if (map.getLayer(layerId)) map.removeLayer(layerId);
+          if (map.getSource(sourceId)) map.removeSource(sourceId);
+        } catch { /* map may already be removed */ }
+      });
+    }
+    setVisibleBatteryPaths(new Map());
+  }, [visibleBatteryPaths]);
+
+  const fetchBatteryPathCoords = useCallback(async (batteryIndex1: number): Promise<Array<[number, number]>> => {
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (!currentOptimizedParams) return [];
+
+    const body = buildResolvedFlightRequestBody(currentOptimizedParams);
+
+    const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex1}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Failed to fetch battery ${batteryIndex1} path`);
+    const csvText = await res.text();
+
+    const lines = csvText.trim().split('\n');
+    const coords: Array<[number, number]> = [];
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',');
+      const lat = parseFloat(parts[0]);
+      const lng = parseFloat(parts[1]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        coords.push([lng, lat]);
+      }
+    }
+    return coords;
+  }, [API_ENHANCED_BASE, buildResolvedFlightRequestBody]);
+
+  const removeWaypointMarkers = useCallback((batteryIndex: number) => {
+    const existing = waypointMarkersRef.current.get(batteryIndex);
+    if (existing) {
+      existing.forEach(m => m.remove());
+    }
+    waypointMarkersRef.current.delete(batteryIndex);
+    waypointCoordsRef.current.delete(batteryIndex);
+  }, []);
+
+  const createWaypointMarkers = useCallback(async (
+    batteryIndex: number,
+    coords: [number, number][],
+    color: string,
+    draggable: boolean
+  ) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    removeWaypointMarkers(batteryIndex);
+    waypointCoordsRef.current.set(batteryIndex, [...coords]);
+
+    const mapboxModule = await import('mapbox-gl');
+    const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
+
+    const markers: any[] = [];
+    let dragStartCoords: [number, number][] | null = null;
+
+    coords.forEach((coord, i) => {
+      const el = document.createElement('div');
+      el.className = 'waypoint-marker';
+      el.style.backgroundColor = color;
+
+      const marker = new mapboxgl.Marker({ element: el, draggable, anchor: 'center' })
+        .setLngLat(coord)
+        .addTo(map);
+
+      // Capture state before drag starts
+      marker.on('dragstart', () => {
+        const current = waypointCoordsRef.current.get(batteryIndex);
+        if (current) dragStartCoords = JSON.parse(JSON.stringify(current));
+      });
+
+      marker.on('drag', () => {
+        const lngLat = marker.getLngLat();
+        const liveCoords = waypointCoordsRef.current.get(batteryIndex);
+        if (!liveCoords) return;
+        liveCoords[i] = [lngLat.lng, lngLat.lat];
+
+        const sourceId = `battery-path-${batteryIndex}`;
+        const source = map.getSource(sourceId);
+        if (source) {
+          source.setData({
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'LineString', coordinates: liveCoords },
+          });
+        }
+      });
+
+      // Commit to history when drag ends
+      marker.on('dragend', () => {
+        const finalCoords = waypointCoordsRef.current.get(batteryIndex);
+        if (dragStartCoords && finalCoords) {
+          const newEntry = {
+            batteryIndex,
+            prevCoords: dragStartCoords,
+            newCoords: JSON.parse(JSON.stringify(finalCoords))
+          };
+          // Add to history and truncate any "redo" future (use ref to avoid stale closure)
+          const idx = historyIndexRef.current;
+          setHistory(prev => {
+            const truncated = prev.slice(0, idx + 1);
+            return [...truncated, newEntry];
+          });
+          setHistoryIndex(prev => prev + 1);
+        }
+        dragStartCoords = null;
+      });
+
+      markers.push(marker);
+    });
+
+    waypointMarkersRef.current.set(batteryIndex, markers);
+  }, [removeWaypointMarkers]);
+
+  const toggleBatteryPathVisibility = useCallback(async (batteryIndex1: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const isCurrentlyVisible = visibleBatteryPaths.has(batteryIndex1);
+
+    if (isCurrentlyVisible) {
+      const layerId = `battery-path-layer-${batteryIndex1}`;
+      const sourceId = `battery-path-${batteryIndex1}`;
+      try {
+        if (map.getLayer(layerId)) map.removeLayer(layerId);
+        if (map.getSource(sourceId)) map.removeSource(sourceId);
+      } catch { /* ignore */ }
+      removeWaypointMarkers(batteryIndex1);
+      setVisibleBatteryPaths(prev => {
+        const next = new Map(prev);
+        next.delete(batteryIndex1);
+        return next;
+      });
+      return;
+    }
+
+    setLoadingBatteryPaths(prev => new Set([...prev, batteryIndex1]));
+    try {
+      if (!optimizedParamsRef.current) {
+        if (!canOptimize) {
+          showSystemNotification('error', 'Please set location and battery params first');
+          return;
+        }
+        await handleOptimize();
+        let checkCount = 0;
+        while (checkCount < 60) {
+          await new Promise(r => setTimeout(r, 500));
+          if (optimizedParamsRef.current) break;
+          checkCount++;
+        }
+        if (!optimizedParamsRef.current) {
+          showSystemNotification('error', 'Optimization timed out');
+          return;
+        }
+      }
+
+      const coords = await fetchBatteryPathCoords(batteryIndex1);
+      if (!coords || coords.length === 0) {
+        showSystemNotification('error', 'No path data received');
+        return;
+      }
+
+      const sourceId = `battery-path-${batteryIndex1}`;
+      const layerId = `battery-path-layer-${batteryIndex1}`;
+      const color = BATTERY_PATH_COLORS[(batteryIndex1 - 1) % BATTERY_PATH_COLORS.length];
+
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: coords },
+        },
+      });
+
+      map.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': color,
+          'line-width': 2.5,
+          'line-opacity': 0.85,
+        },
+      });
+
+      createWaypointMarkers(batteryIndex1, coords, color, isFullscreen);
+
+      setVisibleBatteryPaths(prev => {
+        const next = new Map(prev);
+        next.set(batteryIndex1, coords);
+        return next;
+      });
+
+      const lngs = coords.map(c => c[0]);
+      const lats = coords.map(c => c[1]);
+      map.fitBounds(
+        [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+        { padding: 50, duration: 1000 }
+      );
+    } catch (e: any) {
+      showSystemNotification('error', e?.message || 'Failed to visualize path');
+    } finally {
+      setLoadingBatteryPaths(prev => {
+        const next = new Set(prev);
+        next.delete(batteryIndex1);
+        return next;
+      });
+    }
+  }, [visibleBatteryPaths, canOptimize, handleOptimize, fetchBatteryPathCoords, showSystemNotification, BATTERY_PATH_COLORS, isFullscreen, createWaypointMarkers, removeWaypointMarkers]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -705,10 +1294,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         progress,
         params: {
           address: addressSearch,
+          city: locationCity,
+          state: locationState,
+          cityState: locationCityState,
           batteryMinutes,
           batteries: numBatteries,
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
+          minExpansionDist: minExpansionDist || null,
+          maxExpansionDist: maxExpansionDist || null,
+          formToTerrain,
           latitude: selectedCoordsRef.current?.lat || null,
           longitude: selectedCoordsRef.current?.lng || null,
         },
@@ -745,7 +1340,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, maxHeightFeet, minHeightFeet, numBatteries, onSaved, projectTitle, status, isSaving]);
+  }, [
+    addressSearch,
+    batteryMinutes,
+    currentProjectId,
+    formToTerrain,
+    isSaving,
+    locationCity,
+    locationCityState,
+    locationState,
+    maxHeightFeet,
+    minHeightFeet,
+    minExpansionDist,
+    maxExpansionDist,
+    numBatteries,
+    onSaved,
+    projectTitle,
+    status,
+  ]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -794,6 +1406,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       numBatteries,
       minHeightFeet,
       maxHeightFeet,
+      formToTerrain,
       status,
       selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
       optimizedParams: optimizedParams ? 'EXISTS' : 'NULL'
@@ -805,7 +1418,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, status, selectedCoords]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, minExpansionDist, maxExpansionDist, formToTerrain, locationCity, locationCityState, locationState, status, selectedCoords]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -862,12 +1475,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       const data = await res.json();
       if (data?.features?.length) {
         const [lng, lat] = data.features[0].center;
-        await placeMarkerAtCoords(lat, lng);
+        const parts = extractCityStateFromFeature(data.features[0]);
+        updateLocationParts(parts);
+        await placeMarkerAtCoords(lat, lng, { skipReverse: true });
       }
     } catch (err) {
       console.warn('Geocoding failed:', err);
     }
-  }, [addressSearch, MAPBOX_TOKEN]);
+  }, [addressSearch, MAPBOX_TOKEN, extractCityStateFromFeature, placeMarkerAtCoords, updateLocationParts]);
 
   // Upload flow
   const onFileChosen = useCallback((file: File | null) => {
@@ -1084,6 +1699,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               batteries: numBatteries,
               minHeight: minHeightFeet,
               maxHeight: maxHeightFeet,
+              formToTerrain,
             },
             upload: { objectKey: init.objectKey },
           }),
@@ -1107,6 +1723,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   if (!open) return null;
 
   const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+  const optimizationInfo = optimizedParams?.optimizationInfo ?? null;
+  const optimizationAdjustments = optimizationInfo?.adjustments ?? [];
+  const requestedExpansionSummary = formatExpansionSummary(minExpansionDist, maxExpansionDist);
+  const actualExpansionSummary = optimizedParams
+    ? formatExpansionSummary(
+        optimizedParams.actualMinExpansionDist ?? null,
+        optimizedParams.actualMaxExpansionDist ?? null,
+      )
+    : 'Not optimized yet';
 
   return (
     <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>
@@ -1158,9 +1783,40 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <div id="map-container" className="map-container" ref={mapContainerRef}></div>
                 
                 {/* Map overlays and controls as siblings */}
+                {isFullscreen && (
+                  <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
+                    <button 
+                      onClick={handleUndo} 
+                      disabled={historyIndex < 0}
+                      className="expand-button"
+                      style={{ position: 'static', opacity: historyIndex < 0 ? 0.5 : 1 }}
+                      title="Undo"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 14L4 9l5-5"/>
+                        <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={handleRedo} 
+                      disabled={historyIndex >= history.length - 1}
+                      className="expand-button"
+                      style={{ position: 'static', opacity: historyIndex >= history.length - 1 ? 0.5 : 1 }}
+                      title="Redo"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15 14l5-5-5-5"/>
+                        <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
+                      </svg>
+                    </button>
+                  </div>
+                )}
                 <button className={`expand-button${isFullscreen ? ' expanded' : ''}`} id="expand-button" onClick={toggleFullscreen}>
                   <span className="expand-icon"></span>
                 </button>
+                {isFullscreen && visibleBatteryPaths.size > 0 && (
+                  <div className="waypoint-drag-hint">Drag waypoints to adjust path</div>
+                )}
                 <div className="map-dim-overlay"></div>
                 <div className="map-blur-background"></div>
                 <div className="map-blur-overlay top"></div>
@@ -1297,84 +1953,215 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               </div>
             </div>
 
+            {/* Expansion */}
+            <div className="category-outline">
+              <div className="popup-section">
+                <h4>Expansion</h4>
+                <div className="input-row-popup">
+                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                    <span className="input-icon minimum"></span>
+                    <input
+                      type="text"
+                      className="text-fade-right"
+                      placeholder="Min Distance"
+                      value={minExpansionDist ? `${minExpansionDist} ft` : ''}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setMinExpansionDist(value);
+                        setOptimizedParamsWithLogging(null, `Min expansion distance changed to: ${value}`);
+                      }}
+                      onKeyDown={(e) => {
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      style={{}}
+                    />
+                  </div>
+                  <div className="popup-input-wrapper" style={{ position: 'relative' }}>
+                    <span className="input-icon maximum"></span>
+                    <input
+                      type="text"
+                      className="text-fade-right"
+                      placeholder="Max Distance"
+                      value={maxExpansionDist ? `${maxExpansionDist} ft` : ''}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setMaxExpansionDist(value);
+                        setOptimizedParamsWithLogging(null, `Max expansion distance changed to: ${value}`);
+                      }}
+                      onKeyDown={(e) => {
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      style={{}}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {optimizedParams && (
+              <div className="category-outline">
+                <div className="popup-section">
+                  <h4>Optimization Summary</h4>
+                  <div style={{
+                    display: 'grid',
+                    gap: 10,
+                    marginTop: 8,
+                    color: '#f5f5f5',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}>
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gap: 10,
+                    }}>
+                      <div>
+                        <strong>Requested Expansion:</strong><br />
+                        <span>{requestedExpansionSummary}</span>
+                      </div>
+                      <div>
+                        <strong>Actual Expansion Used:</strong><br />
+                        <span>{actualExpansionSummary}</span>
+                      </div>
+                      <div>
+                        <strong>Bounce Seed / Final:</strong><br />
+                        <span>{optimizedParams.requestedBounceSeed ?? '-'}{' -> '}{optimizedParams.N ?? '-'}</span>
+                      </div>
+                      <div>
+                        <strong>Estimated Time / Utilization:</strong><br />
+                        <span>
+                          {optimizedParams.estimated_time_minutes ?? '-'} min / {optimizedParams.battery_utilization ?? '-'}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {optimizationAdjustments.length > 0 && (
+                      <div style={{
+                        padding: '10px 12px',
+                        borderRadius: 10,
+                        border: '1px solid rgba(255, 205, 96, 0.45)',
+                        background: 'rgba(255, 205, 96, 0.12)',
+                        color: '#ffe8b0',
+                      }}>
+                        <strong style={{ display: 'block', marginBottom: 6 }}>Optimizer Adjustments</strong>
+                        {optimizationAdjustments.map((adjustment, index) => (
+                          <div key={`${adjustment}-${index}`}>{adjustment}</div>
+                        ))}
+                      </div>
+                    )}
+
+                    {optimizationInfo?.final_constraints?.rHold && (
+                      <div style={{ opacity: 0.82 }}>
+                        Final hold radius: {Number(optimizationInfo.final_constraints.rHold).toFixed(0)} ft
+                        {typeof optimizedParams.actualOuterRadius === 'number' && (
+                          <> | Actual outer radius: {optimizedParams.actualOuterRadius.toFixed(0)} ft</>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="category-outline category-outline--hug">
+              <div className="popup-section terrain-toggle-row">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formToTerrain}
+                  aria-label="Terrain avoidance"
+                  className={`terrain-toggle-switch${formToTerrain ? ' is-on' : ''}`}
+                  onClick={handleTerrainToggle}
+                >
+                  <span className="terrain-toggle-switch-thumb" />
+                </button>
+                <span className="terrain-toggle-label">Terrain avoidance</span>
+              </div>
+            </div>
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
               <div className="popup-section">
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
                   {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
                 </h4>
+                {optimizationAdjustments.length > 0 && (
+                  <div style={{
+                    margin: '8px 6% 12px',
+                    padding: '8px 10px',
+                    borderRadius: 10,
+                    border: '1px solid rgba(255, 205, 96, 0.35)',
+                    background: 'rgba(255, 205, 96, 0.08)',
+                    color: '#ffe8b0',
+                    fontSize: 12,
+                    lineHeight: 1.45,
+                  }}>
+                    Battery-fit notice: the optimizer adjusted bounce count and/or spacing before download.
+                  </div>
+                )}
                 <div id="batteryButtons" className="flight-path-grid">
                 {Array.from({ length: batteryCount }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
-                    onClick={async () => {
-                      console.log(`🔍 Battery ${idx + 1} clicked:`, {
-                        optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
-                        optimizedParamsRef: optimizedParamsRef.current ? 'EXISTS' : 'NULL',
-                        canOptimize,
-                        batteryMinutes,
-                        numBatteries,
-                        selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
-                      });
-                      
-                      // Auto-run optimization on first click if needed
-                      if (!optimizedParams) {
-                        if (!canOptimize) {
-                          // Set specific error messages for missing fields
-                          if (!selectedCoordsRef.current) {
-                            showSystemNotification('error', 'Please select a location on the map first');
-                          } else if (!batteryMinutes || !numBatteries) {
-                            showSystemNotification('error', 'Please enter battery duration and quantity first');
-                          } else {
-                            showSystemNotification('error', 'Please set location and battery params first');
-                          }
-                          return;
-                        }
-                        
-                        // Run optimization first
-                        try {
-                          await handleOptimize();
-                          // Poll optimizedParams until set (max ~30s) with improved checking
-                          let checkCount = 0;
-                          const maxChecks = 60; // 30 seconds with 500ms intervals
-                          
-                          while (checkCount < maxChecks) {
-                            await new Promise(r => setTimeout(r, 500));
-                            checkCount++;
-                            
-                            // Use ref to get current optimizedParams (not stale closure)
-                            const currentOptimizedParams = optimizedParamsRef.current;
-                            if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
-                              console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
-                              break;
+                  <div key={idx} className="battery-segment-item">
+                    <button
+                      className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
+                      onClick={async () => {
+                        if (!optimizedParams) {
+                          if (!canOptimize) {
+                            if (!selectedCoordsRef.current) {
+                              showSystemNotification('error', 'Please select a location on the map first');
+                            } else if (!batteryMinutes || !numBatteries) {
+                              showSystemNotification('error', 'Please enter battery duration and quantity first');
+                            } else {
+                              showSystemNotification('error', 'Please set location and battery params first');
                             }
-                            
-                            // Log progress every 5 seconds
-                            if (checkCount % 10 === 0) {
-                              console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
-                            }
-                          }
-                          
-                          // Final check after polling using ref
-                          const finalOptimizedParams = optimizedParamsRef.current;
-                          if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
-                            showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
                             return;
                           }
-                        } catch (e: any) {
-                          showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                          return;
+                          try {
+                            await handleOptimize();
+                            let checkCount = 0;
+                            while (checkCount < 60) {
+                              await new Promise(r => setTimeout(r, 500));
+                              checkCount++;
+                              if (optimizedParamsRef.current && Object.keys(optimizedParamsRef.current).length > 0) break;
+                            }
+                            if (!optimizedParamsRef.current || Object.keys(optimizedParamsRef.current).length === 0) {
+                              showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
+                              return;
+                            }
+                          } catch (e: any) {
+                            showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
+                            return;
+                          }
                         }
-                      }
-                      
-                      // Add to download queue
-                      downloadBatteryCsv(idx + 1);
-                    }}
-                  >
-                    <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
-                    Battery {idx + 1}
-                  </button>
+                        downloadBatteryCsv(idx + 1);
+                      }}
+                    >
+                      <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
+                      Battery {idx + 1}
+                    </button>
+                    <button
+                      className={`battery-view-btn${visibleBatteryPaths.has(idx + 1) ? ' active' : ''}${loadingBatteryPaths.has(idx + 1) ? ' loading' : ''}`}
+                      onClick={() => toggleBatteryPathVisibility(idx + 1)}
+                      title={visibleBatteryPaths.has(idx + 1) ? 'Hide flight path' : 'Show flight path on map'}
+                    >
+                      {loadingBatteryPaths.has(idx + 1) ? (
+                        <span className="view-loading-spinner" />
+                      ) : visibleBatteryPaths.has(idx + 1) ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                          <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 ))}
                 </div>
               </div>
@@ -1544,4 +2331,3 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     </div>
   );
 }
-

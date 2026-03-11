@@ -748,7 +748,9 @@ html, body {
   overflow: hidden;
   z-index: 0;
   border-radius: var(--property-card-inner-radius);
-  background: conic-gradient(
+  background-image:
+    var(--property-thumb),
+    conic-gradient(
     from 230deg at -10% 50%,
     #D4A27F 6%,
     #CB785C 26%,
@@ -756,13 +758,8 @@ html, body {
     #EBDBBC 82%,
     #D4A27F 100%
   );
-}
-.property-card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: var(--property-card-inner-radius);
-  opacity: 0; /* Hidden for now so footer gradient shows; set to 1 when using real thumbnails */
+  background-size: cover, cover;
+  background-position: center, center;
 }
 /* Card text overlaid at bottom on top of thumbnail + vignette */
 .property-card-content {
@@ -4981,6 +4978,12 @@ body.popup-open {
   margin-bottom: 0;
 }
 
+.category-outline--hug {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Add margin above the upload zone container in Property Upload section */
 .accordion-section[data-section="upload"] .category-outline:first-child {
   margin-top: 16px;
@@ -5023,6 +5026,67 @@ body.popup-open {
 
 .input-row-popup:last-child {
   margin-bottom: 0;
+}
+
+.terrain-toggle-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.terrain-toggle-label {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-right: 12px;
+}
+
+.terrain-toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 58px;
+  height: 34px;
+  padding: 3px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.terrain-toggle-switch:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.terrain-toggle-switch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16);
+}
+
+.terrain-toggle-switch:active {
+  transform: scale(0.98);
+}
+
+.terrain-toggle-switch.is-on {
+  background: #34c759;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 10px 24px rgba(52, 199, 89, 0.24);
+}
+
+.terrain-toggle-switch-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+  transition: transform 0.25s ease;
+}
+
+.terrain-toggle-switch.is-on .terrain-toggle-switch-thumb {
+  transform: translateX(24px);
 }
 
 .popup-input-wrapper {
@@ -5389,7 +5453,67 @@ body.popup-open {
   100% { transform: rotate(360deg); }
 }
 
-/* Removed gradient border and text fade effects for cleaner appearance */
+/* Battery segment item wrapper (download btn + view toggle) */
+.battery-segment-item {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  animation: buttonFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.battery-segment-item .flight-path-download-btn {
+  flex: 1;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+/* Battery path visibility toggle button */
+.battery-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-width: 34px;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.battery-view-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.battery-view-btn.active {
+  background: rgba(77, 171, 247, 0.2);
+  color: #4dabf7;
+}
+
+.battery-view-btn.active:hover {
+  background: rgba(255, 90, 90, 0.18);
+  color: #ff6b6b;
+}
+
+.battery-view-btn.loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.battery-view-btn .view-loading-spinner {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: rgba(255, 255, 255, 0.7);
+  animation: spin 0.8s linear infinite;
+}
 
 /* Placeholder message when no batteries */
 .flight-path-placeholder {
@@ -5562,7 +5686,55 @@ input.text-fade-right,
 
 .map-wrapper.fullscreen .map-progressive-bottom-blur {
   border-radius: 0;
-  height: 40px; /* Slightly taller in fullscreen for better effect */
+  height: 40px;
+}
+
+/* Waypoint markers on battery paths */
+.waypoint-marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  transition: width 0.15s ease, height 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+  pointer-events: none;
+}
+.map-wrapper.fullscreen .waypoint-marker {
+  width: 12px;
+  height: 12px;
+  cursor: grab;
+  pointer-events: auto;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15);
+}
+.map-wrapper.fullscreen .waypoint-marker:active {
+  cursor: grabbing;
+}
+
+/* Drag hint pill badge */
+.waypoint-drag-hint {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(11, 14, 36, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: waypointHintFadeIn 0.4s ease;
+}
+@keyframes waypointHintFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* Instructions aligned with map margins */
