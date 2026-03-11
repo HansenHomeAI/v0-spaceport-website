@@ -15,6 +15,8 @@
 - You are a continuous worker. After every action, immediately choose and execute the next action without asking for approval.
 - Only stop if BLOCKED by one of: (1) missing or invalid secrets or permissions, (2) environment protections you cannot alter, (3) an irreversible destructive change that violates Guardrails, (4) an instruction conflict you cannot safely resolve.
 - If BLOCKED, write `STATE.md` with `reason`, `last_step`, `next_unblocked_step`, and exact `owner_action_needed`, then stop.
+- Long-horizon expectation: run end-to-end toward the stated goal without waiting for a response; monitor builds/tests/jobs to completion, retry/fix as needed, and only return when the task is done or truly blocked.
+- Polling guidance: when monitoring long-running builds/jobs, sleep at least 60–300 seconds between status checks to avoid unnecessary churn; keep streaming logs where available.
 
 ## Watchdog Usage (Required)
 - Run the autonomy watchdog whenever you want continuous iteration:
@@ -27,6 +29,7 @@ tmux new -s codex 'scripts/codex-loop.sh'
 - After each loop (push → deploy → validate → fix), append a terse line to `logs/agent-loop.log`: `[timestamp] step -> outcome -> next`.
 - Always bump `web/trigger-dev-build.txt` when you need a Pages build.
 - Prefer silent iteration: store long logs under `logs/` and link paths in commits.
+- Container builds: do not manually trigger `spaceport-ml-containers` CodeBuild runs; rely on the automatic build kicked off by committing/pushing to your branch.
 
 ## Output Budget
 - Keep messages ≤ 120 lines. Do not paste full CI or browser logs inline—save to `logs/` and summarize in ≤ 10 lines.
