@@ -29,6 +29,10 @@ def normalize_url(url: str) -> str:
     return url.strip().rstrip("/")
 
 
+def is_native_spaces_viewer(viewer_url: str, viewer_slug: str) -> bool:
+    return normalize_url(viewer_url) == f"{DEFAULT_THUMBNAIL_BASE_URL}/{viewer_slug}"
+
+
 def build_expected_item(entry: Dict[str, str], thumbnail_base_url: str) -> Dict[str, Any]:
     slug = entry["viewerSlug"].strip()
     title = entry["title"].strip()
@@ -91,7 +95,7 @@ def fetch_existing_items(table) -> Dict[str, Dict[str, Any]]:
 def head_thumbnail(url: str) -> Tuple[bool, str]:
     request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "Mozilla/5.0"})
     try:
-        with urllib.request.urlopen(request, timeout=20) as response:
+        with urllib.request.urlopen(request, timeout=8) as response:
             content_type = response.headers.get("Content-Type", "")
             return response.status == 200 and content_type.lower().startswith("image/"), content_type
     except urllib.error.HTTPError as exc:
@@ -204,10 +208,11 @@ def sync_manifest(
             table.put_item(Item=expected)
             results["updated" if existing else "created"].append(listing_id)
 
-        thumb_ok, thumb_meta = head_thumbnail(expected["thumbnailUrl"])
-        if thumb_ok:
-            results["thumbnailVerified"].append({"listingId": listing_id, "contentType": thumb_meta})
-            continue
+        if is_native_spaces_viewer(expected["viewerUrl"], expected["viewerSlug"]):
+            thumb_ok, thumb_meta = head_thumbnail(expected["thumbnailUrl"])
+            if thumb_ok:
+                results["thumbnailVerified"].append({"listingId": listing_id, "contentType": thumb_meta})
+                continue
 
         generated, detail = generate_thumbnail_with_retries(
             thumbnail_trigger_url=thumbnail_trigger_url,
