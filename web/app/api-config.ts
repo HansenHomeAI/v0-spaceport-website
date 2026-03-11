@@ -31,6 +31,20 @@ function ensureWaitlistEndpoint(rawUrl: string | undefined): string {
   }
 }
 
+function stripTrailingSlash(rawUrl: string | undefined): string {
+  if (!rawUrl) return '';
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return '';
+  return trimmed.replace(/\/+$/, '');
+}
+
+function deriveProjectsBase(rawUrl: string | undefined): string {
+  if (!rawUrl) return '';
+  const trimmed = stripTrailingSlash(rawUrl);
+  if (!trimmed) return '';
+  return trimmed.replace(/\/projects$/i, '');
+}
+
 export const API_CONFIG = {
   // Projects API - User project management
   PROJECTS_API_URL: process.env.NEXT_PUBLIC_PROJECTS_API_URL!,
@@ -46,6 +60,10 @@ export const API_CONFIG = {
   
   // ML Pipeline API - ML processing operations
   ML_PIPELINE_API_URL: process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL!,
+
+  // Litchi Automation API - Mission Hub automation
+  LITCHI_API_URL: stripTrailingSlash(process.env.NEXT_PUBLIC_LITCHI_API_URL),
+  LITCHI_API_URL_FALLBACK: deriveProjectsBase(process.env.NEXT_PUBLIC_PROJECTS_API_URL),
   
   // Beta Access Admin API - Employee beta access management
   BETA_ACCESS_API_URL: process.env.NEXT_PUBLIC_BETA_ACCESS_API_URL || '',
@@ -90,6 +108,14 @@ export const buildApiUrl = {
   mlPipeline: {
     startJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/start-job`,
     stopJob: () => `${API_CONFIG.ML_PIPELINE_API_URL}/stop-job`,
+  },
+
+  // Litchi API endpoints
+  litchi: {
+    status: () => `${API_CONFIG.LITCHI_API_URL}/litchi/status`,
+    connect: () => `${API_CONFIG.LITCHI_API_URL}/litchi/connect`,
+    testConnection: () => `${API_CONFIG.LITCHI_API_URL}/litchi/test-connection`,
+    upload: () => `${API_CONFIG.LITCHI_API_URL}/litchi/upload`,
   },
   
   // Beta Access Admin API endpoints

@@ -26,6 +26,7 @@ import {
   rebuildBatteryCsvWithLiveCoords,
   upsertBatteryWaypointOverride,
 } from '../lib/waypointOverrides';
+import LitchiMissionControl from './LitchiMissionControl';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -1877,6 +1878,50 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     return coords;
   }, [requestBatteryCsv, spinMode]);
+
+  const buildLitchiMissions = useCallback(async (batteryIndexes: number[]) => {
+    const ready = await ensureMissionReady();
+    if (!ready) {
+      throw new Error('Please optimize first');
+    }
+
+    const safeTitle = (projectTitle && projectTitle !== 'Untitled')
+      ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
+      : 'Untitled';
+    const missions: Array<{ name: string; csv: string }> = [];
+
+    for (const batteryIndex of batteryIndexes) {
+      const liveCoords = waypointCoordsRef.current.get(batteryIndex)
+        ?? waypointOverridesRef.current.batteries[String(batteryIndex)];
+
+      if (spinMode) {
+        if (liveCoords && liveCoords.length > 0) {
+          const combinedCsvText = await requestBatteryCsv(batteryIndex, 'combined');
+          const finalCombinedCsvText = rebuildBatteryCsvWithLiveCoords(combinedCsvText, liveCoords);
+          const { partOneCsv, partTwoCsv } = splitSpinBatteryCsv(finalCombinedCsvText);
+          missions.push(
+            { name: `${safeTitle} - ${batteryIndex} Part 1`, csv: partOneCsv },
+            { name: `${safeTitle} - ${batteryIndex} Part 2`, csv: partTwoCsv },
+          );
+        } else {
+          const partOneCsv = await requestBatteryCsv(batteryIndex, 'part1');
+          const partTwoCsv = await requestBatteryCsv(batteryIndex, 'part2');
+          missions.push(
+            { name: `${safeTitle} - ${batteryIndex} Part 1`, csv: partOneCsv },
+            { name: `${safeTitle} - ${batteryIndex} Part 2`, csv: partTwoCsv },
+          );
+        }
+      } else {
+        let csvText = await requestBatteryCsv(batteryIndex, 'single');
+        if (liveCoords && liveCoords.length > 0) {
+          csvText = rebuildBatteryCsvWithLiveCoords(csvText, liveCoords);
+        }
+        missions.push({ name: `${safeTitle} - ${batteryIndex}`, csv: csvText });
+      }
+    }
+
+    return missions;
+  }, [ensureMissionReady, projectTitle, requestBatteryCsv, spinMode, splitSpinBatteryCsv]);
 
   const removeWaypointMarkers = useCallback((batteryIndex: number) => {
     const existing = waypointMarkersRef.current.get(batteryIndex);
@@ -3928,6 +3973,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 </div>
               </div>
             )}
+
+            <div className="category-outline">
+              <div className="popup-section">
+                <LitchiMissionControl
+                  batteryCount={batteryCount}
+                  buildMissions={buildLitchiMissions}
+                />
+              </div>
+            </div>
 
             {/* Individual Battery Segments (legacy-correct UI) */}
             <div className="category-outline">
