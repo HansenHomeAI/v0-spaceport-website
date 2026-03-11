@@ -60,6 +60,7 @@ type OptimizedParams = {
   maxHeight: number | null;
   elevationFeet: number | null;
   formToTerrain: boolean;
+  spinMode?: boolean;
   expansionMode?: 'default' | 'custom';
   actualMinExpansionDist?: number | null;
   actualMaxExpansionDist?: number | null;
@@ -154,6 +155,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [formToTerrain, setFormToTerrain] = useState<boolean>(false);
   const [minExpansionDist, setMinExpansionDist] = useState<string>("");
   const [maxExpansionDist, setMaxExpansionDist] = useState<string>("");
+  const [spinMode, setSpinMode] = useState<boolean>(false);
 
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
@@ -1028,6 +1030,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       
       setProjectTitle(project.title || 'Untitled');
       const params = project.params || {};
+      const savedSpinMode = params.spinMode === true || params.spinMode === 'true' || params.spinMode === 1 || params.spinMode === '1';
       // Don't set address search yet if we have coordinates - restoreSavedLocation will handle it
       if (!(params.latitude && params.longitude)) {
         setAddressSearch(params.address || '');
@@ -1047,6 +1050,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
       const normalizedWaypointOverrides = normalizeWaypointOverrides(params.waypointOverrides);
       commitWaypointOverrides(normalizedWaypointOverrides);
+      setSpinMode(savedSpinMode);
+      setSpinMode(savedSpinMode);
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
       setCurrentProjectId(project.projectId || null);
@@ -1089,6 +1094,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 requestedMaxExpansion: params.maxExpansionDist || '',
                 terrainEnabled,
               });
+              optimizedParams.spinMode = savedSpinMode;
               setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
             } catch (e) {
               console.warn('Failed to auto-restore optimization params:', e);
@@ -1109,6 +1115,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setFormToTerrain(false);
       setMinExpansionDist('');
       setMaxExpansionDist('');
+      setSpinMode(false);
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
@@ -1563,6 +1570,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         requestedMaxExpansion: maxExpansionDist,
         terrainEnabled: formToTerrain,
       });
+      params.spinMode = spinMode;
       setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
@@ -1573,7 +1581,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [API_ENHANCED_BASE, batteryMinutes, formToTerrain, maxHeightFeet, minHeightFeet, numBatteries, showSystemNotification, startProcessingMessages, waitForSelectedCoords]);
+  }, [batteryMinutes, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, numBatteries, runOptimizationRequest, showSystemNotification, startProcessingMessages, spinMode, waitForSelectedCoords]);
 
   const ensureMissionReady = useCallback(async (): Promise<boolean> => {
     if (optimizedParamsRef.current || appliedBoundaryPlanRef.current) {
@@ -1608,7 +1616,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
     return false;
   }, [batteryMinutes, handleOptimize, numBatteries, showSystemNotification, waitForSelectedCoords]);
-  }, [batteryMinutes, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, numBatteries, runOptimizationRequest, showSystemNotification, startProcessingMessages, waitForSelectedCoords]);
 
   // Processing messages for battery downloads
   const batteryProcessingMessages = useMemo(() => [
@@ -1651,12 +1658,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     body.minHeight = body.minHeight ?? minH;
     body.maxHeight = body.maxHeight ?? maxH;
     body.formToTerrain = currentOptimizedParams?.formToTerrain ?? formToTerrain;
+    body.spinMode = currentOptimizedParams?.spinMode ?? spinMode;
 
     if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
     if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
 
     return body;
-  }, [buildResolvedFlightRequestBody, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, parsedBatteryCount]);
+  }, [buildResolvedFlightRequestBody, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, parsedBatteryCount, spinMode]);
 
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     // Check if already downloading this battery
@@ -1783,6 +1791,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
     return coords;
   }, [API_ENHANCED_BASE, buildBatteryRequestBody]);
+
 
   const removeWaypointMarkers = useCallback((batteryIndex: number) => {
     const existing = waypointMarkersRef.current.get(batteryIndex);
@@ -2958,6 +2967,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           minHeight: minHeightFeet,
           maxHeight: maxHeightFeet,
           formToTerrain,
+          spinMode,
           minExpansionDist: minExpansionDist || null,
           maxExpansionDist: maxExpansionDist || null,
           latitude: selectedCoordsRef.current?.lat || null,
@@ -2999,7 +3009,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, formToTerrain, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, status, isSaving]);
+  }, [addressSearch, batteryMinutes, currentProjectId, formToTerrain, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, status, isSaving, spinMode]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -3010,11 +3020,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const hasLocation = Boolean(addressSearch.trim() || selectedCoords);
     const hasBatteryData = Boolean(batteryMinutes || numBatteries);
     const hasAltitudeData = Boolean(minHeightFeet || maxHeightFeet);
+    const hasSpinMode = spinMode;
     const hasTitleChange = projectTitle !== 'Untitled' && projectTitle.trim();
     const hasUploadData = Boolean(propertyTitle.trim() || listingDescription.trim() || contactEmail.trim() || selectedFile);
     
-    return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
-  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
+    return hasLocation || hasBatteryData || hasAltitudeData || hasSpinMode || hasTitleChange || hasUploadData;
+  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, spinMode, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
 
   // SIMPLE debounced save trigger
   const triggerSave = useCallback(() => {
@@ -3053,6 +3064,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       minHeightFeet,
       maxHeightFeet,
       formToTerrain,
+      spinMode,
       status,
       selectedCoords: selectedCoords ? 'EXISTS' : 'NULL',
       optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
@@ -3067,7 +3079,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, formToTerrain, status, selectedCoords, appliedBoundary, appliedBoundaryPlan, waypointOverrides]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, formToTerrain, spinMode, status, selectedCoords, appliedBoundary, appliedBoundaryPlan, waypointOverrides]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -3738,6 +3750,28 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       style={{}}
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="category-outline">
+              <div className="popup-section">
+                <h4>Capture Mode</h4>
+                <div className="input-row-popup" style={{ alignItems: 'center', gap: '12px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={spinMode}
+                      onChange={(e) => {
+                        const nextSpinMode = e.target.checked;
+                        setSpinMode(nextSpinMode);
+                        clearAllBatteryPaths();
+                      }}
+                    />
+                    <span style={{ color: 'rgba(255,255,255,0.9)' }}>
+                      Multi-angle parallax spin mode (2s interval)
+                    </span>
+                  </label>
                 </div>
               </div>
             </div>
