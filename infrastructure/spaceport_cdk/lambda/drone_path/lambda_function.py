@@ -3698,7 +3698,7 @@ def handle_csv_download(designer, body, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
-        form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
         designer.require_live_elevation = form_to_terrain
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
         
@@ -3805,7 +3805,7 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
-        form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
         designer.require_live_elevation = form_to_terrain
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
         export_part = str(body.get('exportPart', 'single')).strip().lower() or 'single'

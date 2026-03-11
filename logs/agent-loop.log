@@ -1,1 +1,4 @@
 [2026-03-11T00:47:30Z] merge-development -> local build and unit tests green; initial CI blocked by shared auth stack lock -> retrigger deploy loop
+[2026-03-11T03:52:08Z] push -> pushed branch and triggered workflows -> watch GH Actions
+[2026-03-11T04:11:30Z] deploy-validate -> CDK + Pages green; preview smoke checks and Litchi proxy probe passed -> return preview URL
+[2026-03-11T04:37:28Z] verify-features -> found merged CSV default regression, fixed local backend default and rebumped preview trigger -> push corrected branch
