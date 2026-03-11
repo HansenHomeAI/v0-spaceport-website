@@ -120,7 +120,7 @@ class DronePathTerrainToggleTests(unittest.TestCase):
     def test_battery_csv_returns_service_unavailable_when_google_denies(self):
         with patch.object(
             self.designer,
-            "generate_battery_csv",
+            "build_battery_csv_export",
             side_effect=drone_path_module.TerrainElevationUnavailableError(
                 "Terrain following is unavailable because Google Elevation returned REQUEST_DENIED"
             ),
