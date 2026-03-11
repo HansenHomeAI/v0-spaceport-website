@@ -1,0 +1,1 @@
+[2026-03-11T00:47:30Z] merge-development -> local build and unit tests green; initial CI blocked by shared auth stack lock -> retrigger deploy loop
