@@ -24,6 +24,7 @@ function parseArgs(argv) {
     renderSettleMs: DEFAULT_RENDER_SETTLE_MS,
     delayMs: DEFAULT_DELAY_MS,
     onlyMissing: true,
+    slugs: null,
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -33,6 +34,7 @@ function parseArgs(argv) {
     else if (arg === "--bucket") args.bucket = argv[++i];
     else if (arg === "--render-settle-ms") args.renderSettleMs = Number(argv[++i]);
     else if (arg === "--delay-ms") args.delayMs = Number(argv[++i]);
+    else if (arg === "--slugs") args.slugs = new Set(argv[++i].split(",").map((value) => value.trim()).filter(Boolean));
     else if (arg === "--all") args.onlyMissing = false;
   }
   return args;
@@ -108,6 +110,9 @@ async function main() {
   try {
     for (const item of items) {
       const slug = item.viewerSlug;
+      if (args.slugs && !args.slugs.has(slug)) {
+        continue;
+      }
       const viewerUrl = normalizeUrl(item.viewerUrl);
       const thumbUrl = `${args.thumbnailBaseUrl.replace(/\/+$/, "")}/${slug}/thumb.jpg`;
       if (args.onlyMissing && (await headOk(thumbUrl))) {
