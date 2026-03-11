@@ -7,6 +7,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 from decimal import Decimal
 from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse, quote_plus
+import urllib.request
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -26,6 +27,9 @@ STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_MODEL_TRAINING_PRICE = os.environ.get('STRIPE_MODEL_TRAINING_PRICE')
 STRIPE_MODEL_HOSTING_PRICE = os.environ.get('STRIPE_MODEL_HOSTING_PRICE')
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://spcprt.com')
+EXPLORE_LISTINGS_TABLE_NAME = os.environ.get('EXPLORE_LISTINGS_TABLE_NAME')
+SPACES_THUMBNAIL_URL = os.environ.get('SPACES_THUMBNAIL_URL')
+SPACES_THUMBNAIL_TOKEN = os.environ.get('SPACES_THUMBNAIL_TOKEN')
 
 
 if not USER_POOL_ID or not PROJECTS_TABLE_NAME:
@@ -43,6 +47,7 @@ cognito = boto3.client('cognito-idp')
 dynamodb = boto3.resource('dynamodb')
 projects_table = dynamodb.Table(PROJECTS_TABLE_NAME)
 permissions_table = dynamodb.Table(PERMISSIONS_TABLE_NAME)
+explore_listings_table = dynamodb.Table(EXPLORE_LISTINGS_TABLE_NAME) if EXPLORE_LISTINGS_TABLE_NAME else None
 
 
 def decimal_default(obj):
@@ -263,6 +268,164 @@ def _resolve_delivery_value(project: Dict[str, Any], keys: List[str]) -> Optiona
         if isinstance(value, str) and value.strip():
             return value.strip()
     return None
+
+
+def _normalize_state(value: Optional[str]) -> str:
+    if not value:
+        return ''
+    cleaned = value.strip()
+    if cleaned.lower().startswith('us-') and len(cleaned) >= 5:
+        cleaned = cleaned.split('-', 1)[1]
+    return cleaned.upper() if len(cleaned) <= 3 else cleaned
+
+
+def _looks_like_state(value: str) -> bool:
+    return bool(value) and value.isalpha() and len(value) in (2, 3)
+
+
+def _extract_city_state(project: Dict[str, Any]) -> Dict[str, str]:
+    params = project.get('params') or {}
+    city = (params.get('city') or '').strip()
+    state = _normalize_state(params.get('state'))
+    city_state = (params.get('cityState') or '').strip()
+
+    if city_state and (not city or not state):
+        parts = [part.strip() for part in city_state.split(',') if part.strip()]
+        if len(parts) >= 2 and not city:
+            city = parts[0]
+        if len(parts) >= 2 and not state:
+            state = _normalize_state(parts[1].split()[0])
+
+    if not city or not state:
+        address = (params.get('address') or '').strip()
+        parts = [part.strip() for part in address.split(',') if part.strip()]
+        if len(parts) >= 2:
+            candidate_state = _normalize_state(parts[-1].split()[0])
+            candidate_city = parts[-2]
+            if not state and _looks_like_state(candidate_state):
+                state = candidate_state
+            if not city and candidate_city:
+                city = candidate_city
+
+    city_state_value = ''
+    if city and state:
+        city_state_value = f'{city}, {state}'
+    elif city:
+        city_state_value = city
+    elif state:
+        city_state_value = state
+
+    return {
+        'city': city,
+        'state': state,
+        'cityState': city_state_value,
+    }
+
+
+def _build_thumbnail_url(model_link: str) -> str:
+    trimmed = model_link.rstrip('/')
+    return f'{trimmed}/thumb.jpg'
+
+
+def _trigger_thumbnail_job(payload: Dict[str, Any]) -> None:
+    if not SPACES_THUMBNAIL_URL:
+        return
+    data = json.dumps(payload).encode('utf-8')
+    headers = {
+        'Content-Type': 'application/json',
+    }
+    if SPACES_THUMBNAIL_TOKEN:
+        headers['X-Spaces-Token'] = SPACES_THUMBNAIL_TOKEN
+    request = urllib.request.Request(SPACES_THUMBNAIL_URL, data=data, headers=headers, method='POST')
+    try:
+        with urllib.request.urlopen(request, timeout=8) as response:
+            logger.info('Thumbnail trigger response: %s', response.status)
+    except Exception as exc:
+        logger.warning('Thumbnail trigger failed: %s', exc)
+
+
+def _upsert_explore_listing(
+    project: Dict[str, Any],
+    model_link: str,
+    viewer_slug: Optional[str],
+    viewer_title: Optional[str],
+    viewer_checksum: Optional[str],
+) -> Dict[str, Any]:
+    if not explore_listings_table:
+        return {'updated': False, 'should_generate_thumbnail': False}
+
+    now_epoch = int(datetime.now(timezone.utc).timestamp())
+    listing_id = project.get('projectId') or viewer_slug or hashlib.md5(model_link.encode('utf-8')).hexdigest()
+    location = _extract_city_state(project)
+    thumbnail_url = _build_thumbnail_url(model_link)
+
+    existing = explore_listings_table.get_item(Key={'listingId': listing_id}).get('Item') or {}
+    existing_checksum = (existing.get('viewerChecksum') or '').strip()
+    should_generate_thumbnail = bool(viewer_checksum and viewer_checksum != existing_checksum) or not existing.get('thumbnailUrl')
+
+    update_expression_parts = [
+        '#viewerUrl = :viewerUrl',
+        '#viewerSlug = :viewerSlug',
+        '#viewerTitle = :viewerTitle',
+        '#visibility = :visibility',
+        '#thumbnailUrl = :thumbnailUrl',
+        '#city = :city',
+        '#state = :state',
+        '#cityState = :cityState',
+        '#updatedAt = :updatedAt',
+        '#projectId = :projectId',
+        '#userSub = :userSub',
+    ]
+    expr_attr_names = {
+        '#viewerUrl': 'viewerUrl',
+        '#viewerSlug': 'viewerSlug',
+        '#viewerTitle': 'viewerTitle',
+        '#visibility': 'visibility',
+        '#thumbnailUrl': 'thumbnailUrl',
+        '#city': 'city',
+        '#state': 'state',
+        '#cityState': 'cityState',
+        '#updatedAt': 'updatedAt',
+        '#projectId': 'projectId',
+        '#userSub': 'userSub',
+        '#createdAt': 'createdAt',
+        '#thumbnailStatus': 'thumbnailStatus',
+        '#viewerChecksum': 'viewerChecksum',
+    }
+    expr_attr_values = {
+        ':viewerUrl': model_link,
+        ':viewerSlug': viewer_slug or '',
+        ':viewerTitle': viewer_title or project.get('title') or '',
+        ':visibility': 'public',
+        ':thumbnailUrl': thumbnail_url,
+        ':city': location['city'],
+        ':state': location['state'],
+        ':cityState': location['cityState'],
+        ':updatedAt': now_epoch,
+        ':projectId': project.get('projectId') or '',
+        ':userSub': project.get('userSub') or '',
+        ':createdAt': existing.get('createdAt') or now_epoch,
+        ':thumbnailStatus': 'pending' if should_generate_thumbnail else (existing.get('thumbnailStatus') or 'ready'),
+        ':viewerChecksum': viewer_checksum or existing_checksum,
+    }
+
+    update_expression_parts.append('#createdAt = if_not_exists(#createdAt, :createdAt)')
+    update_expression_parts.append('#thumbnailStatus = :thumbnailStatus')
+    update_expression_parts.append('#viewerChecksum = :viewerChecksum')
+
+    explore_listings_table.update_item(
+        Key={'listingId': listing_id},
+        UpdateExpression='SET ' + ', '.join(update_expression_parts),
+        ExpressionAttributeNames=expr_attr_names,
+        ExpressionAttributeValues=convert_floats_to_decimal(expr_attr_values),
+    )
+
+    return {
+        'updated': True,
+        'should_generate_thumbnail': should_generate_thumbnail,
+        'thumbnailUrl': thumbnail_url,
+        'listingId': listing_id,
+    }
 
 
 def _resolve_model_link(project: Dict[str, Any]) -> Optional[str]:
@@ -534,6 +697,7 @@ def _persist_delivery(
     recipient: Dict[str, Any],
     viewer_slug: Optional[str] = None,
     viewer_title: Optional[str] = None,
+    viewer_checksum: Optional[str] = None,
     payment_state: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     user_sub = project['userSub']
@@ -558,6 +722,7 @@ def _persist_delivery(
         'projectTitle': project.get('title'),
         'viewerSlug': viewer_slug,
         'viewerTitle': viewer_title,
+        'viewerChecksum': viewer_checksum,
         'sentAt': now_iso,
         'messageId': message_id,
         'sentBy': {
@@ -580,6 +745,7 @@ def _persist_delivery(
         'messageId': message_id,
         'viewerSlug': viewer_slug,
         'viewerTitle': viewer_title,
+        'viewerChecksum': viewer_checksum,
     }
 
     new_status = project.get('status') or 'delivered'
@@ -697,6 +863,7 @@ def lambda_handler(event, context):
             model_link = (data.get('modelLink') or '').strip()
             viewer_slug = (data.get('viewerSlug') or '').strip() or None
             viewer_title = (data.get('viewerTitle') or '').strip() or None
+            viewer_checksum = (data.get('viewerChecksum') or '').strip() or None
 
             if not client_email or not project_id or not model_link:
                 return _response(400, {'error': 'clientEmail, projectId, and modelLink are required'})
@@ -767,8 +934,22 @@ def lambda_handler(event, context):
                 recipient=client,
                 viewer_slug=viewer_slug,
                 viewer_title=viewer_title,
+                viewer_checksum=viewer_checksum,
                 payment_state=payment_state,
             )
+
+            explore_update = _upsert_explore_listing(
+                project=updated_project,
+                model_link=model_link,
+                viewer_slug=viewer_slug,
+                viewer_title=viewer_title,
+                viewer_checksum=viewer_checksum,
+            )
+            if explore_update.get('should_generate_thumbnail') and viewer_slug:
+                _trigger_thumbnail_job({
+                    'slug': viewer_slug,
+                    'viewerUrl': model_link,
+                })
 
             audit_log = {
                 'action': 'model_link_sent',

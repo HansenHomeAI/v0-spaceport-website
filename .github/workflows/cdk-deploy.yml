@@ -110,21 +110,75 @@ jobs:
         set -e
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         
+        BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
+        BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
+        
+        BOOTSTRAP_REQUIRED=0
+        
         # Check if CDK is bootstrapped with default qualifier
-        if ! aws ssm get-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 2>/dev/null; then
-          echo "CDK not bootstrapped with default qualifier. Bootstrapping for account $ACCOUNT..."
+        if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
+          echo "CDK already bootstrapped with default qualifier for account $ACCOUNT (SSM parameter present)"
+        else
+          echo "Default qualifier parameter missing or inaccessible for account $ACCOUNT."
+          BOOTSTRAP_REQUIRED=1
           
-          # Clean up any existing non-standard bootstrap first
+          if aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
+            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET already exists."
+            echo "Removing all object versions from bootstrap bucket before deletion..."
+            
+            KEY_MARKER=""
+            VERSION_MARKER=""
+            while true; do
+              if [ -n "$KEY_MARKER" ]; then
+                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET" --key-marker "$KEY_MARKER" --version-id-marker "$VERSION_MARKER")
+              else
+                RESPONSE=$(aws s3api list-object-versions --bucket "$BOOTSTRAP_BUCKET")
+              fi
+              
+              OBJECTS_JSON=$(echo "$RESPONSE" | jq -c '{
+                Objects: (
+                  ((.Versions // []) + (.DeleteMarkers // []))
+                  | map({Key: .Key, VersionId: .VersionId})
+                )
+              }')
+              
+              COUNT=$(echo "$OBJECTS_JSON" | jq '.Objects | length')
+              if [ "$COUNT" -gt 0 ]; then
+                echo "$OBJECTS_JSON" > /tmp/delete-bootstrap-objects.json
+                aws s3api delete-objects --bucket "$BOOTSTRAP_BUCKET" --delete file:///tmp/delete-bootstrap-objects.json >/dev/null
+              fi
+              
+              if [ "$(echo "$RESPONSE" | jq -r '.IsTruncated')" != "true" ]; then
+                break
+              fi
+              
+              KEY_MARKER=$(echo "$RESPONSE" | jq -r '.NextKeyMarker // empty')
+              VERSION_MARKER=$(echo "$RESPONSE" | jq -r '.NextVersionIdMarker // empty')
+              
+              if [ -z "$KEY_MARKER" ]; then
+                break
+              fi
+            done
+            rm -f /tmp/delete-bootstrap-objects.json
+            
+            echo "Deleting bootstrap bucket $BOOTSTRAP_BUCKET..."
+            aws s3api delete-bucket --bucket "$BOOTSTRAP_BUCKET" --region us-west-2
+          else
+            echo "Bootstrap assets bucket $BOOTSTRAP_BUCKET not found."
+          fi
+          
           echo "Checking for existing CDK bootstrap stack..."
-          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 2>/dev/null; then
+          if aws cloudformation describe-stacks --stack-name CDKToolkit --region us-west-2 >/dev/null 2>&1; then
             echo "Found existing CDKToolkit stack. Deleting to ensure clean bootstrap with default qualifier..."
             aws cloudformation delete-stack --stack-name CDKToolkit --region us-west-2
             echo "Waiting for stack deletion to complete..."
             aws cloudformation wait stack-delete-complete --stack-name CDKToolkit --region us-west-2
             echo "Existing CDK bootstrap stack deleted successfully"
           fi
-          
-          # Bootstrap with default qualifier for consistency between dev and prod
+        fi
+        
+        if [ "$BOOTSTRAP_REQUIRED" -eq 1 ]; then
+          echo "Bootstrapping environment $ACCOUNT/us-west-2 with default qualifier resources..."
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "Production bootstrap with OIDC role trust and default qualifier"
             cdk bootstrap aws://$ACCOUNT/us-west-2 \
@@ -134,8 +188,6 @@ jobs:
             echo "Development bootstrap with default qualifier"
             cdk bootstrap aws://$ACCOUNT/us-west-2
           fi
-        else
-          echo "CDK already bootstrapped with default qualifier for account $ACCOUNT"
         fi
 
     - name: Verify Bootstrap
@@ -145,13 +197,18 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         echo "Verifying CDK bootstrap for account $ACCOUNT"
 
-        # Simple verification - check for default qualifier SSM parameter
-        echo "Checking for default qualifier bootstrap parameter..."
-        if aws ssm get-parameter --name "/cdk-bootstrap/hnb659fds/version" --region us-west-2 >/dev/null 2>&1; then
-          echo "✅ CDK bootstrap verified successfully with default qualifier"
+        BOOTSTRAP_PARAMETER="/cdk-bootstrap/hnb659fds/version"
+        BOOTSTRAP_BUCKET="cdk-hnb659fds-assets-${ACCOUNT}-us-west-2"
+        
+        # Simple verification - prefer SSM parameter, fall back to bucket existence
+        echo "Checking for default qualifier bootstrap artifacts..."
+        if aws ssm get-parameter --name "$BOOTSTRAP_PARAMETER" --region us-west-2 >/dev/null 2>&1; then
+          echo "✅ CDK bootstrap verified successfully via SSM parameter"
+        elif aws s3api head-bucket --bucket "$BOOTSTRAP_BUCKET" >/dev/null 2>&1; then
+          echo "✅ CDK bootstrap assets bucket exists; treating environment as bootstrapped"
         else
-          echo "❌ CDK bootstrap verification failed - default qualifier not found"
-          echo "This should not happen after the bootstrap step above"
+          echo "❌ Unable to verify CDK bootstrap state (missing SSM parameter and assets bucket)"
+          echo "Manual intervention required before continuing deployment"
           exit 1
         fi
 
@@ -175,6 +232,7 @@ jobs:
         STRIPE_PRICE_SINGLE_PROD: ${{ secrets.STRIPE_PRICE_SINGLE_PROD }}
         STRIPE_PRICE_STARTER_PROD: ${{ secrets.STRIPE_PRICE_STARTER_PROD }}
         STRIPE_PRICE_GROWTH_PROD: ${{ secrets.STRIPE_PRICE_GROWTH_PROD }}
+        CDK_DISABLE_BOOTSTRAP_VERSION_CHECK: "1"
         STRIPE_MODEL_TRAINING_PRICE_PROD: ${{ secrets.STRIPE_MODEL_TRAINING_PRICE_PROD }}
         STRIPE_MODEL_HOSTING_PRICE_PROD: ${{ secrets.STRIPE_MODEL_HOSTING_PRICE_PROD }}
         # R2 S3 access credentials
@@ -188,6 +246,8 @@ jobs:
         R2_SECRET_ACCESS_KEY_PROD: ${{ secrets.R2_SECRET_ACCESS_KEY_PROD }}
         R2_BUCKET_NAME_PROD: ${{ secrets.R2_BUCKET_NAME_PROD }}
         R2_REGION_PROD: ${{ secrets.R2_REGION_PROD }}
+        SPACES_THUMBNAIL_URL: ${{ secrets.SPACES_THUMBNAIL_URL }}
+        SPACES_THUMBNAIL_TOKEN: ${{ secrets.SPACES_THUMBNAIL_TOKEN }}
         # Referral system configuration - using CDK defaults (Option A)
         # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
         # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
@@ -198,19 +258,86 @@ jobs:
       run: |
         set -euo pipefail
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        BRANCH_NAME="${GITHUB_REF_NAME}"
+        CHANGED_FILES="$(git show --name-only --format= HEAD)"
+        
+        # Detect Lambda function changes
+        LAMBDA_CHANGED="false"
+        AUTH_STACK_CHANGED="false"
+        EXPLORE_API_MISSING="false"
+        if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          # Check if any Lambda files changed
+          if printf '%s\n' "${CHANGED_FILES}" | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
+            LAMBDA_CHANGED="true"
+            echo "Lambda functions changed - will deploy branch-specific Lambda versions"
+          fi
+
+          if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/app\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\.py|infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/|\.github/workflows/cdk-deploy\.yml|\.github/workflows/deploy-cloudflare-pages\.yml)"; then
+            AUTH_STACK_CHANGED="true"
+            echo "Auth-backed explore files changed - will deploy shared auth stack for this branch"
+          fi
+
+          if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+            CURRENT_EXPLORE_API_URL=$(aws cloudformation describe-stacks \
+              --stack-name "${AUTH_STACK_NAME}" \
+              --query "Stacks[0].Outputs[?OutputKey=='ExplorePublicApiUrl'].OutputValue" \
+              --output text 2>/dev/null || true)
+            if [ -z "${CURRENT_EXPLORE_API_URL}" ] || [ "${CURRENT_EXPLORE_API_URL}" = "None" ]; then
+              EXPLORE_API_MISSING="true"
+              AUTH_STACK_CHANGED="true"
+              echo "Shared auth stack is missing ExplorePublicApiUrl - forcing auth redeploy"
+            fi
+          fi
+        fi
+        
+        # Determine environment based on branch
+        if [ "${BRANCH_NAME}" = "main" ]; then
+          ENVIRONMENT="production"
+          echo "Deploying to production environment"
+        elif [ "${BRANCH_NAME}" = "development" ]; then
+          ENVIRONMENT="staging"
+          echo "Deploying to staging environment"
+        else
+          # For agent/feature branches, use staging as base but with branch-specific suffix
+          ENVIRONMENT="staging"
+          echo "Deploying agent branch: ${BRANCH_NAME} (using staging environment with branch-specific resources)"
+        fi
+        
+        # Sanitize branch name for AWS resource naming (remove invalid chars, lowercase)
+        # This matches the Python sanitize_branch_name function logic
+        BRANCH_SANITIZED=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g' | cut -c1-50)
+        if [ -z "${BRANCH_SANITIZED}" ]; then
+          BRANCH_SANITIZED="default"
+        fi
+        
+        echo "Branch name: ${BRANCH_NAME}"
+        echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
+        echo "Lambda changed: ${LAMBDA_CHANGED}"
+        echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
+        echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
+
+        DEPLOY_AUTH_STACK_EFFECTIVE="${DEPLOY_AUTH_STACK}"
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${AUTH_STACK_CHANGED}" = "true" ]; then
+          DEPLOY_AUTH_STACK_EFFECTIVE="true"
+        fi
+
+        echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
 
         STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
-        if [ "${DEPLOY_AUTH_STACK}" = "true" ]; then
+        if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
         fi
 
         echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
-
+        
+        export DEPLOY_AUTH_STACK_OVERRIDE="${DEPLOY_AUTH_STACK_EFFECTIVE}"
         cdk deploy "${STACKS[@]}" \
           --require-approval never \
           --no-fail-on-empty-changeset \
-          --context branch_name="${GITHUB_REF_NAME}" \
           --context environment="${CDK_ENVIRONMENT_NAME}" \
+          --context branch_name="${BRANCH_NAME}" \
+          --context deploy_auth_stack="${DEPLOY_AUTH_STACK_EFFECTIVE}" \
+          --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
           --parameters "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}"

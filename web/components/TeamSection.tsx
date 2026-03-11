@@ -7,34 +7,34 @@ export default function TeamSection(): JSX.Element {
   return (
     <section className="section" id="team" style={{ padding: '70px 20px 40px' }}>
       <div className="team-content">
-        <h2 style={{ 
-          textAlign: 'center', 
-          marginBottom: '30px', 
-          fontSize: '2rem', 
-          fontWeight: 500, 
+        <h2 style={{
+          textAlign: 'center',
+          marginBottom: '30px',
+          fontSize: '2rem',
+          fontWeight: 500,
           color: 'white'
         }}>
           Meet the team.
         </h2>
-        
+
         <div className="team-grid">
           {TEAM_MEMBERS.map((member) => (
             <div key={member.id} className="team-member-card">
               <div className="member-photo-container">
-                <img 
-                  src={member.imageSrc} 
+                <img
+                  src={member.imageSrc}
                   alt={member.name}
                   className="member-photo"
                 />
               </div>
-              
+
               <div className="member-info">
                 <h3 className="member-name">{member.name}</h3>
                 <div className="member-role-row">
                   <p className="member-role">{member.role}</p>
-                  <a 
-                    href={member.linkedinUrl} 
-                    target="_blank" 
+                  <a
+                    href={member.linkedinUrl}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="linkedin-link"
                     aria-label={`${member.name}'s LinkedIn`}
@@ -126,7 +126,7 @@ export default function TeamSection(): JSX.Element {
             transition: opacity 0.2s;
             cursor: pointer;
           }
-          
+
           .linkedin-link:hover {
             opacity: 1;
           }
@@ -165,7 +165,7 @@ export default function TeamSection(): JSX.Element {
             .member-name {
               margin-bottom: 4px;
             }
-            
+
             .member-role-row {
               gap: 10px;
             }

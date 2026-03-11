@@ -55,6 +55,9 @@ export const API_CONFIG = {
 
   // Spaces Viewer base URL - Hosted viewer for delivered models
   SPACES_VIEWER_BASE_URL: process.env.NEXT_PUBLIC_SPACES_VIEWER_BASE_URL || 'https://spcprt.com/spaces',
+
+  // Explore Public API - Explore listings
+  EXPLORE_PUBLIC_API_URL: process.env.NEXT_PUBLIC_EXPLORE_API_URL || '',
 } as const;
 
 // Individual API endpoint builders
@@ -112,6 +115,11 @@ export const buildApiUrl = {
   spacesViewer: {
     base: () => API_CONFIG.SPACES_VIEWER_BASE_URL,
     publish: () => `${API_CONFIG.SPACES_VIEWER_BASE_URL.replace(/\/$/, '')}/publish`,
+  },
+
+  // Explore Public endpoints
+  explorePublic: {
+    base: () => API_CONFIG.EXPLORE_PUBLIC_API_URL,
   },
 } as const;
 
