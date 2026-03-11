@@ -4702,6 +4702,96 @@ body.popup-open {
   background: rgba(0, 0, 0, 0.15);
 }
 
+.map-toolbar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 40;
+  display: flex;
+  gap: 8px;
+}
+
+.map-battery-panel {
+  position: absolute;
+  top: 16px;
+  right: 76px;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.map-battery-button {
+  min-width: 104px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 9, 20, 0.42);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.map-battery-button:hover:not(.loading) {
+  background: rgba(12, 19, 38, 0.56);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.map-battery-button.loading {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.map-toolbar-button {
+  min-width: 50px;
+  height: 50px;
+  padding: 0 14px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 9, 20, 0.42);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.map-toolbar-button:hover:not(:disabled) {
+  background: rgba(12, 19, 38, 0.56);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.map-toolbar-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.map-toolbar-button--text {
+  min-width: 102px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.map-toolbar-button.active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 .expand-icon {
   width: 20px;
   height: 20px;
@@ -5453,7 +5543,67 @@ body.popup-open {
   100% { transform: rotate(360deg); }
 }
 
-/* Removed gradient border and text fade effects for cleaner appearance */
+/* Battery segment item wrapper (download btn + view toggle) */
+.battery-segment-item {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  animation: buttonFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.battery-segment-item .flight-path-download-btn {
+  flex: 1;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+/* Battery path visibility toggle button */
+.battery-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-width: 34px;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.battery-view-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.battery-view-btn.active {
+  background: rgba(77, 171, 247, 0.2);
+  color: #4dabf7;
+}
+
+.battery-view-btn.active:hover {
+  background: rgba(255, 90, 90, 0.18);
+  color: #ff6b6b;
+}
+
+.battery-view-btn.loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.battery-view-btn .view-loading-spinner {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: rgba(255, 255, 255, 0.7);
+  animation: spin 0.8s linear infinite;
+}
 
 /* Placeholder message when no batteries */
 .flight-path-placeholder {
@@ -5626,7 +5776,182 @@ input.text-fade-right,
 
 .map-wrapper.fullscreen .map-progressive-bottom-blur {
   border-radius: 0;
-  height: 40px; /* Slightly taller in fullscreen for better effect */
+  height: 40px;
+}
+
+/* Waypoint markers on battery paths */
+.waypoint-marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  transition: width 0.15s ease, height 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+  pointer-events: none;
+}
+.map-wrapper.fullscreen .waypoint-marker {
+  width: 12px;
+  height: 12px;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15);
+}
+.map-wrapper.fullscreen .waypoint-marker:active {
+  cursor: grabbing;
+}
+
+.map-wrapper.fullscreen .waypoint-marker.merge-target {
+  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.45), 0 0 10px rgba(255, 193, 7, 0.6);
+}
+
+.map-wrapper.fullscreen .waypoint-marker.merge-armed {
+  box-shadow: 0 0 0 5px rgba(255, 88, 88, 0.7), 0 0 14px rgba(255, 88, 88, 0.65);
+}
+
+.waypoint-insert-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(7, 11, 22, 0.85);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32), 0 0 0 2px rgba(255, 255, 255, 0.14);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.waypoint-insert-marker:hover {
+  transform: scale(1.06);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.38), 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.boundary-handle-marker {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  background: rgba(10, 12, 24, 0.9);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12), 0 6px 20px rgba(0, 0, 0, 0.28);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.boundary-handle-marker:active {
+  cursor: grabbing;
+}
+
+.boundary-handle-marker.center {
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-color: rgba(15, 21, 38, 0.9);
+}
+
+.boundary-handle-marker.major,
+.boundary-handle-marker.minor {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.boundary-editor-bar {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 42;
+  max-width: min(760px, calc(100% - 160px));
+  padding: 10px 12px;
+  border-radius: 22px;
+  background: rgba(7, 11, 22, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
+.boundary-editor-copy {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.boundary-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.boundary-editor-button {
+  min-width: 88px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.boundary-editor-button.primary {
+  background: #ffffff;
+  color: #0b1020;
+}
+
+.boundary-editor-button.secondary {
+  background: transparent;
+  color: #ffffff;
+}
+
+.boundary-editor-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.boundary-editor-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Drag hint pill badge */
+.waypoint-drag-hint {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(11, 14, 36, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: waypointHintFadeIn 0.4s ease;
+}
+@keyframes waypointHintFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* Instructions aligned with map margins */

@@ -1,10 +1,39 @@
-2026-03-04 - Branch-isolated preview backend routing and stack resolution
-2026-03-06 - Add explicit terrain toggle for drone path generation
-2026-03-06 - Wire real Google Maps key into terrain-following lambda
-2026-03-06 - Recompute optimization readiness after selecting a map location
-2026-03-06 - Wait for matching CDK deploy before resolving preview auth outputs
-2026-03-06 - Force fresh branch redeploy after correcting Google Maps API key
-2026-03-08T01:12:00Z refresh development preview for explore thumbnails
-2026-03-07T05:18:00Z restore explore api preview routing after dead api gateway hostname
+2026-02-08 - Cognito preview secrets updated for staging
+2026-02-10 - Fix shape-viewer black canvas (camera far/controls)
+2026-02-10 - Add extra midpoints for 1-2 battery shape circularity
+2026-02-11 - Harden mapbox module import in create modal
+2026-03-04 - Add fullscreen boundary-fit UX and backend ellipse planner
+2026-03-04 - Trigger preview after adding codex branch workflow support
+2026-03-04 - Fix address-entry race before map initialization in create modal
+2026-03-04 - Add boundary optimize fallback via optimize-spiral for preview compatibility
+2026-03-04 - Wait for map readiness before entering boundary mode
+2026-03-04 - Recompute optimization readiness when coordinates resolve
+2026-03-04 - Wait for address resolution before boundary optimization
+2026-03-04 - Harden map drag hit-testing and broaden map undo history
+2026-03-04 - Stabilize map lifecycle during center-click and preview interactions
+2026-03-04 - Flush pending viewport history before new map edits
+2026-03-04 - Suppress viewport history capture during marker and boundary drags
+2026-03-04 - Clear pending viewport state after marker and boundary drag commits
+2026-03-04 - Capture drag history on marker pointerdown for reliable undo ordering
+2026-03-04 - Commit viewport history on pointer release before marker edits
+2026-03-04 - Version marker interactions to discard stale pan commits during undo
+2026-03-04 - Ignore marker-origin map clicks that were clearing optimized paths
+2026-03-05 - Persist waypoint override edits across expansion/altitude updates with boundary-signature reset logic
+2026-03-05 - Add inline segment insert (+) and same-path hold-to-merge waypoint interactions
+2026-03-05 - Rebuild CSV rows from edited waypoint geometry for count-changing path edits
+2026-03-05 - Trigger preview deploy for waypoint override + inline waypoint editing rollout
+2026-03-05T10:17:00-07:00 waypoint-override rollout retrigger
+2026-03-05T11:35:00-07:00 fix waypoint marker draggable state source
+2026-03-05T16:55:00-07:00 force waypoint markers draggable at creation
+2026-03-06T00:12:53Z - Keep fullscreen map in-modal, harden marker drag pan guards, and add fullscreen Battery quick actions
+2026-03-06T00:27:00Z - Guard fullscreen boundary controls from map click invalidation and widen merge capture
+2026-03-06 - Propagate preview backend isolation and branch-specific stack routing
+2026-03-06T16:24:00Z - Persist waypoint override ref synchronously before autosave and scope boundary CSV assertions to explicit battery downloads
+2026-03-06T16:50:47Z codex persistence fix
+2026-03-06T10:40:00-07:00 stabilize touch waypoint insertion hit testing and long-press point capture
+2026-03-06T11:00:00-07:00 move touch waypoint insertion long-press detection onto native canvas touch listeners
+touch-retest 2026-03-07T04:05:55Z
 2026-03-07 compact terrain toggle panel
 2026-03-07 terrain-toggle-row align/justify flex-start
+2026-03-10T23:00:00Z boundary-fit branch merge verification retrigger
+2026-03-11T00:47:30Z retrigger deploy after auth stack lock cleared

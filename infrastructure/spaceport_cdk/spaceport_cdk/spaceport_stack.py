@@ -413,6 +413,10 @@ class SpaceportStack(Stack):
         # Optimize spiral endpoint
         optimize_resource = api_resource.add_resource("optimize-spiral")
         optimize_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))
+
+        # Boundary-aware optimization endpoint
+        optimize_boundary_resource = api_resource.add_resource("optimize-boundary")
+        optimize_boundary_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))
         
         # CSV endpoint
         csv_resource = api_resource.add_resource("csv")
