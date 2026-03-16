@@ -62,6 +62,7 @@ type OptimizedParams = {
   elevationFeet: number | null;
   formToTerrain: boolean;
   spinMode?: boolean;
+  spinModeOverrides?: SpinModeOverridePayload | null;
   expansionMode?: 'default' | 'custom';
   actualMinExpansionDist?: number | null;
   actualMaxExpansionDist?: number | null;
@@ -112,6 +113,135 @@ type WaypointInsertCandidate = {
   coord: [number, number];
 };
 
+type SpinModeOverridePayload = Partial<{
+  maxHeadingDeltaDeg: number;
+  maxAngularRateDegPerSec: number;
+  photoIntervalSeconds: number;
+  combinedWaypointLimit: number;
+  splitOverlapWaypoints: number;
+  outboundClimbRateFtPerFt: number;
+  inboundClimbRateFtPerFt: number;
+  midpointCurveBaseFt: number;
+  midpointCurveScale: number;
+  midpointCurveMaxFt: number;
+  anchorCurveBaseFt: number;
+  anchorCurveScale: number;
+  anchorCurveMaxFt: number;
+}>;
+
+type SpinModeOverrideFormState = {
+  [K in keyof Required<SpinModeOverridePayload>]: string;
+};
+
+type SpinModeFieldDefinition = {
+  key: keyof SpinModeOverrideFormState;
+  label: string;
+  placeholder: string;
+  allowDecimal?: boolean;
+};
+
+const EMPTY_SPIN_MODE_OVERRIDE_FORM_STATE: SpinModeOverrideFormState = {
+  maxHeadingDeltaDeg: '',
+  maxAngularRateDegPerSec: '',
+  photoIntervalSeconds: '',
+  combinedWaypointLimit: '',
+  splitOverlapWaypoints: '',
+  outboundClimbRateFtPerFt: '',
+  inboundClimbRateFtPerFt: '',
+  midpointCurveBaseFt: '',
+  midpointCurveScale: '',
+  midpointCurveMaxFt: '',
+  anchorCurveBaseFt: '',
+  anchorCurveScale: '',
+  anchorCurveMaxFt: '',
+};
+
+const SPIN_MODE_FIELD_GROUPS: Array<{ title: string; fields: SpinModeFieldDefinition[] }> = [
+  {
+    title: 'Spin Export',
+    fields: [
+      { key: 'maxHeadingDeltaDeg', label: 'Heading delta cap', placeholder: '179 deg', allowDecimal: true },
+      { key: 'maxAngularRateDegPerSec', label: 'Max yaw rate', placeholder: '25 deg/s', allowDecimal: true },
+      { key: 'photoIntervalSeconds', label: 'Photo interval', placeholder: '2 sec', allowDecimal: true },
+      { key: 'combinedWaypointLimit', label: 'Combined waypoint cap', placeholder: '197' },
+      { key: 'splitOverlapWaypoints', label: 'Split overlap', placeholder: '1' },
+    ],
+  },
+  {
+    title: 'Altitude Profile',
+    fields: [
+      { key: 'outboundClimbRateFtPerFt', label: 'Outbound climb rate', placeholder: '0.20 ft/ft', allowDecimal: true },
+      { key: 'inboundClimbRateFtPerFt', label: 'Inbound climb rate', placeholder: '0.10 ft/ft', allowDecimal: true },
+    ],
+  },
+  {
+    title: 'Midpoint Curves',
+    fields: [
+      { key: 'midpointCurveBaseFt', label: 'Base curve', placeholder: '50 ft', allowDecimal: true },
+      { key: 'midpointCurveScale', label: 'Distance scale', placeholder: '1.2', allowDecimal: true },
+      { key: 'midpointCurveMaxFt', label: 'Max curve', placeholder: '1500 ft', allowDecimal: true },
+    ],
+  },
+  {
+    title: 'Anchor Curves',
+    fields: [
+      { key: 'anchorCurveBaseFt', label: 'Base curve', placeholder: '40 ft', allowDecimal: true },
+      { key: 'anchorCurveScale', label: 'Distance scale', placeholder: '0.05', allowDecimal: true },
+      { key: 'anchorCurveMaxFt', label: 'Max curve', placeholder: '160 ft', allowDecimal: true },
+    ],
+  },
+];
+
+const SPIN_MODE_FIELD_DEFINITION_MAP = Object.fromEntries(
+  SPIN_MODE_FIELD_GROUPS.flatMap((group) => group.fields.map((field) => [field.key, field]))
+) as Record<keyof SpinModeOverrideFormState, SpinModeFieldDefinition>;
+
+function normalizeSpinModeOverrideFormState(value: unknown): SpinModeOverrideFormState {
+  if (!value || typeof value !== 'object') {
+    return { ...EMPTY_SPIN_MODE_OVERRIDE_FORM_STATE };
+  }
+
+  const source = value as Record<string, unknown>;
+  return {
+    maxHeadingDeltaDeg: source.maxHeadingDeltaDeg == null ? '' : String(source.maxHeadingDeltaDeg),
+    maxAngularRateDegPerSec: source.maxAngularRateDegPerSec == null ? '' : String(source.maxAngularRateDegPerSec),
+    photoIntervalSeconds: source.photoIntervalSeconds == null ? '' : String(source.photoIntervalSeconds),
+    combinedWaypointLimit: source.combinedWaypointLimit == null ? '' : String(source.combinedWaypointLimit),
+    splitOverlapWaypoints: source.splitOverlapWaypoints == null ? '' : String(source.splitOverlapWaypoints),
+    outboundClimbRateFtPerFt: source.outboundClimbRateFtPerFt == null ? '' : String(source.outboundClimbRateFtPerFt),
+    inboundClimbRateFtPerFt: source.inboundClimbRateFtPerFt == null ? '' : String(source.inboundClimbRateFtPerFt),
+    midpointCurveBaseFt: source.midpointCurveBaseFt == null ? '' : String(source.midpointCurveBaseFt),
+    midpointCurveScale: source.midpointCurveScale == null ? '' : String(source.midpointCurveScale),
+    midpointCurveMaxFt: source.midpointCurveMaxFt == null ? '' : String(source.midpointCurveMaxFt),
+    anchorCurveBaseFt: source.anchorCurveBaseFt == null ? '' : String(source.anchorCurveBaseFt),
+    anchorCurveScale: source.anchorCurveScale == null ? '' : String(source.anchorCurveScale),
+    anchorCurveMaxFt: source.anchorCurveMaxFt == null ? '' : String(source.anchorCurveMaxFt),
+  };
+}
+
+function buildSpinModeOverridePayload(
+  value: SpinModeOverrideFormState,
+): SpinModeOverridePayload | null {
+  const payload: SpinModeOverridePayload = {};
+
+  (Object.keys(value) as Array<keyof SpinModeOverrideFormState>).forEach((key) => {
+    const rawValue = value[key].trim();
+    if (!rawValue) {
+      return;
+    }
+
+    const numericValue = Number(rawValue);
+    if (!Number.isFinite(numericValue)) {
+      return;
+    }
+
+    const definition = SPIN_MODE_FIELD_DEFINITION_MAP[key];
+    payload[key] = definition.allowDecimal ? numericValue : Math.trunc(numericValue);
+  });
+
+  return Object.keys(payload).length > 0 ? payload : null;
+}
+
 const WAYPOINT_INSERT_HOVER_DISTANCE_PX = 16;
 const WAYPOINT_INSERT_TOUCH_DISTANCE_PX = 30;
 const WAYPOINT_INSERT_TOUCH_CANCEL_DISTANCE_PX = 16;
@@ -157,6 +287,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [minExpansionDist, setMinExpansionDist] = useState<string>("");
   const [maxExpansionDist, setMaxExpansionDist] = useState<string>("");
   const [spinMode, setSpinMode] = useState<boolean>(false);
+  const [spinModeOverrides, setSpinModeOverrides] = useState<SpinModeOverrideFormState>(() => ({
+    ...EMPTY_SPIN_MODE_OVERRIDE_FORM_STATE,
+  }));
 
   const [propertyTitle, setPropertyTitle] = useState<string>("");
   const [listingDescription, setListingDescription] = useState<string>("");
@@ -224,6 +357,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // Center-screen modal popup system (replacing Safari notifications)
   const [modalPopup, setModalPopup] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const spinModeOverridePayload = useMemo(
+    () => buildSpinModeOverridePayload(spinModeOverrides),
+    [spinModeOverrides]
+  );
   
   const showSystemNotification = useCallback((type: 'success' | 'error', message: string) => {
     // Show center-screen modal instead of browser notifications
@@ -844,6 +981,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     requestedMinExpansion?: string | null,
     requestedMaxExpansion?: string | null,
     terrainEnabled?: boolean,
+    spinModeEnabled?: boolean,
+    spinModeOverrideValues?: SpinModeOverridePayload | null,
   ): Record<string, any> => {
     const body: Record<string, any> = {
       batteryMinutes: minutes,
@@ -858,9 +997,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (requestedMaxExpansion && requestedMaxExpansion.trim()) {
       body.maxExpansionDist = parseFloat(requestedMaxExpansion);
     }
+    if (spinModeEnabled ?? spinMode) {
+      body.spinMode = true;
+      if (spinModeOverrideValues && Object.keys(spinModeOverrideValues).length > 0) {
+        body.spinModeOverrides = spinModeOverrideValues;
+      }
+    }
 
     return body;
-  }, [formToTerrain]);
+  }, [formToTerrain, spinMode]);
 
   const buildResolvedFlightRequestBody = useCallback((params: OptimizedParams): Record<string, any> => {
     const body: Record<string, any> = { ...params };
@@ -880,6 +1025,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
 
     delete body.optimizationInfo;
+    if (!body.spinModeOverrides || Object.keys(body.spinModeOverrides).length === 0) {
+      delete body.spinModeOverrides;
+    }
     return body;
   }, []);
 
@@ -892,6 +1040,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     requestedMinExpansion,
     requestedMaxExpansion,
     terrainEnabled,
+    spinModeEnabled,
+    spinModeOverrideValues,
   }: {
     coords: { lat: number; lng: number };
     minutes: number;
@@ -901,8 +1051,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     requestedMinExpansion?: string | null;
     requestedMaxExpansion?: string | null;
     terrainEnabled?: boolean;
+    spinModeEnabled?: boolean;
+    spinModeOverrideValues?: SpinModeOverridePayload | null;
   }): Promise<OptimizedParams> => {
     const effectiveFormToTerrain = terrainEnabled ?? formToTerrain;
+    const effectiveSpinMode = spinModeEnabled ?? spinMode;
+    const effectiveSpinModeOverrides = effectiveSpinMode
+      ? (spinModeOverrideValues ?? spinModeOverridePayload)
+      : null;
     const optRes = await fetch(`${API_ENHANCED_BASE}/api/optimize-spiral`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -914,6 +1070,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           requestedMinExpansion,
           requestedMaxExpansion,
           effectiveFormToTerrain,
+          effectiveSpinMode,
+          effectiveSpinModeOverrides,
         )
       ),
     });
@@ -957,9 +1115,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       maxHeight: maxH,
       elevationFeet,
       formToTerrain: effectiveFormToTerrain,
+      spinModeOverrides: effectiveSpinModeOverrides,
       optimizationInfo: optData.optimization_info ?? null,
     };
-  }, [API_ENHANCED_BASE, buildOptimizationRequestBody, formToTerrain]);
+  }, [API_ENHANCED_BASE, buildOptimizationRequestBody, formToTerrain, spinMode, spinModeOverridePayload]);
 
   const formatExpansionSummary = useCallback((minValue?: string | number | null, maxValue?: string | number | null): string => {
     const normalize = (value?: string | number | null): number | null => {
@@ -1043,6 +1202,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setMinExpansionDist(params.minExpansionDist || '');
       setMaxExpansionDist(params.maxExpansionDist || '');
       setMaxHeightFeet(params.maxHeight || '');
+      setSpinModeOverrides(normalizeSpinModeOverrideFormState(params.spinModeOverrides));
       if (params.boundary?.enabled) {
         setAppliedBoundary(normalizeBoundary(params.boundary as BoundaryEllipse));
       }
@@ -1094,8 +1254,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 requestedMinExpansion: params.minExpansionDist || '',
                 requestedMaxExpansion: params.maxExpansionDist || '',
                 terrainEnabled,
+                spinModeEnabled: savedSpinMode,
+                spinModeOverrideValues: buildSpinModeOverridePayload(
+                  normalizeSpinModeOverrideFormState(params.spinModeOverrides)
+                ),
               });
               optimizedParams.spinMode = savedSpinMode;
+              optimizedParams.spinModeOverrides = buildSpinModeOverridePayload(
+                normalizeSpinModeOverrideFormState(params.spinModeOverrides)
+              );
               setOptimizedParamsWithLogging(optimizedParams, 'Auto-restore optimization completed');
             } catch (e) {
               console.warn('Failed to auto-restore optimization params:', e);
@@ -1117,6 +1284,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setMinExpansionDist('');
       setMaxExpansionDist('');
       setSpinMode(false);
+      setSpinModeOverrides({ ...EMPTY_SPIN_MODE_OVERRIDE_FORM_STATE });
       setPropertyTitle('');
       setListingDescription('');
       setContactEmail('');
@@ -1570,8 +1738,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         requestedMinExpansion: minExpansionDist,
         requestedMaxExpansion: maxExpansionDist,
         terrainEnabled: formToTerrain,
+        spinModeEnabled: spinMode,
+        spinModeOverrideValues: spinMode ? spinModeOverridePayload : null,
       });
       params.spinMode = spinMode;
+      params.spinModeOverrides = spinMode ? spinModeOverridePayload : null;
       setOptimizedParamsWithLogging(params, 'Optimization completed successfully');
       console.log('Optimization completed successfully:', params);
     } catch (e: any) {
@@ -1582,7 +1753,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setProcessingMessage('');
       setOptimizationLoading(false);
     }
-  }, [batteryMinutes, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, numBatteries, runOptimizationRequest, showSystemNotification, startProcessingMessages, spinMode, waitForSelectedCoords]);
+  }, [batteryMinutes, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, numBatteries, runOptimizationRequest, showSystemNotification, spinMode, spinModeOverridePayload, startProcessingMessages, waitForSelectedCoords]);
 
   const ensureMissionReady = useCallback(async (): Promise<boolean> => {
     if (optimizedParamsRef.current || appliedBoundaryPlanRef.current) {
@@ -1660,12 +1831,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     body.maxHeight = body.maxHeight ?? maxH;
     body.formToTerrain = currentOptimizedParams?.formToTerrain ?? formToTerrain;
     body.spinMode = currentOptimizedParams?.spinMode ?? spinMode;
+    if (body.spinMode) {
+      const resolvedSpinModeOverrides = currentOptimizedParams?.spinModeOverrides ?? spinModeOverridePayload;
+      if (resolvedSpinModeOverrides && Object.keys(resolvedSpinModeOverrides).length > 0) {
+        body.spinModeOverrides = resolvedSpinModeOverrides;
+      }
+    } else {
+      delete body.spinModeOverrides;
+    }
 
     if (minExpansionDist) body.minExpansionDist = parseFloat(minExpansionDist);
     if (maxExpansionDist) body.maxExpansionDist = parseFloat(maxExpansionDist);
 
     return body;
-  }, [buildResolvedFlightRequestBody, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, parsedBatteryCount, spinMode]);
+  }, [buildResolvedFlightRequestBody, formToTerrain, maxHeightFeet, minExpansionDist, maxExpansionDist, minHeightFeet, parsedBatteryCount, spinMode, spinModeOverridePayload]);
 
   const triggerCsvDownload = useCallback((csvText: string, filename: string) => {
     const blob = new Blob([csvText], { type: 'text/csv' });
@@ -1689,7 +1868,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const headerColumns = header.split(',');
     const photoIntervalIndex = headerColumns.indexOf('photo_timeinterval');
     const maxExportWaypoints = 99;
-    const spinSplitOverlapWaypoints = 1;
+    const spinSplitOverlapWaypoints = spinModeOverridePayload?.splitOverlapWaypoints ?? 1;
     const splitIndex = maxExportWaypoints - spinSplitOverlapWaypoints;
     const partOneRows = dataLines.slice(0, maxExportWaypoints).map((row) => row.split(','));
     const partTwoRows = dataLines.slice(splitIndex).map((row) => row.split(','));
@@ -1712,7 +1891,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       partOneCsv: serialize(partOneRows),
       partTwoCsv: serialize(partTwoRows),
     };
-  }, []);
+  }, [spinModeOverridePayload]);
 
   const requestBatteryCsv = useCallback(async (
     batteryIndex1: number,
@@ -1735,11 +1914,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     const spinApplied = res.headers.get('X-Spin-Mode-Applied');
+    const spinOverridesApplied = res.headers.get('X-Spin-Overrides-Applied');
     const poiUsed = res.headers.get('X-POI-Used');
     const spinExportPart = res.headers.get('X-Spin-Export-Part');
-    if (spinApplied != null || poiUsed != null || spinExportPart != null) {
+    if (spinApplied != null || spinOverridesApplied != null || poiUsed != null || spinExportPart != null) {
       console.log(
         `🔍 [Battery CSV] X-Spin-Mode-Applied: ${spinApplied ?? 'n/a'}, `
+        + `X-Spin-Overrides-Applied: ${spinOverridesApplied ?? 'n/a'}, `
         + `X-POI-Used: ${poiUsed ?? 'n/a'}, `
         + `X-Spin-Export-Part: ${spinExportPart ?? 'n/a'}`,
       );
@@ -2532,6 +2713,22 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     clearAllBatteryPathsRef.current = clearAllBatteryPaths;
   }, [clearAllBatteryPaths]);
 
+  const handleSpinModeOverrideChange = useCallback((
+    key: keyof SpinModeOverrideFormState,
+    rawValue: string,
+  ) => {
+    const definition = SPIN_MODE_FIELD_DEFINITION_MAP[key];
+    const sanitizedValue = definition.allowDecimal
+      ? rawValue.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1')
+      : rawValue.replace(/[^0-9]/g, '');
+
+    setSpinModeOverrides((prev) => ({
+      ...prev,
+      [key]: sanitizedValue,
+    }));
+    clearAllBatteryPaths();
+  }, [clearAllBatteryPaths]);
+
   const replaceBatteryPreviewPaths = useCallback(async (
     previewPaths: BoundaryPreviewPath[],
     options?: { fitBounds?: boolean; useOverrides?: boolean }
@@ -3098,6 +3295,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           maxHeight: maxHeightFeet,
           formToTerrain,
           spinMode,
+          spinModeOverrides: spinMode ? spinModeOverridePayload : null,
           minExpansionDist: minExpansionDist || null,
           maxExpansionDist: maxExpansionDist || null,
           latitude: selectedCoordsRef.current?.lat || null,
@@ -3139,7 +3337,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } finally {
       setIsSaving(false);
     }
-  }, [addressSearch, batteryMinutes, currentProjectId, formToTerrain, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, status, isSaving, spinMode]);
+  }, [addressSearch, batteryMinutes, currentProjectId, formToTerrain, maxHeightFeet, minHeightFeet, minExpansionDist, maxExpansionDist, numBatteries, onSaved, projectTitle, spinMode, spinModeOverridePayload, status, isSaving]);
 
   // Check if project has meaningful content
   const hasMeaningfulContent = useCallback(() => {
@@ -3209,7 +3407,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }, 100); // Small delay to avoid render-phase updates
     
     return () => clearTimeout(timer);
-  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, formToTerrain, spinMode, status, selectedCoords, appliedBoundary, appliedBoundaryPlan, waypointOverrides]);
+  }, [open, projectTitle, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, formToTerrain, spinMode, spinModeOverrides, status, selectedCoords, appliedBoundary, appliedBoundaryPlan, waypointOverrides]);
 
   // Delete project function
   const handleDeleteProject = useCallback(async () => {
@@ -3505,6 +3703,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               minHeight: minHeightFeet,
               maxHeight: maxHeightFeet,
               formToTerrain,
+              spinMode,
+              spinModeOverrides: spinMode ? spinModeOverridePayload : null,
               boundary: appliedBoundaryRef.current || null,
               boundaryPlan: appliedBoundaryPlanRef.current || null,
               waypointOverrides: waypointOverridesRef.current,
@@ -3526,7 +3726,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       // Keep stage text visible for a few seconds after completion
       setTimeout(() => setUploadStage(''), 3000);
     }
-  }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, addressSearch, batteryMinutes, contactEmail, formToTerrain, listingDescription, maxHeightFeet, minHeightFeet, numBatteries, projectTitle, propertyTitle, selectedFile, validateUpload]);
+  }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, addressSearch, batteryMinutes, contactEmail, formToTerrain, listingDescription, maxHeightFeet, minHeightFeet, numBatteries, projectTitle, propertyTitle, selectedFile, spinMode, spinModeOverridePayload, validateUpload]);
 
   if (!open) return null;
 
@@ -3908,6 +4108,68 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 </div>
               </div>
             </div>
+
+            {spinMode && (
+              <div className="category-outline">
+                <div className="popup-section">
+                  <h4>Spin Mode Parameters</h4>
+                  <p
+                    className="text-fade-right"
+                    style={{ margin: '4px 0 12px', fontSize: '0.85rem', opacity: 0.82 }}
+                  >
+                    Leave any field blank to keep the lambda default.
+                  </p>
+                  <div style={{ display: 'grid', gap: 14 }}>
+                    {SPIN_MODE_FIELD_GROUPS.map((group) => (
+                      <div key={group.title} style={{ display: 'grid', gap: 8 }}>
+                        <div style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.68 }}>
+                          {group.title}
+                        </div>
+                        <div className="input-row-popup" style={{ flexWrap: 'wrap' }}>
+                          {group.fields.map((field) => (
+                            <div
+                              key={field.key}
+                              className="popup-input-wrapper"
+                              style={{ position: 'relative', minWidth: '220px', flex: '1 1 220px' }}
+                            >
+                              <div style={{ marginBottom: 6, fontSize: 12, opacity: 0.72 }}>
+                                {field.label}
+                              </div>
+                              <input
+                                type="text"
+                                inputMode={field.allowDecimal ? 'decimal' : 'numeric'}
+                                className="text-fade-right"
+                                placeholder={field.placeholder}
+                                value={spinModeOverrides[field.key]}
+                                onChange={(e) => handleSpinModeOverrideChange(field.key, e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (
+                                    !/[0-9.]/.test(e.key)
+                                    && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                  if (!field.allowDecimal && e.key === '.') {
+                                    e.preventDefault();
+                                  }
+                                  if (
+                                    field.allowDecimal
+                                    && e.key === '.'
+                                    && spinModeOverrides[field.key].includes('.')
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {optimizedParams && (
               <div className="category-outline">

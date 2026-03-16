@@ -12,6 +12,39 @@ class TerrainElevationUnavailableError(RuntimeError):
     """Raised when terrain-following requires live elevation data but Google is unavailable."""
 
 
+DEFAULT_SPIN_MODE_CONFIG = {
+    "maxHeadingDeltaDeg": 179.0,
+    "maxAngularRateDegPerSec": 25.0,
+    "photoIntervalSeconds": 2.0,
+    "combinedWaypointLimit": 197,
+    "splitOverlapWaypoints": 1,
+    "outboundClimbRateFtPerFt": 0.20,
+    "inboundClimbRateFtPerFt": 0.10,
+    "midpointCurveBaseFt": 50.0,
+    "midpointCurveScale": 1.2,
+    "midpointCurveMaxFt": 1500.0,
+    "anchorCurveBaseFt": 40.0,
+    "anchorCurveScale": 0.05,
+    "anchorCurveMaxFt": 160.0,
+}
+
+SPIN_MODE_OVERRIDE_SPECS = {
+    "maxHeadingDeltaDeg": {"min": 1.0, "max": 179.0, "integer": False},
+    "maxAngularRateDegPerSec": {"min": 0.1, "max": 360.0, "integer": False},
+    "photoIntervalSeconds": {"min": 0.1, "max": 30.0, "integer": False},
+    "combinedWaypointLimit": {"min": 99, "max": 197, "integer": True},
+    "splitOverlapWaypoints": {"min": 0, "max": 98, "integer": True},
+    "outboundClimbRateFtPerFt": {"min": 0.0, "max": 5.0, "integer": False},
+    "inboundClimbRateFtPerFt": {"min": 0.0, "max": 5.0, "integer": False},
+    "midpointCurveBaseFt": {"min": 0.0, "max": 5000.0, "integer": False},
+    "midpointCurveScale": {"min": 0.0, "max": 25.0, "integer": False},
+    "midpointCurveMaxFt": {"min": 1.0, "max": 10000.0, "integer": False},
+    "anchorCurveBaseFt": {"min": 0.0, "max": 5000.0, "integer": False},
+    "anchorCurveScale": {"min": 0.0, "max": 25.0, "integer": False},
+    "anchorCurveMaxFt": {"min": 1.0, "max": 10000.0, "integer": False},
+}
+
+
 class SpiralDesigner:
     """
     Bounded Spiral Designer - Advanced Drone Flight Pattern Generator
@@ -113,6 +146,7 @@ class SpiralDesigner:
         self.waypoint_cache = []
         self.elevation_cache = {}  # Cache for elevation data with coordinate keys
         self.require_live_elevation = False
+        self.spin_mode_config = DEFAULT_SPIN_MODE_CONFIG.copy()
         
         # DEVELOPMENT API KEY - Replace with environment variable for production
         # This key is rate-limited and for development/testing only
@@ -127,6 +161,22 @@ class SpiralDesigner:
         key_source = "PRODUCTION" if configured_api_key else "DEV (RATE LIMITED)"
         masked_key = self.api_key[:10] + "..." + self.api_key[-4:] if self.api_key else "None"
         print(f"🔑 Using {key_source} API key: {masked_key}")
+
+    def set_spin_mode_overrides(self, overrides: Optional[Dict] = None) -> Dict:
+        self.spin_mode_config = DEFAULT_SPIN_MODE_CONFIG.copy()
+        if overrides:
+            self.spin_mode_config.update(overrides)
+        return self.current_spin_mode_overrides()
+
+    def current_spin_mode_overrides(self) -> Dict:
+        return {
+            key: value
+            for key, value in self.spin_mode_config.items()
+            if value != DEFAULT_SPIN_MODE_CONFIG[key]
+        }
+
+    def _spin_cfg(self, key: str):
+        return self.spin_mode_config.get(key, DEFAULT_SPIN_MODE_CONFIG[key])
 
     def _handle_elevation_failure(self, message: str, default_elevation: float) -> float:
         if self.require_live_elevation:
@@ -496,9 +546,9 @@ class SpiralDesigner:
     def _compute_spin_telemetry(self, waypoint_records: List[Dict]) -> Dict[str, float]:
         """Summarize waypoint density and yaw-rate information for spin exports."""
         min_blur_segment_feet = (
-            self.SPIN_MAX_HEADING_DELTA_DEG
+            self._spin_cfg("maxHeadingDeltaDeg")
             * self.SPEED_FT_PER_SEC
-            / max(self.MAX_ANGULAR_RATE_DEG_PER_SEC, 1e-6)
+            / max(self._spin_cfg("maxAngularRateDegPerSec"), 1e-6)
         )
 
         if len(waypoint_records) < 2:
@@ -518,8 +568,8 @@ class SpiralDesigner:
             estimated_rate_deg_s = 0.0
         else:
             segment_seconds = longest_segment_ft / max(self.SPEED_FT_PER_SEC, 1e-6)
-            blur_limited_delta = self.MAX_ANGULAR_RATE_DEG_PER_SEC * segment_seconds
-            max_delta = min(self.SPIN_MAX_HEADING_DELTA_DEG, blur_limited_delta)
+            blur_limited_delta = self._spin_cfg("maxAngularRateDegPerSec") * segment_seconds
+            max_delta = min(self._spin_cfg("maxHeadingDeltaDeg"), blur_limited_delta)
             estimated_rate_deg_s = max_delta / max(segment_seconds, 1e-6)
 
         return {
@@ -586,8 +636,8 @@ class SpiralDesigner:
             return [0] * len(waypoint_records)
 
         longest_segment_seconds = longest_segment_ft / max(self.SPEED_FT_PER_SEC, 1e-6)
-        blur_limited_delta = self.MAX_ANGULAR_RATE_DEG_PER_SEC * longest_segment_seconds
-        max_delta = min(self.SPIN_MAX_HEADING_DELTA_DEG, blur_limited_delta)
+        blur_limited_delta = self._spin_cfg("maxAngularRateDegPerSec") * longest_segment_seconds
+        max_delta = min(self._spin_cfg("maxHeadingDeltaDeg"), blur_limited_delta)
         spin_rate_deg_per_ft = max_delta / longest_segment_ft
 
         headings = [0]
@@ -608,7 +658,7 @@ class SpiralDesigner:
 
         gimbal_pitches = self._build_gimbal_pitch_series(len(waypoint_records))
         active_photo_interval = (
-            self.SPIN_PHOTO_INTERVAL_SECONDS
+            self._spin_cfg("photoIntervalSeconds")
             if spin_mode
             else self.DEFAULT_PHOTO_INTERVAL_SECONDS
         )
@@ -665,7 +715,7 @@ class SpiralDesigner:
 
     def _split_spin_row_data(self, row_data: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
         """Split a combined spin mission into two overlapping parts for midair handoff."""
-        split_idx = self.MAX_EXPORT_WAYPOINTS - self.SPIN_SPLIT_OVERLAP_WAYPOINTS
+        split_idx = self.MAX_EXPORT_WAYPOINTS - int(self._spin_cfg("splitOverlapWaypoints"))
         part_one = [dict(row) for row in row_data[:self.MAX_EXPORT_WAYPOINTS]]
         part_two = [dict(row) for row in row_data[split_idx:]]
 
@@ -689,6 +739,8 @@ class SpiralDesigner:
         """
         Build per-waypoint records (lat/lon/alt/curve/x/y) before heading/gimbal assignment.
         """
+        outbound_climb_rate = self._spin_cfg("outboundClimbRateFtPerFt")
+        inbound_climb_rate = self._spin_cfg("inboundClimbRateFtPerFt")
         first_waypoint_distance = 0
         max_outbound_altitude = 0
         max_outbound_distance = 0
@@ -732,7 +784,7 @@ class SpiralDesigner:
                     additional_distance = dist_from_center - first_waypoint_distance
                     if additional_distance < 0:
                         additional_distance = 0
-                    agl_increment = additional_distance * 0.20
+                    agl_increment = additional_distance * outbound_climb_rate
                     desired_agl = min_height + agl_increment
 
                     if desired_agl > max_outbound_altitude:
@@ -742,7 +794,7 @@ class SpiralDesigner:
                     distance_from_max = max_outbound_distance - dist_from_center
                     if distance_from_max < 0:
                         distance_from_max = 0
-                    altitude_increase = distance_from_max * 0.1
+                    altitude_increase = distance_from_max * inbound_climb_rate
                     desired_agl = max_outbound_altitude + altitude_increase
 
                     if desired_agl < min_height:
@@ -751,7 +803,7 @@ class SpiralDesigner:
                     additional_distance = dist_from_center - first_waypoint_distance
                     if additional_distance < 0:
                         additional_distance = 0
-                    agl_increment = additional_distance * 0.20
+                    agl_increment = additional_distance * outbound_climb_rate
                     desired_agl = min_height + agl_increment
 
                 final_altitude = local_ground_offset + desired_agl
@@ -1093,15 +1145,15 @@ class SpiralDesigner:
             
             if is_midpoint:
                 # MIDPOINT CURVES: Ultra-smooth for seamless transitions
-                base_curve = 50
-                scale_factor = 1.2
-                max_curve = 1500
+                base_curve = self._spin_cfg("midpointCurveBaseFt")
+                scale_factor = self._spin_cfg("midpointCurveScale")
+                max_curve = self._spin_cfg("midpointCurveMaxFt")
                 curve_radius = min(max_curve, base_curve + (distance_from_center * scale_factor))
             else:
                 # NON-MIDPOINT CURVES: Doubled for smoother directional control  
-                base_curve = 40  # Doubled from 20 for smoother flight
-                scale_factor = 0.05
-                max_curve = 160  # Doubled from 80 for smoother flight
+                base_curve = self._spin_cfg("anchorCurveBaseFt")
+                scale_factor = self._spin_cfg("anchorCurveScale")
+                max_curve = self._spin_cfg("anchorCurveMaxFt")
                 curve_radius = min(max_curve, base_curve + (distance_from_center * scale_factor))
             
             curve_radius = round(curve_radius * 10) / 10  # Round to 1 decimal place
@@ -2219,11 +2271,11 @@ class SpiralDesigner:
 
         combined_records = self._enforce_waypoint_record_limit(
             waypoint_records,
-            self.MAX_SPLIT_SPIN_WAYPOINTS,
+            int(self._spin_cfg("combinedWaypointLimit")),
         )
         combined_records = self._insert_spin_waypoints(
             combined_records,
-            target_total=self.MAX_SPLIT_SPIN_WAYPOINTS,
+            target_total=int(self._spin_cfg("combinedWaypointLimit")),
         )
         combined_row_data = self._build_csv_row_data(combined_records, center, True)
         telemetry = self._compute_spin_telemetry(combined_records)
@@ -3365,6 +3417,46 @@ def _parse_expansion_inputs(body: Dict) -> Tuple[Optional[float], Optional[float
         _parse_optional_float(body.get('maxExpansionDist'), None),
     )
 
+
+def _parse_spin_mode_overrides(raw_overrides: Optional[Dict]) -> Dict:
+    if raw_overrides is None:
+        return {}
+    if not isinstance(raw_overrides, dict):
+        raise ValueError("spinModeOverrides must be an object when provided")
+
+    overrides = {}
+    for key, spec in SPIN_MODE_OVERRIDE_SPECS.items():
+        if key not in raw_overrides:
+            continue
+
+        value = raw_overrides.get(key)
+        if value is None or (isinstance(value, str) and value.strip() == ""):
+            continue
+
+        parsed_value = _parse_optional_float(value, None)
+        if parsed_value is None:
+            continue
+
+        if spec["integer"] and abs(parsed_value - round(parsed_value)) > 1e-6:
+            raise ValueError(f"{key} must be a whole number")
+        if parsed_value < spec["min"] or parsed_value > spec["max"]:
+            raise ValueError(f"{key} must be between {spec['min']} and {spec['max']}")
+
+        overrides[key] = int(round(parsed_value)) if spec["integer"] else float(parsed_value)
+
+    combined_limit = int(overrides.get("combinedWaypointLimit", DEFAULT_SPIN_MODE_CONFIG["combinedWaypointLimit"]))
+    overlap = int(overrides.get("splitOverlapWaypoints", DEFAULT_SPIN_MODE_CONFIG["splitOverlapWaypoints"]))
+    max_safe_combined = min(
+        DEFAULT_SPIN_MODE_CONFIG["combinedWaypointLimit"],
+        (2 * SpiralDesigner.MAX_EXPORT_WAYPOINTS) - overlap,
+    )
+    if combined_limit > max_safe_combined:
+        raise ValueError(
+            f"combinedWaypointLimit must be <= {max_safe_combined} when splitOverlapWaypoints is {overlap}"
+        )
+
+    return overrides
+
 def _build_adjustment_messages(
     optimized_params: Dict,
     requested_expansion: Dict,
@@ -3425,6 +3517,10 @@ def handle_optimize_spiral(designer, body, cors_headers):
         batteries = int(body.get('batteries', 3))
         center = body.get('center', '')
         min_exp, max_exp = _parse_expansion_inputs(body)
+        spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        designer.set_spin_mode_overrides(
+            _parse_spin_mode_overrides(body.get('spinModeOverrides')) if spin_mode else None
+        )
         
         # Validate battery minutes to prevent division by zero
         if battery_minutes <= 0:
@@ -3461,6 +3557,7 @@ def handle_optimize_spiral(designer, body, cors_headers):
         )
         requested_expansion = designer.normalize_expansion_request(min_exp, max_exp)
         adjustments = _build_adjustment_messages(optimized_params, requested_expansion)
+        optimized_params['spinModeOverrides'] = designer.current_spin_mode_overrides() or None
         
         return {
             'statusCode': 200,
@@ -3701,6 +3798,9 @@ def handle_csv_download(designer, body, cors_headers):
         form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
         designer.require_live_elevation = form_to_terrain
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        designer.set_spin_mode_overrides(
+            _parse_spin_mode_overrides(body.get('spinModeOverrides')) if spin_mode else None
+        )
         
         if not center:
             return {
@@ -3808,6 +3908,9 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
         designer.require_live_elevation = form_to_terrain
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        applied_spin_overrides = designer.set_spin_mode_overrides(
+            _parse_spin_mode_overrides(body.get('spinModeOverrides')) if spin_mode else None
+        )
         export_part = str(body.get('exportPart', 'single')).strip().lower() or 'single'
         allowed_export_parts = {'single', 'part1', 'part2', 'combined'}
         if export_part not in allowed_export_parts:
@@ -3885,6 +3988,7 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         expose_headers = [
             'X-Spin-Mode-Applied',
             'X-POI-Used',
+            'X-Spin-Overrides-Applied',
             'X-Spin-Export-Part',
             'X-Spin-Combined-Waypoints',
             'X-Spin-Max-Segment-Feet',
@@ -3901,6 +4005,7 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
                 'Access-Control-Expose-Headers': ', '.join(expose_headers),
                 'X-Spin-Mode-Applied': 'true' if spin_mode else 'false',
                 'X-POI-Used': poi_in_csv,
+                'X-Spin-Overrides-Applied': ','.join(sorted(applied_spin_overrides.keys())) if applied_spin_overrides else '',
                 'X-Spin-Export-Part': export_part,
                 'X-Spin-Combined-Waypoints': str(int(telemetry.get('combined_waypoints', 0))),
                 'X-Spin-Max-Segment-Feet': f"{telemetry.get('max_segment_feet', 0.0):.2f}",
