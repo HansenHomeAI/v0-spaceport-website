@@ -4585,7 +4585,8 @@ body.popup-open {
 }
 
 .accordion-section.active .accordion-content {
-  max-height: 1000px;
+  max-height: none;
+  overflow: visible;
   opacity: 1;
 }
 
