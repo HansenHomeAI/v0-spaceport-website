@@ -447,6 +447,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const setCenterMarkerOnMapRef = useRef<(lat: number, lng: number) => Promise<void>>(async () => {});
   const setOptimizedParamsWithLoggingRef = useRef<(params: OptimizedParams | null, reason: string) => void>(() => {});
   const restoreSavedLocationRef = useRef<(map: any, coords: { lat: number; lng: number }) => Promise<void>>(async () => {});
+  const modalInitializationKeyRef = useRef<string | null>(null);
 
   // Waypoint drag refs
   const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
@@ -1142,7 +1143,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // Reset state when opening/closing
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      modalInitializationKeyRef.current = null;
+      return;
+    }
+    const initializationKey = project?.projectId ? `project:${project.projectId}` : 'new';
+    if (modalInitializationKeyRef.current === initializationKey) {
+      return;
+    }
+    modalInitializationKeyRef.current = initializationKey;
     setUploadProgress(0);
     setUploadLoading(false);
     setMlLoading(false);
@@ -1211,7 +1220,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       }
       const normalizedWaypointOverrides = normalizeWaypointOverrides(params.waypointOverrides);
       commitWaypointOverrides(normalizedWaypointOverrides);
-      setSpinMode(savedSpinMode);
       setSpinMode(savedSpinMode);
       setContactEmail(project.email || '');
       setStatus(project.status || 'draft');
