@@ -77,6 +77,18 @@ class DronePathSpinModeTests(unittest.TestCase):
                 export_part=export_part,
             )
 
+    def _handle_battery_csv_download(self, body, battery_id="1", cors_headers=None):
+        with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
+             patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
+             patch.object(self.designer, "adaptive_terrain_sampling", return_value=[]), \
+             patch("builtins.print"):
+            return drone_path_module.handle_battery_csv_download(
+                self.designer,
+                body,
+                battery_id,
+                cors_headers or {},
+            )
+
     def _parse_rows(self, csv_text):
         return list(csv.DictReader(io.StringIO(csv_text)))
 
@@ -90,6 +102,10 @@ class DronePathSpinModeTests(unittest.TestCase):
             distance_ft = self.designer.haversine_distance(lat1, lon1, lat2, lon2) * 3.28084
             distances.append(distance_ft)
         return distances
+
+    def _max_heading_delta(self, rows):
+        headings = [float(row["heading(deg)"]) for row in rows]
+        return max((headings[i + 1] - headings[i]) % 360.0 for i in range(len(headings) - 1))
 
     def test_spin_mode_uses_waypoint_budget_and_limits_rotation_rate(self):
         params = {"slices": 1, "N": 6, "r0": 100, "rHold": 1000}
@@ -287,6 +303,172 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertIn("X-Spin-Max-Segment-Feet", response["headers"])
         self.assertIn("X-Spin-Estimated-Rate-Deg-S", response["headers"])
         self.assertIn("X-Spin-Min-Blur-Segment-Feet", response["headers"])
+
+    def test_blank_spin_mode_overrides_preserve_default_export(self):
+        body = {
+            "slices": 2,
+            "N": 6,
+            "r0": 100,
+            "rHold": 1000,
+            "center": self.center,
+            "spinMode": True,
+            "exportPart": "combined",
+            "minHeight": 120.0,
+        }
+        blank_overrides = {
+            key: ""
+            for key in drone_path_module.SPIN_MODE_OVERRIDE_SPECS.keys()
+        }
+
+        baseline_response = self._handle_battery_csv_download(body)
+        blank_response = self._handle_battery_csv_download({
+            **body,
+            "spinModeOverrides": blank_overrides,
+        })
+
+        self.assertEqual(baseline_response["statusCode"], 200)
+        self.assertEqual(blank_response["statusCode"], 200)
+        self.assertEqual(blank_response["headers"]["X-Spin-Overrides-Applied"], "")
+        self.assertEqual(blank_response["body"], baseline_response["body"])
+
+    def test_each_spin_mode_override_changes_battery_export_output(self):
+        shared_body = {
+            "slices": 2,
+            "N": 6,
+            "r0": 100,
+            "rHold": 1000,
+            "center": self.center,
+            "spinMode": True,
+            "minHeight": 120.0,
+        }
+
+        cases = [
+            {
+                "key": "maxHeadingDeltaDeg",
+                "override": {"maxHeadingDeltaDeg": 20},
+                "exportPart": "combined",
+                "metric": lambda response, rows: self._max_heading_delta(rows),
+                "assert_metric": lambda baseline, changed: self.assertLess(changed, baseline),
+            },
+            {
+                "key": "maxAngularRateDegPerSec",
+                "override": {"maxAngularRateDegPerSec": 10},
+                "exportPart": "combined",
+                "metric": lambda response, rows: float(response["headers"]["X-Spin-Estimated-Rate-Deg-S"]),
+                "assert_metric": lambda baseline, changed: self.assertLess(changed, baseline),
+            },
+            {
+                "key": "photoIntervalSeconds",
+                "override": {"photoIntervalSeconds": 1.5},
+                "exportPart": "combined",
+                "metric": lambda response, rows: float(rows[0]["photo_timeinterval"]),
+                "assert_metric": lambda baseline, changed: self.assertLess(changed, baseline),
+            },
+            {
+                "key": "combinedWaypointLimit",
+                "override": {"combinedWaypointLimit": 150},
+                "exportPart": "combined",
+                "metric": lambda response, rows: len(rows),
+                "assert_metric": lambda baseline, changed: self.assertLess(changed, baseline),
+            },
+            {
+                "key": "splitOverlapWaypoints",
+                "baselineOverride": {"combinedWaypointLimit": 193},
+                "override": {"combinedWaypointLimit": 193, "splitOverlapWaypoints": 5},
+                "exportPart": "part2",
+                "metric": lambda response, rows: len(rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "outboundClimbRateFtPerFt",
+                "override": {"outboundClimbRateFtPerFt": 0.5},
+                "exportPart": "combined",
+                "metric": lambda response, rows: max(float(row["altitude(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "inboundClimbRateFtPerFt",
+                "override": {"inboundClimbRateFtPerFt": 0.5},
+                "exportPart": "combined",
+                "metric": lambda response, rows: max(float(row["altitude(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "midpointCurveBaseFt",
+                "override": {"midpointCurveBaseFt": 200},
+                "exportPart": "combined",
+                "metric": lambda response, rows: max(float(row["curvesize(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "midpointCurveScale",
+                "override": {"midpointCurveScale": 2.0},
+                "exportPart": "combined",
+                "metric": lambda response, rows: max(float(row["curvesize(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "midpointCurveMaxFt",
+                "override": {"midpointCurveMaxFt": 20},
+                "exportPart": "combined",
+                "metric": lambda response, rows: max(float(row["curvesize(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertLess(changed, baseline),
+            },
+            {
+                "key": "anchorCurveBaseFt",
+                "override": {"anchorCurveBaseFt": 100},
+                "exportPart": "combined",
+                "metric": lambda response, rows: min(float(row["curvesize(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "anchorCurveScale",
+                "override": {"anchorCurveScale": 1.0},
+                "exportPart": "combined",
+                "metric": lambda response, rows: min(float(row["curvesize(ft)"]) for row in rows),
+                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
+            },
+            {
+                "key": "anchorCurveMaxFt",
+                "override": {"anchorCurveMaxFt": 20},
+                "exportPart": "combined",
+                "metric": lambda response, rows: float(rows[0]["curvesize(ft)"]),
+                "assert_metric": lambda baseline, changed: self.assertLess(changed, baseline),
+            },
+        ]
+
+        for case in cases:
+            with self.subTest(case["key"]):
+                baseline_body = {
+                    **shared_body,
+                    "exportPart": case["exportPart"],
+                }
+                if case.get("baselineOverride") is not None:
+                    baseline_body["spinModeOverrides"] = case["baselineOverride"]
+
+                changed_body = {
+                    **shared_body,
+                    "exportPart": case["exportPart"],
+                    "spinModeOverrides": case["override"],
+                }
+
+                baseline_response = self._handle_battery_csv_download(baseline_body)
+                changed_response = self._handle_battery_csv_download(changed_body)
+
+                self.assertEqual(baseline_response["statusCode"], 200)
+                self.assertEqual(changed_response["statusCode"], 200)
+
+                applied_overrides = set(
+                    filter(None, changed_response["headers"]["X-Spin-Overrides-Applied"].split(","))
+                )
+                self.assertIn(case["key"], applied_overrides)
+                self.assertNotEqual(changed_response["body"], baseline_response["body"])
+
+                baseline_rows = self._parse_rows(baseline_response["body"])
+                changed_rows = self._parse_rows(changed_response["body"])
+                baseline_metric = case["metric"](baseline_response, baseline_rows)
+                changed_metric = case["metric"](changed_response, changed_rows)
+                case["assert_metric"](baseline_metric, changed_metric)
 
 
 if __name__ == "__main__":
