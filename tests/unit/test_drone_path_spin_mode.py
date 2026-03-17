@@ -34,7 +34,7 @@ class DronePathSpinModeTests(unittest.TestCase):
             self.designer = drone_path_module.SpiralDesigner()
         self.center = "37.1972,-113.6187"
 
-    def _generate_csv(self, params, spin_mode=False):
+    def _generate_csv(self, params, spin_mode=False, max_height=None):
         with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
              patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
              patch.object(self.designer, "adaptive_terrain_sampling", return_value=[]), \
@@ -43,11 +43,11 @@ class DronePathSpinModeTests(unittest.TestCase):
                 params=params,
                 center_str=self.center,
                 min_height=120.0,
-                max_height=None,
+                max_height=max_height,
                 spin_mode=spin_mode,
             )
 
-    def _generate_battery_csv(self, params, battery_index, spin_mode=False, export_part="single"):
+    def _generate_battery_csv(self, params, battery_index, spin_mode=False, export_part="single", max_height=None):
         with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
              patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
              patch.object(self.designer, "adaptive_terrain_sampling", return_value=[]), \
@@ -57,12 +57,12 @@ class DronePathSpinModeTests(unittest.TestCase):
                 center_str=self.center,
                 battery_index=battery_index,
                 min_height=120.0,
-                max_height=None,
+                max_height=max_height,
                 spin_mode=spin_mode,
                 export_part=export_part,
             )
 
-    def _build_battery_export(self, params, battery_index, spin_mode=False, export_part="single"):
+    def _build_battery_export(self, params, battery_index, spin_mode=False, export_part="single", max_height=None):
         with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
              patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
              patch.object(self.designer, "adaptive_terrain_sampling", return_value=[]), \
@@ -72,9 +72,35 @@ class DronePathSpinModeTests(unittest.TestCase):
                 center_str=self.center,
                 battery_index=battery_index,
                 min_height=120.0,
-                max_height=None,
+                max_height=max_height,
                 spin_mode=spin_mode,
                 export_part=export_part,
+            )
+
+    def _prepare_battery_waypoint_records(self, params, battery_index, spin_mode=False, max_height=None):
+        with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
+             patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
+             patch.object(self.designer, "adaptive_terrain_sampling", return_value=[]), \
+             patch("builtins.print"):
+            return self.designer._prepare_battery_waypoint_records(
+                params=params,
+                center_str=self.center,
+                battery_index=battery_index,
+                min_height=120.0,
+                max_height=max_height,
+                form_to_terrain=False,
+                spin_mode=spin_mode,
+            )
+
+    def _handle_csv_download(self, body, cors_headers=None):
+        with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
+             patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
+             patch.object(self.designer, "adaptive_terrain_sampling", return_value=[]), \
+             patch("builtins.print"):
+            return drone_path_module.handle_csv_download(
+                self.designer,
+                body,
+                cors_headers or {},
             )
 
     def _handle_battery_csv_download(self, body, battery_id="1", cors_headers=None):
@@ -111,7 +137,7 @@ class DronePathSpinModeTests(unittest.TestCase):
         params = {"slices": 1, "N": 6, "r0": 100, "rHold": 1000}
 
         base_rows = self._parse_rows(self._generate_csv(params, spin_mode=False))
-        spin_rows = self._parse_rows(self._generate_csv(params, spin_mode=True))
+        spin_rows = self._parse_rows(self._generate_csv(params, spin_mode=True, max_height=300.0))
 
         self.assertEqual(len(base_rows), 79)
         self.assertEqual(len(spin_rows), self.designer.MAX_TOTAL_WAYPOINTS)
@@ -156,16 +182,16 @@ class DronePathSpinModeTests(unittest.TestCase):
 
         base_rows = self._parse_rows(self._generate_battery_csv(params, battery_index=0, spin_mode=False))
         single_rows = self._parse_rows(
-            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="single")
+            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="single", max_height=300.0)
         )
         combined_rows = self._parse_rows(
-            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="combined")
+            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="combined", max_height=300.0)
         )
         part_one_rows = self._parse_rows(
-            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="part1")
+            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="part1", max_height=300.0)
         )
         part_two_rows = self._parse_rows(
-            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="part2")
+            self._generate_battery_csv(params, battery_index=0, spin_mode=True, export_part="part2", max_height=300.0)
         )
 
         self.assertGreater(len(single_rows), len(base_rows))
@@ -190,7 +216,7 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertEqual(float(part_two_rows[-1]["photo_timeinterval"]), 0.0)
         self.assertGreater(float(part_two_rows[0]["photo_timeinterval"]), 0.0)
 
-        export_data = self._build_battery_export(params, battery_index=0, spin_mode=True, export_part="combined")
+        export_data = self._build_battery_export(params, battery_index=0, spin_mode=True, export_part="combined", max_height=300.0)
         telemetry = export_data["telemetry"]
         self.assertIsNotNone(telemetry)
         self.assertGreater(telemetry["combined_waypoints"], self.designer.MAX_EXPORT_WAYPOINTS)
@@ -239,7 +265,9 @@ class DronePathSpinModeTests(unittest.TestCase):
     def test_spin_mode_poi_zero_and_headings_rotate(self):
         """Spin mode must have POI=0 and headings that actually rotate."""
         params = {"slices": 2, "N": 6, "r0": 100, "rHold": 1000}
-        rows = self._parse_rows(self._generate_battery_csv(params, battery_index=0, spin_mode=True))
+        rows = self._parse_rows(
+            self._generate_battery_csv(params, battery_index=0, spin_mode=True, max_height=300.0)
+        )
 
         for row in rows:
             self.assertEqual(float(row["poi_latitude"]), 0.0, "Spin mode poi_latitude must be 0")
@@ -247,6 +275,37 @@ class DronePathSpinModeTests(unittest.TestCase):
 
         headings = [float(row["heading(deg)"]) for row in rows]
         self.assertGreaterEqual(len(set(headings)), len(rows) // 2, "Spin headings should have many unique values")
+
+    def test_spin_mode_uses_flat_outbound_ramped_hold_and_flat_inbound_altitudes(self):
+        params = {"slices": 2, "N": 6, "r0": 100, "rHold": 1000}
+        _, waypoint_records = self._prepare_battery_waypoint_records(
+            params,
+            battery_index=0,
+            spin_mode=True,
+            max_height=300.0,
+        )
+
+        outbound_altitudes = [
+            record["altitude"]
+            for record in waypoint_records
+            if "outbound" in record["phase"]
+        ]
+        hold_altitudes = [
+            record["altitude"]
+            for record in waypoint_records
+            if record["phase"].startswith("hold_mid") or record["phase"] == "hold_end"
+        ]
+        inbound_altitudes = [
+            record["altitude"]
+            for record in waypoint_records
+            if "inbound" in record["phase"]
+        ]
+
+        self.assertTrue(outbound_altitudes)
+        self.assertEqual(set(outbound_altitudes), {120.0})
+        self.assertEqual(hold_altitudes, [180.0, 240.0, 300.0])
+        self.assertTrue(inbound_altitudes)
+        self.assertEqual(set(inbound_altitudes), {300.0})
 
     def test_battery_export_part_validation(self):
         params = {"slices": 2, "N": 6, "r0": 100, "rHold": 1000}
@@ -282,6 +341,7 @@ class DronePathSpinModeTests(unittest.TestCase):
             "spinMode": True,
             "exportPart": "part1",
             "minHeight": 120.0,
+            "maxHeight": 300.0,
         }
 
         with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
@@ -314,6 +374,7 @@ class DronePathSpinModeTests(unittest.TestCase):
             "spinMode": True,
             "exportPart": "combined",
             "minHeight": 120.0,
+            "maxHeight": 300.0,
         }
         blank_overrides = {
             key: ""
@@ -331,6 +392,72 @@ class DronePathSpinModeTests(unittest.TestCase):
         self.assertEqual(blank_response["headers"]["X-Spin-Overrides-Applied"], "")
         self.assertEqual(blank_response["body"], baseline_response["body"])
 
+    def test_legacy_spin_climb_overrides_are_ignored(self):
+        body = {
+            "slices": 2,
+            "N": 6,
+            "r0": 100,
+            "rHold": 1000,
+            "center": self.center,
+            "spinMode": True,
+            "exportPart": "combined",
+            "minHeight": 120.0,
+            "maxHeight": 300.0,
+        }
+
+        baseline_response = self._handle_battery_csv_download(body)
+        legacy_override_response = self._handle_battery_csv_download({
+            **body,
+            "spinModeOverrides": {
+                "outboundClimbRateFtPerFt": 0.5,
+                "inboundClimbRateFtPerFt": 0.75,
+            },
+        })
+
+        self.assertEqual(baseline_response["statusCode"], 200)
+        self.assertEqual(legacy_override_response["statusCode"], 200)
+        self.assertEqual(legacy_override_response["headers"]["X-Spin-Overrides-Applied"], "")
+        self.assertEqual(legacy_override_response["body"], baseline_response["body"])
+
+    def test_spin_mode_requires_max_height(self):
+        body = {
+            "slices": 2,
+            "N": 6,
+            "r0": 100,
+            "rHold": 1000,
+            "center": self.center,
+            "spinMode": True,
+            "minHeight": 120.0,
+        }
+
+        csv_response = self._handle_csv_download(body)
+        battery_response = self._handle_battery_csv_download(body)
+
+        self.assertEqual(csv_response["statusCode"], 400)
+        self.assertEqual(battery_response["statusCode"], 400)
+        self.assertIn("maximum altitude", csv_response["body"])
+        self.assertIn("maximum altitude", battery_response["body"])
+
+    def test_spin_mode_rejects_max_height_below_min_height(self):
+        body = {
+            "slices": 2,
+            "N": 6,
+            "r0": 100,
+            "rHold": 1000,
+            "center": self.center,
+            "spinMode": True,
+            "minHeight": 120.0,
+            "maxHeight": 100.0,
+        }
+
+        csv_response = self._handle_csv_download(body)
+        battery_response = self._handle_battery_csv_download(body)
+
+        self.assertEqual(csv_response["statusCode"], 400)
+        self.assertEqual(battery_response["statusCode"], 400)
+        self.assertIn("greater than or equal to minHeight", csv_response["body"])
+        self.assertIn("greater than or equal to minHeight", battery_response["body"])
+
     def test_each_spin_mode_override_changes_battery_export_output(self):
         shared_body = {
             "slices": 2,
@@ -340,6 +467,7 @@ class DronePathSpinModeTests(unittest.TestCase):
             "center": self.center,
             "spinMode": True,
             "minHeight": 120.0,
+            "maxHeight": 300.0,
         }
 
         cases = [
@@ -377,20 +505,6 @@ class DronePathSpinModeTests(unittest.TestCase):
                 "override": {"combinedWaypointLimit": 193, "splitOverlapWaypoints": 5},
                 "exportPart": "part2",
                 "metric": lambda response, rows: len(rows),
-                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
-            },
-            {
-                "key": "outboundClimbRateFtPerFt",
-                "override": {"outboundClimbRateFtPerFt": 0.5},
-                "exportPart": "combined",
-                "metric": lambda response, rows: max(float(row["altitude(ft)"]) for row in rows),
-                "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
-            },
-            {
-                "key": "inboundClimbRateFtPerFt",
-                "override": {"inboundClimbRateFtPerFt": 0.5},
-                "exportPart": "combined",
-                "metric": lambda response, rows: max(float(row["altitude(ft)"]) for row in rows),
                 "assert_metric": lambda baseline, changed: self.assertGreater(changed, baseline),
             },
             {

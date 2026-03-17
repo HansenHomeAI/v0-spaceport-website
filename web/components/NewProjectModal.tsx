@@ -119,8 +119,6 @@ type SpinModeOverridePayload = Partial<{
   photoIntervalSeconds: number;
   combinedWaypointLimit: number;
   splitOverlapWaypoints: number;
-  outboundClimbRateFtPerFt: number;
-  inboundClimbRateFtPerFt: number;
   midpointCurveBaseFt: number;
   midpointCurveScale: number;
   midpointCurveMaxFt: number;
@@ -146,8 +144,6 @@ const EMPTY_SPIN_MODE_OVERRIDE_FORM_STATE: SpinModeOverrideFormState = {
   photoIntervalSeconds: '',
   combinedWaypointLimit: '',
   splitOverlapWaypoints: '',
-  outboundClimbRateFtPerFt: '',
-  inboundClimbRateFtPerFt: '',
   midpointCurveBaseFt: '',
   midpointCurveScale: '',
   midpointCurveMaxFt: '',
@@ -165,13 +161,6 @@ const SPIN_MODE_FIELD_GROUPS: Array<{ title: string; fields: SpinModeFieldDefini
       { key: 'photoIntervalSeconds', label: 'Photo interval', placeholder: '2 sec', allowDecimal: true },
       { key: 'combinedWaypointLimit', label: 'Combined waypoint cap', placeholder: '197' },
       { key: 'splitOverlapWaypoints', label: 'Split overlap', placeholder: '1' },
-    ],
-  },
-  {
-    title: 'Altitude Profile',
-    fields: [
-      { key: 'outboundClimbRateFtPerFt', label: 'Outbound climb rate', placeholder: '0.20 ft/ft', allowDecimal: true },
-      { key: 'inboundClimbRateFtPerFt', label: 'Inbound climb rate', placeholder: '0.10 ft/ft', allowDecimal: true },
     ],
   },
   {
@@ -208,8 +197,6 @@ function normalizeSpinModeOverrideFormState(value: unknown): SpinModeOverrideFor
     photoIntervalSeconds: source.photoIntervalSeconds == null ? '' : String(source.photoIntervalSeconds),
     combinedWaypointLimit: source.combinedWaypointLimit == null ? '' : String(source.combinedWaypointLimit),
     splitOverlapWaypoints: source.splitOverlapWaypoints == null ? '' : String(source.splitOverlapWaypoints),
-    outboundClimbRateFtPerFt: source.outboundClimbRateFtPerFt == null ? '' : String(source.outboundClimbRateFtPerFt),
-    inboundClimbRateFtPerFt: source.inboundClimbRateFtPerFt == null ? '' : String(source.inboundClimbRateFtPerFt),
     midpointCurveBaseFt: source.midpointCurveBaseFt == null ? '' : String(source.midpointCurveBaseFt),
     midpointCurveScale: source.midpointCurveScale == null ? '' : String(source.midpointCurveScale),
     midpointCurveMaxFt: source.midpointCurveMaxFt == null ? '' : String(source.midpointCurveMaxFt),
@@ -258,6 +245,31 @@ async function readApiErrorMessage(response: Response, fallback: string): Promis
     }
   } catch {}
   return fallback;
+}
+
+function getSpinModeAltitudeValidationError(
+  spinModeEnabled: boolean,
+  minHeightValue?: string | null,
+  maxHeightValue?: string | null,
+): string | null {
+  if (!spinModeEnabled) {
+    return null;
+  }
+
+  const minHeight = parseFloat(minHeightValue || '120') || 120;
+  const rawMaxHeight = (maxHeightValue ?? '').trim();
+  if (!rawMaxHeight) {
+    return 'Spin mode requires a maximum altitude.';
+  }
+
+  const maxHeight = parseFloat(rawMaxHeight);
+  if (!Number.isFinite(maxHeight)) {
+    return 'Spin mode requires a valid maximum altitude.';
+  }
+  if (maxHeight < minHeight) {
+    return 'Spin mode maximum altitude must be greater than or equal to minimum altitude.';
+  }
+  return null;
 }
 
 export default function NewProjectModal({ open, onClose, project, onSaved }: NewProjectModalProps): JSX.Element | null {
@@ -1736,6 +1748,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         minHeight: minHeightFeet, 
         maxHeight: maxHeightFeet 
       });
+
+      const spinAltitudeError = getSpinModeAltitudeValidationError(
+        spinMode,
+        minHeightFeet,
+        maxHeightFeet,
+      );
+      if (spinAltitudeError) {
+        throw new Error(spinAltitudeError);
+      }
 
       const params = await runOptimizationRequest({
         coords,
@@ -3282,6 +3303,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     try {
       setIsSaving(true);
       console.log('Saving project...', { currentProjectId, projectTitle });
+
+      const spinAltitudeError = getSpinModeAltitudeValidationError(
+        spinMode,
+        minHeightFeet,
+        maxHeightFeet,
+      );
+      if (spinAltitudeError) {
+        throw new Error(spinAltitudeError);
+      }
       
       const { Auth } = await import('aws-amplify');
       const session = await Auth.currentSession();
@@ -4020,6 +4050,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     />
                   </div>
                 </div>
+                {spinMode && (
+                  <p
+                    className="text-fade-right"
+                    style={{ margin: '8px 0 0', fontSize: '0.8rem', opacity: 0.76 }}
+                  >
+                    Spin mode keeps outbound at minimum altitude, ramps during R-hold, and uses maximum altitude inbound.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -4125,7 +4163,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     className="text-fade-right"
                     style={{ margin: '4px 0 12px', fontSize: '0.85rem', opacity: 0.82 }}
                   >
-                    Leave any field blank to keep the lambda default.
+                    Set max altitude above to define the spin climb. These overrides are optional.
                   </p>
                   <div style={{ display: 'grid', gap: 14 }}>
                     {SPIN_MODE_FIELD_GROUPS.map((group) => (

@@ -18,8 +18,6 @@ DEFAULT_SPIN_MODE_CONFIG = {
     "photoIntervalSeconds": 2.0,
     "combinedWaypointLimit": 197,
     "splitOverlapWaypoints": 1,
-    "outboundClimbRateFtPerFt": 0.20,
-    "inboundClimbRateFtPerFt": 0.10,
     "midpointCurveBaseFt": 50.0,
     "midpointCurveScale": 1.2,
     "midpointCurveMaxFt": 1500.0,
@@ -34,8 +32,6 @@ SPIN_MODE_OVERRIDE_SPECS = {
     "photoIntervalSeconds": {"min": 0.1, "max": 30.0, "integer": False},
     "combinedWaypointLimit": {"min": 99, "max": 197, "integer": True},
     "splitOverlapWaypoints": {"min": 0, "max": 98, "integer": True},
-    "outboundClimbRateFtPerFt": {"min": 0.0, "max": 5.0, "integer": False},
-    "inboundClimbRateFtPerFt": {"min": 0.0, "max": 5.0, "integer": False},
     "midpointCurveBaseFt": {"min": 0.0, "max": 5000.0, "integer": False},
     "midpointCurveScale": {"min": 0.0, "max": 25.0, "integer": False},
     "midpointCurveMaxFt": {"min": 1.0, "max": 10000.0, "integer": False},
@@ -177,6 +173,34 @@ class SpiralDesigner:
 
     def _spin_cfg(self, key: str):
         return self.spin_mode_config.get(key, DEFAULT_SPIN_MODE_CONFIG[key])
+
+    def _spin_hold_progress(self, phase: str) -> Optional[float]:
+        if phase == 'hold_end':
+            return 1.0
+        if phase == 'hold_mid':
+            return 0.5
+        if phase.startswith('hold_mid_q'):
+            try:
+                label = int(phase[len('hold_mid_q'):])
+                canonical_progress = {
+                    17: 1 / 6,
+                    33: 1 / 3,
+                    50: 0.5,
+                    67: 2 / 3,
+                    83: 5 / 6,
+                }
+                return canonical_progress.get(label, max(0.0, min(1.0, label / 100.0)))
+            except ValueError:
+                return 0.5
+        return None
+
+    def _spin_desired_agl(self, phase: str, min_height: float, max_height: float) -> float:
+        hold_progress = self._spin_hold_progress(phase)
+        if hold_progress is not None:
+            return min_height + ((max_height - min_height) * hold_progress)
+        if 'inbound' in phase:
+            return max_height
+        return min_height
 
     def _handle_elevation_failure(self, message: str, default_elevation: float) -> float:
         if self.require_live_elevation:
@@ -734,13 +758,12 @@ class SpiralDesigner:
         takeoff_elevation_feet: float,
         min_height: float,
         max_height: Optional[float],
+        spin_mode: bool = False,
         enhanced_waypoints_data: Optional[List[Dict]] = None,
     ) -> List[Dict]:
         """
         Build per-waypoint records (lat/lon/alt/curve/x/y) before heading/gimbal assignment.
         """
-        outbound_climb_rate = self._spin_cfg("outboundClimbRateFtPerFt")
-        inbound_climb_rate = self._spin_cfg("inboundClimbRateFtPerFt")
         first_waypoint_distance = 0
         max_outbound_altitude = 0
         max_outbound_distance = 0
@@ -775,36 +798,44 @@ class SpiralDesigner:
 
                 dist_from_center = math.sqrt(wp['x']**2 + wp['y']**2)
 
-                if i == 0:
-                    first_waypoint_distance = dist_from_center
-                    desired_agl = min_height
-                    max_outbound_altitude = min_height
-                    max_outbound_distance = dist_from_center
-                elif 'outbound' in phase or 'hold' in phase:
-                    additional_distance = dist_from_center - first_waypoint_distance
-                    if additional_distance < 0:
-                        additional_distance = 0
-                    agl_increment = additional_distance * outbound_climb_rate
-                    desired_agl = min_height + agl_increment
-
-                    if desired_agl > max_outbound_altitude:
-                        max_outbound_altitude = desired_agl
-                        max_outbound_distance = dist_from_center
-                elif 'inbound' in phase:
-                    distance_from_max = max_outbound_distance - dist_from_center
-                    if distance_from_max < 0:
-                        distance_from_max = 0
-                    altitude_increase = distance_from_max * inbound_climb_rate
-                    desired_agl = max_outbound_altitude + altitude_increase
-
-                    if desired_agl < min_height:
-                        desired_agl = min_height
+                if spin_mode:
+                    if max_height is None:
+                        raise ValueError("spinMode requires maxHeight")
+                    desired_agl = self._spin_desired_agl(phase, min_height, max_height)
                 else:
-                    additional_distance = dist_from_center - first_waypoint_distance
-                    if additional_distance < 0:
-                        additional_distance = 0
-                    agl_increment = additional_distance * outbound_climb_rate
-                    desired_agl = min_height + agl_increment
+                    outbound_climb_rate = 0.20
+                    inbound_climb_rate = 0.10
+
+                    if i == 0:
+                        first_waypoint_distance = dist_from_center
+                        desired_agl = min_height
+                        max_outbound_altitude = min_height
+                        max_outbound_distance = dist_from_center
+                    elif 'outbound' in phase or 'hold' in phase:
+                        additional_distance = dist_from_center - first_waypoint_distance
+                        if additional_distance < 0:
+                            additional_distance = 0
+                        agl_increment = additional_distance * outbound_climb_rate
+                        desired_agl = min_height + agl_increment
+
+                        if desired_agl > max_outbound_altitude:
+                            max_outbound_altitude = desired_agl
+                            max_outbound_distance = dist_from_center
+                    elif 'inbound' in phase:
+                        distance_from_max = max_outbound_distance - dist_from_center
+                        if distance_from_max < 0:
+                            distance_from_max = 0
+                        altitude_increase = distance_from_max * inbound_climb_rate
+                        desired_agl = max_outbound_altitude + altitude_increase
+
+                        if desired_agl < min_height:
+                            desired_agl = min_height
+                    else:
+                        additional_distance = dist_from_center - first_waypoint_distance
+                        if additional_distance < 0:
+                            additional_distance = 0
+                        agl_increment = additional_distance * outbound_climb_rate
+                        desired_agl = min_height + agl_increment
 
                 final_altitude = local_ground_offset + desired_agl
 
@@ -2075,6 +2106,7 @@ class SpiralDesigner:
             takeoff_elevation_feet=takeoff_elevation_feet,
             min_height=min_height,
             max_height=max_height,
+            spin_mode=spin_mode,
             enhanced_waypoints_data=enhanced_waypoints_data,
         )
         waypoint_records = self._enforce_waypoint_record_limit(waypoint_records, self.MAX_EXPORT_WAYPOINTS)
@@ -2098,6 +2130,7 @@ class SpiralDesigner:
         boundary: Optional[Dict] = None,
         boundary_plan: Optional[Dict] = None,
         form_to_terrain: bool = True,
+        spin_mode: bool = False,
     ) -> Tuple[Dict, List[Dict]]:
         """Build ordered waypoint records for one battery before CSV serialization."""
         center = self.parse_center(center_str)
@@ -2210,6 +2243,7 @@ class SpiralDesigner:
             takeoff_elevation_feet=takeoff_elevation_feet,
             min_height=min_height,
             max_height=max_height,
+            spin_mode=spin_mode,
             enhanced_waypoints_data=enhanced_waypoints_data,
         )
 
@@ -2248,6 +2282,7 @@ class SpiralDesigner:
             boundary=boundary,
             boundary_plan=boundary_plan,
             form_to_terrain=form_to_terrain,
+            spin_mode=spin_mode,
         )
 
         if export_part == "single":
@@ -3397,6 +3432,28 @@ def _parse_optional_float(value, default=None):
         return default
     return float(value_str)
 
+
+def _parse_height(value, default=None):
+    """Convert height field to float, returning default if blank or invalid."""
+    if value is None:
+        return default
+    if isinstance(value, (int, float)):
+        return float(value)
+    value_str = str(value).strip()
+    if value_str == "":
+        return default
+    try:
+        return float(value_str)
+    except (ValueError, TypeError):
+        return default
+
+
+def _validate_spin_mode_altitudes(min_height: float, max_height: Optional[float]) -> None:
+    if max_height is None:
+        raise ValueError("Spin mode requires a maximum altitude (maxHeight)")
+    if max_height < min_height:
+        raise ValueError("Spin mode maxHeight must be greater than or equal to minHeight")
+
 def _parse_expansion_inputs(body: Dict) -> Tuple[Optional[float], Optional[float]]:
     """
     Resolve expansion inputs from either raw request values or optimizer-produced
@@ -3775,21 +3832,6 @@ def handle_csv_download(designer, body, cors_headers):
         r0 = body.get('r0', 150)
         rHold = body.get('rHold', 1595)
         center = body.get('center', '')
-        # Robustly parse minHeight / maxHeight so blank strings don't cause errors
-        def _parse_height(value, default=None):
-            """Convert height field to float, returning default if blank or invalid."""
-            if value is None:
-                return default
-            if isinstance(value, (int, float)):
-                return float(value)
-            # Handle empty string or whitespace
-            value_str = str(value).strip()
-            if value_str == "":
-                return default
-            try:
-                return float(value_str)
-            except (ValueError, TypeError):
-                return default
 
         # Default minimum altitude is 120 ft AGL when user leaves field blank
         min_height = _parse_height(body.get('minHeight'), 120.0)
@@ -3798,6 +3840,8 @@ def handle_csv_download(designer, body, cors_headers):
         form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
         designer.require_live_elevation = form_to_terrain
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        if spin_mode:
+            _validate_spin_mode_altitudes(min_height, max_height)
         designer.set_spin_mode_overrides(
             _parse_spin_mode_overrides(body.get('spinModeOverrides')) if spin_mode else None
         )
@@ -3850,6 +3894,12 @@ def handle_csv_download(designer, body, cors_headers):
             'headers': cors_headers,
             'body': json.dumps({'error': str(e)})
         }
+    except ValueError as e:
+        return {
+            'statusCode': 400,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -3885,21 +3935,6 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         r0 = float(body.get('r0', 150))
         rHold = float(body.get('rHold', 1595))
         center = body.get('center', '')
-        # Robustly parse minHeight / maxHeight so blank strings don't cause errors
-        def _parse_height(value, default=None):
-            """Convert height field to float, returning default if blank or invalid."""
-            if value is None:
-                return default
-            if isinstance(value, (int, float)):
-                return float(value)
-            # Handle empty string or whitespace
-            value_str = str(value).strip()
-            if value_str == "":
-                return default
-            try:
-                return float(value_str)
-            except (ValueError, TypeError):
-                return default
 
         # Default minimum altitude is 120 ft AGL when user leaves field blank
         min_height = _parse_height(body.get('minHeight'), 120.0)
@@ -3908,6 +3943,8 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         form_to_terrain = _parse_bool(body.get('formToTerrain'), False)
         designer.require_live_elevation = form_to_terrain
         spin_mode = _parse_bool_field(body.get('spinMode'), False)
+        if spin_mode:
+            _validate_spin_mode_altitudes(min_height, max_height)
         applied_spin_overrides = designer.set_spin_mode_overrides(
             _parse_spin_mode_overrides(body.get('spinModeOverrides')) if spin_mode else None
         )
@@ -4018,6 +4055,12 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
     except TerrainElevationUnavailableError as e:
         return {
             'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
+    except ValueError as e:
+        return {
+            'statusCode': 400,
             'headers': cors_headers,
             'body': json.dumps({'error': str(e)})
         }

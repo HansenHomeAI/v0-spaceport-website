@@ -3,3 +3,5 @@
 [2026-03-11T04:11:30Z] deploy-validate -> CDK + Pages green; preview smoke checks and Litchi proxy probe passed -> return preview URL
 [2026-03-11T04:37:28Z] verify-features -> found merged CSV default regression, fixed local backend default and rebumped preview trigger -> push corrected branch
 [2026-03-16T00:00:00Z] fix-layout -> reproduced battery buttons clipped by 1000px accordion cap, removed active cap and rebumped preview trigger -> redeploy and verify
+[2026-03-16T23:19:33Z] spin-mode-controls -> local toggle reproduced and fixed -> push preview build
+[2026-03-17T00:08:00Z] local-verify -> spin altitude bridge implemented; targeted unit + next/cf builds green -> push preview branch
