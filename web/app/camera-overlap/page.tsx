@@ -107,9 +107,6 @@ export default function CameraOverlapPage() {
     .map((angle, index) => ({ angle, index }))
     .sort((a, b) => a.angle - b.angle);
   const sorted = sortedWithIndices.map((x) => x.angle);
-  const capDeg =
-    ((sorted[1] - sorted[0] + 360) % 360) +
-    ((sorted[3] - sorted[2] + 360) % 360);
 
   const isCaptureArc = (k: number): boolean => {
     const i = sortedWithIndices[k].index;
@@ -117,6 +114,16 @@ export default function CameraOverlapPage() {
     const [lo, hi] = i < j ? [i, j] : [j, i];
     return (lo === 0 && hi === 1) || (lo === 2 && hi === 3);
   };
+
+  const arcSpan = (k: number): number => {
+    const a1 = sorted[k];
+    const a2 = sorted[(k + 1) % 4];
+    return (a2 - a1 + 360) % 360;
+  };
+
+  const capDeg = [0, 1, 2, 3]
+    .filter((k) => isCaptureArc(k))
+    .reduce((sum, k) => sum + arcSpan(k), 0);
   const capPct = capDeg / 360;
   const rotTime = capPct * FULL_ROT_SEC + 2 * TRANSIT_SEC;
   const speedMph = (distance / rotTime) * 0.681818;
