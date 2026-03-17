@@ -1,0 +1,27 @@
+.pageRoot,
+.pageRoot * {
+  box-sizing: border-box;
+}
+
+.rangeInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f5f5f7;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(58, 142, 255, 0.2);
+}
+
+.rangeInput::-webkit-slider-thumb:active {
+  box-shadow: 0 0 0 5px rgba(58, 142, 255, 0.3);
+}
+
+.rangeInput::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: #f5f5f7;
+  cursor: pointer;
+}
