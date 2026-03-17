@@ -54,31 +54,9 @@ function arcPath(cx: number, cy: number, r: number, a1: number, a2: number): str
 function Stat({ label, value, sub, color }: StatProps) {
   return (
     <div>
-      <p
-        style={{
-          color: '#333',
-          fontSize: 9,
-          fontWeight: 600,
-          letterSpacing: '0.1em',
-          margin: '0 0 1px',
-          textTransform: 'uppercase',
-        }}
-      >
-        {label}
-      </p>
-      <p
-        style={{
-          color,
-          fontSize: 15,
-          fontWeight: 700,
-          letterSpacing: '-0.02em',
-          lineHeight: 1,
-          margin: 0,
-        }}
-      >
-        {value}
-      </p>
-      <p style={{ color: '#333', fontSize: 9, margin: '2px 0 0' }}>{sub}</p>
+      <p className={styles.statLabel}>{label}</p>
+      <p className={styles.statValue} style={{ color }}>{value}</p>
+      <p className={styles.statSub}>{sub}</p>
     </div>
   );
 }
@@ -87,18 +65,8 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct }: Sli
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span
-          style={{
-            color: '#444',
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-          }}
-        >
-          {label}
-        </span>
-        <span style={{ color: '#444', fontSize: 11 }}>{display}</span>
+        <span className={styles.sliderLabel}>{label}</span>
+        <span className={styles.sliderValue}>{display}</span>
       </div>
       <input
         className={styles.rangeInput}
@@ -199,52 +167,23 @@ export default function CameraOverlapPage() {
       style={{
         background: '#0a0a0a',
         color: '#f5f5f7',
-        fontFamily: "-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif",
         minHeight: '100vh',
         paddingTop: 100,
         paddingBottom: 32,
       }}
     >
-      <div style={{ margin: '0 auto', maxWidth: 680, padding: '24px 16px 0' }}>
+      <div className={styles.contentWrapper}>
         <div style={{ padding: '0 4px' }}>
-          <p
-            style={{
-              color: '#3a8eff',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '0.14em',
-              margin: '0 0 2px',
-              textTransform: 'uppercase',
-            }}
-          >
+          <p className={styles.pageLabel}>
             60° FOV · {overlap}% Overlap
           </p>
-          <h1
-            style={{
-              color: '#f5f5f7',
-              fontSize: 20,
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              margin: 0,
-            }}
-          >
+          <h1 className={styles.pageTitle}>
             Drone Path Spacing
           </h1>
         </div>
 
         <div style={{ padding: '10px 0 0' }}>
-          <div
-            style={{
-              alignItems: 'center',
-              background: '#111',
-              border: '1px solid #1e1e1e',
-              borderRadius: 14,
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 14,
-              padding: '12px 14px',
-            }}
-          >
+          <div className={styles.calculatorCard}>
             <svg
               ref={svgRef}
               width={SZ}
@@ -333,16 +272,7 @@ export default function CameraOverlapPage() {
             padding: '8px 0',
           }}
         >
-          <div
-            style={{
-              background: '#111',
-              border: '1px solid #1e1e1e',
-              borderRadius: 14,
-              maxWidth: 340,
-              padding: 8,
-              width: '100%',
-            }}
-          >
+          <div className={styles.coneCard}>
             <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', height: 'auto', width: '100%' }}>
               <defs>
                 <marker id="a1" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse">
@@ -462,7 +392,7 @@ export default function CameraOverlapPage() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 2px 20px' }}>
+        <div className={styles.slidersSection}>
           <SliderRow
             label="Height"
             min={50}
@@ -483,7 +413,7 @@ export default function CameraOverlapPage() {
             display={`${overlap}%`}
             pct={((overlap - 10) / 85) * 100}
           />
-          <p style={{ color: '#252525', fontSize: 10, margin: 0 }}>
+          <p className={styles.footnote}>
             footprint {footprint.toFixed(0)} ft · spacing {distance.toFixed(1)} ft · {rotTime.toFixed(1)}s/pt
           </p>
         </div>
