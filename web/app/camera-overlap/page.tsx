@@ -103,10 +103,20 @@ export default function CameraOverlapPage() {
   const footprint = 2 * height * TAN_30;
   const distance = footprint * (1 - overlapPct);
 
-  const sorted = [...handles].sort((a, b) => a - b);
+  const sortedWithIndices = handles
+    .map((angle, index) => ({ angle, index }))
+    .sort((a, b) => a.angle - b.angle);
+  const sorted = sortedWithIndices.map((x) => x.angle);
   const capDeg =
     ((sorted[1] - sorted[0] + 360) % 360) +
     ((sorted[3] - sorted[2] + 360) % 360);
+
+  const isCaptureArc = (k: number): boolean => {
+    const i = sortedWithIndices[k].index;
+    const j = sortedWithIndices[(k + 1) % 4].index;
+    const [lo, hi] = i < j ? [i, j] : [j, i];
+    return (lo === 0 && hi === 1) || (lo === 2 && hi === 3);
+  };
   const capPct = capDeg / 360;
   const rotTime = capPct * FULL_ROT_SEC + 2 * TRANSIT_SEC;
   const speedMph = (distance / rotTime) * 0.681818;
@@ -193,17 +203,17 @@ export default function CameraOverlapPage() {
             >
               <circle cx={C} cy={C} r={R} fill="none" stroke="#1e1e1e" strokeWidth={10} />
 
-              {[0, 1, 2, 3].map((index) => {
-                const a1 = sorted[index];
-                const a2 = sorted[(index + 1) % 4];
+              {[0, 1, 2, 3].map((k) => {
+                const a1 = sorted[k];
+                const a2 = sorted[(k + 1) % 4];
                 const path = arcPath(C, C, R, a1, a2);
 
                 return path ? (
                   <path
-                    key={index}
+                    key={k}
                     d={path}
                     fill="none"
-                    stroke={index % 2 === 0 ? '#34c759' : '#252525'}
+                    stroke={isCaptureArc(k) ? '#34c759' : '#252525'}
                     strokeLinecap="butt"
                     strokeWidth={10}
                   />
