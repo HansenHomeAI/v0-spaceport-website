@@ -26,6 +26,12 @@ import {
   rebuildBatteryCsvWithLiveCoords,
   upsertBatteryWaypointOverride,
 } from '../lib/waypointOverrides';
+import {
+  BatteryPathWaypoint3D,
+  parseBatteryCsvWaypoints,
+  syncBatteryPathWaypointsWithCoords,
+} from '../lib/flightPath3d';
+import FlightPath3DViewer from './FlightPath3DViewer';
 import LitchiMissionControl from './LitchiMissionControl';
 
 type NewProjectModalProps = {
@@ -357,12 +363,15 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [waypointOverrides, setWaypointOverridesState] = useState<WaypointOverrides>(() => createEmptyWaypointOverrides(null));
 
   const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
+  const [visibleBatteryPathWaypoints3D, setVisibleBatteryPathWaypoints3D] = useState<Map<number, BatteryPathWaypoint3D[]>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
+  const [is3DFlightView, setIs3DFlightView] = useState<boolean>(false);
+  const [isHydrating3DFlightView, setIsHydrating3DFlightView] = useState<boolean>(false);
 
-  const BATTERY_PATH_COLORS = [
+  const batteryPathColors = useMemo(() => [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
     '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F0B27A', '#AED6F1',
-  ];
+  ], []);
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -465,6 +474,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const waypointMarkersRef = useRef<Map<number, any[]>>(new Map());
   const waypointCoordsRef = useRef<Map<number, [number, number][]>>(new Map());
   const waypointOverridesRef = useRef<WaypointOverrides>(createEmptyWaypointOverrides(null));
+  const visibleBatteryPathWaypoints3DRef = useRef<Map<number, BatteryPathWaypoint3D[]>>(new Map());
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -670,12 +680,66 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return coords.map(([lng, lat]) => [lng, lat] as [number, number]);
   }, []);
 
+  const cloneBatteryPathWaypoints = useCallback((waypoints: BatteryPathWaypoint3D[]) => {
+    return waypoints.map((waypoint) => ({ ...waypoint }));
+  }, []);
+
   const cloneBoundaryPreviewPaths = useCallback((paths: BoundaryPreviewPath[]) => {
     return paths.map((path) => ({
       batteryIndex: path.batteryIndex,
       coordinates: clonePathCoords(path.coordinates),
     }));
   }, [clonePathCoords]);
+
+  useEffect(() => {
+    visibleBatteryPathWaypoints3DRef.current = visibleBatteryPathWaypoints3D;
+  }, [visibleBatteryPathWaypoints3D]);
+
+  const setVisibleBatteryPathWaypointData = useCallback((batteryIndex: number, waypoints: BatteryPathWaypoint3D[]) => {
+    const cloned = cloneBatteryPathWaypoints(waypoints);
+    setVisibleBatteryPathWaypoints3D((current) => {
+      const next = new Map(current);
+      next.set(batteryIndex, cloned);
+      visibleBatteryPathWaypoints3DRef.current = next;
+      return next;
+    });
+  }, [cloneBatteryPathWaypoints]);
+
+  const replaceVisibleBatteryPathWaypointData = useCallback((
+    entries: Array<{ batteryIndex: number; waypoints: BatteryPathWaypoint3D[] }>
+  ) => {
+    const next = new Map<number, BatteryPathWaypoint3D[]>(
+      entries.map((entry) => [entry.batteryIndex, cloneBatteryPathWaypoints(entry.waypoints)])
+    );
+    visibleBatteryPathWaypoints3DRef.current = next;
+    setVisibleBatteryPathWaypoints3D(next);
+  }, [cloneBatteryPathWaypoints]);
+
+  const removeVisibleBatteryPathWaypointData = useCallback((batteryIndex: number) => {
+    setVisibleBatteryPathWaypoints3D((current) => {
+      if (!current.has(batteryIndex)) {
+        return current;
+      }
+      const next = new Map(current);
+      next.delete(batteryIndex);
+      visibleBatteryPathWaypoints3DRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const pruneVisibleBatteryPathWaypointData = useCallback((previewPaths: BoundaryPreviewPath[]) => {
+    setVisibleBatteryPathWaypoints3D((current) => {
+      const next = new Map<number, BatteryPathWaypoint3D[]>();
+      previewPaths.forEach((path) => {
+        const existing = current.get(path.batteryIndex);
+        if (existing && existing.length > 0) {
+          next.set(path.batteryIndex, syncBatteryPathWaypointsWithCoords(existing, path.coordinates));
+        }
+      });
+      visibleBatteryPathWaypoints3DRef.current = next;
+      return next;
+    });
+  }, []);
 
   const clearPendingInsertionTouchTimer = useCallback(() => {
     if (insertionTouchTimerRef.current) {
@@ -1171,6 +1235,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setOptimizedParamsWithLogging(null, 'Modal opened/reset');
     setDownloadingBatteries(new Set());
     setVisibleBatteryPaths(new Map());
+    visibleBatteryPathWaypoints3DRef.current = new Map();
+    setVisibleBatteryPathWaypoints3D(new Map());
     setLoadingBatteryPaths(new Set());
     waypointMarkersRef.current.forEach(markers => markers.forEach(m => m.remove()));
     waypointMarkersRef.current.clear();
@@ -1186,6 +1252,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadOpen(false);
     setToast(null);
     setIsFullscreen(false);
+    setIs3DFlightView(false);
+    setIsHydrating3DFlightView(false);
     setIsBoundaryMode(false);
     setDraftBoundary(null);
     setAppliedBoundary(null);
@@ -1681,6 +1749,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       waypointMarkersRef.current.clear();
       waypointCoordsRef.current.clear();
       setVisibleBatteryPaths(new Map());
+      visibleBatteryPathWaypoints3DRef.current = new Map();
+      setVisibleBatteryPathWaypoints3D(new Map());
+      setIs3DFlightView(false);
     }
   }, [clearInsertionCandidateMarker, optimizedParams]);
 
@@ -2070,25 +2141,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     triggerCsvDownload,
   ]);
 
-  const fetchBatteryPathCoords = useCallback(async (batteryIndex1: number): Promise<Array<[number, number]>> => {
-    const csvText = await requestBatteryCsv(
-      batteryIndex1,
-      spinMode ? 'combined' : 'single',
-    );
-
-    const lines = csvText.trim().split('\n');
-    const coords: Array<[number, number]> = [];
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(',');
-      const lat = parseFloat(parts[0]);
-      const lng = parseFloat(parts[1]);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        coords.push([lng, lat]);
-      }
-    }
-    return coords;
-  }, [requestBatteryCsv, spinMode]);
-
   const buildLitchiMissions = useCallback(async (batteryIndexes: number[]) => {
     const ready = await ensureMissionReady();
     if (!ready) {
@@ -2161,6 +2213,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setVisibleBatteryPaths((current) => {
       const next = new Map(current);
       next.set(batteryIndex, cloned);
+      return next;
+    });
+    setVisibleBatteryPathWaypoints3D((current) => {
+      const existing = current.get(batteryIndex);
+      if (!existing || existing.length === 0) {
+        return current;
+      }
+      const next = new Map(current);
+      next.set(batteryIndex, syncBatteryPathWaypointsWithCoords(existing, cloned));
+      visibleBatteryPathWaypoints3DRef.current = next;
       return next;
     });
   }, [clonePathCoords]);
@@ -2435,7 +2497,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setVisibleBatteryPathCoords(candidate.batteryIndex, nextCoords);
     updateWaypointOverridesForBattery(candidate.batteryIndex, nextCoords);
 
-    const color = BATTERY_PATH_COLORS[(candidate.batteryIndex - 1) % BATTERY_PATH_COLORS.length];
+    const color = batteryPathColors[(candidate.batteryIndex - 1) % batteryPathColors.length];
     await createWaypointMarkers(candidate.batteryIndex, nextCoords, color);
 
     const nextSnapshot = captureMapHistorySnapshot();
@@ -2443,7 +2505,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     triggerSaveRef.current?.();
     clearInsertionCandidateMarker();
   }, [
-    BATTERY_PATH_COLORS,
+    batteryPathColors,
     captureMapHistorySnapshot,
     clearInsertionCandidateMarker,
     clonePathCoords,
@@ -2671,7 +2733,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     const sourceId = `battery-path-${batteryIndex}`;
     const layerId = `battery-path-layer-${batteryIndex}`;
-    const color = BATTERY_PATH_COLORS[(batteryIndex - 1) % BATTERY_PATH_COLORS.length];
+    const color = batteryPathColors[(batteryIndex - 1) % batteryPathColors.length];
 
     try {
       if (map.getLayer(layerId)) map.removeLayer(layerId);
@@ -2713,7 +2775,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     await createWaypointMarkers(batteryIndex, coords, color);
-  }, [BATTERY_PATH_COLORS, createWaypointMarkers]);
+  }, [batteryPathColors, createWaypointMarkers]);
 
   const fitMapToPreviewPaths = useCallback((previewPaths: BoundaryPreviewPath[]) => {
     const map = mapRef.current;
@@ -2736,11 +2798,147 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       removeBatteryPathVisualization(batteryIdx);
     });
     setVisibleBatteryPaths(new Map());
+    visibleBatteryPathWaypoints3DRef.current = new Map();
+    setVisibleBatteryPathWaypoints3D(new Map());
+    setIs3DFlightView(false);
   }, [clearInsertionCandidateMarker, removeBatteryPathVisualization, visibleBatteryPaths]);
 
   useEffect(() => {
     clearAllBatteryPathsRef.current = clearAllBatteryPaths;
   }, [clearAllBatteryPaths]);
+
+  useEffect(() => {
+    if (visibleBatteryPaths.size === 0 && is3DFlightView) {
+      setIs3DFlightView(false);
+    }
+  }, [is3DFlightView, visibleBatteryPaths.size]);
+
+  const fetchBatteryPathPreview = useCallback(async (
+    batteryIndex1: number
+  ): Promise<{ coordinates: Array<[number, number]>; waypoints: BatteryPathWaypoint3D[] }> => {
+    const csvText = await requestBatteryCsv(
+      batteryIndex1,
+      spinMode ? 'combined' : 'single',
+    );
+
+    const waypoints = parseBatteryCsvWaypoints(csvText);
+    return {
+      waypoints,
+      coordinates: waypoints.map((waypoint) => [waypoint.lng, waypoint.lat] as [number, number]),
+    };
+  }, [requestBatteryCsv, spinMode]);
+
+  const ensureVisibleBatteryPathWaypointData = useCallback(async (): Promise<boolean> => {
+    const batteryIndexes = Array.from(visibleBatteryPaths.keys()).sort((left, right) => left - right);
+    if (batteryIndexes.length === 0) {
+      return false;
+    }
+
+    const missingBatteryIndexes = batteryIndexes.filter((batteryIndex) => {
+      const existing = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
+      return !existing || existing.length === 0;
+    });
+
+    if (missingBatteryIndexes.length === 0) {
+      return true;
+    }
+
+    setIsHydrating3DFlightView(true);
+    try {
+      const loadedEntries: Array<{ batteryIndex: number; waypoints: BatteryPathWaypoint3D[] }> = [];
+      for (const batteryIndex of missingBatteryIndexes) {
+        const preview = await fetchBatteryPathPreview(batteryIndex);
+        const liveCoords = waypointCoordsRef.current.get(batteryIndex)
+          ?? visibleBatteryPaths.get(batteryIndex)
+          ?? preview.coordinates;
+        if (preview.waypoints.length > 0 && liveCoords.length > 0) {
+          loadedEntries.push({
+            batteryIndex,
+            waypoints: syncBatteryPathWaypointsWithCoords(preview.waypoints, liveCoords),
+          });
+        }
+      }
+
+      if (loadedEntries.length > 0) {
+        setVisibleBatteryPathWaypoints3D((current) => {
+          const next = new Map(current);
+          loadedEntries.forEach((entry) => {
+            next.set(entry.batteryIndex, cloneBatteryPathWaypoints(entry.waypoints));
+          });
+          visibleBatteryPathWaypoints3DRef.current = next;
+          return next;
+        });
+      }
+    } finally {
+      setIsHydrating3DFlightView(false);
+    }
+
+    return batteryIndexes.every((batteryIndex) => {
+      const waypoints = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
+      return Boolean(waypoints && waypoints.length > 0);
+    });
+  }, [cloneBatteryPathWaypoints, fetchBatteryPathPreview, visibleBatteryPaths]);
+
+  const handleFlightViewModeChange = useCallback(async (mode: '2d' | '3d') => {
+    if (mode === '2d') {
+      setIs3DFlightView(false);
+      return;
+    }
+
+    const ready = await ensureVisibleBatteryPathWaypointData();
+    if (!ready) {
+      showSystemNotification('error', '3D path preview is unavailable until flight path data finishes loading.');
+      return;
+    }
+
+    setIs3DFlightView(true);
+  }, [ensureVisibleBatteryPathWaypointData, showSystemNotification]);
+
+  const flightPathViewerCenter = useMemo(() => {
+    if (selectedCoords) {
+      return selectedCoords;
+    }
+
+    const allCoords = Array.from(visibleBatteryPaths.values()).flat();
+    if (allCoords.length === 0) {
+      return null;
+    }
+
+    const totals = allCoords.reduce(
+      (acc, [lng, lat]) => ({
+        lat: acc.lat + lat,
+        lng: acc.lng + lng,
+      }),
+      { lat: 0, lng: 0 }
+    );
+
+    return {
+      lat: totals.lat / allCoords.length,
+      lng: totals.lng / allCoords.length,
+    };
+  }, [selectedCoords, visibleBatteryPaths]);
+
+  const flightPathViewerBatteries = useMemo(() => {
+    return Array.from(visibleBatteryPaths.entries())
+      .sort(([left], [right]) => left - right)
+      .map(([batteryIndex, coordinates]) => {
+        const baseWaypoints = visibleBatteryPathWaypoints3D.get(batteryIndex);
+        if (!baseWaypoints || baseWaypoints.length === 0) {
+          return null;
+        }
+
+        const liveCoords = waypointCoordsRef.current.get(batteryIndex) ?? coordinates;
+        const syncedWaypoints = syncBatteryPathWaypointsWithCoords(baseWaypoints, liveCoords);
+        return {
+          batteryIndex,
+          color: batteryPathColors[(batteryIndex - 1) % batteryPathColors.length],
+          waypoints: syncedWaypoints,
+        };
+      })
+      .filter((
+        battery
+      ): battery is { batteryIndex: number; color: string; waypoints: BatteryPathWaypoint3D[] } => battery !== null);
+  }, [batteryPathColors, visibleBatteryPathWaypoints3D, visibleBatteryPaths]);
 
   const handleSpinModeOverrideChange = useCallback((
     key: keyof SpinModeOverrideFormState,
@@ -2775,6 +2973,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
 
     setVisibleBatteryPaths(new Map(nextPaths.map((path) => [path.batteryIndex, clonePathCoords(path.coordinates)])));
+    pruneVisibleBatteryPathWaypointData(nextPaths);
 
     if (options?.fitBounds !== false) {
       fitMapToPreviewPaths(nextPaths);
@@ -2784,6 +2983,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     clonePathCoords,
     drawBatteryPathVisualization,
     fitMapToPreviewPaths,
+    pruneVisibleBatteryPathWaypointData,
     removeBatteryPathVisualization,
     resolvePreviewPathsWithOverrides,
     visibleBatteryPaths,
@@ -2804,21 +3004,55 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!ready) return [];
 
     const previews: BoundaryPreviewPath[] = [];
+    const previewWaypoints = new Map<number, BatteryPathWaypoint3D[]>();
     for (let batteryIndex = 1; batteryIndex <= batteryCount; batteryIndex += 1) {
       const cached = visibleBatteryPaths.get(batteryIndex);
-      const coords = cached && cached.length > 0 ? cached : await fetchBatteryPathCoords(batteryIndex);
-      if (coords.length > 0) {
-        previews.push({ batteryIndex, coordinates: coords });
+      const cachedWaypoints = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
+      let finalCoords = cached && cached.length > 0 ? cached : [];
+      let finalWaypoints = cachedWaypoints && cachedWaypoints.length > 0
+        ? syncBatteryPathWaypointsWithCoords(cachedWaypoints, finalCoords)
+        : null;
+
+      if (finalCoords.length === 0 || !finalWaypoints) {
+        const preview = await fetchBatteryPathPreview(batteryIndex);
+        if (finalCoords.length === 0) {
+          finalCoords = preview.coordinates;
+        }
+        if (!finalWaypoints && preview.waypoints.length > 0) {
+          finalWaypoints = syncBatteryPathWaypointsWithCoords(preview.waypoints, finalCoords);
+        }
+      }
+
+      if (finalCoords.length > 0) {
+        previews.push({ batteryIndex, coordinates: finalCoords });
+        if (finalWaypoints && finalWaypoints.length > 0) {
+          previewWaypoints.set(batteryIndex, finalWaypoints);
+        }
       }
     }
 
     const resolvedPreviews = resolvePreviewPathsWithOverrides(previews);
     await replaceBatteryPreviewPaths(resolvedPreviews, { ...options, useOverrides: false });
+    replaceVisibleBatteryPathWaypointData(
+      resolvedPreviews
+        .map((previewPath) => {
+          const waypoints = previewWaypoints.get(previewPath.batteryIndex);
+          if (!waypoints || waypoints.length === 0) {
+            return null;
+          }
+          return {
+            batteryIndex: previewPath.batteryIndex,
+            waypoints: syncBatteryPathWaypointsWithCoords(waypoints, previewPath.coordinates),
+          };
+        })
+        .filter((entry): entry is { batteryIndex: number; waypoints: BatteryPathWaypoint3D[] } => entry !== null)
+    );
     return resolvedPreviews;
   }, [
     ensureMissionReady,
-    fetchBatteryPathCoords,
+    fetchBatteryPathPreview,
     parsedBatteryCount,
+    replaceVisibleBatteryPathWaypointData,
     replaceBatteryPreviewPaths,
     resolvePreviewPathsWithOverrides,
     visibleBatteryPaths,
@@ -2841,6 +3075,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         }
         return next;
       });
+      removeVisibleBatteryPathWaypointData(batteryIndex1);
       return;
     }
 
@@ -2851,16 +3086,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return;
       }
 
-      const coords = await fetchBatteryPathCoords(batteryIndex1);
-      if (!coords || coords.length === 0) {
+      const preview = await fetchBatteryPathPreview(batteryIndex1);
+      if (!preview.coordinates || preview.coordinates.length === 0) {
         showSystemNotification('error', 'No path data received');
         return;
       }
 
       const resolvedPath = resolvePreviewPathsWithOverrides([
-        { batteryIndex: batteryIndex1, coordinates: coords },
+        { batteryIndex: batteryIndex1, coordinates: preview.coordinates },
       ])[0];
-      const resolvedCoords = resolvedPath?.coordinates ?? coords;
+      const resolvedCoords = resolvedPath?.coordinates ?? preview.coordinates;
       await drawBatteryPathVisualization(batteryIndex1, resolvedCoords);
 
       setVisibleBatteryPaths(prev => {
@@ -2868,6 +3103,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         next.set(batteryIndex1, clonePathCoords(resolvedCoords));
         return next;
       });
+      if (preview.waypoints.length > 0) {
+        setVisibleBatteryPathWaypointData(
+          batteryIndex1,
+          syncBatteryPathWaypointsWithCoords(preview.waypoints, resolvedCoords)
+        );
+      }
 
       fitMapToPreviewPaths([{ batteryIndex: batteryIndex1, coordinates: resolvedCoords }]);
     } catch (e: any) {
@@ -2884,10 +3125,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     clearInsertionCandidateMarker,
     drawBatteryPathVisualization,
     ensureMissionReady,
-    fetchBatteryPathCoords,
+    fetchBatteryPathPreview,
     fitMapToPreviewPaths,
+    removeVisibleBatteryPathWaypointData,
     removeBatteryPathVisualization,
     resolvePreviewPathsWithOverrides,
+    setVisibleBatteryPathWaypointData,
     showSystemNotification,
     visibleBatteryPaths,
   ]);
@@ -3824,9 +4067,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           {setupOpen && (
           <div className="accordion-content">
             <div className="popup-map-section">
-                            <div className="map-wrapper">
+              <div className={`map-wrapper${is3DFlightView ? ' view-3d' : ''}`}>
                 {/* Empty map container for Mapbox - avoids the warning */}
                 <div id="map-container" className="map-container" ref={mapContainerRef}></div>
+                {is3DFlightView && flightPathViewerCenter && (
+                  <div className="map-3d-overlay" data-flight-path-mode="3d">
+                    <FlightPath3DViewer
+                      batteryPaths={flightPathViewerBatteries}
+                      center={flightPathViewerCenter}
+                    />
+                  </div>
+                )}
                 
                 {/* Map overlays and controls as siblings */}
                 {isFullscreen && (
@@ -3854,12 +4105,42 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       </svg>
                     </button>
                     <button
-                      onClick={isBoundaryMode ? handleCancelBoundaryMode : handleEnterBoundaryMode}
+                      onClick={() => {
+                        if (isBoundaryMode) {
+                          void handleCancelBoundaryMode();
+                          return;
+                        }
+                        if (is3DFlightView) {
+                          setIs3DFlightView(false);
+                        }
+                        void handleEnterBoundaryMode();
+                      }}
                       disabled={isApplyingBoundary}
                       className={`map-toolbar-button map-toolbar-button--text${isBoundaryMode ? ' active' : ''}`}
                       title={isBoundaryMode ? 'Cancel boundary editing' : 'Edit boundary'}
                     >
                       {isBoundaryMode ? 'Boundary On' : 'Boundary'}
+                    </button>
+                  </div>
+                )}
+                {visibleBatteryPaths.size > 0 && (
+                  <div className="map-view-mode-toggle" role="tablist" aria-label="Flight path view mode">
+                    <button
+                      type="button"
+                      className={`map-view-mode-button${!is3DFlightView ? ' active' : ''}`}
+                      aria-pressed={!is3DFlightView}
+                      onClick={() => void handleFlightViewModeChange('2d')}
+                    >
+                      2D
+                    </button>
+                    <button
+                      type="button"
+                      className={`map-view-mode-button${is3DFlightView ? ' active' : ''}`}
+                      aria-pressed={is3DFlightView}
+                      onClick={() => void handleFlightViewModeChange('3d')}
+                      disabled={isHydrating3DFlightView}
+                    >
+                      {isHydrating3DFlightView ? '3D...' : '3D'}
                     </button>
                   </div>
                 )}
@@ -3910,7 +4191,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </div>
                   </div>
                 )}
-                {isFullscreen && visibleBatteryPaths.size > 0 && (
+                {isFullscreen && visibleBatteryPaths.size > 0 && !is3DFlightView && (
                   <div className="waypoint-drag-hint">Drag waypoints to adjust path</div>
                 )}
                 <div className="map-dim-overlay"></div>

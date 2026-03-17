@@ -5,3 +5,4 @@
 [2026-03-16T00:00:00Z] fix-layout -> reproduced battery buttons clipped by 1000px accordion cap, removed active cap and rebumped preview trigger -> redeploy and verify
 [2026-03-16T23:19:33Z] spin-mode-controls -> local toggle reproduced and fixed -> push preview build
 [2026-03-17T00:08:00Z] local-verify -> spin altitude bridge implemented; targeted unit + next/cf builds green -> push preview branch
+[2026-03-17T01:10:00Z] modal-3d -> local build green; 3D path unit tests passed and modal preview spec added (auth-gated locally) -> push preview branch

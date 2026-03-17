@@ -46,3 +46,4 @@ touch-retest 2026-03-07T04:05:55Z
 2026-03-16T17:31:00Z - Spin mode refinement controls and lambda override wiring
 2026-03-16T23:34:00Z - Fix spin mode toggle reset so refinement controls stay visible
 2026-03-16T23:59:00Z - Spin mode altitude profile uses flat outbound, ramped hold, and flat inbound
+2026-03-17T01:10:00Z - Add interactive 3D flight path preview to the new project modal
