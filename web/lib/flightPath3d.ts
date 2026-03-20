@@ -1,38 +1,23 @@
 "use client";
 
-import { latLngToLocalFeet } from "./flightBoundary";
-
 export type BatteryPathWaypoint3D = {
   lat: number;
   lng: number;
   altitudeFeet: number;
 };
 
-export type FlightPath3DBatteryScene = {
-  batteryIndex: number;
-  color: string;
-  points: Array<{
-    x: number;
-    y: number;
-    z: number;
-    altitudeFeet: number;
-  }>;
+export type BatteryPathElevatedFeature = {
+  type: "Feature";
+  properties: {
+    elevationMeters: number[];
+  };
+  geometry: {
+    type: "LineString";
+    coordinates: Array<[number, number]>;
+  };
 };
 
-export type FlightPath3DScene = {
-  baseAltitudeFeet: number;
-  maxAltitudeFeet: number;
-  verticalExaggeration: number;
-  horizontalExtentFeet: number;
-  altitudeRangeFeet: number;
-  batteries: FlightPath3DBatteryScene[];
-};
-
-type SceneInput = {
-  batteryIndex: number;
-  color: string;
-  waypoints: BatteryPathWaypoint3D[];
-};
+export const FEET_TO_METERS = 0.3048;
 
 function splitCsvLine(line: string): string[] {
   return line.split(",").map((value) => value.trim());
@@ -119,47 +104,60 @@ export function syncBatteryPathWaypointsWithCoords(
   }));
 }
 
-export function buildFlightPath3DScene(
-  batteries: SceneInput[],
-  center: { lat: number; lng: number },
-): FlightPath3DScene {
-  const allWaypoints = batteries.flatMap((battery) => battery.waypoints);
-  const altitudeValues = allWaypoints.map((waypoint) => waypoint.altitudeFeet);
-  const minAltitudeFeet = altitudeValues.length > 0 ? Math.min(...altitudeValues) : 0;
-  const maxAltitudeFeet = altitudeValues.length > 0 ? Math.max(...altitudeValues) : minAltitudeFeet;
-  const altitudeRangeFeet = Math.max(0, maxAltitudeFeet - minAltitudeFeet);
+export function altitudeFeetToMeters(altitudeFeet: number): number {
+  return altitudeFeet * FEET_TO_METERS;
+}
 
-  let horizontalExtentFeet = 400;
-  batteries.forEach((battery) => {
-    battery.waypoints.forEach((waypoint) => {
-      const local = latLngToLocalFeet(waypoint.lat, waypoint.lng, center.lat, center.lng);
-      horizontalExtentFeet = Math.max(horizontalExtentFeet, Math.abs(local.xFt), Math.abs(local.yFt));
-    });
-  });
+export function getWaypointAltitudeFeet(
+  waypoints: BatteryPathWaypoint3D[],
+  waypointIndex: number,
+): number {
+  const waypoint = waypoints[waypointIndex];
+  if (!waypoint) {
+    return 0;
+  }
 
-  const verticalExaggeration = altitudeRangeFeet <= 1
-    ? 4
-    : Math.max(2, Math.min(12, (horizontalExtentFeet * 0.18) / altitudeRangeFeet));
-  const elevatedBase = altitudeRangeFeet <= 1 ? 14 : 10;
+  return Number.isFinite(waypoint.altitudeFeet) ? waypoint.altitudeFeet : 0;
+}
+
+export function interpolateSegmentAltitudeFeet(
+  waypoints: BatteryPathWaypoint3D[],
+  segmentIndex: number,
+  segmentProgress: number,
+): number {
+  const lowerAltitude = getWaypointAltitudeFeet(waypoints, segmentIndex);
+  const upperAltitude = getWaypointAltitudeFeet(waypoints, segmentIndex + 1);
+  return lowerAltitude + ((upperAltitude - lowerAltitude) * segmentProgress);
+}
+
+export function buildBatteryPathElevatedFeature(
+  coords: Array<[number, number]>,
+  sourceWaypoints: BatteryPathWaypoint3D[],
+): BatteryPathElevatedFeature {
+  const syncedWaypoints = sourceWaypoints.length > 0
+    ? syncBatteryPathWaypointsWithCoords(sourceWaypoints, coords)
+    : coords.map(([lng, lat]) => ({ lng, lat, altitudeFeet: 0 }));
 
   return {
-    baseAltitudeFeet: minAltitudeFeet,
-    maxAltitudeFeet: maxAltitudeFeet,
-    verticalExaggeration,
-    horizontalExtentFeet,
-    altitudeRangeFeet,
-    batteries: batteries.map((battery) => ({
-      batteryIndex: battery.batteryIndex,
-      color: battery.color,
-      points: battery.waypoints.map((waypoint) => {
-        const local = latLngToLocalFeet(waypoint.lat, waypoint.lng, center.lat, center.lng);
-        return {
-          x: local.xFt,
-          y: local.yFt,
-          z: elevatedBase + ((waypoint.altitudeFeet - minAltitudeFeet) * verticalExaggeration),
-          altitudeFeet: waypoint.altitudeFeet,
-        };
-      }),
-    })),
+    type: "Feature",
+    properties: {
+      elevationMeters: syncedWaypoints.map((waypoint) => altitudeFeetToMeters(waypoint.altitudeFeet)),
+    },
+    geometry: {
+      type: "LineString",
+      coordinates: coords,
+    },
   };
+}
+
+export function buildLineZOffsetExpression(propertyName = "elevationMeters"): any[] {
+  return [
+    "at-interpolated",
+    [
+      "*",
+      ["line-progress"],
+      ["-", ["length", ["get", propertyName]], 1],
+    ],
+    ["get", propertyName],
+  ];
 }

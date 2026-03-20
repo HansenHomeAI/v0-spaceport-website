@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 import {
-  buildFlightPath3DScene,
+  altitudeFeetToMeters,
+  buildBatteryPathElevatedFeature,
+  buildLineZOffsetExpression,
+  interpolateSegmentAltitudeFeet,
   parseBatteryCsvWaypoints,
   syncBatteryPathWaypointsWithCoords,
 } from "../../web/lib/flightPath3d";
@@ -43,25 +46,49 @@ test("syncBatteryPathWaypointsWithCoords preserves end altitudes and interpolate
   expect(synced[4]).toMatchObject({ lng: -104.92, lat: 39.72 });
 });
 
-test("buildFlightPath3DScene converts lat lng into elevated local points", async () => {
-  const scene = buildFlightPath3DScene(
+test("buildBatteryPathElevatedFeature emits line coordinates and elevation meters", async () => {
+  const feature = buildBatteryPathElevatedFeature(
     [
-      {
-        batteryIndex: 1,
-        color: "#ff6b6b",
-        waypoints: [
-          { lat: 39.7392, lng: -104.9903, altitudeFeet: 120 },
-          { lat: 39.7395, lng: -104.9898, altitudeFeet: 240 },
-        ],
-      },
+      [-104.9903, 39.7392],
+      [-104.9898, 39.7395],
+      [-104.9892, 39.7397],
     ],
-    { lat: 39.7392, lng: -104.9903 },
+    [
+      { lat: 39.7392, lng: -104.9903, altitudeFeet: 120 },
+      { lat: 39.7395, lng: -104.9898, altitudeFeet: 180 },
+      { lat: 39.7397, lng: -104.9892, altitudeFeet: 240 },
+    ],
   );
 
-  expect(scene.batteries).toHaveLength(1);
-  expect(scene.batteries[0].points).toHaveLength(2);
-  expect(scene.batteries[0].points[0].x).toBeCloseTo(0, 4);
-  expect(scene.batteries[0].points[0].y).toBeCloseTo(0, 4);
-  expect(scene.batteries[0].points[1].z).toBeGreaterThan(scene.batteries[0].points[0].z);
-  expect(scene.verticalExaggeration).toBeGreaterThanOrEqual(2);
+  expect(feature.geometry.coordinates).toEqual([
+    [-104.9903, 39.7392],
+    [-104.9898, 39.7395],
+    [-104.9892, 39.7397],
+  ]);
+  expect(feature.properties.elevationMeters).toEqual([
+    altitudeFeetToMeters(120),
+    altitudeFeetToMeters(180),
+    altitudeFeetToMeters(240),
+  ]);
+});
+
+test("interpolateSegmentAltitudeFeet returns the segment midpoint altitude", async () => {
+  const altitudeFeet = interpolateSegmentAltitudeFeet(
+    [
+      { lat: 39.7392, lng: -104.9903, altitudeFeet: 120 },
+      { lat: 39.7395, lng: -104.9898, altitudeFeet: 240 },
+    ],
+    0,
+    0.5,
+  );
+
+  expect(altitudeFeet).toBe(180);
+});
+
+test("buildLineZOffsetExpression targets the elevation array property", async () => {
+  expect(buildLineZOffsetExpression()).toEqual([
+    "at-interpolated",
+    ["*", ["line-progress"], ["-", ["length", ["get", "elevationMeters"]], 1]],
+    ["get", "elevationMeters"],
+  ]);
 });

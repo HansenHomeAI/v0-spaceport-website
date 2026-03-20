@@ -37,7 +37,17 @@ async function loginAndOpenNewProjectModal(page: import('@playwright/test').Page
   await expect(page.locator('#newProjectPopup')).toBeVisible();
 }
 
-test('new project modal shows flight path previews in interactive 3d', async ({ page }) => {
+async function readMapPitch(page: import('@playwright/test').Page): Promise<number> {
+  const value = await page.locator('.map-wrapper').getAttribute('data-map-pitch');
+  return Number.parseFloat(value ?? '0');
+}
+
+async function readAltitudeRange(page: import('@playwright/test').Page): Promise<number> {
+  const value = await page.locator('.map-wrapper').getAttribute('data-altitude-range-feet');
+  return Number.parseFloat(value ?? '0');
+}
+
+test('new project modal renders altitude in the live map and restores camera after boundary mode', async ({ page }) => {
   requireEnv();
 
   await loginAndOpenNewProjectModal(page);
@@ -47,29 +57,92 @@ test('new project modal shows flight path previews in interactive 3d', async ({ 
   await page.getByPlaceholder('Duration').fill('20');
   await page.getByPlaceholder('Quantity').fill('2');
   await page.getByPlaceholder('Minimum').fill('120');
+  await page.getByPlaceholder('Maximum').fill('360');
+  await page.locator('.capture-mode-toggle').click();
 
   await page.locator('.battery-view-btn').first().click();
   await expect(page.locator('.battery-view-btn.active')).toHaveCount(1, { timeout: 30_000 });
-  await expect(page.getByRole('button', { name: '3D' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '3D' })).toHaveCount(0);
+  await page.locator('#expand-button').click();
 
-  await page.getByRole('button', { name: '3D' }).click();
-  await expect(page.locator('[data-flight-path-mode="3d"]')).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator('[data-flight-path-3d="ready"]')).toBeVisible();
-  await expect(page.locator('.flight-path-3d-title')).toContainText('3D Flight Path');
+  await expect(page.locator('.map-camera-hint')).toBeVisible();
+  await expect(page.locator('.waypoint-marker')).toHaveCount(1, { timeout: 1_000 }).catch(() => {});
+  await page.waitForFunction(() => {
+    const markers = Array.from(document.querySelectorAll<HTMLElement>('.waypoint-marker[data-altitude-feet]'));
+    return markers.length > 2;
+  }, undefined, { timeout: 30_000 });
 
-  const canvas = page.locator('.flight-path-3d-viewer canvas');
+  const altitudeRangeFeet = await readAltitudeRange(page);
+  expect(altitudeRangeFeet).toBeGreaterThan(100);
+
+  const markerMetricsBeforePitch = await page.locator('.waypoint-marker').evaluateAll((elements) => {
+    return elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        altitudeFeet: Number.parseFloat(element.dataset.altitudeFeet ?? '0'),
+        top: rect.top,
+      };
+    });
+  });
+  const markerAltitudes = markerMetricsBeforePitch.map((marker) => marker.altitudeFeet);
+  expect(Math.max(...markerAltitudes) - Math.min(...markerAltitudes)).toBeGreaterThan(100);
+
+  const canvas = page.locator('.mapboxgl-canvas');
   await expect(canvas).toBeVisible();
   const bounds = await canvas.boundingBox();
   expect(bounds).not.toBeNull();
-  if (bounds) {
-    const centerX = bounds.x + bounds.width / 2;
-    const centerY = bounds.y + bounds.height / 2;
-    await page.mouse.move(centerX, centerY);
-    await page.mouse.down();
-    await page.mouse.move(centerX + 140, centerY - 60, { steps: 18 });
-    await page.mouse.up();
+  if (!bounds) {
+    throw new Error('Expected map canvas bounds');
   }
 
-  await page.getByRole('button', { name: '2D' }).click();
-  await expect(page.locator('[data-flight-path-mode="3d"]')).toHaveCount(0);
+  const centerX = bounds.x + bounds.width / 2;
+  const centerY = bounds.y + bounds.height / 2;
+  expect(await readMapPitch(page)).toBeLessThan(1);
+  await page.keyboard.down('Control');
+  await page.mouse.move(centerX, centerY);
+  await page.mouse.down();
+  await page.mouse.move(centerX + 100, centerY + 140, { steps: 20 });
+  await page.mouse.up();
+  await page.keyboard.up('Control');
+
+  await page.waitForFunction(() => {
+    const wrapper = document.querySelector('.map-wrapper');
+    const pitch = Number.parseFloat(wrapper?.getAttribute('data-map-pitch') ?? '0');
+    return pitch > 5;
+  }, undefined, { timeout: 10_000 });
+  const pitchedMapDegrees = await readMapPitch(page);
+  expect(pitchedMapDegrees).toBeGreaterThan(5);
+
+  const markerMetricsAfterPitch = await page.locator('.waypoint-marker').evaluateAll((elements) => {
+    return elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        altitudeFeet: Number.parseFloat(element.dataset.altitudeFeet ?? '0'),
+        top: rect.top,
+      };
+    });
+  });
+  const highestMarker = markerMetricsAfterPitch.reduce((best, current) => (
+    current.altitudeFeet > best.altitudeFeet ? current : best
+  ));
+  const lowestMarker = markerMetricsAfterPitch.reduce((best, current) => (
+    current.altitudeFeet < best.altitudeFeet ? current : best
+  ));
+  expect(Math.abs(highestMarker.top - lowestMarker.top)).toBeGreaterThan(8);
+
+  await page.getByRole('button', { name: 'Boundary' }).click();
+  await expect(page.locator('.boundary-editor-bar')).toBeVisible({ timeout: 30_000 });
+  await page.waitForFunction(() => {
+    const wrapper = document.querySelector('.map-wrapper');
+    const pitch = Number.parseFloat(wrapper?.getAttribute('data-map-pitch') ?? '0');
+    return pitch < 1;
+  }, undefined, { timeout: 10_000 });
+
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await page.waitForFunction(() => {
+    const wrapper = document.querySelector('.map-wrapper');
+    const pitch = Number.parseFloat(wrapper?.getAttribute('data-map-pitch') ?? '0');
+    return pitch > 5;
+  }, undefined, { timeout: 10_000 });
+  expect(await readMapPitch(page)).toBeGreaterThan(5);
 });

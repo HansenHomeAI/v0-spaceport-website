@@ -27,11 +27,15 @@ import {
   upsertBatteryWaypointOverride,
 } from '../lib/waypointOverrides';
 import {
+  altitudeFeetToMeters,
   BatteryPathWaypoint3D,
+  buildBatteryPathElevatedFeature,
+  buildLineZOffsetExpression,
+  getWaypointAltitudeFeet,
+  interpolateSegmentAltitudeFeet,
   parseBatteryCsvWaypoints,
   syncBatteryPathWaypointsWithCoords,
 } from '../lib/flightPath3d';
-import FlightPath3DViewer from './FlightPath3DViewer';
 import LitchiMissionControl from './LitchiMissionControl';
 
 type NewProjectModalProps = {
@@ -117,6 +121,13 @@ type WaypointInsertCandidate = {
   batteryIndex: number;
   segmentIndex: number;
   coord: [number, number];
+  altitudeFeet: number;
+};
+
+type BoundaryCameraRestoreState = {
+  viewport: MapViewportState | null;
+  dragRotateEnabled: boolean;
+  touchPitchEnabled: boolean;
 };
 
 type SpinModeOverridePayload = Partial<{
@@ -365,8 +376,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [visibleBatteryPaths, setVisibleBatteryPaths] = useState<Map<number, Array<[number, number]>>>(new Map());
   const [visibleBatteryPathWaypoints3D, setVisibleBatteryPathWaypoints3D] = useState<Map<number, BatteryPathWaypoint3D[]>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
-  const [is3DFlightView, setIs3DFlightView] = useState<boolean>(false);
-  const [isHydrating3DFlightView, setIsHydrating3DFlightView] = useState<boolean>(false);
+  const [mapPitchDegrees, setMapPitchDegrees] = useState<number>(0);
 
   const batteryPathColors = useMemo(() => [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
@@ -449,6 +459,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const handleMapTouchStartForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchMoveForInsertionRef = useRef<(event: any) => void>(() => {});
   const handleMapTouchEndForInsertionRef = useRef<() => void>(() => {});
+  const boundaryCameraRestoreRef = useRef<BoundaryCameraRestoreState | null>(null);
   const captureMapHistorySnapshotRef = useRef<() => MapHistorySnapshot>(() => ({
     selectedCoords: null,
     addressSearch: '',
@@ -691,9 +702,56 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }));
   }, [clonePathCoords]);
 
-  useEffect(() => {
-    visibleBatteryPathWaypoints3DRef.current = visibleBatteryPathWaypoints3D;
-  }, [visibleBatteryPathWaypoints3D]);
+  const rememberBoundaryCameraState = useCallback(() => {
+    const map = mapRef.current;
+    if (!map || boundaryCameraRestoreRef.current) {
+      return;
+    }
+
+    boundaryCameraRestoreRef.current = {
+      viewport: captureMapViewportState(),
+      dragRotateEnabled: Boolean(map.dragRotate?.isEnabled?.()),
+      touchPitchEnabled: Boolean(map.touchPitch?.isEnabled?.()),
+    };
+  }, [captureMapViewportState]);
+
+  const lockBoundaryCamera = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) {
+      return;
+    }
+
+    map.dragRotate?.disable?.();
+    map.touchPitch?.disable?.();
+    map.touchZoomRotate?.disableRotation?.();
+    map.easeTo({ pitch: 0, duration: 300 });
+  }, []);
+
+  const restoreBoundaryCamera = useCallback(() => {
+    const map = mapRef.current;
+    const restoreState = boundaryCameraRestoreRef.current;
+    if (!map || !restoreState) {
+      return;
+    }
+
+    if (restoreState.dragRotateEnabled) {
+      map.dragRotate?.enable?.();
+      map.touchZoomRotate?.enableRotation?.();
+    }
+    if (restoreState.touchPitchEnabled) {
+      map.touchPitch?.enable?.();
+    }
+    if (restoreState.viewport) {
+      map.easeTo({
+        center: [restoreState.viewport.centerLng, restoreState.viewport.centerLat],
+        zoom: restoreState.viewport.zoom,
+        bearing: restoreState.viewport.bearing,
+        pitch: restoreState.viewport.pitch,
+        duration: 300,
+      });
+    }
+    boundaryCameraRestoreRef.current = null;
+  }, []);
 
   const setVisibleBatteryPathWaypointData = useCallback((batteryIndex: number, waypoints: BatteryPathWaypoint3D[]) => {
     const cloned = cloneBatteryPathWaypoints(waypoints);
@@ -1252,8 +1310,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadOpen(false);
     setToast(null);
     setIsFullscreen(false);
-    setIs3DFlightView(false);
-    setIsHydrating3DFlightView(false);
+    setMapPitchDegrees(0);
     setIsBoundaryMode(false);
     setDraftBoundary(null);
     setAppliedBoundary(null);
@@ -1415,6 +1472,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           zoom: 4,
           attributionControl: false,
         });
+        const syncMapPitch = () => {
+          setMapPitchDegrees(Number(map.getPitch().toFixed(2)));
+        };
+        syncMapPitch();
         
         map.on('click', (e: any) => {
           const clickedElement = e?.originalEvent?.target as HTMLElement | null;
@@ -1503,6 +1564,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         map.on('rotateend', commitViewportHistory);
         map.on('pitchstart', (event: any) => beginViewportHistory('map pitch', event));
         map.on('pitchend', commitViewportHistory);
+        map.on('pitch', syncMapPitch);
         map.on('mousemove', (event: any) => handleMapPointerMoveForInsertionRef.current(event));
         map.on('dragstart', clearInsertionCandidateMarkerOnMapMove);
         map.on('movestart', clearInsertionCandidateMarkerOnMapMove);
@@ -1751,7 +1813,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setVisibleBatteryPaths(new Map());
       visibleBatteryPathWaypoints3DRef.current = new Map();
       setVisibleBatteryPathWaypoints3D(new Map());
-      setIs3DFlightView(false);
+      setMapPitchDegrees(0);
     }
   }, [clearInsertionCandidateMarker, optimizedParams]);
 
@@ -2194,22 +2256,62 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     waypointCoordsRef.current.delete(batteryIndex);
   }, []);
 
-  const setBatteryPathSourceData = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
+  const getBatteryPathWaypointsForCoords = useCallback((
+    batteryIndex: number,
+    coords: Array<[number, number]>,
+  ): BatteryPathWaypoint3D[] => {
+    const existing = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
+    if (!existing || existing.length === 0) {
+      return coords.map(([lng, lat]) => ({ lng, lat, altitudeFeet: 0 }));
+    }
+
+    return syncBatteryPathWaypointsWithCoords(existing, coords);
+  }, []);
+
+  const setBatteryPathSourceData = useCallback((
+    batteryIndex: number,
+    coords: Array<[number, number]>,
+    sourceWaypoints?: BatteryPathWaypoint3D[],
+  ) => {
     const map = mapRef.current;
     if (!map) return;
 
     const source = map.getSource(`battery-path-${batteryIndex}`);
     if (!source) return;
-    source.setData({
-      type: 'Feature',
-      properties: {},
-      geometry: { type: 'LineString', coordinates: coords },
+
+    source.setData(
+      buildBatteryPathElevatedFeature(
+        coords,
+        sourceWaypoints ?? getBatteryPathWaypointsForCoords(batteryIndex, coords),
+      )
+    );
+  }, [getBatteryPathWaypointsForCoords]);
+
+  const updateWaypointMarkerElevations = useCallback((
+    batteryIndex: number,
+    coords: Array<[number, number]>,
+    sourceWaypoints?: BatteryPathWaypoint3D[],
+  ) => {
+    const markers = waypointMarkersRef.current.get(batteryIndex);
+    if (!markers || markers.length === 0) {
+      return;
+    }
+
+    const syncedWaypoints = sourceWaypoints ?? getBatteryPathWaypointsForCoords(batteryIndex, coords);
+    markers.forEach((marker, markerIndex) => {
+      const altitudeFeet = getWaypointAltitudeFeet(syncedWaypoints, markerIndex);
+      const markerElement = marker?.getElement?.();
+      if (markerElement) {
+        markerElement.dataset.altitudeFeet = altitudeFeet.toFixed(2);
+      }
+      marker?.setAltitude?.(altitudeFeetToMeters(altitudeFeet));
     });
-  }, []);
+  }, [getBatteryPathWaypointsForCoords]);
 
   const setVisibleBatteryPathCoords = useCallback((batteryIndex: number, coords: Array<[number, number]>) => {
     const cloned = clonePathCoords(coords);
     waypointCoordsRef.current.set(batteryIndex, cloned);
+    let syncedWaypoints: BatteryPathWaypoint3D[] | null = null;
     setVisibleBatteryPaths((current) => {
       const next = new Map(current);
       next.set(batteryIndex, cloned);
@@ -2221,11 +2323,41 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return current;
       }
       const next = new Map(current);
-      next.set(batteryIndex, syncBatteryPathWaypointsWithCoords(existing, cloned));
+      const recalculatedWaypoints = syncBatteryPathWaypointsWithCoords(existing, cloned);
+      syncedWaypoints = recalculatedWaypoints;
+      next.set(batteryIndex, recalculatedWaypoints);
       visibleBatteryPathWaypoints3DRef.current = next;
       return next;
     });
-  }, [clonePathCoords]);
+
+    const resolvedWaypoints = syncedWaypoints ?? getBatteryPathWaypointsForCoords(batteryIndex, cloned);
+    setBatteryPathSourceData(batteryIndex, cloned, resolvedWaypoints);
+    updateWaypointMarkerElevations(batteryIndex, cloned, resolvedWaypoints);
+  }, [
+    clonePathCoords,
+    getBatteryPathWaypointsForCoords,
+    setBatteryPathSourceData,
+    updateWaypointMarkerElevations,
+  ]);
+
+  useEffect(() => {
+    visibleBatteryPathWaypoints3DRef.current = visibleBatteryPathWaypoints3D;
+    visibleBatteryPathWaypoints3D.forEach((waypoints, batteryIndex) => {
+      const coords = waypointCoordsRef.current.get(batteryIndex)
+        ?? visibleBatteryPaths.get(batteryIndex);
+      if (!coords || coords.length === 0) {
+        return;
+      }
+
+      setBatteryPathSourceData(batteryIndex, coords, waypoints);
+      updateWaypointMarkerElevations(batteryIndex, coords, waypoints);
+    });
+  }, [
+    setBatteryPathSourceData,
+    updateWaypointMarkerElevations,
+    visibleBatteryPathWaypoints3D,
+    visibleBatteryPaths,
+  ]);
 
   const createWaypointMarkers = useCallback(async (
     batteryIndex: number,
@@ -2241,6 +2373,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const mapboxModule = await import('mapbox-gl');
     const mapboxgl: any = (mapboxModule as any)?.default ?? mapboxModule;
     const markerDraggable = true;
+    const syncedWaypoints = getBatteryPathWaypointsForCoords(batteryIndex, coords);
 
     const markers: any[] = [];
 
@@ -2250,9 +2383,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       el.dataset.batteryIndex = String(batteryIndex);
       el.dataset.waypointIndex = String(markerIndex);
       el.style.backgroundColor = color;
+      const markerAltitudeFeet = getWaypointAltitudeFeet(syncedWaypoints, markerIndex);
+      el.dataset.altitudeFeet = markerAltitudeFeet.toFixed(2);
 
-      const marker = new mapboxgl.Marker({ element: el, draggable: markerDraggable, anchor: 'center' })
+      const marker = new mapboxgl.Marker({
+        element: el,
+        draggable: markerDraggable,
+        anchor: 'center',
+        pitchAlignment: 'map',
+        rotationAlignment: 'map',
+      })
         .setLngLat(coord)
+        .setAltitude(altitudeFeetToMeters(markerAltitudeFeet))
         .addTo(map);
       const releaseMapPan = bindMarkerInteractionGuards(el);
 
@@ -2318,13 +2460,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           return null;
         }
 
-        const markerPoint = map.project([lngLat.lng, lngLat.lat]);
+        const liveWaypoints = getBatteryPathWaypointsForCoords(batteryIndex, liveCoords);
+        const markerPoint = map.project(
+          [lngLat.lng, lngLat.lat],
+          altitudeFeetToMeters(getWaypointAltitudeFeet(liveWaypoints, markerIndex)),
+        );
         let bestIndex: number | null = null;
         let bestDistance = Number.POSITIVE_INFINITY;
 
         liveCoords.forEach(([lng, lat], idx) => {
           if (idx === markerIndex) return;
-          const point = map.project([lng, lat]);
+          const point = map.project(
+            [lng, lat],
+            altitudeFeetToMeters(getWaypointAltitudeFeet(liveWaypoints, idx)),
+          );
           const distance = Math.hypot(point.x - markerPoint.x, point.y - markerPoint.y);
           if (distance < bestDistance) {
             bestDistance = distance;
@@ -2422,6 +2571,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     captureMapHistorySnapshot,
     clonePathCoords,
     flushPendingViewportHistory,
+    getBatteryPathWaypointsForCoords,
     pushMapHistoryEntry,
     removeWaypointMarkers,
     setBatteryPathSourceData,
@@ -2446,12 +2596,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     pathEntries.forEach(([batteryIndex, coords]) => {
       if (!coords || coords.length < 2) return;
+      const syncedWaypoints = getBatteryPathWaypointsForCoords(batteryIndex, coords);
 
       for (let segmentIndex = 0; segmentIndex < coords.length - 1; segmentIndex += 1) {
         const [startLng, startLat] = coords[segmentIndex];
         const [endLng, endLat] = coords[segmentIndex + 1];
-        const startPoint = map.project([startLng, startLat]);
-        const endPoint = map.project([endLng, endLat]);
+        const startPoint = map.project(
+          [startLng, startLat],
+          altitudeFeetToMeters(getWaypointAltitudeFeet(syncedWaypoints, segmentIndex)),
+        );
+        const endPoint = map.project(
+          [endLng, endLat],
+          altitudeFeetToMeters(getWaypointAltitudeFeet(syncedWaypoints, segmentIndex + 1)),
+        );
         const segmentDx = endPoint.x - startPoint.x;
         const segmentDy = endPoint.y - startPoint.y;
         const segmentLengthSq = segmentDx * segmentDx + segmentDy * segmentDy;
@@ -2468,19 +2625,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         const distance = Math.hypot(point.x - projectedX, point.y - projectedY);
 
         if (distance < bestDistance) {
-          const projectedLngLat = map.unproject([projectedX, projectedY]);
+          const altitudeFeet = interpolateSegmentAltitudeFeet(syncedWaypoints, segmentIndex, t);
+          const projectedLngLat = map.unproject(
+            [projectedX, projectedY],
+            altitudeFeetToMeters(altitudeFeet),
+          );
           bestDistance = distance;
           bestCandidate = {
             batteryIndex,
             segmentIndex,
             coord: [projectedLngLat.lng, projectedLngLat.lat],
+            altitudeFeet,
           };
         }
       }
     });
 
     return bestDistance <= maxDistancePx ? bestCandidate : null;
-  }, [visibleBatteryPaths]);
+  }, [getBatteryPathWaypointsForCoords, visibleBatteryPaths]);
 
   const insertWaypointAtCandidate = useCallback(async (candidate: WaypointInsertCandidate) => {
     const existingCoords = waypointCoordsRef.current.get(candidate.batteryIndex)
@@ -2592,11 +2754,16 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
       insertionMarkerRef.current = new mapboxgl.Marker({ element, anchor: 'center' })
         .setLngLat(candidate.coord)
+        .setAltitude(altitudeFeetToMeters(candidate.altitudeFeet))
         .addTo(map);
+      element.dataset.altitudeFeet = candidate.altitudeFeet.toFixed(2);
       return;
     }
 
-    insertionMarkerRef.current.setLngLat(candidate.coord);
+    insertionMarkerRef.current
+      .setLngLat(candidate.coord)
+      .setAltitude(altitudeFeetToMeters(candidate.altitudeFeet));
+    insertionMarkerRef.current.getElement()?.setAttribute('data-altitude-feet', candidate.altitudeFeet.toFixed(2));
   }, [insertWaypointAtCandidate, logTouchInsertionDebug, resolveMapbox]);
 
   const handleMapPointerMoveForInsertion = useCallback((event: any) => {
@@ -2745,21 +2912,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     map.addSource(sourceId, {
       type: 'geojson',
-      data: {
-        type: 'Feature',
-        properties: {},
-        geometry: { type: 'LineString', coordinates: coords },
-      },
+      lineMetrics: true,
+      data: buildBatteryPathElevatedFeature(coords, getBatteryPathWaypointsForCoords(batteryIndex, coords)),
     });
 
     map.addLayer({
       id: layerId,
       type: 'line',
       source: sourceId,
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
       paint: {
         'line-color': color,
         'line-width': 2.5,
         'line-opacity': 0.85,
+        'line-z-offset': buildLineZOffsetExpression(),
+        'line-elevation-reference': 'ground',
       },
     });
 
@@ -2767,15 +2937,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       id: `battery-path-hit-layer-${batteryIndex}`,
       type: 'line',
       source: sourceId,
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
       paint: {
         'line-color': '#ffffff',
         'line-width': 18,
         'line-opacity': 0.001,
+        'line-z-offset': buildLineZOffsetExpression(),
+        'line-elevation-reference': 'ground',
       },
     });
 
     await createWaypointMarkers(batteryIndex, coords, color);
-  }, [batteryPathColors, createWaypointMarkers]);
+  }, [batteryPathColors, createWaypointMarkers, getBatteryPathWaypointsForCoords]);
 
   const fitMapToPreviewPaths = useCallback((previewPaths: BoundaryPreviewPath[]) => {
     const map = mapRef.current;
@@ -2800,18 +2976,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setVisibleBatteryPaths(new Map());
     visibleBatteryPathWaypoints3DRef.current = new Map();
     setVisibleBatteryPathWaypoints3D(new Map());
-    setIs3DFlightView(false);
   }, [clearInsertionCandidateMarker, removeBatteryPathVisualization, visibleBatteryPaths]);
 
   useEffect(() => {
     clearAllBatteryPathsRef.current = clearAllBatteryPaths;
   }, [clearAllBatteryPaths]);
-
-  useEffect(() => {
-    if (visibleBatteryPaths.size === 0 && is3DFlightView) {
-      setIs3DFlightView(false);
-    }
-  }, [is3DFlightView, visibleBatteryPaths.size]);
 
   const fetchBatteryPathPreview = useCallback(async (
     batteryIndex1: number
@@ -2828,117 +2997,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
   }, [requestBatteryCsv, spinMode]);
 
-  const ensureVisibleBatteryPathWaypointData = useCallback(async (): Promise<boolean> => {
-    const batteryIndexes = Array.from(visibleBatteryPaths.keys()).sort((left, right) => left - right);
-    if (batteryIndexes.length === 0) {
-      return false;
+  const visibleAltitudeRangeFeet = useMemo(() => {
+    const altitudeValues = Array.from(visibleBatteryPathWaypoints3D.values())
+      .flat()
+      .map((waypoint) => waypoint.altitudeFeet)
+      .filter((altitude) => Number.isFinite(altitude));
+
+    if (altitudeValues.length === 0) {
+      return 0;
     }
 
-    const missingBatteryIndexes = batteryIndexes.filter((batteryIndex) => {
-      const existing = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
-      return !existing || existing.length === 0;
-    });
-
-    if (missingBatteryIndexes.length === 0) {
-      return true;
-    }
-
-    setIsHydrating3DFlightView(true);
-    try {
-      const loadedEntries: Array<{ batteryIndex: number; waypoints: BatteryPathWaypoint3D[] }> = [];
-      for (const batteryIndex of missingBatteryIndexes) {
-        const preview = await fetchBatteryPathPreview(batteryIndex);
-        const liveCoords = waypointCoordsRef.current.get(batteryIndex)
-          ?? visibleBatteryPaths.get(batteryIndex)
-          ?? preview.coordinates;
-        if (preview.waypoints.length > 0 && liveCoords.length > 0) {
-          loadedEntries.push({
-            batteryIndex,
-            waypoints: syncBatteryPathWaypointsWithCoords(preview.waypoints, liveCoords),
-          });
-        }
-      }
-
-      if (loadedEntries.length > 0) {
-        setVisibleBatteryPathWaypoints3D((current) => {
-          const next = new Map(current);
-          loadedEntries.forEach((entry) => {
-            next.set(entry.batteryIndex, cloneBatteryPathWaypoints(entry.waypoints));
-          });
-          visibleBatteryPathWaypoints3DRef.current = next;
-          return next;
-        });
-      }
-    } finally {
-      setIsHydrating3DFlightView(false);
-    }
-
-    return batteryIndexes.every((batteryIndex) => {
-      const waypoints = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
-      return Boolean(waypoints && waypoints.length > 0);
-    });
-  }, [cloneBatteryPathWaypoints, fetchBatteryPathPreview, visibleBatteryPaths]);
-
-  const handleFlightViewModeChange = useCallback(async (mode: '2d' | '3d') => {
-    if (mode === '2d') {
-      setIs3DFlightView(false);
-      return;
-    }
-
-    const ready = await ensureVisibleBatteryPathWaypointData();
-    if (!ready) {
-      showSystemNotification('error', '3D path preview is unavailable until flight path data finishes loading.');
-      return;
-    }
-
-    setIs3DFlightView(true);
-  }, [ensureVisibleBatteryPathWaypointData, showSystemNotification]);
-
-  const flightPathViewerCenter = useMemo(() => {
-    if (selectedCoords) {
-      return selectedCoords;
-    }
-
-    const allCoords = Array.from(visibleBatteryPaths.values()).flat();
-    if (allCoords.length === 0) {
-      return null;
-    }
-
-    const totals = allCoords.reduce(
-      (acc, [lng, lat]) => ({
-        lat: acc.lat + lat,
-        lng: acc.lng + lng,
-      }),
-      { lat: 0, lng: 0 }
-    );
-
-    return {
-      lat: totals.lat / allCoords.length,
-      lng: totals.lng / allCoords.length,
-    };
-  }, [selectedCoords, visibleBatteryPaths]);
-
-  const flightPathViewerBatteries = useMemo(() => {
-    return Array.from(visibleBatteryPaths.entries())
-      .sort(([left], [right]) => left - right)
-      .map(([batteryIndex, coordinates]) => {
-        const baseWaypoints = visibleBatteryPathWaypoints3D.get(batteryIndex);
-        if (!baseWaypoints || baseWaypoints.length === 0) {
-          return null;
-        }
-
-        const liveCoords = waypointCoordsRef.current.get(batteryIndex) ?? coordinates;
-        const syncedWaypoints = syncBatteryPathWaypointsWithCoords(baseWaypoints, liveCoords);
-        return {
-          batteryIndex,
-          color: batteryPathColors[(batteryIndex - 1) % batteryPathColors.length],
-          waypoints: syncedWaypoints,
-        };
-      })
-      .filter((
-        battery
-      ): battery is { batteryIndex: number; color: string; waypoints: BatteryPathWaypoint3D[] } => battery !== null);
-  }, [batteryPathColors, visibleBatteryPathWaypoints3D, visibleBatteryPaths]);
+    return Math.max(...altitudeValues) - Math.min(...altitudeValues);
+  }, [visibleBatteryPathWaypoints3D]);
 
   const handleSpinModeOverrideChange = useCallback((
     key: keyof SpinModeOverrideFormState,
@@ -3366,7 +3436,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     } else {
       clearAllBatteryPaths();
     }
-  }, [clearAllBatteryPaths, replaceBatteryPreviewPaths]);
+    restoreBoundaryCamera();
+  }, [clearAllBatteryPaths, replaceBatteryPreviewPaths, restoreBoundaryCamera]);
 
   useEffect(() => {
     handleCancelBoundaryModeRef.current = handleCancelBoundaryMode;
@@ -3380,14 +3451,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     try {
       setIsApplyingBoundary(true);
+      rememberBoundaryCameraState();
       const ready = await ensureMissionReady();
       if (!ready) {
+        boundaryCameraRestoreRef.current = null;
         return;
       }
 
       boundaryEntryVisiblePathsRef.current = cloneVisiblePaths(visibleBatteryPaths);
       const previewPaths = await loadAllBatteryPathPreviews({ fitBounds: true });
       if (!previewPaths.length) {
+        restoreBoundaryCamera();
         showSystemNotification('error', 'Failed to generate flight path previews');
         return;
       }
@@ -3396,6 +3470,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         ? { lat: appliedBoundaryRef.current.centerLat, lng: appliedBoundaryRef.current.centerLng }
         : selectedCoordsRef.current;
       if (!currentCenter) {
+        restoreBoundaryCamera();
         showSystemNotification('error', 'Please select a location on the map first');
         return;
       }
@@ -3412,12 +3487,24 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       setDraftBoundary(nextBoundary);
       setBoundaryDirty(!appliedBoundaryRef.current || !appliedBoundaryPlanRef.current);
       setIsBoundaryMode(true);
+      lockBoundaryCamera();
     } catch (e: any) {
+      restoreBoundaryCamera();
       showSystemNotification('error', e?.message || 'Failed to start boundary editing');
     } finally {
       setIsApplyingBoundary(false);
     }
-  }, [cloneVisiblePaths, ensureMissionReady, isFullscreen, loadAllBatteryPathPreviews, showSystemNotification, visibleBatteryPaths]);
+  }, [
+    cloneVisiblePaths,
+    ensureMissionReady,
+    isFullscreen,
+    loadAllBatteryPathPreviews,
+    lockBoundaryCamera,
+    rememberBoundaryCameraState,
+    restoreBoundaryCamera,
+    showSystemNotification,
+    visibleBatteryPaths,
+  ]);
 
   const handleApplyBoundary = useCallback(async () => {
     const currentDraft = draftBoundaryRef.current;
@@ -3476,6 +3563,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         pushMapHistoryEntry('boundary apply', previousSnapshot, captureMapHistorySnapshot());
       }, 0);
       triggerSaveRef.current?.();
+      restoreBoundaryCamera();
     } catch (e: any) {
       showSystemNotification('error', e?.message || 'Failed to apply boundary');
     } finally {
@@ -3491,6 +3579,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     pushMapHistoryEntry,
     replaceBatteryPreviewPaths,
     resetWaypointOverrides,
+    restoreBoundaryCamera,
     resolvePreviewPathsWithOverrides,
     setCenterMarkerOnMap,
     showSystemNotification,
@@ -4067,17 +4156,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           {setupOpen && (
           <div className="accordion-content">
             <div className="popup-map-section">
-              <div className={`map-wrapper${is3DFlightView ? ' view-3d' : ''}`}>
+              <div
+                className="map-wrapper"
+                data-map-pitch={mapPitchDegrees.toFixed(2)}
+                data-altitude-range-feet={visibleAltitudeRangeFeet.toFixed(2)}
+              >
                 {/* Empty map container for Mapbox - avoids the warning */}
                 <div id="map-container" className="map-container" ref={mapContainerRef}></div>
-                {is3DFlightView && flightPathViewerCenter && (
-                  <div className="map-3d-overlay" data-flight-path-mode="3d">
-                    <FlightPath3DViewer
-                      batteryPaths={flightPathViewerBatteries}
-                      center={flightPathViewerCenter}
-                    />
-                  </div>
-                )}
                 
                 {/* Map overlays and controls as siblings */}
                 {isFullscreen && (
@@ -4110,9 +4195,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                           void handleCancelBoundaryMode();
                           return;
                         }
-                        if (is3DFlightView) {
-                          setIs3DFlightView(false);
-                        }
                         void handleEnterBoundaryMode();
                       }}
                       disabled={isApplyingBoundary}
@@ -4120,27 +4202,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       title={isBoundaryMode ? 'Cancel boundary editing' : 'Edit boundary'}
                     >
                       {isBoundaryMode ? 'Boundary On' : 'Boundary'}
-                    </button>
-                  </div>
-                )}
-                {visibleBatteryPaths.size > 0 && (
-                  <div className="map-view-mode-toggle" role="tablist" aria-label="Flight path view mode">
-                    <button
-                      type="button"
-                      className={`map-view-mode-button${!is3DFlightView ? ' active' : ''}`}
-                      aria-pressed={!is3DFlightView}
-                      onClick={() => void handleFlightViewModeChange('2d')}
-                    >
-                      2D
-                    </button>
-                    <button
-                      type="button"
-                      className={`map-view-mode-button${is3DFlightView ? ' active' : ''}`}
-                      aria-pressed={is3DFlightView}
-                      onClick={() => void handleFlightViewModeChange('3d')}
-                      disabled={isHydrating3DFlightView}
-                    >
-                      {isHydrating3DFlightView ? '3D...' : '3D'}
                     </button>
                   </div>
                 )}
@@ -4191,8 +4252,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                     </div>
                   </div>
                 )}
-                {isFullscreen && visibleBatteryPaths.size > 0 && !is3DFlightView && (
+                {isFullscreen && visibleBatteryPaths.size > 0 && (
                   <div className="waypoint-drag-hint">Drag waypoints to adjust path</div>
+                )}
+                {visibleBatteryPaths.size > 0 && !isBoundaryMode && mapPitchDegrees < 8 && (
+                  <div className="map-camera-hint" data-map-camera-hint="visible">
+                    Right-drag to tilt/rotate. Two-finger drag on touch.
+                  </div>
                 )}
                 <div className="map-dim-overlay"></div>
                 <div className="map-blur-background"></div>
