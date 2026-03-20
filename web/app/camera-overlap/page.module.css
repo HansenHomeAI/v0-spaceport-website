@@ -517,6 +517,54 @@
   width: 36px;
 }
 
+/* ── 3D viewer: waypoint / capture count (above canvas) ──────────────────── */
+.viewerWaypointBar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-bottom: 10px;
+}
+
+.viewerWaypointBarLabel {
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.viewerWaypointBarTrack {
+  flex: 1;
+  min-width: 140px;
+}
+
+.viewerWaypointAutoBtn {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  color: rgba(245, 245, 247, 0.55);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.viewerWaypointAutoBtn:hover {
+  border-color: #444;
+  color: #f5f5f7;
+}
+
+.viewerWaypointAutoBtn:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
 /* ── View mode toggle (Linear / Flat spin) ────────────────────────────────── */
 .viewModeToggle {
   display: flex;

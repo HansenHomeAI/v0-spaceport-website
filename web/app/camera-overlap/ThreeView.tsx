@@ -29,6 +29,8 @@ function HoverSceneCursor({ active }: { active: boolean }) {
 const COVERAGE_RAY_MAX_FT = 72_000;
 /** Minimum visualization depth (ft) for frustum mouth when upper rays are above horizon. */
 const FRUSTUM_VIS_MIN_EXTENT_FT = 14_000;
+/** Delay before hover shows tag / frustum emphasis (avoids flicker when scanning the scene). */
+const HOVER_HIGHLIGHT_HOLD_MS = 1000;
 
 /**
  * Math uses X = along-track, Y = cross-track, Z = up.
@@ -724,16 +726,57 @@ export default function ThreeView({
   const droneMarkerRefs = useRef<Array<DroneMarkerHandle | null>>([]);
   const [hoveredWaypointIndex, setHoveredWaypointIndex] = useState<number | null>(null);
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState<number | null>(null);
+  const hoverHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverPendingIndexRef = useRef<number | null>(null);
+
+  const clearHoverHoldTimer = useCallback(() => {
+    if (hoverHoldTimerRef.current !== null) {
+      clearTimeout(hoverHoldTimerRef.current);
+      hoverHoldTimerRef.current = null;
+    }
+  }, []);
+
+  const scheduleHoverHighlight = useCallback(
+    (i: number) => {
+      hoverPendingIndexRef.current = i;
+      clearHoverHoldTimer();
+      hoverHoldTimerRef.current = setTimeout(() => {
+        hoverHoldTimerRef.current = null;
+        if (hoverPendingIndexRef.current === i) {
+          setHoveredWaypointIndex(i);
+        }
+      }, HOVER_HIGHLIGHT_HOLD_MS);
+    },
+    [clearHoverHoldTimer],
+  );
+
+  const cancelHoverHighlight = useCallback(
+    (i: number) => {
+      if (hoverPendingIndexRef.current === i) {
+        hoverPendingIndexRef.current = null;
+      }
+      clearHoverHoldTimer();
+      setHoveredWaypointIndex((prev) => (prev === i ? null : prev));
+    },
+    [clearHoverHoldTimer],
+  );
+
+  useEffect(() => () => clearHoverHoldTimer(), [clearHoverHoldTimer]);
 
   const goToWaypoint = useCallback((i: number) => {
     droneMarkerRefs.current[i]?.focus();
     setSelectedWaypointIndex(i);
   }, []);
 
-  const numSpinCaptures = useMemo(
-    () => Math.max(2, Math.min(30, Math.round(spacing / captureIntervalFt))),
+  /** Formula suggestion when not in spin mode; spin scene length follows `pitchDegs.length` from the page. */
+  const autoSpinCaptureCount = useMemo(
+    () => Math.max(2, Math.min(30, Math.round(spacing / Math.max(0.01, captureIntervalFt)))),
     [spacing, captureIntervalFt],
   );
+
+  const numSpinCaptures = spinMode
+    ? Math.max(2, Math.min(30, pitchDegs.length))
+    : autoSpinCaptureCount;
 
   const spinHeadings = useMemo(
     () => Array.from({ length: numSpinCaptures }, (_, i) => (
@@ -925,10 +968,10 @@ export default function ThreeView({
                 key={i}
                 onPointerOver={(e) => {
                   e.stopPropagation();
-                  setHoveredWaypointIndex(i);
+                  scheduleHoverHighlight(i);
                 }}
                 onPointerOut={() => {
-                  setHoveredWaypointIndex((prev) => (prev === i ? null : prev));
+                  cancelHoverHighlight(i);
                 }}
                 onClick={(e) => {
                   e.stopPropagation();

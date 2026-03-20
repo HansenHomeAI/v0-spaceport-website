@@ -121,6 +121,8 @@ export default function CameraOverlapPage() {
   const [viewerWaypointCount, setViewerWaypointCount] = useState(2);
   const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
   const [spinMode, setSpinMode] = useState(false);
+  /** null = use spacing ÷ interval (shown as “auto”); number = override count in 3D for flat spin. */
+  const [spinViewerCaptureCount, setSpinViewerCaptureCount] = useState<number | null>(null);
   const [captureIntervalFt, setCaptureIntervalFt] = useState(6);
   const [captureIntervalSec, setCaptureIntervalSec] = useState(2);
   const [captureIntervalUnit, setCaptureIntervalUnit] = useState<'ft' | 's'>('ft');
@@ -189,27 +191,32 @@ export default function CameraOverlapPage() {
     [spacingFromSpeed, activeCaptureIntervalFt],
   );
 
+  const effectiveSpinCaptures = useMemo(
+    () => Math.max(2, Math.min(30, spinViewerCaptureCount ?? numSpinCaptures)),
+    [spinViewerCaptureCount, numSpinCaptures],
+  );
+
   const spinHeadings = useMemo(
-    () => Array.from({ length: numSpinCaptures }, (_, i) =>
-      numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * effectiveCapDeg : 0,
+    () => Array.from({ length: effectiveSpinCaptures }, (_, i) =>
+      effectiveSpinCaptures > 1 ? (i / (effectiveSpinCaptures - 1)) * effectiveCapDeg : 0,
     ),
-    [numSpinCaptures, effectiveCapDeg],
+    [effectiveSpinCaptures, effectiveCapDeg],
   );
 
   const spinAlongPositions = useMemo(
-    () => Array.from({ length: numSpinCaptures }, (_, i) =>
-      (i - (numSpinCaptures - 1) / 2) * activeCaptureIntervalFt,
+    () => Array.from({ length: effectiveSpinCaptures }, (_, i) =>
+      (i - (effectiveSpinCaptures - 1) / 2) * activeCaptureIntervalFt,
     ),
-    [numSpinCaptures, activeCaptureIntervalFt],
+    [effectiveSpinCaptures, activeCaptureIntervalFt],
   );
 
   const spinPitchDegs = useMemo(() => {
     const base = getGimbalAngleDeg(height, minAngle, minAngleHeight, maxAngle, maxAngleHeight);
-    return Array.from({ length: numSpinCaptures }, (_, i) => {
+    return Array.from({ length: effectiveSpinCaptures }, (_, i) => {
       const s = pitchSequenceNeg[i % Math.max(1, pitchSequenceNeg.length)];
       return typeof s === 'number' ? Math.abs(s) : base;
     });
-  }, [height, minAngle, minAngleHeight, maxAngle, maxAngleHeight, numSpinCaptures, pitchSequenceNeg]);
+  }, [height, minAngle, minAngleHeight, maxAngle, maxAngleHeight, effectiveSpinCaptures, pitchSequenceNeg]);
 
   const spinOverlapIou = useMemo(
     () => averageAdjacentFootprintIou(spinAlongPositions, height, spinPitchDegs, spinHeadings),
@@ -425,7 +432,10 @@ export default function CameraOverlapPage() {
             <button
               type="button"
               className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
-              onClick={() => setSpinMode(false)}
+              onClick={() => {
+                setSpinMode(false);
+                setSpinViewerCaptureCount(null);
+              }}
             >
               Linear
             </button>
@@ -437,6 +447,90 @@ export default function CameraOverlapPage() {
               Flat spin
             </button>
           </div>
+
+          <div className={styles.viewerWaypointBar}>
+            <span className={styles.viewerWaypointBarLabel}>
+              {spinMode ? '3D captures' : '3D waypoints'}
+            </span>
+            <div className={styles.viewerWaypointBarTrack}>
+              {spinMode ? (
+                <input
+                  className={styles.rangeInput}
+                  data-testid="viewer-spin-capture-count"
+                  type="range"
+                  min={2}
+                  max={30}
+                  step={1}
+                  value={effectiveSpinCaptures}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setSpinViewerCaptureCount(v === numSpinCaptures ? null : v);
+                  }}
+                  aria-label="Number of captures shown in 3D viewer"
+                  style={{
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    background: `linear-gradient(to right, #3a8eff ${((effectiveSpinCaptures - 2) / 28) * 100}%, #1e1e1e ${((effectiveSpinCaptures - 2) / 28) * 100}%)`,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    display: 'block',
+                    height: 2,
+                    outline: 'none',
+                    width: '100%',
+                  }}
+                />
+              ) : (
+                <input
+                  className={styles.rangeInput}
+                  data-testid="viewer-linear-waypoint-count"
+                  type="range"
+                  min={2}
+                  max={30}
+                  step={1}
+                  value={viewerWaypointCount}
+                  onChange={(e) => setViewerWaypointCount(Number(e.target.value))}
+                  aria-label="Number of waypoints shown in 3D viewer"
+                  style={{
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    background: `linear-gradient(to right, #3a8eff ${((viewerWaypointCount - 2) / 28) * 100}%, #1e1e1e ${((viewerWaypointCount - 2) / 28) * 100}%)`,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    display: 'block',
+                    height: 2,
+                    outline: 'none',
+                    width: '100%',
+                  }}
+                />
+              )}
+            </div>
+            <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '7.5rem', textAlign: 'right' }}>
+              {spinMode ? (
+                <>
+                  {effectiveSpinCaptures}
+                  {spinViewerCaptureCount === null ? (
+                    <span style={{ color: 'rgba(255,255,255,0.35)' }}> · auto</span>
+                  ) : (
+                    <span style={{ color: 'rgba(255,255,255,0.35)' }}> · manual</span>
+                  )}
+                </>
+              ) : (
+                <>{viewerWaypointCount}</>
+              )}
+            </span>
+            {spinMode ? (
+              <button
+                type="button"
+                className={styles.viewerWaypointAutoBtn}
+                disabled={spinViewerCaptureCount === null}
+                data-testid="viewer-spin-capture-reset-auto"
+                onClick={() => setSpinViewerCaptureCount(null)}
+              >
+                Match spacing
+              </button>
+            ) : null}
+          </div>
+
           <ThreeView
             height={height}
             pitchDegs={spinMode ? spinPitchDegs : pitchDegsViewer}
@@ -493,7 +587,7 @@ export default function CameraOverlapPage() {
                   {captureIntervalUnit === 'ft'
                     ? `${captureIntervalFt} ft`
                     : `${captureIntervalSec} s · ${activeCaptureIntervalFt.toFixed(1)} ft`
-                  } · {numSpinCaptures} captures / spin
+                  } · ~{numSpinCaptures} from spacing
                 </span>
               </div>
               {captureIntervalUnit === 'ft' ? (
