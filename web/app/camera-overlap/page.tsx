@@ -123,12 +123,10 @@ export default function CameraOverlapPage() {
   const [maxAngle, setMaxAngle] = useState(35);
   const [maxAngleHeight, setMaxAngleHeight] = useState(400);
   const [customCaptureRing, setCustomCaptureRing] = useState(true);
-  /** Linear mode: end-to-end span (ft) along the flight line; waypoint count follows spacing. */
+  /** End-to-end span (ft) for the 3D viewer path; linear uses speed×rotation spacing, spin uses capture interval. */
   const [viewerPathLengthFt, setViewerPathLengthFt] = useState(150);
   const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
   const [spinMode, setSpinMode] = useState(false);
-  /** null = use spacing ÷ interval (shown as “auto”); number = override count in 3D for flat spin. */
-  const [spinViewerCaptureCount, setSpinViewerCaptureCount] = useState<number | null>(null);
   const [captureIntervalFt, setCaptureIntervalFt] = useState(6);
   const [captureIntervalSec, setCaptureIntervalSec] = useState(2);
   const [captureIntervalUnit, setCaptureIntervalUnit] = useState<'ft' | 's'>('ft');
@@ -167,14 +165,19 @@ export default function CameraOverlapPage() {
   const spacingFromSpeed = speedFtsManual * rotTime;
   const speedMphFromSlider = speedFtsManual * 0.681818;
 
-  const linearPathMinFt = linearViewerPathMinFt(spacingFromSpeed);
-  const linearPathMaxFt = linearViewerPathMaxFt(spacingFromSpeed);
+  const activeCaptureIntervalFt = captureIntervalUnit === 's'
+    ? captureIntervalSec * speedFtsManual
+    : captureIntervalFt;
+
+  const pathSpanSpacingFt = spinMode ? activeCaptureIntervalFt : spacingFromSpeed;
+  const pathSpanMinFt = linearViewerPathMinFt(pathSpanSpacingFt);
+  const pathSpanMaxFt = linearViewerPathMaxFt(pathSpanSpacingFt);
 
   useEffect(() => {
     setViewerPathLengthFt((prev) =>
-      Math.min(linearPathMaxFt, Math.max(linearPathMinFt, prev)),
+      Math.min(pathSpanMaxFt, Math.max(pathSpanMinFt, prev)),
     );
-  }, [linearPathMinFt, linearPathMaxFt]);
+  }, [pathSpanMinFt, pathSpanMaxFt]);
 
   const viewerWaypointCount = useMemo(
     () => waypointCountFromLinearPathSpan(viewerPathLengthFt, spacingFromSpeed),
@@ -201,10 +204,6 @@ export default function CameraOverlapPage() {
   );
 
   // Spin-mode derived values ─────────────────────────────────────────────────
-  // Unified interval in ft regardless of which unit the slider is in.
-  const activeCaptureIntervalFt = captureIntervalUnit === 's'
-    ? captureIntervalSec * speedFtsManual
-    : captureIntervalFt;
 
   /** Time (s) between shots if driven only by along-track interval ÷ speed — informational. */
   const captureCadenceSec = activeCaptureIntervalFt / Math.max(0.01, speedFtsManual);
@@ -227,18 +226,15 @@ export default function CameraOverlapPage() {
     [spacingFromSpeed, activeCaptureIntervalFt],
   );
 
-  useEffect(() => {
-    setSpinViewerCaptureCount((prev) => {
-      if (prev === null) return null;
-      return Math.min(prev, nCapturesFromYawStep);
-    });
-  }, [nCapturesFromYawStep]);
+  const spinWaypointCountFromPathSpan = useMemo(
+    () => waypointCountFromLinearPathSpan(viewerPathLengthFt, activeCaptureIntervalFt),
+    [viewerPathLengthFt, activeCaptureIntervalFt],
+  );
 
-  const effectiveSpinCaptures = useMemo(() => {
-    const cap = nCapturesFromYawStep;
-    const raw = spinViewerCaptureCount ?? cap;
-    return Math.max(2, Math.min(cap, raw));
-  }, [spinViewerCaptureCount, nCapturesFromYawStep]);
+  const effectiveSpinCaptures = useMemo(
+    () => Math.max(2, Math.min(spinWaypointCountFromPathSpan, nCapturesFromYawStep)),
+    [spinWaypointCountFromPathSpan, nCapturesFromYawStep],
+  );
 
   const spinHeadings = useMemo(
     () => {
@@ -469,7 +465,8 @@ export default function CameraOverlapPage() {
           onMaxAngle={setMaxAngle}
           onMinAngleHeight={handleMinAngleHeight}
           onMaxAngleHeight={handleMaxAngleHeight}
-          spacingFromSpeedFt={spacingFromSpeed}
+          pathSpanSpacingFt={spinMode ? activeCaptureIntervalFt : spacingFromSpeed}
+          pathSpanMaxCount={spinMode ? nCapturesFromYawStep : undefined}
           viewerPathLengthFt={viewerPathLengthFt}
           onViewerPathLengthFt={setViewerPathLengthFt}
           onPitchSequenceGenerated={setPitchSequenceNeg}
@@ -482,7 +479,6 @@ export default function CameraOverlapPage() {
               className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
               onClick={() => {
                 setSpinMode(false);
-                setSpinViewerCaptureCount(null);
               }}
             >
               Linear
@@ -497,105 +493,49 @@ export default function CameraOverlapPage() {
           </div>
 
           <div className={styles.viewerWaypointBar}>
-            <span className={styles.viewerWaypointBarLabel}>
-              {spinMode ? '3D captures' : '3D path span'}
-            </span>
+            <span className={styles.viewerWaypointBarLabel}>3D path span</span>
             <div className={styles.viewerWaypointBarTrack}>
-              {spinMode ? (
-                <input
-                  className={styles.rangeInput}
-                  data-testid="viewer-spin-capture-count"
-                  type="range"
-                  min={2}
-                  max={Math.max(2, nCapturesFromYawStep)}
-                  step={1}
-                  value={effectiveSpinCaptures}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setSpinViewerCaptureCount(v === nCapturesFromYawStep ? null : v);
-                  }}
-                  aria-label="Number of captures shown in 3D viewer"
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${
-                      nCapturesFromYawStep > 2
-                        ? ((effectiveSpinCaptures - 2) / (nCapturesFromYawStep - 2)) * 100
-                        : 0
-                    }%, #1e1e1e ${
-                      nCapturesFromYawStep > 2
-                        ? ((effectiveSpinCaptures - 2) / (nCapturesFromYawStep - 2)) * 100
-                        : 0
-                    }%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
-                />
-              ) : (
-                <input
-                  className={styles.rangeInput}
-                  data-testid="viewer-linear-path-span"
-                  type="range"
-                  min={linearPathMinFt}
-                  max={linearPathMaxFt}
-                  step={1}
-                  value={viewerPathLengthFt}
-                  onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
-                  aria-label="End-to-end path length sampled in 3D viewer (feet)"
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${
-                      linearPathMaxFt > linearPathMinFt
-                        ? ((viewerPathLengthFt - linearPathMinFt) / (linearPathMaxFt - linearPathMinFt)) * 100
-                        : 0
-                    }%, #1e1e1e ${
-                      linearPathMaxFt > linearPathMinFt
-                        ? ((viewerPathLengthFt - linearPathMinFt) / (linearPathMaxFt - linearPathMinFt)) * 100
-                        : 0
-                    }%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
-                />
-              )}
+              <input
+                className={styles.rangeInput}
+                data-testid="viewer-3d-path-span"
+                type="range"
+                min={pathSpanMinFt}
+                max={pathSpanMaxFt}
+                step={1}
+                value={viewerPathLengthFt}
+                onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
+                aria-label="End-to-end path length sampled in 3D viewer (feet)"
+                style={{
+                  WebkitAppearance: 'none',
+                  appearance: 'none',
+                  background: `linear-gradient(to right, #3a8eff ${
+                    pathSpanMaxFt > pathSpanMinFt
+                      ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
+                      : 0
+                  }%, #1e1e1e ${
+                    pathSpanMaxFt > pathSpanMinFt
+                      ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
+                      : 0
+                  }%)`,
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                  display: 'block',
+                  height: 2,
+                  outline: 'none',
+                  width: '100%',
+                }}
+              />
             </div>
             <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '9rem', textAlign: 'right' }}>
-              {spinMode ? (
-                <>
-                  {effectiveSpinCaptures}
-                  {spinViewerCaptureCount === null ? (
-                    <span style={{ color: 'rgba(255,255,255,0.35)' }}> · auto</span>
-                  ) : (
-                    <span style={{ color: 'rgba(255,255,255,0.35)' }}> · manual</span>
-                  )}
-                </>
-              ) : (
-                <>
-                  {Math.round(viewerPathLengthFt)} ft
-                  <span style={{ color: 'rgba(255,255,255,0.35)' }}> · {viewerWaypointCount} pts</span>
-                </>
-              )}
+              {Math.round(viewerPathLengthFt)} ft
+              <span style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {' '}
+                · {spinMode ? effectiveSpinCaptures : viewerWaypointCount} pts
+                {spinMode && effectiveSpinCaptures < spinWaypointCountFromPathSpan ? (
+                  <span title="Yaw arc limits distinct headings"> · yaw cap</span>
+                ) : null}
+              </span>
             </span>
-            {spinMode ? (
-              <button
-                type="button"
-                className={styles.viewerWaypointAutoBtn}
-                disabled={spinViewerCaptureCount === null}
-                data-testid="viewer-spin-capture-reset-auto"
-                onClick={() => setSpinViewerCaptureCount(null)}
-              >
-                Auto
-              </button>
-            ) : null}
           </div>
 
           <ThreeView

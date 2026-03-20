@@ -308,9 +308,11 @@ export type GimbalDistributionCardProps = {
   onMaxAngle: (v: number) => void;
   onMinAngleHeight: (v: number) => void;
   onMaxAngleHeight: (v: number) => void;
-  /** Along-track spacing (ft) from speed × rotation time — drives path-length limits. */
-  spacingFromSpeedFt: number;
-  /** End-to-end span (ft) of the linear segment sampled in the 3D viewer + pitch draws. */
+  /** Spacing (ft) between consecutive samples along the viewer path — linear: speed×rotation; spin: capture interval. */
+  pathSpanSpacingFt: number;
+  /** When set (flat spin), caps pitch-sample count to the yaw-arc limit. */
+  pathSpanMaxCount?: number;
+  /** End-to-end span (ft) of the segment sampled in the 3D viewer + pitch draws. */
   viewerPathLengthFt: number;
   onViewerPathLengthFt: (ft: number) => void;
   onPitchSequenceGenerated: (pitchNegDeg: number[]) => void;
@@ -326,7 +328,8 @@ export default function GimbalDistributionCard({
   onMaxAngle,
   onMinAngleHeight,
   onMaxAngleHeight,
-  spacingFromSpeedFt,
+  pathSpanSpacingFt,
+  pathSpanMaxCount,
   viewerPathLengthFt,
   onViewerPathLengthFt,
   onPitchSequenceGenerated,
@@ -352,18 +355,19 @@ export default function GimbalDistributionCard({
   );
 
   const linearPathMin = useMemo(
-    () => linearViewerPathMinFt(spacingFromSpeedFt),
-    [spacingFromSpeedFt],
+    () => linearViewerPathMinFt(pathSpanSpacingFt),
+    [pathSpanSpacingFt],
   );
   const linearPathMax = useMemo(
-    () => linearViewerPathMaxFt(spacingFromSpeedFt),
-    [spacingFromSpeedFt],
+    () => linearViewerPathMaxFt(pathSpanSpacingFt),
+    [pathSpanSpacingFt],
   );
 
-  const viewerWaypointCount = useMemo(
-    () => waypointCountFromLinearPathSpan(viewerPathLengthFt, spacingFromSpeedFt),
-    [viewerPathLengthFt, spacingFromSpeedFt],
-  );
+  const viewerWaypointCount = useMemo(() => {
+    const raw = waypointCountFromLinearPathSpan(viewerPathLengthFt, pathSpanSpacingFt);
+    if (pathSpanMaxCount == null) return raw;
+    return Math.max(2, Math.min(raw, pathSpanMaxCount));
+  }, [viewerPathLengthFt, pathSpanSpacingFt, pathSpanMaxCount]);
 
   const runGenerate = useCallback(
     (seed: number) => {
@@ -396,7 +400,7 @@ export default function GimbalDistributionCard({
         shuffleSeedRef.current ??
         paramsToSeed([
           heightAgl, minAngle, maxAngle, minAngleHeight, maxAngleHeight,
-          viewerPathLengthFt, peakConc, baseConc, outlierRate, rho,
+          viewerPathLengthFt, peakConc, baseConc, outlierRate, rho, pathSpanMaxCount ?? 0,
         ]);
       runGenerate(seed);
     }, 120);
@@ -404,7 +408,7 @@ export default function GimbalDistributionCard({
       if (autoTimerRef.current !== null) clearTimeout(autoTimerRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [heightAgl, minAngle, maxAngle, minAngleHeight, maxAngleHeight, viewerPathLengthFt, peakConc, baseConc, outlierRate, rho]);
+  }, [heightAgl, minAngle, maxAngle, minAngleHeight, maxAngleHeight, viewerPathLengthFt, peakConc, baseConc, outlierRate, rho, pathSpanMaxCount]);
 
   // Manual reshuffle: pick a fresh random seed so the user gets a different
   // draw without moving any sliders. Resets to param-derived seed on next change.
@@ -508,8 +512,8 @@ export default function GimbalDistributionCard({
         onChange={setRho}
       />
       <DistSlider
-        label="Viewer path length"
-        sublabel={`≈ ${viewerWaypointCount} pts · ${spacingFromSpeedFt.toFixed(1)} ft spacing`}
+        label="3D path span"
+        sublabel={`≈ ${viewerWaypointCount} pts · ${pathSpanSpacingFt.toFixed(1)} ft spacing`}
         value={viewerPathLengthFt}
         min={linearPathMin}
         max={linearPathMax}
