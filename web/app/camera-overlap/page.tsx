@@ -445,12 +445,12 @@ export default function CameraOverlapPage() {
           <SliderRow
             label="Height"
             min={50}
-            max={1000}
+            max={400}
             step={1}
-            value={height}
+            value={Math.min(height, 400)}
             onChange={setHeight}
-            display={`${height} ft`}
-            pct={((height - 50) / 950) * 100}
+            display={`${Math.min(height, 400)} ft`}
+            pct={((Math.min(height, 400) - 50) / 350) * 100}
             testId="height-slider"
           />
           <SliderRow
