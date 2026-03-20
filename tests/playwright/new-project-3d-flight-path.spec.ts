@@ -47,6 +47,11 @@ async function readAltitudeRange(page: import('@playwright/test').Page): Promise
   return Number.parseFloat(value ?? '0');
 }
 
+async function readRenderedPathPointCount(page: import('@playwright/test').Page): Promise<number> {
+  const value = await page.locator('.map-wrapper').getAttribute('data-rendered-path-point-count');
+  return Number.parseFloat(value ?? '0');
+}
+
 test('new project modal renders altitude in the live map and restores camera after boundary mode', async ({ page }) => {
   requireEnv();
 
@@ -71,21 +76,33 @@ test('new project modal renders altitude in the live map and restores camera aft
     const markers = Array.from(document.querySelectorAll<HTMLElement>('.waypoint-marker[data-altitude-feet]'));
     return markers.length > 2;
   }, undefined, { timeout: 30_000 });
+  await page.waitForFunction(() => {
+    const wrapper = document.querySelector('.map-wrapper');
+    const renderedPointCount = Number.parseFloat(wrapper?.getAttribute('data-rendered-path-point-count') ?? '0');
+    const markerCount = document.querySelectorAll('.waypoint-marker[data-altitude-feet]').length;
+    return renderedPointCount > markerCount;
+  }, undefined, { timeout: 30_000 });
 
   const altitudeRangeFeet = await readAltitudeRange(page);
   expect(altitudeRangeFeet).toBeGreaterThan(100);
+  expect(await readRenderedPathPointCount(page)).toBeGreaterThan(
+    await page.locator('.waypoint-marker[data-altitude-feet]').count(),
+  );
 
   const markerMetricsBeforePitch = await page.locator('.waypoint-marker').evaluateAll((elements) => {
     return elements.map((element) => {
       const rect = element.getBoundingClientRect();
       return {
         altitudeFeet: Number.parseFloat(element.dataset.altitudeFeet ?? '0'),
+        curveFeet: Number.parseFloat(element.dataset.curveFeet ?? '0'),
         top: rect.top,
       };
     });
   });
   const markerAltitudes = markerMetricsBeforePitch.map((marker) => marker.altitudeFeet);
   expect(Math.max(...markerAltitudes) - Math.min(...markerAltitudes)).toBeGreaterThan(100);
+  const markerCurves = markerMetricsBeforePitch.map((marker) => marker.curveFeet);
+  expect(Math.max(...markerCurves)).toBeGreaterThan(0);
 
   const canvas = page.locator('.mapboxgl-canvas');
   await expect(canvas).toBeVisible();

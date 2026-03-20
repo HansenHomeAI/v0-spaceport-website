@@ -30,8 +30,10 @@ import {
   altitudeFeetToMeters,
   BatteryPathWaypoint3D,
   buildBatteryPathElevatedFeature,
+  buildCurvedBatteryPathPoints,
   buildLineZOffsetExpression,
   getWaypointAltitudeFeet,
+  getWaypointCurveFeet,
   interpolateSegmentAltitudeFeet,
   parseBatteryCsvWaypoints,
   syncBatteryPathWaypointsWithCoords,
@@ -2262,7 +2264,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   ): BatteryPathWaypoint3D[] => {
     const existing = visibleBatteryPathWaypoints3DRef.current.get(batteryIndex);
     if (!existing || existing.length === 0) {
-      return coords.map(([lng, lat]) => ({ lng, lat, altitudeFeet: 0 }));
+      return coords.map(([lng, lat]) => ({ lng, lat, altitudeFeet: 0, curveFeet: 0 }));
     }
 
     return syncBatteryPathWaypointsWithCoords(existing, coords);
@@ -2300,9 +2302,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const syncedWaypoints = sourceWaypoints ?? getBatteryPathWaypointsForCoords(batteryIndex, coords);
     markers.forEach((marker, markerIndex) => {
       const altitudeFeet = getWaypointAltitudeFeet(syncedWaypoints, markerIndex);
+      const curveFeet = getWaypointCurveFeet(syncedWaypoints, markerIndex);
       const markerElement = marker?.getElement?.();
       if (markerElement) {
         markerElement.dataset.altitudeFeet = altitudeFeet.toFixed(2);
+        markerElement.dataset.curveFeet = curveFeet.toFixed(2);
       }
       marker?.setAltitude?.(altitudeFeetToMeters(altitudeFeet));
     });
@@ -2384,7 +2388,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       el.dataset.waypointIndex = String(markerIndex);
       el.style.backgroundColor = color;
       const markerAltitudeFeet = getWaypointAltitudeFeet(syncedWaypoints, markerIndex);
+      const markerCurveFeet = getWaypointCurveFeet(syncedWaypoints, markerIndex);
       el.dataset.altitudeFeet = markerAltitudeFeet.toFixed(2);
+      el.dataset.curveFeet = markerCurveFeet.toFixed(2);
 
       const marker = new mapboxgl.Marker({
         element: el,
@@ -3009,6 +3015,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     return Math.max(...altitudeValues) - Math.min(...altitudeValues);
   }, [visibleBatteryPathWaypoints3D]);
+
+  const visibleRenderedPathPointCount = useMemo(() => {
+    let total = 0;
+
+    visibleBatteryPaths.forEach((coords, batteryIndex) => {
+      if (!coords || coords.length === 0) {
+        return;
+      }
+
+      const sourceWaypoints = visibleBatteryPathWaypoints3D.get(batteryIndex);
+      const syncedWaypoints = sourceWaypoints && sourceWaypoints.length > 0
+        ? syncBatteryPathWaypointsWithCoords(sourceWaypoints, coords)
+        : coords.map(([lng, lat]) => ({ lng, lat, altitudeFeet: 0, curveFeet: 0 }));
+
+      total += buildCurvedBatteryPathPoints(syncedWaypoints).length;
+    });
+
+    return total;
+  }, [visibleBatteryPathWaypoints3D, visibleBatteryPaths]);
 
   const handleSpinModeOverrideChange = useCallback((
     key: keyof SpinModeOverrideFormState,
@@ -4160,6 +4185,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 className="map-wrapper"
                 data-map-pitch={mapPitchDegrees.toFixed(2)}
                 data-altitude-range-feet={visibleAltitudeRangeFeet.toFixed(2)}
+                data-rendered-path-point-count={String(visibleRenderedPathPointCount)}
               >
                 {/* Empty map container for Mapbox - avoids the warning */}
                 <div id="map-container" className="map-container" ref={mapContainerRef}></div>
