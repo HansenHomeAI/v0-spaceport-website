@@ -168,3 +168,22 @@ export function footprintOverlapIou(a: FootprintBounds, b: FootprintBounds): num
   if (union <= 0) return 0;
   return intersection / union;
 }
+
+/**
+ * Mean IoU between consecutive footprints along the flight line (N ≥ 2 waypoints).
+ */
+export function averageAdjacentFootprintIou(
+  alongPositions: number[],
+  height: number,
+  pitchDegsBelowHorizon: number[],
+): number {
+  const n = alongPositions.length;
+  if (n < 2 || pitchDegsBelowHorizon.length !== n) return 0;
+  let sum = 0;
+  for (let i = 0; i < n - 1; i++) {
+    const a = groundFootprint(alongPositions[i], height, pitchDegsBelowHorizon[i]);
+    const b = groundFootprint(alongPositions[i + 1], height, pitchDegsBelowHorizon[i + 1]);
+    sum += footprintOverlapIou(footprintBounds(a), footprintBounds(b));
+  }
+  return sum / (n - 1);
+}

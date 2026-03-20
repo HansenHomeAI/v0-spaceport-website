@@ -3,14 +3,13 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  averageAdjacentFootprintIou,
   getGimbalAngleDeg,
-  groundFootprint,
-  footprintBounds,
-  footprintOverlapIou,
   hypotenuseFromHeight,
   rotationTimeSec,
 } from '../../lib/cameraOverlapMath';
 import styles from './page.module.css';
+import GimbalDistributionCard from './GimbalDistributionCard';
 
 const ThreeView = dynamic(() => import('./ThreeView'), { ssr: false });
 
@@ -39,18 +38,6 @@ type SliderRowProps = {
   onChange: (value: number) => void;
   display: string;
   pct: number;
-};
-
-type AngleCardProps = {
-  label: string;
-  angleValue: number;
-  angleMin: number;
-  angleMax: number;
-  onAngleChange: (value: number) => void;
-  heightValue: number;
-  heightMin: number;
-  heightMax: number;
-  onHeightChange: (value: number) => void;
 };
 
 function toDeg(cx: number, cy: number, x: number, y: number): number {
@@ -120,70 +107,6 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct, testI
   );
 }
 
-function AngleCard({
-  label,
-  angleValue,
-  angleMin,
-  angleMax,
-  onAngleChange,
-  heightValue,
-  heightMin,
-  heightMax,
-  onHeightChange,
-}: AngleCardProps) {
-  const anglePct = ((angleValue - angleMin) / (angleMax - angleMin)) * 100;
-  const heightPct = ((heightValue - heightMin) / (heightMax - heightMin)) * 100;
-
-  return (
-    <div className={styles.angleCard}>
-      <p className={styles.angleCardLabel}>{label}</p>
-      <p className={styles.angleCardValue}>
-        &minus;{angleValue}&deg; @ {heightValue} ft
-      </p>
-      <div className={styles.angleCardSliders}>
-        <input
-          className={styles.rangeInput}
-          type="range"
-          min={angleMin}
-          max={angleMax}
-          step={1}
-          value={angleValue}
-          onChange={(event) => onAngleChange(Number(event.target.value))}
-          style={{
-            WebkitAppearance: 'none',
-            appearance: 'none',
-            background: `linear-gradient(to right, #ffd60a ${anglePct}%, #1e1e1e ${anglePct}%)`,
-            borderRadius: 2,
-            cursor: 'pointer',
-            display: 'block',
-            outline: 'none',
-            width: '100%',
-          }}
-        />
-        <input
-          className={styles.rangeInput}
-          type="range"
-          min={heightMin}
-          max={heightMax}
-          step={1}
-          value={heightValue}
-          onChange={(event) => onHeightChange(Number(event.target.value))}
-          style={{
-            WebkitAppearance: 'none',
-            appearance: 'none',
-            background: `linear-gradient(to right, #3a8eff ${heightPct}%, #1e1e1e ${heightPct}%)`,
-            borderRadius: 2,
-            cursor: 'pointer',
-            display: 'block',
-            outline: 'none',
-            width: '100%',
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
 export default function CameraOverlapPage() {
   const [height, setHeight] = useState(100);
   const [speedFtsManual, setSpeedFtsManual] = useState(3.0);
@@ -194,6 +117,8 @@ export default function CameraOverlapPage() {
   const [maxAngle, setMaxAngle] = useState(35);
   const [maxAngleHeight, setMaxAngleHeight] = useState(400);
   const [customCaptureRing, setCustomCaptureRing] = useState(true);
+  const [viewerWaypointCount, setViewerWaypointCount] = useState(2);
+  const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
 
   const dragIdx = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -229,11 +154,24 @@ export default function CameraOverlapPage() {
   const spacingFromSpeed = speedFtsManual * rotTime;
   const speedMphFromSlider = speedFtsManual * 0.681818;
 
-  const overlapIou = useMemo(() => {
-    const fp1 = groundFootprint(-spacingFromSpeed / 2, height, angleDeg);
-    const fp2 = groundFootprint(spacingFromSpeed / 2, height, angleDeg);
-    return footprintOverlapIou(footprintBounds(fp1), footprintBounds(fp2));
-  }, [spacingFromSpeed, height, angleDeg]);
+  const pitchDegsViewer = useMemo(() => {
+    const base = getGimbalAngleDeg(height, minAngle, minAngleHeight, maxAngle, maxAngleHeight);
+    return Array.from({ length: viewerWaypointCount }, (_, i) => {
+      const s = pitchSequenceNeg[i];
+      return typeof s === 'number' ? Math.abs(s) : base;
+    });
+  }, [height, minAngle, minAngleHeight, maxAngle, maxAngleHeight, viewerWaypointCount, pitchSequenceNeg]);
+
+  const alongPositions = useMemo(
+    () =>
+      Array.from({ length: viewerWaypointCount }, (_, i) => (i - (viewerWaypointCount - 1) / 2) * spacingFromSpeed),
+    [viewerWaypointCount, spacingFromSpeed],
+  );
+
+  const overlapIou = useMemo(
+    () => averageAdjacentFootprintIou(alongPositions, height, pitchDegsViewer),
+    [alongPositions, height, pitchDegsViewer],
+  );
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -409,37 +347,28 @@ export default function CameraOverlapPage() {
                 color="#3a8eff"
               />
             </div>
-            <div className={styles.angleCardsRow}>
-              <AngleCard
-                label="Min"
-                angleValue={minAngle}
-                angleMin={5}
-                angleMax={30}
-                onAngleChange={setMinAngle}
-                heightValue={minAngleHeight}
-                heightMin={50}
-                heightMax={1000}
-                onHeightChange={handleMinAngleHeight}
-              />
-              <AngleCard
-                label="Max"
-                angleValue={maxAngle}
-                angleMin={15}
-                angleMax={60}
-                onAngleChange={setMaxAngle}
-                heightValue={maxAngleHeight}
-                heightMin={50}
-                heightMax={1000}
-                onHeightChange={handleMaxAngleHeight}
-              />
-            </div>
           </div>
         </div>
+
+        <GimbalDistributionCard
+          heightAgl={height}
+          minAngle={minAngle}
+          maxAngle={maxAngle}
+          minAngleHeight={minAngleHeight}
+          maxAngleHeight={maxAngleHeight}
+          onMinAngle={setMinAngle}
+          onMaxAngle={setMaxAngle}
+          onMinAngleHeight={handleMinAngleHeight}
+          onMaxAngleHeight={handleMaxAngleHeight}
+          viewerWaypointCount={viewerWaypointCount}
+          onViewerWaypointCount={setViewerWaypointCount}
+          onPitchSequenceGenerated={setPitchSequenceNeg}
+        />
 
         <div style={{ padding: '8px 0' }}>
           <ThreeView
             height={height}
-            pitchDeg={angleDeg}
+            pitchDegs={pitchDegsViewer}
             spacing={spacingFromSpeed}
             overlapPercent={overlapIou * 100}
           />

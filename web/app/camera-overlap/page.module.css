@@ -306,3 +306,187 @@
   font-weight: 500;
   padding: 4px 8px;
 }
+
+/* Gimbal distribution card */
+.gimbalDistributionCard {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 14px;
+  margin-top: 12px;
+  padding: 16px 14px 18px;
+}
+
+.gimbalCardTitle {
+  color: rgba(245, 245, 247, 0.95);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.gimbalCardSub {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  margin: 0 0 14px;
+}
+
+.gimbalIntendedPitch {
+  color: #7eb8ff;
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.gimbalCardMeta {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.gimbalSectionLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 14px 0 8px;
+  text-transform: uppercase;
+}
+
+.gimbalSectionLabelMuted {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin: 12px 0 8px;
+  text-transform: uppercase;
+}
+
+.distChartWrap {
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.distChartCanvas {
+  display: block;
+  height: 140px;
+  width: 100%;
+}
+
+.distSliderRow {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.distSliderLabelCol {
+  flex-shrink: 0;
+  width: 104px;
+}
+
+.distSliderLabel {
+  color: rgba(255, 255, 255, 0.45);
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.distSliderSub {
+  color: rgba(255, 255, 255, 0.28);
+  display: block;
+  font-size: 0.6rem;
+  margin-top: 2px;
+}
+
+.distSliderRow .rangeInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.distSliderValue {
+  color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  width: 48px;
+}
+
+.gimbalGenerateBtn {
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  color: rgba(245, 245, 247, 0.65);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  padding: 10px 14px;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.gimbalGenerateBtn:hover {
+  border-color: #444;
+  color: #f5f5f7;
+}
+
+.gimbalPitchList {
+  margin-top: 8px;
+}
+
+.gimbalPitchRow {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.gimbalPitchIdx {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.6rem;
+  text-align: right;
+  width: 18px;
+}
+
+.gimbalPitchTrack {
+  background: #1e1e1e;
+  flex: 1;
+  height: 1px;
+  position: relative;
+}
+
+.gimbalPitchIntended {
+  background: #333;
+  height: 7px;
+  position: absolute;
+  top: -3px;
+  transform: translateX(-50%);
+  width: 1px;
+}
+
+.gimbalPitchDot {
+  border-radius: 50%;
+  height: 7px;
+  position: absolute;
+  top: -3px;
+  transform: translateX(-50%);
+  width: 7px;
+}
+
+.gimbalPitchDeg {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  width: 44px;
+}
+
+.gimbalPitchDelta {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  width: 36px;
+}

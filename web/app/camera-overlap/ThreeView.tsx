@@ -78,9 +78,11 @@ function FootprintQuad({
 function FrustumLines({
   dronePos,
   quad,
+  lineOpacity = 0.55,
 }: {
   dronePos: [number, number, number];
   quad: GroundQuad;
+  lineOpacity?: number;
 }) {
   const lines = useMemo(() => {
     const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
@@ -111,7 +113,7 @@ function FrustumLines({
           color="#888"
           lineWidth={1}
           transparent
-          opacity={0.55}
+          opacity={lineOpacity}
         />
       ))}
     </>
@@ -226,23 +228,40 @@ function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: num
 
 export type ThreeViewProps = {
   height: number;
-  pitchDeg: number;
+  /** Positive degrees below horizon; one entry per along-track waypoint. */
+  pitchDegs: number[];
   spacing: number;
-  /** 0–100 overlap between the two footprint areas (IoU). */
+  /** 0–100 mean adjacent-pair IoU. */
   overlapPercent: number;
 };
 
+function footprintColor(i: number, n: number): string {
+  const t = n <= 1 ? 0 : i / (n - 1);
+  const h = 200 + t * 55;
+  const l = 72 - t * 8;
+  return `hsl(${h}, 72%, ${l}%)`;
+}
+
 export default function ThreeView({
   height,
-  pitchDeg,
+  pitchDegs,
   spacing,
   overlapPercent,
 }: ThreeViewProps) {
-  const fp1 = useMemo(() => groundFootprint(-spacing / 2, height, pitchDeg), [spacing, height, pitchDeg]);
-  const fp2 = useMemo(() => groundFootprint(spacing / 2, height, pitchDeg), [spacing, height, pitchDeg]);
+  const n = Math.max(1, pitchDegs.length);
+
+  const alongPositions = useMemo(
+    () => Array.from({ length: n }, (_, i) => (i - (n - 1) / 2) * spacing),
+    [n, spacing],
+  );
+
+  const footprints = useMemo(
+    () => alongPositions.map((x, i) => groundFootprint(x, height, pitchDegs[i] ?? pitchDegs[0])),
+    [alongPositions, height, pitchDegs],
+  );
 
   const gridSize = useMemo(() => {
-    const all = [...fp1, ...fp2];
+    const all = footprints.flat();
     let minX = Infinity;
     let maxX = -Infinity;
     let minY = Infinity;
@@ -253,14 +272,20 @@ export default function ThreeView({
       minY = Math.min(minY, y);
       maxY = Math.max(maxY, y);
     }
-    minX = Math.min(minX, -spacing / 2);
-    maxX = Math.max(maxX, spacing / 2);
-    const span = Math.max(maxX - minX, maxY - minY, spacing * 1.5, height * 0.08);
-    return Math.min(span * 1.4, 6000);
-  }, [fp1, fp2, spacing, height]);
+    for (const x of alongPositions) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+    }
+    const span = Math.max(maxX - minX, maxY - minY, spacing * Math.max(2, n) * 0.75, height * 0.08);
+    return Math.min(span * 1.45, 6000);
+  }, [footprints, alongPositions, spacing, height, n]);
 
-  const drone1 = mathDroneToThree(-spacing / 2, height, 0);
-  const drone2 = mathDroneToThree(spacing / 2, height, 0);
+  const dronePositions = useMemo(
+    () => alongPositions.map((x) => mathDroneToThree(x, height, 0)),
+    [alongPositions, height],
+  );
+
+  const lineOpacity = n > 14 ? 0.28 : n > 8 ? 0.4 : 0.55;
 
   const maxOrbit = useMemo(
     () => Math.max(gridSize * 4, height * 6, 2000),
@@ -324,13 +349,18 @@ export default function ThreeView({
             <GroundGrid size={gridSize} />
             <GroundAnchors gridSize={gridSize} />
 
-            <DroneMarker position={drone1} />
-            <FrustumLines dronePos={drone1} quad={fp1} />
-            <FootprintQuad quad={fp1} color="#a8d4ff" opacity={0.22} />
-
-            <DroneMarker position={drone2} />
-            <FrustumLines dronePos={drone2} quad={fp2} />
-            <FootprintQuad quad={fp2} color="#a8d4ff" opacity={0.22} />
+            {footprints.map((quad, i) => {
+              const dronePos = dronePositions[i];
+              const col = footprintColor(i, n);
+              const fpOpacity = 0.14 + (i / Math.max(1, n - 1)) * 0.12;
+              return (
+                <group key={i}>
+                  <DroneMarker position={dronePos} />
+                  <FrustumLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
+                  <FootprintQuad quad={quad} color={col} opacity={fpOpacity} />
+                </group>
+              );
+            })}
           </group>
         </group>
       </Canvas>
@@ -340,7 +370,7 @@ export default function ThreeView({
           Overlap: {overlapPercent.toFixed(0)}%
         </div>
         <div className={styles.threeViewHudMeta} data-testid="overlap-hud-meta">
-          {spacing.toFixed(0)} ft apart · {height} ft AGL
+          {n} pts · {spacing.toFixed(0)} ft apart · {height} ft AGL
         </div>
       </div>
     </div>

@@ -19,8 +19,15 @@ test.describe('Camera Overlap 3D page', () => {
     await expect(hud).toBeVisible();
     await expect(page.locator('[data-testid="overlap-hud-primary"]')).toContainText('Overlap:');
     await expect(page.locator('[data-testid="overlap-hud-primary"]')).toContainText('%');
+    await expect(page.locator('[data-testid="overlap-hud-meta"]')).toContainText('pts');
     await expect(page.locator('[data-testid="overlap-hud-meta"]')).toContainText('ft apart');
     await expect(page.locator('[data-testid="overlap-hud-meta"]')).toContainText('AGL');
+  });
+
+  test('gimbal distribution card and generate control render', async ({ page }) => {
+    await expect(page.locator('[data-testid="gimbal-distribution-card"]')).toBeVisible();
+    await expect(page.locator('[data-testid="gimbal-generate-btn"]')).toBeVisible();
+    await expect(page.locator('[data-testid="gimbal-distribution-chart"]')).toBeVisible();
   });
 
   test('height slider changes overlap percentage', async ({ page }) => {

@@ -16,6 +16,7 @@ import {
   footprintBounds,
   rectOverlapFraction,
   footprintOverlapIou,
+  averageAdjacentFootprintIou,
 } from './cameraOverlapMath';
 
 function approx(a: number, b: number, eps = 1e-6) {
@@ -91,5 +92,29 @@ approx(footprintOverlapIou(nb, farApart), 0);
 const sqA = { minX: 0, maxX: 10, minY: 0, maxY: 10 };
 const sqB = { minX: 5, maxX: 15, minY: 0, maxY: 10 };
 approx(footprintOverlapIou(sqA, sqB), 50 / 150, 1e-9);
+
+// ---- averageAdjacentFootprintIou (N waypoints) ----
+const pos2 = [-25, 25];
+const pitch2 = [30, 30];
+const fp0 = groundFootprint(pos2[0], 100, pitch2[0]);
+const fp1 = groundFootprint(pos2[1], 100, pitch2[1]);
+const mean2 = averageAdjacentFootprintIou(pos2, 100, pitch2);
+approx(mean2, footprintOverlapIou(footprintBounds(fp0), footprintBounds(fp1)));
+
+assert.equal(averageAdjacentFootprintIou([0], 100, [30]), 0);
+assert.equal(averageAdjacentFootprintIou([0, 50], 100, [30]), 0);
+
+const pos3 = [-50, 0, 50];
+const pitch3 = [28, 28, 28];
+const m3 = averageAdjacentFootprintIou(pos3, 100, pitch3);
+const a01 = footprintOverlapIou(
+  footprintBounds(groundFootprint(-50, 100, 28)),
+  footprintBounds(groundFootprint(0, 100, 28)),
+);
+const a12 = footprintOverlapIou(
+  footprintBounds(groundFootprint(0, 100, 28)),
+  footprintBounds(groundFootprint(50, 100, 28)),
+);
+approx(m3, (a01 + a12) / 2);
 
 console.log('cameraOverlapMath.unit.test.ts: all assertions passed');
