@@ -25,8 +25,11 @@ function HoverSceneCursor({ active }: { active: boolean }) {
   return null;
 }
 
-/** Feet — raycast far enough to cover the whole town + distant trees from survey altitude. */
-const COVERAGE_RAY_MAX_FT = 72_000;
+/**
+ * Max distance (ft) along a ray for ground-plane coverage decals.
+ * Kept large so shallow frustum rays still hit y=0 within range (viz only — not the overlap %).
+ */
+const COVERAGE_RAY_MAX_FT = 200_000;
 /** Minimum visualization depth (ft) for frustum mouth when upper rays are above horizon. */
 const FRUSTUM_VIS_MIN_EXTENT_FT = 14_000;
 /** Delay before hover shows tag / frustum emphasis (avoids flicker when scanning the scene). */
@@ -149,7 +152,6 @@ function CoveragePatch({
 
 function CoverageOverlay({
   spaceRef,
-  coverageRootRef,
   dronePositions,
   pitchDegs,
   headingDegs,
@@ -157,7 +159,6 @@ function CoverageOverlay({
   emphasizeIndex,
 }: {
   spaceRef: React.RefObject<THREE.Group | null>;
-  coverageRootRef: React.RefObject<THREE.Group | null>;
   dronePositions: [number, number, number][];
   pitchDegs: number[];
   headingDegs: number[];
@@ -171,17 +172,15 @@ function CoverageOverlay({
   }, []);
 
   const patches = useMemo(() => {
-    if (!mounted || !spaceRef.current || !coverageRootRef.current || dronePositions.length === 0) {
+    if (!mounted || !spaceRef.current || dronePositions.length === 0) {
       return [] as CoveragePatchData[];
     }
 
     const { cols, rows, size } = coverageSamplingFor(dronePositions.length);
     const alongOffsets = sampleOffsets(cols);
     const crossOffsets = sampleOffsets(rows);
-    const raycaster = new THREE.Raycaster();
     const results: CoveragePatchData[] = [];
     const space = spaceRef.current;
-    const coverageRoot = coverageRootRef.current;
 
     for (let i = 0; i < dronePositions.length; i++) {
       const dronePos = dronePositions[i];
@@ -189,32 +188,17 @@ function CoverageOverlay({
       const headingDeg = headingDegs[i] ?? 0;
       const color = colors[i] ?? colors[0] ?? '#3a8eff';
       const originWorld = space.localToWorld(new THREE.Vector3(...dronePos));
+      /** Match `groundFootprint` / FootprintQuad: project every sample to infinite ground y=0 (not first mesh hit). */
+      const far = Math.max(COVERAGE_RAY_MAX_FT, dronePos[1] * 200);
 
       for (const alongSample of alongOffsets) {
         for (const crossSample of crossOffsets) {
           const dirLocal = buildCameraRayLocal(pitchDeg, headingDeg, alongSample, crossSample);
           const dirWorld = dirLocal.clone().transformDirection(space.matrixWorld);
-          raycaster.set(originWorld, dirWorld);
-          raycaster.near = 0.5;
-          const far = Math.max(COVERAGE_RAY_MAX_FT, dronePos[1] * 120);
-          raycaster.far = far;
-
-          const hit = raycaster.intersectObject(coverageRoot, true).find((entry) => entry.face !== null);
-
-          let pointWorld: THREE.Vector3;
-          let normalWorld: THREE.Vector3;
-
-          if (hit?.face) {
-            normalWorld = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
-            pointWorld = hit.point.clone().addScaledVector(normalWorld, 0.25);
-          } else {
-            // Town ground mesh is finite (~3000 ft); shallow / long rays miss it. Project to y=0
-            // so colored coverage matches the full frustum extent on the ground plane.
-            const ground = rayPlaneY(originWorld, dirWorld, 0, 0.5, far);
-            if (!ground) continue;
-            normalWorld = new THREE.Vector3(0, 1, 0);
-            pointWorld = ground.clone().addScaledVector(normalWorld, 0.25);
-          }
+          const ground = rayPlaneY(originWorld, dirWorld, 0, 0.5, far);
+          if (!ground) continue;
+          const normalWorld = new THREE.Vector3(0, 1, 0);
+          const pointWorld = ground.clone().addScaledVector(normalWorld, 0.25);
 
           results.push({
             position: [pointWorld.x, pointWorld.y, pointWorld.z],
@@ -228,7 +212,7 @@ function CoverageOverlay({
     }
 
     return results;
-  }, [mounted, spaceRef, coverageRootRef, dronePositions, pitchDegs, headingDegs, colors, emphasizeIndex]);
+  }, [mounted, spaceRef, dronePositions, pitchDegs, headingDegs, colors, emphasizeIndex]);
 
   return (
     <group>
@@ -1062,7 +1046,6 @@ export default function ThreeView({
 
         <CoverageOverlay
           spaceRef={coverageSpaceRef}
-          coverageRootRef={coverageRootRef}
           dronePositions={dronePositions}
           pitchDegs={activePitchDegs}
           headingDegs={activeHeadings}
