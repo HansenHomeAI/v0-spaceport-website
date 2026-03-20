@@ -23,6 +23,77 @@ function mathDroneToThree(along: number, height: number, cross: number): [number
 }
 
 // ---------------------------------------------------------------------------
+// Camera projection spotlight — illuminates exactly what the drone sees.
+// ---------------------------------------------------------------------------
+
+const MAX_SHADOW_LIGHTS = 6;
+const HALF_FOV_RAD = (77 / 2) * (Math.PI / 180); // wider axis
+
+function CameraLight({
+  dronePos,
+  pitchDeg,
+  headingDeg = 0,
+  color = '#c8daf8',
+  enableShadow = true,
+  intensity = 3.5,
+}: {
+  dronePos: [number, number, number];
+  pitchDeg: number;
+  headingDeg?: number;
+  color?: string;
+  enableShadow?: boolean;
+  intensity?: number;
+}) {
+  const lightRef = useRef<THREE.SpotLight>(null);
+  const targetRef = useRef<THREE.Object3D>(null);
+
+  const theta = (pitchDeg * Math.PI) / 180;
+  const H = (headingDeg * Math.PI) / 180;
+
+  // LOS direction in Three.js local coords (inside the rotated group):
+  //   math LOS = (sinH·cosT, cosH·cosT, -sinT)
+  //   three    = (math.x, math.z, math.y)
+  const losX = Math.sin(H) * Math.cos(theta);
+  const losY = -Math.sin(theta);
+  const losZ = Math.cos(H) * Math.cos(theta);
+
+  const reach = dronePos[1] * 4;
+  const tgtX = dronePos[0] + losX * reach;
+  const tgtY = dronePos[1] + losY * reach;
+  const tgtZ = dronePos[2] + losZ * reach;
+
+  useEffect(() => {
+    if (lightRef.current && targetRef.current) {
+      lightRef.current.target = targetRef.current;
+    }
+  });
+
+  const mapSize = enableShadow ? 512 : 0;
+
+  return (
+    <group>
+      <spotLight
+        ref={lightRef}
+        position={dronePos}
+        angle={HALF_FOV_RAD}
+        penumbra={0.18}
+        intensity={intensity}
+        color={color}
+        distance={0}
+        decay={0.8}
+        castShadow={enableShadow}
+        shadow-mapSize-width={mapSize}
+        shadow-mapSize-height={mapSize}
+        shadow-camera-near={1}
+        shadow-camera-far={reach * 2}
+        shadow-bias={-0.0008}
+      />
+      <object3D ref={targetRef} position={[tgtX, tgtY, tgtZ]} />
+    </group>
+  );
+}
+
+// ---------------------------------------------------------------------------
 
 function DroneMarker({
   position,
@@ -45,7 +116,7 @@ function DroneMarker({
     >
       <mesh>
         <sphereGeometry args={[r, 12, 12]} />
-        <meshStandardMaterial color={hovered ? '#ffd60a' : '#f5f5f7'} />
+        <meshStandardMaterial color={hovered ? '#ffd60a' : '#f5f5f7'} emissive={hovered ? '#ffd60a' : '#444'} emissiveIntensity={hovered ? 0.4 : 0.3} />
       </mesh>
       <mesh position={[0, -y / 2, 0]}>
         <cylinderGeometry args={[0.5, 0.5, y, 6]} />
@@ -91,7 +162,7 @@ function FootprintQuad({
     const verts: number[] = [];
     for (const c of quad) {
       const [tx, ty, tz] = mathGroundToThree(c);
-      verts.push(tx, ty + 0.08, tz);
+      verts.push(tx, ty + 1.2, tz);
     }
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(verts), 3));
     g.setIndex([0, 1, 2, 0, 2, 3]);
@@ -107,6 +178,9 @@ function FootprintQuad({
         opacity={opacity}
         side={THREE.DoubleSide}
         depthWrite={false}
+        polygonOffset
+        polygonOffsetFactor={-1}
+        polygonOffsetUnits={-1}
       />
     </mesh>
   );
@@ -179,7 +253,7 @@ function Building({
         <boxGeometry args={[w, h, d]} />
         <meshStandardMaterial color={color} roughness={0.72} metalness={0.08} />
       </mesh>
-      <mesh position={[0, h + 0.6, 0]}>
+      <mesh position={[0, h + 0.6, 0]} receiveShadow>
         <boxGeometry args={[w + 0.5, 1.2, d + 0.5]} />
         <meshStandardMaterial color="#181818" roughness={0.9} />
       </mesh>
@@ -192,15 +266,15 @@ function TreeFixed({
 }: { x: number; z: number; trunkH: number; canopyH: number; canopyR: number }) {
   return (
     <group position={[x, 0, z]}>
-      <mesh position={[0, trunkH / 2, 0]} castShadow>
+      <mesh position={[0, trunkH / 2, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[trunkH * 0.028, trunkH * 0.042, trunkH, 7]} />
         <meshStandardMaterial color="#4a3828" roughness={0.95} />
       </mesh>
-      <mesh position={[0, trunkH + canopyH * 0.36, 0]} castShadow>
+      <mesh position={[0, trunkH + canopyH * 0.36, 0]} castShadow receiveShadow>
         <coneGeometry args={[canopyR, canopyH * 0.72, 8]} />
         <meshStandardMaterial color="#2d4a2d" roughness={0.88} />
       </mesh>
-      <mesh position={[0, trunkH + canopyH * 0.8, 0]} castShadow>
+      <mesh position={[0, trunkH + canopyH * 0.8, 0]} castShadow receiveShadow>
         <coneGeometry args={[canopyR * 0.6, canopyH * 0.42, 8]} />
         <meshStandardMaterial color="#355c35" roughness={0.82} />
       </mesh>
@@ -219,8 +293,8 @@ function TownScene() {
       </mesh>
 
       {/* ── Road grid ── */}
-      <Road x={0}    z={0}    w={900} d={24} />  {/* main E-W */}
-      <Road x={0}    z={0}    w={24}  d={900} /> {/* main N-S */}
+      <Road x={0}    z={0}    w={900} d={24} />
+      <Road x={0}    z={0}    w={24}  d={900} />
       <Road x={0}    z={148}  w={700} d={14} />
       <Road x={0}    z={-148} w={700} d={14} />
       <Road x={148}  z={0}    w={14}  d={700} />
@@ -270,7 +344,7 @@ function TownScene() {
       <Building x={58}   z={-205} w={34} d={28} h={22} color="#5a5040" />
       <Building x={-58}  z={-200} w={26} d={22} h={20} color="#6a5848" />
 
-      {/* ── Outer trees: 80–100 ft — scattered around the suburban fringe ── */}
+      {/* ── Outer trees: 80–100 ft ── */}
       <TreeFixed x={60}   z={340}  trunkH={32} canopyH={62} canopyR={18} />
       <TreeFixed x={-80}  z={360}  trunkH={35} canopyH={65} canopyR={19} />
       <TreeFixed x={120}  z={310}  trunkH={30} canopyH={58} canopyR={17} />
@@ -305,7 +379,7 @@ function TownScene() {
       <TreeFixed x={65}   z={-258} trunkH={26} canopyH={52} canopyR={15} />
       <TreeFixed x={-62}  z={-255} trunkH={24} canopyH={48} canopyR={14} />
 
-      {/* ── Street trees: 40–60 ft — lining the outer roads ── */}
+      {/* ── Street trees: 40–60 ft ── */}
       <TreeFixed x={40}   z={170}  trunkH={20} canopyH={44} canopyR={11} />
       <TreeFixed x={82}   z={170}  trunkH={18} canopyH={40} canopyR={10} />
       <TreeFixed x={-40}  z={-170} trunkH={22} canopyH={46} canopyR={12} />
@@ -442,6 +516,7 @@ export default function ThreeView({
   const activePitchDegs = spinMode
     ? spinAlongX.map((_, i) => pitchDegs[i % Math.max(1, pitchDegs.length)] ?? pitchDegs[0] ?? 30)
     : pitchDegs;
+  const activeHeadings = spinMode ? spinHeadings : Array(n).fill(0) as number[];
 
   const gridSize = useMemo(() => {
     if (activeFootprints.length === 0) return 800;
@@ -474,6 +549,10 @@ export default function ThreeView({
     [gridSize, height],
   );
 
+  // Scale spotlight intensity down when many are visible so the scene
+  // doesn't blow out additively.
+  const lightIntensity = activeN <= 2 ? 3.5 : activeN <= 6 ? 2.2 : 1.4;
+
   return (
     <div
       data-testid="three-view-container"
@@ -496,21 +575,13 @@ export default function ThreeView({
           gl.shadowMap.type = THREE.PCFSoftShadowMap;
         }}
       >
-        <ambientLight intensity={0.45} />
+        {/* Low ambient so spotlight illumination is clearly visible */}
+        <ambientLight intensity={0.12} />
         <directionalLight
-          castShadow
           position={[120, 180, 80]}
-          intensity={1.05}
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-          shadow-camera-near={10}
-          shadow-camera-far={8000}
-          shadow-camera-left={-600}
-          shadow-camera-right={600}
-          shadow-camera-top={600}
-          shadow-camera-bottom={-600}
+          intensity={0.25}
         />
-        <hemisphereLight args={['#87a4c4', '#1a1814', 0.35]} />
+        <hemisphereLight args={['#4a5a72', '#0a0a08', 0.18]} />
 
         <OrbitControls
           makeDefault
@@ -535,8 +606,8 @@ export default function ThreeView({
               ? spinFootprintColor(spinHeadings[i], captureArcDeg)
               : footprintColor(i, activeN);
             const fpOpacity = spinMode
-              ? 0.18
-              : 0.14 + (i / Math.max(1, activeN - 1)) * 0.12;
+              ? 0.14
+              : 0.10 + (i / Math.max(1, activeN - 1)) * 0.08;
             return (
               <group key={i}>
                 <DroneMarker
@@ -546,6 +617,13 @@ export default function ThreeView({
                 />
                 <FrustumLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
                 <FootprintQuad quad={quad} color={col} opacity={fpOpacity} />
+                <CameraLight
+                  dronePos={dronePos}
+                  pitchDeg={activePitchDegs[i]}
+                  headingDeg={activeHeadings[i]}
+                  enableShadow={i < MAX_SHADOW_LIGHTS}
+                  intensity={lightIntensity}
+                />
               </group>
             );
           })}
