@@ -292,36 +292,57 @@ function FootprintQuad({
   );
 }
 
-/** Wireframe: drone → each ground corner (same rays as `groundFootprint`) + quad on ground. */
+/**
+ * True camera frustum wireframe.  Each of the 4 edge rays follows its real
+ * direction from `buildCameraRayVectorLocal` so the frustum is visually
+ * centered on the optical-axis vector regardless of pitch.
+ *
+ * Rays that hit the ground extend to y ≈ 0.  Rays that point above the
+ * horizon (shallow pitch) extend to the same parametric distance as the
+ * center-ray ground hit, so the upper edges float at the correct angle
+ * instead of being pulled down to a synthetic ground point.
+ */
 function FrustumLines({
   dronePos,
-  quad,
+  pitchDeg,
+  headingDeg,
   lineOpacity = 0.55,
 }: {
   dronePos: [number, number, number];
-  quad: GroundQuad;
+  pitchDeg: number;
+  headingDeg: number;
   lineOpacity?: number;
 }) {
   const lines = useMemo(() => {
     const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
-    const gy = 0.35;
-    for (const corner of quad) {
-      const g = mathGroundToThree(corner);
-      edges.push([
-        new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]),
-        new THREE.Vector3(g[0], g[1] + gy, g[2]),
-      ]);
+    const origin = new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]);
+
+    const centerRay = buildCameraRayVectorLocal(pitchDeg, headingDeg, 0, 0);
+    const centerT = centerRay.y < -1e-6
+      ? dronePos[1] / -centerRay.y
+      : dronePos[1] * 5;
+
+    const cornerSamples: [number, number][] = [[-1, -1], [-1, 1], [1, 1], [1, -1]];
+    const endpoints = cornerSamples.map(([sv, sh]) => {
+      const ray = buildCameraRayVectorLocal(pitchDeg, headingDeg, sv, sh);
+      const t = ray.y < -1e-6
+        ? dronePos[1] / -ray.y
+        : centerT;
+      return new THREE.Vector3(
+        dronePos[0] + ray.x * t,
+        dronePos[1] + ray.y * t,
+        dronePos[2] + ray.z * t,
+      );
+    });
+
+    for (const ep of endpoints) {
+      edges.push([origin.clone(), ep]);
     }
     for (let i = 0; i < 4; i++) {
-      const c1 = mathGroundToThree(quad[i]);
-      const c2 = mathGroundToThree(quad[(i + 1) % 4]);
-      edges.push([
-        new THREE.Vector3(c1[0], c1[1] + gy, c1[2]),
-        new THREE.Vector3(c2[0], c2[1] + gy, c2[2]),
-      ]);
+      edges.push([endpoints[i], endpoints[(i + 1) % 4]]);
     }
     return edges;
-  }, [dronePos, quad]);
+  }, [dronePos, pitchDeg, headingDeg]);
 
   return (
     <>
@@ -808,7 +829,12 @@ export default function ThreeView({
                   headingDeg={activeHeadings[i] ?? 0}
                   length={Math.max(18, height * 0.14)}
                 />
-                <FrustumLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
+                <FrustumLines
+                  dronePos={dronePos}
+                  pitchDeg={activePitchDegs[i] ?? 0}
+                  headingDeg={activeHeadings[i] ?? 0}
+                  lineOpacity={lineOpacity}
+                />
                 <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} />
               </group>
             );
