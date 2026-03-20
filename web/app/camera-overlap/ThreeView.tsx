@@ -157,14 +157,6 @@ function FrustumLines({
   );
 }
 
-function GroundGrid({ size }: { size: number }) {
-  const s = Math.max(800, Math.ceil(size / 40) * 40);
-  const divisions = Math.min(40, Math.max(16, Math.round(s / 30)));
-  return (
-    <gridHelper args={[s, divisions, '#1e1e1e', '#161616']} position={[0, -0.02, 0]} />
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Fixed town scene — absolute positions in feet, never re-randomised.
 // ---------------------------------------------------------------------------
@@ -220,9 +212,9 @@ function TreeFixed({
 function TownScene() {
   return (
     <group>
-      {/* Ground plane */}
+      {/* Ground plane — extends well beyond town to fill the horizon */}
       <mesh position={[0, 0.04, 0]} receiveShadow>
-        <boxGeometry args={[1400, 0.08, 1400]} />
+        <boxGeometry args={[3000, 0.08, 3000]} />
         <meshStandardMaterial color="#1c2a1c" roughness={1} />
       </mesh>
 
@@ -278,43 +270,54 @@ function TownScene() {
       <Building x={58}   z={-205} w={34} d={28} h={22} color="#5a5040" />
       <Building x={-58}  z={-200} w={26} d={22} h={20} color="#6a5848" />
 
-      {/* ── Tall trees: 150–200 ft (sequoia-scale, for altitude reference) ── */}
-      <TreeFixed x={28}   z={185}  trunkH={68} canopyH={132} canopyR={34} />
-      <TreeFixed x={-42}  z={178}  trunkH={72} canopyH={138} canopyR={36} />
-      <TreeFixed x={185}  z={32}   trunkH={62} canopyH={122} canopyR={31} />
-      <TreeFixed x={190}  z={-42}  trunkH={70} canopyH={130} canopyR={34} />
-      <TreeFixed x={-182} z={28}   trunkH={64} canopyH={118} canopyR={30} />
-      <TreeFixed x={-188} z={-38}  trunkH={74} canopyH={136} canopyR={35} />
-      <TreeFixed x={28}   z={-182} trunkH={66} canopyH={124} canopyR={32} />
-      <TreeFixed x={-32}  z={-188} trunkH={60} canopyH={120} canopyR={30} />
+      {/* ── Tall trees: 150–200 ft — well outside town, for altitude reference ── */}
+      <TreeFixed x={60}   z={340}  trunkH={70} canopyH={135} canopyR={35} />
+      <TreeFixed x={-80}  z={360}  trunkH={74} canopyH={142} canopyR={37} />
+      <TreeFixed x={120}  z={310}  trunkH={65} canopyH={125} canopyR={32} />
+      <TreeFixed x={340}  z={55}   trunkH={62} canopyH={120} canopyR={31} />
+      <TreeFixed x={370}  z={-70}  trunkH={72} canopyH={138} canopyR={36} />
+      <TreeFixed x={320}  z={130}  trunkH={68} canopyH={130} canopyR={34} />
+      <TreeFixed x={-345} z={60}   trunkH={64} canopyH={118} canopyR={30} />
+      <TreeFixed x={-370} z={-55}  trunkH={76} canopyH={144} canopyR={37} />
+      <TreeFixed x={-310} z={125}  trunkH={66} canopyH={126} canopyR={33} />
+      <TreeFixed x={55}   z={-340} trunkH={68} canopyH={132} canopyR={34} />
+      <TreeFixed x={-75}  z={-365} trunkH={72} canopyH={140} canopyR={36} />
+      <TreeFixed x={125}  z={-315} trunkH={62} canopyH={122} canopyR={31} />
+      <TreeFixed x={-120} z={-310} trunkH={70} canopyH={136} canopyR={35} />
+      <TreeFixed x={310}  z={-120} trunkH={64} canopyH={124} canopyR={32} />
+      <TreeFixed x={-310} z={-130} trunkH={68} canopyH={130} canopyR={34} />
+      <TreeFixed x={400}  z={400}  trunkH={74} canopyH={146} canopyR={38} />
+      <TreeFixed x={-400} z={400}  trunkH={70} canopyH={138} canopyR={36} />
+      <TreeFixed x={400}  z={-400} trunkH={72} canopyH={142} canopyR={37} />
+      <TreeFixed x={-400} z={-400} trunkH={66} canopyH={128} canopyR={33} />
 
-      {/* ── Medium trees: 80–120 ft ── */}
-      <TreeFixed x={-100} z={-100} trunkH={40} canopyH={88}  canopyR={22} />
-      <TreeFixed x={-132} z={-118} trunkH={44} canopyH={94}  canopyR={24} />
-      <TreeFixed x={-118} z={-82}  trunkH={36} canopyH={78}  canopyR={19} />
-      <TreeFixed x={135}  z={138}  trunkH={42} canopyH={90}  canopyR={23} />
-      <TreeFixed x={160}  z={162}  trunkH={46} canopyH={98}  canopyR={25} />
-      <TreeFixed x={-162} z={158}  trunkH={38} canopyH={80}  canopyR={20} />
-      <TreeFixed x={158}  z={-158} trunkH={48} canopyH={100} canopyR={26} />
-      <TreeFixed x={-158} z={-162} trunkH={40} canopyH={84}  canopyR={21} />
-      <TreeFixed x={220}  z={220}  trunkH={52} canopyH={108} canopyR={27} />
-      <TreeFixed x={-220} z={220}  trunkH={44} canopyH={92}  canopyR={23} />
-      <TreeFixed x={220}  z={-220} trunkH={46} canopyH={96}  canopyR={24} />
-      <TreeFixed x={-220} z={-220} trunkH={42} canopyH={88}  canopyR={22} />
+      {/* ── Medium trees: 80–120 ft — suburban fringe ── */}
+      <TreeFixed x={220}  z={220}  trunkH={44} canopyH={96}  canopyR={24} />
+      <TreeFixed x={-225} z={215}  trunkH={40} canopyH={88}  canopyR={22} />
+      <TreeFixed x={215}  z={-222} trunkH={48} canopyH={102} canopyR={26} />
+      <TreeFixed x={-218} z={-225} trunkH={42} canopyH={90}  canopyR={23} />
+      <TreeFixed x={255}  z={60}   trunkH={38} canopyH={82}  canopyR={20} />
+      <TreeFixed x={260}  z={-55}  trunkH={44} canopyH={94}  canopyR={24} />
+      <TreeFixed x={-258} z={65}   trunkH={40} canopyH={86}  canopyR={21} />
+      <TreeFixed x={-255} z={-58}  trunkH={46} canopyH={98}  canopyR={25} />
+      <TreeFixed x={62}   z={255}  trunkH={42} canopyH={90}  canopyR={23} />
+      <TreeFixed x={-60}  z={260}  trunkH={38} canopyH={84}  canopyR={21} />
+      <TreeFixed x={65}   z={-258} trunkH={44} canopyH={96}  canopyR={24} />
+      <TreeFixed x={-62}  z={-255} trunkH={40} canopyH={88}  canopyR={22} />
 
-      {/* ── Street trees: 40–60 ft ── */}
-      <TreeFixed x={40}   z={168}  trunkH={20} canopyH={44} canopyR={11} />
-      <TreeFixed x={82}   z={168}  trunkH={18} canopyH={40} canopyR={10} />
-      <TreeFixed x={-40}  z={-168} trunkH={22} canopyH={46} canopyR={12} />
-      <TreeFixed x={-82}  z={-168} trunkH={19} canopyH={41} canopyR={10} />
-      <TreeFixed x={168}  z={42}   trunkH={21} canopyH={44} canopyR={11} />
-      <TreeFixed x={168}  z={82}   trunkH={18} canopyH={39} canopyR={10} />
-      <TreeFixed x={-168} z={-42}  trunkH={20} canopyH={42} canopyR={11} />
-      <TreeFixed x={-168} z={-82}  trunkH={19} canopyH={40} canopyR={10} />
-      <TreeFixed x={-168} z={42}   trunkH={22} canopyH={45} canopyR={12} />
-      <TreeFixed x={-168} z={82}   trunkH={18} canopyH={38} canopyR={10} />
-      <TreeFixed x={168}  z={-42}  trunkH={21} canopyH={43} canopyR={11} />
-      <TreeFixed x={168}  z={-82}  trunkH={19} canopyH={40} canopyR={10} />
+      {/* ── Street trees: 40–60 ft — lining the outer roads ── */}
+      <TreeFixed x={40}   z={170}  trunkH={20} canopyH={44} canopyR={11} />
+      <TreeFixed x={82}   z={170}  trunkH={18} canopyH={40} canopyR={10} />
+      <TreeFixed x={-40}  z={-170} trunkH={22} canopyH={46} canopyR={12} />
+      <TreeFixed x={-82}  z={-170} trunkH={19} canopyH={41} canopyR={10} />
+      <TreeFixed x={170}  z={42}   trunkH={21} canopyH={44} canopyR={11} />
+      <TreeFixed x={170}  z={82}   trunkH={18} canopyH={39} canopyR={10} />
+      <TreeFixed x={-170} z={-42}  trunkH={20} canopyH={42} canopyR={11} />
+      <TreeFixed x={-170} z={-82}  trunkH={19} canopyH={40} canopyR={10} />
+      <TreeFixed x={-170} z={42}   trunkH={22} canopyH={45} canopyR={12} />
+      <TreeFixed x={-170} z={82}   trunkH={18} canopyH={38} canopyR={10} />
+      <TreeFixed x={170}  z={-42}  trunkH={21} canopyH={43} canopyR={11} />
+      <TreeFixed x={170}  z={-82}  trunkH={19} canopyH={40} canopyR={10} />
     </group>
   );
 }
@@ -524,7 +527,6 @@ export default function ThreeView({
         <OrbitOriginCamera gridSize={gridSize} height={height} />
 
         <group rotation={[0, Math.PI / 2, 0]}>
-          <GroundGrid size={gridSize} />
           <TownScene />
 
           {activeFootprints.map((quad, i) => {
