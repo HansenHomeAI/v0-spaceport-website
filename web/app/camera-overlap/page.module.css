@@ -521,3 +521,32 @@
   border-color: #3a8eff;
   color: #3a8eff;
 }
+
+/* ── Capture interval unit toggle (ft / s) ───────────────────────────────── */
+.unitToggle {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.unitBtn {
+  background: #161616;
+  border: 1px solid #282828;
+  border-radius: 5px;
+  color: rgba(245, 245, 247, 0.35);
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.unitBtn:hover {
+  color: rgba(245, 245, 247, 0.6);
+}
+
+.unitBtnActive {
+  background: #162038;
+  border-color: #3a8eff;
+  color: #3a8eff;
+}

@@ -122,6 +122,8 @@ export default function CameraOverlapPage() {
   const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
   const [spinMode, setSpinMode] = useState(false);
   const [captureIntervalFt, setCaptureIntervalFt] = useState(6);
+  const [captureIntervalSec, setCaptureIntervalSec] = useState(2);
+  const [captureIntervalUnit, setCaptureIntervalUnit] = useState<'ft' | 's'>('ft');
 
   const dragIdx = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -177,9 +179,14 @@ export default function CameraOverlapPage() {
   );
 
   // Spin-mode derived values ─────────────────────────────────────────────────
+  // Unified interval in ft regardless of which unit the slider is in.
+  const activeCaptureIntervalFt = captureIntervalUnit === 's'
+    ? captureIntervalSec * speedFtsManual
+    : captureIntervalFt;
+
   const numSpinCaptures = useMemo(
-    () => Math.max(2, Math.min(30, Math.round(spacingFromSpeed / captureIntervalFt))),
-    [spacingFromSpeed, captureIntervalFt],
+    () => Math.max(2, Math.min(30, Math.round(spacingFromSpeed / Math.max(0.1, activeCaptureIntervalFt)))),
+    [spacingFromSpeed, activeCaptureIntervalFt],
   );
 
   const spinHeadings = useMemo(
@@ -191,9 +198,9 @@ export default function CameraOverlapPage() {
 
   const spinAlongPositions = useMemo(
     () => Array.from({ length: numSpinCaptures }, (_, i) =>
-      (i - (numSpinCaptures - 1) / 2) * captureIntervalFt,
+      (i - (numSpinCaptures - 1) / 2) * activeCaptureIntervalFt,
     ),
-    [numSpinCaptures, captureIntervalFt],
+    [numSpinCaptures, activeCaptureIntervalFt],
   );
 
   const spinPitchDegs = useMemo(() => {
@@ -436,7 +443,7 @@ export default function CameraOverlapPage() {
             spacing={spacingFromSpeed}
             overlapPercent={(spinMode ? spinOverlapIou : overlapIou) * 100}
             spinMode={spinMode}
-            captureIntervalFt={captureIntervalFt}
+            captureIntervalFt={activeCaptureIntervalFt}
             captureArcDeg={effectiveCapDeg}
           />
         </div>
@@ -465,17 +472,76 @@ export default function CameraOverlapPage() {
             testId="speed-slider"
           />
           {spinMode && (
-            <SliderRow
-              label="Capture interval"
-              min={1}
-              max={50}
-              step={1}
-              value={captureIntervalFt}
-              onChange={setCaptureIntervalFt}
-              display={`${captureIntervalFt} ft · ${numSpinCaptures} captures / spin`}
-              pct={((captureIntervalFt - 1) / 49) * 100}
-              testId="capture-interval-slider"
-            />
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span className={styles.sliderLabel} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  Capture interval
+                  <span className={styles.unitToggle}>
+                    <button
+                      type="button"
+                      className={`${styles.unitBtn} ${captureIntervalUnit === 'ft' ? styles.unitBtnActive : ''}`}
+                      onClick={() => setCaptureIntervalUnit('ft')}
+                    >ft</button>
+                    <button
+                      type="button"
+                      className={`${styles.unitBtn} ${captureIntervalUnit === 's' ? styles.unitBtnActive : ''}`}
+                      onClick={() => setCaptureIntervalUnit('s')}
+                    >s</button>
+                  </span>
+                </span>
+                <span className={styles.sliderValue}>
+                  {captureIntervalUnit === 'ft'
+                    ? `${captureIntervalFt} ft`
+                    : `${captureIntervalSec} s · ${activeCaptureIntervalFt.toFixed(1)} ft`
+                  } · {numSpinCaptures} captures / spin
+                </span>
+              </div>
+              {captureIntervalUnit === 'ft' ? (
+                <input
+                  className={styles.rangeInput}
+                  data-testid="capture-interval-slider"
+                  type="range"
+                  min={1}
+                  max={50}
+                  step={1}
+                  value={captureIntervalFt}
+                  onChange={(e) => setCaptureIntervalFt(Number(e.target.value))}
+                  style={{
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    background: `linear-gradient(to right, #3a8eff ${((captureIntervalFt - 1) / 49) * 100}%, #1e1e1e ${((captureIntervalFt - 1) / 49) * 100}%)`,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    display: 'block',
+                    height: 2,
+                    outline: 'none',
+                    width: '100%',
+                  }}
+                />
+              ) : (
+                <input
+                  className={styles.rangeInput}
+                  data-testid="capture-interval-slider"
+                  type="range"
+                  min={0.5}
+                  max={10}
+                  step={0.5}
+                  value={captureIntervalSec}
+                  onChange={(e) => setCaptureIntervalSec(Number(e.target.value))}
+                  style={{
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    background: `linear-gradient(to right, #3a8eff ${((captureIntervalSec - 0.5) / 9.5) * 100}%, #1e1e1e ${((captureIntervalSec - 0.5) / 9.5) * 100}%)`,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    display: 'block',
+                    height: 2,
+                    outline: 'none',
+                    width: '100%',
+                  }}
+                />
+              )}
+            </div>
           )}
           <p className={styles.footnote}>
             gimbal &minus;{angleDeg.toFixed(0)}° &middot; hyp {hypotenuse.toFixed(0)} ft &middot; spacing {spacingFromSpeed.toFixed(1)} ft &middot; {rotTime.toFixed(1)}s/pt
