@@ -1,3 +1,4 @@
+2026-03-20 - Camera overlap: waypoint tag screen-space, hover highlight, click focus
 2026-03-20 - Camera overlap: extend coverage raycast + denser frustum overlap viz
 2026-03-20 - Camera overlap: fix 75°/55° FOV on correct camera right vs up axes
 2026-03-20 - Camera overlap: 75×55° FOV, ground-projected frustum wireframe

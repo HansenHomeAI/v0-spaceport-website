@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Line, Html } from '@react-three/drei';
+import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
+import { OrbitControls, Line, Html, useCursor } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   TAN_H,
@@ -11,6 +11,11 @@ import {
   type GroundQuad,
 } from '../../lib/cameraOverlapMath';
 import styles from './page.module.css';
+
+function HoverSceneCursor({ active }: { active: boolean }) {
+  useCursor(active);
+  return null;
+}
 
 /** Feet — raycast far enough to cover the whole town + distant trees from survey altitude. */
 const COVERAGE_RAY_MAX_FT = 72_000;
@@ -34,6 +39,7 @@ type CoveragePatchData = {
   normal: [number, number, number];
   color: string;
   size: number;
+  opacity: number;
 };
 
 function sampleOffsets(count: number): number[] {
@@ -86,6 +92,7 @@ function CoveragePatch({
   normal,
   color,
   size,
+  opacity,
 }: CoveragePatchData) {
   const quaternion = useMemo(() => {
     const q = new THREE.Quaternion();
@@ -102,7 +109,7 @@ function CoveragePatch({
       <meshBasicMaterial
         color={color}
         transparent
-        opacity={0.32}
+        opacity={opacity}
         depthWrite={false}
         side={THREE.DoubleSide}
         polygonOffset
@@ -121,6 +128,7 @@ function CoverageOverlay({
   pitchDegs,
   headingDegs,
   colors,
+  emphasizeIndex,
 }: {
   spaceRef: React.RefObject<THREE.Group | null>;
   coverageRootRef: React.RefObject<THREE.Group | null>;
@@ -128,6 +136,7 @@ function CoverageOverlay({
   pitchDegs: number[];
   headingDegs: number[];
   colors: string[];
+  emphasizeIndex: number | null;
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -174,13 +183,14 @@ function CoverageOverlay({
             normal: [normalWorld.x, normalWorld.y, normalWorld.z],
             color,
             size,
+            opacity: emphasizeIndex === i ? 0.52 : 0.32,
           });
         }
       }
     }
 
     return results;
-  }, [mounted, spaceRef, coverageRootRef, dronePositions, pitchDegs, headingDegs, colors]);
+  }, [mounted, spaceRef, coverageRootRef, dronePositions, pitchDegs, headingDegs, colors, emphasizeIndex]);
 
   return (
     <group>
@@ -199,42 +209,61 @@ function CoverageOverlay({
 function DroneMarker({
   position,
   pitchDeg,
+  headingDeg,
   heightFt,
+  isHoveredWaypoint,
 }: {
   position: [number, number, number];
   pitchDeg?: number;
+  headingDeg: number;
   heightFt?: number;
+  isHoveredWaypoint: boolean;
 }) {
   const y = position[1];
   const r = Math.max(2, y * 0.009);
-  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera, controls } = useThree();
+
+  const focusCamera = () => {
+    if (!groupRef.current) return;
+    const p = pitchDeg ?? 0;
+    const h = headingDeg;
+    const losLocal = buildCameraRayLocal(p, h, 0, 0);
+    const losWorld = losLocal.clone().transformDirection(groupRef.current.matrixWorld);
+    const droneWorld = new THREE.Vector3().setFromMatrixPosition(groupRef.current.matrixWorld);
+    const pullBack = Math.max(95, y * 0.95);
+    const lookAhead = Math.max(70, y * 0.55);
+    camera.position.copy(droneWorld.clone().addScaledVector(losWorld, -pullBack));
+    const oc = controls as unknown as { target: THREE.Vector3; update: () => void } | null;
+    if (oc?.target) {
+      oc.target.copy(droneWorld.clone().addScaledVector(losWorld, lookAhead));
+      oc.update?.();
+    }
+  };
+
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    focusCamera();
+  };
 
   return (
-    <group
-      position={position}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-      }}
-      onPointerOut={() => setHovered(false)}
-    >
-      <mesh>
+    <group ref={groupRef} position={position}>
+      <mesh onClick={handleClick}>
         <sphereGeometry args={[r, 12, 12]} />
         <meshStandardMaterial
-          color={hovered ? '#ffd60a' : '#f5f5f7'}
-          emissive={hovered ? '#ffd60a' : '#222'}
-          emissiveIntensity={hovered ? 0.35 : 0.16}
+          color={isHoveredWaypoint ? '#ffd60a' : '#f5f5f7'}
+          emissive={isHoveredWaypoint ? '#ffd60a' : '#222'}
+          emissiveIntensity={isHoveredWaypoint ? 0.35 : 0.16}
         />
       </mesh>
       <mesh position={[0, -y / 2, 0]}>
         <cylinderGeometry args={[0.5, 0.5, y, 6]} />
         <meshStandardMaterial color="#333" transparent opacity={0.25} />
       </mesh>
-      {hovered && pitchDeg !== undefined && (
+      {isHoveredWaypoint && pitchDeg !== undefined && (
         <Html
           position={[0, r + 5, 0]}
           center
-          distanceFactor={120}
           style={{ pointerEvents: 'none' }}
         >
           <div
@@ -244,9 +273,9 @@ function DroneMarker({
               borderRadius: 6,
               color: '#f5f5f7',
               fontFamily: 'ui-monospace, monospace',
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 500,
-              padding: '4px 9px',
+              padding: '6px 10px',
               whiteSpace: 'nowrap',
             }}
           >
@@ -262,10 +291,12 @@ function FootprintQuad({
   quad,
   color,
   opacity,
+  emphasize = false,
 }: {
   quad: GroundQuad;
   color: string;
   opacity: number;
+  emphasize?: boolean;
 }) {
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry();
@@ -280,12 +311,14 @@ function FootprintQuad({
     return g;
   }, [quad]);
 
+  const effOpacity = Math.min(opacity * (emphasize ? 1.45 : 1), 0.42);
+
   return (
     <mesh geometry={geo} renderOrder={3}>
       <meshBasicMaterial
         color={color}
         transparent
-        opacity={opacity}
+        opacity={effOpacity}
         side={THREE.DoubleSide}
         depthWrite={false}
         polygonOffset
@@ -311,11 +344,13 @@ function FrustumLines({
   pitchDeg,
   headingDeg,
   lineOpacity = 0.55,
+  emphasize = false,
 }: {
   dronePos: [number, number, number];
   pitchDeg: number;
   headingDeg: number;
   lineOpacity?: number;
+  emphasize?: boolean;
 }) {
   const lines = useMemo(() => {
     const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
@@ -347,16 +382,19 @@ function FrustumLines({
     return edges;
   }, [dronePos, pitchDeg, headingDeg]);
 
+  const op = Math.min(lineOpacity + (emphasize ? 0.22 : 0), 0.98);
+  const col = emphasize ? '#c5d0e0' : '#888';
+
   return (
     <>
       {lines.map((pts, i) => (
         <Line
           key={i}
           points={[pts[0], pts[1]]}
-          color="#888"
-          lineWidth={1}
+          color={col}
+          lineWidth={emphasize ? 1.5 : 1}
           transparent
-          opacity={lineOpacity}
+          opacity={op}
         />
       ))}
     </>
@@ -368,11 +406,13 @@ function DirectionVector({
   pitchDeg,
   headingDeg,
   length = 22,
+  emphasize = false,
 }: {
   dronePos: [number, number, number];
   pitchDeg: number;
   headingDeg: number;
   length?: number;
+  emphasize?: boolean;
 }) {
   const end = useMemo(() => {
     const dir = buildCameraRayLocal(pitchDeg, headingDeg, 0, 0);
@@ -389,10 +429,10 @@ function DirectionVector({
         new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]),
         end,
       ]}
-      color="#ffffff"
-      lineWidth={2}
+      color={emphasize ? '#ffffff' : '#ffffff'}
+      lineWidth={emphasize ? 3 : 2}
       transparent
-      opacity={0.95}
+      opacity={emphasize ? 1 : 0.95}
     />
   );
 }
@@ -632,6 +672,7 @@ export default function ThreeView({
 }: ThreeViewProps) {
   const coverageSpaceRef = useRef<THREE.Group>(null);
   const coverageRootRef = useRef<THREE.Group>(null);
+  const [hoveredWaypointIndex, setHoveredWaypointIndex] = useState<number | null>(null);
 
   const numSpinCaptures = useMemo(
     () => Math.max(2, Math.min(30, Math.round(spacing / captureIntervalFt))),
@@ -811,6 +852,8 @@ export default function ThreeView({
 
         <OrbitOriginCamera gridSize={gridSize} height={height} target={initialTarget} />
 
+        <HoverSceneCursor active={hoveredWaypointIndex !== null} />
+
         <group ref={coverageSpaceRef} rotation={[0, Math.PI / 2, 0]}>
           <TownScene rootRef={coverageRootRef} />
 
@@ -819,26 +862,40 @@ export default function ThreeView({
             const fpOpacity = spinMode
               ? 0.08
               : 0.05 + (i / Math.max(1, activeN - 1)) * 0.05;
+            const em = hoveredWaypointIndex === i;
             return (
-              <group key={i}>
+              <group
+                key={i}
+                onPointerOver={(e) => {
+                  e.stopPropagation();
+                  setHoveredWaypointIndex(i);
+                }}
+                onPointerOut={() => {
+                  setHoveredWaypointIndex((prev) => (prev === i ? null : prev));
+                }}
+              >
                 <DroneMarker
                   position={dronePos}
                   pitchDeg={activePitchDegs[i]}
+                  headingDeg={activeHeadings[i] ?? 0}
                   heightFt={height}
+                  isHoveredWaypoint={em}
                 />
                 <DirectionVector
                   dronePos={dronePos}
                   pitchDeg={activePitchDegs[i] ?? 0}
                   headingDeg={activeHeadings[i] ?? 0}
                   length={Math.max(18, height * 0.14)}
+                  emphasize={em}
                 />
                 <FrustumLines
                   dronePos={dronePos}
                   pitchDeg={activePitchDegs[i] ?? 0}
                   headingDeg={activeHeadings[i] ?? 0}
                   lineOpacity={lineOpacity}
+                  emphasize={em}
                 />
-                <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} />
+                <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} emphasize={em} />
               </group>
             );
           })}
@@ -851,6 +908,7 @@ export default function ThreeView({
           pitchDegs={activePitchDegs}
           headingDegs={activeHeadings}
           colors={activeColors}
+          emphasizeIndex={hoveredWaypointIndex}
         />
       </Canvas>
 
