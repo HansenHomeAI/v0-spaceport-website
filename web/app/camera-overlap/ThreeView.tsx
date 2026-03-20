@@ -87,6 +87,20 @@ function buildCameraRayLocal(
   return buildCameraRayVectorLocal(pitchDeg, headingDeg, alongSample, crossSample).normalize();
 }
 
+/** World-space intersection with horizontal plane y = planeY (infinite ground). */
+function rayPlaneY(
+  origin: THREE.Vector3,
+  dir: THREE.Vector3,
+  planeY: number,
+  tMin: number,
+  tMax: number,
+): THREE.Vector3 | null {
+  if (Math.abs(dir.y) < 1e-8) return null;
+  const t = (planeY - origin.y) / dir.y;
+  if (t < tMin || t > tMax) return null;
+  return origin.clone().addScaledVector(dir, t);
+}
+
 function CoveragePatch({
   position,
   normal,
@@ -170,13 +184,25 @@ function CoverageOverlay({
           const dirWorld = dirLocal.clone().transformDirection(space.matrixWorld);
           raycaster.set(originWorld, dirWorld);
           raycaster.near = 0.5;
-          raycaster.far = Math.max(COVERAGE_RAY_MAX_FT, dronePos[1] * 120);
+          const far = Math.max(COVERAGE_RAY_MAX_FT, dronePos[1] * 120);
+          raycaster.far = far;
 
           const hit = raycaster.intersectObject(coverageRoot, true).find((entry) => entry.face !== null);
-          if (!hit?.face) continue;
 
-          const normalWorld = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
-          const pointWorld = hit.point.clone().addScaledVector(normalWorld, 0.25);
+          let pointWorld: THREE.Vector3;
+          let normalWorld: THREE.Vector3;
+
+          if (hit?.face) {
+            normalWorld = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
+            pointWorld = hit.point.clone().addScaledVector(normalWorld, 0.25);
+          } else {
+            // Town ground mesh is finite (~3000 ft); shallow / long rays miss it. Project to y=0
+            // so colored coverage matches the full frustum extent on the ground plane.
+            const ground = rayPlaneY(originWorld, dirWorld, 0, 0.5, far);
+            if (!ground) continue;
+            normalWorld = new THREE.Vector3(0, 1, 0);
+            pointWorld = ground.clone().addScaledVector(normalWorld, 0.25);
+          }
 
           results.push({
             position: [pointWorld.x, pointWorld.y, pointWorld.z],
