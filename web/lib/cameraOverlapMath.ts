@@ -204,3 +204,23 @@ export function averageAdjacentFootprintIou(
   }
   return sum / (n - 1);
 }
+
+/** End-to-end span (ft) for two waypoints at the given along-track spacing. */
+export function linearViewerPathMinFt(spacingFt: number): number {
+  return Math.max(0.01, spacingFt);
+}
+
+/** Max span (ft) for 30 waypoints: (30 − 1) × spacing. */
+export function linearViewerPathMaxFt(spacingFt: number): number {
+  const s = Math.max(0.01, spacingFt);
+  return 29 * s;
+}
+
+/**
+ * Waypoint count for a straight segment: span is first-to-last distance along-track;
+ * spacing is distance between consecutive captures (capped 2–30 points).
+ */
+export function waypointCountFromLinearPathSpan(pathSpanFt: number, spacingFt: number): number {
+  const s = Math.max(0.01, spacingFt);
+  return Math.max(2, Math.min(30, Math.round(pathSpanFt / s) + 1));
+}

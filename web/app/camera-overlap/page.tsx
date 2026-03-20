@@ -7,7 +7,10 @@ import {
   FULL_ROT_SEC,
   getGimbalAngleDeg,
   hypotenuseFromHeight,
+  linearViewerPathMaxFt,
+  linearViewerPathMinFt,
   rotationTimeSec,
+  waypointCountFromLinearPathSpan,
 } from '../../lib/cameraOverlapMath';
 import styles from './page.module.css';
 import GimbalDistributionCard from './GimbalDistributionCard';
@@ -118,7 +121,8 @@ export default function CameraOverlapPage() {
   const [maxAngle, setMaxAngle] = useState(35);
   const [maxAngleHeight, setMaxAngleHeight] = useState(400);
   const [customCaptureRing, setCustomCaptureRing] = useState(true);
-  const [viewerWaypointCount, setViewerWaypointCount] = useState(2);
+  /** Linear mode: end-to-end span (ft) along the flight line; waypoint count follows spacing. */
+  const [viewerPathLengthFt, setViewerPathLengthFt] = useState(150);
   const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
   const [spinMode, setSpinMode] = useState(false);
   /** null = use spacing ÷ interval (shown as “auto”); number = override count in 3D for flat spin. */
@@ -160,6 +164,20 @@ export default function CameraOverlapPage() {
   const rotTime = rotationTimeSec(effectiveCapPct);
   const spacingFromSpeed = speedFtsManual * rotTime;
   const speedMphFromSlider = speedFtsManual * 0.681818;
+
+  const linearPathMinFt = linearViewerPathMinFt(spacingFromSpeed);
+  const linearPathMaxFt = linearViewerPathMaxFt(spacingFromSpeed);
+
+  useEffect(() => {
+    setViewerPathLengthFt((prev) =>
+      Math.min(linearPathMaxFt, Math.max(linearPathMinFt, prev)),
+    );
+  }, [linearPathMinFt, linearPathMaxFt]);
+
+  const viewerWaypointCount = useMemo(
+    () => waypointCountFromLinearPathSpan(viewerPathLengthFt, spacingFromSpeed),
+    [viewerPathLengthFt, spacingFromSpeed],
+  );
 
   // Flat-spin display-only metrics (no formula changes)
   const tSpin = effectiveCapPct * FULL_ROT_SEC;
@@ -422,8 +440,9 @@ export default function CameraOverlapPage() {
           onMaxAngle={setMaxAngle}
           onMinAngleHeight={handleMinAngleHeight}
           onMaxAngleHeight={handleMaxAngleHeight}
-          viewerWaypointCount={viewerWaypointCount}
-          onViewerWaypointCount={setViewerWaypointCount}
+          spacingFromSpeedFt={spacingFromSpeed}
+          viewerPathLengthFt={viewerPathLengthFt}
+          onViewerPathLengthFt={setViewerPathLengthFt}
           onPitchSequenceGenerated={setPitchSequenceNeg}
         />
 
@@ -450,7 +469,7 @@ export default function CameraOverlapPage() {
 
           <div className={styles.viewerWaypointBar}>
             <span className={styles.viewerWaypointBarLabel}>
-              {spinMode ? '3D captures' : '3D waypoints'}
+              {spinMode ? '3D captures' : '3D path span'}
             </span>
             <div className={styles.viewerWaypointBarTrack}>
               {spinMode ? (
@@ -482,18 +501,26 @@ export default function CameraOverlapPage() {
               ) : (
                 <input
                   className={styles.rangeInput}
-                  data-testid="viewer-linear-waypoint-count"
+                  data-testid="viewer-linear-path-span"
                   type="range"
-                  min={2}
-                  max={30}
+                  min={linearPathMinFt}
+                  max={linearPathMaxFt}
                   step={1}
-                  value={viewerWaypointCount}
-                  onChange={(e) => setViewerWaypointCount(Number(e.target.value))}
-                  aria-label="Number of waypoints shown in 3D viewer"
+                  value={viewerPathLengthFt}
+                  onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
+                  aria-label="End-to-end path length sampled in 3D viewer (feet)"
                   style={{
                     WebkitAppearance: 'none',
                     appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${((viewerWaypointCount - 2) / 28) * 100}%, #1e1e1e ${((viewerWaypointCount - 2) / 28) * 100}%)`,
+                    background: `linear-gradient(to right, #3a8eff ${
+                      linearPathMaxFt > linearPathMinFt
+                        ? ((viewerPathLengthFt - linearPathMinFt) / (linearPathMaxFt - linearPathMinFt)) * 100
+                        : 0
+                    }%, #1e1e1e ${
+                      linearPathMaxFt > linearPathMinFt
+                        ? ((viewerPathLengthFt - linearPathMinFt) / (linearPathMaxFt - linearPathMinFt)) * 100
+                        : 0
+                    }%)`,
                     borderRadius: 2,
                     cursor: 'pointer',
                     display: 'block',
@@ -504,7 +531,7 @@ export default function CameraOverlapPage() {
                 />
               )}
             </div>
-            <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '7.5rem', textAlign: 'right' }}>
+            <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '9rem', textAlign: 'right' }}>
               {spinMode ? (
                 <>
                   {effectiveSpinCaptures}
@@ -515,7 +542,10 @@ export default function CameraOverlapPage() {
                   )}
                 </>
               ) : (
-                <>{viewerWaypointCount}</>
+                <>
+                  {Math.round(viewerPathLengthFt)} ft
+                  <span style={{ color: 'rgba(255,255,255,0.35)' }}> · {viewerWaypointCount} pts</span>
+                </>
               )}
             </span>
             {spinMode ? (
