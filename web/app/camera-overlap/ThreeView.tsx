@@ -292,15 +292,17 @@ function FootprintQuad({
   );
 }
 
+/** How far past the first ground hit (or center reference) we extend each frustum ray for overlap visibility. */
+const FRUSTUM_PROJECTION_EXTEND = 3.2;
+
 /**
  * True camera frustum wireframe.  Each of the 4 edge rays follows its real
  * direction from `buildCameraRayVectorLocal` so the frustum is visually
  * centered on the optical-axis vector regardless of pitch.
  *
- * Rays that hit the ground extend to y ≈ 0.  Rays that point above the
- * horizon (shallow pitch) extend to the same parametric distance as the
- * center-ray ground hit, so the upper edges float at the correct angle
- * instead of being pulled down to a synthetic ground point.
+ * Rays extend along their direction past the first ground hit by
+ * `FRUSTUM_PROJECTION_EXTEND` so adjacent waypoints’ ground coverage overlaps
+ * are easy to read.  Above-horizon rays use the extended center-ray distance.
  */
 function FrustumLines({
   dronePos,
@@ -316,18 +318,19 @@ function FrustumLines({
   const lines = useMemo(() => {
     const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
     const origin = new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]);
+    const h = dronePos[1];
 
     const centerRay = buildCameraRayVectorLocal(pitchDeg, headingDeg, 0, 0);
-    const centerT = centerRay.y < -1e-6
-      ? dronePos[1] / -centerRay.y
-      : dronePos[1] * 5;
+    const centerTGround = centerRay.y < -1e-6 ? h / -centerRay.y : h * 5;
+    const centerTExtended = centerTGround * FRUSTUM_PROJECTION_EXTEND;
 
     const cornerSamples: [number, number][] = [[-1, -1], [-1, 1], [1, 1], [1, -1]];
     const endpoints = cornerSamples.map(([sv, sh]) => {
       const ray = buildCameraRayVectorLocal(pitchDeg, headingDeg, sv, sh);
-      const t = ray.y < -1e-6
-        ? dronePos[1] / -ray.y
-        : centerT;
+      const t =
+        ray.y < -1e-6
+          ? (h / -ray.y) * FRUSTUM_PROJECTION_EXTEND
+          : centerTExtended;
       return new THREE.Vector3(
         dronePos[0] + ray.x * t,
         dronePos[1] + ray.y * t,

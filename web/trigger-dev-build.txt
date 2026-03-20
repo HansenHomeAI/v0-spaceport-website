@@ -1,3 +1,4 @@
+2026-03-20 - Camera overlap: extend frustum wireframe projection for overlap visibility
 2026-03-20 - Camera overlap: fix 75°/55° FOV on correct camera right vs up axes
 2026-03-20 - Camera overlap: 75×55° FOV, ground-projected frustum wireframe
 2026-03-04 - Branch-isolated preview backend routing and stack resolution
