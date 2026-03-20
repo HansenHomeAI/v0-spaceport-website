@@ -270,40 +270,40 @@ function TownScene() {
       <Building x={58}   z={-205} w={34} d={28} h={22} color="#5a5040" />
       <Building x={-58}  z={-200} w={26} d={22} h={20} color="#6a5848" />
 
-      {/* ── Tall trees: 150–200 ft — well outside town, for altitude reference ── */}
-      <TreeFixed x={60}   z={340}  trunkH={70} canopyH={135} canopyR={35} />
-      <TreeFixed x={-80}  z={360}  trunkH={74} canopyH={142} canopyR={37} />
-      <TreeFixed x={120}  z={310}  trunkH={65} canopyH={125} canopyR={32} />
-      <TreeFixed x={340}  z={55}   trunkH={62} canopyH={120} canopyR={31} />
-      <TreeFixed x={370}  z={-70}  trunkH={72} canopyH={138} canopyR={36} />
-      <TreeFixed x={320}  z={130}  trunkH={68} canopyH={130} canopyR={34} />
-      <TreeFixed x={-345} z={60}   trunkH={64} canopyH={118} canopyR={30} />
-      <TreeFixed x={-370} z={-55}  trunkH={76} canopyH={144} canopyR={37} />
-      <TreeFixed x={-310} z={125}  trunkH={66} canopyH={126} canopyR={33} />
-      <TreeFixed x={55}   z={-340} trunkH={68} canopyH={132} canopyR={34} />
-      <TreeFixed x={-75}  z={-365} trunkH={72} canopyH={140} canopyR={36} />
-      <TreeFixed x={125}  z={-315} trunkH={62} canopyH={122} canopyR={31} />
-      <TreeFixed x={-120} z={-310} trunkH={70} canopyH={136} canopyR={35} />
-      <TreeFixed x={310}  z={-120} trunkH={64} canopyH={124} canopyR={32} />
-      <TreeFixed x={-310} z={-130} trunkH={68} canopyH={130} canopyR={34} />
-      <TreeFixed x={400}  z={400}  trunkH={74} canopyH={146} canopyR={38} />
-      <TreeFixed x={-400} z={400}  trunkH={70} canopyH={138} canopyR={36} />
-      <TreeFixed x={400}  z={-400} trunkH={72} canopyH={142} canopyR={37} />
-      <TreeFixed x={-400} z={-400} trunkH={66} canopyH={128} canopyR={33} />
+      {/* ── Outer trees: 80–100 ft — scattered around the suburban fringe ── */}
+      <TreeFixed x={60}   z={340}  trunkH={32} canopyH={62} canopyR={18} />
+      <TreeFixed x={-80}  z={360}  trunkH={35} canopyH={65} canopyR={19} />
+      <TreeFixed x={120}  z={310}  trunkH={30} canopyH={58} canopyR={17} />
+      <TreeFixed x={340}  z={55}   trunkH={33} canopyH={63} canopyR={18} />
+      <TreeFixed x={370}  z={-70}  trunkH={34} canopyH={64} canopyR={18} />
+      <TreeFixed x={320}  z={130}  trunkH={31} canopyH={60} canopyR={17} />
+      <TreeFixed x={-345} z={60}   trunkH={33} canopyH={62} canopyR={18} />
+      <TreeFixed x={-370} z={-55}  trunkH={36} canopyH={66} canopyR={19} />
+      <TreeFixed x={-310} z={125}  trunkH={32} canopyH={61} canopyR={17} />
+      <TreeFixed x={55}   z={-340} trunkH={34} canopyH={64} canopyR={18} />
+      <TreeFixed x={-75}  z={-365} trunkH={35} canopyH={65} canopyR={19} />
+      <TreeFixed x={125}  z={-315} trunkH={30} canopyH={59} canopyR={17} />
+      <TreeFixed x={-120} z={-310} trunkH={33} canopyH={63} canopyR={18} />
+      <TreeFixed x={310}  z={-120} trunkH={31} canopyH={60} canopyR={17} />
+      <TreeFixed x={-310} z={-130} trunkH={34} canopyH={62} canopyR={18} />
+      <TreeFixed x={400}  z={400}  trunkH={36} canopyH={66} canopyR={19} />
+      <TreeFixed x={-400} z={400}  trunkH={33} canopyH={63} canopyR={18} />
+      <TreeFixed x={400}  z={-400} trunkH={35} canopyH={65} canopyR={19} />
+      <TreeFixed x={-400} z={-400} trunkH={32} canopyH={61} canopyR={17} />
 
-      {/* ── Medium trees: 80–120 ft — suburban fringe ── */}
-      <TreeFixed x={220}  z={220}  trunkH={44} canopyH={96}  canopyR={24} />
-      <TreeFixed x={-225} z={215}  trunkH={40} canopyH={88}  canopyR={22} />
-      <TreeFixed x={215}  z={-222} trunkH={48} canopyH={102} canopyR={26} />
-      <TreeFixed x={-218} z={-225} trunkH={42} canopyH={90}  canopyR={23} />
-      <TreeFixed x={255}  z={60}   trunkH={38} canopyH={82}  canopyR={20} />
-      <TreeFixed x={260}  z={-55}  trunkH={44} canopyH={94}  canopyR={24} />
-      <TreeFixed x={-258} z={65}   trunkH={40} canopyH={86}  canopyR={21} />
-      <TreeFixed x={-255} z={-58}  trunkH={46} canopyH={98}  canopyR={25} />
-      <TreeFixed x={62}   z={255}  trunkH={42} canopyH={90}  canopyR={23} />
-      <TreeFixed x={-60}  z={260}  trunkH={38} canopyH={84}  canopyR={21} />
-      <TreeFixed x={65}   z={-258} trunkH={44} canopyH={96}  canopyR={24} />
-      <TreeFixed x={-62}  z={-255} trunkH={40} canopyH={88}  canopyR={22} />
+      {/* ── Suburban fringe trees: 60–80 ft ── */}
+      <TreeFixed x={220}  z={220}  trunkH={26} canopyH={52} canopyR={15} />
+      <TreeFixed x={-225} z={215}  trunkH={24} canopyH={48} canopyR={14} />
+      <TreeFixed x={215}  z={-222} trunkH={28} canopyH={54} canopyR={15} />
+      <TreeFixed x={-218} z={-225} trunkH={25} canopyH={50} canopyR={14} />
+      <TreeFixed x={255}  z={60}   trunkH={22} canopyH={46} canopyR={13} />
+      <TreeFixed x={260}  z={-55}  trunkH={26} canopyH={52} canopyR={15} />
+      <TreeFixed x={-258} z={65}   trunkH={24} canopyH={48} canopyR={14} />
+      <TreeFixed x={-255} z={-58}  trunkH={27} canopyH={53} canopyR={15} />
+      <TreeFixed x={62}   z={255}  trunkH={25} canopyH={50} canopyR={14} />
+      <TreeFixed x={-60}  z={260}  trunkH={23} canopyH={47} canopyR={13} />
+      <TreeFixed x={65}   z={-258} trunkH={26} canopyH={52} canopyR={15} />
+      <TreeFixed x={-62}  z={-255} trunkH={24} canopyH={48} canopyR={14} />
 
       {/* ── Street trees: 40–60 ft — lining the outer roads ── */}
       <TreeFixed x={40}   z={170}  trunkH={20} canopyH={44} canopyR={11} />
