@@ -97,13 +97,15 @@ export function groundFootprint(
       const dy = losY + sv * TAN_V * rightY + sh * TAN_H * upY;
       const dz = losZ + sv * TAN_V * rightZ + sh * TAN_H * upZ;
 
-      if (dz >= 0) {
-        const bigT = 10000;
-        corners.push([droneX + dx * bigT, dy * bigT, 0]);
-      } else {
-        const t = height / -dz;
-        corners.push([droneX + dx * t, dy * t, 0]);
-      }
+      // Project ray to ground (z=0): t = height / |dz|.
+      // For below-horizon rays (dz < 0) this is the exact ground hit.
+      // For above-horizon rays (dz > 0, pitch < 38.5°) this is a "mirror" clip —
+      // the same slant range as a symmetric below-horizon ray — giving a
+      // pitch-dependent far edge instead of a fixed bigT that looks identical
+      // for all pitches in [0°, 38.5°).
+      // 1/300 cap: limits max slant to 300× height near the 38.5° threshold.
+      const t = height / Math.max(Math.abs(dz), 1 / 300);
+      corners.push([droneX + dx * t, dy * t, 0]);
     }
   }
 

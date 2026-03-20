@@ -61,6 +61,44 @@ assert.ok(tb.maxY > Math.abs(tb.minY) * 0.5, `look-direction (+Y) should dominat
 // Along-track (X) span is still non-trivial (55° FOV)
 assert.ok(tb.maxX - tb.minX > 50);
 
+// ---- groundFootprint: far edge varies with pitch (not stuck at bigT=10000) ----
+// For pitches < 38.5°, upper FOV edge is above horizon. Previously bigT=10000
+// made all those pitches look identical at the far edge. With the mirror-clip fix,
+// the far (maxY) edge must differ between pitches AND the near (minY) edge must
+// also differ correctly: steeper pitch (31°) → closer near, farther far.
+{
+  const h = 100;
+  const b15 = footprintBounds(groundFootprint(0, h, 15));
+  const b31 = footprintBounds(groundFootprint(0, h, 31));
+
+  // Near edge: steeper pitch sees ground closer to the drone
+  assert.ok(b31.minY < b15.minY,
+    `near edge must be closer for steeper pitch: 31°→${b31.minY.toFixed(1)}, 15°→${b15.minY.toFixed(1)}`);
+
+  // Far edge: with mirror-clip the far edge is clearly different between pitches,
+  // and must NOT be the same fixed bigT.
+  assert.ok(Math.abs(b31.maxY - b15.maxY) > 50,
+    `far edge must differ by >50 ft between pitches: 31°→${b31.maxY.toFixed(1)}, 15°→${b15.maxY.toFixed(1)}`);
+
+  // Far edge is bounded to a reasonable multiple of height (not 10000)
+  assert.ok(b15.maxY < h * 50,
+    `far edge at pitch=15° must be < 50×height: ${b15.maxY.toFixed(1)}`);
+  assert.ok(b31.maxY < h * 50,
+    `far edge at pitch=31° must be < 50×height: ${b31.maxY.toFixed(1)}`);
+
+  // Computed values match mirror-clip formula: t_far = h / |dz| where
+  // dz = -sin(pitch) + TAN_H*cos(pitch)  [positive → above horizon]
+  const toRad = (d: number) => d * Math.PI / 180;
+  const dz15 = -Math.sin(toRad(15)) + TAN_H * Math.cos(toRad(15));
+  const dz31 = -Math.sin(toRad(31)) + TAN_H * Math.cos(toRad(31));
+  const dy15 = Math.cos(toRad(15)) + TAN_H * Math.sin(toRad(15));
+  const dy31 = Math.cos(toRad(31)) + TAN_H * Math.sin(toRad(31));
+  const expectedFar15 = dy15 * (h / Math.max(Math.abs(dz15), 1 / 300));
+  const expectedFar31 = dy31 * (h / Math.max(Math.abs(dz31), 1 / 300));
+  approx(b15.maxY, expectedFar15, 1);
+  approx(b31.maxY, expectedFar31, 1);
+}
+
 // ---- groundFootprint offset drone ----
 // Drone at x=500, nadir: footprint should be centered at x=500
 const offset = groundFootprint(500, 100, 90);
