@@ -179,7 +179,7 @@ export default function CameraOverlapPage() {
     [viewerPathLengthFt, spacingFromSpeed],
   );
 
-  // Flat-spin display-only metrics (no formula changes)
+  // Flat-spin: yaw rate (deg/s) is fixed by capture arc ÷ spin window — independent of capture interval.
   const tSpin = effectiveCapPct * FULL_ROT_SEC;
   const yawRateDegPerSec = tSpin > 0 ? effectiveCapDeg / tSpin : 0;
   const headingRpm = yawRateDegPerSec / 6;
@@ -204,21 +204,48 @@ export default function CameraOverlapPage() {
     ? captureIntervalSec * speedFtsManual
     : captureIntervalFt;
 
-  const numSpinCaptures = useMemo(
+  /** Time (s) between shots if driven only by along-track interval ÷ speed — informational. */
+  const captureCadenceSec = activeCaptureIntervalFt / Math.max(0.01, speedFtsManual);
+  /**
+   * Yaw change (deg) between consecutive captures at constant RPM:
+   * ω (deg/s) × Δt (s). Does not depend on how many samples we draw.
+   */
+  const deltaHeadingPerCaptureDeg = yawRateDegPerSec * captureCadenceSec;
+  /**
+   * How many distinct yaw samples fit in the capture arc at this Δθ (capped at 30).
+   */
+  const nCapturesFromYawStep = useMemo(() => {
+    const d = Math.max(1e-9, deltaHeadingPerCaptureDeg);
+    return Math.min(30, Math.max(2, Math.floor(effectiveCapDeg / d) + 1));
+  }, [deltaHeadingPerCaptureDeg, effectiveCapDeg]);
+
+  /** Legacy along-track hint: spacing ÷ interval (not used for headings — avoids coupling RPM to N). */
+  const suggestedCapturesFromSpacing = useMemo(
     () => Math.max(2, Math.min(30, Math.round(spacingFromSpeed / Math.max(0.1, activeCaptureIntervalFt)))),
     [spacingFromSpeed, activeCaptureIntervalFt],
   );
 
-  const effectiveSpinCaptures = useMemo(
-    () => Math.max(2, Math.min(30, spinViewerCaptureCount ?? numSpinCaptures)),
-    [spinViewerCaptureCount, numSpinCaptures],
-  );
+  useEffect(() => {
+    setSpinViewerCaptureCount((prev) => {
+      if (prev === null) return null;
+      return Math.min(prev, nCapturesFromYawStep);
+    });
+  }, [nCapturesFromYawStep]);
+
+  const effectiveSpinCaptures = useMemo(() => {
+    const cap = nCapturesFromYawStep;
+    const raw = spinViewerCaptureCount ?? cap;
+    return Math.max(2, Math.min(cap, raw));
+  }, [spinViewerCaptureCount, nCapturesFromYawStep]);
 
   const spinHeadings = useMemo(
-    () => Array.from({ length: effectiveSpinCaptures }, (_, i) =>
-      effectiveSpinCaptures > 1 ? (i / (effectiveSpinCaptures - 1)) * effectiveCapDeg : 0,
-    ),
-    [effectiveSpinCaptures, effectiveCapDeg],
+    () => {
+      const d = Math.max(1e-9, deltaHeadingPerCaptureDeg);
+      return Array.from({ length: effectiveSpinCaptures }, (_, i) =>
+        Math.min(i * d, effectiveCapDeg),
+      );
+    },
+    [effectiveSpinCaptures, effectiveCapDeg, deltaHeadingPerCaptureDeg],
   );
 
   const spinAlongPositions = useMemo(
@@ -478,18 +505,26 @@ export default function CameraOverlapPage() {
                   data-testid="viewer-spin-capture-count"
                   type="range"
                   min={2}
-                  max={30}
+                  max={Math.max(2, nCapturesFromYawStep)}
                   step={1}
                   value={effectiveSpinCaptures}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    setSpinViewerCaptureCount(v === numSpinCaptures ? null : v);
+                    setSpinViewerCaptureCount(v === nCapturesFromYawStep ? null : v);
                   }}
                   aria-label="Number of captures shown in 3D viewer"
                   style={{
                     WebkitAppearance: 'none',
                     appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${((effectiveSpinCaptures - 2) / 28) * 100}%, #1e1e1e ${((effectiveSpinCaptures - 2) / 28) * 100}%)`,
+                    background: `linear-gradient(to right, #3a8eff ${
+                      nCapturesFromYawStep > 2
+                        ? ((effectiveSpinCaptures - 2) / (nCapturesFromYawStep - 2)) * 100
+                        : 0
+                    }%, #1e1e1e ${
+                      nCapturesFromYawStep > 2
+                        ? ((effectiveSpinCaptures - 2) / (nCapturesFromYawStep - 2)) * 100
+                        : 0
+                    }%)`,
                     borderRadius: 2,
                     cursor: 'pointer',
                     display: 'block',
@@ -556,7 +591,7 @@ export default function CameraOverlapPage() {
                 data-testid="viewer-spin-capture-reset-auto"
                 onClick={() => setSpinViewerCaptureCount(null)}
               >
-                Match spacing
+                Auto
               </button>
             ) : null}
           </div>
@@ -569,6 +604,7 @@ export default function CameraOverlapPage() {
             spinMode={spinMode}
             captureIntervalFt={activeCaptureIntervalFt}
             captureArcDeg={effectiveCapDeg}
+            spinHeadingDegs={spinMode ? spinHeadings : undefined}
           />
         </div>
 
@@ -617,7 +653,11 @@ export default function CameraOverlapPage() {
                   {captureIntervalUnit === 'ft'
                     ? `${captureIntervalFt} ft`
                     : `${captureIntervalSec} s · ${activeCaptureIntervalFt.toFixed(1)} ft`
-                  } · ~{numSpinCaptures} from spacing
+                  } · Δθ ≈ {deltaHeadingPerCaptureDeg.toFixed(2)}° · ~{nCapturesFromYawStep} in arc
+                  {' '}
+                  <span style={{ color: 'rgba(255,255,255,0.35)' }} title="Along-track spacing ÷ interval (not used for yaw)">
+                    (~{suggestedCapturesFromSpacing} along-track)
+                  </span>
                 </span>
               </div>
               {captureIntervalUnit === 'ft' ? (

@@ -697,6 +697,11 @@ export type ThreeViewProps = {
   captureIntervalFt?: number;
   /** Total heading arc swept during the capture window (degrees). Spin mode only. */
   captureArcDeg?: number;
+  /**
+   * Flat spin: yaw angle (deg) per capture at index i. From page: min(i·Δθ, arc) with
+   * Δθ = ω·(interval_ft/speed) so RPM stays fixed when interval changes.
+   */
+  spinHeadingDegs?: number[];
 };
 
 function footprintColor(i: number, n: number): string {
@@ -778,12 +783,18 @@ export default function ThreeView({
     ? Math.max(2, Math.min(30, pitchDegs.length))
     : autoSpinCaptureCount;
 
-  const spinHeadings = useMemo(
-    () => Array.from({ length: numSpinCaptures }, (_, i) => (
+  const spinHeadings = useMemo(() => {
+    if (
+      spinMode
+      && externalSpinHeadingDegs
+      && externalSpinHeadingDegs.length === pitchDegs.length
+    ) {
+      return externalSpinHeadingDegs;
+    }
+    return Array.from({ length: numSpinCaptures }, (_, i) => (
       numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * captureArcDeg : 0
-    )),
-    [numSpinCaptures, captureArcDeg],
-  );
+    ));
+  }, [spinMode, externalSpinHeadingDegs, pitchDegs.length, numSpinCaptures, captureArcDeg]);
 
   const spinAlongX = useMemo(
     () => Array.from({ length: numSpinCaptures }, (_, i) => (
