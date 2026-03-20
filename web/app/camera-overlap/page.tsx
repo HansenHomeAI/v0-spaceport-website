@@ -21,6 +21,8 @@ const ThreeView = dynamic(() => import('./ThreeView'), { ssr: false });
 const MIN_SPEED_FTS = 0.5;
 const MAX_SPEED_MPH = 22.4;
 const MAX_SPEED_FTS = (MAX_SPEED_MPH * 5280) / 3600;
+const DEFAULT_SPEED_MPH = 18;
+const DEFAULT_SPEED_FTS = (DEFAULT_SPEED_MPH * 5280) / 3600;
 
 const C = 72;
 const R = 50;
@@ -113,7 +115,7 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct, testI
 
 export default function CameraOverlapPage() {
   const [height, setHeight] = useState(100);
-  const [speedFtsManual, setSpeedFtsManual] = useState(3.0);
+  const [speedFtsManual, setSpeedFtsManual] = useState(DEFAULT_SPEED_FTS);
   const [handles, setHandles] = useState([10, 100, 190, 280]);
   
   const [minAngle, setMinAngle] = useState(15);

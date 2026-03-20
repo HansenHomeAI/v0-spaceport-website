@@ -54,3 +54,4 @@ touch-retest 2026-03-07T04:05:55Z
 2026-03-20T21:53:39Z viewer waypoint controls
 2026-03-20T22:01:58Z linear viewer path span
 2026-03-20T22:04:46Z spin yaw step from RPM
+2026-03-20T22:05:06Z default 18mph camera-overlap
