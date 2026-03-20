@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   averageAdjacentFootprintIou,
+  FULL_ROT_SEC,
   getGimbalAngleDeg,
   hypotenuseFromHeight,
   rotationTimeSec,
@@ -153,6 +154,11 @@ export default function CameraOverlapPage() {
   const rotTime = rotationTimeSec(effectiveCapPct);
   const spacingFromSpeed = speedFtsManual * rotTime;
   const speedMphFromSlider = speedFtsManual * 0.681818;
+
+  // Flat-spin display-only metrics (no formula changes)
+  const tSpin = effectiveCapPct * FULL_ROT_SEC;
+  const yawRateDegPerSec = tSpin > 0 ? effectiveCapDeg / tSpin : 0;
+  const headingRpm = yawRateDegPerSec / 6;
 
   const pitchDegsViewer = useMemo(() => {
     const base = getGimbalAngleDeg(height, minAngle, minAngleHeight, maxAngle, maxAngleHeight);
@@ -346,6 +352,12 @@ export default function CameraOverlapPage() {
                 sub={`mph · ${speedFtsManual.toFixed(2)} ft/s`}
                 color="#3a8eff"
               />
+              <Stat
+                label="Flat spin"
+                value={tSpin > 0 ? `${yawRateDegPerSec.toFixed(1)}°/s` : '—'}
+                sub={tSpin > 0 ? `${headingRpm.toFixed(2)} RPM · ${tSpin.toFixed(1)}s spin / ${rotTime.toFixed(1)}s total` : 'no capture arc'}
+                color="#ffd60a"
+              />
             </div>
           </div>
         </div>
@@ -399,6 +411,11 @@ export default function CameraOverlapPage() {
           />
           <p className={styles.footnote}>
             gimbal &minus;{angleDeg.toFixed(0)}° &middot; hyp {hypotenuse.toFixed(0)} ft &middot; spacing {spacingFromSpeed.toFixed(1)} ft &middot; {rotTime.toFixed(1)}s/pt
+            {tSpin > 0 && (
+              <>
+                {' '}· flat spin {effectiveCapDeg.toFixed(0)}° @ {yawRateDegPerSec.toFixed(1)}°/s ({headingRpm.toFixed(2)} RPM) · drone advances {spacingFromSpeed.toFixed(0)} ft between spins
+              </>
+            )}
           </p>
         </div>
       </div>

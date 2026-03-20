@@ -19,6 +19,8 @@ import {
   averageAdjacentFootprintIou,
 } from './cameraOverlapMath';
 
+import { makeSeededRandom, paramsToSeed, generatePitchSequence, pitchDomainFromEnvelope } from './gimbalPitchDistribution';
+
 function approx(a: number, b: number, eps = 1e-6) {
   assert.ok(Math.abs(a - b) < eps, `expected ${a} ≈ ${b}`);
 }
@@ -116,5 +118,43 @@ const a12 = footprintOverlapIou(
   footprintBounds(groundFootprint(50, 100, 28)),
 );
 approx(m3, (a01 + a12) / 2);
+
+// ---- Flat-spin 18°/s identity ----
+// For any nonzero capture fraction, the yaw rate over the spin segment is constant:
+//   effectiveCapDeg / (effectiveCapPct * FULL_ROT_SEC) = 360 / 20 = 18°/s
+for (const capDeg of [90, 180, 270, 360]) {
+  const capPct = capDeg / 360;
+  const tSpin = capPct * FULL_ROT_SEC;
+  const yawRate = tSpin > 0 ? capDeg / tSpin : 0;
+  approx(yawRate, 18, 1e-9);
+}
+// Full 360° capture → exactly 3 RPM
+const fullCapYaw = 360 / (1 * FULL_ROT_SEC);
+approx(fullCapYaw / 6, 3, 1e-9);
+
+// ---- Seeded PRNG — deterministic output ----
+const rng1 = makeSeededRandom(42);
+const rng2 = makeSeededRandom(42);
+for (let i = 0; i < 20; i++) {
+  approx(rng1(), rng2());
+}
+// Different seeds produce different values (birthday paradox essentially impossible here)
+const rngA = makeSeededRandom(1);
+const rngB = makeSeededRandom(2);
+const drawn = Array.from({ length: 10 }, () => [rngA(), rngB()]);
+assert.ok(drawn.some(([a, b]) => Math.abs(a - b) > 1e-6), 'different seeds should diverge');
+
+// ---- paramsToSeed — same params same seed ----
+assert.equal(paramsToSeed([100, 15, 35, 200, 400]), paramsToSeed([100, 15, 35, 200, 400]));
+assert.notEqual(paramsToSeed([100, 15, 35, 200, 400]), paramsToSeed([101, 15, 35, 200, 400]));
+
+// ---- generatePitchSequence with seeded RNG — stable draws ----
+const domain = pitchDomainFromEnvelope(15, 35);
+const seq1 = generatePitchSequence(-25, 0.2, 200, 3.3, 0.25, 10, domain, makeSeededRandom(7));
+const seq2 = generatePitchSequence(-25, 0.2, 200, 3.3, 0.25, 10, domain, makeSeededRandom(7));
+seq1.forEach((v, i) => approx(v, seq2[i], 1e-12));
+// Draws from different seeds should differ on at least one element
+const seq3 = generatePitchSequence(-25, 0.2, 200, 3.3, 0.25, 10, domain, makeSeededRandom(8));
+assert.ok(seq1.some((v, i) => Math.abs(v - seq3[i]) > 1e-6), 'different seeds should produce different pitch sequences');
 
 console.log('cameraOverlapMath.unit.test.ts: all assertions passed');

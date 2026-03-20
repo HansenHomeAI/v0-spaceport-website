@@ -6,7 +6,9 @@ import {
   betaPDFUnnorm,
   generatePitchSequence,
   intendedPitchNeg,
+  makeSeededRandom,
   mixturePDFValues,
+  paramsToSeed,
   pitchDomainFromEnvelope,
   toT,
   type PitchDomain,
@@ -326,6 +328,10 @@ export default function GimbalDistributionCard({
   const [rho, setRho] = useState(0.2);
   const [sequence, setSequence] = useState<number[]>([]);
 
+  // Manual reshuffle seed lives here; auto-regen uses a deterministic seed
+  // keyed by params so the same slider position always yields the same dots.
+  const shuffleSeedRef = useRef<number | null>(null);
+
   const domain = useMemo(
     () => pitchDomainFromEnvelope(minAngle, maxAngle),
     [minAngle, maxAngle],
@@ -336,28 +342,53 @@ export default function GimbalDistributionCard({
     [heightAgl, minAngle, minAngleHeight, maxAngle, maxAngleHeight],
   );
 
+  const runGenerate = useCallback(
+    (seed: number) => {
+      const rng = makeSeededRandom(seed);
+      const seq = generatePitchSequence(
+        intPitchNeg,
+        rho,
+        peakConc,
+        baseConc,
+        outlierRate,
+        viewerWaypointCount,
+        domain,
+        rng,
+      );
+      setSequence(seq);
+      onPitchSequenceGenerated(seq);
+    },
+    [intPitchNeg, rho, peakConc, baseConc, outlierRate, viewerWaypointCount, domain, onPitchSequenceGenerated],
+  );
+
+  // Auto-regenerate with a deterministic seed (debounced ~120ms).
+  // shuffleSeedRef === null means "use param-derived seed"; after a manual
+  // reshuffle it holds the random seed until params change again.
+  const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (autoTimerRef.current !== null) clearTimeout(autoTimerRef.current);
+    autoTimerRef.current = setTimeout(() => {
+      autoTimerRef.current = null;
+      const seed =
+        shuffleSeedRef.current ??
+        paramsToSeed([
+          heightAgl, minAngle, maxAngle, minAngleHeight, maxAngleHeight,
+          viewerWaypointCount, peakConc, baseConc, outlierRate, rho,
+        ]);
+      runGenerate(seed);
+    }, 120);
+    return () => {
+      if (autoTimerRef.current !== null) clearTimeout(autoTimerRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [heightAgl, minAngle, maxAngle, minAngleHeight, maxAngleHeight, viewerWaypointCount, peakConc, baseConc, outlierRate, rho]);
+
+  // Manual reshuffle: pick a fresh random seed so the user gets a different
+  // draw without moving any sliders. Resets to param-derived seed on next change.
   const generate = useCallback(() => {
-    const seq = generatePitchSequence(
-      intPitchNeg,
-      rho,
-      peakConc,
-      baseConc,
-      outlierRate,
-      viewerWaypointCount,
-      domain,
-    );
-    setSequence(seq);
-    onPitchSequenceGenerated(seq);
-  }, [
-    intPitchNeg,
-    rho,
-    peakConc,
-    baseConc,
-    outlierRate,
-    viewerWaypointCount,
-    domain,
-    onPitchSequenceGenerated,
-  ]);
+    shuffleSeedRef.current = (Math.random() * 0xffffffff) >>> 0;
+    runGenerate(shuffleSeedRef.current);
+  }, [runGenerate]);
 
   return (
     <div className={styles.gimbalDistributionCard} data-testid="gimbal-distribution-card">
@@ -465,7 +496,7 @@ export default function GimbalDistributionCard({
       />
 
       <button type="button" className={styles.gimbalGenerateBtn} onClick={generate} data-testid="gimbal-generate-btn">
-        Generate pitches
+        Reshuffle pitches
       </button>
 
       {sequence.length > 0 ? (

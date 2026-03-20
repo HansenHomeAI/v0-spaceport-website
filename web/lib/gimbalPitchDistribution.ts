@@ -41,33 +41,65 @@ export function intendedPitchNeg(
   return -getGimbalAngleDeg(agl, minPitchDeg, minAgl, maxPitchDeg, maxAgl);
 }
 
-function gaussianRandom(): number {
-  const u = 1 - Math.random();
-  const v = Math.random();
+// ---------------------------------------------------------------------------
+// Seeded PRNG — mulberry32 (public domain, ~2 ns/call, high quality)
+// ---------------------------------------------------------------------------
+
+/** Returns a seeded PRNG. Pass as `random` to avoid global Math.random state. */
+export function makeSeededRandom(seed: number): () => number {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) >>> 0;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Deterministic integer seed from an array of numeric parameters.
+ * Same values → same seed every time.
+ */
+export function paramsToSeed(values: number[]): number {
+  let h = 5381;
+  for (const v of values) {
+    const bits = Math.round(v * 1000);
+    h = (Math.imul(h, 33) + bits) | 0;
+  }
+  return h >>> 0;
+}
+
+// ---------------------------------------------------------------------------
+// Beta-distribution samplers (accept injectable `random`)
+// ---------------------------------------------------------------------------
+
+function gaussianRandom(random: () => number): number {
+  const u = 1 - random();
+  const v = random();
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
 
-function gammaRandom(shape: number): number {
-  if (shape < 1) return gammaRandom(1 + shape) * Math.random() ** (1 / shape);
+function gammaRandom(shape: number, random: () => number): number {
+  if (shape < 1) return gammaRandom(1 + shape, random) * random() ** (1 / shape);
   const d = shape - 1 / 3;
   const c = 1 / Math.sqrt(9 * d);
   for (;;) {
     let x: number;
     let v: number;
     do {
-      x = gaussianRandom();
+      x = gaussianRandom(random);
       v = 1 + c * x;
     } while (v <= 0);
     v = v ** 3;
-    const u = Math.random();
+    const u = random();
     if (u < 1 - 0.0331 * x ** 4) return d * v;
     if (Math.log(u) < 0.5 * x ** 2 + d * (1 - v + Math.log(v))) return d * v;
   }
 }
 
-function betaRandom(alpha: number, beta: number): number {
-  const x = gammaRandom(alpha);
-  const y = gammaRandom(beta);
+function betaRandom(alpha: number, beta: number, random: () => number): number {
+  const x = gammaRandom(alpha, random);
+  const y = gammaRandom(beta, random);
   return x / (x + y);
 }
 
@@ -101,17 +133,18 @@ export function samplePitch(
   baseConc: number,
   outlierRate: number,
   domain: PitchDomain,
+  random: () => number = Math.random,
 ): number {
   const modeT = toT(intDeg, domain) + rho * (toT(prevDeg, domain) - toT(intDeg, domain));
   const clampedMode = Math.max(0.05, Math.min(0.95, modeT));
   const modeDeg = fromT(clampedMode, domain);
 
-  if (Math.random() < outlierRate) {
+  if (random() < outlierRate) {
     const { alpha, beta } = betaParams(intDeg, baseConc, domain);
-    return fromT(betaRandom(alpha, beta), domain);
+    return fromT(betaRandom(alpha, beta, random), domain);
   }
   const { alpha, beta } = betaParams(modeDeg, peakConc, domain);
-  return fromT(betaRandom(alpha, beta), domain);
+  return fromT(betaRandom(alpha, beta, random), domain);
 }
 
 export function generatePitchSequence(
@@ -122,11 +155,12 @@ export function generatePitchSequence(
   outlierRate: number,
   n: number,
   domain: PitchDomain,
+  random: () => number = Math.random,
 ): number[] {
   const seq: number[] = [];
   let prev = intPitchNeg;
   for (let i = 0; i < n; i++) {
-    prev = samplePitch(prev, intPitchNeg, rho, peakConc, baseConc, outlierRate, domain);
+    prev = samplePitch(prev, intPitchNeg, rho, peakConc, baseConc, outlierRate, domain, random);
     seq.push(prev);
   }
   return seq;
