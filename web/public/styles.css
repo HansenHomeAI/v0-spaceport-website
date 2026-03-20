@@ -5865,23 +5865,24 @@ input.text-fade-right,
 
 /* Waypoint markers on battery paths */
 .waypoint-marker {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.48);
   transition: width 0.15s ease, height 0.15s ease, box-shadow 0.15s ease;
   cursor: default;
   pointer-events: none;
+  opacity: 0.84;
 }
 .map-wrapper.fullscreen .waypoint-marker {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   cursor: grab;
   pointer-events: auto;
   touch-action: none;
   user-select: none;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 0 6px rgba(0, 0, 0, 0.42);
 }
 .map-wrapper.fullscreen .waypoint-marker:active {
   cursor: grabbing;

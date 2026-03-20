@@ -11,3 +11,4 @@
 [2026-03-20 12:07:28 MDT] authenticated preview spec -> passed on 41aa58c2 preview -> commit and push
 [2026-03-20T20:58:32Z] curved-path render -> local build + unit coverage green -> bump preview trigger and push curved map branch
 [2026-03-20T21:51:25Z] curved-path retry -> native line elevation layout fixed and Bezier lead-distance turns validated locally -> push preview branch
+[2026-03-20T22:25:59Z] curved-path visibility pass -> strengthened elevated line styling and stabilized preview pitch assertion locally -> commit and redeploy

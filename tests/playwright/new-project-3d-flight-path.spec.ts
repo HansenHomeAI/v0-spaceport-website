@@ -103,6 +103,8 @@ test('new project modal renders altitude in the live map and restores camera aft
     return elements.map((element) => {
       const rect = element.getBoundingClientRect();
       return {
+        batteryIndex: Number.parseInt(element.dataset.batteryIndex ?? '-1', 10),
+        waypointIndex: Number.parseInt(element.dataset.waypointIndex ?? '-1', 10),
         altitudeFeet: Number.parseFloat(element.dataset.altitudeFeet ?? '0'),
         curveFeet: Number.parseFloat(element.dataset.curveFeet ?? '0'),
         top: rect.top,
@@ -150,18 +152,34 @@ test('new project modal renders altitude in the live map and restores camera aft
     return elements.map((element) => {
       const rect = element.getBoundingClientRect();
       return {
+        batteryIndex: Number.parseInt(element.dataset.batteryIndex ?? '-1', 10),
+        waypointIndex: Number.parseInt(element.dataset.waypointIndex ?? '-1', 10),
         altitudeFeet: Number.parseFloat(element.dataset.altitudeFeet ?? '0'),
         top: rect.top,
       };
     });
   });
-  const highestMarker = markerMetricsAfterPitch.reduce((best, current) => (
+  const highestMarkerBeforePitch = markerMetricsBeforePitch.reduce((best, current) => (
     current.altitudeFeet > best.altitudeFeet ? current : best
   ));
-  const lowestMarker = markerMetricsAfterPitch.reduce((best, current) => (
+  const lowestMarkerBeforePitch = markerMetricsBeforePitch.reduce((best, current) => (
     current.altitudeFeet < best.altitudeFeet ? current : best
   ));
-  expect(Math.abs(highestMarker.top - lowestMarker.top)).toBeGreaterThan(8);
+  const highestMarkerAfterPitch = markerMetricsAfterPitch.find((marker) => (
+    marker.batteryIndex === highestMarkerBeforePitch.batteryIndex
+      && marker.waypointIndex === highestMarkerBeforePitch.waypointIndex
+  ));
+  const lowestMarkerAfterPitch = markerMetricsAfterPitch.find((marker) => (
+    marker.batteryIndex === lowestMarkerBeforePitch.batteryIndex
+      && marker.waypointIndex === lowestMarkerBeforePitch.waypointIndex
+  ));
+  expect(highestMarkerAfterPitch).toBeDefined();
+  expect(lowestMarkerAfterPitch).toBeDefined();
+  const separationBeforePitch = Math.abs(highestMarkerBeforePitch.top - lowestMarkerBeforePitch.top);
+  const separationAfterPitch = Math.abs(
+    highestMarkerAfterPitch!.top - lowestMarkerAfterPitch!.top,
+  );
+  expect(separationAfterPitch).toBeGreaterThan(separationBeforePitch + 2);
 
   await page.getByRole('button', { name: 'Boundary' }).click();
   await expect(page.locator('.boundary-editor-bar')).toBeVisible({ timeout: 30_000 });

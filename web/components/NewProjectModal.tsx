@@ -2884,11 +2884,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const removeBatteryPathVisualization = useCallback((batteryIndex: number) => {
     const map = mapRef.current;
     if (map) {
+      const shadowLayerId = `battery-path-shadow-layer-${batteryIndex}`;
       const casingLayerId = `battery-path-casing-layer-${batteryIndex}`;
       const layerId = `battery-path-layer-${batteryIndex}`;
       const hitLayerId = `battery-path-hit-layer-${batteryIndex}`;
       const sourceId = `battery-path-${batteryIndex}`;
       try {
+        if (map.getLayer(shadowLayerId)) map.removeLayer(shadowLayerId);
         if (map.getLayer(casingLayerId)) map.removeLayer(casingLayerId);
         if (map.getLayer(layerId)) map.removeLayer(layerId);
         if (map.getLayer(hitLayerId)) map.removeLayer(hitLayerId);
@@ -2908,6 +2910,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!map || !coords.length) return;
 
     const sourceId = `battery-path-${batteryIndex}`;
+    const shadowLayerId = `battery-path-shadow-layer-${batteryIndex}`;
     const casingLayerId = `battery-path-casing-layer-${batteryIndex}`;
     const layerId = `battery-path-layer-${batteryIndex}`;
     const hitLayerId = `battery-path-hit-layer-${batteryIndex}`;
@@ -2920,6 +2923,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     };
 
     try {
+      if (map.getLayer(shadowLayerId)) map.removeLayer(shadowLayerId);
       if (map.getLayer(casingLayerId)) map.removeLayer(casingLayerId);
       if (map.getLayer(layerId)) map.removeLayer(layerId);
       if (map.getLayer(hitLayerId)) map.removeLayer(hitLayerId);
@@ -2935,15 +2939,30 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     map.addLayer({
+      id: shadowLayerId,
+      type: 'line',
+      source: sourceId,
+      layout: elevatedLineLayout,
+      paint: {
+        'line-color': '#05070f',
+        'line-width': 14,
+        'line-opacity': 0.34,
+        'line-blur': 1.1,
+        'line-emissive-strength': 0.3,
+      },
+    });
+
+    map.addLayer({
       id: casingLayerId,
       type: 'line',
       source: sourceId,
       layout: elevatedLineLayout,
       paint: {
         'line-color': '#ffffff',
-        'line-width': 8,
-        'line-opacity': 0.42,
-        'line-blur': 0.8,
+        'line-width': 10.5,
+        'line-opacity': 0.76,
+        'line-blur': 0.35,
+        'line-emissive-strength': 0.85,
       },
     });
 
@@ -2954,9 +2973,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       layout: elevatedLineLayout,
       paint: {
         'line-color': color,
-        'line-width': 4.5,
-        'line-opacity': 0.96,
-        'line-blur': 0.15,
+        'line-width': 6.25,
+        'line-opacity': 0.98,
+        'line-blur': 0.05,
+        'line-emissive-strength': 1,
       },
     });
 
