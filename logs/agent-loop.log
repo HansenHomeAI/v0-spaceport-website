@@ -7,3 +7,4 @@
 [2026-03-17T00:08:00Z] local-verify -> spin altitude bridge implemented; targeted unit + next/cf builds green -> push preview branch
 [2026-03-17T01:10:00Z] modal-3d -> local build green; 3D path unit tests passed and modal preview spec added (auth-gated locally) -> push preview branch
 [2026-03-20T17:42:37Z] core in-map elevation patch builds locally -> commit core modal changes -> run cf build and deploy preview
+[2026-03-20T17:43:50Z] cf build passed and CDK baseline green -> bump Pages trigger and push feature branch -> watch deploys and resolve preview URL
