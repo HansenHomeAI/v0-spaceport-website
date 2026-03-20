@@ -99,6 +99,52 @@ assert.ok(tb.maxX - tb.minX > 50);
   approx(b31.maxY, expectedFar31, 1);
 }
 
+// ---- groundFootprint: quad corners match analytic frustum rays (math frame) ----
+// Ensures wireframe edges from drone to corners align with the same basis as buildCameraRayLocal.
+{
+  const droneX = 42;
+  const h = 96;
+  const pitch = 27;
+  const heading = 22;
+  const H = (heading * Math.PI) / 180;
+  const theta = (pitch * Math.PI) / 180;
+  const sinT = Math.sin(theta);
+  const cosT = Math.cos(theta);
+  const sinH = Math.sin(H);
+  const cosH = Math.cos(H);
+  const losX = sinH * cosT;
+  const losY = cosH * cosT;
+  const losZ = -sinT;
+  const rightX = cosH;
+  const rightY = -sinH;
+  const rightZ = 0;
+  const upX = sinH * sinT;
+  const upY = cosH * sinT;
+  const upZ = cosT;
+
+  const expectedCorners: [number, number, number][] = [];
+  for (const sv of [-1, 1]) {
+    for (const sh of [-1, 1]) {
+      const dx = losX + sv * TAN_V * rightX + sh * TAN_H * upX;
+      const dy = losY + sv * TAN_V * rightY + sh * TAN_H * upY;
+      const dz = losZ + sv * TAN_V * rightZ + sh * TAN_H * upZ;
+      const t = h / Math.max(Math.abs(dz), 1 / 300);
+      expectedCorners.push([droneX + dx * t, dy * t, 0]);
+    }
+  }
+
+  const fpCorners = groundFootprint(droneX, h, pitch, heading);
+  const near3 = (a: [number, number, number], b: [number, number, number]) => (
+    Math.abs(a[0] - b[0]) < 1e-3 && Math.abs(a[1] - b[1]) < 1e-3 && Math.abs(a[2] - b[2]) < 1e-3
+  );
+  for (const exp of expectedCorners) {
+    assert.ok(
+      fpCorners.some((c) => near3(c as [number, number, number], exp)),
+      `expected frustum corner ${exp} in footprint`,
+    );
+  }
+}
+
 // ---- groundFootprint offset drone ----
 // Drone at x=500, nadir: footprint should be centered at x=500
 const offset = groundFootprint(500, 100, 90);
