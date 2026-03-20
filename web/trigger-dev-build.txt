@@ -48,3 +48,4 @@ touch-retest 2026-03-07T04:05:55Z
 2026-03-16T23:59:00Z - Spin mode altitude profile uses flat outbound, ramped hold, and flat inbound
 2026-03-17T01:10:00Z - Add interactive 3D flight path preview to the new project modal
 2026-03-20T18:35:00Z - Replace separate modal 3D viewer with native in-map elevated flight paths
+2026-03-20T20:58:32Z - Render curved modal flight paths from waypoint curve radii in the live map
