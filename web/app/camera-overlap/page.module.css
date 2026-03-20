@@ -105,20 +105,129 @@
   }
 }
 
-/* Cone diagram: wider on desktop */
+/* Capture ring: column with toggle above SVG */
+.captureRingColumn {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.captureToggleLabel {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  user-select: none;
+}
+
+.captureToggleText {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.captureSwitch {
+  background: #3a3a3c;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+  height: 28px;
+  padding: 2px;
+  position: relative;
+  transition: background 0.2s ease;
+  width: 50px;
+}
+
+.captureSwitch[aria-checked='true'] {
+  background: #34c759;
+}
+
+.captureSwitchThumb {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  display: block;
+  height: 24px;
+  left: 2px;
+  position: absolute;
+  top: 2px;
+  transition: transform 0.2s ease;
+  width: 24px;
+}
+
+.captureSwitch[aria-checked='true'] .captureSwitchThumb {
+  transform: translateX(22px);
+}
+
+/* Angle cube cards: compact Apple-style tiles in the mosaic */
+.angleCardsRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.angleCard {
+  background: #161616;
+  border: 1px solid #252525;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 120px;
+  min-height: 110px;
+  padding: 14px 16px;
+}
+
+.angleCardLabel {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.angleCardValue {
+  color: #f5f5f7;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.angleCardSliders {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.angleCardSliders input {
+  height: 2px;
+  min-height: 2px;
+}
+
+/* Cone diagram: balanced padding, more top room for distance label at max height */
 .coneCard {
   background: #111;
   border: 1px solid #1e1e1e;
   border-radius: 14px;
   max-width: 340px;
-  padding: 8px;
+  padding: 16px 6px 8px;
   width: 100%;
 }
 
 @media (min-width: 768px) {
   .coneCard {
     max-width: 420px;
-    padding: 12px;
+    padding: 18px 8px 10px;
   }
 }
 
@@ -157,4 +266,43 @@
   border-radius: 50%;
   background: #f5f5f7;
   cursor: pointer;
+}
+
+/* 3D view HUD overlay (bottom-left, screen-space) */
+.threeViewWrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.threeViewHud {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+  max-width: min(92%, 280px);
+}
+
+.threeViewHudPrimary {
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(58, 142, 255, 0.35);
+  border-radius: 8px;
+  color: #7eb8ff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 6px 10px;
+}
+
+.threeViewHudMeta {
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 6px;
+  color: rgba(245, 245, 247, 0.9);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 4px 8px;
 }

@@ -1,11 +1,24 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  getGimbalAngleDeg,
+  groundFootprint,
+  footprintBounds,
+  footprintOverlapIou,
+  hypotenuseFromHeight,
+  rotationTimeSec,
+} from '../../lib/cameraOverlapMath';
 import styles from './page.module.css';
 
-const TAN_30 = Math.tan(Math.PI / 6);
-const FULL_ROT_SEC = 20;
-const TRANSIT_SEC = 1;
+const ThreeView = dynamic(() => import('./ThreeView'), { ssr: false });
+
+/** Slider range: ft/s (22.4 mph max). */
+const MIN_SPEED_FTS = 0.5;
+const MAX_SPEED_MPH = 22.4;
+const MAX_SPEED_FTS = (MAX_SPEED_MPH * 5280) / 3600;
+
 const C = 72;
 const R = 50;
 const SZ = 144;
@@ -26,6 +39,18 @@ type SliderRowProps = {
   onChange: (value: number) => void;
   display: string;
   pct: number;
+};
+
+type AngleCardProps = {
+  label: string;
+  angleValue: number;
+  angleMin: number;
+  angleMax: number;
+  onAngleChange: (value: number) => void;
+  heightValue: number;
+  heightMin: number;
+  heightMax: number;
+  onHeightChange: (value: number) => void;
 };
 
 function toDeg(cx: number, cy: number, x: number, y: number): number {
@@ -61,7 +86,9 @@ function Stat({ label, value, sub, color }: StatProps) {
   );
 }
 
-function SliderRow({ label, min, max, step, value, onChange, display, pct }: SliderRowProps) {
+type SliderRowPropsWithTestId = SliderRowProps & { testId?: string };
+
+function SliderRow({ label, min, max, step, value, onChange, display, pct, testId }: SliderRowPropsWithTestId) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -70,6 +97,7 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct }: Sli
       </div>
       <input
         className={styles.rangeInput}
+        data-testid={testId}
         type="range"
         min={min}
         max={max}
@@ -92,16 +120,86 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct }: Sli
   );
 }
 
+function AngleCard({
+  label,
+  angleValue,
+  angleMin,
+  angleMax,
+  onAngleChange,
+  heightValue,
+  heightMin,
+  heightMax,
+  onHeightChange,
+}: AngleCardProps) {
+  const anglePct = ((angleValue - angleMin) / (angleMax - angleMin)) * 100;
+  const heightPct = ((heightValue - heightMin) / (heightMax - heightMin)) * 100;
+
+  return (
+    <div className={styles.angleCard}>
+      <p className={styles.angleCardLabel}>{label}</p>
+      <p className={styles.angleCardValue}>
+        &minus;{angleValue}&deg; @ {heightValue} ft
+      </p>
+      <div className={styles.angleCardSliders}>
+        <input
+          className={styles.rangeInput}
+          type="range"
+          min={angleMin}
+          max={angleMax}
+          step={1}
+          value={angleValue}
+          onChange={(event) => onAngleChange(Number(event.target.value))}
+          style={{
+            WebkitAppearance: 'none',
+            appearance: 'none',
+            background: `linear-gradient(to right, #ffd60a ${anglePct}%, #1e1e1e ${anglePct}%)`,
+            borderRadius: 2,
+            cursor: 'pointer',
+            display: 'block',
+            outline: 'none',
+            width: '100%',
+          }}
+        />
+        <input
+          className={styles.rangeInput}
+          type="range"
+          min={heightMin}
+          max={heightMax}
+          step={1}
+          value={heightValue}
+          onChange={(event) => onHeightChange(Number(event.target.value))}
+          style={{
+            WebkitAppearance: 'none',
+            appearance: 'none',
+            background: `linear-gradient(to right, #3a8eff ${heightPct}%, #1e1e1e ${heightPct}%)`,
+            borderRadius: 2,
+            cursor: 'pointer',
+            display: 'block',
+            outline: 'none',
+            width: '100%',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function CameraOverlapPage() {
   const [height, setHeight] = useState(100);
-  const [overlap, setOverlap] = useState(75);
+  const [speedFtsManual, setSpeedFtsManual] = useState(3.0);
   const [handles, setHandles] = useState([10, 100, 190, 280]);
+  
+  const [minAngle, setMinAngle] = useState(15);
+  const [minAngleHeight, setMinAngleHeight] = useState(200);
+  const [maxAngle, setMaxAngle] = useState(35);
+  const [maxAngleHeight, setMaxAngleHeight] = useState(400);
+  const [customCaptureRing, setCustomCaptureRing] = useState(true);
+
   const dragIdx = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const overlapPct = overlap / 100;
-  const footprint = 2 * height * TAN_30;
-  const distance = footprint * (1 - overlapPct);
+  const angleDeg = getGimbalAngleDeg(height, minAngle, minAngleHeight, maxAngle, maxAngleHeight);
+  const hypotenuse = hypotenuseFromHeight(height, angleDeg);
 
   const sortedWithIndices = handles
     .map((angle, index) => ({ angle, index }))
@@ -125,9 +223,17 @@ export default function CameraOverlapPage() {
     .filter((k) => isCaptureArc(k))
     .reduce((sum, k) => sum + arcSpan(k), 0);
   const capPct = capDeg / 360;
-  const rotTime = capPct * FULL_ROT_SEC + 2 * TRANSIT_SEC;
-  const speedMph = (distance / rotTime) * 0.681818;
-  const speedFts = distance / rotTime;
+  const effectiveCapPct = customCaptureRing ? capPct : 1;
+  const effectiveCapDeg = customCaptureRing ? capDeg : 360;
+  const rotTime = rotationTimeSec(effectiveCapPct);
+  const spacingFromSpeed = speedFtsManual * rotTime;
+  const speedMphFromSlider = speedFtsManual * 0.681818;
+
+  const overlapIou = useMemo(() => {
+    const fp1 = groundFootprint(-spacingFromSpeed / 2, height, angleDeg);
+    const fp2 = groundFootprint(spacingFromSpeed / 2, height, angleDeg);
+    return footprintOverlapIou(footprintBounds(fp1), footprintBounds(fp2));
+  }, [spacingFromSpeed, height, angleDeg]);
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -161,22 +267,13 @@ export default function CameraOverlapPage() {
     };
   }, []);
 
-  const svgW = 300;
-  const svgH = 160;
-  const gY = svgH - 18;
-  const tVal = (height - 50) / 350;
-  const coneH = 44 + tVal * 82;
-  const tipY = gY - coneH;
-  const hBase = coneH * TAN_30;
-  const sdist = (1 - overlapPct) * 2 * hBase;
-  const c1x = svgW / 2 - sdist / 2;
-  const c2x = svgW / 2 + sdist / 2;
-  const c1l = c1x - hBase;
-  const c1r = c1x + hBase;
-  const c2l = c2x - hBase;
-  const c2r = c2x + hBase;
-  const overlapLeft = Math.max(c1l, c2l);
-  const overlapRight = Math.min(c1r, c2r);
+  const handleMinAngleHeight = (val: number) => {
+    setMinAngleHeight(Math.min(val, maxAngleHeight - 1));
+  };
+
+  const handleMaxAngleHeight = (val: number) => {
+    setMaxAngleHeight(Math.max(val, minAngleHeight + 1));
+  };
 
   return (
     <main
@@ -191,8 +288,8 @@ export default function CameraOverlapPage() {
     >
       <div className={styles.contentWrapper}>
         <div style={{ padding: '0 4px' }}>
-          <p className={styles.pageLabel}>
-            60° FOV · {overlap}% Overlap
+          <p className={styles.pageLabel} data-testid="camera-overlap-page-label">
+            77°×55° FOV · {(overlapIou * 100).toFixed(0)}% overlap
           </p>
           <h1 className={styles.pageTitle}>
             Drone Path Spacing
@@ -201,237 +298,178 @@ export default function CameraOverlapPage() {
 
         <div style={{ padding: '10px 0 0' }}>
           <div className={styles.calculatorCard}>
-            <svg
-              ref={svgRef}
-              width={SZ}
-              height={SZ}
-              viewBox={`0 0 ${SZ} ${SZ}`}
-              style={{ flexShrink: 0, overflow: 'visible', touchAction: 'none' }}
-            >
-              <circle cx={C} cy={C} r={R} fill="none" stroke="#1e1e1e" strokeWidth={10} />
+            <div className={styles.captureRingColumn}>
+              <label className={styles.captureToggleLabel}>
+                <span className={styles.captureToggleText}>Custom ring</span>
+                <button
+                  type="button"
+                  data-testid="capture-ring-switch"
+                  role="switch"
+                  aria-checked={customCaptureRing}
+                  aria-label={
+                    customCaptureRing
+                      ? 'Custom capture ring on. Click for full 100 percent capture.'
+                      : 'Full capture. Click to customize ring with handles.'
+                  }
+                  title="On: drag handles to set capture arc. Off: 100% full rotation capture."
+                  className={styles.captureSwitch}
+                  onClick={() => setCustomCaptureRing((v) => !v)}
+                >
+                  <span className={styles.captureSwitchThumb} />
+                </button>
+              </label>
+              <svg
+                ref={svgRef}
+                width={SZ}
+                height={SZ}
+                viewBox={`0 0 ${SZ} ${SZ}`}
+                style={{ flexShrink: 0, overflow: 'visible', touchAction: 'none' }}
+              >
+                <circle cx={C} cy={C} r={R} fill="none" stroke="#1e1e1e" strokeWidth={10} />
 
-              {[0, 1, 2, 3].map((k) => {
-                const a1 = sorted[k];
-                const a2 = sorted[(k + 1) % 4];
-                const path = arcPath(C, C, R, a1, a2);
+                {customCaptureRing ? (
+                  <>
+                    {[0, 1, 2, 3].map((k) => {
+                      const a1 = sorted[k];
+                      const a2 = sorted[(k + 1) % 4];
+                      const path = arcPath(C, C, R, a1, a2);
 
-                return path ? (
-                  <path
-                    key={k}
-                    d={path}
-                    fill="none"
-                    stroke={isCaptureArc(k) ? '#34c759' : '#252525'}
-                    strokeLinecap="butt"
-                    strokeWidth={10}
-                  />
-                ) : null;
-              })}
+                      return path ? (
+                        <path
+                          key={k}
+                          d={path}
+                          fill="none"
+                          stroke={isCaptureArc(k) ? '#34c759' : '#252525'}
+                          strokeLinecap="butt"
+                          strokeWidth={10}
+                        />
+                      ) : null;
+                    })}
 
-              {handles.map((handle, index) => {
-                const [x, y] = toXY(C, C, R, handle);
+                    {handles.map((handle, index) => {
+                      const [x, y] = toXY(C, C, R, handle);
 
-                return (
-                  <g key={index} style={{ cursor: 'grab' }}>
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={18}
-                      fill="transparent"
-                      onPointerDown={(event) => {
-                        event.preventDefault();
-                        dragIdx.current = index;
-                      }}
-                      style={{ touchAction: 'none' }}
-                    />
-                    <circle cx={x} cy={y} r={5} fill="#f5f5f7" style={{ pointerEvents: 'none' }} />
-                    <circle cx={x} cy={y} r={3} fill="#0a0a0a" style={{ pointerEvents: 'none' }} />
-                  </g>
-                );
-              })}
+                      return (
+                        <g key={index} style={{ cursor: 'grab' }}>
+                          <circle
+                            cx={x}
+                            cy={y}
+                            r={18}
+                            fill="transparent"
+                            onPointerDown={(event) => {
+                              event.preventDefault();
+                              dragIdx.current = index;
+                            }}
+                            style={{ touchAction: 'none' }}
+                          />
+                          <circle cx={x} cy={y} r={5} fill="#f5f5f7" style={{ pointerEvents: 'none' }} />
+                          <circle cx={x} cy={y} r={3} fill="#0a0a0a" style={{ pointerEvents: 'none' }} />
+                        </g>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <circle cx={C} cy={C} r={R} fill="none" stroke="#34c759" strokeWidth={10} />
+                )}
 
-              <text x={C} y={C - 6} textAnchor="middle" fill="#f5f5f7" fontSize={15} fontWeight={700}>
-                {(capPct * 100).toFixed(0)}%
-              </text>
-              <text x={C} y={C + 9} textAnchor="middle" fill="#444" fontSize={8} letterSpacing="0.05em">
-                CAPTURE
-              </text>
-            </svg>
+                <text
+                  data-testid="capture-pct-text"
+                  x={C}
+                  y={C - 6}
+                  textAnchor="middle"
+                  fill="#f5f5f7"
+                  fontSize={15}
+                  fontWeight={700}
+                >
+                  {(effectiveCapPct * 100).toFixed(0)}%
+                </text>
+                <text x={C} y={C + 9} textAnchor="middle" fill="#444" fontSize={8} letterSpacing="0.05em">
+                  CAPTURE
+                </text>
+              </svg>
+            </div>
 
             <div style={{ display: 'flex', flex: 1, flexDirection: 'column', gap: 8, minWidth: 220 }}>
               <Stat
                 label="Capture"
-                value={`${capDeg.toFixed(0)}°`}
-                sub={`${(capPct * 100).toFixed(0)}% of rotation`}
+                value={`${effectiveCapDeg.toFixed(0)}°`}
+                sub={`${(effectiveCapPct * 100).toFixed(0)}% of rotation`}
                 color="#34c759"
               />
               <Stat
                 label="Rot. Time"
                 value={`${rotTime.toFixed(1)}s`}
-                sub={`${capPct.toFixed(2)} × 20s + 2s`}
+                sub={`${effectiveCapPct.toFixed(2)} × 20s + 2s`}
                 color="#f5f5f7"
               />
               <Stat
                 label="Speed"
-                value={speedMph.toFixed(2)}
-                sub={`mph · ${speedFts.toFixed(2)} ft/s`}
+                value={speedMphFromSlider.toFixed(2)}
+                sub={`mph · ${speedFtsManual.toFixed(2)} ft/s`}
                 color="#3a8eff"
+              />
+            </div>
+            <div className={styles.angleCardsRow}>
+              <AngleCard
+                label="Min"
+                angleValue={minAngle}
+                angleMin={5}
+                angleMax={30}
+                onAngleChange={setMinAngle}
+                heightValue={minAngleHeight}
+                heightMin={50}
+                heightMax={1000}
+                onHeightChange={handleMinAngleHeight}
+              />
+              <AngleCard
+                label="Max"
+                angleValue={maxAngle}
+                angleMin={15}
+                angleMax={60}
+                onAngleChange={setMaxAngle}
+                heightValue={maxAngleHeight}
+                heightMin={50}
+                heightMax={1000}
+                onHeightChange={handleMaxAngleHeight}
               />
             </div>
           </div>
         </div>
 
-        <div
-          style={{
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            minHeight: 0,
-            padding: '8px 0',
-          }}
-        >
-          <div className={styles.coneCard}>
-            <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', height: 'auto', width: '100%' }}>
-              <defs>
-                <marker id="a1" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse">
-                  <path d="M0,0 L0,5 L5,2.5 Z" fill="#3a8eff" />
-                </marker>
-                <marker id="a2" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto">
-                  <path d="M0,0 L0,5 L5,2.5 Z" fill="#3a8eff" />
-                </marker>
-              </defs>
-
-              <line x1={14} y1={gY} x2={svgW - 14} y2={gY} stroke="#222" strokeWidth={1} />
-
-              {overlapRight > overlapLeft ? (
-                <polygon
-                  points={`${c1x},${tipY} ${overlapLeft},${gY} ${overlapRight},${gY} ${c2x},${tipY}`}
-                  fill="#3a8eff"
-                  opacity={0.1}
-                />
-              ) : null}
-
-              <polygon
-                points={`${c1x},${tipY} ${c1l},${gY} ${c1r},${gY}`}
-                fill="none"
-                stroke="#f5f5f7"
-                strokeOpacity={0.38}
-                strokeWidth={1.2}
-              />
-              <polygon
-                points={`${c2x},${tipY} ${c2l},${gY} ${c2r},${gY}`}
-                fill="none"
-                stroke="#f5f5f7"
-                strokeOpacity={0.38}
-                strokeWidth={1.2}
-              />
-
-              {overlapRight > overlapLeft ? (
-                <rect
-                  x={overlapLeft}
-                  y={gY - 3}
-                  width={overlapRight - overlapLeft}
-                  height={3}
-                  fill="#3a8eff"
-                  opacity={0.65}
-                  rx={1.5}
-                />
-              ) : null}
-
-              <circle cx={c1x} cy={tipY} r={4} fill="#f5f5f7" />
-              <circle cx={c2x} cy={tipY} r={4} fill="#f5f5f7" />
-              <line
-                x1={c1x}
-                y1={tipY}
-                x2={c2x}
-                y2={tipY}
-                stroke="#3a8eff"
-                strokeDasharray="3 3"
-                strokeOpacity={0.35}
-                strokeWidth={1}
-              />
-
-              {sdist > 14 ? (
-                <>
-                  <line
-                    x1={c1x + 6}
-                    y1={tipY - 10}
-                    x2={c2x - 6}
-                    y2={tipY - 10}
-                    markerStart="url(#a1)"
-                    markerEnd="url(#a2)"
-                    stroke="#3a8eff"
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={(c1x + c2x) / 2}
-                    y={tipY - 14}
-                    textAnchor="middle"
-                    fill="#3a8eff"
-                    fontSize={9}
-                    fontWeight={600}
-                  >
-                    {distance.toFixed(1)} ft
-                  </text>
-                </>
-              ) : (
-                <text x={svgW / 2} y={tipY - 12} textAnchor="middle" fill="#3a8eff" fontSize={9} fontWeight={600}>
-                  {distance.toFixed(1)} ft
-                </text>
-              )}
-
-              <line x1={20} y1={tipY} x2={20} y2={gY} stroke="#2a2a2a" strokeWidth={1} />
-              <line x1={16} y1={tipY} x2={24} y2={tipY} stroke="#2a2a2a" strokeWidth={1} />
-              <line x1={16} y1={gY} x2={24} y2={gY} stroke="#2a2a2a" strokeWidth={1} />
-              <text
-                x={10}
-                y={(tipY + gY) / 2 + 3}
-                textAnchor="middle"
-                fill="#333"
-                fontSize={8}
-                transform={`rotate(-90,10,${(tipY + gY) / 2})`}
-              >
-                {height} ft
-              </text>
-
-              {overlapRight - overlapLeft > 24 ? (
-                <text
-                  x={(overlapLeft + overlapRight) / 2}
-                  y={gY + 13}
-                  textAnchor="middle"
-                  fill="#3a8eff"
-                  fontSize={8}
-                  opacity={0.45}
-                >
-                  {overlap}% overlap
-                </text>
-              ) : null}
-            </svg>
-          </div>
+        <div style={{ padding: '8px 0' }}>
+          <ThreeView
+            height={height}
+            pitchDeg={angleDeg}
+            spacing={spacingFromSpeed}
+            overlapPercent={overlapIou * 100}
+          />
         </div>
 
         <div className={styles.slidersSection}>
           <SliderRow
             label="Height"
             min={50}
-            max={400}
+            max={1000}
             step={1}
             value={height}
             onChange={setHeight}
             display={`${height} ft`}
-            pct={((height - 50) / 350) * 100}
+            pct={((height - 50) / 950) * 100}
+            testId="height-slider"
           />
           <SliderRow
-            label="Overlap"
-            min={10}
-            max={95}
-            step={1}
-            value={overlap}
-            onChange={setOverlap}
-            display={`${overlap}%`}
-            pct={((overlap - 10) / 85) * 100}
+            label="Speed"
+            min={MIN_SPEED_FTS}
+            max={MAX_SPEED_FTS}
+            step={0.05}
+            value={Math.min(MAX_SPEED_FTS, Math.max(MIN_SPEED_FTS, speedFtsManual))}
+            onChange={(v) => setSpeedFtsManual(v)}
+            display={`${speedFtsManual.toFixed(2)} ft/s · ${(speedFtsManual * 0.681818).toFixed(2)} mph (max ${MAX_SPEED_MPH} mph)`}
+            pct={((Math.min(MAX_SPEED_FTS, Math.max(MIN_SPEED_FTS, speedFtsManual)) - MIN_SPEED_FTS) / (MAX_SPEED_FTS - MIN_SPEED_FTS)) * 100}
+            testId="speed-slider"
           />
           <p className={styles.footnote}>
-            footprint {footprint.toFixed(0)} ft · spacing {distance.toFixed(1)} ft · {rotTime.toFixed(1)}s/pt
+            gimbal &minus;{angleDeg.toFixed(0)}° &middot; hyp {hypotenuse.toFixed(0)} ft &middot; spacing {spacingFromSpeed.toFixed(1)} ft &middot; {rotTime.toFixed(1)}s/pt
           </p>
         </div>
       </div>

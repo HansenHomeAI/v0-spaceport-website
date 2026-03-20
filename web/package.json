@@ -9,6 +9,9 @@
     "build": "next build",
     "prestart": "node scripts/copy-cesium-assets.cjs",
     "start": "next start",
+    "test:camera-overlap": "bash scripts/run-camera-overlap-full-test.sh",
+    "test:camera-overlap-math": "tsx lib/cameraOverlapMath.unit.test.ts",
+    "test:camera-overlap-e2e": "node scripts/e2e-camera-overlap.mjs",
     "cf:build": "npx @cloudflare/next-on-pages",
     "cf:preview": "npx wrangler pages dev ./.vercel/output/static"
   },
@@ -45,6 +48,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.31",
     "playwright": "^1.48.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.2",
     "wrangler": "^4.28.1"
   },
