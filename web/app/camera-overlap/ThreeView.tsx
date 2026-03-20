@@ -515,7 +515,7 @@ export default function ThreeView({
         <OrbitControls
           makeDefault
           target={[0, 0, 0]}
-          enablePan={false}
+          enablePan
           enableDamping
           dampingFactor={0.1}
           minDistance={25}
