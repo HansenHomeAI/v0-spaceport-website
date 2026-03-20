@@ -276,7 +276,7 @@ export default function CameraOverlapPage() {
       <div className={styles.contentWrapper}>
         <div style={{ padding: '0 4px' }}>
           <p className={styles.pageLabel} data-testid="camera-overlap-page-label">
-            77°×55° FOV · {((spinMode ? spinOverlapIou : overlapIou) * 100).toFixed(0)}% overlap
+            75°×55° FOV · {((spinMode ? spinOverlapIou : overlapIou) * 100).toFixed(0)}% overlap
           </p>
           <h1 className={styles.pageTitle}>
             Drone Path Spacing

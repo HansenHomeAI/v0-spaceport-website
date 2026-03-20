@@ -63,7 +63,7 @@ test.describe('Camera Overlap 3D page', () => {
 
   test('displays FOV label with overlap percent', async ({ page }) => {
     const label = page.locator('[data-testid="camera-overlap-page-label"]');
-    await expect(label).toContainText('77°×55° FOV');
+    await expect(label).toContainText('75°×55° FOV');
     await expect(label).toContainText('% overlap');
   });
 

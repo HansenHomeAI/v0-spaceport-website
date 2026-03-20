@@ -6,8 +6,8 @@ export const TAN_30 = Math.tan(Math.PI / 6);
 export const FULL_ROT_SEC = 20;
 export const TRANSIT_SEC = 1;
 
-// Rectangular FOV — 77° horizontal (cross-track), 55° vertical (along-track)
-export const FOV_H_DEG = 77;
+// Rectangular FOV — 75° horizontal (cross-track), 55° vertical (along-track)
+export const FOV_H_DEG = 75;
 export const FOV_V_DEG = 55;
 export const TAN_H = Math.tan((FOV_H_DEG / 2) * Math.PI / 180);
 export const TAN_V = Math.tan((FOV_V_DEG / 2) * Math.PI / 180);
@@ -62,7 +62,7 @@ export type GroundQuad = [Vec3, Vec3, Vec3, Vec3]; // 4 ground corners [x, y, 0]
  * survey line with the gimbal aimed out the side of the aircraft.
  *
  * FOV: 55° (TAN_V) spans **along-track** (sensor vertical → ground X);
- * 77° (TAN_H) spans **cross-track** (sensor horizontal → ground Y via image-up in YZ).
+ * 75° (TAN_H) spans **cross-track** (sensor horizontal → ground Y via image-up in YZ).
  *
  * Returns corners in order: [nearLeft, nearRight, farRight, farLeft] for quad winding.
  *
@@ -96,7 +96,7 @@ export function groundFootprint(
   const rightY = -sinH;
   const rightZ = 0;
 
-  // Camera-up vector (77° FOV).
+  // Camera-up vector (75° FOV).
   // H=0: (0, sinT, cosT) — same as before.
   const upX = sinH * sinT;
   const upY = cosH * sinT;
