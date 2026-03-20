@@ -45,3 +45,4 @@ touch-retest 2026-03-07T04:05:55Z
 2026-03-16T00:00:00Z - Rebuild preview after removing accordion height cap that hid battery buttons
 2026-03-16T17:31:00Z - Spin mode refinement controls and lambda override wiring
 2026-03-16T23:34:00Z - Fix spin mode toggle reset so refinement controls stay visible
+2026-03-20T12:00:00Z - Camera overlap gimbal distribution card + multi-waypoint 3D viewer
