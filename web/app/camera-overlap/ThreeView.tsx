@@ -684,8 +684,8 @@ export type ThreeViewProps = {
   /** Total heading arc swept during the capture window (degrees). Spin mode only. */
   captureArcDeg?: number;
   /**
-   * Flat spin: yaw angle (deg) per capture at index i. From page: min(i·Δθ, arc) with
-   * Δθ = ω·(interval_ft/speed) so RPM stays fixed when interval changes.
+   * Flat spin: yaw angle (deg) per capture at index i. From page: i·Δθ with
+   * Δθ = ω·(interval_ft/speed); headings are not clamped to the capture arc.
    */
   spinHeadingDegs?: number[];
 };
@@ -697,8 +697,8 @@ function footprintColor(i: number, n: number): string {
   return `hsl(${h}, 72%, ${l}%)`;
 }
 
-function spinFootprintColor(headingDeg: number, arcDeg: number): string {
-  const t = arcDeg > 0 ? headingDeg / arcDeg : 0;
+function spinFootprintColor(headingDeg: number, maxHeadingDeg: number): string {
+  const t = maxHeadingDeg > 0 ? Math.min(1, Math.max(0, headingDeg / maxHeadingDeg)) : 0;
   const h = 200 - t * 120;
   return `hsl(${(h + 360) % 360}, 80%, 62%)`;
 }
@@ -804,6 +804,11 @@ export default function ThreeView({
     ));
   }, [spinMode, externalSpinHeadingDegs, pitchDegs.length, numSpinCaptures, captureArcDeg]);
 
+  const spinHeadingMaxDeg = useMemo(
+    () => Math.max(1e-9, ...spinHeadings.map((h) => Math.abs(h))),
+    [spinHeadings],
+  );
+
   const spinAlongX = useMemo(
     () => Array.from({ length: numSpinCaptures }, (_, i) => (
       (i - (numSpinCaptures - 1) / 2) * captureIntervalFt
@@ -852,10 +857,10 @@ export default function ThreeView({
   const activeColors = useMemo(
     () => Array.from({ length: activeN }, (_, i) => (
       spinMode
-        ? spinFootprintColor(activeHeadings[i] ?? 0, captureArcDeg)
+        ? spinFootprintColor(activeHeadings[i] ?? 0, spinHeadingMaxDeg)
         : footprintColor(i, activeN)
     )),
-    [activeN, spinMode, activeHeadings, captureArcDeg],
+    [activeN, spinMode, activeHeadings, spinHeadingMaxDeg],
   );
 
   const activeBounds = useMemo(() => {

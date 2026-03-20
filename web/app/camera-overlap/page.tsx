@@ -226,24 +226,18 @@ export default function CameraOverlapPage() {
     [spacingFromSpeed, activeCaptureIntervalFt],
   );
 
-  const spinWaypointCountFromPathSpan = useMemo(
+  /** Along-track sample count follows 3D path span only; yaw continues Δθ per shot (not clamped to capture arc). */
+  const effectiveSpinCaptures = useMemo(
     () => waypointCountFromLinearPathSpan(viewerPathLengthFt, activeCaptureIntervalFt),
     [viewerPathLengthFt, activeCaptureIntervalFt],
-  );
-
-  const effectiveSpinCaptures = useMemo(
-    () => Math.max(2, Math.min(spinWaypointCountFromPathSpan, nCapturesFromYawStep)),
-    [spinWaypointCountFromPathSpan, nCapturesFromYawStep],
   );
 
   const spinHeadings = useMemo(
     () => {
       const d = Math.max(1e-9, deltaHeadingPerCaptureDeg);
-      return Array.from({ length: effectiveSpinCaptures }, (_, i) =>
-        Math.min(i * d, effectiveCapDeg),
-      );
+      return Array.from({ length: effectiveSpinCaptures }, (_, i) => i * d);
     },
-    [effectiveSpinCaptures, effectiveCapDeg, deltaHeadingPerCaptureDeg],
+    [effectiveSpinCaptures, deltaHeadingPerCaptureDeg],
   );
 
   const spinAlongPositions = useMemo(
@@ -466,7 +460,6 @@ export default function CameraOverlapPage() {
           onMinAngleHeight={handleMinAngleHeight}
           onMaxAngleHeight={handleMaxAngleHeight}
           pathSpanSpacingFt={spinMode ? activeCaptureIntervalFt : spacingFromSpeed}
-          pathSpanMaxCount={spinMode ? nCapturesFromYawStep : undefined}
           viewerPathLengthFt={viewerPathLengthFt}
           onViewerPathLengthFt={setViewerPathLengthFt}
           onPitchSequenceGenerated={setPitchSequenceNeg}
@@ -531,9 +524,6 @@ export default function CameraOverlapPage() {
               <span style={{ color: 'rgba(255,255,255,0.35)' }}>
                 {' '}
                 · {spinMode ? effectiveSpinCaptures : viewerWaypointCount} pts
-                {spinMode && effectiveSpinCaptures < spinWaypointCountFromPathSpan ? (
-                  <span title="Yaw arc limits distinct headings"> · yaw cap</span>
-                ) : null}
               </span>
             </span>
           </div>
