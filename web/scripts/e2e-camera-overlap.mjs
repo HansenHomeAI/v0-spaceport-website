@@ -33,8 +33,8 @@ async function main() {
     el.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
-  const footnote = await page.getByText(/hypotenuse/).first().textContent();
-  assert.ok(footnote && /hypotenuse\s+[\d.]+/.test(footnote), `footnote missing hypotenuse value: ${footnote}`);
+  const footnote = await page.getByText(/\bhyp\b/i).first().textContent();
+  assert.ok(footnote && /\bhyp\s+[\d.]+/i.test(footnote), `footnote missing hyp value: ${footnote}`);
 
   await browser.close();
   console.log('e2e-camera-overlap.mjs: passed');
