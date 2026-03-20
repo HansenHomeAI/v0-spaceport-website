@@ -65,29 +65,41 @@ export type GroundQuad = [Vec3, Vec3, Vec3, Vec3]; // 4 ground corners [x, y, 0]
  * 77° (TAN_H) spans **cross-track** (sensor horizontal → ground Y via image-up in YZ).
  *
  * Returns corners in order: [nearLeft, nearRight, farRight, farLeft] for quad winding.
+ *
+ * @param headingDeg  Yaw rotation in degrees. 0 = camera looks in +Y (cross-track),
+ *                    matching the original side-looking convention.  Positive values
+ *                    rotate the footprint CW when viewed from above.
  */
 export function groundFootprint(
   droneX: number,
   height: number,
   pitchDeg: number,
+  headingDeg = 0,
 ): GroundQuad {
   const theta = (pitchDeg * Math.PI) / 180; // angle below horizon
   const cosT = Math.cos(theta);
   const sinT = Math.sin(theta);
 
-  // Side-looking: LOS horizontal in +Y, pitched down (same θ convention as forward case).
-  const losX = 0;
-  const losY = cosT;
+  const H = (headingDeg * Math.PI) / 180;
+  const sinH = Math.sin(H);
+  const cosH = Math.cos(H);
+
+  // Camera looks to the "right" of heading H, pitched down by theta.
+  // H=0: LOS = (0, cosT, -sinT) — backward-compatible side-looking default.
+  const losX = sinH * cosT;
+  const losY = cosH * cosT;
   const losZ = -sinT;
 
-  // Along-track on ground = +X (55°): perpendicular to LOS and world up.
-  const rightX = 1;
-  const rightY = 0;
+  // Along-track axis in the rotated frame (55° FOV).
+  // H=0: (1, 0, 0) = +X along-track — same as before.
+  const rightX = cosH;
+  const rightY = -sinH;
   const rightZ = 0;
 
-  // Cross-track spread in the YZ plane (77°).
-  const upX = 0;
-  const upY = sinT;
+  // Camera-up vector (77° FOV).
+  // H=0: (0, sinT, cosT) — same as before.
+  const upX = sinH * sinT;
+  const upY = cosH * sinT;
   const upZ = cosT;
 
   const corners: Vec3[] = [];
@@ -97,13 +109,9 @@ export function groundFootprint(
       const dy = losY + sv * TAN_V * rightY + sh * TAN_H * upY;
       const dz = losZ + sv * TAN_V * rightZ + sh * TAN_H * upZ;
 
-      // Project ray to ground (z=0): t = height / |dz|.
-      // For below-horizon rays (dz < 0) this is the exact ground hit.
-      // For above-horizon rays (dz > 0, pitch < 38.5°) this is a "mirror" clip —
-      // the same slant range as a symmetric below-horizon ray — giving a
-      // pitch-dependent far edge instead of a fixed bigT that looks identical
-      // for all pitches in [0°, 38.5°).
-      // 1/300 cap: limits max slant to 300× height near the 38.5° threshold.
+      // dz is independent of heading — only pitch determines whether a ray
+      // is above or below the horizon.  Mirror-clip keeps the far edge
+      // pitch-dependent; 1/300 caps slant to 300× height near the threshold.
       const t = height / Math.max(Math.abs(dz), 1 / 300);
       corners.push([droneX + dx * t, dy * t, 0]);
     }
@@ -172,19 +180,25 @@ export function footprintOverlapIou(a: FootprintBounds, b: FootprintBounds): num
 }
 
 /**
- * Mean IoU between consecutive footprints along the flight line (N ≥ 2 waypoints).
+ * Mean IoU between consecutive footprints (N ≥ 2 waypoints).
+ *
+ * Accepts an optional `headingDegs` array for spin-mode captures where each
+ * waypoint faces a different direction.  Defaults to all-0 (side-looking).
  */
 export function averageAdjacentFootprintIou(
   alongPositions: number[],
   height: number,
   pitchDegsBelowHorizon: number[],
+  headingDegs: number[] = [],
 ): number {
   const n = alongPositions.length;
   if (n < 2 || pitchDegsBelowHorizon.length !== n) return 0;
   let sum = 0;
   for (let i = 0; i < n - 1; i++) {
-    const a = groundFootprint(alongPositions[i], height, pitchDegsBelowHorizon[i]);
-    const b = groundFootprint(alongPositions[i + 1], height, pitchDegsBelowHorizon[i + 1]);
+    const hA = headingDegs[i] ?? 0;
+    const hB = headingDegs[i + 1] ?? 0;
+    const a = groundFootprint(alongPositions[i], height, pitchDegsBelowHorizon[i], hA);
+    const b = groundFootprint(alongPositions[i + 1], height, pitchDegsBelowHorizon[i + 1], hB);
     sum += footprintOverlapIou(footprintBounds(a), footprintBounds(b));
   }
   return sum / (n - 1);

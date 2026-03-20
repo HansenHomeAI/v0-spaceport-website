@@ -120,6 +120,8 @@ export default function CameraOverlapPage() {
   const [customCaptureRing, setCustomCaptureRing] = useState(true);
   const [viewerWaypointCount, setViewerWaypointCount] = useState(2);
   const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
+  const [spinMode, setSpinMode] = useState(false);
+  const [captureIntervalFt, setCaptureIntervalFt] = useState(6);
 
   const dragIdx = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -173,6 +175,40 @@ export default function CameraOverlapPage() {
       Array.from({ length: viewerWaypointCount }, (_, i) => (i - (viewerWaypointCount - 1) / 2) * spacingFromSpeed),
     [viewerWaypointCount, spacingFromSpeed],
   );
+
+  // Spin-mode derived values ─────────────────────────────────────────────────
+  const numSpinCaptures = useMemo(
+    () => Math.max(2, Math.min(30, Math.round(spacingFromSpeed / captureIntervalFt))),
+    [spacingFromSpeed, captureIntervalFt],
+  );
+
+  const spinHeadings = useMemo(
+    () => Array.from({ length: numSpinCaptures }, (_, i) =>
+      numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * effectiveCapDeg : 0,
+    ),
+    [numSpinCaptures, effectiveCapDeg],
+  );
+
+  const spinAlongPositions = useMemo(
+    () => Array.from({ length: numSpinCaptures }, (_, i) =>
+      (i - (numSpinCaptures - 1) / 2) * captureIntervalFt,
+    ),
+    [numSpinCaptures, captureIntervalFt],
+  );
+
+  const spinPitchDegs = useMemo(() => {
+    const base = getGimbalAngleDeg(height, minAngle, minAngleHeight, maxAngle, maxAngleHeight);
+    return Array.from({ length: numSpinCaptures }, (_, i) => {
+      const s = pitchSequenceNeg[i % Math.max(1, pitchSequenceNeg.length)];
+      return typeof s === 'number' ? Math.abs(s) : base;
+    });
+  }, [height, minAngle, minAngleHeight, maxAngle, maxAngleHeight, numSpinCaptures, pitchSequenceNeg]);
+
+  const spinOverlapIou = useMemo(
+    () => averageAdjacentFootprintIou(spinAlongPositions, height, spinPitchDegs, spinHeadings),
+    [spinAlongPositions, height, spinPitchDegs, spinHeadings],
+  );
+  // ──────────────────────────────────────────────────────────────────────────
 
   const overlapIou = useMemo(
     () => averageAdjacentFootprintIou(alongPositions, height, pitchDegsViewer),
@@ -233,7 +269,7 @@ export default function CameraOverlapPage() {
       <div className={styles.contentWrapper}>
         <div style={{ padding: '0 4px' }}>
           <p className={styles.pageLabel} data-testid="camera-overlap-page-label">
-            77°×55° FOV · {(overlapIou * 100).toFixed(0)}% overlap
+            77°×55° FOV · {((spinMode ? spinOverlapIou : overlapIou) * 100).toFixed(0)}% overlap
           </p>
           <h1 className={styles.pageTitle}>
             Drone Path Spacing
@@ -378,11 +414,30 @@ export default function CameraOverlapPage() {
         />
 
         <div style={{ padding: '8px 0' }}>
+          <div className={styles.viewModeToggle}>
+            <button
+              type="button"
+              className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
+              onClick={() => setSpinMode(false)}
+            >
+              Linear
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewModeBtn} ${spinMode ? styles.viewModeBtnActive : ''}`}
+              onClick={() => setSpinMode(true)}
+            >
+              Flat spin
+            </button>
+          </div>
           <ThreeView
             height={height}
-            pitchDegs={pitchDegsViewer}
+            pitchDegs={spinMode ? spinPitchDegs : pitchDegsViewer}
             spacing={spacingFromSpeed}
-            overlapPercent={overlapIou * 100}
+            overlapPercent={(spinMode ? spinOverlapIou : overlapIou) * 100}
+            spinMode={spinMode}
+            captureIntervalFt={captureIntervalFt}
+            captureArcDeg={effectiveCapDeg}
           />
         </div>
 
@@ -409,6 +464,19 @@ export default function CameraOverlapPage() {
             pct={((Math.min(MAX_SPEED_FTS, Math.max(MIN_SPEED_FTS, speedFtsManual)) - MIN_SPEED_FTS) / (MAX_SPEED_FTS - MIN_SPEED_FTS)) * 100}
             testId="speed-slider"
           />
+          {spinMode && (
+            <SliderRow
+              label="Capture interval"
+              min={1}
+              max={50}
+              step={1}
+              value={captureIntervalFt}
+              onChange={setCaptureIntervalFt}
+              display={`${captureIntervalFt} ft · ${numSpinCaptures} captures / spin`}
+              pct={((captureIntervalFt - 1) / 49) * 100}
+              testId="capture-interval-slider"
+            />
+          )}
           <p className={styles.footnote}>
             gimbal &minus;{angleDeg.toFixed(0)}° &middot; hyp {hypotenuse.toFixed(0)} ft &middot; spacing {spacingFromSpeed.toFixed(1)} ft &middot; {rotTime.toFixed(1)}s/pt
             {tSpin > 0 && (

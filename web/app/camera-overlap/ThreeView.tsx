@@ -194,8 +194,16 @@ function GroundAnchors({ gridSize }: { gridSize: number }) {
   );
 }
 
-/** One-time camera placement; slider/orbit changes do not reset the view. */
-function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: number }) {
+/** Camera placement on first render per mode (linear = angled, spin = bird's-eye). */
+function OrbitOriginCamera({
+  gridSize,
+  height,
+  spinMode = false,
+}: {
+  gridSize: number;
+  height: number;
+  spinMode?: boolean;
+}) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const controls = useThree((s) => s.controls);
   const didInit = useRef(false);
@@ -207,8 +215,13 @@ function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: num
     const span = Math.max(gridSize * 0.45, height * 1.1, 90);
     const dist = THREE.MathUtils.clamp(span * 0.36, 55, 520);
 
-    const dir = new THREE.Vector3(0.85, 0.38, 0.85).normalize();
-    camera.position.copy(dir.multiplyScalar(dist));
+    if (spinMode) {
+      // Top-down view so the full footprint fan is visible.
+      camera.position.set(0, dist * 1.3, dist * 0.2);
+    } else {
+      const dir = new THREE.Vector3(0.85, 0.38, 0.85).normalize();
+      camera.position.copy(dir.multiplyScalar(dist));
+    }
     camera.near = 0.4;
     camera.far = Math.max(dist * 80, 8000);
     camera.lookAt(0, 0, 0);
@@ -219,7 +232,7 @@ function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: num
       oc.target.set(0, 0, 0);
       oc.update();
     }
-  }, [camera, controls, gridSize, height]);
+  }, [camera, controls, gridSize, height, spinMode]);
 
   return null;
 }
@@ -228,11 +241,17 @@ function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: num
 
 export type ThreeViewProps = {
   height: number;
-  /** Positive degrees below horizon; one entry per along-track waypoint. */
+  /** Positive degrees below horizon; one entry per waypoint / capture. */
   pitchDegs: number[];
   spacing: number;
   /** 0–100 mean adjacent-pair IoU. */
   overlapPercent: number;
+  /** When true, visualise a flat-spin fan instead of the linear flight line. */
+  spinMode?: boolean;
+  /** Distance between successive captures along the flight path (ft). Spin mode only. */
+  captureIntervalFt?: number;
+  /** Total heading arc swept during the capture window (degrees). Spin mode only. */
+  captureArcDeg?: number;
 };
 
 function footprintColor(i: number, n: number): string {
@@ -242,12 +261,53 @@ function footprintColor(i: number, n: number): string {
   return `hsl(${h}, 72%, ${l}%)`;
 }
 
+function spinFootprintColor(headingDeg: number, arcDeg: number): string {
+  const t = arcDeg > 0 ? headingDeg / arcDeg : 0;
+  // Blue (200°) → yellow-green (80°) as heading sweeps across the arc.
+  const h = 200 - t * 120;
+  return `hsl(${(h + 360) % 360}, 80%, 62%)`;
+}
+
 export default function ThreeView({
   height,
   pitchDegs,
   spacing,
   overlapPercent,
+  spinMode = false,
+  captureIntervalFt = 6,
+  captureArcDeg = 180,
 }: ThreeViewProps) {
+
+  // ── Spin mode ──────────────────────────────────────────────────────────────
+  // Number of captures within one spin cycle = spacing / captureIntervalFt.
+  const numSpinCaptures = useMemo(
+    () => Math.max(2, Math.min(30, Math.round(spacing / captureIntervalFt))),
+    [spacing, captureIntervalFt],
+  );
+
+  const spinHeadings = useMemo(
+    () => Array.from({ length: numSpinCaptures }, (_, i) =>
+      numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * captureArcDeg : 0,
+    ),
+    [numSpinCaptures, captureArcDeg],
+  );
+
+  const spinAlongX = useMemo(
+    () => Array.from({ length: numSpinCaptures }, (_, i) =>
+      (i - (numSpinCaptures - 1) / 2) * captureIntervalFt,
+    ),
+    [numSpinCaptures, captureIntervalFt],
+  );
+
+  const spinFootprints = useMemo(() => {
+    if (!spinMode) return [];
+    return spinAlongX.map((x, i) => {
+      const pitch = pitchDegs[i % Math.max(1, pitchDegs.length)] ?? pitchDegs[0] ?? 30;
+      return groundFootprint(x, height, pitch, spinHeadings[i]);
+    });
+  }, [spinMode, spinAlongX, spinHeadings, height, pitchDegs]);
+
+  // ── Linear mode ────────────────────────────────────────────────────────────
   const n = Math.max(1, pitchDegs.length);
 
   const alongPositions = useMemo(
@@ -255,37 +315,41 @@ export default function ThreeView({
     [n, spacing],
   );
 
-  const footprints = useMemo(
+  const linearFootprints = useMemo(
     () => alongPositions.map((x, i) => groundFootprint(x, height, pitchDegs[i] ?? pitchDegs[0])),
     [alongPositions, height, pitchDegs],
   );
 
+  // ── Active set ─────────────────────────────────────────────────────────────
+  const activeFootprints = spinMode ? spinFootprints : linearFootprints;
+  const activeDroneX = spinMode ? spinAlongX : alongPositions;
+  const activeN = spinMode ? numSpinCaptures : n;
+
   const gridSize = useMemo(() => {
-    const all = footprints.flat();
-    let minX = Infinity;
-    let maxX = -Infinity;
-    let minY = Infinity;
-    let maxY = -Infinity;
-    for (const [x, y] of all) {
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+    if (activeFootprints.length === 0) return 200;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const fp of activeFootprints) {
+      for (const [x, y] of fp) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
     }
-    for (const x of alongPositions) {
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
+    for (const x of activeDroneX) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
     }
-    const span = Math.max(maxX - minX, maxY - minY, spacing * Math.max(2, n) * 0.75, height * 0.08);
-    return Math.min(span * 1.45, 6000);
-  }, [footprints, alongPositions, spacing, height, n]);
+    const span = Math.max(maxX - minX, maxY - minY, 80);
+    return Math.min(span * 1.5, 8000);
+  }, [activeFootprints, activeDroneX]);
 
   const dronePositions = useMemo(
-    () => alongPositions.map((x) => mathDroneToThree(x, height, 0)),
-    [alongPositions, height],
+    () => activeDroneX.map((x) => mathDroneToThree(x, height, 0)),
+    [activeDroneX, height],
   );
 
-  const lineOpacity = n > 14 ? 0.28 : n > 8 ? 0.4 : 0.55;
+  const lineOpacity = activeN > 14 ? 0.22 : activeN > 8 ? 0.35 : 0.52;
 
   const maxOrbit = useMemo(
     () => Math.max(gridSize * 4, height * 6, 2000),
@@ -305,6 +369,7 @@ export default function ThreeView({
       }}
     >
       <Canvas
+        key={spinMode ? 'spin' : 'linear'}
         camera={{ fov: 48, near: 0.1, far: 500000 }}
         gl={{ antialias: true, alpha: false }}
         shadows
@@ -338,21 +403,25 @@ export default function ThreeView({
           dampingFactor={0.1}
           minDistance={25}
           maxDistance={maxOrbit}
-          minPolarAngle={0.15}
+          minPolarAngle={spinMode ? 0.05 : 0.15}
           maxPolarAngle={Math.PI / 2 - 0.08}
         />
 
-        <OrbitOriginCamera gridSize={gridSize} height={height} />
+        <OrbitOriginCamera gridSize={gridSize} height={height} spinMode={spinMode} />
 
         <group rotation={[0, Math.PI / 2, 0]}>
           <group>
             <GroundGrid size={gridSize} />
             <GroundAnchors gridSize={gridSize} />
 
-            {footprints.map((quad, i) => {
+            {activeFootprints.map((quad, i) => {
               const dronePos = dronePositions[i];
-              const col = footprintColor(i, n);
-              const fpOpacity = 0.14 + (i / Math.max(1, n - 1)) * 0.12;
+              const col = spinMode
+                ? spinFootprintColor(spinHeadings[i], captureArcDeg)
+                : footprintColor(i, activeN);
+              const fpOpacity = spinMode
+                ? 0.18
+                : 0.14 + (i / Math.max(1, activeN - 1)) * 0.12;
               return (
                 <group key={i}>
                   <DroneMarker position={dronePos} />
@@ -366,12 +435,25 @@ export default function ThreeView({
       </Canvas>
 
       <div className={styles.threeViewHud} data-testid="three-view-hud">
-        <div className={styles.threeViewHudPrimary} data-testid="overlap-hud-primary">
-          Overlap: {overlapPercent.toFixed(0)}%
-        </div>
-        <div className={styles.threeViewHudMeta} data-testid="overlap-hud-meta">
-          {n} pts · {spacing.toFixed(0)} ft apart · {height} ft AGL
-        </div>
+        {spinMode ? (
+          <>
+            <div className={styles.threeViewHudPrimary} data-testid="overlap-hud-primary">
+              Spin: {captureArcDeg.toFixed(0)}° arc
+            </div>
+            <div className={styles.threeViewHudMeta} data-testid="overlap-hud-meta">
+              {numSpinCaptures} captures · {captureIntervalFt} ft · {overlapPercent.toFixed(0)}% adj overlap · {height} ft AGL
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.threeViewHudPrimary} data-testid="overlap-hud-primary">
+              Overlap: {overlapPercent.toFixed(0)}%
+            </div>
+            <div className={styles.threeViewHudMeta} data-testid="overlap-hud-meta">
+              {n} pts · {spacing.toFixed(0)} ft apart · {height} ft AGL
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
