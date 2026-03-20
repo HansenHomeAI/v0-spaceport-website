@@ -98,12 +98,18 @@ test('new project modal renders altitude in the live map and restores camera aft
   const centerX = bounds.x + bounds.width / 2;
   const centerY = bounds.y + bounds.height / 2;
   expect(await readMapPitch(page)).toBeLessThan(1);
-  await page.keyboard.down('Control');
+  await page.evaluate(() => {
+    const canvas = document.querySelector('.mapboxgl-canvas');
+    if (!(canvas instanceof HTMLElement)) {
+      throw new Error('Mapbox canvas not found');
+    }
+    canvas.focus();
+  });
   await page.mouse.move(centerX, centerY);
-  await page.mouse.down();
-  await page.mouse.move(centerX + 100, centerY + 140, { steps: 20 });
-  await page.mouse.up();
-  await page.keyboard.up('Control');
+  for (let step = 0; step < 8; step += 1) {
+    await page.keyboard.press('Shift+ArrowUp');
+    await page.waitForTimeout(200);
+  }
 
   await page.waitForFunction(() => {
     const wrapper = document.querySelector('.map-wrapper');
