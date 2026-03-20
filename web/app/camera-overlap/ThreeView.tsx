@@ -182,22 +182,20 @@ function CoverageOverlay({
 
 // ---------------------------------------------------------------------------
 
+/** Drone body at local origin — parent `<group position={dronePos}>` places it in scene. */
 function DroneMarker({
-  position,
   pitchDeg,
   heightFt,
 }: {
-  position: [number, number, number];
   pitchDeg?: number;
   heightFt?: number;
 }) {
-  const y = position[1];
+  const y = heightFt ?? 100;
   const r = Math.max(2, y * 0.009);
   const [hovered, setHovered] = useState(false);
 
   return (
     <group
-      position={position}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
@@ -211,10 +209,6 @@ function DroneMarker({
           emissive={hovered ? '#ffd60a' : '#222'}
           emissiveIntensity={hovered ? 0.35 : 0.16}
         />
-      </mesh>
-      <mesh position={[0, -y / 2, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, y, 6]} />
-        <meshStandardMaterial color="#333" transparent opacity={0.25} />
       </mesh>
       {hovered && pitchDeg !== undefined && (
         <Html
@@ -236,7 +230,7 @@ function DroneMarker({
               whiteSpace: 'nowrap',
             }}
           >
-            −{pitchDeg.toFixed(1)}° · {heightFt ?? Math.round(y)} ft AGL
+            −{pitchDeg.toFixed(1)}° · {Math.round(y)} ft AGL
           </div>
         </Html>
       )}
@@ -283,7 +277,11 @@ function FootprintQuad({
   );
 }
 
-function FrustumLines({
+/**
+ * Frustum edges from the drone (local origin) to ground corners — must live in the same
+ * `<group position={dronePos}>` as the sphere so drei `Line` shares the transform.
+ */
+function FrustumConeLines({
   dronePos,
   quad,
   lineOpacity = 0.55,
@@ -297,10 +295,43 @@ function FrustumLines({
     for (const corner of quad) {
       const g = mathGroundToThree(corner);
       edges.push([
-        new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]),
-        new THREE.Vector3(g[0], g[1], g[2]),
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(
+          g[0] - dronePos[0],
+          g[1] - dronePos[1],
+          g[2] - dronePos[2],
+        ),
       ]);
     }
+    return edges;
+  }, [dronePos, quad]);
+
+  return (
+    <>
+      {lines.map((pts, i) => (
+        <Line
+          key={i}
+          points={[pts[0], pts[1]]}
+          color="#888"
+          lineWidth={1}
+          transparent
+          opacity={lineOpacity}
+        />
+      ))}
+    </>
+  );
+}
+
+/** Ground footprint border in scene space (sibling of the drone group). */
+function FrustumFootprintBorder({
+  quad,
+  lineOpacity = 0.55,
+}: {
+  quad: GroundQuad;
+  lineOpacity?: number;
+}) {
+  const lines = useMemo(() => {
+    const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
     for (let i = 0; i < 4; i++) {
       const c1 = mathGroundToThree(quad[i]);
       const c2 = mathGroundToThree(quad[(i + 1) % 4]);
@@ -310,7 +341,7 @@ function FrustumLines({
       ]);
     }
     return edges;
-  }, [dronePos, quad]);
+  }, [quad]);
 
   return (
     <>
@@ -752,12 +783,14 @@ export default function ThreeView({
               : 0.05 + (i / Math.max(1, activeN - 1)) * 0.05;
             return (
               <group key={i}>
-                <DroneMarker
-                  position={dronePos}
-                  pitchDeg={activePitchDegs[i]}
-                  heightFt={height}
-                />
-                <FrustumLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
+                <group position={dronePos}>
+                  <DroneMarker
+                    pitchDeg={activePitchDegs[i]}
+                    heightFt={height}
+                  />
+                  <FrustumConeLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
+                </group>
+                <FrustumFootprintBorder quad={quad} lineOpacity={lineOpacity} />
                 <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} />
               </group>
             );
