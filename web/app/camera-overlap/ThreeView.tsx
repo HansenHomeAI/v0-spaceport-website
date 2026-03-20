@@ -328,6 +328,40 @@ function FrustumLines({
   );
 }
 
+function DirectionVector({
+  dronePos,
+  pitchDeg,
+  headingDeg,
+  length = 22,
+}: {
+  dronePos: [number, number, number];
+  pitchDeg: number;
+  headingDeg: number;
+  length?: number;
+}) {
+  const end = useMemo(() => {
+    const dir = buildCameraRayLocal(pitchDeg, headingDeg, 0, 0);
+    return new THREE.Vector3(
+      dronePos[0] + dir.x * length,
+      dronePos[1] + dir.y * length,
+      dronePos[2] + dir.z * length,
+    );
+  }, [dronePos, pitchDeg, headingDeg, length]);
+
+  return (
+    <Line
+      points={[
+        new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]),
+        end,
+      ]}
+      color="#ffffff"
+      lineWidth={2}
+      transparent
+      opacity={0.95}
+    />
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Fixed town scene — absolute positions in feet, never re-randomised.
 // ---------------------------------------------------------------------------
@@ -756,6 +790,12 @@ export default function ThreeView({
                   position={dronePos}
                   pitchDeg={activePitchDegs[i]}
                   heightFt={height}
+                />
+                <DirectionVector
+                  dronePos={dronePos}
+                  pitchDeg={activePitchDegs[i] ?? 0}
+                  headingDeg={activeHeadings[i] ?? 0}
+                  length={Math.max(18, height * 0.14)}
                 />
                 <FrustumLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
                 <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} />
