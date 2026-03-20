@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useMemo, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Line, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
+  TAN_H,
+  TAN_V,
   groundFootprint,
   type GroundQuad,
 } from '../../lib/cameraOverlapMath';
@@ -22,73 +24,158 @@ function mathDroneToThree(along: number, height: number, cross: number): [number
   return [along, height, cross];
 }
 
-// ---------------------------------------------------------------------------
-// Camera projection spotlight — illuminates exactly what the drone sees.
-// ---------------------------------------------------------------------------
+type CoveragePatchData = {
+  position: [number, number, number];
+  normal: [number, number, number];
+  color: string;
+  size: number;
+};
 
-const MAX_SHADOW_LIGHTS = 6;
-const HALF_FOV_RAD = (77 / 2) * (Math.PI / 180); // wider axis
+function sampleOffsets(count: number): number[] {
+  if (count <= 1) return [0];
+  return Array.from({ length: count }, (_, i) => (((i / (count - 1)) * 2) - 1) * 0.92);
+}
 
-function CameraLight({
-  dronePos,
-  pitchDeg,
-  headingDeg = 0,
-  color = '#c8daf8',
-  enableShadow = true,
-  intensity = 3.5,
-}: {
-  dronePos: [number, number, number];
-  pitchDeg: number;
-  headingDeg?: number;
-  color?: string;
-  enableShadow?: boolean;
-  intensity?: number;
-}) {
-  const lightRef = useRef<THREE.SpotLight>(null);
-  const targetRef = useRef<THREE.Object3D>(null);
+function coverageSamplingFor(activeCount: number): { cols: number; rows: number; size: number } {
+  if (activeCount <= 4) return { cols: 11, rows: 7, size: 8 };
+  if (activeCount <= 10) return { cols: 8, rows: 5, size: 7 };
+  return { cols: 6, rows: 4, size: 6 };
+}
 
+function buildCameraRayLocal(
+  pitchDeg: number,
+  headingDeg: number,
+  alongSample: number,
+  crossSample: number,
+): THREE.Vector3 {
   const theta = (pitchDeg * Math.PI) / 180;
   const H = (headingDeg * Math.PI) / 180;
+  const sinT = Math.sin(theta);
+  const cosT = Math.cos(theta);
+  const sinH = Math.sin(H);
+  const cosH = Math.cos(H);
 
-  // LOS direction in Three.js local coords (inside the rotated group):
-  //   math LOS = (sinH·cosT, cosH·cosT, -sinT)
-  //   three    = (math.x, math.z, math.y)
-  const losX = Math.sin(H) * Math.cos(theta);
-  const losY = -Math.sin(theta);
-  const losZ = Math.cos(H) * Math.cos(theta);
+  // Same basis as `groundFootprint`, converted into the local coordinates of the
+  // rotated scene group: three = [math.x, math.z, math.y].
+  const los = new THREE.Vector3(sinH * cosT, -sinT, cosH * cosT);
+  const right = new THREE.Vector3(cosH, 0, -sinH);
+  const up = new THREE.Vector3(sinH * sinT, cosT, cosH * sinT);
 
-  const reach = dronePos[1] * 4;
-  const tgtX = dronePos[0] + losX * reach;
-  const tgtY = dronePos[1] + losY * reach;
-  const tgtZ = dronePos[2] + losZ * reach;
+  return los
+    .addScaledVector(right, alongSample * TAN_V)
+    .addScaledVector(up, crossSample * TAN_H)
+    .normalize();
+}
+
+function CoveragePatch({
+  position,
+  normal,
+  color,
+  size,
+}: CoveragePatchData) {
+  const quaternion = useMemo(() => {
+    const q = new THREE.Quaternion();
+    q.setFromUnitVectors(
+      new THREE.Vector3(0, 0, 1),
+      new THREE.Vector3(normal[0], normal[1], normal[2]).normalize(),
+    );
+    return q;
+  }, [normal]);
+
+  return (
+    <mesh position={position} quaternion={quaternion} renderOrder={8}>
+      <planeGeometry args={[size, size]} />
+      <meshBasicMaterial
+        color={color}
+        transparent
+        opacity={0.22}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        polygonOffset
+        polygonOffsetFactor={-3}
+        polygonOffsetUnits={-3}
+        toneMapped={false}
+      />
+    </mesh>
+  );
+}
+
+function CoverageOverlay({
+  spaceRef,
+  coverageRootRef,
+  dronePositions,
+  pitchDegs,
+  headingDegs,
+  colors,
+}: {
+  spaceRef: React.RefObject<THREE.Group | null>;
+  coverageRootRef: React.RefObject<THREE.Group | null>;
+  dronePositions: [number, number, number][];
+  pitchDegs: number[];
+  headingDegs: number[];
+  colors: string[];
+}) {
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (lightRef.current && targetRef.current) {
-      lightRef.current.target = targetRef.current;
-    }
-  });
+    setMounted(true);
+  }, []);
 
-  const mapSize = enableShadow ? 512 : 0;
+  const patches = useMemo(() => {
+    if (!mounted || !spaceRef.current || !coverageRootRef.current || dronePositions.length === 0) {
+      return [] as CoveragePatchData[];
+    }
+
+    const { cols, rows, size } = coverageSamplingFor(dronePositions.length);
+    const alongOffsets = sampleOffsets(cols);
+    const crossOffsets = sampleOffsets(rows);
+    const raycaster = new THREE.Raycaster();
+    const results: CoveragePatchData[] = [];
+    const space = spaceRef.current;
+    const coverageRoot = coverageRootRef.current;
+
+    for (let i = 0; i < dronePositions.length; i++) {
+      const dronePos = dronePositions[i];
+      const pitchDeg = pitchDegs[i] ?? pitchDegs[0] ?? 30;
+      const headingDeg = headingDegs[i] ?? 0;
+      const color = colors[i] ?? colors[0] ?? '#3a8eff';
+      const originWorld = space.localToWorld(new THREE.Vector3(...dronePos));
+
+      for (const alongSample of alongOffsets) {
+        for (const crossSample of crossOffsets) {
+          const dirLocal = buildCameraRayLocal(pitchDeg, headingDeg, alongSample, crossSample);
+          const dirWorld = dirLocal.clone().transformDirection(space.matrixWorld);
+          raycaster.set(originWorld, dirWorld);
+          raycaster.near = 0.5;
+          raycaster.far = Math.max(1600, dronePos[1] * 14);
+
+          const hit = raycaster.intersectObject(coverageRoot, true).find((entry) => entry.face !== null);
+          if (!hit?.face) continue;
+
+          const normalWorld = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
+          const pointWorld = hit.point.clone().addScaledVector(normalWorld, 0.25);
+
+          results.push({
+            position: [pointWorld.x, pointWorld.y, pointWorld.z],
+            normal: [normalWorld.x, normalWorld.y, normalWorld.z],
+            color,
+            size,
+          });
+        }
+      }
+    }
+
+    return results;
+  }, [mounted, spaceRef, coverageRootRef, dronePositions, pitchDegs, headingDegs, colors]);
 
   return (
     <group>
-      <spotLight
-        ref={lightRef}
-        position={dronePos}
-        angle={HALF_FOV_RAD}
-        penumbra={0.18}
-        intensity={intensity}
-        color={color}
-        distance={0}
-        decay={0.8}
-        castShadow={enableShadow}
-        shadow-mapSize-width={mapSize}
-        shadow-mapSize-height={mapSize}
-        shadow-camera-near={1}
-        shadow-camera-far={reach * 2}
-        shadow-bias={-0.0008}
-      />
-      <object3D ref={targetRef} position={[tgtX, tgtY, tgtZ]} />
+      {patches.map((patch, i) => (
+        <CoveragePatch
+          key={`${i}-${patch.position[0].toFixed(1)}-${patch.position[1].toFixed(1)}-${patch.position[2].toFixed(1)}`}
+          {...patch}
+        />
+      ))}
     </group>
   );
 }
@@ -111,12 +198,19 @@ function DroneMarker({
   return (
     <group
       position={position}
-      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
       onPointerOut={() => setHovered(false)}
     >
       <mesh>
         <sphereGeometry args={[r, 12, 12]} />
-        <meshStandardMaterial color={hovered ? '#ffd60a' : '#f5f5f7'} emissive={hovered ? '#ffd60a' : '#444'} emissiveIntensity={hovered ? 0.4 : 0.3} />
+        <meshStandardMaterial
+          color={hovered ? '#ffd60a' : '#f5f5f7'}
+          emissive={hovered ? '#ffd60a' : '#222'}
+          emissiveIntensity={hovered ? 0.35 : 0.16}
+        />
       </mesh>
       <mesh position={[0, -y / 2, 0]}>
         <cylinderGeometry args={[0.5, 0.5, y, 6]} />
@@ -129,17 +223,19 @@ function DroneMarker({
           distanceFactor={120}
           style={{ pointerEvents: 'none' }}
         >
-          <div style={{
-            background: 'rgba(10, 10, 10, 0.92)',
-            border: '1px solid #3a8eff',
-            borderRadius: 6,
-            color: '#f5f5f7',
-            fontFamily: 'ui-monospace, monospace',
-            fontSize: 11,
-            fontWeight: 500,
-            padding: '4px 9px',
-            whiteSpace: 'nowrap',
-          }}>
+          <div
+            style={{
+              background: 'rgba(10, 10, 10, 0.92)',
+              border: '1px solid #3a8eff',
+              borderRadius: 6,
+              color: '#f5f5f7',
+              fontFamily: 'ui-monospace, monospace',
+              fontSize: 11,
+              fontWeight: 500,
+              padding: '4px 9px',
+              whiteSpace: 'nowrap',
+            }}
+          >
             −{pitchDeg.toFixed(1)}° · {heightFt ?? Math.round(y)} ft AGL
           </div>
         </Html>
@@ -162,7 +258,7 @@ function FootprintQuad({
     const verts: number[] = [];
     for (const c of quad) {
       const [tx, ty, tz] = mathGroundToThree(c);
-      verts.push(tx, ty + 1.2, tz);
+      verts.push(tx, ty + 0.35, tz);
     }
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(verts), 3));
     g.setIndex([0, 1, 2, 0, 2, 3]);
@@ -171,16 +267,17 @@ function FootprintQuad({
   }, [quad]);
 
   return (
-    <mesh geometry={geo}>
-      <meshStandardMaterial
+    <mesh geometry={geo} renderOrder={3}>
+      <meshBasicMaterial
         color={color}
         transparent
         opacity={opacity}
         side={THREE.DoubleSide}
         depthWrite={false}
         polygonOffset
-        polygonOffsetFactor={-1}
-        polygonOffsetUnits={-1}
+        polygonOffsetFactor={-2}
+        polygonOffsetUnits={-2}
+        toneMapped={false}
       />
     </mesh>
   );
@@ -282,116 +379,105 @@ function TreeFixed({
   );
 }
 
-/** Dense town at fixed world coordinates — independent of any scene parameter. */
-function TownScene() {
+function TownScene({ rootRef }: { rootRef?: React.Ref<THREE.Group> }) {
   return (
-    <group>
-      {/* Ground plane — extends well beyond town to fill the horizon */}
+    <group ref={rootRef}>
       <mesh position={[0, 0.04, 0]} receiveShadow>
         <boxGeometry args={[3000, 0.08, 3000]} />
         <meshStandardMaterial color="#1c2a1c" roughness={1} />
       </mesh>
 
-      {/* ── Road grid ── */}
-      <Road x={0}    z={0}    w={900} d={24} />
-      <Road x={0}    z={0}    w={24}  d={900} />
-      <Road x={0}    z={148}  w={700} d={14} />
-      <Road x={0}    z={-148} w={700} d={14} />
-      <Road x={148}  z={0}    w={14}  d={700} />
-      <Road x={-148} z={0}    w={14}  d={700} />
-      <Road x={0}    z={300}  w={500} d={12} />
-      <Road x={0}    z={-300} w={500} d={12} />
-      <Road x={300}  z={0}    w={12}  d={500} />
-      <Road x={-300} z={0}    w={12}  d={500} />
+      <Road x={0} z={0} w={900} d={24} />
+      <Road x={0} z={0} w={24} d={900} />
+      <Road x={0} z={148} w={700} d={14} />
+      <Road x={0} z={-148} w={700} d={14} />
+      <Road x={148} z={0} w={14} d={700} />
+      <Road x={-148} z={0} w={14} d={700} />
+      <Road x={0} z={300} w={500} d={12} />
+      <Road x={0} z={-300} w={500} d={12} />
+      <Road x={300} z={0} w={12} d={500} />
+      <Road x={-300} z={0} w={12} d={500} />
 
-      {/* ── NE block: office/commercial ── */}
-      <Building x={52}  z={50}  w={36} d={30} h={58}  color="#5a6070" />
-      <Building x={98}  z={55}  w={28} d={24} h={38}  color="#7a6858" />
-      <Building x={68}  z={98}  w={44} d={34} h={24}  color="#5c5040" />
-      <Building x={114} z={96}  w={22} d={22} h={72}  color="#4a5060" />
-      <Building x={52}  z={80}  w={18} d={20} h={42}  color="#626870" />
-      <Building x={78}  z={115} w={32} d={28} h={32}  color="#506268" />
+      <Building x={52} z={50} w={36} d={30} h={58} color="#5a6070" />
+      <Building x={98} z={55} w={28} d={24} h={38} color="#7a6858" />
+      <Building x={68} z={98} w={44} d={34} h={24} color="#5c5040" />
+      <Building x={114} z={96} w={22} d={22} h={72} color="#4a5060" />
+      <Building x={52} z={80} w={18} d={20} h={42} color="#626870" />
+      <Building x={78} z={115} w={32} d={28} h={32} color="#506268" />
 
-      {/* ── NW block: residential ── */}
-      <Building x={-52}  z={48}  w={30} d={24} h={20} color="#6d5b4c" />
-      <Building x={-88}  z={62}  w={28} d={22} h={18} color="#7a6050" />
-      <Building x={-62}  z={102} w={26} d={22} h={22} color="#6a5848" />
-      <Building x={-110} z={88}  w={24} d={20} h={16} color="#705a48" />
-      <Building x={-120} z={52}  w={30} d={26} h={18} color="#5a5048" />
-      <Building x={-78}  z={120} w={28} d={24} h={20} color="#685840" />
+      <Building x={-52} z={48} w={30} d={24} h={20} color="#6d5b4c" />
+      <Building x={-88} z={62} w={28} d={22} h={18} color="#7a6050" />
+      <Building x={-62} z={102} w={26} d={22} h={22} color="#6a5848" />
+      <Building x={-110} z={88} w={24} d={20} h={16} color="#705a48" />
+      <Building x={-120} z={52} w={30} d={26} h={18} color="#5a5048" />
+      <Building x={-78} z={120} w={28} d={24} h={20} color="#685840" />
 
-      {/* ── SW block: residential ── */}
-      <Building x={-55}  z={-50}  w={28} d={22} h={18} color="#665242" />
-      <Building x={-92}  z={-68}  w={24} d={20} h={16} color="#6e5a48" />
-      <Building x={-62}  z={-102} w={30} d={24} h={22} color="#6a5040" />
-      <Building x={-114} z={-96}  w={22} d={18} h={14} color="#584840" />
-      <Building x={-75}  z={-120} w={26} d={22} h={18} color="#6a5848" />
+      <Building x={-55} z={-50} w={28} d={22} h={18} color="#665242" />
+      <Building x={-92} z={-68} w={24} d={20} h={16} color="#6e5a48" />
+      <Building x={-62} z={-102} w={30} d={24} h={22} color="#6a5040" />
+      <Building x={-114} z={-96} w={22} d={18} h={14} color="#584840" />
+      <Building x={-75} z={-120} w={26} d={22} h={18} color="#6a5848" />
 
-      {/* ── SE block: mixed use ── */}
-      <Building x={58}   z={-52}  w={32} d={26} h={30} color="#5e6268" />
-      <Building x={102}  z={-60}  w={26} d={22} h={44} color="#4e5862" />
-      <Building x={65}   z={-102} w={38} d={30} h={20} color="#7a6850" />
-      <Building x={114}  z={-100} w={24} d={22} h={52} color="#4a5068" />
-      <Building x={75}   z={-118} w={28} d={24} h={28} color="#586060" />
+      <Building x={58} z={-52} w={32} d={26} h={30} color="#5e6268" />
+      <Building x={102} z={-60} w={26} d={22} h={44} color="#4e5862" />
+      <Building x={65} z={-102} w={38} d={30} h={20} color="#7a6850" />
+      <Building x={114} z={-100} w={24} d={22} h={52} color="#4a5068" />
+      <Building x={75} z={-118} w={28} d={24} h={28} color="#586060" />
 
-      {/* ── Outer ring ── */}
-      <Building x={195}  z={62}   w={36} d={30} h={22} color="#5a5040" />
-      <Building x={210}  z={-58}  w={30} d={24} h={18} color="#6a5848" />
-      <Building x={-192} z={58}   w={28} d={24} h={20} color="#605848" />
-      <Building x={-205} z={-62}  w={32} d={26} h={16} color="#6e5c4a" />
-      <Building x={62}   z={205}  w={30} d={26} h={24} color="#5e5240" />
-      <Building x={-60}  z={198}  w={28} d={22} h={18} color="#685848" />
-      <Building x={58}   z={-205} w={34} d={28} h={22} color="#5a5040" />
-      <Building x={-58}  z={-200} w={26} d={22} h={20} color="#6a5848" />
+      <Building x={195} z={62} w={36} d={30} h={22} color="#5a5040" />
+      <Building x={210} z={-58} w={30} d={24} h={18} color="#6a5848" />
+      <Building x={-192} z={58} w={28} d={24} h={20} color="#605848" />
+      <Building x={-205} z={-62} w={32} d={26} h={16} color="#6e5c4a" />
+      <Building x={62} z={205} w={30} d={26} h={24} color="#5e5240" />
+      <Building x={-60} z={198} w={28} d={22} h={18} color="#685848" />
+      <Building x={58} z={-205} w={34} d={28} h={22} color="#5a5040" />
+      <Building x={-58} z={-200} w={26} d={22} h={20} color="#6a5848" />
 
-      {/* ── Outer trees: 80–100 ft ── */}
-      <TreeFixed x={60}   z={340}  trunkH={32} canopyH={62} canopyR={18} />
-      <TreeFixed x={-80}  z={360}  trunkH={35} canopyH={65} canopyR={19} />
-      <TreeFixed x={120}  z={310}  trunkH={30} canopyH={58} canopyR={17} />
-      <TreeFixed x={340}  z={55}   trunkH={33} canopyH={63} canopyR={18} />
-      <TreeFixed x={370}  z={-70}  trunkH={34} canopyH={64} canopyR={18} />
-      <TreeFixed x={320}  z={130}  trunkH={31} canopyH={60} canopyR={17} />
-      <TreeFixed x={-345} z={60}   trunkH={33} canopyH={62} canopyR={18} />
-      <TreeFixed x={-370} z={-55}  trunkH={36} canopyH={66} canopyR={19} />
-      <TreeFixed x={-310} z={125}  trunkH={32} canopyH={61} canopyR={17} />
-      <TreeFixed x={55}   z={-340} trunkH={34} canopyH={64} canopyR={18} />
-      <TreeFixed x={-75}  z={-365} trunkH={35} canopyH={65} canopyR={19} />
-      <TreeFixed x={125}  z={-315} trunkH={30} canopyH={59} canopyR={17} />
+      <TreeFixed x={60} z={340} trunkH={32} canopyH={62} canopyR={18} />
+      <TreeFixed x={-80} z={360} trunkH={35} canopyH={65} canopyR={19} />
+      <TreeFixed x={120} z={310} trunkH={30} canopyH={58} canopyR={17} />
+      <TreeFixed x={340} z={55} trunkH={33} canopyH={63} canopyR={18} />
+      <TreeFixed x={370} z={-70} trunkH={34} canopyH={64} canopyR={18} />
+      <TreeFixed x={320} z={130} trunkH={31} canopyH={60} canopyR={17} />
+      <TreeFixed x={-345} z={60} trunkH={33} canopyH={62} canopyR={18} />
+      <TreeFixed x={-370} z={-55} trunkH={36} canopyH={66} canopyR={19} />
+      <TreeFixed x={-310} z={125} trunkH={32} canopyH={61} canopyR={17} />
+      <TreeFixed x={55} z={-340} trunkH={34} canopyH={64} canopyR={18} />
+      <TreeFixed x={-75} z={-365} trunkH={35} canopyH={65} canopyR={19} />
+      <TreeFixed x={125} z={-315} trunkH={30} canopyH={59} canopyR={17} />
       <TreeFixed x={-120} z={-310} trunkH={33} canopyH={63} canopyR={18} />
-      <TreeFixed x={310}  z={-120} trunkH={31} canopyH={60} canopyR={17} />
+      <TreeFixed x={310} z={-120} trunkH={31} canopyH={60} canopyR={17} />
       <TreeFixed x={-310} z={-130} trunkH={34} canopyH={62} canopyR={18} />
-      <TreeFixed x={400}  z={400}  trunkH={36} canopyH={66} canopyR={19} />
-      <TreeFixed x={-400} z={400}  trunkH={33} canopyH={63} canopyR={18} />
-      <TreeFixed x={400}  z={-400} trunkH={35} canopyH={65} canopyR={19} />
+      <TreeFixed x={400} z={400} trunkH={36} canopyH={66} canopyR={19} />
+      <TreeFixed x={-400} z={400} trunkH={33} canopyH={63} canopyR={18} />
+      <TreeFixed x={400} z={-400} trunkH={35} canopyH={65} canopyR={19} />
       <TreeFixed x={-400} z={-400} trunkH={32} canopyH={61} canopyR={17} />
 
-      {/* ── Suburban fringe trees: 60–80 ft ── */}
-      <TreeFixed x={220}  z={220}  trunkH={26} canopyH={52} canopyR={15} />
-      <TreeFixed x={-225} z={215}  trunkH={24} canopyH={48} canopyR={14} />
-      <TreeFixed x={215}  z={-222} trunkH={28} canopyH={54} canopyR={15} />
+      <TreeFixed x={220} z={220} trunkH={26} canopyH={52} canopyR={15} />
+      <TreeFixed x={-225} z={215} trunkH={24} canopyH={48} canopyR={14} />
+      <TreeFixed x={215} z={-222} trunkH={28} canopyH={54} canopyR={15} />
       <TreeFixed x={-218} z={-225} trunkH={25} canopyH={50} canopyR={14} />
-      <TreeFixed x={255}  z={60}   trunkH={22} canopyH={46} canopyR={13} />
-      <TreeFixed x={260}  z={-55}  trunkH={26} canopyH={52} canopyR={15} />
-      <TreeFixed x={-258} z={65}   trunkH={24} canopyH={48} canopyR={14} />
-      <TreeFixed x={-255} z={-58}  trunkH={27} canopyH={53} canopyR={15} />
-      <TreeFixed x={62}   z={255}  trunkH={25} canopyH={50} canopyR={14} />
-      <TreeFixed x={-60}  z={260}  trunkH={23} canopyH={47} canopyR={13} />
-      <TreeFixed x={65}   z={-258} trunkH={26} canopyH={52} canopyR={15} />
-      <TreeFixed x={-62}  z={-255} trunkH={24} canopyH={48} canopyR={14} />
+      <TreeFixed x={255} z={60} trunkH={22} canopyH={46} canopyR={13} />
+      <TreeFixed x={260} z={-55} trunkH={26} canopyH={52} canopyR={15} />
+      <TreeFixed x={-258} z={65} trunkH={24} canopyH={48} canopyR={14} />
+      <TreeFixed x={-255} z={-58} trunkH={27} canopyH={53} canopyR={15} />
+      <TreeFixed x={62} z={255} trunkH={25} canopyH={50} canopyR={14} />
+      <TreeFixed x={-60} z={260} trunkH={23} canopyH={47} canopyR={13} />
+      <TreeFixed x={65} z={-258} trunkH={26} canopyH={52} canopyR={15} />
+      <TreeFixed x={-62} z={-255} trunkH={24} canopyH={48} canopyR={14} />
 
-      {/* ── Street trees: 40–60 ft ── */}
-      <TreeFixed x={40}   z={170}  trunkH={20} canopyH={44} canopyR={11} />
-      <TreeFixed x={82}   z={170}  trunkH={18} canopyH={40} canopyR={10} />
-      <TreeFixed x={-40}  z={-170} trunkH={22} canopyH={46} canopyR={12} />
-      <TreeFixed x={-82}  z={-170} trunkH={19} canopyH={41} canopyR={10} />
-      <TreeFixed x={170}  z={42}   trunkH={21} canopyH={44} canopyR={11} />
-      <TreeFixed x={170}  z={82}   trunkH={18} canopyH={39} canopyR={10} />
-      <TreeFixed x={-170} z={-42}  trunkH={20} canopyH={42} canopyR={11} />
-      <TreeFixed x={-170} z={-82}  trunkH={19} canopyH={40} canopyR={10} />
-      <TreeFixed x={-170} z={42}   trunkH={22} canopyH={45} canopyR={12} />
-      <TreeFixed x={-170} z={82}   trunkH={18} canopyH={38} canopyR={10} />
-      <TreeFixed x={170}  z={-42}  trunkH={21} canopyH={43} canopyR={11} />
-      <TreeFixed x={170}  z={-82}  trunkH={19} canopyH={40} canopyR={10} />
+      <TreeFixed x={40} z={170} trunkH={20} canopyH={44} canopyR={11} />
+      <TreeFixed x={82} z={170} trunkH={18} canopyH={40} canopyR={10} />
+      <TreeFixed x={-40} z={-170} trunkH={22} canopyH={46} canopyR={12} />
+      <TreeFixed x={-82} z={-170} trunkH={19} canopyH={41} canopyR={10} />
+      <TreeFixed x={170} z={42} trunkH={21} canopyH={44} canopyR={11} />
+      <TreeFixed x={170} z={82} trunkH={18} canopyH={39} canopyR={10} />
+      <TreeFixed x={-170} z={-42} trunkH={20} canopyH={42} canopyR={11} />
+      <TreeFixed x={-170} z={-82} trunkH={19} canopyH={40} canopyR={10} />
+      <TreeFixed x={-170} z={42} trunkH={22} canopyH={45} canopyR={12} />
+      <TreeFixed x={-170} z={82} trunkH={18} canopyH={38} canopyR={10} />
+      <TreeFixed x={170} z={-42} trunkH={21} canopyH={43} canopyR={11} />
+      <TreeFixed x={170} z={-82} trunkH={19} canopyH={40} canopyR={10} />
     </group>
   );
 }
@@ -399,7 +485,15 @@ function TownScene() {
 // ---------------------------------------------------------------------------
 
 /** Camera placed once on first mount — orbit controls preserve position thereafter. */
-function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: number }) {
+function OrbitOriginCamera({
+  gridSize,
+  height,
+  target,
+}: {
+  gridSize: number;
+  height: number;
+  target: [number, number, number];
+}) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const controls = useThree((s) => s.controls);
   const didInit = useRef(false);
@@ -412,18 +506,18 @@ function OrbitOriginCamera({ gridSize, height }: { gridSize: number; height: num
     const dist = THREE.MathUtils.clamp(span * 0.36, 55, 520);
 
     const dir = new THREE.Vector3(0.85, 0.38, 0.85).normalize();
-    camera.position.copy(dir.multiplyScalar(dist));
+    camera.position.copy(dir.multiplyScalar(dist).add(new THREE.Vector3(...target)));
     camera.near = 0.4;
     camera.far = Math.max(dist * 80, 8000);
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(target[0], target[1], target[2]);
     camera.updateProjectionMatrix();
 
     const oc = controls as unknown as { target: THREE.Vector3; update: () => void } | null;
     if (oc?.update) {
-      oc.target.set(0, 0, 0);
+      oc.target.set(target[0], target[1], target[2]);
       oc.update();
     }
-  }, [camera, controls, gridSize, height]);
+  }, [camera, controls, gridSize, height, target]);
 
   return null;
 }
@@ -467,24 +561,25 @@ export default function ThreeView({
   captureIntervalFt = 6,
   captureArcDeg = 180,
 }: ThreeViewProps) {
+  const coverageSpaceRef = useRef<THREE.Group>(null);
+  const coverageRootRef = useRef<THREE.Group>(null);
 
-  // ── Spin mode ──────────────────────────────────────────────────────────────
   const numSpinCaptures = useMemo(
     () => Math.max(2, Math.min(30, Math.round(spacing / captureIntervalFt))),
     [spacing, captureIntervalFt],
   );
 
   const spinHeadings = useMemo(
-    () => Array.from({ length: numSpinCaptures }, (_, i) =>
-      numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * captureArcDeg : 0,
-    ),
+    () => Array.from({ length: numSpinCaptures }, (_, i) => (
+      numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * captureArcDeg : 0
+    )),
     [numSpinCaptures, captureArcDeg],
   );
 
   const spinAlongX = useMemo(
-    () => Array.from({ length: numSpinCaptures }, (_, i) =>
-      (i - (numSpinCaptures - 1) / 2) * captureIntervalFt,
-    ),
+    () => Array.from({ length: numSpinCaptures }, (_, i) => (
+      (i - (numSpinCaptures - 1) / 2) * captureIntervalFt
+    )),
     [numSpinCaptures, captureIntervalFt],
   );
 
@@ -496,7 +591,6 @@ export default function ThreeView({
     });
   }, [spinMode, spinAlongX, spinHeadings, height, pitchDegs]);
 
-  // ── Linear mode ────────────────────────────────────────────────────────────
   const n = Math.max(1, pitchDegs.length);
 
   const alongPositions = useMemo(
@@ -509,33 +603,80 @@ export default function ThreeView({
     [alongPositions, height, pitchDegs],
   );
 
-  // ── Active set ─────────────────────────────────────────────────────────────
   const activeFootprints = spinMode ? spinFootprints : linearFootprints;
   const activeDroneX = spinMode ? spinAlongX : alongPositions;
   const activeN = spinMode ? numSpinCaptures : n;
-  const activePitchDegs = spinMode
-    ? spinAlongX.map((_, i) => pitchDegs[i % Math.max(1, pitchDegs.length)] ?? pitchDegs[0] ?? 30)
-    : pitchDegs;
-  const activeHeadings = spinMode ? spinHeadings : Array(n).fill(0) as number[];
 
-  const gridSize = useMemo(() => {
-    if (activeFootprints.length === 0) return 800;
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  const activePitchDegs = useMemo(
+    () => (
+      spinMode
+        ? spinAlongX.map((_, i) => pitchDegs[i % Math.max(1, pitchDegs.length)] ?? pitchDegs[0] ?? 30)
+        : pitchDegs
+    ),
+    [spinMode, spinAlongX, pitchDegs],
+  );
+
+  const activeHeadings = useMemo(
+    () => (spinMode ? spinHeadings : Array.from({ length: n }, () => 0)),
+    [spinMode, spinHeadings, n],
+  );
+
+  const activeColors = useMemo(
+    () => Array.from({ length: activeN }, (_, i) => (
+      spinMode
+        ? spinFootprintColor(activeHeadings[i] ?? 0, captureArcDeg)
+        : footprintColor(i, activeN)
+    )),
+    [activeN, spinMode, activeHeadings, captureArcDeg],
+  );
+
+  const activeBounds = useMemo(() => {
+    if (activeFootprints.length === 0) {
+      return {
+        minX: -40,
+        maxX: 40,
+        minY: -40,
+        maxY: 40,
+      };
+    }
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
     for (const fp of activeFootprints) {
       for (const [x, y] of fp) {
-        if (x < minX) minX = x;
-        if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
       }
     }
     for (const x of activeDroneX) {
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
     }
-    const span = Math.max(maxX - minX, maxY - minY, 80);
-    return Math.min(span * 1.5, 8000);
+    return { minX, maxX, minY, maxY };
   }, [activeFootprints, activeDroneX]);
+
+  const gridSize = useMemo(() => {
+    const span = Math.max(
+      activeBounds.maxX - activeBounds.minX,
+      activeBounds.maxY - activeBounds.minY,
+      80,
+    );
+    return Math.min(span * 1.5, 8000);
+  }, [activeBounds]);
+
+  const initialTarget = useMemo<[number, number, number]>(() => {
+    const centerX = (activeBounds.minX + activeBounds.maxX) / 2;
+    const centerY = (activeBounds.minY + activeBounds.maxY) / 2;
+    const blendTowardCoverage = 0.55;
+    return [
+      centerY * blendTowardCoverage,
+      0,
+      -centerX * blendTowardCoverage,
+    ];
+  }, [activeBounds]);
 
   const dronePositions = useMemo(
     () => activeDroneX.map((x) => mathDroneToThree(x, height, 0)),
@@ -548,10 +689,6 @@ export default function ThreeView({
     () => Math.max(gridSize * 4, height * 6, 2000),
     [gridSize, height],
   );
-
-  // Scale spotlight intensity down when many are visible so the scene
-  // doesn't blow out additively.
-  const lightIntensity = activeN <= 2 ? 3.5 : activeN <= 6 ? 2.2 : 1.4;
 
   return (
     <div
@@ -575,13 +712,21 @@ export default function ThreeView({
           gl.shadowMap.type = THREE.PCFSoftShadowMap;
         }}
       >
-        {/* Low ambient so spotlight illumination is clearly visible */}
-        <ambientLight intensity={0.12} />
+        <ambientLight intensity={0.45} />
         <directionalLight
+          castShadow
           position={[120, 180, 80]}
-          intensity={0.25}
+          intensity={1.05}
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+          shadow-camera-near={10}
+          shadow-camera-far={8000}
+          shadow-camera-left={-600}
+          shadow-camera-right={600}
+          shadow-camera-top={600}
+          shadow-camera-bottom={-600}
         />
-        <hemisphereLight args={['#4a5a72', '#0a0a08', 0.18]} />
+        <hemisphereLight args={['#87a4c4', '#1a1814', 0.35]} />
 
         <OrbitControls
           makeDefault
@@ -595,19 +740,16 @@ export default function ThreeView({
           maxPolarAngle={Math.PI / 2 - 0.08}
         />
 
-        <OrbitOriginCamera gridSize={gridSize} height={height} />
+        <OrbitOriginCamera gridSize={gridSize} height={height} target={initialTarget} />
 
-        <group rotation={[0, Math.PI / 2, 0]}>
-          <TownScene />
+        <group ref={coverageSpaceRef} rotation={[0, Math.PI / 2, 0]}>
+          <TownScene rootRef={coverageRootRef} />
 
           {activeFootprints.map((quad, i) => {
             const dronePos = dronePositions[i];
-            const col = spinMode
-              ? spinFootprintColor(spinHeadings[i], captureArcDeg)
-              : footprintColor(i, activeN);
             const fpOpacity = spinMode
-              ? 0.14
-              : 0.10 + (i / Math.max(1, activeN - 1)) * 0.08;
+              ? 0.08
+              : 0.05 + (i / Math.max(1, activeN - 1)) * 0.05;
             return (
               <group key={i}>
                 <DroneMarker
@@ -616,18 +758,20 @@ export default function ThreeView({
                   heightFt={height}
                 />
                 <FrustumLines dronePos={dronePos} quad={quad} lineOpacity={lineOpacity} />
-                <FootprintQuad quad={quad} color={col} opacity={fpOpacity} />
-                <CameraLight
-                  dronePos={dronePos}
-                  pitchDeg={activePitchDegs[i]}
-                  headingDeg={activeHeadings[i]}
-                  enableShadow={i < MAX_SHADOW_LIGHTS}
-                  intensity={lightIntensity}
-                />
+                <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} />
               </group>
             );
           })}
         </group>
+
+        <CoverageOverlay
+          spaceRef={coverageSpaceRef}
+          coverageRootRef={coverageRootRef}
+          dronePositions={dronePositions}
+          pitchDegs={activePitchDegs}
+          headingDegs={activeHeadings}
+          colors={activeColors}
+        />
       </Canvas>
 
       <div className={styles.threeViewHud} data-testid="three-view-hud">
