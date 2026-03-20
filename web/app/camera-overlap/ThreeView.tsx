@@ -12,6 +12,11 @@ import {
 } from '../../lib/cameraOverlapMath';
 import styles from './page.module.css';
 
+/** Feet — raycast far enough to cover the whole town + distant trees from survey altitude. */
+const COVERAGE_RAY_MAX_FT = 72_000;
+/** Minimum visualization depth (ft) for frustum mouth when upper rays are above horizon. */
+const FRUSTUM_VIS_MIN_EXTENT_FT = 14_000;
+
 /**
  * Math uses X = along-track, Y = cross-track, Z = up.
  * Three.js uses Y-up; ground is the XZ plane (Y = 0).
@@ -37,9 +42,9 @@ function sampleOffsets(count: number): number[] {
 }
 
 function coverageSamplingFor(activeCount: number): { cols: number; rows: number; size: number } {
-  if (activeCount <= 4) return { cols: 11, rows: 7, size: 8 };
-  if (activeCount <= 10) return { cols: 8, rows: 5, size: 7 };
-  return { cols: 6, rows: 4, size: 6 };
+  if (activeCount <= 4) return { cols: 18, rows: 13, size: 11 };
+  if (activeCount <= 10) return { cols: 14, rows: 10, size: 9 };
+  return { cols: 11, rows: 8, size: 8 };
 }
 
 function buildCameraRayVectorLocal(
@@ -97,7 +102,7 @@ function CoveragePatch({
       <meshBasicMaterial
         color={color}
         transparent
-        opacity={0.22}
+        opacity={0.32}
         depthWrite={false}
         side={THREE.DoubleSide}
         polygonOffset
@@ -156,7 +161,7 @@ function CoverageOverlay({
           const dirWorld = dirLocal.clone().transformDirection(space.matrixWorld);
           raycaster.set(originWorld, dirWorld);
           raycaster.near = 0.5;
-          raycaster.far = Math.max(1600, dronePos[1] * 14);
+          raycaster.far = Math.max(COVERAGE_RAY_MAX_FT, dronePos[1] * 120);
 
           const hit = raycaster.intersectObject(coverageRoot, true).find((entry) => entry.face !== null);
           if (!hit?.face) continue;
@@ -292,17 +297,14 @@ function FootprintQuad({
   );
 }
 
-/** How far past the first ground hit (or center reference) we extend each frustum ray for overlap visibility. */
-const FRUSTUM_PROJECTION_EXTEND = 3.2;
-
 /**
  * True camera frustum wireframe.  Each of the 4 edge rays follows its real
  * direction from `buildCameraRayVectorLocal` so the frustum is visually
  * centered on the optical-axis vector regardless of pitch.
  *
- * Rays extend along their direction past the first ground hit by
- * `FRUSTUM_PROJECTION_EXTEND` so adjacent waypoints’ ground coverage overlaps
- * are easy to read.  Above-horizon rays use the extended center-ray distance.
+ * Downward rays end at the ground plane (y ≈ 0).  Above-horizon rays extend to
+ * `visFar` (tens of k ft) so the wireframe mouth matches scene scale.  Colored
+ * coverage uses the same long raycast range to paint overlap on all geometry.
  */
 function FrustumLines({
   dronePos,
@@ -318,19 +320,17 @@ function FrustumLines({
   const lines = useMemo(() => {
     const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
     const origin = new THREE.Vector3(dronePos[0], dronePos[1], dronePos[2]);
-    const h = dronePos[1];
 
+    const h = dronePos[1];
     const centerRay = buildCameraRayVectorLocal(pitchDeg, headingDeg, 0, 0);
-    const centerTGround = centerRay.y < -1e-6 ? h / -centerRay.y : h * 5;
-    const centerTExtended = centerTGround * FRUSTUM_PROJECTION_EXTEND;
+    const centerT = centerRay.y < -1e-6 ? h / -centerRay.y : h * 5;
+    /** Shared far depth so wireframe extends far enough to read overlap vs scene scale. */
+    const visFar = Math.max(centerT * 6, h * 72, FRUSTUM_VIS_MIN_EXTENT_FT);
 
     const cornerSamples: [number, number][] = [[-1, -1], [-1, 1], [1, 1], [1, -1]];
     const endpoints = cornerSamples.map(([sv, sh]) => {
       const ray = buildCameraRayVectorLocal(pitchDeg, headingDeg, sv, sh);
-      const t =
-        ray.y < -1e-6
-          ? (h / -ray.y) * FRUSTUM_PROJECTION_EXTEND
-          : centerTExtended;
+      const t = ray.y < -1e-6 ? h / -ray.y : visFar;
       return new THREE.Vector3(
         dronePos[0] + ray.x * t,
         dronePos[1] + ray.y * t,
