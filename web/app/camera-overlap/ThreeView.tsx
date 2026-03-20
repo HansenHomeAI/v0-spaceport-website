@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Line, Html, useCursor } from '@react-three/drei';
 import * as THREE from 'three';
 import {
@@ -31,6 +31,8 @@ const COVERAGE_RAY_MAX_FT = 72_000;
 const FRUSTUM_VIS_MIN_EXTENT_FT = 14_000;
 /** Delay before hover shows tag / frustum emphasis (avoids flicker when scanning the scene). */
 const HOVER_HIGHLIGHT_HOLD_MS = 1000;
+/** Max pointer movement (px) between down/up to count as a click (orbit drags exceed this). */
+const WAYPOINT_CLICK_MAX_MOVE_PX = 6;
 
 /**
  * Math uses X = along-track, Y = cross-track, Z = up.
@@ -725,6 +727,7 @@ export default function ThreeView({
   spinMode = false,
   captureIntervalFt = 6,
   captureArcDeg = 180,
+  spinHeadingDegs: externalSpinHeadingDegs,
 }: ThreeViewProps) {
   const coverageSpaceRef = useRef<THREE.Group>(null);
   const coverageRootRef = useRef<THREE.Group>(null);
@@ -733,6 +736,12 @@ export default function ThreeView({
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState<number | null>(null);
   const hoverHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverPendingIndexRef = useRef<number | null>(null);
+  /** Pointer must go down and up on the same frustum with little movement (not a stray click while orbiting). */
+  const waypointPressRef = useRef<{
+    downIndex: number | null;
+    x: number;
+    y: number;
+  }>({ downIndex: null, x: 0, y: 0 });
 
   const clearHoverHoldTimer = useCallback(() => {
     if (hoverHoldTimerRef.current !== null) {
@@ -767,6 +776,21 @@ export default function ThreeView({
   );
 
   useEffect(() => () => clearHoverHoldTimer(), [clearHoverHoldTimer]);
+
+  useEffect(() => {
+    /** Runs after R3F waypoint handlers so we only clear presses that missed all frustums. */
+    const clearStalePress = () => {
+      queueMicrotask(() => {
+        waypointPressRef.current = { downIndex: null, x: 0, y: 0 };
+      });
+    };
+    window.addEventListener('pointerup', clearStalePress);
+    window.addEventListener('pointercancel', clearStalePress);
+    return () => {
+      window.removeEventListener('pointerup', clearStalePress);
+      window.removeEventListener('pointercancel', clearStalePress);
+    };
+  }, []);
 
   const goToWaypoint = useCallback((i: number) => {
     droneMarkerRefs.current[i]?.focus();
@@ -984,8 +1008,23 @@ export default function ThreeView({
                 onPointerOut={() => {
                   cancelHoverHighlight(i);
                 }}
-                onClick={(e) => {
+                onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+                  if (e.button !== 0) return;
+                  waypointPressRef.current = {
+                    downIndex: i,
+                    x: e.clientX,
+                    y: e.clientY,
+                  };
+                }}
+                onPointerUp={(e: ThreeEvent<PointerEvent>) => {
+                  if (e.button !== 0) return;
                   e.stopPropagation();
+                  const snap = waypointPressRef.current;
+                  waypointPressRef.current = { downIndex: null, x: 0, y: 0 };
+                  if (snap.downIndex === null) return;
+                  if (snap.downIndex !== i) return;
+                  const moved = Math.hypot(e.clientX - snap.x, e.clientY - snap.y);
+                  if (moved > WAYPOINT_CLICK_MAX_MOVE_PX) return;
                   goToWaypoint(i);
                 }}
               >
