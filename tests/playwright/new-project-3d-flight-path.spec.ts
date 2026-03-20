@@ -52,6 +52,11 @@ async function readRenderedPathPointCount(page: import('@playwright/test').Page)
   return Number.parseFloat(value ?? '0');
 }
 
+async function readElevatedLineCount(page: import('@playwright/test').Page): Promise<number> {
+  const value = await page.locator('.map-wrapper').getAttribute('data-elevated-line-count');
+  return Number.parseFloat(value ?? '0');
+}
+
 test('new project modal renders altitude in the live map and restores camera after boundary mode', async ({ page }) => {
   requireEnv();
 
@@ -82,9 +87,14 @@ test('new project modal renders altitude in the live map and restores camera aft
     const markerCount = document.querySelectorAll('.waypoint-marker[data-altitude-feet]').length;
     return renderedPointCount > markerCount;
   }, undefined, { timeout: 30_000 });
+  await page.waitForFunction(() => {
+    const wrapper = document.querySelector('.map-wrapper');
+    return Number.parseFloat(wrapper?.getAttribute('data-elevated-line-count') ?? '0') > 0;
+  }, undefined, { timeout: 30_000 });
 
   const altitudeRangeFeet = await readAltitudeRange(page);
   expect(altitudeRangeFeet).toBeGreaterThan(100);
+  expect(await readElevatedLineCount(page)).toBeGreaterThan(0);
   expect(await readRenderedPathPointCount(page)).toBeGreaterThan(
     await page.locator('.waypoint-marker[data-altitude-feet]').count(),
   );

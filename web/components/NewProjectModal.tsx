@@ -379,6 +379,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [visibleBatteryPathWaypoints3D, setVisibleBatteryPathWaypoints3D] = useState<Map<number, BatteryPathWaypoint3D[]>>(new Map());
   const [loadingBatteryPaths, setLoadingBatteryPaths] = useState<Set<number>>(new Set());
   const [mapPitchDegrees, setMapPitchDegrees] = useState<number>(0);
+  const [visibleElevatedLineCount, setVisibleElevatedLineCount] = useState<number>(0);
 
   const batteryPathColors = useMemo(() => [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
@@ -2883,10 +2884,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const removeBatteryPathVisualization = useCallback((batteryIndex: number) => {
     const map = mapRef.current;
     if (map) {
+      const casingLayerId = `battery-path-casing-layer-${batteryIndex}`;
       const layerId = `battery-path-layer-${batteryIndex}`;
       const hitLayerId = `battery-path-hit-layer-${batteryIndex}`;
       const sourceId = `battery-path-${batteryIndex}`;
       try {
+        if (map.getLayer(casingLayerId)) map.removeLayer(casingLayerId);
         if (map.getLayer(layerId)) map.removeLayer(layerId);
         if (map.getLayer(hitLayerId)) map.removeLayer(hitLayerId);
         if (map.getSource(sourceId)) map.removeSource(sourceId);
@@ -2905,12 +2908,21 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!map || !coords.length) return;
 
     const sourceId = `battery-path-${batteryIndex}`;
+    const casingLayerId = `battery-path-casing-layer-${batteryIndex}`;
     const layerId = `battery-path-layer-${batteryIndex}`;
+    const hitLayerId = `battery-path-hit-layer-${batteryIndex}`;
     const color = batteryPathColors[(batteryIndex - 1) % batteryPathColors.length];
+    const elevatedLineLayout = {
+      'line-join': 'round' as const,
+      'line-cap': 'round' as const,
+      'line-z-offset': buildLineZOffsetExpression(),
+      'line-elevation-reference': 'ground' as const,
+    };
 
     try {
+      if (map.getLayer(casingLayerId)) map.removeLayer(casingLayerId);
       if (map.getLayer(layerId)) map.removeLayer(layerId);
-      if (map.getLayer(`battery-path-hit-layer-${batteryIndex}`)) map.removeLayer(`battery-path-hit-layer-${batteryIndex}`);
+      if (map.getLayer(hitLayerId)) map.removeLayer(hitLayerId);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     } catch {
       // Ignore replacement races while redrawing the preview.
@@ -2923,36 +2935,40 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
 
     map.addLayer({
-      id: layerId,
+      id: casingLayerId,
       type: 'line',
       source: sourceId,
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: elevatedLineLayout,
       paint: {
-        'line-color': color,
-        'line-width': 2.5,
-        'line-opacity': 0.85,
-        'line-z-offset': buildLineZOffsetExpression(),
-        'line-elevation-reference': 'ground',
+        'line-color': '#ffffff',
+        'line-width': 8,
+        'line-opacity': 0.42,
+        'line-blur': 0.8,
       },
     });
 
     map.addLayer({
-      id: `battery-path-hit-layer-${batteryIndex}`,
+      id: layerId,
       type: 'line',
       source: sourceId,
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
+      layout: elevatedLineLayout,
+      paint: {
+        'line-color': color,
+        'line-width': 4.5,
+        'line-opacity': 0.96,
+        'line-blur': 0.15,
       },
+    });
+
+    map.addLayer({
+      id: hitLayerId,
+      type: 'line',
+      source: sourceId,
+      layout: elevatedLineLayout,
       paint: {
         'line-color': '#ffffff',
         'line-width': 18,
         'line-opacity': 0.001,
-        'line-z-offset': buildLineZOffsetExpression(),
-        'line-elevation-reference': 'ground',
       },
     });
 
@@ -3034,6 +3050,30 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     return total;
   }, [visibleBatteryPathWaypoints3D, visibleBatteryPaths]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) {
+      setVisibleElevatedLineCount(0);
+      return;
+    }
+
+    let elevatedLineCount = 0;
+    visibleBatteryPaths.forEach((_, batteryIndex) => {
+      const layerId = `battery-path-layer-${batteryIndex}`;
+      if (!map.getLayer(layerId)) {
+        return;
+      }
+
+      const elevationReference = map.getLayoutProperty(layerId, 'line-elevation-reference');
+      const zOffset = map.getLayoutProperty(layerId, 'line-z-offset');
+      if (elevationReference === 'ground' && Array.isArray(zOffset)) {
+        elevatedLineCount += 1;
+      }
+    });
+
+    setVisibleElevatedLineCount(elevatedLineCount);
+  }, [visibleBatteryPaths]);
 
   const handleSpinModeOverrideChange = useCallback((
     key: keyof SpinModeOverrideFormState,
@@ -4186,6 +4226,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 data-map-pitch={mapPitchDegrees.toFixed(2)}
                 data-altitude-range-feet={visibleAltitudeRangeFeet.toFixed(2)}
                 data-rendered-path-point-count={String(visibleRenderedPathPointCount)}
+                data-elevated-line-count={String(visibleElevatedLineCount)}
               >
                 {/* Empty map container for Mapbox - avoids the warning */}
                 <div id="map-container" className="map-container" ref={mapContainerRef}></div>

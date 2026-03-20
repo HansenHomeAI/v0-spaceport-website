@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { latLngToLocalFeet } from "../../web/lib/flightBoundary";
 import {
   altitudeFeetToMeters,
   buildBatteryPathElevatedFeature,
@@ -86,6 +87,23 @@ test("buildCurvedBatteryPathPoints bends around the curved waypoint instead of p
     Math.abs(point.lat - 39.7402) < 1e-6 && Math.abs(point.lng + 104.9903) < 1e-6,
   );
   expect(touchesCornerWaypoint).toBeFalsy();
+});
+
+test("buildCurvedBatteryPathPoints treats curve size as turn lead distance on shallow corners", async () => {
+  const renderedPoints = buildCurvedBatteryPathPoints([
+    { lat: 39.7392, lng: -104.9950, altitudeFeet: 120, curveFeet: 0 },
+    { lat: 39.7392, lng: -104.9900, altitudeFeet: 180, curveFeet: 220 },
+    { lat: 39.7406, lng: -104.9850, altitudeFeet: 240, curveFeet: 0 },
+  ]);
+
+  const reference = { lat: 39.7392, lng: -104.9900 };
+  const localPoints = renderedPoints.map((point) => latLngToLocalFeet(point.lat, point.lng, reference.lat, reference.lng));
+
+  const straightApproachPoints = localPoints.filter((point) => Math.abs(point.yFt) < 0.1 && point.xFt < 0);
+  const tangentStartPoint = straightApproachPoints[straightApproachPoints.length - 1];
+  expect(tangentStartPoint).toBeDefined();
+  expect(Math.abs(tangentStartPoint!.xFt)).toBeGreaterThan(200);
+  expect(Math.abs(Math.abs(tangentStartPoint!.xFt) - 220)).toBeLessThan(10);
 });
 
 test("interpolateSegmentAltitudeFeet returns the segment midpoint altitude", async () => {

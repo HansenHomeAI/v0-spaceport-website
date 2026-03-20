@@ -238,6 +238,34 @@ function appendLinearSegment(
   }
 }
 
+function appendBezierTurnSegment(
+  points: LocalBatteryPathPoint[],
+  start: LocalBatteryPathPoint,
+  controlStart: LocalBatteryPathPoint,
+  controlEnd: LocalBatteryPathPoint,
+  end: LocalBatteryPathPoint,
+) {
+  const chordLengthFt = Math.hypot(end.xFt - start.xFt, end.yFt - start.yFt);
+  const steps = Math.max(8, Math.ceil(chordLengthFt / 25));
+
+  for (let index = 1; index <= steps; index += 1) {
+    const t = index / steps;
+    const oneMinusT = 1 - t;
+    appendRenderedPoint(points, {
+      xFt: (oneMinusT ** 3 * start.xFt)
+        + (3 * oneMinusT ** 2 * t * controlStart.xFt)
+        + (3 * oneMinusT * t ** 2 * controlEnd.xFt)
+        + (t ** 3 * end.xFt),
+      yFt: (oneMinusT ** 3 * start.yFt)
+        + (3 * oneMinusT ** 2 * t * controlStart.yFt)
+        + (3 * oneMinusT * t ** 2 * controlEnd.yFt)
+        + (t ** 3 * end.yFt),
+      altitudeFeet: start.altitudeFeet + ((end.altitudeFeet - start.altitudeFeet) * t),
+      curveFeet: 0,
+    });
+  }
+}
+
 export function buildCurvedBatteryPathPoints(
   waypoints: BatteryPathWaypoint3D[],
 ): BatteryPathRenderedPoint[] {
@@ -303,23 +331,21 @@ export function buildCurvedBatteryPathPoints(
       continue;
     }
 
-    const requestedRadiusFt = Math.max(0, currentWaypoint.curveFeet);
+    const requestedLeadDistanceFt = Math.max(0, currentWaypoint.curveFeet);
     const tangentScale = Math.tan(turnAngle / 2);
-    if (requestedRadiusFt < 1e-3 || tangentScale < 1e-6) {
+    if (requestedLeadDistanceFt < 1e-3 || tangentScale < 1e-6) {
       appendLinearSegment(renderedPoints, lastPoint, currentWaypoint);
       lastPoint = { ...currentWaypoint };
       continue;
     }
 
     const maxTangentDistance = Math.min(incomingLength, outgoingLength) * 0.49;
-    const tangentDistance = Math.min(requestedRadiusFt * tangentScale, maxTangentDistance);
+    const tangentDistance = Math.min(requestedLeadDistanceFt, maxTangentDistance);
     if (tangentDistance < 1e-3) {
       appendLinearSegment(renderedPoints, lastPoint, currentWaypoint);
       lastPoint = { ...currentWaypoint };
       continue;
     }
-
-    const effectiveRadiusFt = tangentDistance / tangentScale;
     const tangentStart: LocalBatteryPathPoint = {
       xFt: currentWaypoint.xFt - (incomingUnitX * tangentDistance),
       yFt: currentWaypoint.yFt - (incomingUnitY * tangentDistance),
@@ -335,55 +361,23 @@ export function buildCurvedBatteryPathPoints(
       curveFeet: 0,
     };
 
-    const inwardIncomingX = -incomingUnitX;
-    const inwardIncomingY = -incomingUnitY;
-    const bisectorX = inwardIncomingX + outgoingUnitX;
-    const bisectorY = inwardIncomingY + outgoingUnitY;
-    const bisectorLength = Math.hypot(bisectorX, bisectorY);
-
-    if (bisectorLength < 1e-6) {
-      appendLinearSegment(renderedPoints, lastPoint, currentWaypoint);
-      lastPoint = { ...currentWaypoint };
-      continue;
-    }
-
-    const centerDistanceFt = effectiveRadiusFt / Math.sin(turnAngle / 2);
-    const centerX = currentWaypoint.xFt + ((bisectorX / bisectorLength) * centerDistanceFt);
-    const centerY = currentWaypoint.yFt + ((bisectorY / bisectorLength) * centerDistanceFt);
-
-    const startAngle = Math.atan2(tangentStart.yFt - centerY, tangentStart.xFt - centerX);
-    let endAngle = Math.atan2(tangentEnd.yFt - centerY, tangentEnd.xFt - centerX);
-    const turnCross = (inwardIncomingX * outgoingUnitY) - (inwardIncomingY * outgoingUnitX);
-
-    let normalizedStartAngle = startAngle;
-    if (turnCross > 0) {
-      if (endAngle < normalizedStartAngle) {
-        endAngle += 2 * Math.PI;
-      }
-    } else if (turnCross < 0) {
-      if (endAngle > normalizedStartAngle) {
-        endAngle -= 2 * Math.PI;
-      }
-    } else {
-      appendLinearSegment(renderedPoints, lastPoint, currentWaypoint);
-      lastPoint = { ...currentWaypoint };
-      continue;
-    }
-
     appendLinearSegment(renderedPoints, lastPoint, tangentStart);
 
-    const arcLengthFt = Math.abs(endAngle - normalizedStartAngle) * effectiveRadiusFt;
-    const arcSteps = Math.max(8, Math.ceil(arcLengthFt / 30));
-    for (let step = 1; step <= arcSteps; step += 1) {
-      const t = step / arcSteps;
-      const angle = normalizedStartAngle + ((endAngle - normalizedStartAngle) * t);
-      appendRenderedPoint(renderedPoints, {
-        xFt: centerX + (effectiveRadiusFt * Math.cos(angle)),
-        yFt: centerY + (effectiveRadiusFt * Math.sin(angle)),
-        altitudeFeet: tangentStart.altitudeFeet + ((tangentEnd.altitudeFeet - tangentStart.altitudeFeet) * t),
-        curveFeet: 0,
-      });
-    }
+    const effectiveRadiusFt = tangentDistance / tangentScale;
+    const handleDistanceFt = (4 / 3) * Math.tan(turnAngle / 4) * effectiveRadiusFt;
+    const controlStart: LocalBatteryPathPoint = {
+      xFt: tangentStart.xFt + (incomingUnitX * handleDistanceFt),
+      yFt: tangentStart.yFt + (incomingUnitY * handleDistanceFt),
+      altitudeFeet: tangentStart.altitudeFeet,
+      curveFeet: 0,
+    };
+    const controlEnd: LocalBatteryPathPoint = {
+      xFt: tangentEnd.xFt - (outgoingUnitX * handleDistanceFt),
+      yFt: tangentEnd.yFt - (outgoingUnitY * handleDistanceFt),
+      altitudeFeet: tangentEnd.altitudeFeet,
+      curveFeet: 0,
+    };
+    appendBezierTurnSegment(renderedPoints, tangentStart, controlStart, controlEnd, tangentEnd);
 
     lastPoint = { ...tangentEnd };
   }
