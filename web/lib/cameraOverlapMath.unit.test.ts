@@ -25,6 +25,57 @@ function approx(a: number, b: number, eps = 1e-6) {
   assert.ok(Math.abs(a - b) < eps, `expected ${a} ≈ ${b}`);
 }
 
+function lineIntersection2d(
+  a1: [number, number],
+  a2: [number, number],
+  b1: [number, number],
+  b2: [number, number],
+): [number, number] {
+  const [x1, y1] = a1;
+  const [x2, y2] = a2;
+  const [x3, y3] = b1;
+  const [x4, y4] = b2;
+  const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+  assert.ok(Math.abs(denom) > 1e-9, 'diagonals must not be parallel');
+  const px = (
+    (x1 * y2 - y1 * x2) * (x3 - x4) -
+    (x1 - x2) * (x3 * y4 - y3 * x4)
+  ) / denom;
+  const py = (
+    (x1 * y2 - y1 * x2) * (y3 - y4) -
+    (y1 - y2) * (x3 * y4 - y3 * x4)
+  ) / denom;
+  return [px, py];
+}
+
+function cameraRayVector(
+  pitchDeg: number,
+  headingDeg: number,
+  alongSample: number,
+  crossSample: number,
+): [number, number, number] {
+  const theta = (pitchDeg * Math.PI) / 180;
+  const H = (headingDeg * Math.PI) / 180;
+  const sinT = Math.sin(theta);
+  const cosT = Math.cos(theta);
+  const sinH = Math.sin(H);
+  const cosH = Math.cos(H);
+  const losX = sinH * cosT;
+  const losY = -sinT;
+  const losZ = cosH * cosT;
+  const rightX = cosH;
+  const rightY = 0;
+  const rightZ = -sinH;
+  const upX = sinH * sinT;
+  const upY = cosT;
+  const upZ = cosH * sinT;
+  return [
+    losX + alongSample * TAN_H * rightX + crossSample * TAN_V * upX,
+    losY + alongSample * TAN_H * rightY + crossSample * TAN_V * upY,
+    losZ + alongSample * TAN_H * rightZ + crossSample * TAN_V * upZ,
+  ];
+}
+
 // Gimbal interpolation
 approx(getGimbalAngleDeg(100, 15, 200, 35, 400), 15);
 approx(getGimbalAngleDeg(500, 15, 200, 35, 400), 35);
@@ -45,20 +96,20 @@ approx(rotationTimeSec(0.5), 0.5 * FULL_ROT_SEC + 2 * TRANSIT_SEC);
 
 // ---- groundFootprint at nadir (90°) ----
 // At 90° pitch the camera looks straight down. Footprint should be a rectangle
-// centered at (droneX, 0) with half-extents h*TAN_V along X and h*TAN_H along Y.
+// centered at (droneX, 0) with half-extents h*TAN_H along X and h*TAN_V along Y.
 const nadir = groundFootprint(0, 100, 90);
 const nb = footprintBounds(nadir);
-approx(nb.minX, -100 * TAN_V, 0.01);
-approx(nb.maxX, 100 * TAN_V, 0.01);
-approx(nb.minY, -100 * TAN_H, 0.01);
-approx(nb.maxY, 100 * TAN_H, 0.01);
+approx(nb.minX, -100 * TAN_H, 0.01);
+approx(nb.maxX, 100 * TAN_H, 0.01);
+approx(nb.minY, -100 * TAN_V, 0.01);
+approx(nb.maxY, 100 * TAN_V, 0.01);
 
 // ---- groundFootprint at 45° (side-looking) ----
 // Optical axis is in +Y; footprint extends mostly along look direction (asymmetric in Y).
 const tilted = groundFootprint(0, 200, 45);
 const tb = footprintBounds(tilted);
 assert.ok(tb.maxY > Math.abs(tb.minY) * 0.5, `look-direction (+Y) should dominate: maxY=${tb.maxY.toFixed(1)}, minY=${tb.minY.toFixed(1)}`);
-// Along-track (X) span is still non-trivial (55° FOV)
+// Along-track (X) span is still non-trivial (75° horizontal FOV on right)
 assert.ok(tb.maxX - tb.minX > 50);
 
 // ---- groundFootprint: far edge varies with pitch (not stuck at bigT=10000) ----
@@ -87,62 +138,113 @@ assert.ok(tb.maxX - tb.minX > 50);
     `far edge at pitch=31° must be < 50×height: ${b31.maxY.toFixed(1)}`);
 
   // Computed values match mirror-clip formula: t_far = h / |dz| where
-  // dz = -sin(pitch) + TAN_H*cos(pitch)  [positive → above horizon]
+  // dz = -sin(pitch) + TAN_V*cos(pitch) on upper image row (sh=+1)
   const toRad = (d: number) => d * Math.PI / 180;
-  const dz15 = -Math.sin(toRad(15)) + TAN_H * Math.cos(toRad(15));
-  const dz31 = -Math.sin(toRad(31)) + TAN_H * Math.cos(toRad(31));
-  const dy15 = Math.cos(toRad(15)) + TAN_H * Math.sin(toRad(15));
-  const dy31 = Math.cos(toRad(31)) + TAN_H * Math.sin(toRad(31));
+  const dz15 = -Math.sin(toRad(15)) + TAN_V * Math.cos(toRad(15));
+  const dz31 = -Math.sin(toRad(31)) + TAN_V * Math.cos(toRad(31));
+  const dy15 = Math.cos(toRad(15)) + TAN_V * Math.sin(toRad(15));
+  const dy31 = Math.cos(toRad(31)) + TAN_V * Math.sin(toRad(31));
   const expectedFar15 = dy15 * (h / Math.max(Math.abs(dz15), 1 / 300));
   const expectedFar31 = dy31 * (h / Math.max(Math.abs(dz31), 1 / 300));
   approx(b15.maxY, expectedFar15, 1);
   approx(b31.maxY, expectedFar31, 1);
 }
 
-// ---- groundFootprint: quad corners match analytic frustum rays (math frame) ----
-// Ensures wireframe edges from drone to corners align with the same basis as buildCameraRayLocal.
-{
-  const droneX = 42;
-  const h = 96;
-  const pitch = 27;
-  const heading = 22;
-  const H = (heading * Math.PI) / 180;
-  const theta = (pitch * Math.PI) / 180;
-  const sinT = Math.sin(theta);
-  const cosT = Math.cos(theta);
-  const sinH = Math.sin(H);
-  const cosH = Math.cos(H);
-  const losX = sinH * cosT;
-  const losY = cosH * cosT;
-  const losZ = -sinT;
-  const rightX = cosH;
-  const rightY = -sinH;
-  const rightZ = 0;
-  const upX = sinH * sinT;
-  const upY = cosH * sinT;
-  const upZ = cosT;
-
-  const expectedCorners: [number, number, number][] = [];
-  for (const sv of [-1, 1]) {
-    for (const sh of [-1, 1]) {
-      const dx = losX + sv * TAN_V * rightX + sh * TAN_H * upX;
-      const dy = losY + sv * TAN_V * rightY + sh * TAN_H * upY;
-      const dz = losZ + sv * TAN_V * rightZ + sh * TAN_H * upZ;
-      const t = h / Math.max(Math.abs(dz), 1 / 300);
-      expectedCorners.push([droneX + dx * t, dy * t, 0]);
-    }
-  }
-
-  const fpCorners = groundFootprint(droneX, h, pitch, heading);
-  const near3 = (a: [number, number, number], b: [number, number, number]) => (
-    Math.abs(a[0] - b[0]) < 1e-3 && Math.abs(a[1] - b[1]) < 1e-3 && Math.abs(a[2] - b[2]) < 1e-3
+// ---- optical axis vs footprint diagonals ----
+// When all four corner rays physically hit the ground (pitch >= ~38.5°), the
+// projected footprint is a true projective image and its diagonals intersect
+// at the center LOS ground hit.
+for (const { droneX, height, pitchDeg, headingDeg } of [
+  { droneX: 10, height: 100, pitchDeg: 45, headingDeg: 0 },
+  { droneX: 40, height: 100, pitchDeg: 60, headingDeg: 45 },
+  { droneX: -25, height: 180, pitchDeg: 75, headingDeg: 90 },
+]) {
+  const fp = groundFootprint(droneX, height, pitchDeg, headingDeg);
+  const diagHit = lineIntersection2d(
+    [fp[0][0], fp[0][1]],
+    [fp[2][0], fp[2][1]],
+    [fp[1][0], fp[1][1]],
+    [fp[3][0], fp[3][1]],
   );
-  for (const exp of expectedCorners) {
-    assert.ok(
-      fpCorners.some((c) => near3(c as [number, number, number], exp)),
-      `expected frustum corner ${exp} in footprint`,
-    );
-  }
+
+  const theta = (pitchDeg * Math.PI) / 180;
+  const H = (headingDeg * Math.PI) / 180;
+  const losX = Math.sin(H) * Math.cos(theta);
+  const losY = Math.cos(H) * Math.cos(theta);
+  const losZ = -Math.sin(theta);
+  const tCenter = height / Math.abs(losZ);
+  const centerGroundHit: [number, number] = [
+    droneX + losX * tCenter,
+    losY * tCenter,
+  ];
+
+  approx(diagHit[0], centerGroundHit[0], 1e-6);
+  approx(diagHit[1], centerGroundHit[1], 1e-6);
+}
+
+// For shallow pitches (< ~38.5°), the upper rays point above the horizon and
+// `groundFootprint` intentionally uses a mirror-clip to synthesize a bounded
+// far edge for overlap visualization. In that regime, the footprint quad is no
+// longer a true projective image, so its diagonals should NOT be expected to
+// pass through the optical-axis ground hit.
+{
+  const droneX = 0;
+  const height = 100;
+  const pitchDeg = 15;
+  const headingDeg = 0;
+  const fp = groundFootprint(droneX, height, pitchDeg, headingDeg);
+  const diagHit = lineIntersection2d(
+    [fp[0][0], fp[0][1]],
+    [fp[2][0], fp[2][1]],
+    [fp[1][0], fp[1][1]],
+    [fp[3][0], fp[3][1]],
+  );
+  const theta = (pitchDeg * Math.PI) / 180;
+  const losY = Math.cos(theta);
+  const losZ = -Math.sin(theta);
+  const tCenter = height / Math.abs(losZ);
+  const centerGroundHitY = losY * tCenter;
+  assert.ok(
+    Math.abs(diagHit[1] - centerGroundHitY) > 100,
+    `mirror-clipped shallow footprint should diverge from optical center: diag=${diagHit[1].toFixed(1)}, center=${centerGroundHitY.toFixed(1)}`,
+  );
+}
+
+// The displayed 3D frustum mouth uses a constant camera-depth plane
+// P(u,v) = O + d * (L + uR + vU). Its diagonals must always intersect at the
+// optical axis point O + dL, even in shallow-pitch cases where the ground
+// footprint is mirror-clipped and no longer projectively centered.
+for (const { pitchDeg, headingDeg, depth } of [
+  { pitchDeg: 15, headingDeg: 0, depth: 90 },
+  { pitchDeg: 15, headingDeg: 45, depth: 90 },
+  { pitchDeg: 75, headingDeg: 120, depth: 160 },
+]) {
+  const c00 = cameraRayVector(pitchDeg, headingDeg, -1, -1);
+  const c01 = cameraRayVector(pitchDeg, headingDeg, -1, 1);
+  const c11 = cameraRayVector(pitchDeg, headingDeg, 1, 1);
+  const c10 = cameraRayVector(pitchDeg, headingDeg, 1, -1);
+  const center = cameraRayVector(pitchDeg, headingDeg, 0, 0);
+  const diagA: [number, number, number] = [
+    depth * (c00[0] + c11[0]) / 2,
+    depth * (c00[1] + c11[1]) / 2,
+    depth * (c00[2] + c11[2]) / 2,
+  ];
+  const diagB: [number, number, number] = [
+    depth * (c01[0] + c10[0]) / 2,
+    depth * (c01[1] + c10[1]) / 2,
+    depth * (c01[2] + c10[2]) / 2,
+  ];
+  const centerPoint: [number, number, number] = [
+    depth * center[0],
+    depth * center[1],
+    depth * center[2],
+  ];
+  approx(diagA[0], centerPoint[0], 1e-9);
+  approx(diagA[1], centerPoint[1], 1e-9);
+  approx(diagA[2], centerPoint[2], 1e-9);
+  approx(diagB[0], centerPoint[0], 1e-9);
+  approx(diagB[1], centerPoint[1], 1e-9);
+  approx(diagB[2], centerPoint[2], 1e-9);
 }
 
 // ---- groundFootprint offset drone ----

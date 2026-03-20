@@ -61,8 +61,9 @@ export type GroundQuad = [Vec3, Vec3, Vec3, Vec3]; // 4 ground corners [x, y, 0]
  * so the drone “flies sideways” relative to where the lens points — like a port-side
  * survey line with the gimbal aimed out the side of the aircraft.
  *
- * FOV: 55° (TAN_V) spans **along-track** (sensor vertical → ground X);
- * 75° (TAN_H) spans **cross-track** (sensor horizontal → ground Y via image-up in YZ).
+ * FOV (landscape): **75° horizontal** on **camera right** (image width / along-track for H=0);
+ * **55° vertical** on **camera up** (image height → cross-track + vertical via up in YZ).
+ * `right` and `up` are orthonormal to LOS; TAN_H must multiply `right`, TAN_V must multiply `up`.
  *
  * Returns corners in order: [nearLeft, nearRight, farRight, farLeft] for quad winding.
  *
@@ -90,14 +91,14 @@ export function groundFootprint(
   const losY = cosH * cosT;
   const losZ = -sinT;
 
-  // Along-track axis in the rotated frame (55° FOV).
-  // H=0: (1, 0, 0) = +X along-track — same as before.
+  // Camera-right (image horizontal / wide FOV axis for landscape).
+  // H=0: (1, 0, 0) = +X along-track.
   const rightX = cosH;
   const rightY = -sinH;
   const rightZ = 0;
 
-  // Camera-up vector (75° FOV).
-  // H=0: (0, sinT, cosT) — same as before.
+  // Camera-up (image vertical / narrow FOV axis).
+  // H=0: (0, sinT, cosT).
   const upX = sinH * sinT;
   const upY = cosH * sinT;
   const upZ = cosT;
@@ -105,9 +106,9 @@ export function groundFootprint(
   const corners: Vec3[] = [];
   for (const sv of [-1, 1]) {
     for (const sh of [-1, 1]) {
-      const dx = losX + sv * TAN_V * rightX + sh * TAN_H * upX;
-      const dy = losY + sv * TAN_V * rightY + sh * TAN_H * upY;
-      const dz = losZ + sv * TAN_V * rightZ + sh * TAN_H * upZ;
+      const dx = losX + sv * TAN_H * rightX + sh * TAN_V * upX;
+      const dy = losY + sv * TAN_H * rightY + sh * TAN_V * upY;
+      const dz = losZ + sv * TAN_H * rightZ + sh * TAN_V * upZ;
 
       // dz is independent of heading — only pitch determines whether a ray
       // is above or below the horizon.  Mirror-clip keeps the far edge

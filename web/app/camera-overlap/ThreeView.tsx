@@ -61,9 +61,10 @@ function buildCameraRayVectorLocal(
   const right = new THREE.Vector3(cosH, 0, -sinH);
   const up = new THREE.Vector3(sinH * sinT, cosT, cosH * sinT);
 
+  // along = image horizontal (75°), cross = image vertical (55°) — matches groundFootprint
   return los
-    .addScaledVector(right, alongSample * TAN_V)
-    .addScaledVector(up, crossSample * TAN_H);
+    .addScaledVector(right, alongSample * TAN_H)
+    .addScaledVector(up, crossSample * TAN_V);
 }
 
 function buildCameraRayLocal(
