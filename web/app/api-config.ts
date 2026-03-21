@@ -92,6 +92,10 @@ export const buildApiUrl = {
     batteryCsv: (batteryId: string) => `${API_CONFIG.DRONE_PATH_API_URL}/api/csv/battery/${batteryId}`,
     legacy: () => `${API_CONFIG.DRONE_PATH_API_URL}/DronePathREST`,
   },
+  spinPath: {
+    optimize: () => `${API_CONFIG.DRONE_PATH_API_URL}/api/spin-path/optimize`,
+    exportBattery: (batteryId: string) => `${API_CONFIG.DRONE_PATH_API_URL}/api/spin-path/export/battery/${batteryId}`,
+  },
   
   // File Upload API endpoints
   fileUpload: {

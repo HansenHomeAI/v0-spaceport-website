@@ -185,6 +185,34 @@ class SpaceportStack(Stack):
                 "GOOGLE_MAPS_API_KEY": google_maps_api_key_param.value_as_string,
             }
         )
+
+        self.spin_path_lambda = lambda_.Function(
+            self,
+            "SpaceportSpinPathFunction",
+            function_name=scoped_name("Spaceport-SpinPathFunction-"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                "lambda/spin_path",
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            role=self.lambda_role,
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            environment={
+                "UPLOAD_BUCKET": self.upload_bucket.bucket_name,
+                "FILE_METADATA_TABLE": self.file_metadata_table.table_name,
+                "DRONE_PATH_TABLE": self.drone_path_table.table_name,
+                "ML_BUCKET": f"spaceport-ml-processing-{suffix}",
+                "GOOGLE_MAPS_API_KEY": google_maps_api_key_param.value_as_string,
+            }
+        )
         
         self.file_upload_lambda = lambda_.Function(
             self, 
@@ -425,7 +453,17 @@ class SpaceportStack(Stack):
         # Battery CSV endpoint
         battery_csv_resource = csv_resource.add_resource("battery").add_resource("{id}")
         battery_csv_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))
-        
+
+        spin_path_resource = api_resource.add_resource("spin-path")
+        spin_path_resource.add_resource("optimize").add_method(
+            "POST",
+            apigw.LambdaIntegration(self.spin_path_lambda),
+        )
+        spin_path_resource.add_resource("export").add_resource("battery").add_resource("{id}").add_method(
+            "POST",
+            apigw.LambdaIntegration(self.spin_path_lambda),
+        )
+
         # Legacy endpoint
         legacy_resource = self.drone_path_api.root.add_resource("DronePathREST")
         legacy_resource.add_method("POST", apigw.LambdaIntegration(self.drone_path_lambda))

@@ -12,8 +12,10 @@ import {
   rotationTimeSec,
   waypointCountFromLinearPathSpan,
 } from '../../lib/cameraOverlapMath';
+import { buildSpinPathOverlapConfig } from '../../lib/realPathSpin';
 import styles from './page.module.css';
 import GimbalDistributionCard from './GimbalDistributionCard';
+import RealPathPlanner from './RealPathPlanner';
 
 const ThreeView = dynamic(() => import('./ThreeView'), { ssr: false });
 
@@ -117,6 +119,7 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct, testI
 }
 
 export default function CameraOverlapPage() {
+  const [workflowMode, setWorkflowMode] = useState<'straight' | 'realPath'>('straight');
   const [height, setHeight] = useState(200);
   const [handles, setHandles] = useState([10, 100, 190, 280]);
 
@@ -275,6 +278,36 @@ export default function CameraOverlapPage() {
     [alongPositions, height, pitchDegsViewer],
   );
 
+  const realPathOverlapConfig = useMemo(
+    () => buildSpinPathOverlapConfig({
+      speedFts: speedFtsManual,
+      speedMph: speedMphFromAgl,
+      captureSpacingFt: activeCaptureIntervalFt,
+      captureIntervalSeconds: captureCadenceSec,
+      yawRateDegPerSec,
+      captureArcDeg: effectiveCapDeg,
+      maxHeadingDeltaDeg: 179,
+      defaultPitchDeg: -Math.abs(angleDeg),
+      pitchSequenceNeg,
+    }),
+    [
+      speedFtsManual,
+      speedMphFromAgl,
+      activeCaptureIntervalFt,
+      captureCadenceSec,
+      yawRateDegPerSec,
+      effectiveCapDeg,
+      angleDeg,
+      pitchSequenceNeg,
+    ],
+  );
+
+  const isRealPathMode = workflowMode === 'realPath';
+  const showSpinCaptureControls = spinMode || isRealPathMode;
+  const pageLabel = isRealPathMode
+    ? `Mapbox real path · ${activeCaptureIntervalFt.toFixed(1)} ft capture spacing · ${yawRateDegPerSec.toFixed(1)}°/s yaw`
+    : `75°×55° FOV · ${((spinMode ? spinOverlapIou : overlapIou) * 100).toFixed(0)}% overlap`;
+
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
       if (dragIdx.current === null || !svgRef.current) {
@@ -329,92 +362,117 @@ export default function CameraOverlapPage() {
       <div className={styles.contentWrapper}>
         <div style={{ padding: '0 4px' }}>
           <p className={styles.pageLabel} data-testid="camera-overlap-page-label">
-            75°×55° FOV · {((spinMode ? spinOverlapIou : overlapIou) * 100).toFixed(0)}% overlap
+            {pageLabel}
           </p>
           <h1 className={styles.pageTitle}>
-            Drone Path Spacing
+            {isRealPathMode ? 'Camera Overlap Real Path' : 'Drone Path Spacing'}
           </h1>
+        </div>
+
+        <div className={styles.viewModeToggle} style={{ padding: '8px 4px 0' }}>
+          <button
+            type="button"
+            data-testid="workflow-straight-btn"
+            className={`${styles.viewModeBtn} ${!isRealPathMode ? styles.viewModeBtnActive : ''}`}
+            onClick={() => setWorkflowMode('straight')}
+          >
+            Straight Lab
+          </button>
+          <button
+            type="button"
+            data-testid="workflow-real-path-btn"
+            className={`${styles.viewModeBtn} ${isRealPathMode ? styles.viewModeBtnActive : ''}`}
+            onClick={() => setWorkflowMode('realPath')}
+          >
+            Real Path
+          </button>
         </div>
 
         <div className={styles.topCard}>
           <div style={{ padding: '8px 0' }}>
-            <div className={styles.viewModeToggle}>
-              <button
-                type="button"
-                className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
-                onClick={() => {
-                  setSpinMode(false);
-                }}
-              >
-                Linear
-              </button>
-              <button
-                type="button"
-                className={`${styles.viewModeBtn} ${spinMode ? styles.viewModeBtnActive : ''}`}
-                onClick={() => setSpinMode(true)}
-              >
-                Flat spin
-              </button>
-            </div>
+            {isRealPathMode ? (
+              <RealPathPlanner overlapConfig={realPathOverlapConfig} />
+            ) : (
+              <>
+                <div className={styles.viewModeToggle}>
+                  <button
+                    type="button"
+                    className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
+                    onClick={() => {
+                      setSpinMode(false);
+                    }}
+                  >
+                    Linear
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.viewModeBtn} ${spinMode ? styles.viewModeBtnActive : ''}`}
+                    onClick={() => setSpinMode(true)}
+                  >
+                    Flat spin
+                  </button>
+                </div>
 
-            <div className={styles.viewerWaypointBar}>
-              <span className={styles.viewerWaypointBarLabel}>3D path span</span>
-              <div className={styles.viewerWaypointBarTrack}>
-                <input
-                  className={styles.rangeInput}
-                  data-testid="viewer-3d-path-span"
-                  type="range"
-                  min={pathSpanMinFt}
-                  max={pathSpanMaxFt}
-                  step={1}
-                  value={viewerPathLengthFt}
-                  onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
-                  aria-label="End-to-end path length sampled in 3D viewer (feet)"
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${
-                      pathSpanMaxFt > pathSpanMinFt
-                        ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
-                        : 0
-                    }%, #1e1e1e ${
-                      pathSpanMaxFt > pathSpanMinFt
-                        ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
-                        : 0
-                    }%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
+                <div className={styles.viewerWaypointBar}>
+                  <span className={styles.viewerWaypointBarLabel}>3D path span</span>
+                  <div className={styles.viewerWaypointBarTrack}>
+                    <input
+                      className={styles.rangeInput}
+                      data-testid="viewer-3d-path-span"
+                      type="range"
+                      min={pathSpanMinFt}
+                      max={pathSpanMaxFt}
+                      step={1}
+                      value={viewerPathLengthFt}
+                      onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
+                      aria-label="End-to-end path length sampled in 3D viewer (feet)"
+                      style={{
+                        WebkitAppearance: 'none',
+                        appearance: 'none',
+                        background: `linear-gradient(to right, #3a8eff ${
+                          pathSpanMaxFt > pathSpanMinFt
+                            ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
+                            : 0
+                        }%, #1e1e1e ${
+                          pathSpanMaxFt > pathSpanMinFt
+                            ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
+                            : 0
+                        }%)`,
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        display: 'block',
+                        height: 2,
+                        outline: 'none',
+                        width: '100%',
+                      }}
+                    />
+                  </div>
+                  <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '9rem', textAlign: 'right' }}>
+                    {Math.round(viewerPathLengthFt)} ft
+                    <span style={{ color: 'rgba(255,255,255,0.35)' }}>
+                      {' '}
+                      · {spinMode ? effectiveSpinCaptures : viewerWaypointCount} pts
+                    </span>
+                  </span>
+                </div>
+
+                <ThreeView
+                  height={height}
+                  pitchDegs={spinMode ? spinPitchDegs : pitchDegsViewer}
+                  spacing={spacingFromSpeed}
+                  overlapPercent={(spinMode ? spinOverlapIou : overlapIou) * 100}
+                  spinMode={spinMode}
+                  captureIntervalFt={activeCaptureIntervalFt}
+                  captureArcDeg={effectiveCapDeg}
+                  spinHeadingDegs={spinMode ? spinHeadings : undefined}
                 />
-              </div>
-              <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '9rem', textAlign: 'right' }}>
-                {Math.round(viewerPathLengthFt)} ft
-                <span style={{ color: 'rgba(255,255,255,0.35)' }}>
-                  {' '}
-                  · {spinMode ? effectiveSpinCaptures : viewerWaypointCount} pts
-                </span>
-              </span>
-            </div>
-
-            <ThreeView
-              height={height}
-              pitchDegs={spinMode ? spinPitchDegs : pitchDegsViewer}
-              spacing={spacingFromSpeed}
-              overlapPercent={(spinMode ? spinOverlapIou : overlapIou) * 100}
-              spinMode={spinMode}
-              captureIntervalFt={activeCaptureIntervalFt}
-              captureArcDeg={effectiveCapDeg}
-              spinHeadingDegs={spinMode ? spinHeadings : undefined}
-            />
+              </>
+            )}
           </div>
 
           <div className={styles.slidersSection}>
             <SliderRow
-              label="Height"
+              label={isRealPathMode ? 'Overlap AGL' : 'Height'}
               min={50}
               max={400}
               step={1}
@@ -481,7 +539,7 @@ export default function CameraOverlapPage() {
               Cruise speed: <strong>{speedMphFromAgl.toFixed(2)} mph</strong> ({speedFtsManual.toFixed(2)} ft/s) from AGL vs. anchors
             </p>
 
-            {spinMode && (
+            {showSpinCaptureControls && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span className={styles.sliderLabel} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -559,6 +617,7 @@ export default function CameraOverlapPage() {
               {tSpin > 0 && (
                 <>
                   {' '}· flat spin {effectiveCapDeg.toFixed(0)}° @ {yawRateDegPerSec.toFixed(1)}°/s ({headingRpm.toFixed(2)} RPM) · drone advances {spacingFromSpeed.toFixed(0)} ft between spins
+                  {isRealPathMode ? ` · real-path capture spacing ${activeCaptureIntervalFt.toFixed(1)} ft` : ''}
                 </>
               )}
             </p>
@@ -697,7 +756,7 @@ export default function CameraOverlapPage() {
           onMaxAngle={setMaxAngle}
           onMinAngleHeight={handleMinAngleHeight}
           onMaxAngleHeight={handleMaxAngleHeight}
-          pathSpanSpacingFt={spinMode ? activeCaptureIntervalFt : spacingFromSpeed}
+          pathSpanSpacingFt={showSpinCaptureControls ? activeCaptureIntervalFt : spacingFromSpeed}
           viewerPathLengthFt={viewerPathLengthFt}
           onViewerPathLengthFt={setViewerPathLengthFt}
           onPitchSequenceGenerated={setPitchSequenceNeg}
