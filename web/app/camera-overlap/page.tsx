@@ -21,6 +21,11 @@ const ThreeView = dynamic(() => import('./ThreeView'), { ssr: false });
 const MIN_SPEED_FTS = 0.5;
 const MAX_SPEED_MPH = 22.4;
 const MAX_SPEED_FTS = (MAX_SPEED_MPH * 5280) / 3600;
+const MPH_TO_FTS = 5280 / 3600;
+const DEFAULT_SPEED_AGL_MIN_FT = 200;
+const DEFAULT_SPEED_AGL_MAX_FT = 400;
+const DEFAULT_SPEED_MPH_MIN = 17;
+const DEFAULT_SPEED_MPH_MAX = 22;
 
 const C = 72;
 const R = 50;
@@ -112,27 +117,51 @@ function SliderRow({ label, min, max, step, value, onChange, display, pct, testI
 }
 
 export default function CameraOverlapPage() {
-  const [height, setHeight] = useState(100);
-  const [speedFtsManual, setSpeedFtsManual] = useState(3.0);
+  const [height, setHeight] = useState(200);
   const [handles, setHandles] = useState([10, 100, 190, 280]);
-  
+
+  const [speedEnvLoAgl, setSpeedEnvLoAgl] = useState(DEFAULT_SPEED_AGL_MIN_FT);
+  const [speedEnvLoMph, setSpeedEnvLoMph] = useState(DEFAULT_SPEED_MPH_MIN);
+  const [speedEnvHiAgl, setSpeedEnvHiAgl] = useState(DEFAULT_SPEED_AGL_MAX_FT);
+  const [speedEnvHiMph, setSpeedEnvHiMph] = useState(DEFAULT_SPEED_MPH_MAX);
+
   const [minAngle, setMinAngle] = useState(15);
   const [minAngleHeight, setMinAngleHeight] = useState(200);
   const [maxAngle, setMaxAngle] = useState(35);
   const [maxAngleHeight, setMaxAngleHeight] = useState(400);
-  const [customCaptureRing, setCustomCaptureRing] = useState(true);
-  /** Linear mode: end-to-end span (ft) along the flight line; waypoint count follows spacing. */
+  const [customCaptureRing, setCustomCaptureRing] = useState(false);
   const [viewerPathLengthFt, setViewerPathLengthFt] = useState(150);
   const [pitchSequenceNeg, setPitchSequenceNeg] = useState<number[]>([]);
   const [spinMode, setSpinMode] = useState(false);
-  /** null = use spacing ÷ interval (shown as “auto”); number = override count in 3D for flat spin. */
-  const [spinViewerCaptureCount, setSpinViewerCaptureCount] = useState<number | null>(null);
   const [captureIntervalFt, setCaptureIntervalFt] = useState(6);
-  const [captureIntervalSec, setCaptureIntervalSec] = useState(2);
-  const [captureIntervalUnit, setCaptureIntervalUnit] = useState<'ft' | 's'>('ft');
+  const [captureIntervalSec, setCaptureIntervalSec] = useState(1.5);
+  const [captureIntervalUnit, setCaptureIntervalUnit] = useState<'ft' | 's'>('s');
 
   const dragIdx = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const speedMphFromAgl = useMemo(() => {
+    const h = Math.min(400, Math.max(50, height));
+    const a0 = speedEnvLoAgl;
+    const m0 = speedEnvLoMph;
+    const a1 = speedEnvHiAgl;
+    const m1 = speedEnvHiMph;
+    const lo = Math.min(a0, a1);
+    const hi = Math.max(a0, a1);
+    const mphLo = a0 <= a1 ? m0 : m1;
+    const mphHi = a0 <= a1 ? m1 : m0;
+    if (hi - lo < 1e-6) {
+      return mphLo;
+    }
+    const hh = Math.min(hi, Math.max(lo, h));
+    const t = (hh - lo) / (hi - lo);
+    return mphLo + t * (mphHi - mphLo);
+  }, [height, speedEnvLoAgl, speedEnvLoMph, speedEnvHiAgl, speedEnvHiMph]);
+
+  const speedFtsManual = useMemo(
+    () => Math.min(MAX_SPEED_FTS, Math.max(MIN_SPEED_FTS, speedMphFromAgl * MPH_TO_FTS)),
+    [speedMphFromAgl],
+  );
 
   const angleDeg = getGimbalAngleDeg(height, minAngle, minAngleHeight, maxAngle, maxAngleHeight);
   const hypotenuse = hypotenuseFromHeight(height, angleDeg);
@@ -163,23 +192,26 @@ export default function CameraOverlapPage() {
   const effectiveCapDeg = customCaptureRing ? capDeg : 360;
   const rotTime = rotationTimeSec(effectiveCapPct);
   const spacingFromSpeed = speedFtsManual * rotTime;
-  const speedMphFromSlider = speedFtsManual * 0.681818;
 
-  const linearPathMinFt = linearViewerPathMinFt(spacingFromSpeed);
-  const linearPathMaxFt = linearViewerPathMaxFt(spacingFromSpeed);
+  const activeCaptureIntervalFt = captureIntervalUnit === 's'
+    ? captureIntervalSec * speedFtsManual
+    : captureIntervalFt;
+
+  const pathSpanSpacingFt = spinMode ? activeCaptureIntervalFt : spacingFromSpeed;
+  const pathSpanMinFt = linearViewerPathMinFt(pathSpanSpacingFt);
+  const pathSpanMaxFt = linearViewerPathMaxFt(pathSpanSpacingFt);
 
   useEffect(() => {
     setViewerPathLengthFt((prev) =>
-      Math.min(linearPathMaxFt, Math.max(linearPathMinFt, prev)),
+      Math.min(pathSpanMaxFt, Math.max(pathSpanMinFt, prev)),
     );
-  }, [linearPathMinFt, linearPathMaxFt]);
+  }, [pathSpanMinFt, pathSpanMaxFt]);
 
   const viewerWaypointCount = useMemo(
     () => waypointCountFromLinearPathSpan(viewerPathLengthFt, spacingFromSpeed),
     [viewerPathLengthFt, spacingFromSpeed],
   );
 
-  // Flat-spin display-only metrics (no formula changes)
   const tSpin = effectiveCapPct * FULL_ROT_SEC;
   const yawRateDegPerSec = tSpin > 0 ? effectiveCapDeg / tSpin : 0;
   const headingRpm = yawRateDegPerSec / 6;
@@ -198,28 +230,24 @@ export default function CameraOverlapPage() {
     [viewerWaypointCount, spacingFromSpeed],
   );
 
-  // Spin-mode derived values ─────────────────────────────────────────────────
-  // Unified interval in ft regardless of which unit the slider is in.
-  const activeCaptureIntervalFt = captureIntervalUnit === 's'
-    ? captureIntervalSec * speedFtsManual
-    : captureIntervalFt;
+  // Spin-mode: path span drives along-track count; yaw steps by Δθ = ω·Δt (capture % sets ω).
+  const captureCadenceSec = activeCaptureIntervalFt / Math.max(0.01, speedFtsManual);
+  const deltaHeadingPerCaptureDeg = yawRateDegPerSec * captureCadenceSec;
 
-  const numSpinCaptures = useMemo(
-    () => Math.max(2, Math.min(30, Math.round(spacingFromSpeed / Math.max(0.1, activeCaptureIntervalFt)))),
-    [spacingFromSpeed, activeCaptureIntervalFt],
-  );
+  const nCapturesFromYawStep = useMemo(() => {
+    const d = Math.max(1e-9, deltaHeadingPerCaptureDeg);
+    return Math.min(30, Math.max(2, Math.floor(effectiveCapDeg / d) + 1));
+  }, [deltaHeadingPerCaptureDeg, effectiveCapDeg]);
 
   const effectiveSpinCaptures = useMemo(
-    () => Math.max(2, Math.min(30, spinViewerCaptureCount ?? numSpinCaptures)),
-    [spinViewerCaptureCount, numSpinCaptures],
+    () => waypointCountFromLinearPathSpan(viewerPathLengthFt, activeCaptureIntervalFt),
+    [viewerPathLengthFt, activeCaptureIntervalFt],
   );
 
-  const spinHeadings = useMemo(
-    () => Array.from({ length: effectiveSpinCaptures }, (_, i) =>
-      effectiveSpinCaptures > 1 ? (i / (effectiveSpinCaptures - 1)) * effectiveCapDeg : 0,
-    ),
-    [effectiveSpinCaptures, effectiveCapDeg],
-  );
+  const spinHeadings = useMemo(() => {
+    const d = Math.max(1e-9, deltaHeadingPerCaptureDeg);
+    return Array.from({ length: effectiveSpinCaptures }, (_, i) => i * d);
+  }, [effectiveSpinCaptures, deltaHeadingPerCaptureDeg]);
 
   const spinAlongPositions = useMemo(
     () => Array.from({ length: effectiveSpinCaptures }, (_, i) =>
@@ -306,6 +334,235 @@ export default function CameraOverlapPage() {
           <h1 className={styles.pageTitle}>
             Drone Path Spacing
           </h1>
+        </div>
+
+        <div className={styles.topCard}>
+          <div style={{ padding: '8px 0' }}>
+            <div className={styles.viewModeToggle}>
+              <button
+                type="button"
+                className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
+                onClick={() => {
+                  setSpinMode(false);
+                }}
+              >
+                Linear
+              </button>
+              <button
+                type="button"
+                className={`${styles.viewModeBtn} ${spinMode ? styles.viewModeBtnActive : ''}`}
+                onClick={() => setSpinMode(true)}
+              >
+                Flat spin
+              </button>
+            </div>
+
+            <div className={styles.viewerWaypointBar}>
+              <span className={styles.viewerWaypointBarLabel}>3D path span</span>
+              <div className={styles.viewerWaypointBarTrack}>
+                <input
+                  className={styles.rangeInput}
+                  data-testid="viewer-3d-path-span"
+                  type="range"
+                  min={pathSpanMinFt}
+                  max={pathSpanMaxFt}
+                  step={1}
+                  value={viewerPathLengthFt}
+                  onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
+                  aria-label="End-to-end path length sampled in 3D viewer (feet)"
+                  style={{
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    background: `linear-gradient(to right, #3a8eff ${
+                      pathSpanMaxFt > pathSpanMinFt
+                        ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
+                        : 0
+                    }%, #1e1e1e ${
+                      pathSpanMaxFt > pathSpanMinFt
+                        ? ((viewerPathLengthFt - pathSpanMinFt) / (pathSpanMaxFt - pathSpanMinFt)) * 100
+                        : 0
+                    }%)`,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    display: 'block',
+                    height: 2,
+                    outline: 'none',
+                    width: '100%',
+                  }}
+                />
+              </div>
+              <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '9rem', textAlign: 'right' }}>
+                {Math.round(viewerPathLengthFt)} ft
+                <span style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  {' '}
+                  · {spinMode ? effectiveSpinCaptures : viewerWaypointCount} pts
+                </span>
+              </span>
+            </div>
+
+            <ThreeView
+              height={height}
+              pitchDegs={spinMode ? spinPitchDegs : pitchDegsViewer}
+              spacing={spacingFromSpeed}
+              overlapPercent={(spinMode ? spinOverlapIou : overlapIou) * 100}
+              spinMode={spinMode}
+              captureIntervalFt={activeCaptureIntervalFt}
+              captureArcDeg={effectiveCapDeg}
+              spinHeadingDegs={spinMode ? spinHeadings : undefined}
+            />
+          </div>
+
+          <div className={styles.slidersSection}>
+            <SliderRow
+              label="Height"
+              min={50}
+              max={400}
+              step={1}
+              value={Math.min(height, 400)}
+              onChange={setHeight}
+              display={`${Math.min(height, 400)} ft`}
+              pct={((Math.min(height, 400) - 50) / 350) * 100}
+              testId="height-slider"
+            />
+
+            <div className={styles.speedEnvelopeRow}>
+              <div className={styles.speedEnvelopeCard}>
+                <p className={styles.speedEnvelopeTitle}>Low AGL</p>
+                <label className={styles.speedEnvelopeField}>
+                  <span>AGL (ft)</span>
+                  <input
+                    type="number"
+                    min={50}
+                    max={900}
+                    step={1}
+                    value={speedEnvLoAgl}
+                    onChange={(e) => setSpeedEnvLoAgl(Number(e.target.value))}
+                  />
+                </label>
+                <label className={styles.speedEnvelopeField}>
+                  <span>Speed (mph)</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={30}
+                    step={0.5}
+                    value={speedEnvLoMph}
+                    onChange={(e) => setSpeedEnvLoMph(Number(e.target.value))}
+                  />
+                </label>
+              </div>
+              <div className={styles.speedEnvelopeCard}>
+                <p className={styles.speedEnvelopeTitle}>High AGL</p>
+                <label className={styles.speedEnvelopeField}>
+                  <span>AGL (ft)</span>
+                  <input
+                    type="number"
+                    min={50}
+                    max={900}
+                    step={1}
+                    value={speedEnvHiAgl}
+                    onChange={(e) => setSpeedEnvHiAgl(Number(e.target.value))}
+                  />
+                </label>
+                <label className={styles.speedEnvelopeField}>
+                  <span>Speed (mph)</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={30}
+                    step={0.5}
+                    value={speedEnvHiMph}
+                    onChange={(e) => setSpeedEnvHiMph(Number(e.target.value))}
+                  />
+                </label>
+              </div>
+            </div>
+            <p className={styles.speedAutoNote}>
+              Cruise speed: <strong>{speedMphFromAgl.toFixed(2)} mph</strong> ({speedFtsManual.toFixed(2)} ft/s) from AGL vs. anchors
+            </p>
+
+            {spinMode && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span className={styles.sliderLabel} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    Capture interval
+                    <span className={styles.unitToggle}>
+                      <button
+                        type="button"
+                        className={`${styles.unitBtn} ${captureIntervalUnit === 'ft' ? styles.unitBtnActive : ''}`}
+                        onClick={() => setCaptureIntervalUnit('ft')}
+                      >ft</button>
+                      <button
+                        type="button"
+                        className={`${styles.unitBtn} ${captureIntervalUnit === 's' ? styles.unitBtnActive : ''}`}
+                        onClick={() => setCaptureIntervalUnit('s')}
+                      >s</button>
+                    </span>
+                  </span>
+                  <span className={styles.sliderValue}>
+                    {captureIntervalUnit === 'ft'
+                      ? `${captureIntervalFt} ft`
+                      : `${captureIntervalSec} s · ${activeCaptureIntervalFt.toFixed(1)} ft`
+                    }
+                    {' '}· Δθ ≈ {deltaHeadingPerCaptureDeg.toFixed(2)}° · ~{nCapturesFromYawStep} in one arc
+                  </span>
+                </div>
+                {captureIntervalUnit === 'ft' ? (
+                  <input
+                    className={styles.rangeInput}
+                    data-testid="capture-interval-slider"
+                    type="range"
+                    min={1}
+                    max={50}
+                    step={1}
+                    value={captureIntervalFt}
+                    onChange={(e) => setCaptureIntervalFt(Number(e.target.value))}
+                    style={{
+                      WebkitAppearance: 'none',
+                      appearance: 'none',
+                      background: `linear-gradient(to right, #3a8eff ${((captureIntervalFt - 1) / 49) * 100}%, #1e1e1e ${((captureIntervalFt - 1) / 49) * 100}%)`,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      display: 'block',
+                      height: 2,
+                      outline: 'none',
+                      width: '100%',
+                    }}
+                  />
+                ) : (
+                  <input
+                    className={styles.rangeInput}
+                    data-testid="capture-interval-slider"
+                    type="range"
+                    min={0.5}
+                    max={10}
+                    step={0.1}
+                    value={captureIntervalSec}
+                    onChange={(e) => setCaptureIntervalSec(Number(e.target.value))}
+                    style={{
+                      WebkitAppearance: 'none',
+                      appearance: 'none',
+                      background: `linear-gradient(to right, #3a8eff ${((captureIntervalSec - 0.5) / 9.5) * 100}%, #1e1e1e ${((captureIntervalSec - 0.5) / 9.5) * 100}%)`,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      display: 'block',
+                      height: 2,
+                      outline: 'none',
+                      width: '100%',
+                    }}
+                  />
+                )}
+              </div>
+            )}
+            <p className={styles.footnote}>
+              gimbal &minus;{angleDeg.toFixed(0)}° &middot; hyp {hypotenuse.toFixed(0)} ft &middot; spacing {spacingFromSpeed.toFixed(1)} ft &middot; {rotTime.toFixed(1)}s/pt
+              {tSpin > 0 && (
+                <>
+                  {' '}· flat spin {effectiveCapDeg.toFixed(0)}° @ {yawRateDegPerSec.toFixed(1)}°/s ({headingRpm.toFixed(2)} RPM) · drone advances {spacingFromSpeed.toFixed(0)} ft between spins
+                </>
+              )}
+            </p>
+          </div>
         </div>
 
         <div style={{ padding: '10px 0 0' }}>
@@ -416,8 +673,8 @@ export default function CameraOverlapPage() {
               />
               <Stat
                 label="Speed"
-                value={speedMphFromSlider.toFixed(2)}
-                sub={`mph · ${speedFtsManual.toFixed(2)} ft/s`}
+                value={speedMphFromAgl.toFixed(2)}
+                sub={`mph · ${speedFtsManual.toFixed(2)} ft/s (from AGL)`}
                 color="#3a8eff"
               />
               <Stat
@@ -440,242 +697,11 @@ export default function CameraOverlapPage() {
           onMaxAngle={setMaxAngle}
           onMinAngleHeight={handleMinAngleHeight}
           onMaxAngleHeight={handleMaxAngleHeight}
-          spacingFromSpeedFt={spacingFromSpeed}
+          pathSpanSpacingFt={spinMode ? activeCaptureIntervalFt : spacingFromSpeed}
           viewerPathLengthFt={viewerPathLengthFt}
           onViewerPathLengthFt={setViewerPathLengthFt}
           onPitchSequenceGenerated={setPitchSequenceNeg}
         />
-
-        <div style={{ padding: '8px 0' }}>
-          <div className={styles.viewModeToggle}>
-            <button
-              type="button"
-              className={`${styles.viewModeBtn} ${!spinMode ? styles.viewModeBtnActive : ''}`}
-              onClick={() => {
-                setSpinMode(false);
-                setSpinViewerCaptureCount(null);
-              }}
-            >
-              Linear
-            </button>
-            <button
-              type="button"
-              className={`${styles.viewModeBtn} ${spinMode ? styles.viewModeBtnActive : ''}`}
-              onClick={() => setSpinMode(true)}
-            >
-              Flat spin
-            </button>
-          </div>
-
-          <div className={styles.viewerWaypointBar}>
-            <span className={styles.viewerWaypointBarLabel}>
-              {spinMode ? '3D captures' : '3D path span'}
-            </span>
-            <div className={styles.viewerWaypointBarTrack}>
-              {spinMode ? (
-                <input
-                  className={styles.rangeInput}
-                  data-testid="viewer-spin-capture-count"
-                  type="range"
-                  min={2}
-                  max={30}
-                  step={1}
-                  value={effectiveSpinCaptures}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setSpinViewerCaptureCount(v === numSpinCaptures ? null : v);
-                  }}
-                  aria-label="Number of captures shown in 3D viewer"
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${((effectiveSpinCaptures - 2) / 28) * 100}%, #1e1e1e ${((effectiveSpinCaptures - 2) / 28) * 100}%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
-                />
-              ) : (
-                <input
-                  className={styles.rangeInput}
-                  data-testid="viewer-linear-path-span"
-                  type="range"
-                  min={linearPathMinFt}
-                  max={linearPathMaxFt}
-                  step={1}
-                  value={viewerPathLengthFt}
-                  onChange={(e) => setViewerPathLengthFt(Number(e.target.value))}
-                  aria-label="End-to-end path length sampled in 3D viewer (feet)"
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${
-                      linearPathMaxFt > linearPathMinFt
-                        ? ((viewerPathLengthFt - linearPathMinFt) / (linearPathMaxFt - linearPathMinFt)) * 100
-                        : 0
-                    }%, #1e1e1e ${
-                      linearPathMaxFt > linearPathMinFt
-                        ? ((viewerPathLengthFt - linearPathMinFt) / (linearPathMaxFt - linearPathMinFt)) * 100
-                        : 0
-                    }%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
-                />
-              )}
-            </div>
-            <span className={styles.sliderValue} style={{ flexShrink: 0, minWidth: '9rem', textAlign: 'right' }}>
-              {spinMode ? (
-                <>
-                  {effectiveSpinCaptures}
-                  {spinViewerCaptureCount === null ? (
-                    <span style={{ color: 'rgba(255,255,255,0.35)' }}> · auto</span>
-                  ) : (
-                    <span style={{ color: 'rgba(255,255,255,0.35)' }}> · manual</span>
-                  )}
-                </>
-              ) : (
-                <>
-                  {Math.round(viewerPathLengthFt)} ft
-                  <span style={{ color: 'rgba(255,255,255,0.35)' }}> · {viewerWaypointCount} pts</span>
-                </>
-              )}
-            </span>
-            {spinMode ? (
-              <button
-                type="button"
-                className={styles.viewerWaypointAutoBtn}
-                disabled={spinViewerCaptureCount === null}
-                data-testid="viewer-spin-capture-reset-auto"
-                onClick={() => setSpinViewerCaptureCount(null)}
-              >
-                Match spacing
-              </button>
-            ) : null}
-          </div>
-
-          <ThreeView
-            height={height}
-            pitchDegs={spinMode ? spinPitchDegs : pitchDegsViewer}
-            spacing={spacingFromSpeed}
-            overlapPercent={(spinMode ? spinOverlapIou : overlapIou) * 100}
-            spinMode={spinMode}
-            captureIntervalFt={activeCaptureIntervalFt}
-            captureArcDeg={effectiveCapDeg}
-          />
-        </div>
-
-        <div className={styles.slidersSection}>
-          <SliderRow
-            label="Height"
-            min={50}
-            max={400}
-            step={1}
-            value={Math.min(height, 400)}
-            onChange={setHeight}
-            display={`${Math.min(height, 400)} ft`}
-            pct={((Math.min(height, 400) - 50) / 350) * 100}
-            testId="height-slider"
-          />
-          <SliderRow
-            label="Speed"
-            min={MIN_SPEED_FTS}
-            max={MAX_SPEED_FTS}
-            step={0.05}
-            value={Math.min(MAX_SPEED_FTS, Math.max(MIN_SPEED_FTS, speedFtsManual))}
-            onChange={(v) => setSpeedFtsManual(v)}
-            display={`${speedFtsManual.toFixed(2)} ft/s · ${(speedFtsManual * 0.681818).toFixed(2)} mph (max ${MAX_SPEED_MPH} mph)`}
-            pct={((Math.min(MAX_SPEED_FTS, Math.max(MIN_SPEED_FTS, speedFtsManual)) - MIN_SPEED_FTS) / (MAX_SPEED_FTS - MIN_SPEED_FTS)) * 100}
-            testId="speed-slider"
-          />
-          {spinMode && (
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span className={styles.sliderLabel} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  Capture interval
-                  <span className={styles.unitToggle}>
-                    <button
-                      type="button"
-                      className={`${styles.unitBtn} ${captureIntervalUnit === 'ft' ? styles.unitBtnActive : ''}`}
-                      onClick={() => setCaptureIntervalUnit('ft')}
-                    >ft</button>
-                    <button
-                      type="button"
-                      className={`${styles.unitBtn} ${captureIntervalUnit === 's' ? styles.unitBtnActive : ''}`}
-                      onClick={() => setCaptureIntervalUnit('s')}
-                    >s</button>
-                  </span>
-                </span>
-                <span className={styles.sliderValue}>
-                  {captureIntervalUnit === 'ft'
-                    ? `${captureIntervalFt} ft`
-                    : `${captureIntervalSec} s · ${activeCaptureIntervalFt.toFixed(1)} ft`
-                  } · ~{numSpinCaptures} from spacing
-                </span>
-              </div>
-              {captureIntervalUnit === 'ft' ? (
-                <input
-                  className={styles.rangeInput}
-                  data-testid="capture-interval-slider"
-                  type="range"
-                  min={1}
-                  max={50}
-                  step={1}
-                  value={captureIntervalFt}
-                  onChange={(e) => setCaptureIntervalFt(Number(e.target.value))}
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${((captureIntervalFt - 1) / 49) * 100}%, #1e1e1e ${((captureIntervalFt - 1) / 49) * 100}%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
-                />
-              ) : (
-                <input
-                  className={styles.rangeInput}
-                  data-testid="capture-interval-slider"
-                  type="range"
-                  min={0.5}
-                  max={10}
-                  step={0.5}
-                  value={captureIntervalSec}
-                  onChange={(e) => setCaptureIntervalSec(Number(e.target.value))}
-                  style={{
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, #3a8eff ${((captureIntervalSec - 0.5) / 9.5) * 100}%, #1e1e1e ${((captureIntervalSec - 0.5) / 9.5) * 100}%)`,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    display: 'block',
-                    height: 2,
-                    outline: 'none',
-                    width: '100%',
-                  }}
-                />
-              )}
-            </div>
-          )}
-          <p className={styles.footnote}>
-            gimbal &minus;{angleDeg.toFixed(0)}° &middot; hyp {hypotenuse.toFixed(0)} ft &middot; spacing {spacingFromSpeed.toFixed(1)} ft &middot; {rotTime.toFixed(1)}s/pt
-            {tSpin > 0 && (
-              <>
-                {' '}· flat spin {effectiveCapDeg.toFixed(0)}° @ {yawRateDegPerSec.toFixed(1)}°/s ({headingRpm.toFixed(2)} RPM) · drone advances {spacingFromSpeed.toFixed(0)} ft between spins
-              </>
-            )}
-          </p>
-        </div>
       </div>
     </main>
   );

@@ -231,6 +231,67 @@
   }
 }
 
+/* Top stack: 3D viewer + height / speed anchors + spin interval */
+.topCard {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 14px;
+  margin-top: 8px;
+  padding: 12px 14px 8px;
+}
+
+.speedEnvelopeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.speedEnvelopeCard {
+  background: #161616;
+  border: 1px solid #252525;
+  border-radius: 12px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 140px;
+  padding: 12px 14px;
+}
+
+.speedEnvelopeTitle {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.speedEnvelopeField {
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  gap: 4px;
+}
+
+.speedEnvelopeField input {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #f5f5f7;
+  font-size: 0.875rem;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.speedAutoNote {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8125rem;
+  margin: 10px 0 0;
+}
+
 /* Sliders section: more horizontal padding on desktop */
 .slidersSection {
   display: flex;

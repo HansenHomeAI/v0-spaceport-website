@@ -697,6 +697,11 @@ export type ThreeViewProps = {
   captureIntervalFt?: number;
   /** Total heading arc swept during the capture window (degrees). Spin mode only. */
   captureArcDeg?: number;
+  /**
+   * When provided (length matches pitchDegs), overrides internal evenly-spread headings.
+   * Use for RPM-based cumulative yaw along the path span.
+   */
+  spinHeadingDegs?: number[];
 };
 
 function footprintColor(i: number, n: number): string {
@@ -706,8 +711,8 @@ function footprintColor(i: number, n: number): string {
   return `hsl(${h}, 72%, ${l}%)`;
 }
 
-function spinFootprintColor(headingDeg: number, arcDeg: number): string {
-  const t = arcDeg > 0 ? headingDeg / arcDeg : 0;
+function spinFootprintColor(headingDeg: number, maxHeadingDeg: number): string {
+  const t = maxHeadingDeg > 0 ? Math.min(1, Math.max(0, headingDeg / maxHeadingDeg)) : 0;
   const h = 200 - t * 120;
   return `hsl(${(h + 360) % 360}, 80%, 62%)`;
 }
@@ -720,6 +725,7 @@ export default function ThreeView({
   spinMode = false,
   captureIntervalFt = 6,
   captureArcDeg = 180,
+  spinHeadingDegs: externalSpinHeadingDegs,
 }: ThreeViewProps) {
   const coverageSpaceRef = useRef<THREE.Group>(null);
   const coverageRootRef = useRef<THREE.Group>(null);
@@ -778,11 +784,28 @@ export default function ThreeView({
     ? Math.max(2, Math.min(30, pitchDegs.length))
     : autoSpinCaptureCount;
 
-  const spinHeadings = useMemo(
-    () => Array.from({ length: numSpinCaptures }, (_, i) => (
+  const spinHeadings = useMemo(() => {
+    if (
+      spinMode
+      && externalSpinHeadingDegs
+      && externalSpinHeadingDegs.length === pitchDegs.length
+    ) {
+      return externalSpinHeadingDegs;
+    }
+    return Array.from({ length: numSpinCaptures }, (_, i) => (
       numSpinCaptures > 1 ? (i / (numSpinCaptures - 1)) * captureArcDeg : 0
-    )),
-    [numSpinCaptures, captureArcDeg],
+    ));
+  }, [
+    spinMode,
+    externalSpinHeadingDegs,
+    pitchDegs.length,
+    numSpinCaptures,
+    captureArcDeg,
+  ]);
+
+  const spinHeadingMaxDeg = useMemo(
+    () => Math.max(1e-9, ...spinHeadings.map((h) => Math.abs(h))),
+    [spinHeadings],
   );
 
   const spinAlongX = useMemo(
@@ -833,10 +856,10 @@ export default function ThreeView({
   const activeColors = useMemo(
     () => Array.from({ length: activeN }, (_, i) => (
       spinMode
-        ? spinFootprintColor(activeHeadings[i] ?? 0, captureArcDeg)
+        ? spinFootprintColor(activeHeadings[i] ?? 0, spinHeadingMaxDeg)
         : footprintColor(i, activeN)
     )),
-    [activeN, spinMode, activeHeadings, captureArcDeg],
+    [activeN, spinMode, activeHeadings, spinHeadingMaxDeg],
   );
 
   const activeBounds = useMemo(() => {
