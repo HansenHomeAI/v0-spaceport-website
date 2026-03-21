@@ -36,27 +36,34 @@ const SPACE_ROTATION = new THREE.Matrix4().makeRotationY(Math.PI / 2);
 
 const COV_VERT = /* glsl */ `
   varying vec3 vWP;
+  varying vec3 vWN;
   void main() {
     vec4 wp = modelMatrix * vec4(position, 1.0);
     vWP = wp.xyz;
+    vWN = normalize(mat3(modelMatrix) * normal);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
 const COV_FRAG = /* glsl */ `
-  uniform sampler2D dAtlas;
   uniform int nProj;
   uniform mat4 pMat[30];
   uniform vec3 pCol[30];
+  uniform vec3 pPos[30];
   uniform vec4 pRect[30];
   uniform float pAlpha;
+  uniform sampler2D dAtlas;
   varying vec3 vWP;
+  varying vec3 vWN;
 
   void main() {
+    vec3 N = normalize(vWN);
     vec3 acc = vec3(0.0);
     float a = 0.0;
     for (int i = 0; i < 30; i++) {
       if (i >= nProj) break;
+      vec3 toProj = pPos[i] - vWP;
+      if (dot(N, normalize(toProj)) < 0.05) continue;
       vec4 clip = pMat[i] * vec4(vWP, 1.0);
       if (clip.w <= 0.0) continue;
       vec3 ndc = clip.xyz / clip.w;
@@ -66,14 +73,11 @@ const COV_FRAG = /* glsl */ `
       float sd = texture2D(dAtlas, auv).x;
       float fd = ndc.z * 0.5 + 0.5;
       if (sd > 0.0 && fd > sd + 0.002) continue;
+      float facing = dot(N, normalize(toProj));
       float edge = min(1.0 - abs(ndc.x), 1.0 - abs(ndc.y));
-      float fade = smoothstep(0.0, 0.06, edge);
+      float fade = smoothstep(0.0, 0.06, edge) * smoothstep(0.05, 0.3, facing);
       acc += pCol[i] * fade;
       a += pAlpha * fade;
-      
-      // if (sd > 0.0 && fd > sd + 0.005) continue;
-      // acc += pCol[i] * fade;
-      // a += pAlpha * fade;
     }
     if (a < 0.005) discard;
     a = min(a, 0.82);
@@ -627,6 +631,7 @@ export default function ThreeView({
   const uBuf = useMemo(() => ({
     matrices: Array.from({ length: MAX_PROJ }, () => new THREE.Matrix4()),
     colors: Array.from({ length: MAX_PROJ }, () => new THREE.Vector3()),
+    positions: Array.from({ length: MAX_PROJ }, () => new THREE.Vector3()),
     rects: Array.from({ length: MAX_PROJ }, () => new THREE.Vector4()),
   }), []);
 
@@ -636,6 +641,7 @@ export default function ThreeView({
       nProj: { value: 0 },
       pMat: { value: uBuf.matrices },
       pCol: { value: uBuf.colors },
+      pPos: { value: uBuf.positions },
       pRect: { value: uBuf.rects },
       pAlpha: { value: 0.22 },
     },
@@ -761,6 +767,7 @@ export default function ThreeView({
     for (let i = 0; i < count; i++) {
       const cam = projectorCameras[i];
       uBuf.matrices[i].multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+      uBuf.positions[i].copy(cam.position);
       const c = new THREE.Color(activeColors[i] ?? '#3a8eff');
       uBuf.colors[i].set(c.r, c.g, c.b);
       const col = i % ATLAS_COLS;
