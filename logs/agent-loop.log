@@ -12,3 +12,6 @@
 [2026-03-20T20:58:32Z] curved-path render -> local build + unit coverage green -> bump preview trigger and push curved map branch
 [2026-03-20T21:51:25Z] curved-path retry -> native line elevation layout fixed and Bezier lead-distance turns validated locally -> push preview branch
 [2026-03-20T22:25:59Z] curved-path visibility pass -> strengthened elevated line styling and stabilized preview pitch assertion locally -> commit and redeploy
+[2026-03-21T22:56:53Z] push->pages/cdk green -> preview ready -> next: preview browser validation
+[2026-03-21T22:57:47Z] preview validation -> success -> next: final report
+[2026-03-21T23:28:00Z] real-path refinement -> local backend/frontend suites green; waypoint density reduced and stage-speed export added -> commit and push branch

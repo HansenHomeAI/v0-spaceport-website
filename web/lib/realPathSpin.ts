@@ -10,8 +10,15 @@ import { localFeetToLatLng, latLngToLocalFeet } from "./flightBoundary";
 export type SpinPathOverlapConfig = {
   speedFts: number;
   speedMph: number;
+  speedEnvLoAglFt: number;
+  speedEnvLoMph: number;
+  speedEnvHiAglFt: number;
+  speedEnvHiMph: number;
   captureSpacingFt: number;
   captureIntervalSeconds: number;
+  captureIntervalUnit: "ft" | "s";
+  captureDistanceIntervalFt: number;
+  captureTimeIntervalSeconds: number;
   yawRateDegPerSec: number;
   captureArcDeg: number;
   maxHeadingDeltaDeg: number;
@@ -27,6 +34,8 @@ export type RealPathPreviewWaypoint = {
   headingDeg: number;
   gimbalPitchDeg: number;
   distanceFeet: number;
+  stageNumber?: number;
+  stageSpeedMph?: number;
 };
 
 export type RealPathBatteryTelemetry = {
@@ -38,8 +47,12 @@ export type RealPathBatteryTelemetry = {
   estimatedYawRateDegPerSec: number;
   captureArcDeg: number;
   captureIntervalSeconds: number;
+  captureTriggerMode?: "ft" | "s";
+  captureDistanceFeet?: number;
   stageCount: number;
   stageWaypointCounts: number[];
+  stageAverageAglFeet?: number[];
+  stageAverageSpeedMph?: number[];
 };
 
 export type RealPathPreviewBattery = {
@@ -65,6 +78,8 @@ export type RealPathBatteryExportResponse = {
     filename: string;
     waypointCount: number;
     csvText: string;
+    averageAglFeet?: number;
+    averageSpeedMph?: number;
   }>;
   previewPath: { batteryIndex: number; coordinates: Array<[number, number]> };
   previewWaypoints: RealPathPreviewWaypoint[];

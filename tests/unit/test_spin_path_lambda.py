@@ -37,8 +37,15 @@ class SpinPathLambdaTests(unittest.TestCase):
         self.raw_overlap_config = {
             "speedFts": 24.93,
             "speedMph": 17.0,
+            "speedEnvLoAglFt": 200.0,
+            "speedEnvLoMph": 17.0,
+            "speedEnvHiAglFt": 400.0,
+            "speedEnvHiMph": 22.0,
             "captureSpacingFt": 12.0,
             "captureIntervalSeconds": 0.5,
+            "captureIntervalUnit": "s",
+            "captureDistanceIntervalFt": 12.0,
+            "captureTimeIntervalSeconds": 0.5,
             "yawRateDegPerSec": 90.0,
             "captureArcDeg": 180.0,
             "maxHeadingDeltaDeg": 179.0,
@@ -95,6 +102,7 @@ class SpinPathLambdaTests(unittest.TestCase):
         self.assertEqual(payload["overlapTelemetry"]["captureSpacingFeet"], 12.0)
         self.assertEqual(payload["overlapTelemetry"]["yawRateDegPerSec"], 90.0)
         self.assertGreater(payload["previewBatteries"][0]["telemetry"]["waypointCount"], 99)
+        self.assertEqual(payload["overlapTelemetry"]["captureTriggerMode"], "s")
 
     def test_rendered_path_follows_curved_turn_geometry(self):
         waypoint_records = [
@@ -187,6 +195,41 @@ class SpinPathLambdaTests(unittest.TestCase):
         )
         self.assertEqual(export_data["telemetry"]["stageWaypointCounts"][0], len(stage_one_rows))
         self.assertEqual(export_data["telemetry"]["stageWaypointCounts"][1], len(stage_two_rows))
+
+    def test_stage_average_speed_tracks_stage_average_agl(self):
+        export_data = self._build_export()
+
+        stage_average_agl = export_data["telemetry"]["stageAverageAglFeet"]
+        stage_average_speed = export_data["telemetry"]["stageAverageSpeedMph"]
+
+        self.assertTrue(stage_average_agl)
+        self.assertEqual(len(stage_average_agl), len(stage_average_speed))
+        self.assertGreater(stage_average_speed[-1], stage_average_speed[0])
+        self.assertEqual(export_data["stages"][0]["averageSpeedMph"], stage_average_speed[0])
+
+    def test_distance_trigger_mode_exports_distance_interval_without_extra_waypoints(self):
+        raw_overlap_config = dict(self.raw_overlap_config)
+        raw_overlap_config["captureIntervalUnit"] = "ft"
+        raw_overlap_config["captureDistanceIntervalFt"] = 12.0
+        overlap_config = spin_path_module._parse_real_path_overlap_config(raw_overlap_config)
+
+        terrain_patches = self._patch_terrain_dependencies()
+        with terrain_patches[0], terrain_patches[1], terrain_patches[2], terrain_patches[3]:
+            export_data = spin_path_module._build_real_path_battery_export(
+                designer=self.designer,
+                params=self.params,
+                center_str=self.center,
+                battery_index=0,
+                min_height=120.0,
+                max_height=360.0,
+                form_to_terrain=False,
+                overlap_config=overlap_config,
+            )
+
+        stage_rows = self._parse_csv_rows(export_data["stages"][0]["csvText"])
+        self.assertEqual(stage_rows[0]["photo_timeinterval"], "0")
+        self.assertEqual(stage_rows[0]["photo_distinterval"], "12.0")
+        self.assertEqual(stage_rows[-1]["photo_distinterval"], "0")
 
 
 if __name__ == "__main__":

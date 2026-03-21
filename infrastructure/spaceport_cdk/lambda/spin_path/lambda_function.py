@@ -3531,15 +3531,25 @@ def _parse_real_path_overlap_config(raw_overlap_config: Optional[Dict]) -> Dict:
         raise ValueError("overlapConfig is required")
 
     speed_fps = _parse_optional_float(raw_overlap_config.get('speedFts'), None)
+    speed_mph = _parse_optional_float(raw_overlap_config.get('speedMph'), None)
     capture_spacing_ft = _parse_optional_float(raw_overlap_config.get('captureSpacingFt'), None)
     capture_interval_seconds = _parse_optional_float(raw_overlap_config.get('captureIntervalSeconds'), None)
     yaw_rate_deg_per_sec = _parse_optional_float(raw_overlap_config.get('yawRateDegPerSec'), None)
     capture_arc_deg = _parse_optional_float(raw_overlap_config.get('captureArcDeg'), None)
     max_heading_delta_deg = _parse_optional_float(raw_overlap_config.get('maxHeadingDeltaDeg'), 179.0)
     default_pitch_deg = _parse_optional_float(raw_overlap_config.get('defaultPitchDeg'), -25.0)
+    speed_env_lo_agl_ft = _parse_optional_float(raw_overlap_config.get('speedEnvLoAglFt'), None)
+    speed_env_lo_mph = _parse_optional_float(raw_overlap_config.get('speedEnvLoMph'), None)
+    speed_env_hi_agl_ft = _parse_optional_float(raw_overlap_config.get('speedEnvHiAglFt'), None)
+    speed_env_hi_mph = _parse_optional_float(raw_overlap_config.get('speedEnvHiMph'), None)
+    capture_interval_unit = str(raw_overlap_config.get('captureIntervalUnit', 's') or 's').strip().lower()
+    capture_distance_interval_ft = _parse_optional_float(raw_overlap_config.get('captureDistanceIntervalFt'), None)
+    capture_time_interval_seconds = _parse_optional_float(raw_overlap_config.get('captureTimeIntervalSeconds'), None)
 
     if speed_fps is None or speed_fps <= 0:
         raise ValueError("overlapConfig.speedFts must be greater than 0")
+    if speed_mph is None or speed_mph <= 0:
+        speed_mph = speed_fps / 1.4666666666666666
     if capture_spacing_ft is None or capture_spacing_ft <= 0:
         raise ValueError("overlapConfig.captureSpacingFt must be greater than 0")
     if capture_interval_seconds is None or capture_interval_seconds <= 0:
@@ -3550,6 +3560,22 @@ def _parse_real_path_overlap_config(raw_overlap_config: Optional[Dict]) -> Dict:
         capture_arc_deg = 360.0
     if max_heading_delta_deg is None or max_heading_delta_deg <= 0:
         max_heading_delta_deg = 179.0
+    if capture_interval_unit not in ('ft', 's'):
+        capture_interval_unit = 's'
+    if capture_interval_unit == 'ft':
+        if capture_distance_interval_ft is None or capture_distance_interval_ft <= 0:
+            capture_distance_interval_ft = capture_spacing_ft
+        capture_time_interval_seconds = 0.0
+    else:
+        if capture_time_interval_seconds is None or capture_time_interval_seconds <= 0:
+            capture_time_interval_seconds = capture_interval_seconds
+        capture_distance_interval_ft = 0.0
+
+    if speed_env_lo_agl_ft is None or speed_env_lo_mph is None or speed_env_hi_agl_ft is None or speed_env_hi_mph is None:
+        speed_env_lo_agl_ft = 200.0
+        speed_env_lo_mph = float(speed_mph)
+        speed_env_hi_agl_ft = 400.0
+        speed_env_hi_mph = float(speed_mph)
 
     raw_pitch_sequence = raw_overlap_config.get('pitchSequenceNeg') or []
     pitch_sequence = []
@@ -3562,15 +3588,70 @@ def _parse_real_path_overlap_config(raw_overlap_config: Optional[Dict]) -> Dict:
 
     return {
         'speed_fps': float(speed_fps),
-        'speed_mph': float(raw_overlap_config.get('speedMph', 0.0) or 0.0),
+        'speed_mph': float(speed_mph),
         'capture_spacing_ft': float(capture_spacing_ft),
         'capture_interval_seconds': float(capture_interval_seconds),
+        'capture_interval_unit': capture_interval_unit,
+        'capture_distance_interval_ft': float(capture_distance_interval_ft),
+        'capture_time_interval_seconds': float(capture_time_interval_seconds),
         'yaw_rate_deg_per_sec': float(yaw_rate_deg_per_sec),
         'capture_arc_deg': float(capture_arc_deg),
         'max_heading_delta_deg': float(max_heading_delta_deg),
         'default_pitch_deg': -abs(float(default_pitch_deg)),
         'pitch_sequence': pitch_sequence,
+        'speed_env_lo_agl_ft': float(speed_env_lo_agl_ft),
+        'speed_env_lo_mph': float(speed_env_lo_mph),
+        'speed_env_hi_agl_ft': float(speed_env_hi_agl_ft),
+        'speed_env_hi_mph': float(speed_env_hi_mph),
     }
+
+
+def _speed_mph_from_agl(agl_ft: float, overlap_config: Dict) -> float:
+    a0 = overlap_config.get('speed_env_lo_agl_ft')
+    m0 = overlap_config.get('speed_env_lo_mph')
+    a1 = overlap_config.get('speed_env_hi_agl_ft')
+    m1 = overlap_config.get('speed_env_hi_mph')
+    if a0 is None or m0 is None or a1 is None or m1 is None:
+        return float(overlap_config['speed_mph'])
+
+    lo_agl = min(a0, a1)
+    hi_agl = max(a0, a1)
+    mph_lo = m0 if a0 <= a1 else m1
+    mph_hi = m1 if a0 <= a1 else m0
+    if hi_agl - lo_agl < 1e-6:
+        return float(mph_lo)
+
+    clamped_agl = min(hi_agl, max(lo_agl, float(agl_ft)))
+    progress = (clamped_agl - lo_agl) / (hi_agl - lo_agl)
+    return float(mph_lo + (progress * (mph_hi - mph_lo)))
+
+
+def _speed_fps_from_agl(agl_ft: float, overlap_config: Dict) -> float:
+    return _speed_mph_from_agl(agl_ft, overlap_config) * 1.4666666666666666
+
+
+def _min_speed_fps_for_overlap_config(overlap_config: Dict) -> float:
+    mph_candidates = [
+        float(overlap_config.get('speed_mph', 0.0) or 0.0),
+        float(overlap_config.get('speed_env_lo_mph', 0.0) or 0.0),
+        float(overlap_config.get('speed_env_hi_mph', 0.0) or 0.0),
+    ]
+    valid_mph = [candidate for candidate in mph_candidates if candidate > 0]
+    if not valid_mph:
+        return max(float(overlap_config['speed_fps']), 1e-9)
+    return max(min(valid_mph) * 1.4666666666666666, 1e-9)
+
+
+def _max_heading_gap_feet_for_speed(speed_fps: float, overlap_config: Dict) -> float:
+    yaw_rate_deg_per_sec = float(overlap_config['yaw_rate_deg_per_sec'])
+    if yaw_rate_deg_per_sec <= 0:
+        return float('inf')
+    effective_heading_delta_deg = max(float(overlap_config['max_heading_delta_deg']) - 0.5, 1.0)
+    return (
+        effective_heading_delta_deg
+        * max(float(speed_fps), 1e-9)
+        / yaw_rate_deg_per_sec
+    )
 
 
 def _pick_progress_value(values: List[float], total_count: int, index: int, fallback: float) -> float:
@@ -3823,6 +3904,171 @@ def _resample_rendered_points(rendered_points: List[Dict], spacing_ft: float) ->
     return sampled_points, total_distance_ft
 
 
+def _find_nearest_rendered_point_index(rendered_points: List[Dict], target_point: Dict) -> int:
+    best_index = 0
+    best_distance = float('inf')
+    target_x = float(target_point['x'])
+    target_y = float(target_point['y'])
+    target_altitude = float(target_point.get('altitude', 0.0))
+    for index, point in enumerate(rendered_points):
+        distance = math.sqrt(
+            ((point['x'] - target_x) ** 2)
+            + ((point['y'] - target_y) ** 2)
+            + (((point['altitude'] - target_altitude) * 0.35) ** 2)
+        )
+        if distance < best_distance:
+            best_distance = distance
+            best_index = index
+    return best_index
+
+
+def _max_segment_xy_deviation(rendered_points: List[Dict], start_index: int, end_index: int) -> float:
+    if end_index - start_index <= 1:
+        return 0.0
+
+    start_point = rendered_points[start_index]
+    end_point = rendered_points[end_index]
+    dx = end_point['x'] - start_point['x']
+    dy = end_point['y'] - start_point['y']
+    chord_length = math.hypot(dx, dy)
+    if chord_length < 1e-6:
+        return max(
+            math.hypot(point['x'] - start_point['x'], point['y'] - start_point['y'])
+            for point in rendered_points[start_index + 1:end_index]
+        )
+
+    max_deviation = 0.0
+    for point in rendered_points[start_index + 1:end_index]:
+        numerator = abs((dy * point['x']) - (dx * point['y']) + (end_point['x'] * start_point['y']) - (end_point['y'] * start_point['x']))
+        max_deviation = max(max_deviation, numerator / chord_length)
+    return max_deviation
+
+
+def _max_segment_altitude_deviation(rendered_points: List[Dict], cumulative_distances: List[float], start_index: int, end_index: int) -> float:
+    if end_index - start_index <= 1:
+        return 0.0
+
+    start_distance = cumulative_distances[start_index]
+    end_distance = cumulative_distances[end_index]
+    distance_span = max(end_distance - start_distance, 1e-9)
+    start_altitude = rendered_points[start_index]['altitude']
+    end_altitude = rendered_points[end_index]['altitude']
+    max_deviation = 0.0
+
+    for point_index in range(start_index + 1, end_index):
+        progress = (cumulative_distances[point_index] - start_distance) / distance_span
+        expected_altitude = start_altitude + ((end_altitude - start_altitude) * progress)
+        max_deviation = max(
+            max_deviation,
+            abs(rendered_points[point_index]['altitude'] - expected_altitude),
+        )
+
+    return max_deviation
+
+
+def _select_real_path_navigation_points(
+    rendered_points: List[Dict],
+    cumulative_distances: List[float],
+    base_waypoint_records: List[Dict],
+    overlap_config: Dict,
+) -> Tuple[List[Dict], float]:
+    if not rendered_points:
+        return [], 0.0
+
+    total_distance_ft = cumulative_distances[-1] if cumulative_distances else 0.0
+    if len(rendered_points) == 1 or total_distance_ft <= 1e-6:
+        first = rendered_points[0]
+        return ([{
+            'x': first['x'],
+            'y': first['y'],
+            'altitude': first['altitude'],
+            'distance_ft': 0.0,
+        }], total_distance_ft)
+
+    required_indexes = {0, len(rendered_points) - 1}
+    for record in base_waypoint_records:
+        required_indexes.add(_find_nearest_rendered_point_index(rendered_points, record))
+    ordered_required_indexes = sorted(required_indexes)
+
+    geometry_tolerance_ft = 12.0
+    altitude_tolerance_ft = 8.0
+    conservative_speed_fps = _min_speed_fps_for_overlap_config(overlap_config)
+    selected_indexes = [0]
+    current_index = 0
+
+    while current_index < len(rendered_points) - 1:
+        next_required_index = next(
+            (index for index in ordered_required_indexes if index > current_index),
+            len(rendered_points) - 1,
+        )
+        candidate_index = current_index + 1
+        last_valid_index = candidate_index
+
+        while candidate_index <= next_required_index:
+            segment_distance_ft = cumulative_distances[candidate_index] - cumulative_distances[current_index]
+            max_heading_gap_feet = _max_heading_gap_feet_for_speed(
+                conservative_speed_fps,
+                overlap_config,
+            )
+            if segment_distance_ft > max_heading_gap_feet + 1e-6:
+                break
+
+            if _max_segment_xy_deviation(rendered_points, current_index, candidate_index) > geometry_tolerance_ft:
+                break
+
+            if _max_segment_altitude_deviation(rendered_points, cumulative_distances, current_index, candidate_index) > altitude_tolerance_ft:
+                break
+
+            last_valid_index = candidate_index
+            candidate_index += 1
+
+        if last_valid_index <= current_index:
+            last_valid_index = min(current_index + 1, next_required_index)
+
+        selected_indexes.append(last_valid_index)
+        current_index = last_valid_index
+
+    sampled_points = [{
+        'x': rendered_points[index]['x'],
+        'y': rendered_points[index]['y'],
+        'altitude': rendered_points[index]['altitude'],
+        'distance_ft': cumulative_distances[index],
+    } for index in selected_indexes]
+
+    return sampled_points, total_distance_ft
+
+
+def _enforce_real_path_heading_gap(
+    sampled_points: List[Dict],
+    rendered_points: List[Dict],
+    cumulative_distances: List[float],
+    overlap_config: Dict,
+) -> List[Dict]:
+    if len(sampled_points) < 2:
+        return sampled_points
+
+    max_heading_gap_feet = _max_heading_gap_feet_for_speed(
+        _min_speed_fps_for_overlap_config(overlap_config),
+        overlap_config,
+    )
+    if not math.isfinite(max_heading_gap_feet) or max_heading_gap_feet <= 0:
+        return sampled_points
+
+    enforced_points = [dict(sampled_points[0])]
+    for point in sampled_points[1:]:
+        while point['distance_ft'] - enforced_points[-1]['distance_ft'] > max_heading_gap_feet + 1e-6:
+            enforced_points.append(
+                _interpolate_rendered_point(
+                    rendered_points,
+                    cumulative_distances,
+                    enforced_points[-1]['distance_ft'] + max_heading_gap_feet,
+                )
+            )
+        enforced_points.append(dict(point))
+
+    return enforced_points
+
+
 def _assign_export_curve_feet(sampled_points: List[Dict], index: int) -> float:
     if index <= 0 or index >= len(sampled_points) - 1:
         return 0.0
@@ -3838,19 +4084,11 @@ def _assign_export_curve_feet(sampled_points: List[Dict], index: int) -> float:
     return max(10.0, min(80.0, min(previous_distance, next_distance) * 0.45))
 
 
-def _compute_heading_progression(distance_ft: float, overlap_config: Dict) -> float:
-    speed_fps = max(overlap_config['speed_fps'], 1e-9)
-    return (distance_ft / speed_fps) * overlap_config['yaw_rate_deg_per_sec']
-
-
-def _build_real_path_row_data(designer: SpiralDesigner, sampled_points: List[Dict], center: Dict, overlap_config: Dict) -> Tuple[List[Dict], List[Dict]]:
-    row_data = []
-    preview_waypoints = []
+def _build_real_path_point_templates(designer: SpiralDesigner, sampled_points: List[Dict], center: Dict, overlap_config: Dict) -> List[Dict]:
+    point_templates = []
     total_count = len(sampled_points)
 
     for index, point in enumerate(sampled_points):
-        heading_progress_deg = _compute_heading_progression(point['distance_ft'], overlap_config)
-        heading_deg = heading_progress_deg % 360.0
         pitch_deg = _pick_progress_value(
             overlap_config['pitch_sequence'],
             total_count,
@@ -3859,115 +4097,165 @@ def _build_real_path_row_data(designer: SpiralDesigner, sampled_points: List[Dic
         )
         lat_lon = designer.xy_to_lat_lon(point['x'], point['y'], center['lat'], center['lon'])
         curve_ft = _assign_export_curve_feet(sampled_points, index)
-        photo_interval = 0.0 if index == total_count - 1 else overlap_config['capture_interval_seconds']
-
-        row = {
+        point_templates.append({
             'latitude': _round_float(lat_lon['lat'], 8),
             'longitude': _round_float(lat_lon['lon'], 8),
             'altitude': _round_float(point['altitude'], 2),
-            'heading': _round_float(heading_deg, 3),
-            'curve_size_meters': _round_float(curve_ft * designer.FT2M, 2),
-            'rotationdir': 0,
-            'gimbalmode': 2,
+            'curve_ft': _round_float(curve_ft, 2),
             'gimbalpitchangle': int(round(-abs(pitch_deg))),
-            'altitudemode': 0,
-            'speed': designer.FLIGHT_SPEED_MPS,
-            'poi_latitude': 0,
-            'poi_longitude': 0,
-            'poi_altitude': -35,
-            'poi_altitudemode': 0,
-            'photo_timeinterval': _round_float(photo_interval, 3),
-            'photo_distinterval': 0,
-        }
-        row_data.append(row)
-        preview_waypoints.append({
-            'lat': row['latitude'],
-            'lng': row['longitude'],
-            'altitudeFeet': row['altitude'],
-            'curveFeet': _round_float(curve_ft, 2),
-            'headingDeg': row['heading'],
-            'gimbalPitchDeg': row['gimbalpitchangle'],
-            'distanceFeet': _round_float(point['distance_ft'], 3),
+            'distance_ft': _round_float(point['distance_ft'], 3),
         })
 
-    return row_data, preview_waypoints
+    return point_templates
 
 
-def _build_real_path_telemetry(sampled_points: List[Dict], row_data: List[Dict], overlap_config: Dict, total_distance_ft: float) -> Dict:
-    if len(sampled_points) < 2:
-        return {
-            'pathDistanceFeet': _round_float(total_distance_ft, 3),
-            'waypointCount': len(sampled_points),
-            'captureSpacingFeet': _round_float(overlap_config['capture_spacing_ft'], 3),
-            'maxHeadingGapFeet': 0.0,
-            'maxHeadingDeltaDeg': 0.0,
-            'estimatedYawRateDegPerSec': _round_float(overlap_config['yaw_rate_deg_per_sec'], 3),
-        }
-
-    max_heading_gap_feet = (
-        overlap_config['max_heading_delta_deg']
-        * overlap_config['speed_fps']
-        / max(overlap_config['yaw_rate_deg_per_sec'], 1e-9)
-    ) if overlap_config['yaw_rate_deg_per_sec'] > 0 else float('inf')
-
-    max_heading_delta_deg = 0.0
-    for index in range(1, len(sampled_points)):
-        delta_deg = _compute_heading_progression(
-            sampled_points[index]['distance_ft'] - sampled_points[index - 1]['distance_ft'],
-            overlap_config,
-        )
-        max_heading_delta_deg = max(max_heading_delta_deg, delta_deg)
-
-    return {
-        'pathDistanceFeet': _round_float(total_distance_ft, 3),
-        'waypointCount': len(sampled_points),
-        'captureSpacingFeet': _round_float(overlap_config['capture_spacing_ft'], 3),
-        'maxHeadingGapFeet': _round_float(max_heading_gap_feet, 3) if math.isfinite(max_heading_gap_feet) else None,
-        'maxHeadingDeltaDeg': _round_float(max_heading_delta_deg, 3),
-        'estimatedYawRateDegPerSec': _round_float(overlap_config['yaw_rate_deg_per_sec'], 3),
-        'captureArcDeg': _round_float(overlap_config['capture_arc_deg'], 3),
-        'captureIntervalSeconds': _round_float(overlap_config['capture_interval_seconds'], 3),
-    }
-
-
-def _split_real_path_stage_row_data(row_data: List[Dict], stage_limit: int = 99, overlap_rows: int = 1) -> List[List[Dict]]:
-    if len(row_data) <= stage_limit:
-        return [[dict(row) for row in row_data]]
+def _split_real_path_stage_points(point_templates: List[Dict], stage_limit: int = 99, overlap_rows: int = 1) -> List[List[Dict]]:
+    if len(point_templates) <= stage_limit:
+        return [[dict(point) for point in point_templates]]
 
     stages = []
     start_index = 0
     safe_overlap = max(0, min(stage_limit - 1, int(overlap_rows)))
-    while start_index < len(row_data):
-        stage_rows = [dict(row) for row in row_data[start_index:start_index + stage_limit]]
-        if not stage_rows:
+    while start_index < len(point_templates):
+        stage_points = [dict(point) for point in point_templates[start_index:start_index + stage_limit]]
+        if not stage_points:
             break
-        stage_rows[-1]['photo_timeinterval'] = 0
-        stages.append(stage_rows)
-        if start_index + stage_limit >= len(row_data):
+        stages.append(stage_points)
+        if start_index + stage_limit >= len(point_templates):
             break
         start_index += stage_limit - safe_overlap
     return stages
 
 
-def _build_real_path_stage_exports(designer: SpiralDesigner, row_data: List[Dict], telemetry: Dict, battery_index: int, overlap_rows: int = 1) -> Tuple[List[Dict], Dict]:
-    stage_row_sets = _split_real_path_stage_row_data(
-        row_data,
+def _build_stage_capture_fields(overlap_config: Dict, is_terminal_row: bool) -> Dict:
+    if is_terminal_row:
+        return {
+            'photo_timeinterval': 0,
+            'photo_distinterval': 0,
+        }
+
+    if overlap_config['capture_interval_unit'] == 'ft':
+        return {
+            'photo_timeinterval': 0,
+            'photo_distinterval': _round_float(overlap_config['capture_distance_interval_ft'], 3),
+        }
+
+    return {
+        'photo_timeinterval': _round_float(overlap_config['capture_time_interval_seconds'], 3),
+        'photo_distinterval': 0,
+    }
+
+
+def _build_real_path_stage_exports(
+    designer: SpiralDesigner,
+    point_templates: List[Dict],
+    overlap_config: Dict,
+    battery_index: int,
+    total_distance_ft: float,
+    overlap_rows: int = 1,
+) -> Tuple[List[Dict], List[Dict], Dict]:
+    stage_point_sets = _split_real_path_stage_points(
+        point_templates,
         stage_limit=SpiralDesigner.MAX_EXPORT_WAYPOINTS,
         overlap_rows=overlap_rows,
     )
+
     stage_exports = []
-    for stage_index, stage_rows in enumerate(stage_row_sets, start=1):
+    preview_waypoints: List[Dict] = []
+    max_heading_delta_deg = 0.0
+    min_heading_gap_feet = float('inf')
+    previous_stage_terminal_heading_deg = 0.0
+    point_usage_count = 0
+    stage_average_agl_feet = []
+    stage_average_speed_mph = []
+
+    for stage_index, stage_points in enumerate(stage_point_sets, start=1):
+        if not stage_points:
+            continue
+
+        average_altitude = sum(point['altitude'] for point in stage_points) / max(len(stage_points), 1)
+        stage_speed_mph = _speed_mph_from_agl(average_altitude, overlap_config)
+        stage_speed_fps = max(_speed_fps_from_agl(average_altitude, overlap_config), 1e-9)
+        stage_speed_mps = stage_speed_fps / 3.28084
+        stage_heading_gap_feet = _max_heading_gap_feet_for_speed(stage_speed_fps, overlap_config)
+        stage_average_agl_feet.append(_round_float(average_altitude, 3))
+        stage_average_speed_mph.append(_round_float(stage_speed_mph, 3))
+        min_heading_gap_feet = min(min_heading_gap_feet, stage_heading_gap_feet)
+
+        stage_rows = []
+        stage_start_distance_ft = float(stage_points[0]['distance_ft'])
+        for point_index, point in enumerate(stage_points):
+            local_distance_ft = float(point['distance_ft']) - stage_start_distance_ft
+            heading_delta_deg = (local_distance_ft / stage_speed_fps) * overlap_config['yaw_rate_deg_per_sec']
+            heading_deg = (previous_stage_terminal_heading_deg + heading_delta_deg) % 360.0
+            capture_fields = _build_stage_capture_fields(
+                overlap_config,
+                is_terminal_row=(point_index == len(stage_points) - 1),
+            )
+
+            row = {
+                'latitude': point['latitude'],
+                'longitude': point['longitude'],
+                'altitude': point['altitude'],
+                'heading': _round_float(heading_deg, 3),
+                'curve_size_meters': _round_float(point['curve_ft'] * designer.FT2M, 2),
+                'rotationdir': 0,
+                'gimbalmode': 2,
+                'gimbalpitchangle': point['gimbalpitchangle'],
+                'altitudemode': 0,
+                'speed': _round_float(stage_speed_mps, 3),
+                'poi_latitude': 0,
+                'poi_longitude': 0,
+                'poi_altitude': -35,
+                'poi_altitudemode': 0,
+                **capture_fields,
+            }
+            stage_rows.append(row)
+
+            if stage_index == 1 or point_index > 0:
+                preview_waypoints.append({
+                    'lat': row['latitude'],
+                    'lng': row['longitude'],
+                    'altitudeFeet': row['altitude'],
+                    'curveFeet': point['curve_ft'],
+                    'headingDeg': row['heading'],
+                    'gimbalPitchDeg': row['gimbalpitchangle'],
+                    'distanceFeet': point['distance_ft'],
+                    'stageNumber': stage_index,
+                    'stageSpeedMph': _round_float(stage_speed_mph, 3),
+                })
+                point_usage_count += 1
+
+            if point_index > 0:
+                max_heading_delta_deg = max(max_heading_delta_deg, heading_delta_deg - ((float(stage_points[point_index - 1]['distance_ft']) - stage_start_distance_ft) / stage_speed_fps * overlap_config['yaw_rate_deg_per_sec']))
+
+        previous_stage_terminal_heading_deg = stage_rows[-1]['heading']
         stage_exports.append({
             'stageNumber': stage_index,
             'filename': f"battery-{battery_index}-part-{stage_index}.csv",
             'waypointCount': len(stage_rows),
             'csvText': designer._serialize_csv_rows(stage_rows),
+            'averageAglFeet': _round_float(average_altitude, 3),
+            'averageSpeedMph': _round_float(stage_speed_mph, 3),
         })
 
-    telemetry = dict(telemetry)
-    telemetry['stageCount'] = len(stage_exports)
-    telemetry['stageWaypointCounts'] = [stage['waypointCount'] for stage in stage_exports]
-    return stage_exports, telemetry
+    telemetry = {
+        'pathDistanceFeet': _round_float(total_distance_ft, 3),
+        'waypointCount': point_usage_count,
+        'captureSpacingFeet': _round_float(overlap_config['capture_spacing_ft'], 3),
+        'maxHeadingGapFeet': _round_float(min_heading_gap_feet, 3) if math.isfinite(min_heading_gap_feet) else None,
+        'maxHeadingDeltaDeg': _round_float(max_heading_delta_deg, 3),
+        'estimatedYawRateDegPerSec': _round_float(overlap_config['yaw_rate_deg_per_sec'], 3),
+        'captureArcDeg': _round_float(overlap_config['capture_arc_deg'], 3),
+        'captureIntervalSeconds': _round_float(overlap_config['capture_time_interval_seconds'], 3),
+        'captureTriggerMode': overlap_config['capture_interval_unit'],
+        'captureDistanceFeet': _round_float(overlap_config['capture_distance_interval_ft'], 3),
+        'stageCount': len(stage_exports),
+        'stageWaypointCounts': [stage['waypointCount'] for stage in stage_exports],
+        'stageAverageAglFeet': stage_average_agl_feet,
+        'stageAverageSpeedMph': stage_average_speed_mph,
+    }
+    return stage_exports, preview_waypoints, telemetry
 
 
 def _build_real_path_battery_export(
@@ -3991,23 +4279,33 @@ def _build_real_path_battery_export(
     )
 
     rendered_points = _build_rendered_local_path_points(base_waypoint_records, designer)
-    max_heading_gap_feet = (
-        overlap_config['max_heading_delta_deg']
-        * overlap_config['speed_fps']
-        / max(overlap_config['yaw_rate_deg_per_sec'], 1e-9)
-    ) if overlap_config['yaw_rate_deg_per_sec'] > 0 else overlap_config['capture_spacing_ft']
-    resample_spacing_ft = min(overlap_config['capture_spacing_ft'], max_heading_gap_feet, 25.0)
-    sampled_points, total_distance_ft = _resample_rendered_points(rendered_points, resample_spacing_ft)
-    row_data, preview_waypoints = _build_real_path_row_data(designer, sampled_points, center, overlap_config)
-    telemetry = _build_real_path_telemetry(sampled_points, row_data, overlap_config, total_distance_ft)
-    stages, telemetry = _build_real_path_stage_exports(designer, row_data, telemetry, battery_index + 1)
+    cumulative_distances = _build_cumulative_distances(rendered_points)
+    sampled_points, total_distance_ft = _select_real_path_navigation_points(
+        rendered_points,
+        cumulative_distances,
+        base_waypoint_records,
+        overlap_config,
+    )
+    sampled_points = _enforce_real_path_heading_gap(
+        sampled_points,
+        rendered_points,
+        cumulative_distances,
+        overlap_config,
+    )
+    point_templates = _build_real_path_point_templates(designer, sampled_points, center, overlap_config)
+    stages, preview_waypoints, telemetry = _build_real_path_stage_exports(
+        designer,
+        point_templates,
+        overlap_config,
+        battery_index + 1,
+        total_distance_ft,
+    )
     return {
         'previewPath': {
             'batteryIndex': battery_index + 1,
             'coordinates': [[waypoint['lng'], waypoint['lat']] for waypoint in preview_waypoints],
         },
         'previewWaypoints': preview_waypoints,
-        'rowData': row_data,
         'stages': stages,
         'telemetry': telemetry,
     }
@@ -4180,7 +4478,9 @@ def handle_spin_path_optimize(designer, body, cors_headers):
             'batterySummaries': battery_summaries,
             'overlapTelemetry': {
                 'captureSpacingFeet': _round_float(overlap_config['capture_spacing_ft'], 3),
-                'captureIntervalSeconds': _round_float(overlap_config['capture_interval_seconds'], 3),
+                'captureIntervalSeconds': _round_float(overlap_config['capture_time_interval_seconds'], 3),
+                'captureDistanceFeet': _round_float(overlap_config['capture_distance_interval_ft'], 3),
+                'captureTriggerMode': overlap_config['capture_interval_unit'],
                 'yawRateDegPerSec': _round_float(overlap_config['yaw_rate_deg_per_sec'], 3),
                 'captureArcDeg': _round_float(overlap_config['capture_arc_deg'], 3),
             },

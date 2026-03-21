@@ -46,8 +46,11 @@ const optimizeResponse = {
         estimatedYawRateDegPerSec: 90,
         captureArcDeg: 180,
         captureIntervalSeconds: 0.5,
+        captureTriggerMode: "s",
+        captureDistanceFeet: 0,
         stageCount: 2,
         stageWaypointCounts: [99, 44],
+        stageAverageSpeedMph: [17.2, 18.6],
       },
       waypoints: [
         { lat: 39.7392, lng: -104.9903, altitudeFeet: 120, curveFeet: 0, headingDeg: 0, gimbalPitchDeg: -25, distanceFeet: 0 },
@@ -67,8 +70,11 @@ const optimizeResponse = {
         estimatedYawRateDegPerSec: 90,
         captureArcDeg: 180,
         captureIntervalSeconds: 0.5,
+        captureTriggerMode: "s",
+        captureDistanceFeet: 0,
         stageCount: 1,
         stageWaypointCounts: [78],
+        stageAverageSpeedMph: [20.4],
       },
       waypoints: [
         { lat: 39.7399, lng: -104.9892, altitudeFeet: 240, curveFeet: 0, headingDeg: 96, gimbalPitchDeg: -28, distanceFeet: 0 },
@@ -89,8 +95,11 @@ const optimizeResponse = {
       estimatedYawRateDegPerSec: 90,
       captureArcDeg: 180,
       captureIntervalSeconds: 0.5,
+      captureTriggerMode: "s",
+      captureDistanceFeet: 0,
       stageCount: 2,
       stageWaypointCounts: [99, 44],
+      stageAverageSpeedMph: [17.2, 18.6],
     },
     {
       batteryIndex: 2,
@@ -102,13 +111,18 @@ const optimizeResponse = {
       estimatedYawRateDegPerSec: 90,
       captureArcDeg: 180,
       captureIntervalSeconds: 0.5,
+      captureTriggerMode: "s",
+      captureDistanceFeet: 0,
       stageCount: 1,
       stageWaypointCounts: [78],
+      stageAverageSpeedMph: [20.4],
     },
   ],
   overlapTelemetry: {
     captureSpacingFeet: 12,
     captureIntervalSeconds: 0.5,
+    captureDistanceFeet: 0,
+    captureTriggerMode: "s",
     yawRateDegPerSec: 90,
     captureArcDeg: 180,
   },
@@ -144,6 +158,7 @@ test("camera overlap real path mode previews staged exports and preserves straig
     const body = route.request().postDataJSON();
     expect(body.center).toBe("39.739200, -104.990300");
     expect(body.overlapConfig.captureSpacingFt).toBeGreaterThan(0);
+    expect(body.overlapConfig.captureIntervalUnit).toBe("s");
 
     await route.fulfill({
       contentType: "application/json",
@@ -155,6 +170,7 @@ test("camera overlap real path mode previews staged exports and preserves straig
     exportRequestCount += 1;
     const body = route.request().postDataJSON();
     expect(body.overlapConfig.captureSpacingFt).toBeGreaterThan(0);
+    expect(body.overlapConfig.captureIntervalUnit).toBe("s");
 
     await route.fulfill({
       contentType: "application/json",
@@ -179,6 +195,7 @@ test("camera overlap real path mode previews staged exports and preserves straig
   await expect(mapWrapper).toHaveAttribute("data-selected-battery", "1");
   await expect(mapWrapper).toHaveAttribute("data-elevated-line-count", "2");
   await expect(mapWrapper).toHaveAttribute("data-rendered-path-point-count", "4");
+  await expect(page.getByText("0.50 s trigger").first()).toBeVisible();
   await expect(page.getByText("Reduced bounces from 8 to 6 to fit battery target")).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");

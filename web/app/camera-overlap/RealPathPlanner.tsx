@@ -32,6 +32,10 @@ function formatFeet(value: number): string {
   return `${Math.round(value).toLocaleString()} ft`;
 }
 
+function formatMph(value: number | undefined): string {
+  return value === undefined ? "0.0 mph" : `${value.toFixed(1)} mph`;
+}
+
 function selectedPreviewBattery(
   result: RealPathOptimizeResponse | null,
   selectedBatteryIndex: number | null,
@@ -175,156 +179,154 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
 
   return (
     <div className={styles.realPathPlanner} data-testid="real-path-planner">
-      <div className={styles.realPathPlannerGrid}>
-        <section className={styles.realPathControlCard}>
-          <p className={styles.realPathCardEyebrow}>Real Path</p>
-          <h2 className={styles.realPathCardTitle}>Generate a curved flat-spin mission</h2>
-          <p className={styles.realPathCardSub}>
-            Use the current overlap settings to sample a real drone path, preview it on Mapbox, and export staged Litchi CSVs.
-          </p>
+      <section className={styles.realPathControlCard}>
+        <p className={styles.realPathCardEyebrow}>Real Path</p>
+        <h2 className={styles.realPathCardTitle}>Generate a curved flat-spin mission</h2>
+        <p className={styles.realPathCardSub}>
+          Use the current overlap settings to build a real drone path, preview it on Mapbox, and export staged Litchi CSVs without forcing a waypoint at every capture.
+        </p>
 
-          <label className={styles.realPathField}>
-            <span>Center coordinates</span>
-            <input
-              data-testid="real-path-center-input"
-              placeholder="39.739200, -104.990300"
-              value={center}
-              onChange={(event) => setCenter(event.target.value)}
-            />
-          </label>
-
-          <div className={styles.realPathFieldGrid}>
-            <label className={styles.realPathField}>
-              <span>Battery minutes</span>
-              <input
-                data-testid="real-path-battery-minutes"
-                type="number"
-                min={1}
-                max={60}
-                value={batteryMinutes}
-                onChange={(event) => setBatteryMinutes(event.target.value)}
-              />
-            </label>
-            <label className={styles.realPathField}>
-              <span>Battery count</span>
-              <input
-                data-testid="real-path-battery-count"
-                type="number"
-                min={1}
-                max={12}
-                value={batteries}
-                onChange={(event) => setBatteries(event.target.value)}
-              />
-            </label>
-          </div>
-
-          <div className={styles.realPathFieldGrid}>
-            <label className={styles.realPathField}>
-              <span>Min height</span>
-              <input
-                data-testid="real-path-min-height"
-                type="number"
-                min={1}
-                value={minHeight}
-                onChange={(event) => setMinHeight(event.target.value)}
-              />
-            </label>
-            <label className={styles.realPathField}>
-              <span>Max height</span>
-              <input
-                data-testid="real-path-max-height"
-                type="number"
-                min={1}
-                value={maxHeight}
-                onChange={(event) => setMaxHeight(event.target.value)}
-              />
-            </label>
-          </div>
-
-          <div className={styles.realPathFieldGrid}>
-            <label className={styles.realPathField}>
-              <span>Min expansion</span>
-              <input
-                data-testid="real-path-min-expansion"
-                inputMode="decimal"
-                placeholder="Optional"
-                value={minExpansionDist}
-                onChange={(event) => setMinExpansionDist(event.target.value)}
-              />
-            </label>
-            <label className={styles.realPathField}>
-              <span>Max expansion</span>
-              <input
-                data-testid="real-path-max-expansion"
-                inputMode="decimal"
-                placeholder="Optional"
-                value={maxExpansionDist}
-                onChange={(event) => setMaxExpansionDist(event.target.value)}
-              />
-            </label>
-          </div>
-
-          <label className={styles.realPathCheckbox}>
-            <input
-              data-testid="real-path-terrain-toggle"
-              type="checkbox"
-              checked={formToTerrain}
-              onChange={(event) => setFormToTerrain(event.target.checked)}
-            />
-            <span>Form to terrain</span>
-          </label>
-
-          <div className={styles.realPathMetricGrid}>
-            <div className={styles.realPathMetric}>
-              <span>Capture spacing</span>
-              <strong>{overlapConfig.captureSpacingFt.toFixed(1)} ft</strong>
-            </div>
-            <div className={styles.realPathMetric}>
-              <span>Yaw rate</span>
-              <strong>{overlapConfig.yawRateDegPerSec.toFixed(1)}°/s</strong>
-            </div>
-            <div className={styles.realPathMetric}>
-              <span>Capture cadence</span>
-              <strong>{overlapConfig.captureIntervalSeconds.toFixed(2)} s</strong>
-            </div>
-            <div className={styles.realPathMetric}>
-              <span>Default gimbal</span>
-              <strong>{Math.abs(overlapConfig.defaultPitchDeg).toFixed(0)}° down</strong>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className={styles.realPathGenerateButton}
-            data-testid="real-path-generate-btn"
-            onClick={handleGenerate}
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Generate real path"}
-          </button>
-
-          {optimizeResult?.optimizationInfo?.adjustments ? (
-            <div className={styles.realPathAdjustmentList}>
-              {(optimizeResult.optimizationInfo.adjustments as string[]).map((adjustment) => (
-                <p key={adjustment}>{adjustment}</p>
-              ))}
-            </div>
-          ) : null}
-
-          {error ? (
-            <p className={styles.realPathError} data-testid="real-path-error">
-              {error}
-            </p>
-          ) : null}
-        </section>
-
-        <section className={styles.realPathMapCard}>
-          <RealPathMap
-            batteries={optimizeResult?.previewBatteries ?? []}
-            selectedBatteryIndex={selectedBatteryIndex}
+        <label className={styles.realPathField}>
+          <span>Center coordinates</span>
+          <input
+            data-testid="real-path-center-input"
+            placeholder="39.739200, -104.990300"
+            value={center}
+            onChange={(event) => setCenter(event.target.value)}
           />
-        </section>
-      </div>
+        </label>
+
+        <div className={styles.realPathFieldGrid}>
+          <label className={styles.realPathField}>
+            <span>Battery minutes</span>
+            <input
+              data-testid="real-path-battery-minutes"
+              type="number"
+              min={1}
+              max={60}
+              value={batteryMinutes}
+              onChange={(event) => setBatteryMinutes(event.target.value)}
+            />
+          </label>
+          <label className={styles.realPathField}>
+            <span>Battery count</span>
+            <input
+              data-testid="real-path-battery-count"
+              type="number"
+              min={1}
+              max={12}
+              value={batteries}
+              onChange={(event) => setBatteries(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className={styles.realPathFieldGrid}>
+          <label className={styles.realPathField}>
+            <span>Min height</span>
+            <input
+              data-testid="real-path-min-height"
+              type="number"
+              min={1}
+              value={minHeight}
+              onChange={(event) => setMinHeight(event.target.value)}
+            />
+          </label>
+          <label className={styles.realPathField}>
+            <span>Max height</span>
+            <input
+              data-testid="real-path-max-height"
+              type="number"
+              min={1}
+              value={maxHeight}
+              onChange={(event) => setMaxHeight(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className={styles.realPathFieldGrid}>
+          <label className={styles.realPathField}>
+            <span>Min expansion</span>
+            <input
+              data-testid="real-path-min-expansion"
+              inputMode="decimal"
+              placeholder="Optional"
+              value={minExpansionDist}
+              onChange={(event) => setMinExpansionDist(event.target.value)}
+            />
+          </label>
+          <label className={styles.realPathField}>
+            <span>Max expansion</span>
+            <input
+              data-testid="real-path-max-expansion"
+              inputMode="decimal"
+              placeholder="Optional"
+              value={maxExpansionDist}
+              onChange={(event) => setMaxExpansionDist(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <label className={styles.realPathCheckbox}>
+          <input
+            data-testid="real-path-terrain-toggle"
+            type="checkbox"
+            checked={formToTerrain}
+            onChange={(event) => setFormToTerrain(event.target.checked)}
+          />
+          <span>Form to terrain</span>
+        </label>
+
+        <div className={styles.realPathMetricGrid}>
+          <div className={styles.realPathMetric}>
+            <span>Capture spacing</span>
+            <strong>{overlapConfig.captureSpacingFt.toFixed(1)} ft</strong>
+          </div>
+          <div className={styles.realPathMetric}>
+            <span>Yaw rate</span>
+            <strong>{overlapConfig.yawRateDegPerSec.toFixed(1)}°/s</strong>
+          </div>
+          <div className={styles.realPathMetric}>
+            <span>Trigger mode</span>
+            <strong>{overlapConfig.captureIntervalUnit === "ft" ? `${overlapConfig.captureDistanceIntervalFt.toFixed(1)} ft` : `${overlapConfig.captureTimeIntervalSeconds.toFixed(2)} s`}</strong>
+          </div>
+          <div className={styles.realPathMetric}>
+            <span>Default gimbal</span>
+            <strong>{Math.abs(overlapConfig.defaultPitchDeg).toFixed(0)}° down</strong>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className={styles.realPathGenerateButton}
+          data-testid="real-path-generate-btn"
+          onClick={handleGenerate}
+          disabled={loading}
+        >
+          {loading ? "Generating..." : "Generate real path"}
+        </button>
+
+        {optimizeResult?.optimizationInfo?.adjustments ? (
+          <div className={styles.realPathAdjustmentList}>
+            {(optimizeResult.optimizationInfo.adjustments as string[]).map((adjustment) => (
+              <p key={adjustment}>{adjustment}</p>
+            ))}
+          </div>
+        ) : null}
+
+        {error ? (
+          <p className={styles.realPathError} data-testid="real-path-error">
+            {error}
+          </p>
+        ) : null}
+      </section>
+
+      <section className={styles.realPathMapCard}>
+        <RealPathMap
+          batteries={optimizeResult?.previewBatteries ?? []}
+          selectedBatteryIndex={selectedBatteryIndex}
+        />
+      </section>
 
       {optimizeResult ? (
         <>
@@ -339,6 +341,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               <span>{selectedBattery ? formatFeet(selectedBattery.telemetry.pathDistanceFeet) : "0 ft"}</span>
               <span>{selectedBatteryOverlapPct.toFixed(0)}% overlap</span>
               <span>{selectedBattery?.telemetry.stageCount ?? 0} stages</span>
+              <span>{formatMph(selectedBattery?.telemetry.stageAverageSpeedMph?.[0])} first-stage speed</span>
             </div>
           </div>
 
@@ -384,6 +387,8 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
                     <span>{overlapPct.toFixed(0)}% avg overlap</span>
                     <span>{summary.maxHeadingDeltaDeg.toFixed(1)}° max Δheading</span>
                     <span>{summary.estimatedYawRateDegPerSec.toFixed(1)}°/s yaw</span>
+                    <span>{formatMph(summary.stageAverageSpeedMph?.[0])} stage speed</span>
+                    <span>{summary.captureTriggerMode === "ft" ? `${summary.captureDistanceFeet?.toFixed(1) ?? "0.0"} ft trigger` : `${summary.captureIntervalSeconds.toFixed(2)} s trigger`}</span>
                   </div>
                 </article>
               );
