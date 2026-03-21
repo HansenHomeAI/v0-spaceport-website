@@ -802,6 +802,19 @@ function GroundParallaxPicker({
   return null;
 }
 
+/**
+ * Waypoint frustums/drones are on layer 1 so surface picks raycast layer 0 (town) only.
+ * The default camera renders layer 0 only — without this, those meshes never draw (brief
+ * flash can occur before useLayoutEffect assigns layers on first paint).
+ */
+function CameraSeesWaypointLayer() {
+  const camera = useThree((s) => s.camera);
+  useLayoutEffect(() => {
+    camera.layers.enable(1);
+  }, [camera]);
+  return null;
+}
+
 export default function ThreeView({
   height,
   pitchDegs,
@@ -1075,6 +1088,8 @@ export default function ThreeView({
           shadow-camera-bottom={-600}
         />
         <hemisphereLight args={['#87a4c4', '#1a1814', 0.35]} />
+
+        <CameraSeesWaypointLayer />
 
         <OrbitControls
           makeDefault
