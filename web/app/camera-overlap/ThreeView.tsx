@@ -65,11 +65,15 @@ const COV_FRAG = /* glsl */ `
       vec2 auv = pRect[i].xy + luv * pRect[i].zw;
       float sd = texture2D(dAtlas, auv).x;
       float fd = ndc.z * 0.5 + 0.5;
-      if (sd > 0.0 && fd > sd + 0.005) continue;
+      if (sd > 0.0 && fd > sd + 0.002) continue;
       float edge = min(1.0 - abs(ndc.x), 1.0 - abs(ndc.y));
       float fade = smoothstep(0.0, 0.06, edge);
       acc += pCol[i] * fade;
       a += pAlpha * fade;
+      
+      // if (sd > 0.0 && fd > sd + 0.005) continue;
+      // acc += pCol[i] * fade;
+      // a += pAlpha * fade;
     }
     if (a < 0.005) discard;
     a = min(a, 0.82);
@@ -486,15 +490,19 @@ function AtlasDepthRenderer({
 }) {
   const gl = useThree((s) => s.gl);
   const invalidate = useThree((s) => s.invalidate);
-  const depthMat = useMemo(() => new THREE.MeshDepthMaterial(), []);
+  const depthMat = useMemo(() => new THREE.MeshDepthMaterial({
+    depthPacking: THREE.BasicDepthPacking
+  }), []);
   const dirty = useRef(true);
+  const dirtyFrames = useRef(10);
 
   useEffect(() => { dirty.current = true; invalidate(); }, [cameras, invalidate]);
   useEffect(() => () => depthMat.dispose(), [depthMat]);
 
   useFrame(() => {
-    if (!dirty.current || cameras.length === 0) return;
+    if ((!dirty.current && dirtyFrames.current <= 0) || cameras.length === 0) return;
     dirty.current = false;
+    if (dirtyFrames.current > 0) dirtyFrames.current--;
 
     const prev = {
       rt: gl.getRenderTarget(),
