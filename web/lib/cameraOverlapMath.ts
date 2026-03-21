@@ -136,6 +136,27 @@ export function footprintBounds(fp: GroundQuad): FootprintBounds {
 }
 
 /**
+ * Point-in-polygon (along / cross-track plane). `poly` vertices from `groundFootprint` corners (convex quad).
+ */
+export function pointInPolygon2D(px: number, py: number, poly: [number, number][]): boolean {
+  const n = poly.length;
+  if (n < 3) return false;
+  let inside = false;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = poly[i][0];
+    const yi = poly[i][1];
+    const xj = poly[j][0];
+    const yj = poly[j][1];
+    const yn = yj - yi;
+    const denom = Math.abs(yn) < 1e-12 ? 1e-12 : yn;
+    const intersect =
+      yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / denom + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+/**
  * Overlap fraction between two footprints on each axis.
  * Returns {alongTrack, crossTrack} each in [0, 1], measured as the overlap
  * span divided by the smaller footprint span on that axis.

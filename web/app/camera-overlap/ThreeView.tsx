@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -16,6 +17,7 @@ import {
   TAN_H,
   TAN_V,
   groundFootprint,
+  pointInPolygon2D,
   type GroundQuad,
 } from '../../lib/cameraOverlapMath';
 import styles from './page.module.css';
@@ -118,6 +120,13 @@ function CoveragePatch({
   size,
   opacity,
 }: CoveragePatchData) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  useEffect(() => {
+    const m = meshRef.current;
+    if (!m) return;
+    m.raycast = () => {};
+  }, []);
+
   const quaternion = useMemo(() => {
     const q = new THREE.Quaternion();
     q.setFromUnitVectors(
@@ -128,7 +137,7 @@ function CoveragePatch({
   }, [normal]);
 
   return (
-    <mesh position={position} quaternion={quaternion} renderOrder={8}>
+    <mesh ref={meshRef} position={position} quaternion={quaternion} renderOrder={8}>
       <planeGeometry args={[size, size]} />
       <meshBasicMaterial
         color={color}
@@ -254,6 +263,7 @@ const DroneMarker = forwardRef<
     isHighlighted: boolean;
     showTag: boolean;
     onTagActivate?: () => void;
+    tagPointerEnabled?: boolean;
   }
 >(function DroneMarker(
   {
@@ -264,6 +274,7 @@ const DroneMarker = forwardRef<
     isHighlighted,
     showTag,
     onTagActivate,
+    tagPointerEnabled = true,
   },
   ref,
 ) {
@@ -310,7 +321,7 @@ const DroneMarker = forwardRef<
           position={[0, r + 5, 0]}
           center
           transform={false}
-          style={{ pointerEvents: 'auto' }}
+          style={{ pointerEvents: tagPointerEnabled ? 'auto' : 'none' }}
           zIndexRange={[200, 0]}
         >
           <div
@@ -343,11 +354,13 @@ function FootprintQuad({
   color,
   opacity,
   emphasize = false,
+  parallaxHighlight = false,
 }: {
   quad: GroundQuad;
   color: string;
   opacity: number;
   emphasize?: boolean;
+  parallaxHighlight?: boolean;
 }) {
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry();
@@ -362,12 +375,16 @@ function FootprintQuad({
     return g;
   }, [quad]);
 
-  const effOpacity = Math.min(opacity * (emphasize ? 1.45 : 1), 0.42);
+  const effOpacity = Math.min(
+    opacity * (emphasize ? 1.45 : 1) * (parallaxHighlight ? 1.5 : 1),
+    parallaxHighlight ? 0.5 : 0.42,
+  );
+  const fillColor = parallaxHighlight ? '#00e5cc' : color;
 
   return (
     <mesh geometry={geo} renderOrder={3}>
       <meshBasicMaterial
-        color={color}
+        color={fillColor}
         transparent
         opacity={effOpacity}
         side={THREE.DoubleSide}
@@ -396,12 +413,14 @@ function FrustumLines({
   headingDeg,
   lineOpacity = 0.55,
   emphasize = false,
+  parallaxHighlight = false,
 }: {
   dronePos: [number, number, number];
   pitchDeg: number;
   headingDeg: number;
   lineOpacity?: number;
   emphasize?: boolean;
+  parallaxHighlight?: boolean;
 }) {
   const lines = useMemo(() => {
     const edges: Array<[THREE.Vector3, THREE.Vector3]> = [];
@@ -433,8 +452,8 @@ function FrustumLines({
     return edges;
   }, [dronePos, pitchDeg, headingDeg]);
 
-  const op = Math.min(lineOpacity + (emphasize ? 0.38 : 0), 0.99);
-  const col = emphasize ? '#e8eef8' : '#888';
+  const op = Math.min(lineOpacity + (emphasize || parallaxHighlight ? 0.38 : 0), 0.99);
+  const col = parallaxHighlight ? '#00e5cc' : emphasize ? '#e8eef8' : '#888';
 
   return (
     <>
@@ -443,7 +462,7 @@ function FrustumLines({
           key={i}
           points={[pts[0], pts[1]]}
           color={col}
-          lineWidth={emphasize ? 2.25 : 1}
+          lineWidth={parallaxHighlight ? 2.6 : emphasize ? 2.25 : 1}
           transparent
           opacity={op}
         />
@@ -717,6 +736,72 @@ function spinFootprintColor(headingDeg: number, maxHeadingDeg: number): string {
   return `hsl(${(h + 360) % 360}, 80%, 62%)`;
 }
 
+/** Raycast town/ground (layer 0); highlight views whose ground footprint contains the hit (projected to along/cross). */
+function GroundParallaxPicker({
+  enabled,
+  coverageSpaceRef,
+  coverageRootRef,
+  activeFootprintsRef,
+  onParallaxIndices,
+}: {
+  enabled: boolean;
+  coverageSpaceRef: React.RefObject<THREE.Group | null>;
+  coverageRootRef: React.RefObject<THREE.Group | null>;
+  activeFootprintsRef: { current: GroundQuad[] };
+  onParallaxIndices: (indices: number[]) => void;
+}) {
+  const { camera, gl, raycaster } = useThree();
+
+  useEffect(() => {
+    if (!enabled) {
+      onParallaxIndices([]);
+      return;
+    }
+    const el = gl.domElement;
+    const onClick = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      const rect = el.getBoundingClientRect();
+      const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const ndcY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      const maskBackup = raycaster.layers.mask;
+      raycaster.layers.set(0);
+      raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), camera);
+      const root = coverageRootRef.current;
+      if (!root) {
+        raycaster.layers.mask = maskBackup;
+        return;
+      }
+      const hits = raycaster.intersectObject(root, true);
+      raycaster.layers.mask = maskBackup;
+      if (hits.length === 0) {
+        onParallaxIndices([]);
+        return;
+      }
+      const hit = hits[0];
+      const space = coverageSpaceRef.current;
+      if (!space) return;
+      const local = hit.point.clone();
+      space.worldToLocal(local);
+      const gx = local.x;
+      const gy = local.z;
+      const indices: number[] = [];
+      const fps = activeFootprintsRef.current;
+      for (let i = 0; i < fps.length; i++) {
+        const quad = fps[i];
+        const poly = quad.map((c) => [c[0], c[1]] as [number, number]);
+        if (pointInPolygon2D(gx, gy, poly)) {
+          indices.push(i);
+        }
+      }
+      onParallaxIndices(indices);
+    };
+    el.addEventListener('click', onClick);
+    return () => el.removeEventListener('click', onClick);
+  }, [enabled, camera, gl, raycaster, coverageSpaceRef, coverageRootRef, activeFootprintsRef, onParallaxIndices]);
+
+  return null;
+}
+
 export default function ThreeView({
   height,
   pitchDegs,
@@ -729,9 +814,14 @@ export default function ThreeView({
 }: ThreeViewProps) {
   const coverageSpaceRef = useRef<THREE.Group>(null);
   const coverageRootRef = useRef<THREE.Group>(null);
+  const waypointLayerGroupRef = useRef<THREE.Group>(null);
+  const activeFootprintsRef = useRef<GroundQuad[]>([]);
   const droneMarkerRefs = useRef<Array<DroneMarkerHandle | null>>([]);
   const [hoveredWaypointIndex, setHoveredWaypointIndex] = useState<number | null>(null);
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState<number | null>(null);
+  const [clickToFocusEnabled, setClickToFocusEnabled] = useState(true);
+  const [surfaceParallaxMode, setSurfaceParallaxMode] = useState(false);
+  const [parallaxIndices, setParallaxIndices] = useState<number[]>([]);
   const hoverHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverPendingIndexRef = useRef<number | null>(null);
 
@@ -744,6 +834,7 @@ export default function ThreeView({
 
   const scheduleHoverHighlight = useCallback(
     (i: number) => {
+      if (!clickToFocusEnabled) return;
       hoverPendingIndexRef.current = i;
       clearHoverHoldTimer();
       hoverHoldTimerRef.current = setTimeout(() => {
@@ -753,7 +844,7 @@ export default function ThreeView({
         }
       }, HOVER_HIGHLIGHT_HOLD_MS);
     },
-    [clearHoverHoldTimer],
+    [clearHoverHoldTimer, clickToFocusEnabled],
   );
 
   const cancelHoverHighlight = useCallback(
@@ -769,10 +860,18 @@ export default function ThreeView({
 
   useEffect(() => () => clearHoverHoldTimer(), [clearHoverHoldTimer]);
 
+  useEffect(() => {
+    if (!clickToFocusEnabled) {
+      setHoveredWaypointIndex(null);
+      setSelectedWaypointIndex(null);
+    }
+  }, [clickToFocusEnabled]);
+
   const goToWaypoint = useCallback((i: number) => {
+    if (!clickToFocusEnabled) return;
     droneMarkerRefs.current[i]?.focus();
     setSelectedWaypointIndex(i);
-  }, []);
+  }, [clickToFocusEnabled]);
 
   /** Formula suggestion when not in spin mode; spin scene length follows `pitchDegs.length` from the page. */
   const autoSpinCaptureCount = useMemo(
@@ -836,6 +935,7 @@ export default function ThreeView({
   );
 
   const activeFootprints = spinMode ? spinFootprints : linearFootprints;
+  activeFootprintsRef.current = activeFootprints;
   const activeDroneX = spinMode ? spinAlongX : alongPositions;
   const activeN = spinMode ? numSpinCaptures : n;
 
@@ -922,6 +1022,16 @@ export default function ThreeView({
     [gridSize, height],
   );
 
+  useLayoutEffect(() => {
+    const g = waypointLayerGroupRef.current;
+    if (!g) return;
+    g.traverse((obj) => {
+      if (obj instanceof THREE.Object3D) {
+        obj.layers.set(1);
+      }
+    });
+  }, [activeN, activeFootprints]);
+
   return (
     <div
       data-testid="three-view-container"
@@ -938,7 +1048,12 @@ export default function ThreeView({
         camera={{ fov: 48, near: 0.1, far: 500000 }}
         gl={{ antialias: true, alpha: false }}
         shadows
-        onPointerMissed={() => setSelectedWaypointIndex(null)}
+        onPointerMissed={() => {
+          setSelectedWaypointIndex(null);
+          if (surfaceParallaxMode) {
+            setParallaxIndices([]);
+          }
+        }}
         onCreated={({ gl }) => {
           gl.setClearColor('#0d0d0d');
           gl.shadowMap.enabled = true;
@@ -975,62 +1090,96 @@ export default function ThreeView({
 
         <OrbitOriginCamera gridSize={gridSize} height={height} target={initialTarget} />
 
-        <HoverSceneCursor active={hoveredWaypointIndex !== null || selectedWaypointIndex !== null} />
+        <GroundParallaxPicker
+          enabled={surfaceParallaxMode}
+          coverageSpaceRef={coverageSpaceRef}
+          coverageRootRef={coverageRootRef}
+          activeFootprintsRef={activeFootprintsRef}
+          onParallaxIndices={setParallaxIndices}
+        />
+
+        <HoverSceneCursor
+          active={
+            clickToFocusEnabled
+            && (hoveredWaypointIndex !== null || selectedWaypointIndex !== null)
+          }
+        />
 
         <group ref={coverageSpaceRef} rotation={[0, Math.PI / 2, 0]}>
           <TownScene rootRef={coverageRootRef} />
 
-          {activeFootprints.map((quad, i) => {
-            const dronePos = dronePositions[i];
-            const fpOpacity = spinMode
-              ? 0.08
-              : 0.05 + (i / Math.max(1, activeN - 1)) * 0.05;
-            const em = hoveredWaypointIndex === i || selectedWaypointIndex === i;
-            return (
-              <group
-                key={i}
-                onPointerOver={(e) => {
-                  e.stopPropagation();
-                  scheduleHoverHighlight(i);
-                }}
-                onPointerOut={() => {
-                  cancelHoverHighlight(i);
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToWaypoint(i);
-                }}
-              >
-                <DroneMarker
-                  ref={(el) => {
-                    droneMarkerRefs.current[i] = el;
+          <group ref={waypointLayerGroupRef}>
+            {activeFootprints.map((quad, i) => {
+              const dronePos = dronePositions[i];
+              const fpOpacity = spinMode
+                ? 0.08
+                : 0.05 + (i / Math.max(1, activeN - 1)) * 0.05;
+              const parallaxHit = parallaxIndices.includes(i);
+              const em =
+                (clickToFocusEnabled
+                  && (hoveredWaypointIndex === i || selectedWaypointIndex === i))
+                || parallaxHit;
+              return (
+                <group
+                  key={i}
+                  onPointerOver={(e) => {
+                    if (!clickToFocusEnabled) return;
+                    e.stopPropagation();
+                    scheduleHoverHighlight(i);
                   }}
-                  position={dronePos}
-                  pitchDeg={activePitchDegs[i]}
-                  headingDeg={activeHeadings[i] ?? 0}
-                  heightFt={height}
-                  isHighlighted={em}
-                  showTag={em}
-                  onTagActivate={() => goToWaypoint(i)}
-                />
-                <DirectionVector
-                  dronePos={dronePos}
-                  pitchDeg={activePitchDegs[i] ?? 0}
-                  headingDeg={activeHeadings[i] ?? 0}
-                  length={Math.max(18, height * 0.14)}
-                  emphasize={em}
-                />
-                <FrustumLines
-                  dronePos={dronePos}
-                  pitchDeg={activePitchDegs[i] ?? 0}
-                  headingDeg={activeHeadings[i] ?? 0}
-                  lineOpacity={lineOpacity}
-                  emphasize={em}
-                />
-                <FootprintQuad quad={quad} color={activeColors[i]} opacity={fpOpacity} emphasize={em} />
-              </group>
-            );
-          })}
+                  onPointerOut={() => {
+                    if (!clickToFocusEnabled) return;
+                    cancelHoverHighlight(i);
+                  }}
+                  onClick={(e) => {
+                    if (!clickToFocusEnabled || surfaceParallaxMode) return;
+                    e.stopPropagation();
+                    goToWaypoint(i);
+                  }}
+                >
+                  <DroneMarker
+                    ref={(el) => {
+                      droneMarkerRefs.current[i] = el;
+                    }}
+                    position={dronePos}
+                    pitchDeg={activePitchDegs[i]}
+                    headingDeg={activeHeadings[i] ?? 0}
+                    heightFt={height}
+                    isHighlighted={em}
+                    showTag={em}
+                    tagPointerEnabled={clickToFocusEnabled && !surfaceParallaxMode}
+                    onTagActivate={
+                      clickToFocusEnabled && !surfaceParallaxMode
+                        ? () => goToWaypoint(i)
+                        : undefined
+                    }
+                  />
+                  <DirectionVector
+                    dronePos={dronePos}
+                    pitchDeg={activePitchDegs[i] ?? 0}
+                    headingDeg={activeHeadings[i] ?? 0}
+                    length={Math.max(18, height * 0.14)}
+                    emphasize={em}
+                  />
+                  <FrustumLines
+                    dronePos={dronePos}
+                    pitchDeg={activePitchDegs[i] ?? 0}
+                    headingDeg={activeHeadings[i] ?? 0}
+                    lineOpacity={lineOpacity}
+                    emphasize={em && !parallaxHit}
+                    parallaxHighlight={parallaxHit}
+                  />
+                  <FootprintQuad
+                    quad={quad}
+                    color={activeColors[i]}
+                    opacity={fpOpacity}
+                    emphasize={em && !parallaxHit}
+                    parallaxHighlight={parallaxHit}
+                  />
+                </group>
+              );
+            })}
+          </group>
         </group>
 
         <CoverageOverlay
@@ -1064,6 +1213,36 @@ export default function ThreeView({
             </div>
           </>
         )}
+      </div>
+
+      <div className={styles.threeViewControls}>
+        <label className={styles.threeViewToggleRow}>
+          <input
+            type="checkbox"
+            checked={clickToFocusEnabled}
+            onChange={(e) => setClickToFocusEnabled(e.target.checked)}
+            data-testid="three-view-click-focus-toggle"
+          />
+          <span>Click to focus</span>
+        </label>
+        <label className={styles.threeViewToggleRow}>
+          <input
+            type="checkbox"
+            checked={surfaceParallaxMode}
+            onChange={(e) => {
+              const next = e.target.checked;
+              setSurfaceParallaxMode(next);
+              if (!next) setParallaxIndices([]);
+            }}
+            data-testid="three-view-surface-parallax-toggle"
+          />
+          <span>Surface multi-view</span>
+        </label>
+        {surfaceParallaxMode && parallaxIndices.length > 0 ? (
+          <div className={styles.threeViewParallaxCount} data-testid="three-view-parallax-count">
+            {parallaxIndices.length} view{parallaxIndices.length === 1 ? '' : 's'} see point
+          </div>
+        ) : null}
       </div>
     </div>
   );
