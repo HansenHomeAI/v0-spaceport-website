@@ -207,6 +207,31 @@ class SpinPathLambdaTests(unittest.TestCase):
         self.assertGreater(stage_average_speed[-1], stage_average_speed[0])
         self.assertEqual(export_data["stages"][0]["averageSpeedMph"], stage_average_speed[0])
 
+    def test_split_stage_points_forces_outbound_inbound_split_under_limit(self):
+        point_templates = [
+            {
+                "latitude": 39.7392 + (index * 0.0001),
+                "longitude": -104.9903,
+                "altitude": 120.0 + (index * 10.0),
+                "curve_ft": 0.0,
+                "gimbalpitchangle": -25,
+                "distance_ft": float(index * 20),
+            }
+            for index in range(10)
+        ]
+
+        stage_sets = spin_path_module._split_real_path_stage_points(
+            point_templates,
+            stage_limit=99,
+            overlap_rows=1,
+            preferred_split_distance_ft=95.0,
+        )
+
+        self.assertEqual(len(stage_sets), 2)
+        self.assertEqual(stage_sets[0][-1]["distance_ft"], stage_sets[1][0]["distance_ft"])
+        self.assertLess(len(stage_sets[0]), 99)
+        self.assertLess(len(stage_sets[1]), 99)
+
     def test_distance_trigger_mode_exports_distance_interval_without_extra_waypoints(self):
         raw_overlap_config = dict(self.raw_overlap_config)
         raw_overlap_config["captureIntervalUnit"] = "ft"

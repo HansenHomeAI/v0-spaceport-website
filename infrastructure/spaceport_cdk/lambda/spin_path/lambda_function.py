@@ -4109,22 +4109,99 @@ def _build_real_path_point_templates(designer: SpiralDesigner, sampled_points: L
     return point_templates
 
 
-def _split_real_path_stage_points(point_templates: List[Dict], stage_limit: int = 99, overlap_rows: int = 1) -> List[List[Dict]]:
-    if len(point_templates) <= stage_limit:
-        return [[dict(point) for point in point_templates]]
+def _find_real_path_phase_split_distance(
+    base_waypoint_records: List[Dict],
+    rendered_points: List[Dict],
+    cumulative_distances: List[float],
+) -> Optional[float]:
+    first_inbound_record = next(
+        (record for record in base_waypoint_records if 'inbound' in str(record.get('phase', '')).lower()),
+        None,
+    )
+    if not first_inbound_record or not rendered_points or not cumulative_distances:
+        return None
 
-    stages = []
-    start_index = 0
+    inbound_index = _find_nearest_rendered_point_index(rendered_points, first_inbound_record)
+    if inbound_index <= 0 or inbound_index >= len(cumulative_distances) - 1:
+        return None
+    return float(cumulative_distances[inbound_index])
+
+
+def _find_point_template_split_index(point_templates: List[Dict], split_distance_ft: float) -> Optional[int]:
+    if len(point_templates) < 2:
+        return None
+
+    for index, point in enumerate(point_templates):
+        if float(point['distance_ft']) >= split_distance_ft:
+            if index <= 0:
+                return 1
+            if index >= len(point_templates) - 1:
+                return len(point_templates) - 1
+            previous_distance = abs(float(point_templates[index - 1]['distance_ft']) - split_distance_ft)
+            current_distance = abs(float(point['distance_ft']) - split_distance_ft)
+            return index if current_distance <= previous_distance else index - 1
+
+    return len(point_templates) - 1
+
+
+def _append_split_stage_segments(
+    segments: List[List[Dict]],
+    point_templates: List[Dict],
+    start_index: int,
+    end_index: int,
+    stage_limit: int,
+    overlap_rows: int,
+) -> None:
+    if start_index >= end_index:
+        return
+
     safe_overlap = max(0, min(stage_limit - 1, int(overlap_rows)))
-    while start_index < len(point_templates):
-        stage_points = [dict(point) for point in point_templates[start_index:start_index + stage_limit]]
-        if not stage_points:
+    current_start = start_index
+    while current_start < end_index:
+        current_end = min(end_index, current_start + stage_limit)
+        segment = [dict(point) for point in point_templates[current_start:current_end]]
+        if not segment:
             break
-        stages.append(stage_points)
-        if start_index + stage_limit >= len(point_templates):
+        segments.append(segment)
+        if current_end >= end_index:
             break
-        start_index += stage_limit - safe_overlap
-    return stages
+        current_start = max(current_start + 1, current_end - safe_overlap)
+
+
+def _split_real_path_stage_points(
+    point_templates: List[Dict],
+    stage_limit: int = 99,
+    overlap_rows: int = 1,
+    preferred_split_distance_ft: Optional[float] = None,
+) -> List[List[Dict]]:
+    if len(point_templates) <= 1:
+        return [[dict(point) for point in point_templates]] if point_templates else []
+
+    split_index = None
+    if preferred_split_distance_ft is not None:
+        split_index = _find_point_template_split_index(point_templates, preferred_split_distance_ft)
+
+    if split_index is None or split_index <= 0 or split_index >= len(point_templates) - 1:
+        split_index = max(1, len(point_templates) // 2)
+
+    segments: List[List[Dict]] = []
+    _append_split_stage_segments(
+        segments,
+        point_templates,
+        start_index=0,
+        end_index=split_index + 1,
+        stage_limit=stage_limit,
+        overlap_rows=overlap_rows,
+    )
+    _append_split_stage_segments(
+        segments,
+        point_templates,
+        start_index=split_index,
+        end_index=len(point_templates),
+        stage_limit=stage_limit,
+        overlap_rows=overlap_rows,
+    )
+    return segments
 
 
 def _build_stage_capture_fields(overlap_config: Dict, is_terminal_row: bool) -> Dict:
@@ -4152,12 +4229,14 @@ def _build_real_path_stage_exports(
     overlap_config: Dict,
     battery_index: int,
     total_distance_ft: float,
+    preferred_split_distance_ft: Optional[float] = None,
     overlap_rows: int = 1,
 ) -> Tuple[List[Dict], List[Dict], Dict]:
     stage_point_sets = _split_real_path_stage_points(
         point_templates,
         stage_limit=SpiralDesigner.MAX_EXPORT_WAYPOINTS,
         overlap_rows=overlap_rows,
+        preferred_split_distance_ft=preferred_split_distance_ft,
     )
 
     stage_exports = []
@@ -4280,6 +4359,11 @@ def _build_real_path_battery_export(
 
     rendered_points = _build_rendered_local_path_points(base_waypoint_records, designer)
     cumulative_distances = _build_cumulative_distances(rendered_points)
+    phase_split_distance_ft = _find_real_path_phase_split_distance(
+        base_waypoint_records,
+        rendered_points,
+        cumulative_distances,
+    )
     sampled_points, total_distance_ft = _select_real_path_navigation_points(
         rendered_points,
         cumulative_distances,
@@ -4299,6 +4383,7 @@ def _build_real_path_battery_export(
         overlap_config,
         battery_index + 1,
         total_distance_ft,
+        preferred_split_distance_ft=phase_split_distance_ft,
     )
     return {
         'previewPath': {

@@ -36,6 +36,16 @@ function formatMph(value: number | undefined): string {
   return value === undefined ? "0.0 mph" : `${value.toFixed(1)} mph`;
 }
 
+function formatStageSpeedSummary(values: number[] | undefined): string {
+  if (!values?.length) {
+    return "0.0 mph";
+  }
+  if (values.length === 1) {
+    return formatMph(values[0]);
+  }
+  return `${values[0].toFixed(1)} -> ${values[values.length - 1].toFixed(1)} mph`;
+}
+
 function selectedPreviewBattery(
   result: RealPathOptimizeResponse | null,
   selectedBatteryIndex: number | null,
@@ -341,7 +351,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               <span>{selectedBattery ? formatFeet(selectedBattery.telemetry.pathDistanceFeet) : "0 ft"}</span>
               <span>{selectedBatteryOverlapPct.toFixed(0)}% overlap</span>
               <span>{selectedBattery?.telemetry.stageCount ?? 0} stages</span>
-              <span>{formatMph(selectedBattery?.telemetry.stageAverageSpeedMph?.[0])} first-stage speed</span>
+              <span>{formatStageSpeedSummary(selectedBattery?.telemetry.stageAverageSpeedMph)} stage speeds</span>
             </div>
           </div>
 
@@ -387,7 +397,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
                     <span>{overlapPct.toFixed(0)}% avg overlap</span>
                     <span>{summary.maxHeadingDeltaDeg.toFixed(1)}° max Δheading</span>
                     <span>{summary.estimatedYawRateDegPerSec.toFixed(1)}°/s yaw</span>
-                    <span>{formatMph(summary.stageAverageSpeedMph?.[0])} stage speed</span>
+                    <span>{formatStageSpeedSummary(summary.stageAverageSpeedMph)} stage speeds</span>
                     <span>{summary.captureTriggerMode === "ft" ? `${summary.captureDistanceFeet?.toFixed(1) ?? "0.0"} ft trigger` : `${summary.captureIntervalSeconds.toFixed(2)} s trigger`}</span>
                   </div>
                 </article>
