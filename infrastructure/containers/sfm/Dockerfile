@@ -3,7 +3,7 @@
 ARG UBUNTU_IMAGE=public.ecr.aws/docker/library/ubuntu:24.04
 FROM ${UBUNTU_IMAGE}
 
-ARG COLMAP_GIT_REF=43dd3bb2
+ARG COLMAP_GIT_SHA=83cb454fd2016687b5db313dc08370bf2137b08e
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
@@ -13,8 +13,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
-        git \
-        unzip \
         python3 \
         python3-pip \
         python3-venv \
@@ -47,10 +45,10 @@ RUN apt-get update && \
     && mkdir -p /usr/include/opencv4 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone --filter=blob:none https://github.com/colmap/colmap.git /tmp/colmap && \
+RUN curl -fsSL "https://github.com/colmap/colmap/archive/${COLMAP_GIT_SHA}.tar.gz" -o /tmp/colmap.tar.gz && \
+    mkdir -p /tmp/colmap && \
+    tar -xzf /tmp/colmap.tar.gz -C /tmp/colmap --strip-components=1 && \
     cd /tmp/colmap && \
-    git fetch --depth 1 origin ${COLMAP_GIT_REF} && \
-    git checkout ${COLMAP_GIT_REF} && \
     cmake -S . -B build -GNinja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -58,8 +56,8 @@ RUN git clone --filter=blob:none https://github.com/colmap/colmap.git /tmp/colma
         -DGUI_ENABLED=OFF \
         -DTESTS_ENABLED=OFF \
         -DCUDA_ENABLED=OFF && \
-    cmake --build build --target install --parallel "$(nproc)" && \
-    rm -rf /tmp/colmap
+    cmake --build build --target install --parallel 2 && \
+    rm -rf /tmp/colmap /tmp/colmap.tar.gz
 
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
 
