@@ -85,6 +85,30 @@ class Segmented3DGSTests(unittest.TestCase):
         rendered = json.dumps(payload)
         self.assertIn("tile_00", rendered)
 
+    def test_overlap_expansion_does_not_collapse_long_strip_tiles(self) -> None:
+        strip_root = self.root / "strip_training"
+        self._write_strip_fixture(strip_root)
+        strip_scene = SparseScene.from_training_root(strip_root)
+        strip_profile = SegmentedProfile(
+            max_tiles=4,
+            max_cameras_per_tile=6,
+            max_points_per_tile=80,
+            min_cameras_per_tile=2,
+            min_points_per_tile=20,
+            overlap_ratio=0.15,
+            min_observation_fraction=0.1,
+            default_iterations=6000,
+            heavy_tile_iterations=8000,
+            heavy_camera_threshold=5,
+            heavy_point_threshold=60,
+        )
+
+        _, tiles, _ = build_tiles(strip_scene, strip_profile)
+
+        self.assertGreaterEqual(len(tiles), 2)
+        self.assertTrue(all(len(tile.image_ids) < len(strip_scene.image_ids) for tile in tiles))
+        self.assertTrue(all(len(tile.expanded_point_ids) < len(strip_scene.point_ids) for tile in tiles))
+
     def test_segmented_trainer_dry_run_writes_artifacts(self) -> None:
         model_dir = self.root / "model"
         config_path = Path(__file__).resolve().parents[2] / "infrastructure/containers/3dgs/nerfstudio_config.yaml"
@@ -162,6 +186,70 @@ class Segmented3DGSTests(unittest.TestCase):
         with open(sparse_dir / "points3D.txt", "w", encoding="utf-8") as handle:
             handle.write("# POINT3D_ID X Y Z R G B ERROR TRACK[]\n")
             for point_id, x, y, z, track in points:
+                track_str = " ".join(f"{image_id} {point2d_id}" for image_id, point2d_id in track)
+                handle.write(f"{point_id} {x:.4f} {y:.4f} {z:.4f} 255 255 255 0.1 {track_str}\n")
+
+    def _write_strip_fixture(self, training_root: Path) -> None:
+        sparse_dir = training_root / "sparse" / "0"
+        images_dir = training_root / "images"
+        sparse_dir.mkdir(parents=True, exist_ok=True)
+        images_dir.mkdir(parents=True, exist_ok=True)
+
+        with open(sparse_dir / "cameras.txt", "w", encoding="utf-8") as handle:
+            handle.write("# CAMERA_ID MODEL WIDTH HEIGHT PARAMS[]\n")
+            handle.write("1 PINHOLE 1024 768 800 800 512 384\n")
+
+        strip_centers = [0.0, 50.0, 100.0, 150.0]
+        image_positions = []
+        image_observations = {}
+        image_id = 1
+        for strip_index, strip_x in enumerate(strip_centers):
+            for offset in (-120.0, 120.0):
+                image_positions.append((image_id, strip_x, 500.0 + offset))
+                image_observations[image_id] = []
+                image_id += 1
+
+        with open(sparse_dir / "images.txt", "w", encoding="utf-8") as handle:
+            handle.write("# IMAGE_ID QW QX QY QZ TX TY TZ CAMERA_ID NAME\n")
+            handle.write("# POINTS2D[] as X Y POINT3D_ID\n")
+            for image_id, center_x, center_y in image_positions:
+                image_name = f"strip_{image_id:04d}.jpg"
+                handle.write(f"{image_id} 1 0 0 0 {-center_x:.4f} {-center_y:.4f} -10.0 1 {image_name}\n")
+                handle.write("\n")
+                (images_dir / image_name).write_bytes(b"fixture")
+
+        point_id = 1
+        point_tracks = []
+        for strip_index, strip_x in enumerate(strip_centers):
+            image_ids = [strip_index * 2 + 1, strip_index * 2 + 2]
+            for y in range(0, 1000, 25):
+                x = strip_x + ((point_id % 5) - 2) * 0.2
+                z = ((point_id % 7) - 3) * 0.01
+                track = []
+                for observation_index, image_id in enumerate(image_ids):
+                    x2d = 100.0 + point_id + observation_index
+                    y2d = 200.0 + (y / 10.0)
+                    point2d_id = len(image_observations[image_id])
+                    image_observations[image_id].append((x2d, y2d, point_id))
+                    track.append((image_id, point2d_id))
+                point_tracks.append((point_id, x, float(y), z, track))
+                point_id += 1
+
+        with open(sparse_dir / "images.txt", "w", encoding="utf-8") as handle:
+            handle.write("# IMAGE_ID QW QX QY QZ TX TY TZ CAMERA_ID NAME\n")
+            handle.write("# POINTS2D[] as X Y POINT3D_ID\n")
+            for image_id, center_x, center_y in image_positions:
+                image_name = f"strip_{image_id:04d}.jpg"
+                handle.write(f"{image_id} 1 0 0 0 {-center_x:.4f} {-center_y:.4f} -10.0 1 {image_name}\n")
+                points_line = " ".join(
+                    f"{x:.3f} {y:.3f} {point_id}"
+                    for x, y, point_id in image_observations[image_id]
+                )
+                handle.write(points_line + "\n")
+
+        with open(sparse_dir / "points3D.txt", "w", encoding="utf-8") as handle:
+            handle.write("# POINT3D_ID X Y Z R G B ERROR TRACK[]\n")
+            for point_id, x, y, z, track in point_tracks:
                 track_str = " ".join(f"{image_id} {point2d_id}" for image_id, point2d_id in track)
                 handle.write(f"{point_id} {x:.4f} {y:.4f} {z:.4f} 255 255 255 0.1 {track_str}\n")
 

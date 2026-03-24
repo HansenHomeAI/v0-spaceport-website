@@ -33,6 +33,7 @@ class SegmentedProfile:
     min_cameras_per_tile: int = 80
     min_points_per_tile: int = 50_000
     overlap_ratio: float = 0.15
+    camera_overlap_ratio: float = 0.01
     min_observation_fraction: float = 0.05
     default_iterations: int = 6000
     heavy_tile_iterations: int = 8000
@@ -59,6 +60,9 @@ class Bounds2D:
 
     def expanded(self, margin: float) -> "Bounds2D":
         return Bounds2D(self.minimum - margin, self.maximum + margin)
+
+    def expanded_per_axis(self, margins: np.ndarray) -> "Bounds2D":
+        return Bounds2D(self.minimum - margins, self.maximum + margins)
 
     def to_dict(self) -> Dict[str, List[float]]:
         return {
@@ -356,11 +360,11 @@ def _assign_tiles(
     profile: SegmentedProfile,
 ) -> List[TileSpec]:
     tiles: List[TileSpec] = []
-    point_id_to_index = scene.point_id_to_index
+    image_index_lookup = {image_id: index for index, image_id in enumerate(scene.image_ids)}
 
     for tile_index, core_bounds in enumerate(partition_bounds):
-        long_side = float(np.max(core_bounds.size))
-        expanded_bounds = core_bounds.expanded(long_side * profile.overlap_ratio)
+        axis_margins = np.maximum(core_bounds.size * profile.overlap_ratio, 1e-6)
+        expanded_bounds = core_bounds.expanded_per_axis(axis_margins)
 
         core_point_ids = [
             scene.point_ids[index]
@@ -370,26 +374,41 @@ def _assign_tiles(
             scene.point_ids[index]
             for index in np.where(expanded_bounds.contains(point_uv))[0].tolist()
         ]
-        expanded_point_id_set = set(expanded_point_ids)
 
         center_image_ids = [
             scene.image_ids[index]
             for index in np.where(core_bounds.contains(camera_uv))[0].tolist()
         ]
 
-        image_ids: List[int] = []
-        for image_index, image_id in enumerate(scene.image_ids):
-            if expanded_bounds.contains(camera_uv[image_index : image_index + 1])[0]:
-                image_ids.append(image_id)
-                continue
+        if center_image_ids:
+            center_indices = [image_index_lookup[image_id] for image_id in center_image_ids]
+            center_camera_uv = camera_uv[center_indices]
+            camera_bounds = Bounds2D(center_camera_uv.min(axis=0), center_camera_uv.max(axis=0))
+            camera_margins = np.maximum(camera_bounds.size * profile.camera_overlap_ratio, 1e-6)
+            expanded_camera_bounds = camera_bounds.expanded_per_axis(camera_margins)
+        else:
+            expanded_camera_bounds = core_bounds
 
-            observed_point_ids = scene.image_observation_ids.get(image_id, [])
-            if not observed_point_ids:
-                continue
+        image_ids = [
+            scene.image_ids[index]
+            for index in np.where(expanded_camera_bounds.contains(camera_uv))[0].tolist()
+        ]
 
-            observed_in_tile = sum(1 for point_id in observed_point_ids if point_id in expanded_point_id_set)
-            if observed_in_tile / len(observed_point_ids) >= profile.min_observation_fraction:
-                image_ids.append(image_id)
+        if len(image_ids) < profile.min_cameras_per_tile:
+            assigned_image_ids = set(image_ids)
+            core_point_id_set = set(core_point_ids)
+            for image_id in scene.image_ids:
+                if image_id in assigned_image_ids:
+                    continue
+
+                observed_point_ids = scene.image_observation_ids.get(image_id, [])
+                if not observed_point_ids:
+                    continue
+
+                observed_in_tile = sum(1 for point_id in observed_point_ids if point_id in core_point_id_set)
+                if observed_in_tile / len(observed_point_ids) >= profile.min_observation_fraction:
+                    image_ids.append(image_id)
+                    assigned_image_ids.add(image_id)
 
         if not image_ids:
             raise ValueError(f"Tile {tile_index} has no assigned images")
@@ -397,7 +416,7 @@ def _assign_tiles(
         camera_ids = sorted({scene.images[image_id].camera_id for image_id in image_ids})
         iterations = (
             profile.heavy_tile_iterations
-            if len(image_ids) > profile.heavy_camera_threshold or len(expanded_point_ids) > profile.heavy_point_threshold
+            if len(image_ids) > profile.heavy_camera_threshold or len(core_point_ids) > profile.heavy_point_threshold
             else profile.default_iterations
         )
 
