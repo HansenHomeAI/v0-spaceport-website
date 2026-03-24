@@ -41,7 +41,7 @@ RUN apt-get update && \
         libsuitesparse-dev \
         libcurl4-openssl-dev \
         libssl-dev \
-        libmkl-full-dev \
+        libopenblas-dev \
     && mkdir -p /usr/include/opencv4 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -52,7 +52,7 @@ RUN curl -fsSL "https://github.com/colmap/colmap/archive/${COLMAP_GIT_SHA}.tar.g
     cmake -S . -B build -GNinja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
-        -DBLA_VENDOR=Intel10_64lp \
+        -DBLA_VENDOR=OpenBLAS \
         -DGUI_ENABLED=OFF \
         -DTESTS_ENABLED=OFF \
         -DCUDA_ENABLED=OFF && \
