@@ -52,9 +52,9 @@ cache_base_images() {
   
   # Pull common base images in parallel
   {
-    docker pull public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
-    docker pull public.ecr.aws/nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
+    docker pull 763104351884.dkr.ecr.${AWS_REGION}.amazonaws.com/pytorch-training:2.0.1-gpu-py310-cu118-ubuntu20.04-sagemaker || true &
     docker pull python:3.9-slim || true &
+    docker pull public.ecr.aws/lts/ubuntu:22.04 || true &
     wait
   }
   
@@ -157,27 +157,29 @@ deploy_container() {
   log "Build complete with caching optimizations."
 
   log "Tagging images..."
-  docker tag "${repo_name}:latest" "${ecr_uri}:latest"
   if [ -n "$branch_tag" ]; then
     docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
-    log "Tags created: latest, ${branch_tag}"
+    log "Tags created: ${branch_tag}"
   else
+    docker tag "${repo_name}:latest" "${ecr_uri}:latest"
     log "Tags created: latest"
   fi
 
   log "Pushing images to ECR..."
-  docker push "${ecr_uri}:latest"
   if [ -n "$branch_tag" ]; then
     docker push "${ecr_uri}:${branch_tag}"
+  else
+    docker push "${ecr_uri}:latest"
   fi
   log "Successfully pushed to ${ecr_uri}"
   
   # Clean up local images to save space
   log "Cleaning up local images..."
   docker rmi "${repo_name}:latest" || true
-  docker rmi "${ecr_uri}:latest" || true
   if [ -n "$branch_tag" ]; then
     docker rmi "${ecr_uri}:${branch_tag}" || true
+  else
+    docker rmi "${ecr_uri}:latest" || true
   fi
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
@@ -205,8 +207,8 @@ main() {
 
   # Setup optimization
   setup_docker_cache
-  cache_base_images
   login_ecr
+  cache_base_images
   echo
 
   # Handle multiple arguments - either "all" or specific container names
