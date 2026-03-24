@@ -453,7 +453,7 @@ class MLPipelineStack(Stack):
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g5.2xlarge",  # A10G GPU with 32GB RAM - supports Vincent Woo's full methodology
+                    "InstanceType": "ml.g5.xlarge",  # Keep the 3DGS step below the target cost ceiling
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
@@ -484,6 +484,18 @@ class MLPipelineStack(Stack):
                     "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),  # splatfacto vs splatfacto-big
                     "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),          # Industry standard: 3
                     "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),  # Vincent's innovation
+
+                    # Segmented training controls
+                    "TRAINING_MODE": sfn.JsonPath.string_at("$.TRAINING_MODE"),
+                    "SEGMENTED_PROFILE": sfn.JsonPath.string_at("$.SEGMENTED_PROFILE"),
+                    "SEG_TARGET_TOTAL_GAUSSIANS": sfn.JsonPath.string_at("$.SEG_TARGET_TOTAL_GAUSSIANS"),
+                    "SEG_MAX_TILES": sfn.JsonPath.string_at("$.SEG_MAX_TILES"),
+                    "SEG_TILE_MAX_ITERATIONS": sfn.JsonPath.string_at("$.SEG_TILE_MAX_ITERATIONS"),
+                    "WRITE_PROOF_ARTIFACTS": sfn.JsonPath.string_at("$.WRITE_PROOF_ARTIFACTS"),
+                    "MODEL_OUTPUT_S3_URI": sfn.JsonPath.string_at("$.gaussianOutputS3Uri"),
+                    "COMPRESSED_OUTPUT_S3_URI": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
+                    "TRAINING_JOB_NAME": sfn.JsonPath.format("{}-3dgs", sfn.JsonPath.string_at("$.jobName")),
+                    "INSTANCE_TYPE": "ml.g5.xlarge",
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",

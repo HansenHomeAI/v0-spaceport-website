@@ -229,6 +229,14 @@ def lambda_handler(event, context):
             "MAX_NUM_GAUSSIANS": "1500000",     # Conservative limit for A10G
             "MEMORY_OPTIMIZATION": "true",      # Enable memory optimization
             "TORCH_CUDA_ARCH_LIST": "8.0 8.6",  # Limit gsplat JIT targets to Ampere+
+
+            # Segmented large-scene training controls
+            "TRAINING_MODE": "monolithic",
+            "SEGMENTED_PROFILE": "landscape_v1",
+            "SEG_TARGET_TOTAL_GAUSSIANS": "15000000",
+            "SEG_MAX_TILES": "6",
+            "SEG_TILE_MAX_ITERATIONS": "8000",
+            "WRITE_PROOF_ARTIFACTS": "true",
             
             # Legacy G-Splat parameters for backward compatibility (will be ignored by NerfStudio)
             "max_iterations": 30000,
