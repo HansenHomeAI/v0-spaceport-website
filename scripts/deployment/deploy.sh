@@ -54,7 +54,7 @@ cache_base_images() {
   {
     docker pull public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
     docker pull public.ecr.aws/nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
-    docker pull python:3.9-slim || true &
+    docker pull public.ecr.aws/docker/library/ubuntu:24.04 || true &
     wait
   }
   
