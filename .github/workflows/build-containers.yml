@@ -327,10 +327,12 @@ jobs:
         ROLE_ARN=$(aws iam get-role --role-name CodeBuildServiceRole --query 'Role.Arn' --output text)
         echo "Service role: $ROLE_ARN"
 
-        # Ensure CodeBuild project
+        # Ensure CodeBuild projects
         set +e
         aws codebuild batch-get-projects --names spaceport-ml-containers --query 'projects[0].name' --output text | grep -q spaceport-ml-containers
         MISSING_PROJ=$?
+        aws codebuild batch-get-projects --names spaceport-ml-containers-medium --query 'projects[0].name' --output text | grep -q spaceport-ml-containers-medium
+        MISSING_MEDIUM_PROJ=$?
         set -e
         REPO_URL="https://github.com/${{ github.repository }}.git"
         CACHE_LOCATION="spaceport-build-cache/codebuild-cache"
@@ -363,6 +365,33 @@ jobs:
           --service-role "$ROLE_ARN" \
           >/dev/null
 
+        if [ "$MISSING_MEDIUM_PROJ" -ne 0 ]; then
+          echo "Creating CodeBuild project spaceport-ml-containers-medium..."
+          aws codebuild create-project \
+            --name spaceport-ml-containers-medium \
+            --description "Build ML containers for Spaceport pipeline on cheaper medium compute" \
+            --source type=GITHUB,location=${REPO_URL},buildspec=buildspec.yml,gitCloneDepth=1,reportBuildStatus=true \
+            --artifacts type=NO_ARTIFACTS \
+            --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_MEDIUM,privilegedMode=true \
+            --cache type=S3,location="${CACHE_LOCATION}" \
+            --service-role "$ROLE_ARN" \
+            --timeout-in-minutes 120 \
+            --queued-timeout-in-minutes 30 \
+            --tags key=Project,value=Spaceport key=Purpose,value=ML-Container-Build-Medium
+          echo "Created CodeBuild project."
+        else
+          echo "CodeBuild project spaceport-ml-containers-medium already exists."
+        fi
+
+        aws codebuild update-project \
+          --name spaceport-ml-containers-medium \
+          --environment type=LINUX_CONTAINER,image=aws/codebuild/standard:7.0,computeType=BUILD_GENERAL1_MEDIUM,privilegedMode=true \
+          --cache type=S3,location="${CACHE_LOCATION}" \
+          --timeout-in-minutes 120 \
+          --queued-timeout-in-minutes 30 \
+          --service-role "$ROLE_ARN" \
+          >/dev/null
+
     - name: Trigger CodeBuild for container builds sequentially
       if: ${{ steps.build_plan.outputs.build_required == 'true' }}
       run: |
@@ -375,6 +404,13 @@ jobs:
         DEFAULT_COMPUTE="BUILD_GENERAL1_LARGE"
         BASE_COMPUTE="BUILD_GENERAL1_2XLARGE"
         BUILD_BASE_ONLY="${{ inputs.base_only == 'true' && '1' || '0' }}"
+        PROJECT_NAME="spaceport-ml-containers"
+
+        if [ "$CONTAINER_SEQUENCE" = "sfm" ] && [ "$BUILD_BASE_ONLY" != "1" ] && [ -z "$COMPUTE_TYPE_INPUT" ]; then
+          PROJECT_NAME="spaceport-ml-containers-medium"
+          DEFAULT_COMPUTE="BUILD_GENERAL1_MEDIUM"
+          echo "SfM-only app-layer build detected; using ${PROJECT_NAME} on ${DEFAULT_COMPUTE}"
+        fi
 
         if [ -n "$COMPUTE_TYPE_INPUT" ]; then
           echo "Compute override requested: $COMPUTE_TYPE_INPUT"
@@ -390,7 +426,7 @@ jobs:
         wait_for_capacity() {
           while true; do
             ACTIVE_IDS=$(aws codebuild list-builds-for-project \
-              --project-name spaceport-ml-containers \
+              --project-name "$PROJECT_NAME" \
               --max-items 5 \
               --sort-order DESCENDING \
               --output json | jq -r '.ids[]?' | xargs 2>/dev/null || true)
@@ -417,7 +453,7 @@ jobs:
           wait_for_capacity
 
           BUILD_ID=$(aws codebuild start-build \
-            --project-name spaceport-ml-containers \
+            --project-name "$PROJECT_NAME" \
             --source-version ${{ github.sha }} \
             --source-type-override GITHUB \
             --source-location-override "${SOURCE_REPO}" \
@@ -433,7 +469,7 @@ jobs:
 
           echo "✅ CodeBuild triggered successfully for $CONTAINER"
           echo "Build ID: $BUILD_ID"
-          echo "Monitor progress: https://console.aws.amazon.com/codesuite/codebuild/projects/spaceport-ml-containers/build/$BUILD_ID"
+          echo "Monitor progress: https://console.aws.amazon.com/codesuite/codebuild/projects/${PROJECT_NAME}/build/$BUILD_ID"
 
           while true; do
             STATUS=$(aws codebuild batch-get-builds --ids $BUILD_ID --query 'builds[0].buildStatus' --output text)

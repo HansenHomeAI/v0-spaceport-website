@@ -283,8 +283,8 @@ def lambda_handler(event, context):
             # GPS/CSV Enhancement Information
             "hasGpsData": has_gps_data,
             "csvS3Uri": f"s3://{csv_bucket_name}/{csv_object_key}" if has_gps_data else None,
-            "pipelineType": "gps_enhanced" if has_gps_data else "standard",
-            "sfmMethod": "opensfm_gps" if has_gps_data else "opensfm_standard",
+            "pipelineType": "exif_csv_refined" if has_gps_data else "exif_first",
+            "sfmMethod": "colmap_hybrid_csv_refined" if has_gps_data else "colmap_hybrid_exif",
             
             # Add all hyperparameters to the Step Functions input
             **final_hyperparameters

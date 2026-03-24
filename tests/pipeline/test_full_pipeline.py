@@ -63,7 +63,7 @@ def test_full_pipeline():
         "hasGpsData": False,
         "csvS3Uri": None,
         "pipelineType": "standard",
-        "sfmMethod": "opensfm_standard",
+        "sfmMethod": "colmap_hybrid_exif",
 
         # Hyperparameters expected by the Step Functions state machine
         "MAX_ITERATIONS": "30000",

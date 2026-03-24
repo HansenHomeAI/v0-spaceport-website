@@ -11,78 +11,61 @@ from sfm_scaling import normalize_profile_override, select_sfm_runtime_plan
 
 
 class SfmScalingTests(unittest.TestCase):
-    def test_small_gps_dataset_keeps_quality_profile(self):
+    def test_small_gps_dataset_uses_quality_profile(self):
         plan = select_sfm_runtime_plan(
             286,
             has_gps_priors=True,
             profile_override="auto",
             cpu_count=8,
+            median_relative_altitude_m=40.0,
         )
 
         self.assertEqual(plan["selected_profile"], "quality")
-        self.assertEqual(plan["selected_neighbors"], 30)
-        self.assertEqual(plan["estimated_pairs"], 8580)
-        self.assertEqual(plan["config"]["feature_process_size"], 2048)
-        self.assertEqual(plan["stage_timeouts"]["match_features"], 2400)
-        self.assertEqual(plan["stage_timeouts"]["reconstruct"], 7200)
+        self.assertEqual(plan["segment_worker_count"], 1)
+        self.assertEqual(plan["segment_target_size"], 400)
+        self.assertEqual(plan["spatial_matcher_neighbors"], 12)
+        self.assertEqual(plan["spatial_matcher_distance_m"], 100)
 
-    def test_medium_gps_dataset_reduces_matching_budget(self):
+    def test_medium_gps_dataset_uses_two_workers(self):
         plan = select_sfm_runtime_plan(
             500,
             has_gps_priors=True,
             profile_override="auto",
             cpu_count=16,
+            median_relative_altitude_m=45.0,
         )
 
         self.assertEqual(plan["selected_profile"], "medium_dataset")
-        self.assertLessEqual(plan["selected_neighbors"], 20)
-        self.assertGreaterEqual(plan["selected_neighbors"], 10)
-        self.assertLessEqual(plan["estimated_pairs"], 10000)
-        self.assertEqual(plan["config"]["processes"], 6)
-        self.assertEqual(plan["stage_timeouts"]["match_features"], 7200)
+        self.assertEqual(plan["segment_worker_count"], 2)
+        self.assertEqual(plan["segment_count_estimate"], 1)
+        self.assertEqual(plan["worker_threads"], 8)
 
     def test_large_gps_dataset_uses_large_dataset_profile(self):
         plan = select_sfm_runtime_plan(
-            898,
+            1800,
             has_gps_priors=True,
             profile_override="auto",
-            cpu_count=16,
+            cpu_count=24,
+            median_relative_altitude_m=50.0,
         )
 
         self.assertEqual(plan["selected_profile"], "large_dataset")
-        self.assertLessEqual(plan["selected_neighbors"], 12)
-        self.assertGreaterEqual(plan["selected_neighbors"], 8)
-        self.assertLessEqual(plan["estimated_pairs"], 10776)
-        self.assertEqual(plan["config"]["processes"], 4)
-        self.assertEqual(plan["stage_timeouts"]["match_features"], 14400)
-        self.assertEqual(plan["stage_timeouts"]["reconstruct"], 21600)
+        self.assertEqual(plan["segment_worker_count"], 4)
+        self.assertGreater(plan["segment_count_estimate"], 1)
+        self.assertEqual(plan["spatial_matcher_distance_m"], 125)
+        self.assertEqual(plan["stage_timeouts"]["job_total"], 10800)
 
-    def test_large_no_gps_dataset_extends_reconstruct_budget(self):
+    def test_large_no_gps_dataset_uses_lower_pair_budget(self):
         plan = select_sfm_runtime_plan(
-            898,
+            1800,
             has_gps_priors=False,
             profile_override="auto",
-            cpu_count=16,
+            cpu_count=24,
         )
 
         self.assertEqual(plan["selected_profile"], "no_gps_large_dataset")
-        self.assertLessEqual(plan["selected_neighbors"], 8)
-        self.assertGreaterEqual(plan["selected_neighbors"], 6)
-        self.assertLessEqual(plan["estimated_pairs"], 7184)
-        self.assertEqual(plan["stage_timeouts"]["match_features"], 14400)
-        self.assertEqual(plan["stage_timeouts"]["reconstruct"], 21600)
-
-    def test_quality_override_respects_requested_profile(self):
-        plan = select_sfm_runtime_plan(
-            898,
-            has_gps_priors=True,
-            profile_override="quality",
-            cpu_count=16,
-        )
-
-        self.assertEqual(plan["selected_profile"], "quality")
-        self.assertEqual(plan["selected_neighbors"], 30)
-        self.assertEqual(plan["config"]["feature_max_num_features"], 20000)
+        self.assertEqual(plan["spatial_matcher_neighbors"], 8)
+        self.assertEqual(plan["segment_worker_count"], 4)
 
     def test_invalid_override_raises(self):
         with self.assertRaises(ValueError):
