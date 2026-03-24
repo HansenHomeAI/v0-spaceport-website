@@ -457,7 +457,7 @@ class MLPipelineStack(Stack):
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 7200  # 2 hours for real training
+                    "MaxRuntimeInSeconds": 10700  # Keep the 3DGS step below the $3 budget ceiling
                 },
                 "RoleArn": sagemaker_role.role_arn,
                 # Enable comprehensive CloudWatch logging for training
@@ -496,6 +496,7 @@ class MLPipelineStack(Stack):
                     "COMPRESSED_OUTPUT_S3_URI": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
                     "TRAINING_JOB_NAME": sfn.JsonPath.format("{}-3dgs", sfn.JsonPath.string_at("$.jobName")),
                     "INSTANCE_TYPE": "ml.g5.xlarge",
+                    "TRAINING_TIMEOUT_SECONDS": "10700",
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",

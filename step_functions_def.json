@@ -148,7 +148,7 @@
           "VolumeSizeInGB": 100
         },
         "StoppingCondition": {
-          "MaxRuntimeInSeconds": 7200
+          "MaxRuntimeInSeconds": 10700
         },
         "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8",
         "Environment": {
@@ -168,6 +168,7 @@
           "COMPRESSED_OUTPUT_S3_URI.$": "States.Format('{}', $.compressedOutputS3Uri)",
           "TRAINING_JOB_NAME.$": "States.Format('{}-3dgs', $.jobName)",
           "INSTANCE_TYPE": "ml.g5.xlarge",
+          "TRAINING_TIMEOUT_SECONDS": "10700",
           "FRAMEWORK": "nerfstudio",
           "METHODOLOGY": "vincent_woo_sutro_tower",
           "LICENSE": "apache_2_0",

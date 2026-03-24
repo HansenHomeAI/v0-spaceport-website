@@ -13,6 +13,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import threading
 import time
 from typing import Any, Dict, Optional, Sequence
 
@@ -138,6 +139,7 @@ class NerfStudioTrainer:
         self.compressed_output_s3_uri = os.environ.get("COMPRESSED_OUTPUT_S3_URI")
         self.training_job_name = os.environ.get("TRAINING_JOB_NAME") or os.environ.get("SAGEMAKER_JOB_NAME")
         self.instance_type = os.environ.get("INSTANCE_TYPE", "ml.g5.xlarge")
+        self.training_timeout_seconds = int(os.environ.get("TRAINING_TIMEOUT_SECONDS", "10700"))
         self.aws_region = os.environ.get("AWS_DEFAULT_REGION", "us-west-2")
         self.s3_client = (
             boto3.client("s3", region_name=self.aws_region)
@@ -159,6 +161,7 @@ class NerfStudioTrainer:
         logger.info(f"🎛️  Training mode: {self.training_mode}")
         logger.info(f"🧩 Segmented profile: {self.segmented_profile_name}")
         logger.info(f"🎯 Segmented target gaussians: {self.segment_target_gaussians:,}")
+        logger.info(f"⏱️  Training timeout: {self.training_timeout_seconds}s")
         logger.info(f"📦 Proof artifact uploads: {self.write_proof_artifacts}")
 
     def apply_step_functions_params(self) -> None:
@@ -322,24 +325,48 @@ class NerfStudioTrainer:
         cwd: Optional[Path] = None,
     ) -> subprocess.CompletedProcess[str]:
         logger.info(f"🚀 {description}: {' '.join(command)}")
-        result = subprocess.run(
+        process = subprocess.Popen(
             list(command),
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             text=True,
-            timeout=timeout,
+            bufsize=1,
             cwd=str(cwd) if cwd else None,
         )
 
-        if result.stdout:
-            for line in result.stdout.splitlines():
-                logger.info(f"   STDOUT: {line}")
-        if result.stderr:
-            for line in result.stderr.splitlines():
-                logger.info(f"   STDERR: {line}")
+        output_lines: list[str] = []
 
+        def _stream_output() -> None:
+            if process.stdout is None:
+                return
+            for line in iter(process.stdout.readline, ""):
+                stripped = line.rstrip()
+                if stripped:
+                    output_lines.append(stripped)
+                    logger.info(f"   OUTPUT: {stripped}")
+            process.stdout.close()
+
+        output_thread = threading.Thread(target=_stream_output, daemon=True)
+        output_thread.start()
+
+        try:
+            return_code = process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            process.kill()
+            process.wait()
+            output_thread.join(timeout=5)
+            raise RuntimeError(f"{description} timed out after {timeout} seconds") from exc
+
+        output_thread.join(timeout=5)
+        stdout = "\n".join(output_lines)
+        result = subprocess.CompletedProcess(
+            args=list(command),
+            returncode=return_code,
+            stdout=stdout,
+            stderr=None,
+        )
         if result.returncode != 0:
             raise RuntimeError(f"{description} failed with exit code {result.returncode}")
-
         return result
 
     def build_train_command(
@@ -389,7 +416,11 @@ class NerfStudioTrainer:
         log_interval: Optional[int] = None,
     ) -> None:
         command = self.build_train_command(data_dir, output_root, max_iterations, log_interval)
-        self.run_subprocess(command, timeout=7200, description="NerfStudio training")
+        self.run_subprocess(
+            command,
+            timeout=self.training_timeout_seconds,
+            description="NerfStudio training",
+        )
 
     def export_trained_model(self, training_root: Path, output_dir: Path) -> Path:
         config_files = list(training_root.glob("**/config.yml"))
