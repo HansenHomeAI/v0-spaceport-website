@@ -52,28 +52,55 @@ jobs:
         echo "ECR suffix: ${ECR_SUFFIX:-<shared>}"
         echo "ecr_suffix=$ECR_SUFFIX" >> $GITHUB_OUTPUT
 
+        list_changed_files() {
+          local diff_base="$1"
+          if [ -n "$diff_base" ]; then
+            git diff --name-only "$diff_base"...HEAD 2>/dev/null || git diff --name-only "$diff_base" HEAD 2>/dev/null || true
+          else
+            git diff --name-only HEAD 2>/dev/null || true
+          fi
+        }
+
         if git rev-parse HEAD~1 >/dev/null 2>&1; then
-          DIFF_BASE="HEAD~1"
+          PUSH_DIFF_BASE="HEAD~1"
         else
-          git fetch origin development --depth=1 || true
-          DIFF_BASE=$(git merge-base HEAD origin/development || echo "")
+          PUSH_DIFF_BASE=""
         fi
 
-        if [ -n "$DIFF_BASE" ]; then
-          CHANGED_FILES=$(git diff --name-only "$DIFF_BASE"...HEAD || git diff --name-only "$DIFF_BASE" HEAD)
+        git fetch origin development --depth=200 || true
+        if [ "$BRANCH_NAME" = "main" ] || [ "$BRANCH_NAME" = "development" ] || [ "$BRANCH_NAME" = "ml-development" ]; then
+          BRANCH_DELTA_BASE="$PUSH_DIFF_BASE"
         else
-          CHANGED_FILES=$(git diff --name-only HEAD || true)
+          BRANCH_DELTA_BASE=$(git merge-base HEAD origin/development 2>/dev/null || echo "")
         fi
+
+        CHANGED_FILES=$(list_changed_files "$PUSH_DIFF_BASE")
+        BRANCH_DELTA_FILES=$(list_changed_files "$BRANCH_DELTA_BASE")
 
         echo "Changed files:"
         echo "$CHANGED_FILES"
+        echo "Branch delta files:"
+        echo "$BRANCH_DELTA_FILES"
 
         CONTAINERS_TO_BUILD=""
+        BRANCH_DELTA_CONTAINERS=""
 
-        # Only detect containers that have actual file changes
+        detect_changed_containers() {
+          local changed_files="$1"
+          local changed_containers=""
+          for container in sfm 3dgs compressor; do
+            if echo "$changed_files" | grep -q "infrastructure/containers/${container}/"; then
+              changed_containers="$changed_containers $container"
+            fi
+          done
+          echo "$changed_containers" | xargs 2>/dev/null || true
+        }
+
+        CONTAINERS_TO_BUILD=$(detect_changed_containers "$CHANGED_FILES")
+        BRANCH_DELTA_CONTAINERS=$(detect_changed_containers "$BRANCH_DELTA_FILES")
+
         for container in sfm 3dgs compressor; do
-          if echo "$CHANGED_FILES" | grep -q "infrastructure/containers/${container}/"; then
-            CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container"
+          if echo "$CONTAINERS_TO_BUILD" | grep -qw "$container"; then
             echo "Detected change in ${container} container"
           fi
         done
@@ -81,8 +108,8 @@ jobs:
         # Note: deploy.sh and buildspec.yml changes don't require container rebuilds
         # They only affect the build process, not the container contents
 
-        CONTAINERS_TO_BUILD=$(echo "$CONTAINERS_TO_BUILD" | xargs 2>/dev/null || true)
         echo "changed_containers=${CONTAINERS_TO_BUILD:-}" >> $GITHUB_OUTPUT
+        echo "branch_delta_containers=${BRANCH_DELTA_CONTAINERS:-}" >> $GITHUB_OUTPUT
 
     - name: Configure AWS credentials (production via OIDC)
       if: github.ref_name == 'main'
@@ -106,6 +133,7 @@ jobs:
 
         BRANCH_SUFFIX="${{ steps.branch.outputs.ecr_suffix }}"
         CHANGED="${{ steps.branch.outputs.changed_containers }}"
+        BRANCH_DELTA="${{ steps.branch.outputs.branch_delta_containers }}"
         INPUT_CONTAINER="${{ inputs.container }}"
         CONTAINERS_TO_BUILD=""
         CONTAINERS_TO_IMPORT=""
@@ -175,8 +203,13 @@ jobs:
           # Branch tag missing -> import (retag latest)
           if [ -n "$BRANCH_SUFFIX" ]; then
             if ! aws ecr describe-images --region us-west-2 --repository-name "$repo_name" --image-ids imageTag="$BRANCH_SUFFIX" >/dev/null 2>&1; then
-              echo "Repo $repo_name missing branch tag ${BRANCH_SUFFIX} - will import"
-              CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
+              if echo "$BRANCH_DELTA" | grep -qw "$container_name"; then
+                echo "Repo $repo_name missing branch tag ${BRANCH_SUFFIX} and branch contains $container_name changes - will build"
+                CONTAINERS_TO_BUILD="$CONTAINERS_TO_BUILD $container_name"
+              else
+                echo "Repo $repo_name missing branch tag ${BRANCH_SUFFIX} but branch has no $container_name changes - will import"
+                CONTAINERS_TO_IMPORT="$CONTAINERS_TO_IMPORT $container_name"
+              fi
             fi
           fi
         }
