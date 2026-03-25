@@ -389,7 +389,7 @@ export default function SogsViewerDevPanel() {
                   <summary>Notes</summary>
                   <p className="sogs-dev-details-body">
                     Values apply to the viewer as you edit. Defaults match{" "}
-                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code> (default euler X/Y −90°, Z 180°). FOV
+                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code> (default euler X/Y/Z −90°). FOV
                     applies after the orbit camera updates. Paste copied JSON for maintainers to update{" "}
                     <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
                   </p>
