@@ -114,6 +114,20 @@ class OpenSfMGPSPipeline:
         
         logger.info(f"🏗️ Created workspace: {self.work_dir}")
         return self.work_dir
+
+    @staticmethod
+    def _is_supported_image_name(name: str) -> bool:
+        path = Path(name)
+        if path.name.startswith("._"):
+            return False
+        if any(part.startswith(".") or part == "__MACOSX" for part in path.parts):
+            return False
+        return path.suffix.lower() in {".jpg", ".jpeg", ".png"}
+
+    def _iter_supported_images(self, directory: Path):
+        for path in directory.iterdir():
+            if path.is_file() and self._is_supported_image_name(path.name):
+                yield path
     
     def extract_images(self) -> int:
         """Extract images from input directory or ZIP file"""
@@ -129,7 +143,7 @@ class OpenSfMGPSPipeline:
             
             with zipfile.ZipFile(zip_path, 'r') as zf:
                 for member in zf.namelist():
-                    if member.lower().endswith(('.jpg', '.jpeg', '.png')):
+                    if self._is_supported_image_name(member):
                         # Extract to images directory
                         target_path = self.images_dir / Path(member).name
                         with zf.open(member) as source, open(target_path, 'wb') as target:
@@ -139,7 +153,7 @@ class OpenSfMGPSPipeline:
         else:
             # Copy images from input directory
             for img_path in self.input_dir.rglob('*'):
-                if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png']:
+                if img_path.is_file() and self._is_supported_image_name(str(img_path.relative_to(self.input_dir))):
                     target_path = self.images_dir / img_path.name
                     shutil.copy2(img_path, target_path)
                     total_bytes += target_path.stat().st_size
@@ -152,7 +166,7 @@ class OpenSfMGPSPipeline:
 
     def _select_execution_profile(self) -> Dict[str, object]:
         """Select a processing profile based on dataset size and GPS availability."""
-        image_count = self.image_count or len(list(self.images_dir.glob("*")))
+        image_count = self.image_count or len(list(self._iter_supported_images(self.images_dir)))
         total_mb = self.total_input_bytes / (1024 * 1024) if self.total_input_bytes else 0
         profile = select_sfm_execution_profile(image_count, self.total_input_bytes, self.has_gps_priors)
         self.execution_profile = profile
@@ -280,7 +294,7 @@ class OpenSfMGPSPipeline:
         logger.info(f"✅ Created OpenSfM config: {config_path}")
 
         try:
-            image_count = self.image_count or len(list(self.images_dir.iterdir()))
+            image_count = self.image_count or len(list(self._iter_supported_images(self.images_dir)))
             neighbors = config.get('matching_gps_neighbors', 0)
             estimated_pairs = image_count * neighbors
             logger.info(f"📈 Matching plan: images={image_count}, neighbors≈{neighbors}, est. pairs≈{estimated_pairs}")
@@ -293,8 +307,12 @@ class OpenSfMGPSPipeline:
         opensfm_images = self.opensfm_dir / "images"
         if opensfm_images.exists():
             shutil.rmtree(opensfm_images)
-        shutil.copytree(self.images_dir, opensfm_images)
-        logger.info(f"✅ Copied {len(list(opensfm_images.iterdir()))} images to OpenSfM")
+        opensfm_images.mkdir(parents=True, exist_ok=True)
+        image_count = 0
+        for image_path in self._iter_supported_images(self.images_dir):
+            shutil.copy2(image_path, opensfm_images / image_path.name)
+            image_count += 1
+        logger.info(f"✅ Copied {image_count} images to OpenSfM")
     
     def run_opensfm_commands(self) -> bool:
         """Run OpenSfM reconstruction pipeline"""
@@ -415,7 +433,7 @@ class OpenSfMGPSPipeline:
         logger.info(f"   Registered images (showing up to 20): {registered_images[:20]}")
         
         # Determine unregistered images for debugging
-        all_images = [p.name for p in (self.images_dir).iterdir() if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}]
+        all_images = [p.name for p in self._iter_supported_images(self.images_dir)]
         unregistered = sorted(set(all_images) - set(registered_images))
         if unregistered:
             logger.warning(f"⚠️ Unregistered images (showing up to 20): {unregistered[:20]}")
@@ -603,10 +621,11 @@ class OpenSfMGPSPipeline:
         if output_images_dir.exists():
             shutil.rmtree(output_images_dir)
         
-        # Copy images from extracted directory
-        shutil.copytree(self.images_dir, output_images_dir)
-        
-        image_count = len(list(output_images_dir.iterdir()))
+        output_images_dir.mkdir(parents=True, exist_ok=True)
+        image_count = 0
+        for image_path in self._iter_supported_images(self.images_dir):
+            shutil.copy2(image_path, output_images_dir / image_path.name)
+            image_count += 1
         logger.info(f"✅ Copied {image_count} images to output directory for 3DGS training")
 
     def validate_output_artifacts(self) -> bool:
@@ -628,10 +647,7 @@ class OpenSfMGPSPipeline:
             return False
 
         output_images_dir = self.output_dir / "images"
-        image_files = [
-            path for path in output_images_dir.iterdir()
-            if path.is_file() and path.suffix.lower() in {'.jpg', '.jpeg', '.png'}
-        ] if output_images_dir.exists() else []
+        image_files = list(self._iter_supported_images(output_images_dir)) if output_images_dir.exists() else []
         if not image_files:
             logger.error("❌ 3DGS handoff is missing extracted images")
             return False

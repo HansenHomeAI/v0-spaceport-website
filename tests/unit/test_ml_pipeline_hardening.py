@@ -5,6 +5,7 @@ import sys
 import tempfile
 import types
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -188,6 +189,27 @@ class SfmArtifactValidatorTests(unittest.TestCase):
 
             (output_dir / "database.db").unlink()
             self.assertFalse(pipeline.validate_output_artifacts())
+
+    def test_extract_images_skips_appledouble_sidecars(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            input_dir = Path(tmpdir) / "input"
+            output_dir = Path(tmpdir) / "output"
+            input_dir.mkdir()
+            output_dir.mkdir()
+
+            zip_path = input_dir / "archive.zip"
+            with zipfile.ZipFile(zip_path, "w") as zf:
+                zf.writestr("DJI_0829.JPG", b"real-image")
+                zf.writestr("._DJI_0829.JPG", b"appledouble")
+                zf.writestr("__MACOSX/._DJI_0829.JPG", b"macos-metadata")
+
+            pipeline = self.module.OpenSfMGPSPipeline(input_dir, output_dir)
+            pipeline.setup_workspace()
+
+            image_count = pipeline.extract_images()
+
+            self.assertEqual(image_count, 1)
+            self.assertEqual(sorted(path.name for path in pipeline.images_dir.iterdir()), ["DJI_0829.JPG"])
 
 
 class TrainingArtifactValidatorTests(unittest.TestCase):
