@@ -118,8 +118,9 @@ export default function SogsViewerDevPanel() {
           scale: d.scale,
           fov: d.fov,
         };
+        // Only update `scene` here — not `form`. PlayCanvas reports Euler angles in a non-unique
+        // decomposition; overwriting the fields after each apply made Z edits show up on X, etc.
         setScene(next);
-        setForm(next);
       }
     };
     window.addEventListener("message", onMessage);
@@ -371,7 +372,12 @@ export default function SogsViewerDevPanel() {
 
                 <div className="sogs-dev-actions">
                   <div className="sogs-dev-actions-row">
-                    <button type="button" className="sogs-btn-ghost" onClick={syncFromScene}>
+                    <button
+                      type="button"
+                      className="sogs-btn-ghost"
+                      title="Replace fields with the viewer’s last reported transform (PlayCanvas may use a different Euler breakdown than you typed)"
+                      onClick={syncFromScene}
+                    >
                       Sync
                     </button>
                     <button type="button" className="sogs-btn-ghost" onClick={resetDev}>
@@ -388,9 +394,11 @@ export default function SogsViewerDevPanel() {
                 <details className="sogs-dev-details">
                   <summary>Notes</summary>
                   <p className="sogs-dev-details-body">
-                    Values apply to the viewer as you edit. Defaults match{" "}
-                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code> (default euler X −82°, Y −90°, Z 0°). FOV
-                    applies after the orbit camera updates. Paste copied JSON for maintainers to update{" "}
+                    Rotation fields stay as you type them; the engine can represent the same pose with different Euler
+                    triples, so we do not overwrite the inputs on every frame. Use Sync to pull the
+                    viewer’s reported angles into the fields. Defaults match{" "}
+                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code>. FOV applies after the orbit camera
+                    updates. Paste copied JSON for maintainers to update{" "}
                     <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
                   </p>
                 </details>
