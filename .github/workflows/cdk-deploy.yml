@@ -273,6 +273,7 @@ jobs:
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
         SPACEPORT_STACK_REQUIRED="true"
+        DEPLOY_ML_API="true"
         ML_ONLY_BRANCH_PATTERN="^(infrastructure/containers/|infrastructure/spaceport_cdk/lambda/start_ml_job/|infrastructure/spaceport_cdk/lambda/ml_status/|infrastructure/spaceport_cdk/lambda/ml_notification/|infrastructure/spaceport_cdk/lambda/stop_ml_job/|infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack\\.py|tests/|web/trigger-dev-build\\.txt|\\.github/workflows/cdk-deploy\\.yml|\\.github/workflows/deploy-cloudflare-pages\\.yml)"
         if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
           # Check if any Lambda files changed
@@ -300,6 +301,7 @@ jobs:
 
             if [ -n "${CHANGED_FILES}" ] && ! printf '%s\n' "${CHANGED_FILES}" | grep -Evq "${ML_ONLY_BRANCH_PATTERN}"; then
               SPACEPORT_STACK_REQUIRED="false"
+              DEPLOY_ML_API="false"
               echo "Detected ML-only branch change set - will skip branch preview Spaceport stack deploy"
             fi
           fi
@@ -331,6 +333,7 @@ jobs:
         echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
         echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
         echo "Spaceport stack required: ${SPACEPORT_STACK_REQUIRED}"
+        echo "Deploy ML API: ${DEPLOY_ML_API}"
 
         DEPLOY_AUTH_STACK_EFFECTIVE="${DEPLOY_AUTH_STACK}"
         if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${AUTH_STACK_CHANGED}" = "true" ]; then
@@ -356,6 +359,7 @@ jobs:
           --context environment="${CDK_ENVIRONMENT_NAME}" \
           --context branch_name="${BRANCH_NAME}" \
           --context deploy_auth_stack="${DEPLOY_AUTH_STACK_EFFECTIVE}" \
+          --context deploy_ml_api="${DEPLOY_ML_API}" \
           --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
@@ -414,12 +418,36 @@ jobs:
           printf '%s' "$value"
         }
 
+        get_output_with_fallback() {
+          local preferred_stack="$1"
+          local output_key="$2"
+          local fallback_stack="$3"
+          local value
+          value=$(aws cloudformation describe-stacks \
+            --stack-name "$preferred_stack" \
+            --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+            --output text 2>/dev/null || true)
+          if [ -n "$value" ] && [ "$value" != "None" ] && [ "$value" != "disabled" ]; then
+            printf '%s' "$value"
+            return 0
+          fi
+
+          if [ -n "$fallback_stack" ] && [ "$fallback_stack" != "$preferred_stack" ]; then
+            echo "Using fallback output ${output_key} from ${fallback_stack} (preferred ${preferred_stack} value: ${value:-missing})" >&2
+            get_output "$fallback_stack" "$output_key"
+            return 0
+          fi
+
+          echo "Missing required CloudFormation output ${output_key} on stack ${preferred_stack}" >&2
+          exit 1
+        }
+
         SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "SpaceportStagingStack" "spaceport")"
         ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "SpaceportMLPipelineStagingStack" "ml")"
 
         DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
         FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
-        ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack")"
 
         echo "Deployment class: $DEPLOYMENT_CLASS"
         echo "Branch ID: ${BRANCH_ID:-<shared>}"

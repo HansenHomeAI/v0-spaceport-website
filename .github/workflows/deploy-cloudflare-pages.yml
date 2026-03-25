@@ -202,6 +202,31 @@ jobs:
             return 1
           }
 
+          get_output_with_fallback() {
+            local preferred_stack="$1"
+            local output_key="$2"
+            local fallback_stack="$3"
+            local value=""
+
+            value=$(aws cloudformation describe-stacks \
+              --stack-name "$preferred_stack" \
+              --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+              --output text 2>/dev/null || true)
+            if [ -n "$value" ] && [ "$value" != "None" ] && [ "$value" != "disabled" ]; then
+              printf '%s' "$value"
+              return 0
+            fi
+
+            if [ -n "$fallback_stack" ] && [ "$fallback_stack" != "$preferred_stack" ]; then
+              echo "Using fallback output ${output_key} from ${fallback_stack} (preferred ${preferred_stack} value: ${value:-missing})" >&2
+              get_output "$fallback_stack" "$output_key"
+              return 0
+            fi
+
+            echo "Missing required CloudFormation output ${output_key} on stack ${preferred_stack}" >&2
+            return 1
+          }
+
           SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "SpaceportStagingStack" "spaceport")"
           ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "SpaceportMLPipelineStagingStack" "ml")"
           AUTH_OUTPUT_STACK="$(resolve_output_stack "$AUTH_STACK_NAME" "" "auth")"
@@ -218,7 +243,7 @@ jobs:
           FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
           WAITLIST_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "WaitlistApiUrl")"
           FEEDBACK_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FeedbackApiUrl")"
-          ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
+          ML_PIPELINE_API_URL="$(get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack")"
 
           {
             echo "PROJECTS_API_URL=$PROJECTS_API_URL"

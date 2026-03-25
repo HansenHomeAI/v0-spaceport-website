@@ -42,6 +42,12 @@ deploy_auth_stack_override = str(
 ).lower() == "true"
 deploy_auth_stack = deployment_context.deploy_auth_stack or deploy_auth_stack_override
 env_config["deployAuthStack"] = deploy_auth_stack
+deploy_ml_api_context = app.node.try_get_context("deploy_ml_api")
+if deploy_ml_api_context is None:
+    deploy_ml_api = env_config.get("deployMlApi", True)
+else:
+    deploy_ml_api = str(deploy_ml_api_context).lower() == "true"
+env_config["deployMlApi"] = deploy_ml_api
 
 auth_deployment_context = deployment_context
 auth_env_config = env_config

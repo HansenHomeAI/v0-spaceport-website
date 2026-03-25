@@ -219,6 +219,33 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
         self.assertIn('start_job_lambda.add_environment("STATE_MACHINE_ARN"', stack_source)
         self.assertIn('"STATE_MACHINE_ARN": ml_pipeline.state_machine_arn', stack_source)
 
+    def test_preview_ml_api_toggle_and_workflow_fallbacks_exist(self):
+        stack_source = (
+            REPO_ROOT / "infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack.py"
+        ).read_text(encoding="utf-8")
+        app_source = (
+            REPO_ROOT / "infrastructure/spaceport_cdk/app.py"
+        ).read_text(encoding="utf-8")
+        context_source = (
+            REPO_ROOT / "infrastructure/spaceport_cdk/spaceport_cdk/deployment_context.py"
+        ).read_text(encoding="utf-8")
+        cdk_workflow_source = (
+            REPO_ROOT / ".github/workflows/cdk-deploy.yml"
+        ).read_text(encoding="utf-8")
+        pages_workflow_source = (
+            REPO_ROOT / ".github/workflows/deploy-cloudflare-pages.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('self.deploy_ml_api = env_config.get("deployMlApi", True)', stack_source)
+        self.assertIn('value=ml_api_url', stack_source)
+        self.assertIn('self, "StartMLJobFunctionName"', stack_source)
+        self.assertIn('self, "StopMLJobFunctionName"', stack_source)
+        self.assertIn('app.node.try_get_context("deploy_ml_api")', app_source)
+        self.assertIn('"deployMlApi": context.deploy_ml_api', context_source)
+        self.assertIn('--context deploy_ml_api="${DEPLOY_ML_API}"', cdk_workflow_source)
+        self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', cdk_workflow_source)
+        self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', pages_workflow_source)
+
 
 if __name__ == "__main__":
     unittest.main()

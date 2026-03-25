@@ -40,6 +40,7 @@ class MLPipelineStack(Stack):
         self.branch_name = env_config.get("branchName", "")
         self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
         self.reuse_shared_ecr = env_config.get("reuseSharedEcr", False)
+        self.deploy_ml_api = env_config.get("deployMlApi", True)
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
@@ -778,37 +779,39 @@ class MLPipelineStack(Stack):
         )
 
         # ========== API GATEWAY ==========
-        # Create API Gateway for ML pipeline
-        ml_api = apigw.RestApi(
-            self, "SpaceportMLApi",
-            rest_api_name=f"Spaceport-ML-API-{suffix}",
-            description="API for ML processing pipeline",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,
-                allow_methods=apigw.Cors.ALL_METHODS,
-                allow_headers=["Content-Type", "Authorization"]
+        ml_api_url = "disabled"
+        if self.deploy_ml_api:
+            ml_api = apigw.RestApi(
+                self, "SpaceportMLApi",
+                rest_api_name=f"Spaceport-ML-API-{suffix}",
+                description="API for ML processing pipeline",
+                default_cors_preflight_options=apigw.CorsOptions(
+                    allow_origins=apigw.Cors.ALL_ORIGINS,
+                    allow_methods=apigw.Cors.ALL_METHODS,
+                    allow_headers=["Content-Type", "Authorization"]
+                )
             )
-        )
 
-        # Add /start-job endpoint
-        start_job_resource = ml_api.root.add_resource("start-job")
-        start_job_resource.add_method(
-            "POST",
-            apigw.LambdaIntegration(
-                start_job_lambda,
-                proxy=True
+            start_job_resource = ml_api.root.add_resource("start-job")
+            start_job_resource.add_method(
+                "POST",
+                apigw.LambdaIntegration(
+                    start_job_lambda,
+                    proxy=True
+                )
             )
-        )
 
-        # Add /stop-job endpoint
-        stop_job_resource = ml_api.root.add_resource("stop-job")
-        stop_job_resource.add_method(
-            "POST",
-            apigw.LambdaIntegration(
-                stop_job_lambda,
-                proxy=True
+            stop_job_resource = ml_api.root.add_resource("stop-job")
+            stop_job_resource.add_method(
+                "POST",
+                apigw.LambdaIntegration(
+                    stop_job_lambda,
+                    proxy=True
+                )
             )
-        )
+            ml_api_url = ml_api.url
+        else:
+            print(f"Skipping ML API Gateway creation for {suffix}; direct Lambda invocation only")
 
         # ========== CLOUDWATCH ALARMS ==========
         # Alarm for Step Function failures with environment-specific naming
@@ -829,13 +832,13 @@ class MLPipelineStack(Stack):
         # ========== OUTPUTS ==========
         CfnOutput(
             self, "MLApiUrl",
-            value=ml_api.url,
+            value=ml_api_url,
             description="ML Pipeline API Gateway URL"
         )
 
         CfnOutput(
             self, "MLPipelineApiUrl",
-            value=ml_api.url,
+            value=ml_api_url,
             description="ML Pipeline API Gateway URL"
         )
 
@@ -849,6 +852,18 @@ class MLPipelineStack(Stack):
             self, "StepFunctionArn",
             value=ml_pipeline.state_machine_arn,
             description="ML Pipeline Step Function ARN"
+        )
+
+        CfnOutput(
+            self, "StartMLJobFunctionName",
+            value=start_job_lambda.function_name,
+            description="Direct invocation function name for starting ML jobs"
+        )
+
+        CfnOutput(
+            self, "StopMLJobFunctionName",
+            value=stop_job_lambda.function_name,
+            description="Direct invocation function name for stopping ML jobs"
         )
 
         CfnOutput(

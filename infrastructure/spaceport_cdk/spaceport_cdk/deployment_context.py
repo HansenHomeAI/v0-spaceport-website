@@ -28,6 +28,7 @@ class DeploymentContext:
     reuse_shared_ecr: bool
     allow_fallback_imports: bool
     deploy_auth_stack: bool
+    deploy_ml_api: bool
 
     def to_dict(self) -> Dict[str, object]:
         return asdict(self)
@@ -58,6 +59,7 @@ def resolve_deployment_context(branch_name: str) -> DeploymentContext:
             reuse_shared_ecr=False,
             allow_fallback_imports=True,
             deploy_auth_stack=True,
+            deploy_ml_api=True,
         )
 
     if branch_name == SHARED_STAGING_BRANCH:
@@ -76,6 +78,7 @@ def resolve_deployment_context(branch_name: str) -> DeploymentContext:
             reuse_shared_ecr=False,
             allow_fallback_imports=True,
             deploy_auth_stack=True,
+            deploy_ml_api=True,
         )
 
     branch_id = _compute_branch_id(branch_name)
@@ -95,6 +98,7 @@ def resolve_deployment_context(branch_name: str) -> DeploymentContext:
         reuse_shared_ecr=True,
         allow_fallback_imports=False,
         deploy_auth_stack=False,
+        deploy_ml_api=True,
     )
 
 
@@ -113,6 +117,7 @@ def build_env_config(base_env_config: Dict[str, object], context: DeploymentCont
             "spaceportStackName": context.spaceport_stack_name,
             "mlStackName": context.ml_stack_name,
             "deployAuthStack": context.deploy_auth_stack,
+            "deployMlApi": context.deploy_ml_api,
         }
     )
     return env_config
