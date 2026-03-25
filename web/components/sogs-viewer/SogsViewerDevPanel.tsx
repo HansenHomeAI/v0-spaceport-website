@@ -254,7 +254,7 @@ export default function SogsViewerDevPanel() {
               >
                 <div className="sogs-dev-header">
                   <div id="sogs-dev-title" className="sogs-dev-title">
-                    Splat & camera
+                    Scene
                   </div>
                   <button
                     type="button"
@@ -266,42 +266,54 @@ export default function SogsViewerDevPanel() {
                   </button>
                 </div>
 
-                <div className="sogs-dev-grid">
-                  {(["x", "y", "z"] as const).map((axis, i) => (
-                    <div key={`p-${axis}`} className="sogs-dev-field">
-                      <label htmlFor={`pos-${axis}`}>Pos {axis.toUpperCase()}</label>
-                      <input
-                        id={`pos-${axis}`}
-                        type="number"
-                        step="0.001"
-                        value={form.position[i]}
-                        onChange={(e) => {
-                          const v = parseFloat(e.target.value);
-                          const next = [...form.position] as [number, number, number];
-                          next[i] = Number.isFinite(v) ? v : 0;
-                          setForm((f) => ({ ...f, position: next }));
-                        }}
-                      />
-                    </div>
-                  ))}
-                  {(["x", "y", "z"] as const).map((axis, i) => (
-                    <div key={`r-${axis}`} className="sogs-dev-field">
-                      <label htmlFor={`rot-${axis}`}>Rot {axis.toUpperCase()}°</label>
-                      <input
-                        id={`rot-${axis}`}
-                        type="number"
-                        step="0.1"
-                        value={form.rotation[i]}
-                        onChange={(e) => {
-                          const v = parseFloat(e.target.value);
-                          const next = [...form.rotation] as [number, number, number];
-                          next[i] = Number.isFinite(v) ? v : 0;
-                          setForm((f) => ({ ...f, rotation: next }));
-                        }}
-                      />
-                    </div>
-                  ))}
-                  <div className="sogs-dev-field sogs-dev-field-full">
+                <div className="sogs-dev-section">
+                  <div className="sogs-dev-section-label">Position</div>
+                  <div className="sogs-dev-grid sogs-dev-grid-3">
+                    {(["x", "y", "z"] as const).map((axis, i) => (
+                      <div key={`p-${axis}`} className="sogs-dev-field">
+                        <label htmlFor={`pos-${axis}`}>{axis.toUpperCase()}</label>
+                        <input
+                          id={`pos-${axis}`}
+                          type="number"
+                          step="0.001"
+                          value={form.position[i]}
+                          onChange={(e) => {
+                            const v = parseFloat(e.target.value);
+                            const next = [...form.position] as [number, number, number];
+                            next[i] = Number.isFinite(v) ? v : 0;
+                            setForm((f) => ({ ...f, position: next }));
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="sogs-dev-section">
+                  <div className="sogs-dev-section-label">Rotation (°)</div>
+                  <div className="sogs-dev-grid sogs-dev-grid-3">
+                    {(["x", "y", "z"] as const).map((axis, i) => (
+                      <div key={`r-${axis}`} className="sogs-dev-field">
+                        <label htmlFor={`rot-${axis}`}>{axis.toUpperCase()}</label>
+                        <input
+                          id={`rot-${axis}`}
+                          type="number"
+                          step="0.1"
+                          value={form.rotation[i]}
+                          onChange={(e) => {
+                            const v = parseFloat(e.target.value);
+                            const next = [...form.rotation] as [number, number, number];
+                            next[i] = Number.isFinite(v) ? v : 0;
+                            setForm((f) => ({ ...f, rotation: next }));
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="sogs-dev-grid sogs-dev-grid-2">
+                  <div className="sogs-dev-field">
                     <label htmlFor="splat-scale">Scale</label>
                     <input
                       id="splat-scale"
@@ -315,8 +327,8 @@ export default function SogsViewerDevPanel() {
                       }}
                     />
                   </div>
-                  <div className="sogs-dev-field sogs-dev-field-full">
-                    <label htmlFor="cam-fov">FOV (°)</label>
+                  <div className="sogs-dev-field">
+                    <label htmlFor="cam-fov">FOV°</label>
                     <input
                       id="cam-fov"
                       type="number"
@@ -334,33 +346,35 @@ export default function SogsViewerDevPanel() {
 
                 <label className="sogs-dev-toggle-row">
                   <input type="checkbox" checked={guides} onChange={(e) => setGuides(e.target.checked)} />
-                  Show axis guides (RGB = XYZ at splat origin)
+                  Axis guides
                 </label>
 
                 <div className="sogs-dev-actions">
                   <div className="sogs-dev-actions-row">
-                    <button type="button" className="sogs-btn-secondary" onClick={syncFromScene}>
-                      Sync from scene
+                    <button type="button" className="sogs-btn-ghost" onClick={syncFromScene}>
+                      Sync
                     </button>
-                    <button type="button" className="sogs-btn-secondary" onClick={resetDev}>
-                      Reset defaults
+                    <button type="button" className="sogs-btn-ghost" onClick={resetDev}>
+                      Reset
                     </button>
-                    <button type="button" className="sogs-btn-primary" onClick={applyDev}>
+                    <button type="button" className="sogs-btn-primary sogs-btn-apply" onClick={applyDev}>
                       Apply
                     </button>
                   </div>
                   <div className="sogs-copy-row">
-                    <button type="button" className="sogs-btn-secondary" onClick={copySceneJson}>
-                      Copy scene JSON
+                    <button type="button" className="sogs-btn-ghost sogs-btn-copy" onClick={copySceneJson}>
+                      Copy JSON
                     </button>
                     {copyFeedback ? <span className="sogs-copy-feedback">{copyFeedback}</span> : null}
                   </div>
                 </div>
-                <p className="sogs-dev-note">
-                  Defaults match the viewer: rotation Z = 180° (PlayCanvas gsplat). FOV is applied after the orbit camera
-                  updates each frame (dev override). Paste copied JSON so maintainers can update{" "}
-                  <code style={{ fontSize: "10px" }}>web/lib/sogsViewerSceneDefaults.ts</code>.
-                </p>
+                <details className="sogs-dev-details">
+                  <summary>Notes</summary>
+                  <p className="sogs-dev-details-body">
+                    Default rotation Z is 180° (PlayCanvas gsplat). FOV applies after the orbit camera updates. Paste
+                    copied JSON for maintainers to update <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
+                  </p>
+                </details>
               </div>
             ) : null}
           </div>

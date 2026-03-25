@@ -13,3 +13,4 @@
 2026-03-25 sogs-viewer Playwright E2E + idle state on invalid URL
 2026-03-25 sogs-viewer Canyon-style dev modal + iframe bridge (transform, FOV, guides)
 2026-03-25 sogs-viewer Scene & lens dropdown + copy scene JSON + scene defaults module
+2026-03-25 sogs-viewer compact minimal dark panel styling
