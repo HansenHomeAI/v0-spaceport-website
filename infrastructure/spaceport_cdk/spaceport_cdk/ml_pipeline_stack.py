@@ -231,6 +231,16 @@ class MLPipelineStack(Stack):
                         ),
                         iam.PolicyStatement(
                             actions=[
+                                "s3:ListBucket",
+                                "s3:GetBucketLocation"
+                            ],
+                            resources=[
+                                upload_bucket.bucket_arn,
+                                ml_bucket.bucket_arn
+                            ]
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
                                 "s3:GetObject",
                                 "s3:HeadObject",
                                 "s3:PutObject"
