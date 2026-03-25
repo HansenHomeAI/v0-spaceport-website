@@ -48,12 +48,18 @@ PRESETS = {
 
 
 def run_command(args: list[str], *, capture_output: bool = True) -> str:
-    result = subprocess.run(
-        args,
-        check=True,
-        text=True,
-        capture_output=capture_output,
-    )
+    try:
+        result = subprocess.run(
+            args,
+            check=True,
+            text=True,
+            capture_output=capture_output,
+        )
+    except subprocess.CalledProcessError as exc:
+        stderr = (exc.stderr or "").strip()
+        stdout = (exc.stdout or "").strip()
+        detail = stderr or stdout or str(exc)
+        raise RuntimeError(f"Command failed: {' '.join(args)}\n{detail}") from exc
     return result.stdout.strip() if capture_output else ""
 
 
@@ -101,7 +107,7 @@ def s3_exists(uri: str) -> bool:
 def load_s3_json(uri: str) -> Optional[Dict[str, object]]:
     try:
         output = run_command(["aws", "s3", "cp", uri, "-"])
-    except subprocess.CalledProcessError:
+    except RuntimeError:
         return None
     return json.loads(output)
 

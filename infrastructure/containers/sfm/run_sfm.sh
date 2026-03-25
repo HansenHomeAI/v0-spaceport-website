@@ -30,7 +30,7 @@ exiftool -ver >/dev/null 2>&1 || error_exit "exiftool not available"
 echo "✅ Environment verification completed"
 log_mem "startup"
 
-export PYTHONPATH="/opt/ml/code:$PYTHONPATH"
+export PYTHONPATH="/opt/ml/code:${PYTHONPATH:-}"
 
 REQUIRED_SCRIPTS=(
     "/opt/ml/code/run_colmap_hybrid.py"
