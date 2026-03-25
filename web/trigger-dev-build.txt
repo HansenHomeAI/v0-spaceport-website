@@ -28,3 +28,4 @@
 2026-03-25 sogs-viewer remove Reset button
 2026-03-25 SOGS_DEFAULT_SCENE position Y 0.231 from scene-v1 export
 2026-03-25 sogs-viewer Shift+drag splat XZ + sync position from iframe
+2026-03-25 supersplat-viewer hide info settings fullscreen buttons

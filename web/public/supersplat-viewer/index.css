@@ -362,3 +362,11 @@ button {
 #flyCamera {
   display: none !important;
 }
+
+/* Spaceport SOGS viewer: hide help / settings / fullscreen controls */
+#info,
+#settings,
+#enterFullscreen,
+#exitFullscreen {
+  display: none !important;
+}
