@@ -9,3 +9,4 @@
 2026-03-07 compact terrain toggle panel
 2026-03-07 terrain-toggle-row align/justify flex-start
 2026-03-25 standalone sogs-viewer page (no site chrome)
+2026-03-25 sogs-viewer default S3 URL + iframe only with content (no bogus 100%)

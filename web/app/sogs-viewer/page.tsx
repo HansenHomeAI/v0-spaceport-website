@@ -1,62 +1,67 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
+
+const DEFAULT_SOGS_BUNDLE_URL =
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+
 const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
 ]);
 
+function getBaseOrigin(): string {
+  return typeof window !== "undefined" ? window.location.origin : "https://spcprt.com";
+}
+
+function convertToProxyPath(url: URL): string {
+  const base = `${url.protocol}//${url.host}`;
+  const encodedBase = base.replace("://", ":/");
+  return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
+}
+
+function normalizeBundleUrl(rawValue: string): string | null {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const parsed =
+      trimmed.startsWith("http://") || trimmed.startsWith("https://")
+        ? new URL(trimmed)
+        : new URL(trimmed, getBaseOrigin());
+
+    if (!parsed.protocol.startsWith("http")) {
+      return null;
+    }
+
+    if (!parsed.pathname.endsWith(".json")) {
+      parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
+    }
+
+    if (PROXY_HOSTS.has(parsed.host)) {
+      return convertToProxyPath(parsed);
+    }
+
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 export default function SogsViewerPage() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const getBaseOrigin = () => {
-    return typeof window !== "undefined" ? window.location.origin : "https://spcprt.com";
-  };
 
-  const [inputUrl, setInputUrl] = useState("");
+  const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
   const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
 
-  const convertToProxyPath = (url: URL) => {
-    const base = `${url.protocol}//${url.host}`;
-    const encodedBase = base.replace("://", ":/");
-    return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
-  };
-
-  const normalizeBundleUrl = (rawValue: string): string | null => {
-    const trimmed = rawValue.trim();
-    if (!trimmed) {
-      return null;
-    }
-
-    try {
-      const parsed =
-        trimmed.startsWith("http://") || trimmed.startsWith("https://")
-          ? new URL(trimmed)
-          : new URL(trimmed, getBaseOrigin());
-
-      if (!parsed.protocol.startsWith("http")) {
-        return null;
-      }
-
-      if (!parsed.pathname.endsWith(".json")) {
-        parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
-      }
-
-      if (PROXY_HOSTS.has(parsed.host)) {
-        return convertToProxyPath(parsed);
-      }
-
-      return parsed.toString();
-    } catch {
-      return null;
-    }
-  };
-
-  const attemptLoad = (rawValue: string) => {
+  const attemptLoad = useCallback((rawValue: string) => {
     setError(null);
     const normalized = normalizeBundleUrl(rawValue);
     if (!normalized) {
@@ -68,11 +73,11 @@ export default function SogsViewerPage() {
     setActiveUrl(normalized);
     setIframeKey((prev) => prev + 1);
     return true;
-  };
+  }, []);
 
   const viewerSrc = useMemo(() => {
     if (!activeUrl) {
-      return `${VIEWER_BASE}?settings=/supersplat-viewer/settings.json`;
+      return null;
     }
 
     const params = new URLSearchParams({
@@ -102,39 +107,15 @@ export default function SogsViewerPage() {
   }, []);
 
   useEffect(() => {
-    const poll = () => {
-      const iframe = iframeRef.current;
-      try {
-        const doc = iframe?.contentDocument;
-        if (!doc) {
-          return;
-        }
-        const loadingWrap = doc.getElementById("loadingWrap");
-        if (loadingWrap?.classList.contains("hidden")) {
-          setViewerState((prev) => (prev === "ready" ? prev : "ready"));
-        }
-      } catch {
-        // ignore cross-origin access errors
-      }
-    };
-
-    const id = window.setInterval(poll, 1000);
-    return () => {
-      window.clearInterval(id);
-    };
-  }, [viewerSrc]);
-
-  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
     const params = new URLSearchParams(window.location.search);
     const q = params.get("url");
-    if (q?.trim()) {
-      setInputUrl(q.trim());
-      attemptLoad(q.trim());
-    }
-  }, []);
+    const raw = q?.trim() ? q.trim() : DEFAULT_SOGS_BUNDLE_URL;
+    setInputUrl(raw);
+    attemptLoad(raw);
+  }, [attemptLoad]);
 
   const isSubmitDisabled = !inputUrl.trim();
 
@@ -149,14 +130,18 @@ export default function SogsViewerPage() {
         overflow: "hidden",
       }}
     >
-      <iframe
-        key={iframeKey}
-        ref={iframeRef}
-        src={viewerSrc}
-        title="sogs-viewer"
-        style={{ border: "none", width: "100%", height: "100%", display: "block" }}
-        allow="xr-spatial-tracking"
-      />
+      {viewerSrc ? (
+        <iframe
+          key={iframeKey}
+          ref={iframeRef}
+          src={viewerSrc}
+          title="sogs-viewer"
+          style={{ border: "none", width: "100%", height: "100%", display: "block" }}
+          allow="xr-spatial-tracking"
+        />
+      ) : (
+        <div style={{ position: "absolute", inset: 0, backgroundColor: "#000000" }} aria-hidden />
+      )}
 
       <form
         onSubmit={handleSubmit}
