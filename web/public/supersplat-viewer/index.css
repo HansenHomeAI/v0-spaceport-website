@@ -356,3 +356,9 @@ button {
 #annotations * {
   pointer-events: auto;
 }
+
+/* Spaceport SOGS viewer: orbit-only (no fly / no mode toggle) */
+#orbitCamera,
+#flyCamera {
+  display: none !important;
+}

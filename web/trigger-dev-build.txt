@@ -16,3 +16,4 @@
 2026-03-25 sogs-viewer compact minimal dark panel styling
 2026-03-25 sogs-viewer auto-apply scene (no Apply button)
 2026-03-25 sogs-bridge RGB world axes meshes (replace drawLine overlay)
+2026-03-25 supersplat viewer orbit-only: no fly/pan, dolly zoom, hide mode toggles
