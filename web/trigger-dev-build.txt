@@ -11,3 +11,4 @@
 2026-03-25 standalone sogs-viewer page (no site chrome)
 2026-03-25 sogs-viewer default S3 URL + iframe only with content (no bogus 100%)
 2026-03-25 sogs-viewer Playwright E2E + idle state on invalid URL
+2026-03-25 sogs-viewer Canyon-style dev modal + iframe bridge (transform, FOV, guides)
