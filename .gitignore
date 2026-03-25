@@ -70,9 +70,7 @@ tests/pipeline/*.log
 *.log
 
 # Agent artifacts
-logs/*.png
-logs/*.jpg
-logs/*.jpeg
+logs/
 .next/
 .vercel/
 web/.next/

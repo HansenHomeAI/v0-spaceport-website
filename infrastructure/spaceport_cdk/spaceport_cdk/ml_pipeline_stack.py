@@ -999,10 +999,21 @@ class MLPipelineStack(Stack):
         )
 
     def _import_required_ecr_repo(self, construct_id: str, repository_name: str) -> ecr.IRepository:
-        """Import a shared ECR repository or fail clearly when it is missing."""
-        if not self._ecr_repo_exists(repository_name):
+        """Import a shared ECR repository.
+
+        Credential-free PR synth runs cannot always verify ECR state. Only fail
+        when AWS explicitly reports the repository as missing.
+        """
+        try:
+            self.ecr_client.describe_repositories(repositoryNames=[repository_name])
+            print(f"Importing shared ECR repository: {repository_name}")
+        except self.ecr_client.exceptions.RepositoryNotFoundException:
             raise ValueError(f"Required shared ECR repository does not exist: {repository_name}")
-        print(f"Importing shared ECR repository: {repository_name}")
+        except Exception as error:
+            print(
+                f"Warning: unable to verify shared ECR repository {repository_name} "
+                f"during synth ({error}). Importing by name without existence validation."
+            )
         return ecr.Repository.from_repository_name(self, construct_id, repository_name)
 
     # ========== ROBUSTNESS VALIDATION METHODS ==========
