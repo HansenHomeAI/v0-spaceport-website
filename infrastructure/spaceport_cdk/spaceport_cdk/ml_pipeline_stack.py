@@ -88,12 +88,16 @@ class MLPipelineStack(Stack):
 
         # Import upload bucket from main Spaceport stack - DO NOT CREATE
         # This bucket is owned by the main Spaceport stack, we just reference it
+        upload_bucket_name = f"spaceport-uploads-{suffix}"
+        if self.deployment_class == "branch-preview":
+            upload_bucket_name = "spaceport-uploads-staging"
+
         upload_bucket = s3.Bucket.from_bucket_name(
             self, "ImportedUploadBucket",
-            f"spaceport-uploads-{suffix}"
+            upload_bucket_name
         )
-        print(f"✅ Importing upload bucket from main stack: spaceport-uploads-{suffix}")
-        self._imported_resources.append({"type": "S3::Bucket", "name": f"spaceport-uploads-{suffix}", "action": "imported_from_main_stack"})
+        print(f"✅ Importing upload bucket from main stack: {upload_bucket_name}")
+        self._imported_resources.append({"type": "S3::Bucket", "name": upload_bucket_name, "action": "imported_from_main_stack"})
 
         # ========== ECR REPOSITORIES ==========
         # Dynamic ECR repositories - import if exist, create if not

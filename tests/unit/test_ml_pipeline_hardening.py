@@ -240,6 +240,8 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
         self.assertIn('value=ml_api_url', stack_source)
         self.assertIn('self, "StartMLJobFunctionName"', stack_source)
         self.assertIn('self, "StopMLJobFunctionName"', stack_source)
+        self.assertIn('if self.deployment_class == "branch-preview":', stack_source)
+        self.assertIn('upload_bucket_name = "spaceport-uploads-staging"', stack_source)
         self.assertIn('app.node.try_get_context("deploy_ml_api")', app_source)
         self.assertIn('"deployMlApi": context.deploy_ml_api', context_source)
         self.assertIn('--context deploy_ml_api="${DEPLOY_ML_API}"', cdk_workflow_source)
