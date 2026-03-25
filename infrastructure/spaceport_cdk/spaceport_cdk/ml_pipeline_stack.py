@@ -328,6 +328,7 @@ class MLPipelineStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
+            role=lambda_role,
             timeout=Duration.seconds(60),
             memory_size=512,
             environment={
@@ -359,6 +360,7 @@ class MLPipelineStack(Stack):
                     ],
                 ),
             ),
+            role=notification_lambda_role,
             timeout=Duration.seconds(30),
             memory_size=256,
             environment={
@@ -784,6 +786,7 @@ class MLPipelineStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="stop_job.lambda_handler",
             code=lambda_.Code.from_asset("../lambda/stop_job"),
+            role=lambda_role,
             timeout=Duration.seconds(30),
             memory_size=256,
             environment={

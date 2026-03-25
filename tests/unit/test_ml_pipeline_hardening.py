@@ -257,6 +257,8 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
 
         self.assertIn('pipeline_failed = sfn.Fail(', stack_source)
         self.assertIn('notify_error.next(pipeline_failed)', stack_source)
+        self.assertIn('role=lambda_role,', stack_source)
+        self.assertIn('role=notification_lambda_role,', stack_source)
         self.assertIn('start_job_lambda.add_environment("STATE_MACHINE_ARN"', stack_source)
         self.assertIn('"STATE_MACHINE_ARN": ml_pipeline.state_machine_arn', stack_source)
 
