@@ -243,6 +243,8 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
         self.assertIn('app.node.try_get_context("deploy_ml_api")', app_source)
         self.assertIn('"deployMlApi": context.deploy_ml_api', context_source)
         self.assertIn('--context deploy_ml_api="${DEPLOY_ML_API}"', cdk_workflow_source)
+        self.assertIn('infrastructure/spaceport_cdk/app\\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\\.py', cdk_workflow_source.replace("\\\\", "\\"))
+        self.assertNotIn('grep -Eq "^(infrastructure/spaceport_cdk/app\\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\\.py', cdk_workflow_source.replace("\\\\", "\\"))
         self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', cdk_workflow_source)
         self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', pages_workflow_source)
 
