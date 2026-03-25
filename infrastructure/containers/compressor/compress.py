@@ -79,6 +79,17 @@ def _diagnose_gpu_environment():
 
 class PlayCanvasSOGSCompressor:
     """Real PlayCanvas SOGS Compression Implementation using official package"""
+
+    REQUIRED_SOGS_FILES = (
+        "meta.json",
+        "means_l.webp",
+        "means_u.webp",
+        "quats.webp",
+        "scales.webp",
+        "sh0.webp",
+        "shN_centroids.webp",
+        "shN_labels.webp",
+    )
     
     def __init__(self):
         self.s3_client = boto3.client('s3')
@@ -304,6 +315,7 @@ class PlayCanvasSOGSCompressor:
             
             # Create SuperSplat viewer compatible structure
             self._create_supersplat_bundle(results)
+            self._validate_compression_outputs(results)
             
             logger.info(f"✅ PlayCanvas SOGS compression completed successfully")
             logger.info(f"📊 Overall compression ratio: {results['overall_compression_ratio']:.2f}x")
@@ -374,6 +386,28 @@ class PlayCanvasSOGSCompressor:
             json.dump(settings, f, indent=2)
         
         logger.info(f"✅ SuperSplat bundle created at: {bundle_dir}")
+
+    def _validate_required_bundle(self, bundle_dir: Path, bundle_name: str):
+        missing = [name for name in self.REQUIRED_SOGS_FILES if not (bundle_dir / name).exists()]
+        if missing:
+            raise RuntimeError(f"{bundle_name} is missing required SOGS files: {missing}")
+
+        for path in bundle_dir.iterdir():
+            if path.is_file() and path.stat().st_size <= 0:
+                raise RuntimeError(f"{bundle_name} contains an empty file: {path.name}")
+
+    def _validate_compression_outputs(self, results: Dict[str, Any]):
+        """Validate that compression emitted a complete SOGS bundle."""
+        if not results.get('compressed_outputs'):
+            raise RuntimeError("Compression produced no outputs to validate")
+
+        primary_dir = Path(results['compressed_outputs'][0]['output_dir'])
+        bundle_dir = Path(self.output_dir) / "supersplat_bundle"
+        self._validate_required_bundle(primary_dir, "compressed output")
+        self._validate_required_bundle(bundle_dir, "supersplat bundle")
+        settings_path = bundle_dir / "settings.json"
+        if not settings_path.exists() or settings_path.stat().st_size <= 0:
+            raise RuntimeError("supersplat bundle is missing settings.json")
 
     def _extract_and_find_plys(self, archive_path: str) -> List[str]:
         """Extract archive and find PLY files"""

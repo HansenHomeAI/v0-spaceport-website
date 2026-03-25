@@ -645,18 +645,7 @@ class NerfStudioTrainer:
                 return False
             
             logger.info("✅ Model export completed successfully")
-            
-            # Verify PLY file was created
-            ply_files = list(self.output_dir.glob("*.ply"))
-            if ply_files:
-                ply_file = ply_files[0]
-                file_size_mb = ply_file.stat().st_size / (1024 * 1024)
-                logger.info(f"📄 PLY file: {ply_file.name} ({file_size_mb:.1f} MB)")
-                logger.info("✅ SOGS-compatible PLY format ready for compression")
-            else:
-                logger.warning("⚠️ No PLY file found in export output")
-            
-            return True
+            return self.validate_training_artifacts()
             
         except subprocess.TimeoutExpired:
             logger.error("❌ Export timeout (10 minutes exceeded)")
@@ -664,6 +653,24 @@ class NerfStudioTrainer:
         except Exception as e:
             logger.error(f"❌ Export execution failed: {e}")
             return False
+
+    def validate_training_artifacts(self) -> bool:
+        """Validate that export produced the splat artifact expected by compression."""
+        ply_files = list(self.output_dir.glob("*.ply"))
+        if not ply_files:
+            logger.error("❌ No PLY file found in export output")
+            return False
+
+        preferred_names = ("splat.ply", "final_model.ply")
+        ply_file = next((path for path in ply_files if path.name in preferred_names), ply_files[0])
+        if ply_file.stat().st_size <= 0:
+            logger.error(f"❌ Exported PLY file is empty: {ply_file}")
+            return False
+
+        file_size_mb = ply_file.stat().st_size / (1024 * 1024)
+        logger.info(f"📄 PLY file: {ply_file.name} ({file_size_mb:.1f} MB)")
+        logger.info("✅ SOGS-compatible PLY format ready for compression")
+        return True
     
     def generate_training_metadata(self) -> Dict[str, Any]:
         """Generate comprehensive training metadata"""

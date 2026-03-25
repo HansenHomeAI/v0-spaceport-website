@@ -28,6 +28,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gps_processor import DroneFlightPathProcessor
 from gps_processor_3d import Advanced3DPathProcessor
 from colmap_converter import OpenSfMToCOLMAPConverter
+from profile_utils import line_indicates_progress, select_sfm_execution_profile
 
 
 def log_memory_usage(stage: str) -> None:
@@ -93,7 +94,10 @@ class OpenSfMGPSPipeline:
         self.opensfm_dir = None
         self.has_gps_priors = False
         self.image_count = 0
+        self.total_input_bytes = 0
         self.feature_stats = {}
+        self.execution_profile = {}
+        self.failure_reason = None
 
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -114,6 +118,7 @@ class OpenSfMGPSPipeline:
     def extract_images(self) -> int:
         """Extract images from input directory or ZIP file"""
         image_count = 0
+        total_bytes = 0
         
         # Check if input is a ZIP file
         zip_files = list(self.input_dir.glob("*.zip"))
@@ -129,16 +134,41 @@ class OpenSfMGPSPipeline:
                         target_path = self.images_dir / Path(member).name
                         with zf.open(member) as source, open(target_path, 'wb') as target:
                             target.write(source.read())
+                        total_bytes += target_path.stat().st_size
                         image_count += 1
         else:
             # Copy images from input directory
             for img_path in self.input_dir.rglob('*'):
                 if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png']:
-                    shutil.copy2(img_path, self.images_dir / img_path.name)
+                    target_path = self.images_dir / img_path.name
+                    shutil.copy2(img_path, target_path)
+                    total_bytes += target_path.stat().st_size
                     image_count += 1
         
         logger.info(f"📷 Extracted {image_count} images")
+        logger.info(f"💾 Extracted image payload: {total_bytes / (1024 * 1024):.1f} MB")
+        self.total_input_bytes = total_bytes
         return image_count
+
+    def _select_execution_profile(self) -> Dict[str, object]:
+        """Select a processing profile based on dataset size and GPS availability."""
+        image_count = self.image_count or len(list(self.images_dir.glob("*")))
+        total_mb = self.total_input_bytes / (1024 * 1024) if self.total_input_bytes else 0
+        profile = select_sfm_execution_profile(image_count, self.total_input_bytes, self.has_gps_priors)
+        self.execution_profile = profile
+        logger.info(
+            "🧭 Selected SfM profile: %s (images=%s, payload=%.1f MB, gps=%s)",
+            profile["name"],
+            image_count,
+            total_mb,
+            self.has_gps_priors,
+        )
+        logger.info(f"⏱️ Command timeout policy: {json.dumps(profile['timeouts'])}")
+        return profile
+
+    @staticmethod
+    def _line_indicates_progress(command: str, line: str) -> bool:
+        return line_indicates_progress(command, line)
     
     def process_gps_data(self) -> bool:
         """Process GPS data if available"""
@@ -237,23 +267,11 @@ class OpenSfMGPSPipeline:
             'save_partial_reconstructions': True,
         }
 
-        conservative_overrides = {
-            'feature_process_size': 1200,
-            'feature_max_num_features': 6000,
-            'feature_min_frames': 1200,
-            'sift_peak_threshold': 0.01,  # reduce feature count
-            'matching_gps_neighbors': 10,
-            'matching_gps_distance': 120,
-            'matching_graph_rounds': 16,
-            'robust_matching_min_match': 12,
-            # Use more CPU when running without GPS priors; default up to 16 cores when available.
-            'processes': max(4, min(16, os.cpu_count() or 4)),
-        }
-
         config = base_config.copy()
-        if not self.has_gps_priors:
-            config.update(conservative_overrides)
-            logger.info("🧭 Using conservative no-CSV profile for matching/features (lower memory).")
+        profile = self._select_execution_profile()
+        config.update(profile.get("overrides", {}))
+        if profile["name"] != "gps_standard":
+            logger.info(f"🧭 Using {profile['name']} profile for matching/features.")
         
         config_path = self.opensfm_dir / "config.yaml"
         with open(config_path, 'w') as f:
@@ -295,8 +313,12 @@ class OpenSfMGPSPipeline:
             
             try:
                 if cmd in {"match_features", "reconstruct"}:
-                    # Stream output and enforce a max duration for reconstruct to detect hangs
-                    max_seconds = 7200 if cmd == "reconstruct" else 2400  # reconstruct up to 120m, match up to 40m
+                    timeout_policy = self.execution_profile.get("timeouts", {}).get(
+                        cmd,
+                        {"max_seconds": 7200 if cmd == "reconstruct" else 2400, "stall_seconds": 1800},
+                    )
+                    max_seconds = timeout_policy["max_seconds"]
+                    stall_seconds = timeout_policy["stall_seconds"]
                     proc = subprocess.Popen(
                         ["opensfm", cmd, str(self.opensfm_dir)],
                         stdout=subprocess.PIPE,
@@ -305,25 +327,41 @@ class OpenSfMGPSPipeline:
                     )
                     start = time.time()
                     last_log = start
+                    last_progress = start
                     while True:
                         line = proc.stdout.readline()
                         if line:
                             line = line.rstrip()
                             tag = "RECONSTRUCT" if cmd == "reconstruct" else "MATCH"
                             print(f"OPENSFM_{tag}: {line}", flush=True)
+                            if self._line_indicates_progress(cmd, line):
+                                last_progress = time.time()
                         now = time.time()
                         if now - last_log > 300:  # heartbeat every 5 minutes
                             log_memory_usage(f"{cmd}_heartbeat_{int(now-start)}s")
                             last_log = now
+                        if stall_seconds and now - last_progress > stall_seconds:
+                            proc.kill()
+                            self.failure_reason = (
+                                f"OpenSfM {cmd} stalled for {stall_seconds} seconds "
+                                f"under profile {self.execution_profile.get('name', 'unknown')}"
+                            )
+                            logger.error(f"❌ {self.failure_reason}")
+                            return False
                         if now - start > max_seconds:
                             proc.kill()
-                            logger.error(f"❌ OpenSfM {cmd} timed out")
+                            self.failure_reason = (
+                                f"OpenSfM {cmd} timed out after {max_seconds} seconds "
+                                f"under profile {self.execution_profile.get('name', 'unknown')}"
+                            )
+                            logger.error(f"❌ {self.failure_reason}")
                             return False
                         if line == '' and proc.poll() is not None:
                             break
                     ret = proc.wait()
                     if ret != 0:
                         logger.error(f"❌ OpenSfM {cmd} failed with code {ret}")
+                        self.failure_reason = f"OpenSfM {cmd} failed with exit code {ret}"
                         return False
                 else:
                     subprocess.run(
@@ -341,6 +379,7 @@ class OpenSfMGPSPipeline:
                 logger.error(f"❌ OpenSfM {cmd} failed:")
                 logger.error(f"   stdout: {e.stdout}")
                 logger.error(f"   stderr: {e.stderr}")
+                self.failure_reason = f"OpenSfM {cmd} failed with CalledProcessError"
                 return False
         
         return True
@@ -569,6 +608,41 @@ class OpenSfMGPSPipeline:
         
         image_count = len(list(output_images_dir.iterdir()))
         logger.info(f"✅ Copied {image_count} images to output directory for 3DGS training")
+
+    def validate_output_artifacts(self) -> bool:
+        """Validate the final COLMAP handoff artifact set expected by 3DGS."""
+        sparse_dir = self.output_dir / "sparse" / "0"
+        required_sparse_files = (
+            sparse_dir / "cameras.txt",
+            sparse_dir / "images.txt",
+            sparse_dir / "points3D.txt",
+        )
+        missing_files = [str(path) for path in required_sparse_files if not path.exists()]
+        if missing_files:
+            logger.error(f"❌ Missing required COLMAP outputs: {missing_files}")
+            return False
+
+        validation_results = self.validate_exported_colmap()
+        if not validation_results.get('quality_check_passed', False):
+            logger.error(f"❌ COLMAP outputs failed validation: {validation_results}")
+            return False
+
+        output_images_dir = self.output_dir / "images"
+        image_files = [
+            path for path in output_images_dir.iterdir()
+            if path.is_file() and path.suffix.lower() in {'.jpg', '.jpeg', '.png'}
+        ] if output_images_dir.exists() else []
+        if not image_files:
+            logger.error("❌ 3DGS handoff is missing extracted images")
+            return False
+
+        database_file = self.output_dir / "database.db"
+        if not database_file.exists() or database_file.stat().st_size <= 0:
+            logger.error("❌ 3DGS handoff is missing database.db")
+            return False
+
+        logger.info("✅ Final SfM handoff artifacts validated")
+        return True
     
     def generate_metadata_json(self) -> None:
         """Generate metadata JSON file with processing statistics"""
@@ -603,11 +677,17 @@ class OpenSfMGPSPipeline:
             'cameras_registered': num_cameras,
             'images_registered': num_cameras,  # Assuming 1:1 mapping
             'points_3d': num_points,
-            'gps_enhanced': hasattr(self, 'gps_csv_path') and self.gps_csv_path is not None,
+            'gps_enhanced': self.has_gps_priors,
             'quality_check_passed': num_points >= 1000,
             'colmap_format': True,
+            'sfm_profile': self.execution_profile.get('name'),
+            'input_image_count': self.image_count,
+            'input_payload_mb': round(self.total_input_bytes / (1024 * 1024), 2),
+            'command_timeouts': self.execution_profile.get('timeouts', {}),
             'timestamp': time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
         }
+        if self.failure_reason:
+            metadata['failure_reason'] = self.failure_reason
         
         metadata_file = self.output_dir / "sfm_metadata.json"
         with open(metadata_file, 'w') as f:
@@ -787,6 +867,8 @@ class OpenSfMGPSPipeline:
             self.copy_images_for_3dgs()
             self.generate_metadata_json()
             self.create_stub_database()
+            if not self.validate_output_artifacts():
+                return 1
             log_memory_usage("after_artifact_generation")
             
             logger.info("✅ OpenSfM GPS pipeline completed successfully")
