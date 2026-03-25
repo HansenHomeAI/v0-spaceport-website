@@ -4,8 +4,8 @@
  */
 export const SOGS_DEFAULT_SCENE = {
   position: [0, 0, 0] as [number, number, number],
-  /** From viewer copy scene JSON (2026-03-25); Y euler noise rounded to 0 */
-  rotation: [95, 0, 180] as [number, number, number],
+  /** Euler ° (PlayCanvas order: X, Y, Z); Z = 180° matches gsplat convention */
+  rotation: [-90, -90, 180] as [number, number, number],
   scale: 1,
   fov: 60,
 } as const;
