@@ -127,6 +127,20 @@ export default function SogsViewerDevPanel() {
     postToIframe({ type: "sogs:guides", enabled: guides });
   }, [guides, postToIframe, activeUrl, iframeKey]);
 
+  /** Push splat/camera to iframe whenever values change (panel open + viewer ready). */
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready" || !devOpen) {
+      return;
+    }
+    postToIframe({
+      type: "sogs:apply",
+      position: form.position,
+      rotation: form.rotation,
+      scale: form.scale,
+      fov: form.fov,
+    });
+  }, [form, activeUrl, viewerState, iframeKey, devOpen, postToIframe]);
+
   useEffect(() => {
     if (!devOpen) {
       return;
@@ -153,26 +167,8 @@ export default function SogsViewerDevPanel() {
     };
   }, [devOpen]);
 
-  const applyDev = () => {
-    postToIframe({
-      type: "sogs:apply",
-      position: form.position,
-      rotation: form.rotation,
-      scale: form.scale,
-      fov: form.fov,
-    });
-  };
-
   const resetDev = () => {
-    const d = createDefaultScenePayload();
-    setForm(d);
-    postToIframe({
-      type: "sogs:apply",
-      position: d.position,
-      rotation: d.rotation,
-      scale: d.scale,
-      fov: d.fov,
-    });
+    setForm(createDefaultScenePayload());
   };
 
   const syncFromScene = () => {
@@ -357,9 +353,6 @@ export default function SogsViewerDevPanel() {
                     <button type="button" className="sogs-btn-ghost" onClick={resetDev}>
                       Reset
                     </button>
-                    <button type="button" className="sogs-btn-primary sogs-btn-apply" onClick={applyDev}>
-                      Apply
-                    </button>
                   </div>
                   <div className="sogs-copy-row">
                     <button type="button" className="sogs-btn-ghost sogs-btn-copy" onClick={copySceneJson}>
@@ -371,8 +364,9 @@ export default function SogsViewerDevPanel() {
                 <details className="sogs-dev-details">
                   <summary>Notes</summary>
                   <p className="sogs-dev-details-body">
-                    Default rotation Z is 180° (PlayCanvas gsplat). FOV applies after the orbit camera updates. Paste
-                    copied JSON for maintainers to update <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
+                    Values apply to the viewer as you edit. Default rotation Z is 180° (PlayCanvas gsplat). FOV applies
+                    after the orbit camera updates. Paste copied JSON for maintainers to update{" "}
+                    <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
                   </p>
                 </details>
               </div>
