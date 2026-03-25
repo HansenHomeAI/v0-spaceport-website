@@ -210,6 +210,23 @@ jobs:
             return 1
           }
 
+          get_output_optional() {
+            local stack_name="$1"
+            local output_key="$2"
+            local value=""
+
+            value=$(aws cloudformation describe-stacks \
+              --stack-name "$stack_name" \
+              --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+              --output text 2>/dev/null || true)
+            if [ -z "$value" ] || [ "$value" = "None" ]; then
+              printf ''
+              return 0
+            fi
+
+            printf '%s' "$value"
+          }
+
           get_output_with_fallback() {
             local preferred_stack="$1"
             local output_key="$2"
@@ -246,7 +263,7 @@ jobs:
           SUBSCRIPTION_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "SubscriptionApiUrl")"
           BETA_ACCESS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "BetaAccessAdminApiUrl")"
           MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ModelDeliveryAdminApiUrl")"
-          EXPLORE_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ExplorePublicApiUrl")"
+          EXPLORE_API_URL="$(get_output_optional "$AUTH_OUTPUT_STACK" "ExplorePublicApiUrl")"
 
           DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
           FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
