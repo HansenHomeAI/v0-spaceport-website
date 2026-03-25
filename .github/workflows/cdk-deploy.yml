@@ -32,6 +32,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -260,7 +262,7 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
         if git rev-parse HEAD~1 >/dev/null 2>&1; then
-          CHANGED_FILES="$(git diff --name-only HEAD~1...HEAD || git diff --name-only HEAD~1 HEAD)"
+          CHANGED_FILES="$(git diff --name-only HEAD~1 HEAD)"
         else
           CHANGED_FILES="$(git show --name-only --format= HEAD)"
         fi
