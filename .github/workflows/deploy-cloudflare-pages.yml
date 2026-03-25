@@ -175,6 +175,14 @@ jobs:
             return 1
           }
 
+          resolve_stack_by_prefix() {
+            local prefix="$1"
+            aws cloudformation list-stacks \
+              --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE UPDATE_COMPLETE_CLEANUP_IN_PROGRESS IMPORT_COMPLETE CREATE_IN_PROGRESS UPDATE_IN_PROGRESS REVIEW_IN_PROGRESS \
+              --query "StackSummaries[?starts_with(StackName, \`${prefix}\`)].StackName" \
+              --output text 2>/dev/null | tr '\t' '\n' | head -n 1
+          }
+
           get_output() {
             local stack_name="$1"
             local output_key="$2"
@@ -229,7 +237,8 @@ jobs:
 
           SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "SpaceportStagingStack" "spaceport")"
           ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "SpaceportMLPipelineStagingStack" "ml")"
-          AUTH_OUTPUT_STACK="$(resolve_output_stack "$AUTH_STACK_NAME" "" "auth")"
+          AUTH_FALLBACK_STACK="$(resolve_stack_by_prefix "SpaceportAuthStagingStack")"
+          AUTH_OUTPUT_STACK="$(resolve_output_stack "$AUTH_STACK_NAME" "$AUTH_FALLBACK_STACK" "auth")"
 
           PROJECTS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ProjectsApiUrl")"
           COGNITO_USER_POOL_ID="$(get_output "$AUTH_OUTPUT_STACK" "CognitoUserPoolId")"

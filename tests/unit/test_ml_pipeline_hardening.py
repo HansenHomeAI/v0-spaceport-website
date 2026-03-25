@@ -247,6 +247,8 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
         self.assertNotIn('grep -Eq "^(infrastructure/spaceport_cdk/app\\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\\.py', cdk_workflow_source.replace("\\\\", "\\"))
         self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', cdk_workflow_source)
         self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', pages_workflow_source)
+        self.assertIn('resolve_stack_by_prefix() {', pages_workflow_source)
+        self.assertIn('AUTH_FALLBACK_STACK="$(resolve_stack_by_prefix "SpaceportAuthStagingStack")"', pages_workflow_source)
 
 
 if __name__ == "__main__":
