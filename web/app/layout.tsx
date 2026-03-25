@@ -36,9 +36,7 @@ export const metadata = {
 import './globals.css';
 import '../public/styles.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import AnalyticsProvider from '../components/AnalyticsProvider';
+import SiteChrome from '../components/SiteChrome';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -49,11 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#000000" />
       </head>
       <body>
-        <AnalyticsProvider>
-          <Header />
-          {children}
-          <Footer />
-        </AnalyticsProvider>
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );
