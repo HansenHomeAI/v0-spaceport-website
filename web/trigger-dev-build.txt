@@ -15,3 +15,4 @@
 2026-03-25 sogs-viewer Scene & lens dropdown + copy scene JSON + scene defaults module
 2026-03-25 sogs-viewer compact minimal dark panel styling
 2026-03-25 sogs-viewer auto-apply scene (no Apply button)
+2026-03-25 sogs-bridge RGB world axes meshes (replace drawLine overlay)

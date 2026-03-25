@@ -1,11 +1,18 @@
 /**
- * Spaceport SOGS bridge: postMessage API for parent page + optional world axes (PlayCanvas drawLine).
- * Loaded after window.sse is set by index.html.
+ * Spaceport SOGS bridge: postMessage API for parent page + optional RGB world axes (mesh, not drawLine overlay).
  */
 import { main } from "./index.js";
-import { Vec3, Color } from "https://esm.sh/playcanvas@2.13.2";
+import {
+  Color,
+  CylinderGeometry,
+  Entity,
+  Mesh,
+  MeshInstance,
+  StandardMaterial,
+} from "https://esm.sh/playcanvas@2.13.2";
 
 const AXIS_LEN = 45;
+const AXIS_RADIUS = 0.28;
 
 window.firstFrame = function sogsFirstFrameHook() {
   window.parent.postMessage({ type: "supersplat:firstFrame" }, "*");
@@ -50,44 +57,89 @@ function hookCameraManagerFov(cameraManager) {
   };
 }
 
-function drawGuides(app, gsplatEntity) {
-  if (!window.__sogsGuidesEnabled) {
+function axisMaterial(rgb) {
+  const m = new StandardMaterial();
+  m.diffuse = new Color(0, 0, 0);
+  m.emissive = new Color(rgb[0], rgb[1], rgb[2]);
+  m.emissiveIntensity = 1;
+  m.useLighting = false;
+  return m;
+}
+
+function copyRenderLayers(fromEntity, toEntity) {
+  try {
+    const layers = fromEntity.render?.layers;
+    if (layers?.length && toEntity.render) {
+      toEntity.render.layers = layers.slice();
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Thin cylinders along local +X / +Y / +Z at the splat origin, parented to gsplat.
+ * Renders in the normal forward pass (depth-tested), not as immediate drawLine overlay.
+ */
+function setupSogsAxesGuides(app, gsplatEntity) {
+  if (window.__sogsAxesRoot) {
+    try {
+      window.__sogsAxesRoot.destroy();
+    } catch {
+      /* ignore */
+    }
+    window.__sogsAxesRoot = null;
+  }
+
+  const device = app.graphicsDevice;
+  const geom = new CylinderGeometry({
+    height: AXIS_LEN,
+    radius: AXIS_RADIUS,
+    heightSegments: 1,
+    capSegments: 18,
+  });
+  const mesh = Mesh.fromGeometry(device, geom);
+
+  const root = new Entity("sogsAxes");
+  gsplatEntity.addChild(root);
+
+  const configs = [
+    { name: "sogsAxisX", ex: 0, ey: 0, ez: -90, px: AXIS_LEN / 2, py: 0, pz: 0, rgb: [0.95, 0.22, 0.18] },
+    { name: "sogsAxisY", ex: 0, ey: 0, ez: 0, px: 0, py: AXIS_LEN / 2, pz: 0, rgb: [0.28, 0.92, 0.32] },
+    { name: "sogsAxisZ", ex: 90, ey: 0, ez: 0, px: 0, py: 0, pz: AXIS_LEN / 2, rgb: [0.32, 0.52, 0.98] },
+  ];
+
+  for (const c of configs) {
+    const mat = axisMaterial(c.rgb);
+    const ent = new Entity(c.name);
+    ent.setLocalEulerAngles(c.ex, c.ey, c.ez);
+    ent.setLocalPosition(c.px, c.py, c.pz);
+    const mi = new MeshInstance(mesh, mat, ent);
+    ent.addComponent("render", {
+      meshInstances: [mi],
+      castShadows: false,
+      receiveShadows: false,
+    });
+    copyRenderLayers(gsplatEntity, ent);
+    root.addChild(ent);
+  }
+
+  window.__sogsAxesRoot = root;
+  root.enabled = !!window.__sogsGuidesEnabled;
+}
+
+function syncSogsAxesGuides(app) {
+  const g = app.root.findByName("gsplat");
+  if (!g) {
     return;
   }
-  const p = new Vec3();
-  gsplatEntity.getPosition(p);
-  const rot = gsplatEntity.getRotation();
-  const ax = new Vec3(1, 0, 0);
-  const ay = new Vec3(0, 1, 0);
-  const az = new Vec3(0, 0, 1);
-  rot.transformVector(ax, ax);
-  rot.transformVector(ay, ay);
-  rot.transformVector(az, az);
-  ax.mulScalar(AXIS_LEN);
-  ay.mulScalar(AXIS_LEN);
-  az.mulScalar(AXIS_LEN);
-  const endX = p.clone().add(ax);
-  const endY = p.clone().add(ay);
-  const endZ = p.clone().add(az);
-  app.drawLine(p, endX, new Color(0.95, 0.25, 0.2));
-  app.drawLine(p, endY, new Color(0.35, 0.9, 0.35));
-  app.drawLine(p, endZ, new Color(0.35, 0.55, 0.95));
-  const dot = 0.35;
-  app.drawLine(
-    new Vec3(p.x - dot, p.y, p.z),
-    new Vec3(p.x + dot, p.y, p.z),
-    new Color(1, 1, 1),
-  );
-  app.drawLine(
-    new Vec3(p.x, p.y - dot, p.z),
-    new Vec3(p.x, p.y + dot, p.z),
-    new Color(1, 1, 1),
-  );
-  app.drawLine(
-    new Vec3(p.x, p.y, p.z - dot),
-    new Vec3(p.x, p.y, p.z + dot),
-    new Color(1, 1, 1),
-  );
+  if (window.__sogsGuidesEnabled && !window.__sogsAxesRoot) {
+    setupSogsAxesGuides(app, g);
+  }
+  if (window.__sogsAxesRoot) {
+    window.__sogsAxesRoot.enabled = !!window.__sogsGuidesEnabled;
+  }
+  app.renderNextFrame = true;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -137,13 +189,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   hookCameraManagerFov(viewer.cameraManager);
 
-  app.on("update", () => {
-    const g = app.root.findByName("gsplat");
-    if (g) {
-      drawGuides(app, g);
-    }
-  });
-
   window.addEventListener("message", (event) => {
     const d = event.data;
     if (!d || typeof d !== "object") {
@@ -171,7 +216,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (d.type === "sogs:guides") {
       window.__sogsGuidesEnabled = !!d.enabled;
-      app.renderNextFrame = true;
+      syncSogsAxesGuides(app);
     }
     if (d.type === "sogs:requestState") {
       postSogsState();

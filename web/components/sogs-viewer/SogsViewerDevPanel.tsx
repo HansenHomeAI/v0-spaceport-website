@@ -342,7 +342,7 @@ export default function SogsViewerDevPanel() {
 
                 <label className="sogs-dev-toggle-row">
                   <input type="checkbox" checked={guides} onChange={(e) => setGuides(e.target.checked)} />
-                  Axis guides
+                  RGB axes (world, at splat origin)
                 </label>
 
                 <div className="sogs-dev-actions">
