@@ -162,10 +162,6 @@ export default function SogsViewerDevPanel() {
     };
   }, [devOpen]);
 
-  const resetDev = () => {
-    setForm(createDefaultScenePayload());
-  };
-
   const copySceneJson = async () => {
     const payload = buildSogsSceneExport({
       bundleUrl: activeUrl || inputUrl.trim() || "",
@@ -337,14 +333,9 @@ export default function SogsViewerDevPanel() {
                 </label>
 
                 <div className="sogs-dev-actions">
-                  <div className="sogs-dev-actions-row">
-                    <button type="button" className="sogs-btn-ghost" onClick={resetDev}>
-                      Reset
-                    </button>
-                    <button type="button" className="sogs-btn-ghost" onClick={copySceneJson}>
-                      Copy JSON
-                    </button>
-                  </div>
+                  <button type="button" className="sogs-btn-ghost" onClick={copySceneJson}>
+                    Copy JSON
+                  </button>
                   {copyFeedback ? (
                     <div className="sogs-copy-row">
                       <span className="sogs-copy-feedback">{copyFeedback}</span>

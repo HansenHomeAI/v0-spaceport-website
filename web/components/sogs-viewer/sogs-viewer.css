@@ -279,15 +279,12 @@
   gap: 4px;
 }
 
-.sogs-dev-actions-row {
-  display: flex;
-  gap: 4px;
-  flex-wrap: nowrap;
+.sogs-dev-actions > .sogs-btn-ghost {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sogs-btn-ghost {
-  flex: 1;
-  min-width: 0;
   padding: 5px 6px;
   border-radius: 3px;
   border: 1px solid rgba(255, 255, 255, 0.08);
