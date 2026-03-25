@@ -14,6 +14,8 @@ const VIEWER_BASE = "/supersplat-viewer/index.html";
 export default function SogsViewerDevPanel() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  /** Skip first sogs:state after each iframe load — it reflects viewer defaults before SOGS_DEFAULT_SCENE is applied. */
+  const ignoreNextSogsStateRef = useRef(false);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState("");
@@ -52,6 +54,7 @@ export default function SogsViewerDevPanel() {
     setViewerState("loading");
     setActiveUrl(normalized);
     setIframeKey((prev) => prev + 1);
+    ignoreNextSogsStateRef.current = true;
     return true;
   }, []);
 
@@ -74,9 +77,30 @@ export default function SogsViewerDevPanel() {
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
+        const d = createDefaultScenePayload();
+        try {
+          (event.source as Window).postMessage(
+            {
+              type: "sogs:apply",
+              position: d.position,
+              rotation: d.rotation,
+              scale: d.scale,
+              fov: d.fov,
+            },
+            "*",
+          );
+        } catch {
+          /* ignore */
+        }
+        setForm(d);
+        setScene(d);
         setViewerState("ready");
       }
       if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
+        if (ignoreNextSogsStateRef.current) {
+          ignoreNextSogsStateRef.current = false;
+          return;
+        }
         const d = event.data;
         if (
           !Array.isArray(d.position) ||
