@@ -79,6 +79,7 @@ COPY run_opensfm_gps.py /opt/ml/code/run_opensfm_gps.py
 COPY gps_processor.py /opt/ml/code/gps_processor.py
 COPY gps_processor_3d.py /opt/ml/code/gps_processor_3d.py
 COPY colmap_converter.py /opt/ml/code/colmap_converter.py
+COPY profile_utils.py /opt/ml/code/profile_utils.py
 COPY config_template.yaml /opt/ml/code/config_template.yaml
 
 # Make scripts executable

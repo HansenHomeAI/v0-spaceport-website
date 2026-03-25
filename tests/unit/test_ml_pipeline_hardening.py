@@ -278,6 +278,9 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
         pages_workflow_source = (
             REPO_ROOT / ".github/workflows/deploy-cloudflare-pages.yml"
         ).read_text(encoding="utf-8")
+        sfm_dockerfile_source = (
+            REPO_ROOT / "infrastructure/containers/sfm/Dockerfile"
+        ).read_text(encoding="utf-8")
 
         self.assertIn('self.deploy_ml_api = env_config.get("deployMlApi", True)', stack_source)
         self.assertIn('value=ml_api_url', stack_source)
@@ -294,6 +297,8 @@ class StepFunctionDefinitionContractTests(unittest.TestCase):
         self.assertIn('get_output_with_fallback "$ML_OUTPUT_STACK" "MLPipelineApiUrl" "SpaceportMLPipelineStagingStack"', pages_workflow_source)
         self.assertIn('resolve_stack_by_prefix() {', pages_workflow_source)
         self.assertIn('AUTH_FALLBACK_STACK="$(resolve_stack_by_prefix "SpaceportAuthStagingStack")"', pages_workflow_source)
+        self.assertIn("grep -v '^NEXT_PUBLIC_EXPLORE_API_URL=$'", pages_workflow_source)
+        self.assertIn('COPY profile_utils.py /opt/ml/code/profile_utils.py', sfm_dockerfile_source)
 
 
 if __name__ == "__main__":

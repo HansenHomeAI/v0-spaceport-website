@@ -375,7 +375,9 @@ jobs:
             echo ".env missing or empty" >&2
             exit 1
           fi
-          if grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env; then
+          empty_public_vars="$(grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env | grep -v '^NEXT_PUBLIC_EXPLORE_API_URL=$' || true)"
+          if [ -n "$empty_public_vars" ]; then
+            printf '%s\n' "$empty_public_vars"
             echo "Detected empty NEXT_PUBLIC variables in .env" >&2
             exit 1
           fi
