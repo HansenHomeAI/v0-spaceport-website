@@ -4,8 +4,8 @@
  */
 export const SOGS_DEFAULT_SCENE = {
   position: [0, 0, 0] as [number, number, number],
-  /** Euler ° (PlayCanvas order: X, Y, Z) */
-  rotation: [0, 0, -90] as [number, number, number],
+  /** Euler ° (PlayCanvas order: X, Y, Z); from viewer scene-v1 export 2026-03-25 (X rounded) */
+  rotation: [-82, -90, 0] as [number, number, number],
   scale: 1,
   fov: 60,
 } as const;

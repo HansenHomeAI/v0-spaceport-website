@@ -22,3 +22,4 @@
 2026-03-25 sogs-viewer apply SOGS_DEFAULT_SCENE on firstFrame; skip stale sogs:state
 2026-03-25 SOGS_DEFAULT_SCENE rotation X/Y -90°, Z 180°
 2026-03-25 SOGS_DEFAULT_SCENE rotation X 0 Y 0 Z -90
+2026-03-25 SOGS_DEFAULT_SCENE rotation from pasted JSON X -82 Y -90 Z 0
