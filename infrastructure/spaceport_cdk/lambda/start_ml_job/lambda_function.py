@@ -82,17 +82,10 @@ def lambda_handler(event, context):
                     })
                 }
             except Exception as e:
-                return {
-                    'statusCode': 403,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                    },
-                    'body': json.dumps({
-                        'error': f'Cannot access S3 object: {str(e)}'
-                    })
-                }
+                print(
+                    f"⚠️ Unable to preflight access to s3://{bucket_name}/{object_key}: {str(e)}. "
+                    "Continuing and allowing the downstream processing role to validate access."
+                )
         
         # Generate unique job ID early so it can be used for CSV storage
         job_id = str(uuid.uuid4())

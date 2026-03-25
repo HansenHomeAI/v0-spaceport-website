@@ -1,3 +1,4 @@
+import json
 import importlib.util
 import os
 import sys
@@ -58,6 +59,46 @@ class StartMLJobContractTests(unittest.TestCase):
             self.module.parse_s3_url("https://bucket-name.s3.amazonaws.com/path/to/archive.zip"),
             ("bucket-name", "path/to/archive.zip"),
         )
+
+    def test_lambda_continues_when_s3_preflight_access_is_forbidden(self):
+        no_such_key = type("NoSuchKey", (Exception,), {})
+        self.module.s3 = types.SimpleNamespace(
+            head_object=mock.Mock(side_effect=Exception("403 forbidden")),
+            put_object=mock.Mock(),
+            exceptions=types.SimpleNamespace(NoSuchKey=no_such_key),
+        )
+        self.module.stepfunctions = types.SimpleNamespace(
+            start_execution=mock.Mock(return_value={"executionArn": "arn:aws:states:region:acct:execution:test"})
+        )
+        self.module.boto3 = types.SimpleNamespace(
+            client=lambda *args, **kwargs: types.SimpleNamespace(
+                describe_repositories=lambda **repo_kwargs: {}
+            )
+        )
+
+        event = {"body": json.dumps({"s3Url": "s3://bucket-name/path/to/archive.zip"})}
+        context = types.SimpleNamespace(
+            invoked_function_arn="arn:aws:lambda:us-west-2:123456789012:function:test"
+        )
+
+        with mock.patch.dict(
+            os.environ,
+            {
+                "STATE_MACHINE_ARN": "arn:aws:states:us-west-2:123456789012:stateMachine:test",
+                "ML_BUCKET": "spaceport-ml-processing-staging",
+                "SFM_ECR_REPO": "spaceport/sfm",
+                "GAUSSIAN_ECR_REPO": "spaceport/3dgs",
+                "COMPRESSOR_ECR_REPO": "spaceport/compressor",
+                "SFM_ECR_REPO_FALLBACK": "spaceport/sfm",
+                "GAUSSIAN_ECR_REPO_FALLBACK": "spaceport/3dgs",
+                "COMPRESSOR_ECR_REPO_FALLBACK": "spaceport/compressor",
+            },
+            clear=True,
+        ):
+            response = self.module.lambda_handler(event, context)
+
+        self.assertEqual(response["statusCode"], 200)
+        self.module.stepfunctions.start_execution.assert_called_once()
 
 
 class MLStatusContractTests(unittest.TestCase):
