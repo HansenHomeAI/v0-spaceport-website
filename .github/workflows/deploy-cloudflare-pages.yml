@@ -130,11 +130,11 @@ jobs:
                 --stack-name "$stack_name" \
                 --query 'Stacks[0].StackStatus' \
                 --output text 2>/dev/null); then
-                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to exist..."
+                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to exist..." >&2
               elif [[ "$status" == *_IN_PROGRESS ]]; then
-                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to finish: $status"
+                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to finish: $status" >&2
               elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
-                echo "Stack $stack_name is ready with status $status"
+                echo "Stack $stack_name is ready with status $status" >&2
                 return 0
               else
                 echo "Stack $stack_name reached unexpected status: $status" >&2
