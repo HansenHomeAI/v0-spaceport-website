@@ -259,13 +259,19 @@ jobs:
         set -euo pipefail
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
-        CHANGED_FILES="$(git diff-tree --no-commit-id --name-only -r HEAD)"
+        if git rev-parse HEAD~1 >/dev/null 2>&1; then
+          CHANGED_FILES="$(git diff --name-only HEAD~1...HEAD || git diff --name-only HEAD~1 HEAD)"
+        else
+          CHANGED_FILES="$(git show --name-only --format= HEAD)"
+        fi
         printf 'Changed files:\n%s\n' "${CHANGED_FILES}"
         
         # Detect Lambda function changes
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
+        SPACEPORT_STACK_REQUIRED="true"
+        ML_ONLY_BRANCH_PATTERN="^(infrastructure/containers/|infrastructure/spaceport_cdk/lambda/start_ml_job/|infrastructure/spaceport_cdk/lambda/ml_status/|infrastructure/spaceport_cdk/lambda/ml_notification/|infrastructure/spaceport_cdk/lambda/stop_ml_job/|infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack\\.py|tests/|web/trigger-dev-build\\.txt|\\.github/workflows/cdk-deploy\\.yml|\\.github/workflows/deploy-cloudflare-pages\\.yml)"
         if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
           # Check if any Lambda files changed
           if printf '%s\n' "${CHANGED_FILES}" | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
@@ -288,6 +294,11 @@ jobs:
               EXPLORE_API_MISSING="true"
               AUTH_STACK_CHANGED="true"
               echo "Shared auth stack is missing ExplorePublicApiUrl - forcing auth redeploy"
+            fi
+
+            if [ -n "${CHANGED_FILES}" ] && ! printf '%s\n' "${CHANGED_FILES}" | grep -Evq "${ML_ONLY_BRANCH_PATTERN}"; then
+              SPACEPORT_STACK_REQUIRED="false"
+              echo "Detected ML-only branch change set - will skip branch preview Spaceport stack deploy"
             fi
           fi
         fi
@@ -317,6 +328,7 @@ jobs:
         echo "Lambda changed: ${LAMBDA_CHANGED}"
         echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
         echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
+        echo "Spaceport stack required: ${SPACEPORT_STACK_REQUIRED}"
 
         DEPLOY_AUTH_STACK_EFFECTIVE="${DEPLOY_AUTH_STACK}"
         if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${AUTH_STACK_CHANGED}" = "true" ]; then
@@ -325,7 +337,10 @@ jobs:
 
         echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
 
-        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+        STACKS=("$ML_STACK_NAME")
+        if [ "${SPACEPORT_STACK_REQUIRED}" = "true" ]; then
+          STACKS=("$SPACEPORT_STACK_NAME" "${STACKS[@]}")
+        fi
         if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
         fi
@@ -350,6 +365,38 @@ jobs:
       run: |
         set -euo pipefail
 
+        get_stack_status() {
+          local stack_name="$1"
+          aws cloudformation describe-stacks \
+            --stack-name "$stack_name" \
+            --query 'Stacks[0].StackStatus' \
+            --output text 2>/dev/null || true
+        }
+
+        resolve_output_stack() {
+          local preferred="$1"
+          local fallback="$2"
+          local label="$3"
+          local status
+
+          status="$(get_stack_status "$preferred")"
+          case "$status" in
+            CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS)
+              printf '%s' "$preferred"
+              return 0
+              ;;
+          esac
+
+          if [ -n "$fallback" ]; then
+            echo "Using fallback ${label} stack: ${fallback} (preferred ${preferred} status: ${status:-missing})" >&2
+            printf '%s' "$fallback"
+            return 0
+          fi
+
+          echo "Missing required ${label} stack: ${preferred}" >&2
+          exit 1
+        }
+
         get_output() {
           local stack_name="$1"
           local output_key="$2"
@@ -365,14 +412,17 @@ jobs:
           printf '%s' "$value"
         }
 
-        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-        ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+        SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "SpaceportStagingStack" "spaceport")"
+        ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "SpaceportMLPipelineStagingStack" "ml")"
+
+        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
 
         echo "Deployment class: $DEPLOYMENT_CLASS"
         echo "Branch ID: ${BRANCH_ID:-<shared>}"
-        echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-        echo "ML stack: $ML_STACK_NAME"
+        echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+        echo "ML stack: $ML_OUTPUT_STACK"
         echo "Shared auth stack: $AUTH_STACK_NAME"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"
