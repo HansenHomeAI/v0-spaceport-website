@@ -364,8 +364,9 @@ export default function SogsViewerDevPanel() {
                 <details className="sogs-dev-details">
                   <summary>Notes</summary>
                   <p className="sogs-dev-details-body">
-                    Values apply to the viewer as you edit. Default rotation Z is 180° (PlayCanvas gsplat). FOV applies
-                    after the orbit camera updates. Paste copied JSON for maintainers to update{" "}
+                    Values apply to the viewer as you edit. Defaults match{" "}
+                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code> (PlayCanvas gsplat; includes Z = 180°). FOV
+                    applies after the orbit camera updates. Paste copied JSON for maintainers to update{" "}
                     <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
                   </p>
                 </details>

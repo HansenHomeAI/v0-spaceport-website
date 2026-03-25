@@ -4,7 +4,8 @@
  */
 export const SOGS_DEFAULT_SCENE = {
   position: [0, 0, 0] as [number, number, number],
-  rotation: [0, 0, 180] as [number, number, number],
+  /** From viewer copy scene JSON (2026-03-25); X noise rounded to 0 */
+  rotation: [0, -2.7, 180] as [number, number, number],
   scale: 1,
   fov: 60,
 } as const;
