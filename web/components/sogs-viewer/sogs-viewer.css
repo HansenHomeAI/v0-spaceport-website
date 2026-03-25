@@ -304,12 +304,6 @@
   color: rgba(255, 255, 255, 0.92);
 }
 
-.sogs-btn-copy {
-  flex: 0 0 auto;
-  width: 100%;
-  text-align: center;
-}
-
 .sogs-copy-row {
   display: flex;
   align-items: center;

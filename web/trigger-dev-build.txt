@@ -24,3 +24,4 @@
 2026-03-25 SOGS_DEFAULT_SCENE rotation X 0 Y 0 Z -90
 2026-03-25 SOGS_DEFAULT_SCENE rotation from pasted JSON X -82 Y -90 Z 0
 2026-03-25 sogs-viewer: do not overwrite rotation form from sogs:state (Euler ambiguity)
+2026-03-25 sogs-viewer remove Sync button

@@ -27,7 +27,6 @@ export default function SogsViewerDevPanel() {
   const [guides, setGuides] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
 
-  const [scene, setScene] = useState<SogsScenePayload>(() => createDefaultScenePayload());
   const [form, setForm] = useState<SogsScenePayload>(() => createDefaultScenePayload());
 
   const postToIframe = useCallback((payload: object) => {
@@ -93,34 +92,12 @@ export default function SogsViewerDevPanel() {
           /* ignore */
         }
         setForm(d);
-        setScene(d);
         setViewerState("ready");
       }
       if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
         if (ignoreNextSogsStateRef.current) {
           ignoreNextSogsStateRef.current = false;
-          return;
         }
-        const d = event.data;
-        if (
-          !Array.isArray(d.position) ||
-          d.position.length !== 3 ||
-          !Array.isArray(d.rotation) ||
-          d.rotation.length !== 3 ||
-          typeof d.scale !== "number" ||
-          typeof d.fov !== "number"
-        ) {
-          return;
-        }
-        const next: SogsScenePayload = {
-          position: [d.position[0], d.position[1], d.position[2]],
-          rotation: [d.rotation[0], d.rotation[1], d.rotation[2]],
-          scale: d.scale,
-          fov: d.fov,
-        };
-        // Only update `scene` here — not `form`. PlayCanvas reports Euler angles in a non-unique
-        // decomposition; overwriting the fields after each apply made Z edits show up on X, etc.
-        setScene(next);
       }
     };
     window.addEventListener("message", onMessage);
@@ -137,13 +114,6 @@ export default function SogsViewerDevPanel() {
     setInputUrl(raw);
     attemptLoad(raw);
   }, [attemptLoad]);
-
-  useEffect(() => {
-    if (!devOpen || !viewerSrc) {
-      return;
-    }
-    postToIframe({ type: "sogs:requestState" });
-  }, [devOpen, viewerSrc, postToIframe]);
 
   useEffect(() => {
     if (!activeUrl) {
@@ -194,10 +164,6 @@ export default function SogsViewerDevPanel() {
 
   const resetDev = () => {
     setForm(createDefaultScenePayload());
-  };
-
-  const syncFromScene = () => {
-    setForm(scene);
   };
 
   const copySceneJson = async () => {
@@ -372,31 +338,24 @@ export default function SogsViewerDevPanel() {
 
                 <div className="sogs-dev-actions">
                   <div className="sogs-dev-actions-row">
-                    <button
-                      type="button"
-                      className="sogs-btn-ghost"
-                      title="Replace fields with the viewer’s last reported transform (PlayCanvas may use a different Euler breakdown than you typed)"
-                      onClick={syncFromScene}
-                    >
-                      Sync
-                    </button>
                     <button type="button" className="sogs-btn-ghost" onClick={resetDev}>
                       Reset
                     </button>
-                  </div>
-                  <div className="sogs-copy-row">
-                    <button type="button" className="sogs-btn-ghost sogs-btn-copy" onClick={copySceneJson}>
+                    <button type="button" className="sogs-btn-ghost" onClick={copySceneJson}>
                       Copy JSON
                     </button>
-                    {copyFeedback ? <span className="sogs-copy-feedback">{copyFeedback}</span> : null}
                   </div>
+                  {copyFeedback ? (
+                    <div className="sogs-copy-row">
+                      <span className="sogs-copy-feedback">{copyFeedback}</span>
+                    </div>
+                  ) : null}
                 </div>
                 <details className="sogs-dev-details">
                   <summary>Notes</summary>
                   <p className="sogs-dev-details-body">
                     Rotation fields stay as you type them; the engine can represent the same pose with different Euler
-                    triples, so we do not overwrite the inputs on every frame. Use Sync to pull the
-                    viewer’s reported angles into the fields. Defaults match{" "}
+                    triples, so we do not overwrite the inputs from the iframe. Defaults match{" "}
                     <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code>. FOV applies after the orbit camera
                     updates. Paste copied JSON for maintainers to update{" "}
                     <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
