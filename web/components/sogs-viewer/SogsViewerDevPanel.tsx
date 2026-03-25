@@ -97,6 +97,14 @@ export default function SogsViewerDevPanel() {
       if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
         if (ignoreNextSogsStateRef.current) {
           ignoreNextSogsStateRef.current = false;
+          return;
+        }
+        const d = event.data as { position?: number[] };
+        if (Array.isArray(d.position) && d.position.length === 3) {
+          setForm((f) => ({
+            ...f,
+            position: [d.position[0], d.position[1], d.position[2]] as [number, number, number],
+          }));
         }
       }
     };
@@ -347,8 +355,9 @@ export default function SogsViewerDevPanel() {
                   <p className="sogs-dev-details-body">
                     Rotation fields stay as you type them; the engine can represent the same pose with different Euler
                     triples, so we do not overwrite the inputs from the iframe. Defaults match{" "}
-                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code>. FOV applies after the orbit camera
-                    updates. Paste copied JSON for maintainers to update{" "}
+                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code>.                     FOV applies after the orbit camera
+                    updates. Shift+drag translates the splat on the horizontal (world X/Z) plane; position is synced from
+                    the viewer. Paste copied JSON for maintainers to update{" "}
                     <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
                   </p>
                 </details>
@@ -358,7 +367,7 @@ export default function SogsViewerDevPanel() {
         </div>
         <p className="sogs-hint">
           {viewerState === "ready" && activeUrl
-            ? "Ready — orbit or fly with the embedded viewer controls."
+            ? "Ready — Shift+drag on the viewer moves the splat along world X/Z; left-drag orbits, right-drag pans the camera."
             : viewerState === "loading" && activeUrl
               ? "Loading bundle…"
               : activeUrl

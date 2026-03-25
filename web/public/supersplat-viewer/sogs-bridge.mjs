@@ -57,6 +57,76 @@ function hookCameraManagerFov(cameraManager) {
   };
 }
 
+/** Shift + left-drag: move splat in world XZ (Y unchanged). Capture phase so orbit does not run. */
+function setupSogsSplatWorldXzDrag(app) {
+  const canvas = app.graphicsDevice?.canvas;
+  if (!canvas) {
+    return;
+  }
+
+  let drag = null;
+  /** Pixels → world units; tuned for orbit-scale scenes */
+  const SENS = 0.0009;
+
+  const endDrag = (e) => {
+    if (!drag) {
+      return;
+    }
+    drag = null;
+    try {
+      canvas.releasePointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  canvas.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (!e.shiftKey || e.button !== 0) {
+        return;
+      }
+      const g = app.root.findByName("gsplat");
+      if (!g) {
+        return;
+      }
+      drag = { x: e.clientX, y: e.clientY };
+      canvas.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    },
+    true,
+  );
+
+  canvas.addEventListener(
+    "pointermove",
+    (e) => {
+      if (!drag) {
+        return;
+      }
+      const g = app.root.findByName("gsplat");
+      if (!g) {
+        endDrag(e);
+        return;
+      }
+      const dx = e.clientX - drag.x;
+      const dy = e.clientY - drag.y;
+      drag.x = e.clientX;
+      drag.y = e.clientY;
+      const p = g.getPosition();
+      g.setPosition(p.x + dx * SENS, p.y, p.z - dy * SENS);
+      app.renderNextFrame = true;
+      postSogsState();
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    },
+    true,
+  );
+
+  canvas.addEventListener("pointerup", endDrag, true);
+  canvas.addEventListener("pointercancel", endDrag, true);
+}
+
 function axisMaterial(rgb) {
   const m = new StandardMaterial();
   m.diffuse = new Color(0, 0, 0);
@@ -188,6 +258,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   hookCameraManagerFov(viewer.cameraManager);
+  setupSogsSplatWorldXzDrag(app);
 
   window.addEventListener("message", (event) => {
     const d = event.data;
