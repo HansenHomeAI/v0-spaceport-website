@@ -95,6 +95,11 @@ async function runScenario({ launcher, name, options }) {
     await page.waitForSelector(iframeSelector, { timeout: 60000 });
     await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
 
+    const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
+    assert(!!splatFrame, "supersplat iframe frame should exist");
+    const xzReady = await splatFrame.evaluate(() => window.__sogsSplatXzDragReady === true);
+    assert(xzReady, "sogs-bridge should set __sogsSplatXzDragReady on the viewer canvas");
+
     // Manual reload still works
     await page.click(submitSelector);
     await page.getByText(/Loading bundle/).waitFor({ state: "visible", timeout: 5000 }).catch(() => {});

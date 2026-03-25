@@ -356,8 +356,8 @@ export default function SogsViewerDevPanel() {
                     Rotation fields stay as you type them; the engine can represent the same pose with different Euler
                     triples, so we do not overwrite the inputs from the iframe. Defaults match{" "}
                     <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code>.                     FOV applies after the orbit camera
-                    updates. Two-finger drag (or middle mouse on desktop) translates the splat on the horizontal (world
-                    X/Z) plane; position is synced from
+                    updates. On a touchscreen use two fingers; on a trackpad use a two-finger scroll (not
+                    vertical-only, which zooms). Middle mouse on desktop. Position is synced from
                     the viewer. Paste copied JSON for maintainers to update{" "}
                     <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
                   </p>
@@ -368,7 +368,7 @@ export default function SogsViewerDevPanel() {
         </div>
         <p className="sogs-hint">
           {viewerState === "ready" && activeUrl
-            ? "Ready — two-finger drag moves the splat on world X/Z (middle mouse on desktop); left-drag orbits, right-drag pans the camera."
+            ? "Ready — two-finger touch or two-finger trackpad scroll moves the splat on X/Z (middle mouse on desktop); left-drag orbits."
             : viewerState === "loading" && activeUrl
               ? "Loading bundle…"
               : activeUrl

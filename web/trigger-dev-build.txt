@@ -30,3 +30,4 @@
 2026-03-25 sogs-viewer Shift+drag splat XZ + sync position from iframe
 2026-03-25 supersplat-viewer hide info settings fullscreen buttons
 2026-03-25 sogs splat XZ: two-finger drag + middle mouse (no shift)
+2026-03-25 sogs splat XZ: TouchEvent+wheel trackpad + iframe __sogsSplatXzDragReady test
