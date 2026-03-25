@@ -5,7 +5,7 @@
 export const SOGS_DEFAULT_SCENE = {
   position: [0, 0, 0] as [number, number, number],
   /** Euler ° (PlayCanvas order: X, Y, Z) */
-  rotation: [-90, -90, -90] as [number, number, number],
+  rotation: [0, 0, -90] as [number, number, number],
   scale: 1,
   fov: 60,
 } as const;
