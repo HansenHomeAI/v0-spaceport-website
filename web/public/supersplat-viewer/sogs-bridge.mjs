@@ -57,43 +57,82 @@ function hookCameraManagerFov(cameraManager) {
   };
 }
 
-/** Shift + left-drag: move splat in world XZ (Y unchanged). Capture phase so orbit does not run. */
+/**
+ * Move splat in world XZ (Y unchanged):
+ * - Two-finger touch drag (centroid), no modifier keys.
+ * - Middle mouse drag on desktop (left-drag stays orbit).
+ * Capture phase so the viewer does not orbit/pan at the same time.
+ */
 function setupSogsSplatWorldXzDrag(app) {
   const canvas = app.graphicsDevice?.canvas;
   if (!canvas) {
     return;
   }
 
-  let drag = null;
-  /** Pixels → world units; tuned for orbit-scale scenes */
+  /** Pixels → world units */
   const SENS = 0.0009;
 
-  const endDrag = (e) => {
-    if (!drag) {
+  /** @type {{ mode: "touch2" | "mouse"; x: number; y: number } | null} */
+  let drag = null;
+  /** pointerId → last client position (touch only) */
+  const touchPts = new Map();
+
+  const touchCentroid = () => {
+    if (touchPts.size < 2) {
+      return null;
+    }
+    const pts = [...touchPts.values()];
+    const a = pts[0];
+    const b = pts[1];
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  };
+
+  const applyDelta = (dx, dy, e) => {
+    const g = app.root.findByName("gsplat");
+    if (!g) {
       return;
     }
-    drag = null;
-    try {
-      canvas.releasePointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
+    const p = g.getPosition();
+    g.setPosition(p.x + dx * SENS, p.y, p.z - dy * SENS);
+    app.renderNextFrame = true;
+    postSogsState();
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  };
+
+  const syncTouchPoint = (e) => {
+    if (e.pointerType === "touch") {
+      touchPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     }
   };
 
   canvas.addEventListener(
     "pointerdown",
     (e) => {
-      if (!e.shiftKey || e.button !== 0) {
-        return;
-      }
       const g = app.root.findByName("gsplat");
       if (!g) {
         return;
       }
-      drag = { x: e.clientX, y: e.clientY };
-      canvas.setPointerCapture(e.pointerId);
-      e.preventDefault();
-      e.stopImmediatePropagation();
+      syncTouchPoint(e);
+      if (e.pointerType === "touch" && touchPts.size === 2) {
+        const c = touchCentroid();
+        if (c) {
+          drag = { mode: "touch2", x: c.x, y: c.y };
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+        return;
+      }
+      if (e.pointerType === "mouse" && e.button === 1) {
+        drag = { mode: "mouse", x: e.clientX, y: e.clientY };
+        try {
+          canvas.setPointerCapture(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
     },
     true,
   );
@@ -101,30 +140,69 @@ function setupSogsSplatWorldXzDrag(app) {
   canvas.addEventListener(
     "pointermove",
     (e) => {
+      syncTouchPoint(e);
+
+      if (!drag && e.pointerType === "touch" && touchPts.size >= 2) {
+        const c = touchCentroid();
+        if (c) {
+          drag = { mode: "touch2", x: c.x, y: c.y };
+        }
+      }
+
       if (!drag) {
         return;
       }
-      const g = app.root.findByName("gsplat");
-      if (!g) {
-        endDrag(e);
+
+      if (drag.mode === "touch2") {
+        if (touchPts.size < 2) {
+          drag = null;
+          return;
+        }
+        const c = touchCentroid();
+        if (!c) {
+          return;
+        }
+        const dx = c.x - drag.x;
+        const dy = c.y - drag.y;
+        drag.x = c.x;
+        drag.y = c.y;
+        applyDelta(dx, dy, e);
         return;
       }
-      const dx = e.clientX - drag.x;
-      const dy = e.clientY - drag.y;
-      drag.x = e.clientX;
-      drag.y = e.clientY;
-      const p = g.getPosition();
-      g.setPosition(p.x + dx * SENS, p.y, p.z - dy * SENS);
-      app.renderNextFrame = true;
-      postSogsState();
-      e.preventDefault();
-      e.stopImmediatePropagation();
+
+      if (drag.mode === "mouse") {
+        const dx = e.clientX - drag.x;
+        const dy = e.clientY - drag.y;
+        drag.x = e.clientX;
+        drag.y = e.clientY;
+        applyDelta(dx, dy, e);
+      }
     },
     true,
   );
 
-  canvas.addEventListener("pointerup", endDrag, true);
-  canvas.addEventListener("pointercancel", endDrag, true);
+  const endPointer = (e) => {
+    if (e.pointerType === "touch") {
+      touchPts.delete(e.pointerId);
+      if (drag?.mode === "touch2" && touchPts.size < 2) {
+        drag = null;
+      }
+      return;
+    }
+    if (e.pointerType === "mouse" && drag?.mode === "mouse") {
+      if (e.type === "pointercancel" || e.button === 1) {
+        drag = null;
+        try {
+          canvas.releasePointerCapture(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  };
+
+  canvas.addEventListener("pointerup", endPointer, true);
+  canvas.addEventListener("pointercancel", endPointer, true);
 }
 
 function axisMaterial(rgb) {
