@@ -66,6 +66,7 @@ export default function SogsViewerPage() {
     const normalized = normalizeBundleUrl(rawValue);
     if (!normalized) {
       setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
+      setViewerState("idle");
       return false;
     }
 
