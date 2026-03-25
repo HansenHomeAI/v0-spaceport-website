@@ -1,30 +1,19 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  buildSogsSceneExport,
+  createDefaultScenePayload,
+  type SogsScenePayload,
+} from "../../lib/sogsViewerSceneDefaults";
 import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
 import "./sogs-viewer.css";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 
-/** Matches PlayCanvas loadGsplat default local euler on the gsplat entity */
-const DEFAULT_ROT = { x: 0, y: 0, z: 180 };
-
-type SceneState = {
-  position: [number, number, number];
-  rotation: [number, number, number];
-  scale: number;
-  fov: number;
-};
-
-const defaultSceneState = (): SceneState => ({
-  position: [0, 0, 0],
-  rotation: [DEFAULT_ROT.x, DEFAULT_ROT.y, DEFAULT_ROT.z],
-  scale: 1,
-  fov: 60,
-});
-
 export default function SogsViewerDevPanel() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState("");
@@ -34,9 +23,10 @@ export default function SogsViewerDevPanel() {
 
   const [devOpen, setDevOpen] = useState(false);
   const [guides, setGuides] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
 
-  const [scene, setScene] = useState<SceneState>(defaultSceneState);
-  const [form, setForm] = useState<SceneState>(defaultSceneState);
+  const [scene, setScene] = useState<SogsScenePayload>(() => createDefaultScenePayload());
+  const [form, setForm] = useState<SogsScenePayload>(() => createDefaultScenePayload());
 
   const postToIframe = useCallback((payload: object) => {
     const win = iframeRef.current?.contentWindow;
@@ -50,23 +40,20 @@ export default function SogsViewerDevPanel() {
     }
   }, []);
 
-  const attemptLoad = useCallback(
-    (rawValue: string) => {
-      setError(null);
-      const normalized = normalizeBundleUrl(rawValue);
-      if (!normalized) {
-        setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
-        setViewerState("idle");
-        return false;
-      }
+  const attemptLoad = useCallback((rawValue: string) => {
+    setError(null);
+    const normalized = normalizeBundleUrl(rawValue);
+    if (!normalized) {
+      setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
+      setViewerState("idle");
+      return false;
+    }
 
-      setViewerState("loading");
-      setActiveUrl(normalized);
-      setIframeKey((prev) => prev + 1);
-      return true;
-    },
-    [],
-  );
+    setViewerState("loading");
+    setActiveUrl(normalized);
+    setIframeKey((prev) => prev + 1);
+    return true;
+  }, []);
 
   const viewerSrc = (() => {
     if (!activeUrl) {
@@ -101,7 +88,7 @@ export default function SogsViewerDevPanel() {
         ) {
           return;
         }
-        const next: SceneState = {
+        const next: SogsScenePayload = {
           position: [d.position[0], d.position[1], d.position[2]],
           rotation: [d.rotation[0], d.rotation[1], d.rotation[2]],
           scale: d.scale,
@@ -140,6 +127,32 @@ export default function SogsViewerDevPanel() {
     postToIframe({ type: "sogs:guides", enabled: guides });
   }, [guides, postToIframe, activeUrl, iframeKey]);
 
+  useEffect(() => {
+    if (!devOpen) {
+      return;
+    }
+    const onDoc = (e: MouseEvent) => {
+      const el = dropdownRef.current;
+      if (!el) {
+        return;
+      }
+      if (e.target instanceof Node && !el.contains(e.target)) {
+        setDevOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDevOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [devOpen]);
+
   const applyDev = () => {
     postToIframe({
       type: "sogs:apply",
@@ -151,7 +164,7 @@ export default function SogsViewerDevPanel() {
   };
 
   const resetDev = () => {
-    const d = defaultSceneState();
+    const d = createDefaultScenePayload();
     setForm(d);
     postToIframe({
       type: "sogs:apply",
@@ -164,6 +177,22 @@ export default function SogsViewerDevPanel() {
 
   const syncFromScene = () => {
     setForm(scene);
+  };
+
+  const copySceneJson = async () => {
+    const payload = buildSogsSceneExport({
+      bundleUrl: activeUrl || inputUrl.trim() || "",
+      scene: form,
+      guides,
+    });
+    const text = JSON.stringify(payload, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyFeedback("Copied");
+    } catch {
+      setCopyFeedback("Copy failed — try a secure context (HTTPS).");
+    }
+    window.setTimeout(() => setCopyFeedback(null), 2200);
   };
 
   const isSubmitDisabled = !inputUrl.trim();
@@ -201,9 +230,140 @@ export default function SogsViewerDevPanel() {
           </button>
         </div>
         <div className="sogs-toolbar-row">
-          <button type="button" className="sogs-btn-secondary" onClick={() => setDevOpen(true)}>
-            Scene & lens
-          </button>
+          <div className="sogs-dropdown-wrap" ref={dropdownRef}>
+            <button
+              type="button"
+              className="sogs-btn-secondary sogs-dropdown-trigger"
+              aria-expanded={devOpen}
+              aria-haspopup="dialog"
+              aria-controls="sogs-scene-panel"
+              onClick={() => setDevOpen((o) => !o)}
+            >
+              Scene & lens
+              <span className={`sogs-dropdown-chevron${devOpen ? " sogs-open" : ""}`} aria-hidden>
+                ▼
+              </span>
+            </button>
+            {devOpen ? (
+              <div
+                id="sogs-scene-panel"
+                className="sogs-dropdown-panel"
+                role="dialog"
+                aria-labelledby="sogs-dev-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="sogs-dev-header">
+                  <div id="sogs-dev-title" className="sogs-dev-title">
+                    Splat & camera
+                  </div>
+                  <button
+                    type="button"
+                    className="sogs-dev-close"
+                    aria-label="Close scene panel"
+                    onClick={() => setDevOpen(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="sogs-dev-grid">
+                  {(["x", "y", "z"] as const).map((axis, i) => (
+                    <div key={`p-${axis}`} className="sogs-dev-field">
+                      <label htmlFor={`pos-${axis}`}>Pos {axis.toUpperCase()}</label>
+                      <input
+                        id={`pos-${axis}`}
+                        type="number"
+                        step="0.001"
+                        value={form.position[i]}
+                        onChange={(e) => {
+                          const v = parseFloat(e.target.value);
+                          const next = [...form.position] as [number, number, number];
+                          next[i] = Number.isFinite(v) ? v : 0;
+                          setForm((f) => ({ ...f, position: next }));
+                        }}
+                      />
+                    </div>
+                  ))}
+                  {(["x", "y", "z"] as const).map((axis, i) => (
+                    <div key={`r-${axis}`} className="sogs-dev-field">
+                      <label htmlFor={`rot-${axis}`}>Rot {axis.toUpperCase()}°</label>
+                      <input
+                        id={`rot-${axis}`}
+                        type="number"
+                        step="0.1"
+                        value={form.rotation[i]}
+                        onChange={(e) => {
+                          const v = parseFloat(e.target.value);
+                          const next = [...form.rotation] as [number, number, number];
+                          next[i] = Number.isFinite(v) ? v : 0;
+                          setForm((f) => ({ ...f, rotation: next }));
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <div className="sogs-dev-field sogs-dev-field-full">
+                    <label htmlFor="splat-scale">Scale</label>
+                    <input
+                      id="splat-scale"
+                      type="number"
+                      step="0.01"
+                      min={0.01}
+                      value={form.scale}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        setForm((f) => ({ ...f, scale: Number.isFinite(v) ? Math.max(0.01, v) : 1 }));
+                      }}
+                    />
+                  </div>
+                  <div className="sogs-dev-field sogs-dev-field-full">
+                    <label htmlFor="cam-fov">FOV (°)</label>
+                    <input
+                      id="cam-fov"
+                      type="number"
+                      step="0.5"
+                      min={10}
+                      max={120}
+                      value={form.fov}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        setForm((f) => ({ ...f, fov: Number.isFinite(v) ? v : 60 }));
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <label className="sogs-dev-toggle-row">
+                  <input type="checkbox" checked={guides} onChange={(e) => setGuides(e.target.checked)} />
+                  Show axis guides (RGB = XYZ at splat origin)
+                </label>
+
+                <div className="sogs-dev-actions">
+                  <div className="sogs-dev-actions-row">
+                    <button type="button" className="sogs-btn-secondary" onClick={syncFromScene}>
+                      Sync from scene
+                    </button>
+                    <button type="button" className="sogs-btn-secondary" onClick={resetDev}>
+                      Reset defaults
+                    </button>
+                    <button type="button" className="sogs-btn-primary" onClick={applyDev}>
+                      Apply
+                    </button>
+                  </div>
+                  <div className="sogs-copy-row">
+                    <button type="button" className="sogs-btn-secondary" onClick={copySceneJson}>
+                      Copy scene JSON
+                    </button>
+                    {copyFeedback ? <span className="sogs-copy-feedback">{copyFeedback}</span> : null}
+                  </div>
+                </div>
+                <p className="sogs-dev-note">
+                  Defaults match the viewer: rotation Z = 180° (PlayCanvas gsplat). FOV is applied after the orbit camera
+                  updates each frame (dev override). Paste copied JSON so maintainers can update{" "}
+                  <code style={{ fontSize: "10px" }}>web/lib/sogsViewerSceneDefaults.ts</code>.
+                </p>
+              </div>
+            ) : null}
+          </div>
         </div>
         <p className="sogs-hint">
           {viewerState === "ready" && activeUrl
@@ -216,120 +376,6 @@ export default function SogsViewerDevPanel() {
         </p>
         {error ? <p className="sogs-error">{error}</p> : null}
       </form>
-
-      {devOpen ? (
-        <div
-          className="sogs-modal-backdrop"
-          role="presentation"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setDevOpen(false);
-            }
-          }}
-        >
-          <div className="sogs-modal" role="dialog" aria-labelledby="sogs-dev-title" onClick={(e) => e.stopPropagation()}>
-            <div className="sogs-modal-header">
-              <div id="sogs-dev-title" className="sogs-modal-title">
-                Splat & camera
-              </div>
-              <button type="button" className="sogs-modal-close" aria-label="Close" onClick={() => setDevOpen(false)}>
-                ×
-              </button>
-            </div>
-
-            <div className="sogs-modal-grid">
-              {(["x", "y", "z"] as const).map((axis, i) => (
-                <div key={`p-${axis}`} className="sogs-modal-field">
-                  <label htmlFor={`pos-${axis}`}>Pos {axis.toUpperCase()}</label>
-                  <input
-                    id={`pos-${axis}`}
-                    type="number"
-                    step="0.001"
-                    value={form.position[i]}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      const next = [...form.position] as [number, number, number];
-                      next[i] = Number.isFinite(v) ? v : 0;
-                      setForm((f) => ({ ...f, position: next }));
-                    }}
-                  />
-                </div>
-              ))}
-              {(["x", "y", "z"] as const).map((axis, i) => (
-                <div key={`r-${axis}`} className="sogs-modal-field">
-                  <label htmlFor={`rot-${axis}`}>Rot {axis.toUpperCase()}°</label>
-                  <input
-                    id={`rot-${axis}`}
-                    type="number"
-                    step="0.1"
-                    value={form.rotation[i]}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      const next = [...form.rotation] as [number, number, number];
-                      next[i] = Number.isFinite(v) ? v : 0;
-                      setForm((f) => ({ ...f, rotation: next }));
-                    }}
-                  />
-                </div>
-              ))}
-              <div className="sogs-modal-field sogs-modal-field-full">
-                <label htmlFor="splat-scale">Scale</label>
-                <input
-                  id="splat-scale"
-                  type="number"
-                  step="0.01"
-                  min={0.01}
-                  value={form.scale}
-                  onChange={(e) => {
-                    const v = parseFloat(e.target.value);
-                    setForm((f) => ({ ...f, scale: Number.isFinite(v) ? Math.max(0.01, v) : 1 }));
-                  }}
-                />
-              </div>
-              <div className="sogs-modal-field sogs-modal-field-full">
-                <label htmlFor="cam-fov">FOV (°)</label>
-                <input
-                  id="cam-fov"
-                  type="number"
-                  step="0.5"
-                  min={10}
-                  max={120}
-                  value={form.fov}
-                  onChange={(e) => {
-                    const v = parseFloat(e.target.value);
-                    setForm((f) => ({ ...f, fov: Number.isFinite(v) ? v : 60 }));
-                  }}
-                />
-              </div>
-            </div>
-
-            <label className="sogs-modal-toggle-row">
-              <input
-                type="checkbox"
-                checked={guides}
-                onChange={(e) => setGuides(e.target.checked)}
-              />
-              Show axis guides (RGB = XYZ at splat origin)
-            </label>
-
-            <div className="sogs-modal-actions">
-              <button type="button" className="sogs-btn-secondary" onClick={syncFromScene}>
-                Sync from scene
-              </button>
-              <button type="button" className="sogs-btn-secondary" onClick={resetDev}>
-                Reset defaults
-              </button>
-              <button type="button" className="sogs-btn-primary" onClick={applyDev}>
-                Apply
-              </button>
-            </div>
-            <p className="sogs-modal-note">
-              Defaults match the viewer: rotation Z = 180° (PlayCanvas gsplat). FOV is applied after the orbit camera
-              updates each frame (dev override).
-            </p>
-          </div>
-        </div>
-      ) : null}
     </main>
   );
 }
