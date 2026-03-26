@@ -8,7 +8,7 @@
 # - Vocabulary tree: we pre-create /opt/colmap/vocab and allow runtime download fallback
 #   from the official COLMAP host to avoid brittle build-time network coupling.
 
-ARG BASE_IMAGE=public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04
+ARG BASE_IMAGE=public.ecr.aws/nvidia/cuda:12.9.1-devel-ubuntu22.04
 FROM ${BASE_IMAGE}
 
 WORKDIR /opt
