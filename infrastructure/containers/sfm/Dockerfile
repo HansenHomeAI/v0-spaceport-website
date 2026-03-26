@@ -8,7 +8,7 @@
 # - Vocabulary tree: we pre-create /opt/colmap/vocab and allow runtime download fallback
 #   from the official COLMAP host to avoid brittle build-time network coupling.
 
-FROM public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04
+FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.1.0-gpu-py310-cu121-ubuntu20.04-sagemaker
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
