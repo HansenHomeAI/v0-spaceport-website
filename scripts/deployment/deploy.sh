@@ -95,27 +95,34 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
-  local build_stage="app"
+  local uses_base_image=0
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
   local ecr_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}"
   local container_dir="${PROJECT_ROOT}/infrastructure/containers/${container_name}"
+  local dockerfile_path="${container_dir}/Dockerfile"
 
   if [[ ! -d "$container_dir" ]]; then
     error "Container directory not found: ${container_dir}"
   fi
 
   log "Building container from: ${container_dir}"
+
+  if grep -Eq '^[[:space:]]*FROM[[:space:]]+(\$\{BASE_IMAGE\}|\$BASE_IMAGE)([[:space:]]|$)' "${dockerfile_path}"; then
+    uses_base_image=1
+  fi
   
   # Try to pull existing image for layer caching
   log "Pulling existing image and cache for layer reuse..."
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
-  docker pull "${base_image}" || log "No base image yet for ${container_name}"
+  if [[ "${uses_base_image}" = "1" ]]; then
+    docker pull "${base_image}" || log "No base image yet for ${container_name}"
+  fi
   
   # Build base image if missing
-  if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
+  if [[ "${uses_base_image}" = "1" ]] && ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
     local base_file="${container_dir}/Dockerfile.base"
     if [[ -f "$base_file" ]]; then
       log "Building base image for ${container_name}..."
@@ -148,7 +155,6 @@ deploy_container() {
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
-    --cache-from "${base_image}" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \
