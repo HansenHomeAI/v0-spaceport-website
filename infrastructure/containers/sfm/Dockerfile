@@ -3,7 +3,7 @@
 # Non-obvious choices:
 # - Base image: CUDA 11.8 + Ubuntu 22.04 keeps compatibility with g4dn (T4) while
 #   using a modern compiler toolchain that COLMAP builds cleanly with.
-# - Build flags: COLMAP is compiled with CUDA enabled (CUDA_ARCHS=native) so GPU SIFT
+# - Build flags: COLMAP is compiled with CUDA enabled (CUDA arch 75 for T4).
 #   extraction/matching is available at runtime.
 # - Vocabulary tree: we pre-create /opt/colmap/vocab and allow runtime download fallback
 #   from the official COLMAP host to avoid brittle build-time network coupling.
