@@ -10,3 +10,4 @@
 2026-03-07 terrain-toggle-row align/justify flex-start
 2026-03-26T18:29:18Z COLMAP GPU SfM swap with branch-tagged preview image pinning
 2026-03-26T18:36:28Z avoid auth-stack redeploy on ML-only preview pushes
+2026-03-26T18:41:46Z rebuild sfm container from public ECR Ubuntu to avoid Docker Hub rate limits

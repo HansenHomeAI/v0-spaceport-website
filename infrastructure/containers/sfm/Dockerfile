@@ -1,28 +1,82 @@
-# Official CUDA-enabled COLMAP runtime, pinned so CodeBuild stays reproducible.
-FROM colmap/colmap:20260318.6455
+# Build from AWS Public ECR Ubuntu instead of Docker Hub's prebuilt COLMAP
+# image, because CodeBuild hits Docker Hub pull-rate limits on unattended CI.
+FROM public.ecr.aws/lts/ubuntu:22.04
 
-# Modern COLMAP expects a FAISS vocab tree, so the runtime script builds one
-# from the extracted descriptors instead of downloading the legacy public FLANN
-# tree. GPU SIFT and matching stay configurable in the entrypoint so the same
-# image can still be probed on CPU-only hosts, while ml.g4dn.xlarge runs with
-# CUDA enabled by default.
+# Pin the COLMAP release and compile only T4-compatible CUDA kernels to keep
+# rebuilds reproducible and the CodeBuild compile time reasonable for
+# ml.g4dn.xlarge runtime targets.
+ARG COLMAP_VERSION=4.0.2
+
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
-    COLMAP_VOCAB_TREE_PATH=/opt/ml/code/resources/colmap_vocab_tree.faiss
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
+    CUDA_HOME=/usr/local/cuda \
+    PATH=/usr/local/cuda/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH} \
+    COLMAP_VOCAB_TREE_PATH=/opt/ml/code/resources/colmap_vocab_tree.faiss \
+    CC=/usr/bin/gcc-10 \
+    CXX=/usr/bin/g++-10 \
+    CUDAHOSTCXX=/usr/bin/g++-10
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        gnupg2 \
+        wget && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && \
+    rm cuda-keyring_1.1-1_all.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        gcc-10 \
+        g++-10 \
+        ninja-build \
+        cuda-toolkit-12-4 \
+        libboost-program-options-dev \
+        libboost-graph-dev \
+        libboost-system-dev \
+        libcgal-dev \
+        libceres-dev \
+        libcurl4-openssl-dev \
+        libeigen3-dev \
+        libfreeimage-dev \
+        libglew-dev \
+        libgoogle-glog-dev \
+        libgmock-dev \
+        libgtest-dev \
         libimage-exiftool-perl \
+        libmetis-dev \
+        libopenblas-dev \
+        libsqlite3-dev \
+        libssl-dev \
+        python-is-python3 \
         python3 \
         python3-pip \
         python3-venv \
-        python-is-python3 \
         sqlite3 \
         unzip && \
     rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /tmp/colmap-src && \
+    curl -fsSL "https://github.com/colmap/colmap/archive/refs/tags/${COLMAP_VERSION}.tar.gz" | tar -xz --strip-components=1 -C /tmp/colmap-src && \
+    cmake -S /tmp/colmap-src -B /tmp/colmap-build \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_CUDA_ARCHITECTURES=75 \
+        -DCUDA_ENABLED=ON \
+        -DGUI_ENABLED=OFF \
+        -DOPENGL_ENABLED=OFF \
+        -DTESTS_ENABLED=OFF \
+        -DBLA_VENDOR=OpenBLAS && \
+    cmake --build /tmp/colmap-build --parallel "$(nproc)" && \
+    cmake --install /tmp/colmap-build && \
+    rm -rf /tmp/colmap-src /tmp/colmap-build
 
 RUN mkdir -p /opt/ml/code /opt/ml/code/resources /opt/ml/processing/input /opt/ml/processing/output
 
