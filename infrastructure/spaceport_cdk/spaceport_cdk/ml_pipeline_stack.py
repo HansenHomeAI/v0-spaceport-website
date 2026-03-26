@@ -45,6 +45,7 @@ class MLPipelineStack(Stack):
         self.s3_client = boto3.client('s3', region_name=region)
         self.ecr_client = boto3.client('ecr', region_name=region)
         self.cloudwatch_client = boto3.client('cloudwatch', region_name=region)
+        self.cloudformation_client = boto3.client('cloudformation', region_name=region)
         self.iam_client = boto3.client('iam', region_name=region)
 
         if self.deployment_class == "branch-preview":
@@ -779,38 +780,42 @@ class MLPipelineStack(Stack):
             }
         )
 
-        # ========== API GATEWAY ==========
-        # Create API Gateway for ML pipeline
-        ml_api = apigw.RestApi(
-            self, "SpaceportMLApi",
-            rest_api_name=f"Spaceport-ML-API-{suffix}",
-            description="API for ML processing pipeline",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,
-                allow_methods=apigw.Cors.ALL_METHODS,
-                allow_headers=["Content-Type", "Authorization"]
+        ml_api_url = self._get_stack_output("SpaceportMLPipelineStagingStack", "MLPipelineApiUrl")
+        if self.deployment_class != "branch-preview":
+            # Shared environments keep the public API entrypoint; branch previews
+            # invoke the scoped Lambda directly to avoid exhausting the account's
+            # EDGE API Gateway quota.
+            ml_api = apigw.RestApi(
+                self, "SpaceportMLApi",
+                rest_api_name=f"Spaceport-ML-API-{suffix}",
+                description="API for ML processing pipeline",
+                default_cors_preflight_options=apigw.CorsOptions(
+                    allow_origins=apigw.Cors.ALL_ORIGINS,
+                    allow_methods=apigw.Cors.ALL_METHODS,
+                    allow_headers=["Content-Type", "Authorization"]
+                )
             )
-        )
 
-        # Add /start-job endpoint
-        start_job_resource = ml_api.root.add_resource("start-job")
-        start_job_resource.add_method(
-            "POST",
-            apigw.LambdaIntegration(
-                start_job_lambda,
-                proxy=True
+            # Add /start-job endpoint
+            start_job_resource = ml_api.root.add_resource("start-job")
+            start_job_resource.add_method(
+                "POST",
+                apigw.LambdaIntegration(
+                    start_job_lambda,
+                    proxy=True
+                )
             )
-        )
 
-        # Add /stop-job endpoint
-        stop_job_resource = ml_api.root.add_resource("stop-job")
-        stop_job_resource.add_method(
-            "POST",
-            apigw.LambdaIntegration(
-                stop_job_lambda,
-                proxy=True
+            # Add /stop-job endpoint
+            stop_job_resource = ml_api.root.add_resource("stop-job")
+            stop_job_resource.add_method(
+                "POST",
+                apigw.LambdaIntegration(
+                    stop_job_lambda,
+                    proxy=True
+                )
             )
-        )
+            ml_api_url = ml_api.url
 
         # ========== CLOUDWATCH ALARMS ==========
         # Alarm for Step Function failures with environment-specific naming
@@ -831,13 +836,13 @@ class MLPipelineStack(Stack):
         # ========== OUTPUTS ==========
         CfnOutput(
             self, "MLApiUrl",
-            value=ml_api.url,
+            value=ml_api_url,
             description="ML Pipeline API Gateway URL"
         )
 
         CfnOutput(
             self, "MLPipelineApiUrl",
-            value=ml_api.url,
+            value=ml_api_url,
             description="ML Pipeline API Gateway URL"
         )
 
@@ -896,6 +901,14 @@ class MLPipelineStack(Stack):
             return True
         except Exception:
             return False
+
+    def _get_stack_output(self, stack_name: str, output_key: str) -> str:
+        """Resolve a CloudFormation stack output value."""
+        response = self.cloudformation_client.describe_stacks(StackName=stack_name)
+        for output in response["Stacks"][0].get("Outputs", []):
+            if output.get("OutputKey") == output_key:
+                return output.get("OutputValue", "")
+        raise ValueError(f"Missing CloudFormation output {output_key} on stack {stack_name}")
 
     def _ecr_repo_exists(self, repo_name: str) -> bool:
         """Check if an ECR repository exists"""
