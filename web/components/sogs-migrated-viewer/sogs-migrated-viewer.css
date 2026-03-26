@@ -1,0 +1,119 @@
+.sogs-migrated-root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #000;
+}
+
+.sogs-migrated-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.sogs-migrated-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+.sogs-migrated-chrome {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), transparent);
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.sogs-migrated-chrome button,
+.sogs-migrated-chrome input[type="url"],
+.sogs-migrated-chrome label {
+  pointer-events: auto;
+}
+
+.sogs-migrated-title {
+  margin: 0;
+  font-weight: 600;
+  flex: 1 1 auto;
+}
+
+.sogs-migrated-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sogs-migrated-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.sogs-migrated-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sogs-migrated-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.sogs-migrated-url {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.sogs-migrated-url input[type="url"] {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+.sogs-migrated-url button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+}
+
+.sogs-migrated-error {
+  width: 100%;
+  margin: 0;
+  color: #f88;
+  font-size: 13px;
+}
+
+.sogs-migrated-status {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.85;
+}

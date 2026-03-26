@@ -9,7 +9,12 @@ import {
   Mesh,
   MeshInstance,
   StandardMaterial,
+  Vec3,
 } from "https://esm.sh/playcanvas@2.13.2";
+
+/** Parent-driven camera (position + look-at). When `sogs:cameraMode` is `scripted`, orbit input is skipped. */
+const tmpFrom = new Vec3();
+const tmpTo = new Vec3();
 
 const AXIS_LEN = 45;
 const AXIS_RADIUS = 0.28;
@@ -47,12 +52,29 @@ function postSogsState() {
   }
 }
 
-function hookCameraManagerFov(cameraManager) {
-  const orig = cameraManager.update.bind(cameraManager);
+/**
+ * Wraps CameraManager.update: free orbit vs scripted pose from `window.__sogsCameraPose`.
+ * `sogs:cameraMode` sets `window.__sogsScriptedCamera` (true = scripted).
+ */
+function setupCameraManagerBridge(cameraManager) {
+  const origUpdate = cameraManager.update.bind(cameraManager);
   cameraManager.update = (dt, frame) => {
-    orig(dt, frame);
-    if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
-      cameraManager.camera.fov = window.__sogsUserFov;
+    if (window.__sogsScriptedCamera) {
+      const pose = window.__sogsCameraPose;
+      if (pose?.position?.length === 3 && pose?.target?.length === 3) {
+        tmpFrom.set(pose.position[0], pose.position[1], pose.position[2]);
+        tmpTo.set(pose.target[0], pose.target[1], pose.target[2]);
+        cameraManager.camera.look(tmpFrom, tmpTo);
+        if (typeof pose.fov === "number" && Number.isFinite(pose.fov)) {
+          cameraManager.camera.fov = pose.fov;
+          window.__sogsUserFov = pose.fov;
+        }
+      }
+    } else {
+      origUpdate(dt, frame);
+      if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
+        cameraManager.camera.fov = window.__sogsUserFov;
+      }
     }
   };
 }
@@ -449,7 +471,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 30);
   });
 
-  hookCameraManagerFov(viewer.cameraManager);
+  setupCameraManagerBridge(viewer.cameraManager);
   setupSogsSplatWorldXzDrag(app);
 
   window.addEventListener("message", (event) => {
@@ -483,6 +505,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (d.type === "sogs:requestState") {
       postSogsState();
+    }
+    if (d.type === "sogs:cameraLookAt") {
+      window.__sogsCameraPose = {
+        position: d.position,
+        target: d.target,
+        fov: d.fov,
+      };
+      app.renderNextFrame = true;
+    }
+    if (d.type === "sogs:cameraMode") {
+      const scripted = d.mode === "scripted" || d.scripted === true;
+      window.__sogsScriptedCamera = !!scripted;
+      app.renderNextFrame = true;
     }
   });
 });
