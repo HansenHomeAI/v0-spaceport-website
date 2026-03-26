@@ -1,111 +1,44 @@
-# Production OpenSfM Container with GPS-Constrained Reconstruction - Multi-Stage Build
-# Optimized for layer caching and build efficiency
+# COLMAP GPU SfM container for SageMaker processing jobs.
+# Non-obvious choices:
+# - CUDA 12.3 + Ubuntu 22.04 works with T4 on ml.g4dn.xlarge.
+# - COLMAP is compiled from source with CUDA so GPU SIFT/matching are guaranteed.
+# - The official 100K/32K vocabulary tree is bundled at build-time for deterministic runtime behavior.
 
-# Stage 1: Base system with dependencies  
-FROM python:3.9-slim-bullseye AS base
+FROM nvidia/cuda:12.3.2-devel-ubuntu22.04
 
-# Set environment to avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    COLMAP_VOCAB_TREE=/opt/ml/code/vocab_tree_flickr100K_words32K.bin
 
-# Install system dependencies for OpenSfM and GPS processing (cached layer)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        build-essential \
-        cmake \
-        git \
-        wget \
-        curl \
-        unzip \
-        ca-certificates \
-        pkg-config \
-        libeigen3-dev \
-        libopencv-dev \
-        libceres-dev \
-        libgoogle-glog-dev \
-        libgflags-dev \
-        libopenblas-dev \
-        libsuitesparse-dev \
-        libproj-dev \
-        libgdal-dev \
-        python3-dev \
-        libboost-all-dev \
-        libyaml-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake ninja-build git wget curl ca-certificates \
+    libboost-program-options-dev libboost-filesystem-dev libboost-graph-dev \
+    libboost-system-dev libboost-test-dev libeigen3-dev libsuitesparse-dev \
+    libfreeimage-dev libmetis-dev libgoogle-glog-dev libgflags-dev \
+    libsqlite3-dev libglew-dev qtbase5-dev libqt5opengl5-dev libcgal-dev \
+    python3 python3-pip python3-dev python3-setuptools python3-wheel \
+    && rm -rf /var/lib/apt/lists/*
 
-# Stage 2: Python dependencies
-FROM base AS python-deps
+RUN git clone --depth 1 https://github.com/colmap/colmap.git /opt/colmap && \
+    cmake -S /opt/colmap -B /opt/colmap/build -GNinja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCUDA_ENABLED=ON \
+      -DGUI_ENABLED=OFF && \
+    cmake --build /opt/colmap/build && \
+    cmake --install /opt/colmap/build && \
+    rm -rf /opt/colmap
 
-# Create working directories
-RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output
+COPY requirements.txt /tmp/requirements.txt
+RUN python3 -m pip install --no-cache-dir --upgrade pip && \
+    python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm -f /tmp/requirements.txt
 
-# Copy requirements first for better caching
-COPY requirements.txt /opt/ml/code/
-
-# Install Python dependencies together to ensure numpy<2.0 constraint
-RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
-    && pip3 install --no-cache-dir sphinx==4.5.0 \
-    && pip3 cache purge \
-    && rm -rf ~/.cache/pip
-
-# Stage 3: OpenSfM build
-FROM python-deps AS opensfm-build
-
-# Clone and build OpenSfM with explicit glog path configuration
-RUN cd /opt && \
-    git clone --depth 1 https://github.com/mapillary/OpenSfM.git && \
-    cd OpenSfM && \
-    git submodule update --init --recursive && \
-    mkdir -p cmake_build && \
-    cd cmake_build && \
-    cmake ../opensfm/src \
-        -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
-        -DGLOG_INCLUDE_DIR=/usr/include \
-        -DGLOG_LIBRARY=/usr/lib/x86_64-linux-gnu/libglog.so && \
-    make && \
-    cd .. && \
-    cp -r opensfm /usr/local/lib/python3.9/site-packages/ && \
-    cp -r bin /usr/local/ && \
-    chmod +x /usr/local/bin/* && \
-    rm -rf /opt/OpenSfM/.git
-
-# Stage 4: Application code
-FROM opensfm-build AS app-build
-
-# Base layers already include heavy deps; keep this layer minimal for fast rebuilds (canary edit)
-# Copy processing scripts (most frequently changed)
-COPY run_sfm.sh /opt/ml/code/run_sfm.sh
-COPY run_opensfm_gps.py /opt/ml/code/run_opensfm_gps.py
-COPY gps_processor.py /opt/ml/code/gps_processor.py
-COPY gps_processor_3d.py /opt/ml/code/gps_processor_3d.py
-COPY colmap_converter.py /opt/ml/code/colmap_converter.py
-COPY config_template.yaml /opt/ml/code/config_template.yaml
-
-# Make scripts executable
-RUN chmod +x /opt/ml/code/run_sfm.sh \
-    && chmod +x /opt/ml/code/run_opensfm_gps.py
-
-# Stage 5: Final runtime image
-FROM app-build AS runtime
-
-# Create non-root user for security but don't switch to it yet
-RUN useradd --create-home --shell /bin/bash sagemaker \
-    && chown -R sagemaker:sagemaker /opt/ml
-
-# Set working directory
 WORKDIR /opt/ml/code
+COPY run_sfm.sh /opt/ml/code/run_sfm.sh
+COPY run_colmap_gps.py /opt/ml/code/run_colmap_gps.py
 
-# OpenSfM is now installed in site-packages, no need for custom PYTHONPATH
-# The opensfm module will be importable directly via Python's standard import mechanism
+RUN chmod +x /opt/ml/code/run_sfm.sh /opt/ml/code/run_colmap_gps.py && \
+    wget -O /opt/ml/code/vocab_tree_flickr100K_words32K.bin \
+      https://demuc.de/colmap/vocab_tree_flickr100K_words32K.bin
 
-# Pre-create the output directory structure with proper permissions
-RUN mkdir -p /opt/ml/processing/output/sparse /opt/ml/processing/output/dense \
-    && chmod -R 755 /opt/ml/processing/output
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import opensfm; print('OpenSfM available')" || exit 1
-
-# Stay as root for SageMaker compatibility and directory creation
-# Use the expected script name as the entrypoint
-ENTRYPOINT ["/opt/ml/code/run_sfm.sh"] 
+ENTRYPOINT ["/opt/ml/code/run_sfm.sh"]
