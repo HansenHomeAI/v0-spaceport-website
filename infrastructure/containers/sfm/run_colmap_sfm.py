@@ -260,9 +260,9 @@ class ColmapPipeline:
                 "vocab_tree_matcher",
                 "--database_path",
                 str(self.database_path),
-                "--FeatureMatching.use_gpu",
+                "--SiftMatching.use_gpu",
                 "1" if self.use_gpu else "0",
-                "--FeatureMatching.guided_matching",
+                "--SiftMatching.guided_matching",
                 "1",
                 "--VocabTreeMatching.vocab_tree_path",
                 str(self.active_vocab_tree_path),
@@ -285,14 +285,14 @@ class ColmapPipeline:
             "1",
             "--ImageReader.camera_model",
             "SIMPLE_RADIAL",
-            "--FeatureExtraction.use_gpu",
+            "--SiftExtraction.use_gpu",
             "1" if self.use_gpu else "0",
             "--SiftExtraction.max_num_features",
             str(self.max_features),
         ]
         max_image_size = os.environ.get("COLMAP_FEATURE_MAX_IMAGE_SIZE")
         if max_image_size:
-            command.extend(["--FeatureExtraction.max_image_size", max_image_size])
+            command.extend(["--SiftExtraction.max_image_size", max_image_size])
         stream_command(command, stage="feature_extractor")
         self.timings["feature_extraction_seconds"] = round(time.time() - started, 2)
 
@@ -306,9 +306,9 @@ class ColmapPipeline:
                     "spatial_matcher",
                     "--database_path",
                     str(self.database_path),
-                    "--FeatureMatching.use_gpu",
+                    "--SiftMatching.use_gpu",
                     "1" if self.use_gpu else "0",
-                    "--FeatureMatching.guided_matching",
+                    "--SiftMatching.guided_matching",
                     "1",
                     "--SpatialMatching.ignore_z",
                     "0",
