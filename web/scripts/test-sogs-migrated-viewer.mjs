@@ -40,9 +40,9 @@ function assert(condition, message) {
 
   const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
   assert(!!splatFrame, "supersplat iframe frame exists");
-  await page.waitForTimeout(3000);
-  const xzReady = await splatFrame.evaluate(() => window.__sogsSplatXzDragReady === true);
-  assert(xzReady, "sogs-bridge sets __sogsSplatXzDragReady");
+  await splatFrame.waitForFunction(() => window.__sogsSplatXzDragReady === true, null, {
+    timeout: 120000,
+  });
 
   await page.waitForSelector('[data-testid="animation-path-panel"]', { timeout: 30000 });
   await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
