@@ -44,11 +44,13 @@ function assert(condition, message) {
     timeout: 120000,
   });
 
-  await page.waitForSelector('[data-testid="animation-path-panel"]', { timeout: 30000 });
   await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
   await page.getByTestId("focus-scene-center").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("animation-path-panel").locator("button.animation-path-toggle").click();
-  await page.waitForSelector('[data-testid="animation-path-checkpoints"] li', { timeout: 10000 });
+  await page.getByTestId("path-editor-toggle").click();
+  await page.waitForSelector('[data-testid="animation-path-panel"].active', { timeout: 10000 });
+  await page.waitForSelector('[data-testid="animation-path-checkpoints"] .animation-checkpoint-item', {
+    timeout: 10000,
+  });
 
   const shot = path.join(logsDir, "sogs-migrated-viewer-smoke.png");
   await page.screenshot({ path: shot, fullPage: true });
