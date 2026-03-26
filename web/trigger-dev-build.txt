@@ -33,3 +33,4 @@
 2026-03-25 sogs splat XZ: TouchEvent+wheel trackpad + iframe __sogsSplatXzDragReady test
 2026-03-25 sogs-migrated-viewer: tap dots, lot lines, compass, vignette, sogs:cameraPose bridge
 2026-03-25 sogs-migrated-viewer page + bridge cameraLookAt/cameraMode
+2026-03-25 sogs-migrated-viewer path editor, sold labels, hole picker, focus scene + smoke tests
