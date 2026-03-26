@@ -41,7 +41,7 @@ export function createInitialPathState(params: {
   };
 }
 
-function getPathSegmentCount(state: PathAnimationState): number {
+export function getPathSegmentCount(state: PathAnimationState): number {
   const count = state.checkpoints.length;
   if (count < 2) return 0;
   return state.loop ? count : count - 1;
