@@ -31,4 +31,5 @@
 2026-03-25 supersplat-viewer hide info settings fullscreen buttons
 2026-03-25 sogs splat XZ: two-finger drag + middle mouse (no shift)
 2026-03-25 sogs splat XZ: TouchEvent+wheel trackpad + iframe __sogsSplatXzDragReady test
+2026-03-25 sogs-migrated-viewer page + bridge cameraLookAt/cameraMode
 2026-03-25 sogs-bridge: fix focus math (euler angles as numbers; esm vs bundled Vec3)
