@@ -133,6 +133,7 @@ def lambda_handler(event, context):
         
         # Fallback repo names (shared repos without suffix)
         sfm_repo_fallback = os.environ.get('SFM_ECR_REPO_FALLBACK', 'spaceport/sfm')
+        sfm_image_tag = os.environ.get('SFM_IMAGE_TAG', 'latest')
         gaussian_repo_fallback = os.environ.get('GAUSSIAN_ECR_REPO_FALLBACK', 'spaceport/3dgs')
         compressor_repo_fallback = os.environ.get('COMPRESSOR_ECR_REPO_FALLBACK', 'spaceport/compressor')
         
@@ -141,14 +142,14 @@ def lambda_handler(event, context):
         
         # Resolve ECR image URIs with fallback logic
         # Try branch-specific repo first, fallback to shared repo if it doesn't exist
-        def resolve_ecr_uri(repo_name, fallback_repo_name):
+        def resolve_ecr_uri(repo_name, fallback_repo_name, image_tag='latest'):
             """Resolve ECR URI, trying branch-specific repo first, then fallback"""
             ecr_client = boto3.client('ecr', region_name=region)
             # Try branch-specific repo first
             try:
                 ecr_client.describe_repositories(repositoryNames=[repo_name])
                 print(f"Using branch-specific ECR repo: {repo_name}")
-                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repo_name}:latest"
+                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repo_name}:{image_tag}"
             except Exception as e:
                 # Check if it's a repository not found error
                 error_code = e.response.get('Error', {}).get('Code', '') if hasattr(e, 'response') else ''
@@ -157,17 +158,17 @@ def lambda_handler(event, context):
                     try:
                         ecr_client.describe_repositories(repositoryNames=[fallback_repo_name])
                         print(f"Branch-specific repo {repo_name} not found, using fallback: {fallback_repo_name}")
-                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:{image_tag}"
                     except Exception as e2:
                         # If fallback also doesn't exist, use it anyway (will fail at runtime with clear error)
                         print(f"Warning: Neither {repo_name} nor {fallback_repo_name} found, using fallback")
-                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:{image_tag}"
                 else:
                     # On any other error, use fallback
                     print(f"Error checking repo {repo_name}: {str(e)}, using fallback: {fallback_repo_name}")
-                    return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                    return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:{image_tag}"
         
-        sfm_image_uri = resolve_ecr_uri(sfm_repo, sfm_repo_fallback)
+        sfm_image_uri = resolve_ecr_uri(sfm_repo, sfm_repo_fallback, sfm_image_tag)
         gaussian_image_uri = resolve_ecr_uri(gaussian_repo, gaussian_repo_fallback)
         compressor_image_uri = resolve_ecr_uri(compressor_repo, compressor_repo_fallback)
         
