@@ -1,10 +1,12 @@
 # Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay reproducible.
 FROM colmap/colmap:20260318.6455
 
-# Keep the vocab tree source in the image config so jobs can download the official
-# pre-trained tree from demuc.de on first boot without baking a 118 MB artifact into ECR.
-# GPU SIFT/matching flags stay in the runtime script so the same image can still be probed
-# on CPU-only hosts by setting COLMAP_USE_GPU=0, while ml.g4dn.xlarge runs on CUDA by default.
+# Keep the vocab tree URL configurable so jobs can try the public COLMAP tree
+# without baking a large binary into ECR; the runtime script rebuilds a FAISS
+# index from the extracted descriptors when a legacy FLANN tree is encountered.
+# GPU SIFT/matching flags stay in the runtime script so the same image can still
+# be probed on CPU-only hosts by setting COLMAP_USE_GPU=0, while ml.g4dn.xlarge
+# runs on CUDA by default.
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
