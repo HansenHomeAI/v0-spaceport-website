@@ -54,6 +54,7 @@ RUN apt-get update && \
         libmetis-dev \
         libopenblas-dev \
         libopenimageio-dev \
+        libopenexr-dev \
         libsqlite3-dev \
         libssl-dev \
         python-is-python3 \
