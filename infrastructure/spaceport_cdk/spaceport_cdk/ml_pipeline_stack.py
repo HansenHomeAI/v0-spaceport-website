@@ -322,6 +322,7 @@ class MLPipelineStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
+            role=lambda_role,
             timeout=Duration.seconds(60),
             memory_size=512,
             environment={
@@ -765,6 +766,7 @@ class MLPipelineStack(Stack):
 
         # Update start job lambda with Step Function ARN
         start_job_lambda.add_environment("STEP_FUNCTION_ARN", ml_pipeline.state_machine_arn)
+        start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
 
         # Create Lambda function for stopping jobs
         stop_job_lambda = lambda_.Function(

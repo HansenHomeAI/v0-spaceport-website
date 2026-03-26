@@ -121,7 +121,7 @@ def lambda_handler(event, context):
                 # Continue without GPS data - don't fail the entire request
         
         # Get environment variables
-        state_machine_arn = os.environ['STATE_MACHINE_ARN']
+        state_machine_arn = os.environ.get('STATE_MACHINE_ARN') or os.environ['STEP_FUNCTION_ARN']
         ml_bucket = os.environ['ML_BUCKET']
         
         # Get ECR repository names from environment variables (set by CDK)
