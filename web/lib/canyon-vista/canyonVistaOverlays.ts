@@ -133,6 +133,18 @@ export function compassArrowRotationDeg(
   return (northDirectionDeg - cameraBearing + 360) % 360;
 }
 
+/** Optional “SOLD” labels (Canyon-Vista had this block commented; we ship one demo point). */
+export type SoldHotspotConfig = {
+  text: string;
+  position: V3;
+  scale: number;
+  verticalOffset: number;
+};
+
+export const CANYON_VISTA_SOLD_HOTSPOTS: SoldHotspotConfig[] = [
+  { text: "SOLD", position: { x: 0.22, y: 0.5, z: -0.85 }, scale: 0.2, verticalOffset: 0.06 },
+];
+
 /** Orbit camera position in XZ so bearing matches `northDirectionDeg` (Canyon-Vista `animateCameraToNorth`). */
 export function computeNorthFacingPosition(current: V3, orbitTarget: V3, northDirectionDeg: number): V3 {
   const dx = current.x - orbitTarget.x;

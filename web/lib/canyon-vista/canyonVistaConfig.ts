@@ -6,6 +6,16 @@ import type { PathCheckpoint, V3 } from "./types";
 
 export const CANYON_VISTA_SCENE_ORIGIN: V3 = { x: 0, y: -0.06, z: 0 };
 
+/** Selectable holes (extend with `bundleUrl` when multiple SOGS bundles exist). */
+export type CanyonHoleConfig = {
+  id: string;
+  label: string;
+  /** If omitted, the app default bundle URL is used. */
+  bundleUrl?: string;
+};
+
+export const CANYON_VISTA_HOLES: CanyonHoleConfig[] = [{ id: "canyon-vista", label: "Canyon Vista" }];
+
 /** Single-hole layout: SOGS bundle URL is supplied at runtime (?url=). */
 export const CANYON_VISTA_HOLE_VIEW = {
   startPosition: { x: 0.22, y: 0.6, z: 2.75 } as V3,

@@ -7,10 +7,13 @@ import {
   CANYON_VISTA_CAMERA_START_Y,
   CANYON_VISTA_DEFAULT_PATH_CHECKPOINTS,
   CANYON_VISTA_HOLE_VIEW,
+  CANYON_VISTA_HOLES,
   CANYON_VISTA_ORBIT,
+  CANYON_VISTA_SCENE_ORIGIN,
 } from "../../lib/canyon-vista/canyonVistaConfig";
 import {
   computeNorthFacingPosition,
+  CANYON_VISTA_SOLD_HOTSPOTS,
   CANYON_VISTA_TAP_DOTS,
   type TapDotConfig,
 } from "../../lib/canyon-vista/canyonVistaOverlays";
@@ -21,12 +24,15 @@ import {
   samplePathCamera,
   updatePathAnimation,
 } from "../../lib/canyon-vista/pathAnimation";
+import { appendCheckpoint, snapCameraToCheckpointKey } from "../../lib/canyon-vista/pathEditing";
 import type { PathAnimationState, V3 } from "../../lib/canyon-vista/types";
 import type { CameraPose } from "../../lib/canyon-vista/worldProjection";
+import { AnimationPathPanel } from "./AnimationPathPanel";
 import { CanyonCompassLive } from "./CanyonCompassLive";
 import { CanyonPhotoModal } from "./CanyonPhotoModal";
 import { CanyonVignette } from "./CanyonVignette";
 import { LotLinesOverlay } from "./LotLinesOverlay";
+import { SoldOverlays } from "./SoldOverlays";
 import { TapDotsOverlay } from "./TapDotsOverlay";
 import "./sogs-migrated-viewer.css";
 
@@ -79,7 +85,12 @@ export default function SogsMigratedViewer() {
   const [autoRotate, setAutoRotate] = useState(CANYON_VISTA_ORBIT.autoRotateDefault);
   const [showTapDots, setShowTapDots] = useState(true);
   const [showLotLines, setShowLotLines] = useState(false);
+  const [showSoldLabels, setShowSoldLabels] = useState(false);
+  const [pathVersion, setPathVersion] = useState(0);
+  const [selectedHoleId, setSelectedHoleId] = useState(() => CANYON_VISTA_HOLES[0]?.id ?? "canyon-vista");
   const [photoDot, setPhotoDot] = useState<TapDotConfig | null>(null);
+
+  const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
   useEffect(() => {
     pathPlayingRef.current = pathPlaying;
@@ -282,6 +293,62 @@ export default function SogsMigratedViewer() {
     }, 100);
   };
 
+  const onFocusSceneCenter = useCallback(() => {
+    const p = poseRef.current;
+    const win = iframeRef.current?.contentWindow;
+    if (!p || !win) return;
+    const t = CANYON_VISTA_SCENE_ORIGIN;
+    postToWindow(win, { type: "sogs:cameraMode", mode: "scripted" });
+    postToWindow(win, {
+      type: "sogs:cameraLookAt",
+      position: [p.position.x, p.position.y, p.position.z],
+      target: [t.x, t.y, t.z],
+      fov: p.fov,
+    });
+    poseRef.current = {
+      position: { ...p.position },
+      target: { x: t.x, y: t.y, z: t.z },
+      fov: p.fov,
+    };
+    window.setTimeout(() => postToWindow(iframeRef.current?.contentWindow, { type: "sogs:cameraMode", mode: "free" }), 80);
+  }, []);
+
+  const onAddFromCurrentView = useCallback(() => {
+    const p = poseRef.current;
+    if (!p) return;
+    appendCheckpoint(pathStateRef.current, {
+      position: { ...p.position },
+      lookAt: { ...p.target },
+      duration: 5,
+    });
+    bumpPath();
+  }, [bumpPath]);
+
+  const onSeekCheckpoint = useCallback(
+    (index: number) => {
+      pathStateRef.current.playing = false;
+      setPathPlaying(false);
+      snapCameraToCheckpointKey(pathStateRef.current, index, outPos.current, outTarget.current);
+      const win = iframeRef.current?.contentWindow;
+      const fov = poseRef.current?.fov ?? createDefaultScenePayload().fov;
+      postToWindow(win, { type: "sogs:cameraMode", mode: "scripted" });
+      postToWindow(win, {
+        type: "sogs:cameraLookAt",
+        position: [outPos.current.x, outPos.current.y, outPos.current.z],
+        target: [outTarget.current.x, outTarget.current.y, outTarget.current.z],
+        fov,
+      });
+      poseRef.current = {
+        position: { x: outPos.current.x, y: outPos.current.y, z: outPos.current.z },
+        target: { x: outTarget.current.x, y: outTarget.current.y, z: outTarget.current.z },
+        fov,
+      };
+      window.setTimeout(() => postToWindow(iframeRef.current?.contentWindow, { type: "sogs:cameraMode", mode: "free" }), 80);
+      bumpPath();
+    },
+    [bumpPath],
+  );
+
   return (
     <main className="sogs-migrated-root">
       <div ref={containerRef} className="sogs-migrated-stage">
@@ -310,6 +377,12 @@ export default function SogsMigratedViewer() {
           poseRef={poseRef}
           containerRef={containerRef}
         />
+        <SoldOverlays
+          enabled={viewerState === "ready" && showSoldLabels}
+          hotspots={CANYON_VISTA_SOLD_HOTSPOTS}
+          poseRef={poseRef}
+          containerRef={containerRef}
+        />
       </div>
 
       <div className="sogs-migrated-bottom-menu">
@@ -327,6 +400,45 @@ export default function SogsMigratedViewer() {
       <div className="sogs-migrated-chrome">
         <p className="sogs-migrated-title">Canyon Vista (SOGS)</p>
         <div className="sogs-migrated-actions">
+          <label className="sogs-migrated-hole">
+            Hole
+            <select
+              data-testid="sogs-hole-picker"
+              value={selectedHoleId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setSelectedHoleId(id);
+                const hole = CANYON_VISTA_HOLES.find((h) => h.id === id);
+                const url = hole?.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL;
+                setInputUrl(url);
+                if (attemptLoad(url)) setPathPlaying(false);
+              }}
+              disabled={viewerState === "loading"}
+            >
+              {CANYON_VISTA_HOLES.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="sogs-migrated-btn"
+            data-testid="focus-scene-center"
+            onClick={onFocusSceneCenter}
+            disabled={viewerState !== "ready"}
+          >
+            Focus scene
+          </button>
+          <AnimationPathPanel
+            pathStateRef={pathStateRef}
+            pathVersion={pathVersion}
+            bumpPath={bumpPath}
+            disabled={viewerState !== "ready"}
+            onSeekCheckpoint={onSeekCheckpoint}
+            onAddFromCurrentView={onAddFromCurrentView}
+          />
           <button type="button" className="sogs-migrated-btn" onClick={onPlayTour} disabled={viewerState !== "ready"}>
             Play tour
           </button>
@@ -362,6 +474,15 @@ export default function SogsMigratedViewer() {
               disabled={viewerState !== "ready"}
             />
             Lot lines
+          </label>
+          <label className="sogs-migrated-check">
+            <input
+              type="checkbox"
+              checked={showSoldLabels}
+              onChange={(e) => setShowSoldLabels(e.target.checked)}
+              disabled={viewerState !== "ready"}
+            />
+            Sold labels
           </label>
         </div>
         <form
