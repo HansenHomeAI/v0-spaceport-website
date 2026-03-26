@@ -55,6 +55,7 @@ RUN apt-get update && \
         libopenblas-dev \
         libopenimageio-dev \
         libopenexr-dev \
+        openimageio-tools \
         libsqlite3-dev \
         libssl-dev \
         python-is-python3 \
