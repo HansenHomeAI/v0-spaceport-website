@@ -8,7 +8,9 @@ import {
   Entity,
   Mesh,
   MeshInstance,
+  Quat,
   StandardMaterial,
+  Vec3,
 } from "https://esm.sh/playcanvas@2.13.2";
 
 const AXIS_LEN = 45;
@@ -57,264 +59,128 @@ function hookCameraManagerFov(cameraManager) {
   };
 }
 
+/** PlayCanvas convention: camera looks down -Z; matches supersplat Camera.calcFocusPoint. */
+const CAM_FORWARD = new Vec3(0, 0, -1);
+
 /**
- * Move splat in world XZ (Y unchanged):
- * - Touchscreens: TouchEvent API (2-finger centroid) — passive:false so preventDefault works (iOS).
- * - Trackpads: wheel with deltaX/deltaY (two-finger pan is not two Pointer touches).
- * - Pointer fallback: 2 touch pointers if Touch API did not claim the gesture.
- * - Middle mouse on desktop (left-drag stays orbit).
- * All listeners use capture phase so we run before the viewer’s bubble handlers.
+ * Orbit focus (look-at) is clamped to a horizontal slab: X,Z ∈ [-FOCUS_XZ_MAX, FOCUS_XZ_MAX], Y = FOCUS_Y.
+ * - Wheel / trackpad scroll: unchanged — passes through to the viewer (orbit zoom). We no longer intercept wheel.
+ * - Primary button drag: pans the orbit focus in the camera tangent plane (same basis as supersplat InputController).
+ * - After every camera update, focus is clamped so scripted / orbit drift cannot leave the box.
  */
-function setupSogsSplatWorldXzDrag(app) {
-  const canvas = app.graphicsDevice?.canvas;
+function hookCameraFocusInteraction(cameraManager, canvas) {
   if (!canvas) {
     return;
   }
 
-  /** Screen pixels → world units (pointer / Touch centroid) */
-  const SENS = 0.0009;
-  /** Normalized wheel delta → world (trackpad sends larger numbers than pointer px) */
-  const WHEEL_SENS = 0.00038;
+  const FOCUS_XZ_MAX = 10;
+  const FOCUS_Y = 0;
 
-  /** While true, Touch API owns the gesture — skip pointer duplicate handling */
-  let touchTwoFingerActive = false;
+  let pendPx = 0;
+  let pendPy = 0;
+  /** @type {{ id: number; x: number; y: number } | null} */
+  let focusDrag = null;
 
-  /** @type {{ mode: "touch2" | "mouse"; x: number; y: number } | null} */
-  let pointerDrag = null;
-  /** pointerId → last client position (touch, pointer fallback) */
-  const touchPts = new Map();
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
-  /** @type {{ x: number; y: number } | null} */
-  let touchCentroidDrag = null;
-
-  const centroidFromTouchList = (tl) => {
-    if (tl.length < 2) {
-      return null;
-    }
-    const a = tl[0];
-    const b = tl[1];
-    return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
+  const getFocusPoint = (cam) => {
+    const q = new Quat().setFromEulerAngles(cam.angles);
+    const dir = new Vec3();
+    q.transformVector(CAM_FORWARD, dir);
+    dir.mulScalar(cam.distance);
+    return new Vec3().copy(cam.position).add(dir);
   };
 
-  const touchCentroidFromMap = () => {
-    if (touchPts.size < 2) {
-      return null;
-    }
-    const pts = [...touchPts.values()];
-    const a = pts[0];
-    const b = pts[1];
-    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  const setCameraFromFocus = (cam, focus) => {
+    const q = new Quat().setFromEulerAngles(cam.angles);
+    const dir = new Vec3();
+    q.transformVector(CAM_FORWARD, dir);
+    dir.mulScalar(cam.distance);
+    cam.position.copy(focus).sub(dir);
   };
 
-  const applyWorldDelta = (dwx, dwy) => {
-    const g = app.root.findByName("gsplat");
-    if (!g) {
+  const clampCameraFocus = (cam) => {
+    const focus = getFocusPoint(cam);
+    const fx = clamp(focus.x, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
+    const fz = clamp(focus.z, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
+    const fy = FOCUS_Y;
+    if (fx !== focus.x || fz !== focus.z || Math.abs(fy - focus.y) > 1e-5) {
+      focus.set(fx, fy, fz);
+      setCameraFromFocus(cam, focus);
+    }
+  };
+
+  /** Matches supersplat `screenToWorld` (orbit pan): mouse px deltas → world offset at current distance. */
+  const screenToWorldPan = (cam, dxPx, dyPx) => {
+    const d = cam.distance;
+    const fov = cam.fov;
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width || 1;
+    const h = rect.height || 1;
+    const aspect = w / h;
+    const halfSlice = d * Math.tan(0.5 * fov * (Math.PI / 180));
+    const halfX = halfSlice * aspect;
+    const halfY = halfSlice;
+    const nx = -(dxPx / w) * 2;
+    const ny = (dyPx / h) * 2;
+    const local = new Vec3(nx * halfX, ny * halfY, 0);
+    const q = new Quat().setFromEulerAngles(cam.angles);
+    q.transformVector(local, local);
+    return local;
+  };
+
+  const orig = cameraManager.update.bind(cameraManager);
+  cameraManager.update = (dt, frame) => {
+    orig(dt, frame);
+    const cam = cameraManager.camera;
+    if (pendPx !== 0 || pendPy !== 0) {
+      const pan = screenToWorldPan(cam, pendPx, pendPy);
+      pendPx = 0;
+      pendPy = 0;
+      const focus = getFocusPoint(cam);
+      focus.add(pan);
+      focus.x = clamp(focus.x, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
+      focus.z = clamp(focus.z, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
+      focus.y = FOCUS_Y;
+      setCameraFromFocus(cam, focus);
+    }
+    clampCameraFocus(cam);
+  };
+
+  const onPointerDown = (e) => {
+    if (e.button !== 0) {
       return;
     }
-    const p = g.getPosition();
-    g.setPosition(p.x + dwx, p.y, p.z - dwy);
-    app.renderNextFrame = true;
-    postSogsState();
+    if (!canvas.contains(e.target)) {
+      return;
+    }
+    focusDrag = { id: e.pointerId, x: e.clientX, y: e.clientY };
   };
 
-  const applyPixelDelta = (dx, dy, e) => {
-    applyWorldDelta(dx * SENS, dy * SENS);
+  const onPointerMove = (e) => {
+    if (!focusDrag || e.pointerId !== focusDrag.id) {
+      return;
+    }
+    const dx = e.clientX - focusDrag.x;
+    const dy = e.clientY - focusDrag.y;
+    focusDrag.x = e.clientX;
+    focusDrag.y = e.clientY;
+    pendPx += dx;
+    pendPy += dy;
     e.preventDefault();
     e.stopImmediatePropagation();
   };
 
-  const syncTouchPoint = (e) => {
-    if (e.pointerType === "touch") {
-      touchPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const onPointerEnd = (e) => {
+    if (focusDrag && e.pointerId === focusDrag.id) {
+      focusDrag = null;
     }
   };
 
-  const touchOpts = { capture: true, passive: false };
-
-  canvas.addEventListener(
-    "touchstart",
-    (e) => {
-      if (e.touches.length < 2) {
-        return;
-      }
-      const c = centroidFromTouchList(e.touches);
-      if (!c) {
-        return;
-      }
-      touchTwoFingerActive = true;
-      touchCentroidDrag = { x: c.x, y: c.y };
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },
-    touchOpts,
-  );
-
-  canvas.addEventListener(
-    "touchmove",
-    (e) => {
-      if (e.touches.length < 2) {
-        return;
-      }
-      if (!touchCentroidDrag) {
-        const c0 = centroidFromTouchList(e.touches);
-        if (c0) {
-          touchCentroidDrag = { x: c0.x, y: c0.y };
-        }
-        return;
-      }
-      const c = centroidFromTouchList(e.touches);
-      if (!c) {
-        return;
-      }
-      const dx = c.x - touchCentroidDrag.x;
-      const dy = c.y - touchCentroidDrag.y;
-      touchCentroidDrag.x = c.x;
-      touchCentroidDrag.y = c.y;
-      applyPixelDelta(dx, dy, e);
-    },
-    touchOpts,
-  );
-
-  const endTouchCluster = (e) => {
-    if (e.touches.length < 2) {
-      touchCentroidDrag = null;
-      touchTwoFingerActive = false;
-    }
-  };
-  canvas.addEventListener("touchend", endTouchCluster, touchOpts);
-  canvas.addEventListener("touchcancel", endTouchCluster, touchOpts);
-
-  canvas.addEventListener(
-    "wheel",
-    (e) => {
-      if (e.ctrlKey) {
-        return;
-      }
-      if (touchTwoFingerActive) {
-        return;
-      }
-      const ax = Math.abs(e.deltaX);
-      const ay = Math.abs(e.deltaY);
-      if (ax < 0.5 && ay < 0.5) {
-        return;
-      }
-      /** Vertical-only scroll keeps orbit zoom; horizontal or diagonal = splat pan (trackpad two-finger). */
-      if (ax < 1 && ay > ax * 2) {
-        return;
-      }
-      applyWorldDelta(e.deltaX * WHEEL_SENS, e.deltaY * WHEEL_SENS);
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },
-    { capture: true, passive: false },
-  );
-
-  canvas.addEventListener(
-    "pointerdown",
-    (e) => {
-      if (e.pointerType === "touch" && touchTwoFingerActive) {
-        return;
-      }
-      const g = app.root.findByName("gsplat");
-      if (!g) {
-        return;
-      }
-      syncTouchPoint(e);
-      if (e.pointerType === "touch" && touchPts.size === 2) {
-        const c = touchCentroidFromMap();
-        if (c) {
-          pointerDrag = { mode: "touch2", x: c.x, y: c.y };
-          e.preventDefault();
-          e.stopImmediatePropagation();
-        }
-        return;
-      }
-      if (e.pointerType === "mouse" && e.button === 1) {
-        pointerDrag = { mode: "mouse", x: e.clientX, y: e.clientY };
-        try {
-          canvas.setPointerCapture(e.pointerId);
-        } catch {
-          /* ignore */
-        }
-        e.preventDefault();
-        e.stopImmediatePropagation();
-      }
-    },
-    true,
-  );
-
-  canvas.addEventListener(
-    "pointermove",
-    (e) => {
-      if (e.pointerType === "touch" && touchTwoFingerActive) {
-        return;
-      }
-      syncTouchPoint(e);
-
-      if (!pointerDrag && e.pointerType === "touch" && touchPts.size >= 2) {
-        const c = touchCentroidFromMap();
-        if (c) {
-          pointerDrag = { mode: "touch2", x: c.x, y: c.y };
-        }
-      }
-
-      if (!pointerDrag) {
-        return;
-      }
-
-      if (pointerDrag.mode === "touch2") {
-        if (touchPts.size < 2) {
-          pointerDrag = null;
-          return;
-        }
-        const c = touchCentroidFromMap();
-        if (!c) {
-          return;
-        }
-        const dx = c.x - pointerDrag.x;
-        const dy = c.y - pointerDrag.y;
-        pointerDrag.x = c.x;
-        pointerDrag.y = c.y;
-        applyPixelDelta(dx, dy, e);
-        return;
-      }
-
-      if (pointerDrag.mode === "mouse") {
-        const dx = e.clientX - pointerDrag.x;
-        const dy = e.clientY - pointerDrag.y;
-        pointerDrag.x = e.clientX;
-        pointerDrag.y = e.clientY;
-        applyPixelDelta(dx, dy, e);
-      }
-    },
-    true,
-  );
-
-  const endPointer = (e) => {
-    if (e.pointerType === "touch" && touchTwoFingerActive) {
-      return;
-    }
-    if (e.pointerType === "touch") {
-      touchPts.delete(e.pointerId);
-      if (pointerDrag?.mode === "touch2" && touchPts.size < 2) {
-        pointerDrag = null;
-      }
-      return;
-    }
-    if (e.pointerType === "mouse" && pointerDrag?.mode === "mouse") {
-      if (e.type === "pointercancel" || e.button === 1) {
-        pointerDrag = null;
-        try {
-          canvas.releasePointerCapture(e.pointerId);
-        } catch {
-          /* ignore */
-        }
-      }
-    }
-  };
-
-  canvas.addEventListener("pointerup", endPointer, true);
-  canvas.addEventListener("pointercancel", endPointer, true);
+  window.addEventListener("pointerdown", onPointerDown, { capture: true });
+  window.addEventListener("pointermove", onPointerMove, { capture: true });
+  window.addEventListener("pointerup", onPointerEnd, { capture: true });
+  window.addEventListener("pointercancel", onPointerEnd, { capture: true });
 
   window.__sogsSplatXzDragReady = true;
 }
@@ -450,7 +316,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   hookCameraManagerFov(viewer.cameraManager);
-  setupSogsSplatWorldXzDrag(app);
+  hookCameraFocusInteraction(viewer.cameraManager, app.graphicsDevice.canvas);
 
   window.addEventListener("message", (event) => {
     const d = event.data;
