@@ -59,9 +59,6 @@ function hookCameraManagerFov(cameraManager) {
   };
 }
 
-/** PlayCanvas convention: camera looks down -Z; matches supersplat Camera.calcFocusPoint. */
-const CAM_FORWARD = new Vec3(0, 0, -1);
-
 /**
  * Orbit focus (look-at) is clamped to a horizontal slab: X,Z ∈ [-FOCUS_XZ_MAX, FOCUS_XZ_MAX], Y = FOCUS_Y.
  * - Wheel / trackpad scroll: unchanged — passes through to the viewer (orbit zoom). We no longer intercept wheel.
@@ -83,18 +80,19 @@ function hookCameraFocusInteraction(cameraManager, canvas) {
 
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
+  /** Use (ex,ey,ez) numbers — bundled viewer Vec3 is a different class than esm.sh Vec3, so passing cam.angles breaks Quat. */
   const getFocusPoint = (cam) => {
-    const q = new Quat().setFromEulerAngles(cam.angles);
+    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
     const dir = new Vec3();
-    q.transformVector(CAM_FORWARD, dir);
+    q.transformVector(Vec3.FORWARD, dir);
     dir.mulScalar(cam.distance);
     return new Vec3().copy(cam.position).add(dir);
   };
 
   const setCameraFromFocus = (cam, focus) => {
-    const q = new Quat().setFromEulerAngles(cam.angles);
+    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
     const dir = new Vec3();
-    q.transformVector(CAM_FORWARD, dir);
+    q.transformVector(Vec3.FORWARD, dir);
     dir.mulScalar(cam.distance);
     cam.position.copy(focus).sub(dir);
   };
@@ -124,7 +122,7 @@ function hookCameraFocusInteraction(cameraManager, canvas) {
     const nx = -(dxPx / w) * 2;
     const ny = (dyPx / h) * 2;
     const local = new Vec3(nx * halfX, ny * halfY, 0);
-    const q = new Quat().setFromEulerAngles(cam.angles);
+    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
     q.transformVector(local, local);
     return local;
   };
