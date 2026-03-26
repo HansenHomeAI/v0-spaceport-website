@@ -121,7 +121,12 @@ jobs:
           CONTAINER_LIST="$INPUT_CONTAINER"
         elif [ -n "$CHANGED" ]; then
           echo "Containers changed in git diff: $CHANGED"
-          CONTAINER_LIST="$CHANGED"
+          if [ -n "$BRANCH_SUFFIX" ]; then
+            echo "Branch-specific tags enabled; ensuring unchanged containers are imported as branch tags too"
+            CONTAINER_LIST="sfm 3dgs compressor"
+          else
+            CONTAINER_LIST="$CHANGED"
+          fi
         fi
 
         # Check if shared repo has latest tag

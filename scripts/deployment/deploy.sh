@@ -157,25 +157,29 @@ deploy_container() {
   log "Build complete with caching optimizations."
 
   log "Tagging images..."
-  docker tag "${repo_name}:latest" "${ecr_uri}:latest"
   if [ -n "$branch_tag" ]; then
     docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
-    log "Tags created: latest, ${branch_tag}"
+    log "Tags created: ${branch_tag}"
   else
+    docker tag "${repo_name}:latest" "${ecr_uri}:latest"
     log "Tags created: latest"
   fi
 
   log "Pushing images to ECR..."
-  docker push "${ecr_uri}:latest"
   if [ -n "$branch_tag" ]; then
     docker push "${ecr_uri}:${branch_tag}"
+    log "Skipped pushing shared latest because BRANCH_SUFFIX=${branch_tag}"
+  else
+    docker push "${ecr_uri}:latest"
   fi
   log "Successfully pushed to ${ecr_uri}"
   
   # Clean up local images to save space
   log "Cleaning up local images..."
   docker rmi "${repo_name}:latest" || true
-  docker rmi "${ecr_uri}:latest" || true
+  if [ -z "$branch_tag" ]; then
+    docker rmi "${ecr_uri}:latest" || true
+  fi
   if [ -n "$branch_tag" ]; then
     docker rmi "${ecr_uri}:${branch_tag}" || true
   fi
