@@ -95,11 +95,13 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local target_image
   local uses_base_image=0
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
   local ecr_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}"
+  target_image="${ecr_uri}:${branch_tag:-latest}"
   local container_dir="${PROJECT_ROOT}/infrastructure/containers/${container_name}"
   local dockerfile_path="${container_dir}/Dockerfile"
 
@@ -129,12 +131,10 @@ deploy_container() {
       docker buildx build \
         --platform linux/amd64 \
         --file "${base_file}" \
-        --tag "${repo_name}:base" \
+        --tag "${base_image}" \
         --progress plain \
-        --load \
+        --push \
         "${container_dir}"
-      docker tag "${repo_name}:base" "${base_image}"
-      docker push "${base_image}"
       log "Base image built and pushed: ${base_image}"
       if [[ "${BUILD_BASE_ONLY:-0}" = "1" ]]; then
         log "BUILD_BASE_ONLY=1 set; skipping app build for ${container_name}"
@@ -152,42 +152,19 @@ deploy_container() {
     --file "${container_dir}/Dockerfile" \
     --build-arg BASE_IMAGE="${base_image}" \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
-    --tag "${repo_name}:latest" \
+    --tag "${target_image}" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
-    --load \
+    --push \
     "${container_dir}"
   
   log "Build complete with caching optimizations."
-
-  log "Tagging images..."
   if [ -n "$branch_tag" ]; then
-    docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
-    log "Tags created: ${branch_tag}"
+    log "Pushed branch-scoped image only: ${target_image}"
   else
-    docker tag "${repo_name}:latest" "${ecr_uri}:latest"
-    log "Tags created: latest"
-  fi
-
-  log "Pushing images to ECR..."
-  if [ -n "$branch_tag" ]; then
-    docker push "${ecr_uri}:${branch_tag}"
-    log "Skipped pushing shared latest because BRANCH_SUFFIX=${branch_tag}"
-  else
-    docker push "${ecr_uri}:latest"
-  fi
-  log "Successfully pushed to ${ecr_uri}"
-  
-  # Clean up local images to save space
-  log "Cleaning up local images..."
-  docker rmi "${repo_name}:latest" || true
-  if [ -z "$branch_tag" ]; then
-    docker rmi "${ecr_uri}:latest" || true
-  fi
-  if [ -n "$branch_tag" ]; then
-    docker rmi "${ecr_uri}:${branch_tag}" || true
+    log "Pushed shared image: ${target_image}"
   fi
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
