@@ -52,7 +52,7 @@ RUN cmake -S . -B build -GNinja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCUDA_ENABLED=ON \
     -DCMAKE_CUDA_ARCHITECTURES=75 \
-    && cmake --build build --target colmap -j"$(nproc)" \
+    && cmake --build build -j"$(nproc)" \
     && cmake --install build
 
 RUN mkdir -p /opt/ml/code /opt/ml/processing/input /opt/ml/processing/output /opt/colmap/vocab
