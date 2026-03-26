@@ -111,6 +111,23 @@ jobs:
         run: |
           set -euo pipefail
 
+          resolve_stack_name() {
+            local preferred="$1"
+            local fallback="$2"
+
+            if aws cloudformation describe-stacks --stack-name "$preferred" >/dev/null 2>&1; then
+              printf '%s' "$preferred"
+              return 0
+            fi
+
+            if [ -n "$fallback" ] && aws cloudformation describe-stacks --stack-name "$fallback" >/dev/null 2>&1; then
+              printf '%s' "$fallback"
+              return 0
+            fi
+
+            printf '%s' "$preferred"
+          }
+
           wait_for_stack() {
             local stack_name="$1"
             local max_attempts=120
@@ -168,8 +185,15 @@ jobs:
             return 1
           }
 
-          wait_for_stack "$SPACEPORT_STACK_NAME"
-          wait_for_stack "$ML_STACK_NAME"
+          SPACEPORT_OUTPUT_STACK="$SPACEPORT_STACK_NAME"
+          ML_OUTPUT_STACK="$ML_STACK_NAME"
+          if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+            SPACEPORT_OUTPUT_STACK="$(resolve_stack_name "$SPACEPORT_STACK_NAME" "SpaceportStagingStack")"
+            ML_OUTPUT_STACK="$(resolve_stack_name "$ML_STACK_NAME" "SpaceportMLPipelineStagingStack")"
+          fi
+
+          wait_for_stack "$SPACEPORT_OUTPUT_STACK"
+          wait_for_stack "$ML_OUTPUT_STACK"
           wait_for_stack "$AUTH_STACK_NAME"
 
           PROJECTS_API_URL="$(get_output "$AUTH_STACK_NAME" "ProjectsApiUrl")"
@@ -180,11 +204,11 @@ jobs:
           MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_STACK_NAME" "ModelDeliveryAdminApiUrl")"
           EXPLORE_API_URL="$(get_output "$AUTH_STACK_NAME" "ExplorePublicApiUrl")"
 
-          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-          WAITLIST_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "WaitlistApiUrl")"
-          FEEDBACK_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FeedbackApiUrl")"
-          ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+          WAITLIST_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "WaitlistApiUrl")"
+          FEEDBACK_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FeedbackApiUrl")"
+          ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
 
           {
             echo "PROJECTS_API_URL=$PROJECTS_API_URL"
@@ -202,8 +226,8 @@ jobs:
           } >> "$GITHUB_ENV"
 
           echo "Resolved deployment class: $DEPLOYMENT_CLASS"
-          echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-          echo "ML stack: $ML_STACK_NAME"
+          echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+          echo "ML stack: $ML_OUTPUT_STACK"
           echo "Shared auth stack: $AUTH_STACK_NAME"
           echo "Drone Path API: $DRONE_PATH_API_URL"
           echo "File Upload API: $FILE_UPLOAD_API_URL"

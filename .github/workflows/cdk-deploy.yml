@@ -276,11 +276,17 @@ jobs:
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
+        SPACEPORT_STACK_CHANGED="false"
         if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
           # Check if any Lambda files changed
           if printf '%s\n' "${CHANGED_FILES}" | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
             LAMBDA_CHANGED="true"
             echo "Lambda functions changed - will deploy branch-specific Lambda versions"
+          fi
+
+          if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/spaceport_cdk/spaceport_stack\.py|infrastructure/spaceport_cdk/lambda/(drone_path|file_upload|csv_upload_url|waitlist|feedback)/|infrastructure/spaceport_cdk/app\.py)"; then
+            SPACEPORT_STACK_CHANGED="true"
+            echo "Spaceport API files changed - will deploy branch-specific Spaceport stack"
           fi
 
           if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/app\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\.py|infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/)"; then
@@ -324,6 +330,7 @@ jobs:
         echo "Branch name: ${BRANCH_NAME}"
         echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
         echo "Lambda changed: ${LAMBDA_CHANGED}"
+        echo "Spaceport stack changed: ${SPACEPORT_STACK_CHANGED}"
         echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
         echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
 
@@ -334,7 +341,18 @@ jobs:
 
         echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
 
-        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+        SKIP_SPACEPORT_STACK="false"
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${SPACEPORT_STACK_CHANGED}" != "true" ]; then
+          SKIP_SPACEPORT_STACK="true"
+        fi
+
+        echo "Skip Spaceport preview stack: ${SKIP_SPACEPORT_STACK}"
+
+        STACKS=()
+        if [ "${SKIP_SPACEPORT_STACK}" != "true" ]; then
+          STACKS+=("$SPACEPORT_STACK_NAME")
+        fi
+        STACKS+=("$ML_STACK_NAME")
         if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
         fi
@@ -359,6 +377,23 @@ jobs:
       run: |
         set -euo pipefail
 
+        resolve_stack_name() {
+          local preferred="$1"
+          local fallback="$2"
+
+          if aws cloudformation describe-stacks --stack-name "$preferred" >/dev/null 2>&1; then
+            printf '%s' "$preferred"
+            return 0
+          fi
+
+          if [ -n "$fallback" ] && aws cloudformation describe-stacks --stack-name "$fallback" >/dev/null 2>&1; then
+            printf '%s' "$fallback"
+            return 0
+          fi
+
+          printf '%s' "$preferred"
+        }
+
         get_output() {
           local stack_name="$1"
           local output_key="$2"
@@ -374,14 +409,21 @@ jobs:
           printf '%s' "$value"
         }
 
-        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-        ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+        SPACEPORT_OUTPUT_STACK="$SPACEPORT_STACK_NAME"
+        ML_OUTPUT_STACK="$ML_STACK_NAME"
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+          SPACEPORT_OUTPUT_STACK="$(resolve_stack_name "$SPACEPORT_STACK_NAME" "SpaceportStagingStack")"
+          ML_OUTPUT_STACK="$(resolve_stack_name "$ML_STACK_NAME" "SpaceportMLPipelineStagingStack")"
+        fi
+
+        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
 
         echo "Deployment class: $DEPLOYMENT_CLASS"
         echo "Branch ID: ${BRANCH_ID:-<shared>}"
-        echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-        echo "ML stack: $ML_STACK_NAME"
+        echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+        echo "ML stack: $ML_OUTPUT_STACK"
         echo "Shared auth stack: $AUTH_STACK_NAME"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"
