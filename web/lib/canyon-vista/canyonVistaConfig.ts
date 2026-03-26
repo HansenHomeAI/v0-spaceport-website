@@ -14,6 +14,7 @@ export const CANYON_VISTA_HOLE_VIEW = {
   maxDistance: 10.4,
   minPolarAngle: 14,
   maxPolarAngle: 179,
+  /** Degrees: positive Z = 0; matches Canyon-Vista `compass.northDirection`. */
   northDirection: 358,
 };
 
