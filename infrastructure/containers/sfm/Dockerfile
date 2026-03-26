@@ -44,6 +44,7 @@ RUN apt-get update && \
         libceres-dev \
         libcurl4-openssl-dev \
         libeigen3-dev \
+        libflann-dev \
         libfreeimage-dev \
         libglew-dev \
         libgoogle-glog-dev \
@@ -52,6 +53,7 @@ RUN apt-get update && \
         libimage-exiftool-perl \
         libmetis-dev \
         libopenblas-dev \
+        libopenimageio-dev \
         libsqlite3-dev \
         libssl-dev \
         python-is-python3 \

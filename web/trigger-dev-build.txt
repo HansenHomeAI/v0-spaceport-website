@@ -16,3 +16,4 @@
 2026-03-26T19:11:45Z ignore failed preview stacks when resolving shared fallback outputs
 2026-03-26T19:18:10Z rerun preview after branch ML stack reached steady-state outputs
 2026-03-26T19:33:20Z accept shared stacks in update-rollback-complete when resolving preview build outputs
+2026-03-26T19:39:20Z add missing COLMAP source-build deps and rerun preview/container build
