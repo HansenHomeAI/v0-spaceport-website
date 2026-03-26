@@ -123,7 +123,7 @@ jobs:
                 --query 'Stacks[0].StackStatus' \
                 --output text 2>/dev/null || true)
               case "$stack_status" in
-                CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS)
+                CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS|UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS)
                   return 0
                   ;;
               esac
@@ -157,7 +157,7 @@ jobs:
                 echo "[$attempt/$max_attempts] Waiting for stack $stack_name to exist..."
               elif [[ "$status" == *_IN_PROGRESS ]]; then
                 echo "[$attempt/$max_attempts] Waiting for stack $stack_name to finish: $status"
-              elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
+              elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" || "$status" == "UPDATE_ROLLBACK_COMPLETE" || "$status" == "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
                 echo "Stack $stack_name is ready with status $status"
                 return 0
               else
