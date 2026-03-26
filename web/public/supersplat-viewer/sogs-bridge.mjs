@@ -15,6 +15,8 @@ import {
 /** Parent-driven camera (position + look-at). When `sogs:cameraMode` is `scripted`, orbit input is skipped. */
 const tmpFrom = new Vec3();
 const tmpTo = new Vec3();
+/** Orbit focus point for `sogs:cameraPose` (parent overlays / Three.js projection). */
+const tmpFocus = new Vec3();
 
 const AXIS_LEN = 45;
 const AXIS_RADIUS = 0.28;
@@ -56,6 +58,27 @@ function postSogsState() {
  * Wraps CameraManager.update: free orbit vs scripted pose from `window.__sogsCameraPose`.
  * `sogs:cameraMode` sets `window.__sogsScriptedCamera` (true = scripted).
  */
+function postCameraPoseFromViewer(cameraManager) {
+  try {
+    if (window.__sogsScriptedCamera) {
+      return;
+    }
+    const cam = cameraManager.camera;
+    cam.calcFocusPoint(tmpFocus);
+    window.parent.postMessage(
+      {
+        type: "sogs:cameraPose",
+        position: [cam.position.x, cam.position.y, cam.position.z],
+        target: [tmpFocus.x, tmpFocus.y, tmpFocus.z],
+        fov: cam.fov,
+      },
+      "*",
+    );
+  } catch {
+    /* ignore */
+  }
+}
+
 function setupCameraManagerBridge(cameraManager) {
   const origUpdate = cameraManager.update.bind(cameraManager);
   cameraManager.update = (dt, frame) => {
@@ -75,6 +98,7 @@ function setupCameraManagerBridge(cameraManager) {
       if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
         cameraManager.camera.fov = window.__sogsUserFov;
       }
+      postCameraPoseFromViewer(cameraManager);
     }
   };
 }

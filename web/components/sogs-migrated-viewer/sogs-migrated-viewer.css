@@ -3,6 +3,13 @@
   width: 100%;
   min-height: 100vh;
   background: #000;
+  overflow: hidden;
+}
+
+.sogs-migrated-stage {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .sogs-migrated-iframe {
@@ -116,4 +123,191 @@
   margin: 0;
   font-size: 13px;
   opacity: 0.85;
+}
+
+/* Canyon-Vista-style vignette */
+.canyon-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(to top, black 0%, transparent 12%);
+  mix-blend-mode: multiply;
+}
+
+/* Tap dots (screen-projected) */
+.tapdot-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.tapdot-label-bubble {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 6px));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  border-radius: 9999px;
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.tapdot-label-text {
+  position: relative;
+  z-index: 1;
+}
+
+.lot-lines-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Bottom compass (Canyon menu) */
+.sogs-migrated-bottom-menu {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 12;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.sogs-migrated-menu-spacer {
+  flex: 1;
+}
+
+.canyon-compass-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  pointer-events: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.canyon-compass-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Photo modal */
+.canyon-photo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canyon-photo-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.72);
+  cursor: pointer;
+}
+
+.canyon-photo-modal-panel {
+  position: relative;
+  z-index: 1;
+  max-width: min(960px, 96vw);
+  max-height: min(90vh, 900px);
+  width: 100%;
+  background: rgba(32, 32, 32, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+}
+
+.canyon-photo-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.canyon-photo-modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.canyon-photo-modal-close {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.canyon-photo-modal-body {
+  flex: 1;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+}
+
+.canyon-photo-modal-img {
+  max-width: 100%;
+  max-height: min(72vh, 800px);
+  object-fit: contain;
+}
+
+.canyon-photo-modal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px;
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.canyon-photo-modal-nav button {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
 }
