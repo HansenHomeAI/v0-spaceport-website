@@ -81,16 +81,16 @@ class ColmapPipeline:
         self.active_vocab_tree_path: Path | None = None
         self.vocab_tree_url = os.environ.get(
             "COLMAP_VOCAB_TREE_URL",
-            "https://demuc.de/colmap/vocab_tree_flickr100K_words256K.bin",
+            "",
         )
         self.use_gpu = os.environ.get("COLMAP_USE_GPU", "1") != "0"
         self.max_features = int(os.environ.get("COLMAP_SIFT_MAX_NUM_FEATURES", "8192"))
         self.vocab_num_images = int(os.environ.get("COLMAP_VOCAB_NUM_IMAGES", "40"))
         self.vocab_num_visual_words = int(
-            os.environ.get("COLMAP_VOCAB_BUILD_NUM_VISUAL_WORDS", "32768")
+            os.environ.get("COLMAP_VOCAB_BUILD_NUM_VISUAL_WORDS", "8192")
         )
         self.vocab_max_num_descriptors = int(
-            os.environ.get("COLMAP_VOCAB_BUILD_MAX_NUM_DESCRIPTORS", "250000")
+            os.environ.get("COLMAP_VOCAB_BUILD_MAX_NUM_DESCRIPTORS", "100000")
         )
         self.vocab_build_threads = os.environ.get(
             "COLMAP_VOCAB_BUILD_THREADS",
@@ -181,9 +181,11 @@ class ColmapPipeline:
             self.vocab_tree_source = "downloaded_cached"
             return
         if not self.vocab_tree_url:
-            logger.info("No external vocab tree configured; will build a FAISS tree from descriptors")
+            logger.info(
+                "No external vocab tree configured; letting COLMAP auto-download a compatible FAISS tree first"
+            )
             self.timings["download_vocab_tree_seconds"] = 0.0
-            self.vocab_tree_source = "built_from_database"
+            self.vocab_tree_source = "colmap_auto_download"
             return
         self.vocab_tree_path.parent.mkdir(parents=True, exist_ok=True)
         logger.info("Downloading vocab tree from %s", self.vocab_tree_url)
@@ -240,26 +242,26 @@ class ColmapPipeline:
         self.active_vocab_tree_path = self.generated_vocab_tree_path
 
     def run_vocab_tree_matcher(self) -> None:
-        if self.active_vocab_tree_path is None:
-            self.build_vocab_tree()
-        assert self.active_vocab_tree_path is not None
-        stream_command(
-            [
-                "colmap",
-                "vocab_tree_matcher",
-                "--database_path",
-                str(self.database_path),
-                "--FeatureMatching.use_gpu",
-                "1" if self.use_gpu else "0",
-                "--FeatureMatching.guided_matching",
-                "1",
-                "--VocabTreeMatching.vocab_tree_path",
-                str(self.active_vocab_tree_path),
-                "--VocabTreeMatching.num_images",
-                str(self.vocab_num_images),
-            ],
-            stage="vocab_tree_matcher",
-        )
+        command = [
+            "colmap",
+            "vocab_tree_matcher",
+            "--database_path",
+            str(self.database_path),
+            "--FeatureMatching.use_gpu",
+            "1" if self.use_gpu else "0",
+            "--FeatureMatching.guided_matching",
+            "1",
+            "--VocabTreeMatching.num_images",
+            str(self.vocab_num_images),
+        ]
+        if self.active_vocab_tree_path is not None:
+            command.extend(
+                [
+                    "--VocabTreeMatching.vocab_tree_path",
+                    str(self.active_vocab_tree_path),
+                ]
+            )
+        stream_command(command, stage="vocab_tree_matcher")
 
     def run_feature_extraction(self) -> None:
         started = time.time()
@@ -314,11 +316,17 @@ class ColmapPipeline:
         try:
             self.run_vocab_tree_matcher()
         except RuntimeError as exc:
-            if "Failed to read faiss index" not in str(exc):
+            error_message = str(exc)
+            if self.active_vocab_tree_path is None:
+                logger.warning(
+                    "COLMAP runtime vocab tree path failed; rebuilding a reduced FAISS tree locally"
+                )
+            elif "Failed to read faiss index" in error_message:
+                logger.warning(
+                    "Downloaded vocab tree is a legacy FLANN index; rebuilding a FAISS tree locally"
+                )
+            else:
                 raise
-            logger.warning(
-                "Downloaded vocab tree is a legacy FLANN index; rebuilding a FAISS tree locally"
-            )
             self.build_vocab_tree()
             self.run_vocab_tree_matcher()
         self.timings["vocab_tree_matching_seconds"] = round(time.time() - started, 2)

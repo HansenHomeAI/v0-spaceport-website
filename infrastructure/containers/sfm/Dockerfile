@@ -1,16 +1,17 @@
 # Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay reproducible.
 FROM colmap/colmap:20260318.6455
 
-# Keep the vocab tree URL configurable so jobs can try the public COLMAP tree
-# without baking a large binary into ECR; the runtime script rebuilds a FAISS
-# index from the extracted descriptors when a legacy FLANN tree is encountered.
+# Leave the vocab tree URL empty by default so COLMAP 4 can use its own
+# FAISS-compatible runtime tree path; the runtime script still accepts an
+# explicit URL override and falls back to building a reduced local FAISS index
+# from the extracted descriptors when the external/runtime path fails.
 # GPU SIFT/matching flags stay in the runtime script so the same image can still
 # be probed on CPU-only hosts by setting COLMAP_USE_GPU=0, while ml.g4dn.xlarge
 # runs on CUDA by default.
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
-    COLMAP_VOCAB_TREE_URL=https://demuc.de/colmap/vocab_tree_flickr100K_words256K.bin \
+    COLMAP_VOCAB_TREE_URL= \
     COLMAP_VOCAB_TREE_PATH=/opt/ml/code/resources/vocab_tree_flickr100K_words256K.bin
 
 RUN apt-get update && \
