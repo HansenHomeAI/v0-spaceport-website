@@ -265,6 +265,7 @@ jobs:
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
+        SPACEPORT_STACK_REQUIRED="true"
         if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
           # Check if any Lambda files changed
           if printf '%s\n' "${CHANGED_FILES}" | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
@@ -286,6 +287,22 @@ jobs:
               EXPLORE_API_MISSING="true"
               AUTH_STACK_CHANGED="true"
               echo "Shared auth stack is missing ExplorePublicApiUrl - forcing auth redeploy"
+            fi
+          fi
+
+          if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+            NON_ML_CHANGED_FILES=$(
+              printf '%s\n' "${CHANGED_FILES}" \
+                | sed '/^$/d' \
+                | grep -Ev '^(\\.github/workflows/cdk-deploy\.yml|buildspec\.yml|infrastructure/containers/|infrastructure/spaceport_cdk/lambda/(start_ml_job|ml_status|ml_notification)/|infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack\.py|infrastructure/lambda/stop_job/|scripts/deployment/(deploy|import_containers)\.sh|tests/pipeline/|tests/test_container_diagnostics\.py|web/trigger-dev-build\.txt)' \
+                || true
+            )
+            if [ -z "${NON_ML_CHANGED_FILES}" ]; then
+              SPACEPORT_STACK_REQUIRED="false"
+              echo "Only ML-preview files changed - skipping Spaceport preview stack deployment"
+            else
+              echo "Spaceport preview stack still required due to changed files:"
+              printf '%s\n' "${NON_ML_CHANGED_FILES}"
             fi
           fi
         fi
@@ -315,6 +332,7 @@ jobs:
         echo "Lambda changed: ${LAMBDA_CHANGED}"
         echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
         echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
+        echo "Spaceport stack required: ${SPACEPORT_STACK_REQUIRED}"
 
         DEPLOY_AUTH_STACK_EFFECTIVE="${DEPLOY_AUTH_STACK}"
         if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${AUTH_STACK_CHANGED}" = "true" ]; then
@@ -323,7 +341,10 @@ jobs:
 
         echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
 
-        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+        STACKS=("$ML_STACK_NAME")
+        if [ "${SPACEPORT_STACK_REQUIRED}" = "true" ]; then
+          STACKS=("$SPACEPORT_STACK_NAME" "${STACKS[@]}")
+        fi
         if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
         fi
@@ -331,16 +352,27 @@ jobs:
         echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
         
         export DEPLOY_AUTH_STACK_OVERRIDE="${DEPLOY_AUTH_STACK_EFFECTIVE}"
-        cdk deploy "${STACKS[@]}" \
-          --require-approval never \
-          --no-fail-on-empty-changeset \
-          --context environment="${CDK_ENVIRONMENT_NAME}" \
-          --context branch_name="${BRANCH_NAME}" \
-          --context deploy_auth_stack="${DEPLOY_AUTH_STACK_EFFECTIVE}" \
-          --context lambdaChanged=$LAMBDA_CHANGED \
-          --context account=$ACCOUNT \
-          --context region=us-west-2 \
-          --parameters "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}"
+        echo "SPACEPORT_STACK_REQUIRED=${SPACEPORT_STACK_REQUIRED}" >> "$GITHUB_ENV"
+
+        CDK_ARGS=(
+          deploy
+          "${STACKS[@]}"
+          --require-approval never
+          --no-fail-on-empty-changeset
+          --context environment="${CDK_ENVIRONMENT_NAME}"
+          --context branch_name="${BRANCH_NAME}"
+          --context deploy_auth_stack="${DEPLOY_AUTH_STACK_EFFECTIVE}"
+          --context lambdaChanged=$LAMBDA_CHANGED
+          --context account=$ACCOUNT
+          --context region=us-west-2
+        )
+        if [ "${SPACEPORT_STACK_REQUIRED}" = "true" ]; then
+          CDK_ARGS+=(
+            --parameters
+            "${SPACEPORT_STACK_NAME}:GoogleMapsApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}"
+          )
+        fi
+        cdk "${CDK_ARGS[@]}"
 
     - name: Publish deployment outputs
       if: github.event_name == 'push'
@@ -363,8 +395,12 @@ jobs:
           printf '%s' "$value"
         }
 
-        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
+        DRONE_PATH_API_URL=""
+        FILE_UPLOAD_API_URL=""
+        if [ "${SPACEPORT_STACK_REQUIRED:-true}" = "true" ]; then
+          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
+          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
+        fi
         ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
 
         echo "Deployment class: $DEPLOYMENT_CLASS"
