@@ -8,7 +8,7 @@
 # - Vocabulary tree: we pre-create /opt/colmap/vocab and allow runtime download fallback
 #   from the official COLMAP host to avoid brittle build-time network coupling.
 
-FROM public.ecr.aws/nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+FROM public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
