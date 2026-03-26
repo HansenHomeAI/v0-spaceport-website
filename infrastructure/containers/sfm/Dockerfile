@@ -51,7 +51,7 @@ WORKDIR /opt/colmap
 RUN cmake -S . -B build -GNinja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCUDA_ENABLED=ON \
-    -DCMAKE_CUDA_ARCHITECTURES=native \
+    -DCMAKE_CUDA_ARCHITECTURES=75 \
     && cmake --build build --target colmap -j"$(nproc)" \
     && cmake --install build
 
