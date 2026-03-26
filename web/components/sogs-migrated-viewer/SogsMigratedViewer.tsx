@@ -89,6 +89,7 @@ export default function SogsMigratedViewer() {
   const [pathVersion, setPathVersion] = useState(0);
   const [selectedHoleId, setSelectedHoleId] = useState(() => CANYON_VISTA_HOLES[0]?.id ?? "canyon-vista");
   const [photoDot, setPhotoDot] = useState<TapDotConfig | null>(null);
+  const [pathPanelOpen, setPathPanelOpen] = useState(false);
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -349,8 +350,11 @@ export default function SogsMigratedViewer() {
     [bumpPath],
   );
 
+  const toggleDisabled = viewerState !== "ready";
+
   return (
     <main className="sogs-migrated-root">
+      <h1 className="sogs-migrated-sr-only">Canyon Vista (SOGS)</h1>
       <div ref={containerRef} className="sogs-migrated-stage">
         {viewerSrc ? (
           <iframe
@@ -385,7 +389,140 @@ export default function SogsMigratedViewer() {
         />
       </div>
 
-      <div className="sogs-migrated-bottom-menu">
+      {/* Canyon-Vista: top-right editor toggles (HansenHomeAI/Canyon-Vista index.html) */}
+      <div className="editor-toggles-wrap" id="editorTogglesWrap">
+        <div className="animation-editor-toggle-wrap">
+          <button
+            type="button"
+            id="animationEditorToggle"
+            className={`lot-editor-toggle animation-editor-toggle-icon-only ${pathPanelOpen ? "active" : ""}`}
+            aria-pressed={pathPanelOpen}
+            aria-label="Toggle camera path editor"
+            data-testid="path-editor-toggle"
+            disabled={toggleDisabled}
+            onClick={() => setPathPanelOpen((o) => !o)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M4 18.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />
+              <path d="M20 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />
+              <path d="M12 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />
+              <path d="M6.2 14.2 17.7 9" />
+              <path d="M10.4 18.3 6.3 16" />
+            </svg>
+          </button>
+        </div>
+        <div className="lot-editor-toggle-wrap">
+          <button
+            type="button"
+            className={`lot-editor-toggle animation-editor-toggle-icon-only ${showLotLines ? "active" : ""}`}
+            aria-pressed={showLotLines}
+            aria-label="Toggle lot lines"
+            disabled={toggleDisabled}
+            onClick={() => setShowLotLines((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M3 17.5V21h3.5L17.2 10.3l-3.5-3.5L3 17.5z" />
+              <path d="M12.4 7.6l3.5 3.5" />
+              <path d="M18 6l1.2-1.2a1.8 1.8 0 1 1 2.5 2.5L20.5 8.5" />
+            </svg>
+          </button>
+        </div>
+        <div className="lot-editor-toggle-wrap">
+          <button
+            type="button"
+            className={`lot-editor-toggle animation-editor-toggle-icon-only ${showTapDots ? "active" : ""}`}
+            aria-pressed={showTapDots}
+            aria-label="Toggle tap labels"
+            disabled={toggleDisabled}
+            onClick={() => setShowTapDots((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
+          </button>
+        </div>
+        <div className="lot-editor-toggle-wrap">
+          <button
+            type="button"
+            className={`lot-editor-toggle animation-editor-toggle-icon-only ${showSoldLabels ? "active" : ""}`}
+            aria-pressed={showSoldLabels}
+            aria-label="Toggle sold labels"
+            disabled={toggleDisabled}
+            onClick={() => setShowSoldLabels((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
+            </svg>
+          </button>
+        </div>
+        <div className="lot-editor-toggle-wrap">
+          <button
+            type="button"
+            className={`lot-editor-toggle animation-editor-toggle-icon-only ${autoRotate ? "active" : ""}`}
+            aria-pressed={autoRotate}
+            aria-label="Toggle auto-rotate"
+            disabled={toggleDisabled}
+            onClick={() => {
+              setAutoRotate((v) => {
+                const next = !v;
+                if (next) {
+                  setPathPlaying(false);
+                }
+                return next;
+              });
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M21 12a9 9 0 1 1-3-6.7" />
+              <polyline points="21 3 21 9 15 9" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <AnimationPathPanel
+        open={pathPanelOpen}
+        onClose={() => setPathPanelOpen(false)}
+        pathStateRef={pathStateRef}
+        pathVersion={pathVersion}
+        bumpPath={bumpPath}
+        disabled={toggleDisabled}
+        onSeekCheckpoint={onSeekCheckpoint}
+        onAddFromCurrentView={onAddFromCurrentView}
+        onPlayTour={onPlayTour}
+        onStopTour={onStopTour}
+        pathPlaying={pathPlaying}
+      />
+
+      {/* Canyon-Vista: bottom-left glass menu */}
+      <div className="menu-container" id="menuContainer">
+        <button
+          type="button"
+          className="menu-button"
+          data-testid="focus-scene-center"
+          aria-label="Focus scene"
+          disabled={viewerState !== "ready"}
+          onClick={onFocusSceneCenter}
+        >
+          <svg
+            className="sogs-focus-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <circle cx="12" cy="12" r="3" />
+            <line x1="12" y1="2" x2="12" y2="5" />
+            <line x1="12" y1="19" x2="12" y2="22" />
+            <line x1="2" y1="12" x2="5" y2="12" />
+            <line x1="19" y1="12" x2="22" y2="12" />
+          </svg>
+        </button>
         {viewerState === "ready" ? (
           <CanyonCompassLive
             poseRef={poseRef}
@@ -394,118 +531,58 @@ export default function SogsMigratedViewer() {
             onClick={onFaceNorth}
           />
         ) : null}
-        <div className="sogs-migrated-menu-spacer" />
       </div>
 
-      <div className="sogs-migrated-chrome">
-        <p className="sogs-migrated-title">Canyon Vista (SOGS)</p>
-        <div className="sogs-migrated-actions">
-          <label className="sogs-migrated-hole">
-            Hole
-            <select
-              data-testid="sogs-hole-picker"
-              value={selectedHoleId}
-              onChange={(e) => {
-                const id = e.target.value;
-                setSelectedHoleId(id);
-                const hole = CANYON_VISTA_HOLES.find((h) => h.id === id);
-                const url = hole?.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL;
-                setInputUrl(url);
-                if (attemptLoad(url)) setPathPlaying(false);
-              }}
-              disabled={viewerState === "loading"}
-            >
-              {CANYON_VISTA_HOLES.map((h) => (
-                <option key={h.id} value={h.id}>
-                  {h.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            type="button"
-            className="sogs-migrated-btn"
-            data-testid="focus-scene-center"
-            onClick={onFocusSceneCenter}
-            disabled={viewerState !== "ready"}
+      <div className="lot-editor-panel sogs-bundle-panel" aria-label="SOGS bundle">
+        <div className="lot-editor-title">Bundle</div>
+        <div className="lot-editor-field sogs-bundle-hole-field">
+          <label htmlFor="sogs-hole-picker">Hole</label>
+          <select
+            id="sogs-hole-picker"
+            data-testid="sogs-hole-picker"
+            value={selectedHoleId}
+            onChange={(e) => {
+              const id = e.target.value;
+              setSelectedHoleId(id);
+              const hole = CANYON_VISTA_HOLES.find((h) => h.id === id);
+              const url = hole?.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL;
+              setInputUrl(url);
+              if (attemptLoad(url)) setPathPlaying(false);
+            }}
+            disabled={viewerState === "loading"}
           >
-            Focus scene
-          </button>
-          <AnimationPathPanel
-            pathStateRef={pathStateRef}
-            pathVersion={pathVersion}
-            bumpPath={bumpPath}
-            disabled={viewerState !== "ready"}
-            onSeekCheckpoint={onSeekCheckpoint}
-            onAddFromCurrentView={onAddFromCurrentView}
-          />
-          <button type="button" className="sogs-migrated-btn" onClick={onPlayTour} disabled={viewerState !== "ready"}>
-            Play tour
-          </button>
-          <button type="button" className="sogs-migrated-btn" onClick={onStopTour} disabled={viewerState !== "ready" || !pathPlaying}>
-            Stop
-          </button>
-          <label className="sogs-migrated-check">
-            <input
-              type="checkbox"
-              checked={autoRotate}
-              onChange={(e) => {
-                setAutoRotate(e.target.checked);
-                if (e.target.checked) setPathPlaying(false);
-              }}
-              disabled={viewerState !== "ready"}
-            />
-            Auto-rotate
-          </label>
-          <label className="sogs-migrated-check">
-            <input
-              type="checkbox"
-              checked={showTapDots}
-              onChange={(e) => setShowTapDots(e.target.checked)}
-              disabled={viewerState !== "ready"}
-            />
-            Tap labels
-          </label>
-          <label className="sogs-migrated-check">
-            <input
-              type="checkbox"
-              checked={showLotLines}
-              onChange={(e) => setShowLotLines(e.target.checked)}
-              disabled={viewerState !== "ready"}
-            />
-            Lot lines
-          </label>
-          <label className="sogs-migrated-check">
-            <input
-              type="checkbox"
-              checked={showSoldLabels}
-              onChange={(e) => setShowSoldLabels(e.target.checked)}
-              disabled={viewerState !== "ready"}
-            />
-            Sold labels
-          </label>
+            {CANYON_VISTA_HOLES.map((h) => (
+              <option key={h.id} value={h.id}>
+                {h.label}
+              </option>
+            ))}
+          </select>
         </div>
         <form
-          className="sogs-migrated-url"
+          className="sogs-bundle-form"
           onSubmit={(e) => {
             e.preventDefault();
             if (attemptLoad(inputUrl)) setPathPlaying(false);
           }}
         >
-          <label htmlFor="sogs-migrated-url">SOGS URL</label>
-          <input
-            id="sogs-migrated-url"
-            type="url"
-            value={inputUrl}
-            onChange={(e) => setInputUrl(e.target.value)}
-            placeholder="https://…/meta.json"
-          />
-          <button type="submit" disabled={viewerState === "loading"}>
-            Load
-          </button>
+          <div className="lot-editor-field">
+            <label htmlFor="sogs-migrated-url">SOGS URL</label>
+            <input
+              id="sogs-migrated-url"
+              type="url"
+              value={inputUrl}
+              onChange={(e) => setInputUrl(e.target.value)}
+              placeholder="https://…/meta.json"
+            />
+          </div>
+          <div className="lot-editor-actions sogs-bundle-actions">
+            <button type="submit" className="lot-editor-action-btn" disabled={viewerState === "loading"}>
+              Load
+            </button>
+          </div>
         </form>
-        {error ? <p className="sogs-migrated-error">{error}</p> : null}
-        {viewerState === "loading" ? <p className="sogs-migrated-status">Loading viewer…</p> : null}
+        {error ? <p className="sogs-bundle-error">{error}</p> : null}
+        {viewerState === "loading" ? <p className="lot-editor-status">Loading viewer…</p> : null}
       </div>
 
       <CanyonPhotoModal dot={photoDot} onClose={() => setPhotoDot(null)} />

@@ -8,14 +8,16 @@ type Props = {
   onClick: () => void;
 };
 
+/** Matches Canyon-Vista `#compassButton.menu-button` + `#compassIcon`. */
 export function CanyonCompass({ rotationDeg, onClick }: Props) {
   return (
-    <button type="button" className="canyon-compass-btn" onClick={onClick} aria-label="Face north">
+    <button type="button" id="compassButton" className="menu-button" onClick={onClick} aria-label="Face north">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        id="compassIcon"
         src={COMPASS_OUTLINE}
         alt=""
-        className="canyon-compass-icon"
+        draggable={false}
         style={{ transform: `rotate(${rotationDeg}deg)` }}
       />
     </button>
