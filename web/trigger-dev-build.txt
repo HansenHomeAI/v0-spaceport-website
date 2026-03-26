@@ -14,3 +14,4 @@
 2026-03-26T18:57:30Z skip Spaceport preview stack for ML-only branch deploys and reuse shared staging outputs
 2026-03-26T19:04:30Z skip branch preview ML API Gateway and reuse shared staging ML API output
 2026-03-26T19:11:45Z ignore failed preview stacks when resolving shared fallback outputs
+2026-03-26T19:18:10Z rerun preview after branch ML stack reached steady-state outputs
