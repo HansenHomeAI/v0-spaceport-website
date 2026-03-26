@@ -21,7 +21,7 @@ from constructs import Construct
 import os
 import json
 import boto3
-from .branch_utils import build_scoped_name
+from .branch_utils import build_scoped_name, get_ecr_branch_suffix
 
 
 class MLPipelineStack(Stack):
@@ -301,6 +301,7 @@ class MLPipelineStack(Stack):
         sfm_repo_name = sfm_repo.repository_name
         gaussian_repo_name = gaussian_repo.repository_name
         compressor_repo_name = compressor_repo.repository_name
+        sfm_image_tag = get_ecr_branch_suffix(self.branch_name) or "latest"
         
         # Fallback repo names (shared repos without suffix)
         sfm_repo_fallback_name = "spaceport/sfm"
@@ -325,6 +326,8 @@ class MLPipelineStack(Stack):
                 "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
                 "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
                 "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
+                # Branch previews pin the SfM image tag so container swaps stay isolated.
+                "SFM_ECR_TAG": sfm_image_tag,
             }
         )
 
@@ -369,7 +372,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.2xlarge",
+                        "InstanceType": "ml.g4dn.xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },
