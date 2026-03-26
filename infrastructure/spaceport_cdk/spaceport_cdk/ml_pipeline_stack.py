@@ -323,6 +323,7 @@ class MLPipelineStack(Stack):
                 "COMPRESSOR_ECR_REPO": compressor_repo_name,
                 # Fallback repo names (shared repos)
                 "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
+                "SFM_IMAGE_TAG": "colmap-gpu",
                 "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
                 "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
             }
@@ -369,7 +370,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.2xlarge",
+                        "InstanceType": "ml.g4dn.xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },
