@@ -1,14 +1,14 @@
 # COLMAP GPU SfM container for SageMaker Processing.
 #
 # Non-obvious choices:
-# - Base image: CUDA 11.8 + Ubuntu 22.04 keeps compatibility with g4dn (T4) while
+# - Base image: AWS public ECR GPU training image avoids Docker Hub pull-rate limits in CodeBuild and includes CUDA toolchain for COLMAP.
 #   using a modern compiler toolchain that COLMAP builds cleanly with.
 # - Build flags: COLMAP is compiled with CUDA enabled (CUDA_ARCHS=native) so GPU SIFT
 #   extraction/matching is available at runtime.
 # - Vocabulary tree: we pre-create /opt/colmap/vocab and allow runtime download fallback
 #   from the official COLMAP host to avoid brittle build-time network coupling.
 
-FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+FROM public.ecr.aws/pytorch-training/pytorch-training:2.1.0-gpu-py310-cu121-ubuntu20.04-sagemaker
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
