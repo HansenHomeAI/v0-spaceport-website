@@ -2,9 +2,9 @@
 # image, because CodeBuild hits Docker Hub pull-rate limits on unattended CI.
 FROM public.ecr.aws/lts/ubuntu:22.04
 
-# Pin the COLMAP release and compile only T4-compatible CUDA kernels to keep
-# rebuilds reproducible and the CodeBuild compile time reasonable for
-# ml.g4dn.xlarge runtime targets.
+# Pin the COLMAP release and compile only T4-compatible CUDA kernels so CI
+# rebuilds stay reproducible and the CodeBuild compile time remains reasonable
+# for ml.g4dn.xlarge runtime targets.
 ARG COLMAP_VERSION=4.0.2
 
 ENV DEBIAN_FRONTEND=noninteractive \
