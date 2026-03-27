@@ -75,23 +75,17 @@ class ColmapPipeline:
         self.vocab_tree_path = Path(
             os.environ.get(
                 "COLMAP_VOCAB_TREE_PATH",
-                str(self.work_dir / "vocab_tree.faiss"),
+                "/opt/ml/code/resources/vocab_tree_faiss_flickr100K_words256K.bin",
             )
+        )
+        self.vocab_tree_url = os.environ.get(
+            "COLMAP_VOCAB_TREE_URL",
+            "https://github.com/colmap/colmap/releases/download/3.12.0/vocab_tree_faiss_flickr100K_words256K.bin",
         )
         self.use_gpu = os.environ.get("COLMAP_USE_GPU", "1") != "0"
         self.max_features = int(os.environ.get("COLMAP_SIFT_MAX_NUM_FEATURES", "8192"))
-        self.vocab_num_images = int(os.environ.get("COLMAP_VOCAB_NUM_IMAGES", "40"))
-        self.vocab_num_visual_words = int(
-            os.environ.get("COLMAP_VOCAB_BUILD_NUM_VISUAL_WORDS", "32768")
-        )
-        self.vocab_max_num_descriptors = int(
-            os.environ.get("COLMAP_VOCAB_BUILD_MAX_NUM_DESCRIPTORS", "250000")
-        )
-        self.vocab_build_threads = os.environ.get(
-            "COLMAP_VOCAB_BUILD_THREADS",
-            os.environ.get("COLMAP_MAPPER_THREADS", "-1"),
-        )
-        self.spatial_neighbors = int(os.environ.get("COLMAP_SPATIAL_MAX_NEIGHBORS", "24"))
+        self.vocab_num_images = int(os.environ.get("COLMAP_VOCAB_NUM_IMAGES", "20"))
+        self.spatial_neighbors = int(os.environ.get("COLMAP_SPATIAL_MAX_NEIGHBORS", "16"))
         self.spatial_distance_m = float(os.environ.get("COLMAP_SPATIAL_MAX_DISTANCE_METERS", "150"))
         self.mapper_threads = os.environ.get("COLMAP_MAPPER_THREADS", "-1")
         self.start_time = time.time()
@@ -100,6 +94,7 @@ class ColmapPipeline:
         self.matchers_run: List[str] = []
         self.extracted_image_count = 0
         self.database_stats: Dict[str, int] = {}
+        self.vocab_tree_source = "missing"
         self.images_dir.mkdir(parents=True, exist_ok=True)
         self.sparse_root.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -199,34 +194,27 @@ class ColmapPipeline:
         logger.info("Detected GPS EXIF priors on %s images", count)
         return count
 
-    def build_vocab_tree(self) -> None:
+    def ensure_vocab_tree(self) -> None:
         started = time.time()
         self.vocab_tree_path.parent.mkdir(parents=True, exist_ok=True)
-        logger.info(
-            "Building a FAISS vocab tree with %s visual words from up to %s descriptors",
-            self.vocab_num_visual_words,
-            self.vocab_max_num_descriptors,
-        )
+        if self.vocab_tree_path.exists() and self.vocab_tree_path.stat().st_size > 0:
+            self.vocab_tree_source = "cached"
+            return
+        logger.info("Downloading vocab tree from %s", self.vocab_tree_url)
         stream_command(
             [
-                "colmap",
-                "vocab_tree_builder",
-                "--database_path",
-                str(self.database_path),
-                "--vocab_tree_path",
+                "curl",
+                "-fL",
+                self.vocab_tree_url,
+                "-o",
                 str(self.vocab_tree_path),
-                "--num_visual_words",
-                str(self.vocab_num_visual_words),
-                "--max_num_descriptors",
-                str(self.vocab_max_num_descriptors),
-                "--num_threads",
-                str(self.vocab_build_threads),
             ],
-            stage="vocab_tree_builder",
+            stage="download_vocab_tree",
         )
         if not self.vocab_tree_path.exists() or self.vocab_tree_path.stat().st_size == 0:
-            raise RuntimeError("COLMAP vocab_tree_builder produced an empty index")
-        self.timings["build_vocab_tree_seconds"] = round(time.time() - started, 2)
+            raise RuntimeError("Failed to download a usable COLMAP vocab tree")
+        self.vocab_tree_source = "downloaded"
+        self.timings["download_vocab_tree_seconds"] = round(time.time() - started, 2)
 
     def run_feature_extraction(self) -> None:
         started = time.time()
@@ -328,7 +316,7 @@ class ColmapPipeline:
                 )
             self.timings["spatial_matching_seconds"] = round(time.time() - started, 2)
 
-        self.build_vocab_tree()
+        self.ensure_vocab_tree()
 
         started = time.time()
         stream_command(
@@ -440,13 +428,11 @@ class ColmapPipeline:
             "matchers_run": self.matchers_run,
             "vocab_tree_path": str(self.vocab_tree_path),
             "vocab_tree_bytes": self.vocab_tree_path.stat().st_size if self.vocab_tree_path.exists() else 0,
-            "vocab_tree_source": "built_from_database",
+            "vocab_tree_source": self.vocab_tree_source,
             "sift_max_num_features": self.max_features,
             "spatial_matcher_neighbors": self.spatial_neighbors,
             "spatial_matcher_distance_m": self.spatial_distance_m,
             "vocab_tree_num_images": self.vocab_num_images,
-            "vocab_tree_num_visual_words": self.vocab_num_visual_words,
-            "vocab_tree_max_num_descriptors": self.vocab_max_num_descriptors,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
         with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
