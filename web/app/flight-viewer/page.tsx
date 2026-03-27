@@ -171,12 +171,12 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
     index,
   }));
 
-  // Second pass: calculate heading angles from path when missing or zero
+  // Second pass: calculate heading angles from path when missing (0 is valid for spin mode)
   for (let i = 0; i < processedSamples.length; i++) {
     const sample = processedSamples[i];
     
-    // If heading is missing, null, or zero, calculate it from the flight path
-    if (!sample.headingDeg || sample.headingDeg === 0) {
+    // Only override when heading is missing or invalid; preserve 0 (valid spin-mode start)
+    if (sample.headingDeg == null || (typeof sample.headingDeg === "number" && !Number.isFinite(sample.headingDeg))) {
       let calculatedHeading: number | null = null;
       
       if (i < processedSamples.length - 1) {
@@ -211,7 +211,13 @@ function buildSamples(samples: PreparedRow[]): { samples: ProcessedSample[]; poi
   );
 
   let poi: PoiData | null = null;
-  if (firstPoiSource && firstPoiSource.poiLatitude !== null && firstPoiSource.poiLongitude !== null) {
+  // Litchi uses 0,0 for "no POI" (e.g. spin mode); don't show a marker there
+  if (
+    firstPoiSource &&
+    firstPoiSource.poiLatitude !== null &&
+    firstPoiSource.poiLongitude !== null &&
+    !(firstPoiSource.poiLatitude === 0 && firstPoiSource.poiLongitude === 0)
+  ) {
     const poiAltitudeFt = firstPoiSource.poiAltitudeFt ?? samples[0].altitudeFt;
     poi = {
       latitude: firstPoiSource.poiLatitude,
