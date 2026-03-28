@@ -876,7 +876,12 @@ class MLPipelineStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["Content-Type", "Authorization"]
-            )
+            ),
+            endpoint_types=(
+                [apigw.EndpointType.REGIONAL]
+                if self.deployment_class == "branch-preview"
+                else None
+            ),
         )
 
         # Add /start-job endpoint

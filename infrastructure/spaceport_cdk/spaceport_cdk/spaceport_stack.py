@@ -253,6 +253,11 @@ class SpaceportStack(Stack):
         )
 
         feedback_allowed_origin = env_config.get("feedbackAllowedOrigin", "*")
+        api_endpoint_types = (
+            [apigw.EndpointType.REGIONAL]
+            if self.deployment_class == "branch-preview"
+            else None
+        )
         self.feedback_lambda = lambda_.Function(
             self,
             "SpaceportFeedbackFunction",
@@ -298,7 +303,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            endpoint_types=api_endpoint_types,
         )
         
         self.file_upload_api = apigw.RestApi(
@@ -310,7 +316,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            endpoint_types=api_endpoint_types,
         )
         
         # Create Waitlist API Gateway
@@ -323,7 +330,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            endpoint_types=api_endpoint_types,
         )
 
         self.feedback_api = apigw.RestApi(
@@ -335,7 +343,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            endpoint_types=api_endpoint_types,
         )
         
         # Create API Gateway resources and methods
