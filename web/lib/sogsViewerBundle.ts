@@ -21,6 +21,16 @@ function convertToProxyPath(url: URL): string {
   return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
 }
 
+function shouldProxyBundleUrl(url: URL): boolean {
+  if (PROXY_HOSTS.has(url.host)) {
+    return true;
+  }
+
+  // Route edge-delivered bundle assets through the same-origin proxy to avoid
+  // browser-only access discrepancies when preview environments fetch CloudFront.
+  return url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
+}
+
 export function normalizeBundleUrl(rawValue: string): string | null {
   const trimmed = rawValue.trim();
   if (!trimmed) {
@@ -41,7 +51,7 @@ export function normalizeBundleUrl(rawValue: string): string | null {
       parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
     }
 
-    if (PROXY_HOSTS.has(parsed.host)) {
+    if (shouldProxyBundleUrl(parsed)) {
       return convertToProxyPath(parsed);
     }
 

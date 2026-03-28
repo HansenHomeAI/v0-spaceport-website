@@ -51,7 +51,11 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   urlString = urlString.replace(/^https:\/\//, "https://").replace(/^http:\/\//, "http://");
   try {
     const url = new URL(urlString);
-    if (!ALLOWED_HOSTS.has(url.host)) {
+    const isAllowedS3Host = ALLOWED_HOSTS.has(url.host);
+    const isAllowedEdgeBundle =
+      url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
+
+    if (!isAllowedS3Host && !isAllowedEdgeBundle) {
       return null;
     }
     return url;
