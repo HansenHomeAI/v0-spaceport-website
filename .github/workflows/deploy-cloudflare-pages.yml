@@ -113,6 +113,7 @@ jobs:
 
           wait_for_stack() {
             local stack_name="$1"
+            local extra_ready_regex="${2:-}"
             local max_attempts=120
             local sleep_seconds=15
             local attempt=1
@@ -125,7 +126,7 @@ jobs:
                 echo "[$attempt/$max_attempts] Waiting for stack $stack_name to exist..."
               elif [[ "$status" == *_IN_PROGRESS ]]; then
                 echo "[$attempt/$max_attempts] Waiting for stack $stack_name to finish: $status"
-              elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
+              elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]] || { [ -n "$extra_ready_regex" ] && [[ "$status" =~ $extra_ready_regex ]]; }; then
                 echo "Stack $stack_name is ready with status $status"
                 return 0
               else
@@ -170,7 +171,7 @@ jobs:
 
           wait_for_stack "$SPACEPORT_STACK_NAME"
           wait_for_stack "$ML_STACK_NAME"
-          wait_for_stack "$AUTH_STACK_NAME"
+          wait_for_stack "$AUTH_STACK_NAME" "^(UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED)$"
 
           PROJECTS_API_URL="$(get_output "$AUTH_STACK_NAME" "ProjectsApiUrl")"
           COGNITO_USER_POOL_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolId")"
