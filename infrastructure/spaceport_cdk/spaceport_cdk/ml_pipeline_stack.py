@@ -40,6 +40,11 @@ class MLPipelineStack(Stack):
         self.branch_name = env_config.get("branchName", "")
         self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
         self.reuse_shared_ecr = env_config.get("reuseSharedEcr", False)
+        self.api_endpoint_types = (
+            [apigw.EndpointType.REGIONAL]
+            if self.deployment_class == "branch-preview"
+            else [apigw.EndpointType.EDGE]
+        )
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
@@ -775,6 +780,7 @@ class MLPipelineStack(Stack):
             self, "SpaceportMLApi",
             rest_api_name=f"Spaceport-ML-API-{suffix}",
             description="API for ML processing pipeline",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
