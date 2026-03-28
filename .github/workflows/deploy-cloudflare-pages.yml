@@ -236,6 +236,12 @@ jobs:
           BRANCH="${{ github.ref_name }}"
           echo "Preparing .env for branch $BRANCH"
           : > .env
+          echo "AWS_REGION=$AWS_REGION" >> .env
+          echo "AWS_DEFAULT_REGION=$AWS_REGION" >> .env
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
+          if [ -n "${AWS_SESSION_TOKEN:-}" ]; then echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> .env; fi
+          echo "ML_DELIVERY_BUCKET_NAME=$ML_DELIVERY_BUCKET_NAME" >> .env
           GOOGLE_MAPS_KEY="${MAPS_KEY_PRIMARY:-}"
           if [ -z "$GOOGLE_MAPS_KEY" ]; then GOOGLE_MAPS_KEY="${MAPS_KEY_LEGACY:-}"; fi
           GOOGLE_MAPS_MAP_ID="${MAP_ID_PRIMARY:-}"
@@ -292,6 +298,10 @@ jobs:
         run: |
           if ! [ -s .env ]; then
             echo ".env missing or empty" >&2
+            exit 1
+          fi
+          if grep -E '^(AWS_REGION|AWS_DEFAULT_REGION|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|ML_DELIVERY_BUCKET_NAME)=$' .env; then
+            echo "Detected empty server-side runtime variables in .env" >&2
             exit 1
           fi
           if grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env; then
