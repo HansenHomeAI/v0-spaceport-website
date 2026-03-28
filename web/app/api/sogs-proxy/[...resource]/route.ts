@@ -24,6 +24,10 @@ type S3Reference = {
 
 let awsClient: AwsClient | null = null;
 
+function hasAwsCredentials(): boolean {
+  return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+}
+
 function getAwsClient(): AwsClient {
   if (!awsClient) {
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
@@ -263,6 +267,22 @@ async function signedS3Fetch(ref: S3Reference): Promise<Response> {
   });
 }
 
+async function fetchS3Asset(ref: S3Reference): Promise<Response> {
+  const publicResponse = await fetch(buildSignedS3Url(ref), {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      Accept: "*/*",
+    },
+  });
+
+  if (publicResponse.ok || !hasAwsCredentials() || ![401, 403].includes(publicResponse.status)) {
+    return publicResponse;
+  }
+
+  return signedS3Fetch(ref);
+}
+
 async function proxyLegacyHttp(url: URL, request: NextRequest): Promise<Response> {
   const upstreamResponse = await fetch(url, {
     cache: "no-store",
@@ -289,7 +309,7 @@ function signedError(message: string, error: unknown): Response {
 
 async function proxyRawAsset(ref: S3Reference, request: NextRequest): Promise<Response> {
   try {
-    const upstreamResponse = await signedS3Fetch(ref);
+    const upstreamResponse = await fetchS3Asset(ref);
     if (!upstreamResponse.ok) {
       return new Response(`Unable to fetch source asset from S3 (${upstreamResponse.status})`, {
         status: upstreamResponse.status,
@@ -306,7 +326,7 @@ async function proxyRawAsset(ref: S3Reference, request: NextRequest): Promise<Re
 
 async function streamPlyFromTar(ref: S3Reference): Promise<Response> {
   try {
-    const upstreamResponse = await signedS3Fetch(ref);
+    const upstreamResponse = await fetchS3Asset(ref);
     if (!upstreamResponse.ok || !upstreamResponse.body) {
       return new Response(`Unable to fetch 3DGS artifact from S3 (${upstreamResponse.status})`, {
         status: upstreamResponse.status || 502,
@@ -383,7 +403,7 @@ async function convertColmapToPly(ref: S3Reference): Promise<Response> {
   }
 
   try {
-    const upstreamResponse = await signedS3Fetch(ref);
+    const upstreamResponse = await fetchS3Asset(ref);
     if (!upstreamResponse.ok) {
       return new Response(`Unable to fetch COLMAP point cloud from S3 (${upstreamResponse.status})`, {
         status: upstreamResponse.status || 502,
