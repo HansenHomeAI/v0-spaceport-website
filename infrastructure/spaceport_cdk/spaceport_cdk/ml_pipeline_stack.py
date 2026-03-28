@@ -771,6 +771,11 @@ class MLPipelineStack(Stack):
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
+        ml_api_kwargs = {}
+        if self.deployment_class == "branch-preview":
+            # Branch previews quickly exhaust the account EDGE API quota; keep prod/shared behavior unchanged.
+            ml_api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+
         ml_api = apigw.RestApi(
             self, "SpaceportMLApi",
             rest_api_name=f"Spaceport-ML-API-{suffix}",
@@ -779,7 +784,8 @@ class MLPipelineStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["Content-Type", "Authorization"]
-            )
+            ),
+            **ml_api_kwargs,
         )
 
         # Add /start-job endpoint
