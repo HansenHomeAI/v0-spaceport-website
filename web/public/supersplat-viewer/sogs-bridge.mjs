@@ -95,7 +95,8 @@ function setupCameraManagerBridge(cameraManager, canvas) {
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
   const getFocusPoint = (cam) => {
-    const q = new Quat().setFromEulerAngles(cam.angles);
+    // `cam.angles` comes from the bundled viewer build, not the esm.sh Vec3 class.
+    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
     const dir = new Vec3();
     q.transformVector(CAM_FORWARD, dir);
     dir.mulScalar(cam.distance);
@@ -103,7 +104,7 @@ function setupCameraManagerBridge(cameraManager, canvas) {
   };
 
   const setCameraFromFocus = (cam, focus) => {
-    const q = new Quat().setFromEulerAngles(cam.angles);
+    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
     const dir = new Vec3();
     q.transformVector(CAM_FORWARD, dir);
     dir.mulScalar(cam.distance);
@@ -134,7 +135,7 @@ function setupCameraManagerBridge(cameraManager, canvas) {
     const nx = -(dxPx / w) * 2;
     const ny = (dyPx / h) * 2;
     const local = new Vec3(nx * halfX, ny * halfY, 0);
-    const q = new Quat().setFromEulerAngles(cam.angles);
+    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
     q.transformVector(local, local);
     return local;
   };
