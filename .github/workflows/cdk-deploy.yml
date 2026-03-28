@@ -299,7 +299,7 @@ jobs:
             --context region=us-west-2
 
   deploy_application:
-    if: github.event_name == 'push' && (needs.deploy_shared_auth.result == 'success' || needs.deploy_shared_auth.result == 'skipped')
+    if: always() && github.event_name == 'push' && needs.resolve_context.result == 'success' && (needs.deploy_shared_auth.result == 'success' || needs.deploy_shared_auth.result == 'skipped')
     needs: [resolve_context, deploy_shared_auth]
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
