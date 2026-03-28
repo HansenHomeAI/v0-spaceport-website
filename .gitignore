@@ -84,3 +84,6 @@ web/public/cesium/
 
 # 3D model files (large binary files)
 *.ply
+
+# Local splat editor scratch area
+.spaceport-splat-editor/

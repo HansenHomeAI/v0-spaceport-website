@@ -4,7 +4,9 @@
     "build": "cd web && npm run build",
     "start": "cd web && npm run start",
     "cf:build": "cd web && npm run cf:build",
-    "cf:preview": "cd web && npm run cf:preview"
+    "cf:preview": "cd web && npm run cf:preview",
+    "test:splat-editor": "node --test --test-concurrency=1 tests/splat-editor/*.test.mjs",
+    "test:playwright:splat-editor": "npx playwright test --config tests/playwright/playwright.config.ts tests/playwright/splat-editor.spec.ts"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"

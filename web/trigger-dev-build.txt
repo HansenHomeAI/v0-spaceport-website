@@ -38,4 +38,5 @@
 2026-03-25 sogs-bridge: fix focus math (euler angles as numbers; esm vs bundled Vec3)
 2026-03-25 sogs-migrated-viewer path editor, sold labels, hole picker, focus scene + smoke tests
 2026-03-26 sogs-migrated-viewer UI parity with Canyon-Vista (glass menus, editor toggles, path panel)
+2026-03-28 local 3dgs splat editor MVP import/edit/export flow
 2026-03-28 sogs-migrated-viewer black viewport fix + render-verifying smoke test
