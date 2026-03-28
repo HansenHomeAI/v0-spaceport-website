@@ -30,6 +30,11 @@ class AuthStack(Stack):
         region = env_config['region']
         deployment_class = env_config.get("deploymentClass", "shared-staging")
         deploy_auth_stack = bool(env_config.get("deployAuthStack"))
+        self.api_endpoint_types = (
+            [apigw.EndpointType.EDGE]
+            if deployment_class == "production"
+            else [apigw.EndpointType.REGIONAL]
+        )
 
         if deployment_class == "branch-preview" and not deploy_auth_stack:
             raise ValueError("AuthStack must not be deployed for branch-preview contexts")
@@ -77,6 +82,7 @@ class AuthStack(Stack):
             "Spaceport-InviteApi",
             rest_api_name="Spaceport-InviteApi",
             description="Invite approved users to Spaceport",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -175,6 +181,7 @@ class AuthStack(Stack):
             "Spaceport-ProjectsApi",
             rest_api_name=f"Spaceport-ProjectsApi-{suffix}",
             description="CRUD for user projects (requires Cognito JWT)",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -318,6 +325,7 @@ class AuthStack(Stack):
             "Spaceport-ExplorePublicApi",
             rest_api_name=f"Spaceport-ExplorePublicApi-{suffix}",
             description="Public explore listings API",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -432,6 +440,7 @@ class AuthStack(Stack):
             "SubscriptionApiGateway",  # Unique construct ID
             rest_api_name="Spaceport-SubscriptionApi",
             description="Subscription management API for Spaceport",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -615,6 +624,7 @@ class AuthStack(Stack):
             self, "Spaceport-BetaAccessAdminApi",
             rest_api_name=f"Spaceport-BetaAccessAdminApi-{suffix}",
             description="Beta access admin API for employee invitation management",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -763,6 +773,7 @@ class AuthStack(Stack):
             self, "Spaceport-ModelDeliveryAdminApi",
             rest_api_name=f"Spaceport-ModelDeliveryAdminApi-{suffix}",
             description="Model delivery admin API for sending model links to clients",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -938,6 +949,7 @@ class AuthStack(Stack):
             self, "Spaceport-PasswordResetApi",
             rest_api_name=f"Spaceport-PasswordResetApi-{suffix}",
             description="Password reset API for Spaceport users",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
