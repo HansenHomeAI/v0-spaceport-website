@@ -24,10 +24,6 @@ const CAM_FORWARD = new Vec3(0, 0, -1);
 
 const FOCUS_XZ_MAX = 10;
 const FOCUS_Y = 0;
-let focusPendPx = 0;
-let focusPendPy = 0;
-/** @type {{ id: number; x: number; y: number } | null} */
-let focusDrag = null;
 
 const AXIS_LEN = 45;
 const AXIS_RADIUS = 0.28;
@@ -90,7 +86,7 @@ function postCameraPoseFromViewer(cameraManager) {
   }
 }
 
-function setupCameraManagerBridge(cameraManager, canvas) {
+function setupCameraManagerBridge(cameraManager) {
   const origUpdate = cameraManager.update.bind(cameraManager);
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
@@ -122,40 +118,6 @@ function setupCameraManagerBridge(cameraManager, canvas) {
     }
   };
 
-  const screenToWorldPan = (cam, dxPx, dyPx) => {
-    const d = cam.distance;
-    const fov = cam.fov;
-    const rect = canvas.getBoundingClientRect();
-    const w = rect.width || 1;
-    const h = rect.height || 1;
-    const aspect = w / h;
-    const halfSlice = d * Math.tan(0.5 * fov * (Math.PI / 180));
-    const halfX = halfSlice * aspect;
-    const halfY = halfSlice;
-    const nx = -(dxPx / w) * 2;
-    const ny = (dyPx / h) * 2;
-    const local = new Vec3(nx * halfX, ny * halfY, 0);
-    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
-    q.transformVector(local, local);
-    return local;
-  };
-
-  const applyFocusPanAndClamp = () => {
-    const cam = cameraManager.camera;
-    if (focusPendPx !== 0 || focusPendPy !== 0) {
-      const pan = screenToWorldPan(cam, focusPendPx, focusPendPy);
-      focusPendPx = 0;
-      focusPendPy = 0;
-      const focus = getFocusPoint(cam);
-      focus.add(pan);
-      focus.x = clamp(focus.x, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
-      focus.z = clamp(focus.z, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
-      focus.y = FOCUS_Y;
-      setCameraFromFocus(cam, focus);
-    }
-    clampCameraFocus(cam);
-  };
-
   cameraManager.update = (dt, frame) => {
     if (window.__sogsScriptedCamera) {
       const pose = window.__sogsCameraPose;
@@ -173,48 +135,10 @@ function setupCameraManagerBridge(cameraManager, canvas) {
       if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
         cameraManager.camera.fov = window.__sogsUserFov;
       }
-      applyFocusPanAndClamp();
+      clampCameraFocus(cameraManager.camera);
       postCameraPoseFromViewer(cameraManager);
     }
   };
-}
-
-function installFocusPointerHandlers(canvas) {
-  if (!canvas) {
-    return;
-  }
-  const onPointerDown = (e) => {
-    if (e.button !== 0) {
-      return;
-    }
-    if (!canvas.contains(e.target)) {
-      return;
-    }
-    focusDrag = { id: e.pointerId, x: e.clientX, y: e.clientY };
-  };
-  const onPointerMove = (e) => {
-    if (!focusDrag || e.pointerId !== focusDrag.id) {
-      return;
-    }
-    const dx = e.clientX - focusDrag.x;
-    const dy = e.clientY - focusDrag.y;
-    focusDrag.x = e.clientX;
-    focusDrag.y = e.clientY;
-    focusPendPx += dx;
-    focusPendPy += dy;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  };
-  const onPointerEnd = (e) => {
-    if (focusDrag && e.pointerId === focusDrag.id) {
-      focusDrag = null;
-    }
-  };
-  window.addEventListener("pointerdown", onPointerDown, { capture: true });
-  window.addEventListener("pointermove", onPointerMove, { capture: true });
-  window.addEventListener("pointerup", onPointerEnd, { capture: true });
-  window.addEventListener("pointercancel", onPointerEnd, { capture: true });
-  window.__sogsSplatXzDragReady = true;
 }
 
 function axisMaterial(rgb) {
@@ -347,8 +271,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 30);
   });
 
-  setupCameraManagerBridge(viewer.cameraManager, app.graphicsDevice.canvas);
-  installFocusPointerHandlers(app.graphicsDevice.canvas);
+  setupCameraManagerBridge(viewer.cameraManager);
+  /** Primary pointer + pointermove pan was removed: it fought orbit/touch and caused bounce. */
+  window.__sogsSplatXzDragReady = true;
 
   window.addEventListener("message", (event) => {
     const d = event.data;
