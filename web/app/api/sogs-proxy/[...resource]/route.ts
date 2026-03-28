@@ -9,6 +9,11 @@ const ALLOWED_HOSTS = new Set([
 ]);
 
 const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
+const DELIVERY_BUCKET = process.env.ML_DELIVERY_BUCKET_NAME?.trim() ?? "";
+
+function isAllowedEdgeBundleUrl(url: URL): boolean {
+  return url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
+}
 
 /** Map global S3 hostname to regional so legacy private S3 bundle links can still be fetched with SigV4 when needed. */
 function toRegionalS3HttpsUrl(url: URL): URL {
@@ -20,12 +25,20 @@ function toRegionalS3HttpsUrl(url: URL): URL {
   return url;
 }
 
+function toSignedS3HttpsUrl(url: URL): URL {
+  if (isAllowedEdgeBundleUrl(url) && DELIVERY_BUCKET) {
+    return new URL(`https://${DELIVERY_BUCKET}.s3.${S3_REGION}.amazonaws.com${url.pathname}${url.search}`);
+  }
+
+  return toRegionalS3HttpsUrl(url);
+}
+
 function awsCredentialsAvailable(): boolean {
   return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
 }
 
 async function fetchS3Signed(url: URL): Promise<Response> {
-  const regional = toRegionalS3HttpsUrl(url);
+  const regional = toSignedS3HttpsUrl(url);
   const client = new AwsClient({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
@@ -52,8 +65,7 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   try {
     const url = new URL(urlString);
     const isAllowedS3Host = ALLOWED_HOSTS.has(url.host);
-    const isAllowedEdgeBundle =
-      url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
+    const isAllowedEdgeBundle = isAllowedEdgeBundleUrl(url);
 
     if (!isAllowedS3Host && !isAllowedEdgeBundle) {
       return null;
@@ -70,11 +82,15 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }
 
-  let upstreamResponse = await fetch(upstreamUrl, {
-    headers: {
-      Accept: request.headers.get("accept") ?? "*/*",
-    },
-  });
+  const shouldUseSignedS3First = isAllowedEdgeBundleUrl(upstreamUrl) && DELIVERY_BUCKET && awsCredentialsAvailable();
+
+  let upstreamResponse = shouldUseSignedS3First
+    ? await fetchS3Signed(upstreamUrl)
+    : await fetch(upstreamUrl, {
+        headers: {
+          Accept: request.headers.get("accept") ?? "*/*",
+        },
+      });
 
   // Legacy direct-S3 bundle URLs may still require SigV4 depending on bucket/object policy.
   if (

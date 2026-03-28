@@ -186,6 +186,7 @@ jobs:
           WAITLIST_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "WaitlistApiUrl")"
           FEEDBACK_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FeedbackApiUrl")"
           ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+          ML_DELIVERY_BUCKET_NAME="$(get_output "$ML_STACK_NAME" "MLDeliveryBucketName")"
 
           {
             echo "PROJECTS_API_URL=$PROJECTS_API_URL"
@@ -200,6 +201,7 @@ jobs:
             echo "WAITLIST_API_URL=$WAITLIST_API_URL"
             echo "FEEDBACK_API_URL=$FEEDBACK_API_URL"
             echo "ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL"
+            echo "ML_DELIVERY_BUCKET_NAME=$ML_DELIVERY_BUCKET_NAME"
           } >> "$GITHUB_ENV"
 
           echo "Resolved deployment class: $DEPLOYMENT_CLASS"
@@ -211,6 +213,7 @@ jobs:
           echo "Waitlist API: $WAITLIST_API_URL"
           echo "Feedback API: $FEEDBACK_API_URL"
           echo "ML Pipeline API: $ML_PIPELINE_API_URL"
+          echo "ML Delivery Bucket: $ML_DELIVERY_BUCKET_NAME"
 
       - name: Setup Node
         uses: actions/setup-node@v4
