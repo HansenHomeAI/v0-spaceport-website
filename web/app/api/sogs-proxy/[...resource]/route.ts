@@ -215,10 +215,15 @@ function normalizeLegacyUpstreamUrl(segments: string[]): URL | null {
 }
 
 function parseStageReference(rawSegments: string[]): { mode: Mode; ref: S3Reference } | null {
-  const [mode, ...rest] = decodeSegments(rawSegments);
-  if (!mode || !["raw", "3dgs-ply", "colmap-ply"].includes(mode)) {
+  const [candidateMode, ...rest] = decodeSegments(rawSegments);
+  if (
+    candidateMode !== "raw" &&
+    candidateMode !== "3dgs-ply" &&
+    candidateMode !== "colmap-ply"
+  ) {
     return null;
   }
+  const mode: Mode = candidateMode;
 
   const withoutSynthetic = mode === "raw" ? rest : rest.slice(0, -1);
   const [scheme, bucket, ...keySegments] = withoutSynthetic;
