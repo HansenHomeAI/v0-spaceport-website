@@ -1,4 +1,4 @@
-2026-03-28 sogs-proxy: SigV4 fallback for SSE-KMS S3 GETs; default bundle = pipeline manual-3dgs
+2026-03-28 edge bundle delivery: CloudFront publish path + viewer default env support
 2026-03-28 - SOGS bridge: remove primary-pointer XZ pan (orbit conflict / bounce)
 2026-03-04 - Branch-isolated preview backend routing and stack resolution
 2026-03-06 - Add explicit terrain toggle for drone path generation

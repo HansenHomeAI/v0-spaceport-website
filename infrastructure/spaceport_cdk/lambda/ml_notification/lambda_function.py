@@ -19,6 +19,7 @@ def lambda_handler(event, context):
         s3_url = event.get('s3Url')
         status = event.get('status')  # 'completed' or 'failed'
         compressed_output_uri = event.get('compressedOutputS3Uri')
+        edge_bundle_url = event.get('edgeBundleUrl')
         
         # Handle different error sources - new approach with state object
         state = event.get('state', {})
@@ -57,7 +58,7 @@ def lambda_handler(event, context):
         # Prepare email content based on status
         if status == 'completed':
             subject = "🎉 Your 3D Model is Ready!"
-            body_text, body_html = create_success_email(job_id, s3_url, compressed_output_uri)
+            body_text, body_html = create_success_email(job_id, s3_url, compressed_output_uri, edge_bundle_url)
         elif status == 'failed':
             subject = "❌ 3D Model Processing Failed"
             body_text, body_html = create_failure_email(job_id, s3_url, actual_error)
@@ -94,8 +95,10 @@ def lambda_handler(event, context):
         }
 
 
-def create_success_email(job_id, s3_url, compressed_output_uri):
+def create_success_email(job_id, s3_url, compressed_output_uri, edge_bundle_url=None):
     """Create email content for successful processing"""
+    delivery_url = edge_bundle_url or compressed_output_uri
+    delivery_label = "Edge-hosted bundle" if edge_bundle_url else "Processed Model"
     
     body_text = f"""
 Your 3D Model is Ready!
@@ -104,14 +107,14 @@ Great news! We've successfully processed your drone photos and created your imme
 
 Job ID: {job_id}
 Original Upload: {s3_url}
-Processed Model: {compressed_output_uri}
+{delivery_label}: {delivery_url}
 
 Your model has been processed through our advanced pipeline:
 1. ✅ Structure from Motion (SfM) processing with COLMAP
 2. ✅ 3D Gaussian Splatting training
 3. ✅ Model compression for optimal viewing
 
-You can now download your compressed 3D model from the link above. The model is optimized for web viewing and can be embedded in your website or shared with clients.
+You can now open your compressed 3D model from the link above. The model is optimized for web viewing and can be embedded in your website or shared with clients.
 
 If you have any questions or need assistance, please don't hesitate to reach out to our support team.
 
@@ -151,7 +154,7 @@ hello@spcprt.com
                 <h3>Processing Details</h3>
                 <p><strong>Job ID:</strong> {job_id}</p>
                 <p><strong>Original Upload:</strong> <a href="{s3_url}">{s3_url}</a></p>
-                <p><strong>Processed Model:</strong> <a href="{compressed_output_uri}">{compressed_output_uri}</a></p>
+                <p><strong>{delivery_label}:</strong> <a href="{delivery_url}">{delivery_url}</a></p>
             </div>
             
             <h3>Processing Pipeline Completed:</h3>
@@ -159,7 +162,7 @@ hello@spcprt.com
             <div class="step"><span class="step-icon">✅</span> 3D Gaussian Splatting training</div>
             <div class="step"><span class="step-icon">✅</span> Model compression for optimal viewing</div>
             
-            <a href="{compressed_output_uri}" class="download-link">Download Your 3D Model</a>
+            <a href="{delivery_url}" class="download-link">Open Your 3D Model</a>
             
             <p>Your model has been optimized for web viewing and can be embedded in your website or shared with clients.</p>
             

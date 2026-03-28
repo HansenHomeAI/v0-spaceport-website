@@ -10,7 +10,7 @@ const ALLOWED_HOSTS = new Set([
 
 const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
 
-/** Map global S3 hostname to regional (SigV4 + SSE-KMS GET needs a signed request). */
+/** Map global S3 hostname to regional so legacy private S3 bundle links can still be fetched with SigV4 when needed. */
 function toRegionalS3HttpsUrl(url: URL): URL {
   const globalMatch = /^([^.]+)\.s3\.amazonaws\.com$/i.exec(url.host);
   if (globalMatch) {
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     },
   });
 
-  // SSE-S3 (AES256): anonymous GET works. SSE-KMS: anonymous GET returns 400; use SigV4 when creds exist.
+  // Legacy direct-S3 bundle URLs may still require SigV4 depending on bucket/object policy.
   if (
     (upstreamResponse.status === 400 || upstreamResponse.status === 403) &&
     awsCredentialsAvailable()

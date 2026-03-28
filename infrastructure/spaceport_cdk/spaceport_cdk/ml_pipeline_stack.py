@@ -4,6 +4,8 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_s3 as s3,
     aws_iam as iam,
+    aws_cloudfront as cloudfront,
+    aws_cloudfront_origins as origins,
     aws_stepfunctions as sfn,
     aws_stepfunctions_tasks as sfn_tasks,
     aws_sagemaker as sagemaker,
@@ -84,6 +86,42 @@ class MLPipelineStack(Stack):
                 fallback_name="spaceport-ml-processing"
             )
         print(f"🆕 ML Pipeline stack owns ML bucket: {ml_bucket.bucket_name}")
+
+        delivery_bucket_name = f"spaceport-ml-delivery-{suffix}"
+        delivery_bucket = self._get_or_create_s3_bucket(
+            construct_id="SpaceportMLDeliveryBucket",
+            preferred_name=delivery_bucket_name,
+            fallback_name=delivery_bucket_name,
+        )
+        print(f"🆕 ML Pipeline stack owns delivery bucket: {delivery_bucket.bucket_name}")
+
+        edge_response_headers_policy = cloudfront.ResponseHeadersPolicy(
+            self,
+            "EdgeBundleResponseHeadersPolicy",
+            cors_behavior=cloudfront.ResponseHeadersCorsBehavior(
+                access_control_allow_credentials=False,
+                access_control_allow_headers=["*"],
+                access_control_allow_methods=["GET", "HEAD", "OPTIONS"],
+                access_control_allow_origins=["*"],
+                access_control_max_age=Duration.days(365),
+                origin_override=True,
+            ),
+        )
+
+        edge_distribution = cloudfront.Distribution(
+            self,
+            "SpaceportMLEdgeDistribution",
+            comment=f"Spaceport ML edge delivery for {suffix}",
+            default_behavior=cloudfront.BehaviorOptions(
+                origin=origins.S3Origin(delivery_bucket),
+                allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+                cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD_OPTIONS,
+                cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+                compress=True,
+                response_headers_policy=edge_response_headers_policy,
+                viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            ),
+        )
 
         # Import upload bucket from main Spaceport stack - DO NOT CREATE
         # This bucket is owned by the main Spaceport stack, we just reference it
@@ -352,6 +390,43 @@ class MLPipelineStack(Stack):
             }
         )
 
+        publish_bundle_lambda = lambda_.Function(
+            self,
+            "PublishBundleFunction",
+            function_name=scoped_name("Spaceport-MLPublishBundle-"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/ml_publish_bundle"),
+            timeout=Duration.seconds(120),
+            memory_size=512,
+            environment={
+                "DELIVERY_BUCKET": delivery_bucket.bucket_name,
+                "EDGE_DISTRIBUTION_DOMAIN": edge_distribution.distribution_domain_name,
+            },
+        )
+
+        status_lambda = lambda_.Function(
+            self,
+            "MLStatusFunction",
+            function_name=scoped_name("Spaceport-MLStatus-"),
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset("lambda/ml_status"),
+            timeout=Duration.seconds(30),
+            memory_size=256,
+        )
+
+        ml_bucket.grant_read(publish_bundle_lambda)
+        delivery_bucket.grant_read_write(publish_bundle_lambda)
+        status_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["states:DescribeExecution", "states:GetExecutionHistory"],
+                resources=[
+                    f"arn:aws:states:{self.region}:{self.account}:execution:SpaceportMLPipeline-{suffix}:*"
+                ],
+            )
+        )
+
         # ========== STEP FUNCTIONS DEFINITION ==========
         # Define the Step Functions workflow
         
@@ -612,6 +687,18 @@ class MLPipelineStack(Stack):
             time=sfn.WaitTime.duration(Duration.seconds(60))  # Wait 60 seconds between polls
         )
 
+        publish_bundle = sfn_tasks.LambdaInvoke(
+            self,
+            "PublishBundleToEdge",
+            lambda_function=publish_bundle_lambda,
+            payload=sfn.TaskInput.from_object({
+                "jobId": sfn.JsonPath.string_at("$.jobId"),
+                "compressedOutputS3Uri": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
+            }),
+            payload_response_only=True,
+            result_path="$.publishResult",
+        )
+
         # Notification step
         notify_user = sfn_tasks.LambdaInvoke(
             self, "NotifyUser",
@@ -621,6 +708,7 @@ class MLPipelineStack(Stack):
                 "email": sfn.JsonPath.string_at("$.email"),
                 "s3Url": sfn.JsonPath.string_at("$.s3Url"),
                 "compressedOutputS3Uri": sfn.JsonPath.string_at("$.compressedOutputS3Uri"),
+                "edgeBundleUrl": sfn.JsonPath.string_at("$.publishResult.edgeBundleUrl"),
                 "status": "completed"
             }),
             result_path="$.notificationResult"
@@ -677,6 +765,12 @@ class MLPipelineStack(Stack):
             result_path="$.error"
         )
 
+        publish_bundle_with_catch = publish_bundle.add_catch(
+            notify_error,
+            errors=["States.ALL"],
+            result_path="$.error",
+        )
+
         # Build the workflow with proper job completion waiting
         # SfM workflow: Start job -> Wait and poll until complete
         sfm_polling_loop = sfm_choice.when(
@@ -703,13 +797,15 @@ class MLPipelineStack(Stack):
         # Compression workflow: Start job -> Wait and poll until complete
         compression_polling_loop = compression_choice.when(
             sfn.Condition.string_equals("$.compressionStatus.ProcessingJobStatus", "Completed"),
-            notify_user
+            publish_bundle_with_catch
         ).when(
             sfn.Condition.string_equals("$.compressionStatus.ProcessingJobStatus", "Failed"),
             notify_error
         ).otherwise(
             compression_wait.next(wait_for_compression_with_catch)
         )
+
+        publish_bundle_with_catch.next(notify_user)
 
         # Connect the polling loops to the choices
         wait_for_sfm_with_catch.next(sfm_polling_loop)
@@ -754,6 +850,7 @@ class MLPipelineStack(Stack):
 
         # Update start job lambda with Step Function ARN
         start_job_lambda.add_environment("STEP_FUNCTION_ARN", ml_pipeline.state_machine_arn)
+        status_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
 
         # Create Lambda function for stopping jobs
         stop_job_lambda = lambda_.Function(
@@ -802,6 +899,16 @@ class MLPipelineStack(Stack):
             )
         )
 
+        status_resource = ml_api.root.add_resource("status")
+        status_job_resource = status_resource.add_resource("{jobId}")
+        status_job_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(
+                status_lambda,
+                proxy=True,
+            ),
+        )
+
         # ========== CLOUDWATCH ALARMS ==========
         # Alarm for Step Function failures with environment-specific naming
         step_function_failure_alarm = cloudwatch.Alarm(
@@ -841,6 +948,20 @@ class MLPipelineStack(Stack):
             self, "StepFunctionArn",
             value=ml_pipeline.state_machine_arn,
             description="ML Pipeline Step Function ARN"
+        )
+
+        CfnOutput(
+            self,
+            "MLEdgeDistributionDomain",
+            value=edge_distribution.distribution_domain_name,
+            description="CloudFront distribution domain for edge-hosted ML bundles",
+        )
+
+        CfnOutput(
+            self,
+            "MLDeliveryBucketName",
+            value=delivery_bucket.bucket_name,
+            description="S3 bucket used for edge-hosted ML bundle delivery",
         )
 
         CfnOutput(
@@ -1035,7 +1156,9 @@ class MLPipelineStack(Stack):
             'lambda_functions': [
                 ("Spaceport-StartMLJob-", 64),
                 ("Spaceport-MLNotification-", 64),
-                ("Spaceport-StopJobFunction-", 64)
+                ("Spaceport-StopJobFunction-", 64),
+                ("Spaceport-MLPublishBundle-", 64),
+                ("Spaceport-MLStatus-", 64),
             ],
             'cloudwatch_alarms': [
                 ("SpaceportMLPipeline-Failures-", 128)

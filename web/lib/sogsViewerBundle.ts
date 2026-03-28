@@ -3,8 +3,12 @@ const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
 ]);
 
-/** Latest pipeline compression output (SSE-KMS); /api/sogs-proxy signs GETs when AWS_* creds are set. */
+const CONFIGURED_DEFAULT_SOGS_BUNDLE_URL =
+  process.env.NEXT_PUBLIC_DEFAULT_SOGS_BUNDLE_URL?.trim() || "";
+
+/** Prefer edge-hosted bundle URLs; keep S3 proxying only for legacy direct-bucket links. */
 export const DEFAULT_SOGS_BUNDLE_URL =
+  CONFIGURED_DEFAULT_SOGS_BUNDLE_URL ||
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/manual-3dgs-1774642514/supersplat_bundle/meta.json";
 
 export function getBaseOrigin(): string {
