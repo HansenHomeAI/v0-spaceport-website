@@ -72,16 +72,9 @@ class ColmapPipeline:
         self.images_dir = self.work_dir / "images"
         self.database_path = self.work_dir / "database.db"
         self.sparse_root = self.work_dir / "sparse"
-        self.vocab_tree_path = Path(
-            os.environ.get(
-                "COLMAP_VOCAB_TREE_PATH",
-                "/opt/ml/code/resources/vocab_tree_faiss_flickr100K_words256K.bin",
-            )
-        )
-        self.vocab_tree_url = os.environ.get(
-            "COLMAP_VOCAB_TREE_URL",
-            "https://github.com/colmap/colmap/releases/download/3.12.0/vocab_tree_faiss_flickr100K_words256K.bin",
-        )
+        configured_vocab_tree_path = os.environ.get("COLMAP_VOCAB_TREE_PATH", "").strip()
+        self.vocab_tree_path = Path(configured_vocab_tree_path) if configured_vocab_tree_path else None
+        self.vocab_tree_url = os.environ.get("COLMAP_VOCAB_TREE_URL", "").strip()
         self.use_gpu = os.environ.get("COLMAP_USE_GPU", "1") != "0"
         self.max_features = int(os.environ.get("COLMAP_SIFT_MAX_NUM_FEATURES", "8192"))
         self.vocab_num_images = int(os.environ.get("COLMAP_VOCAB_NUM_IMAGES", "20"))
@@ -195,11 +188,18 @@ class ColmapPipeline:
         return count
 
     def ensure_vocab_tree(self) -> None:
+        if self.vocab_tree_path is None:
+            self.vocab_tree_source = "colmap_auto"
+            return
         started = time.time()
         self.vocab_tree_path.parent.mkdir(parents=True, exist_ok=True)
         if self.vocab_tree_path.exists() and self.vocab_tree_path.stat().st_size > 0:
             self.vocab_tree_source = "cached"
             return
+        if not self.vocab_tree_url:
+            raise RuntimeError(
+                "COLMAP_VOCAB_TREE_PATH was set but the file is missing and no COLMAP_VOCAB_TREE_URL was provided"
+            )
         logger.info("Downloading vocab tree from %s", self.vocab_tree_url)
         stream_command(
             [
@@ -319,23 +319,26 @@ class ColmapPipeline:
         self.ensure_vocab_tree()
 
         started = time.time()
-        stream_command(
-            [
-                "colmap",
-                "vocab_tree_matcher",
-                "--database_path",
-                str(self.database_path),
-                "--FeatureMatching.use_gpu",
-                "1" if self.use_gpu else "0",
-                "--FeatureMatching.guided_matching",
-                "1",
-                "--VocabTreeMatching.vocab_tree_path",
-                str(self.vocab_tree_path),
-                "--VocabTreeMatching.num_images",
-                str(self.vocab_num_images),
-            ],
-            stage="vocab_tree_matcher",
-        )
+        command = [
+            "colmap",
+            "vocab_tree_matcher",
+            "--database_path",
+            str(self.database_path),
+            "--FeatureMatching.use_gpu",
+            "1" if self.use_gpu else "0",
+            "--FeatureMatching.guided_matching",
+            "1",
+            "--VocabTreeMatching.num_images",
+            str(self.vocab_num_images),
+        ]
+        if self.vocab_tree_path is not None:
+            command.extend(
+                [
+                    "--VocabTreeMatching.vocab_tree_path",
+                    str(self.vocab_tree_path),
+                ]
+            )
+        stream_command(command, stage="vocab_tree_matcher")
         self.timings["vocab_tree_matching_seconds"] = round(time.time() - started, 2)
         self.matchers_run.append("vocab_tree_matcher")
 
@@ -426,8 +429,12 @@ class ColmapPipeline:
             "gps_priors_detected": self.gps_image_count,
             "database_stats": self.database_stats,
             "matchers_run": self.matchers_run,
-            "vocab_tree_path": str(self.vocab_tree_path),
-            "vocab_tree_bytes": self.vocab_tree_path.stat().st_size if self.vocab_tree_path.exists() else 0,
+            "vocab_tree_path": str(self.vocab_tree_path) if self.vocab_tree_path else "colmap:auto-download",
+            "vocab_tree_bytes": (
+                self.vocab_tree_path.stat().st_size
+                if self.vocab_tree_path is not None and self.vocab_tree_path.exists()
+                else 0
+            ),
             "vocab_tree_source": self.vocab_tree_source,
             "sift_max_num_features": self.max_features,
             "spatial_matcher_neighbors": self.spatial_neighbors,
