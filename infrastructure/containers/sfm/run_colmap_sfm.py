@@ -371,7 +371,7 @@ class ColmapPipeline:
         best_registered = -1
         for candidate_dir in candidate_dirs:
             text_dir = self.work_dir / "text_models" / candidate_dir.name
-            text_dir.parent.mkdir(parents=True, exist_ok=True)
+            text_dir.mkdir(parents=True, exist_ok=True)
             stream_command(
                 [
                     "colmap",
