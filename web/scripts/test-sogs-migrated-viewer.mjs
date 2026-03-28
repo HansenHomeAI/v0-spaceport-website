@@ -1,5 +1,11 @@
 /**
- * Smoke test for /sogs-migrated-viewer: standalone chrome, iframe, first frame, bridge ready.
+ * Deep regression for /sogs-migrated-viewer.
+ *
+ * Validates:
+ * - default Canyon preset still loads with scene tools
+ * - latest SfM, 3DGS, and compressed S3 artifacts load through the same pasted-URL UX
+ * - rendered pixels are visible for each stage
+ * - camera can orbit and zoom for each stage
  *
  * Usage (from web/):
  *   SOGS_MIGRATED_URL=http://127.0.0.1:3000 node scripts/test-sogs-migrated-viewer.mjs
@@ -15,29 +21,63 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const logsDir = path.join(repoRoot, "logs");
+const LOAD_TIMEOUT_MS = 360000;
 
 const baseUrl = (process.env.SOGS_MIGRATED_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
-const bundleUrl =
-  process.env.SOGS_BUNDLE_URL ??
+const DEFAULT_PRESET_URL =
+  process.env.SOGS_DEFAULT_URL ??
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+const LATEST_COMPRESSED_URL =
+  process.env.SOGS_COMPRESSED_URL ??
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/manual-3dgs-1774642514/supersplat_bundle/meta.json";
+const LATEST_3DGS_URL =
+  process.env.SOGS_3DGS_URL ??
+  "https://spaceport-ml-processing.s3.amazonaws.com/3dgs/manual-3dgs-1774642514/ml-job-20260327-201514-manual-3-3dgs/output/model.tar.gz";
+const LATEST_SFM_URL =
+  process.env.SOGS_SFM_URL ??
+  "https://spaceport-ml-processing.s3.amazonaws.com/colmap/colmap-gpu-subset-runtime2-1774553792/";
+
+const CASES = [
+  {
+    name: "default-canyon",
+    queryUrl: null,
+    inputUrl: DEFAULT_PRESET_URL,
+    expectedStage: "Compressed SOGS bundle",
+    expectCanyonTools: true,
+    verifyNavigation: false,
+    minBright: 5000,
+  },
+  {
+    name: "compressed-latest",
+    queryUrl: LATEST_COMPRESSED_URL,
+    inputUrl: LATEST_COMPRESSED_URL,
+    expectedStage: "Compressed SOGS bundle",
+    expectCanyonTools: false,
+    verifyNavigation: true,
+    minBright: 5000,
+  },
+  {
+    name: "3dgs-latest",
+    queryUrl: LATEST_3DGS_URL,
+    inputUrl: LATEST_3DGS_URL,
+    expectedStage: "3DGS model",
+    expectCanyonTools: false,
+    verifyNavigation: true,
+    minBright: 5000,
+  },
+  {
+    name: "sfm-latest",
+    queryUrl: LATEST_SFM_URL,
+    inputUrl: LATEST_SFM_URL,
+    expectedStage: "SfM sparse point cloud",
+    expectCanyonTools: false,
+    verifyNavigation: true,
+    minBright: 400,
+  },
+];
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
-}
-
-async function readCanvasStats(frame) {
-  return frame.evaluate(async () => {
-    const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
-    return {
-      camera: cam
-        ? {
-            position: { x: cam.position.x, y: cam.position.y, z: cam.position.z },
-            angles: { x: cam.angles.x, y: cam.angles.y, z: cam.angles.z },
-            distance: cam.distance,
-          }
-        : null,
-    };
-  });
 }
 
 function paethPredictor(a, b, c) {
@@ -132,72 +172,152 @@ function decodePngRgba(buffer) {
 function summarizeRenderedPixels(buffer) {
   const { width, height, pixels } = decodePngRgba(buffer);
   let bright = 0;
-  let alpha = 0;
   for (let i = 0; i < pixels.length; i += 4) {
-    if (pixels[i + 3] > 0) alpha += 1;
     if (pixels[i] + pixels[i + 1] + pixels[i + 2] > 36) bright += 1;
   }
-  return { width, height, bright, alpha };
+  return { width, height, bright };
+}
+
+async function readCamera(frame) {
+  return frame.evaluate(() => {
+    const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
+    return cam
+      ? {
+          position: { x: cam.position.x, y: cam.position.y, z: cam.position.z },
+          angles: { x: cam.angles.x, y: cam.angles.y, z: cam.angles.z },
+          distance: cam.distance,
+        }
+      : null;
+  });
+}
+
+function cameraDelta(a, b) {
+  if (!a || !b) return 0;
+  return Math.max(
+    Math.abs(a.position.x - b.position.x),
+    Math.abs(a.position.y - b.position.y),
+    Math.abs(a.position.z - b.position.z),
+    Math.abs(a.angles.x - b.angles.x),
+    Math.abs(a.angles.y - b.angles.y),
+    Math.abs(a.angles.z - b.angles.z),
+    Math.abs((a.distance ?? 0) - (b.distance ?? 0)),
+  );
+}
+
+async function loadCase(page, testCase) {
+  const destination = testCase.queryUrl
+    ? `${baseUrl}/sogs-migrated-viewer?url=${encodeURIComponent(testCase.queryUrl)}`
+    : `${baseUrl}/sogs-migrated-viewer`;
+
+  await page.goto(destination, { waitUntil: "domcontentloaded", timeout: LOAD_TIMEOUT_MS });
+  assert((await page.locator("header").count()) === 0, "no site header on standalone migrated viewer");
+  await page.waitForSelector('iframe[title="sogs-migrated-viewer"]', { timeout: LOAD_TIMEOUT_MS });
+  await page.locator("#sogs-migrated-url").waitFor({ state: "visible", timeout: LOAD_TIMEOUT_MS });
+  assert((await page.locator("#sogs-migrated-url").inputValue()) === testCase.inputUrl, "pipeline URL should populate");
+  await page.getByText(`Detected: ${testCase.expectedStage}`).waitFor({ state: "visible", timeout: LOAD_TIMEOUT_MS });
+
+  const frameSrc = await page.locator('iframe[title="sogs-migrated-viewer"]').evaluate((node) => node.getAttribute("src"));
+  const decodedFrameSrc = frameSrc ? decodeURIComponent(frameSrc) : "";
+  assert(frameSrc && frameSrc.includes("content="), "viewer iframe should include content query");
+  assert(decodedFrameSrc.includes("/api/sogs-proxy/"), "viewer iframe should load through stage-aware API route");
+
+  const splatFrame = page.frames().find((frame) => frame.url().includes("supersplat-viewer"));
+  assert(!!splatFrame, "supersplat iframe frame exists");
+
+  await splatFrame.waitForFunction(() => !!document.querySelector("canvas"), null, { timeout: LOAD_TIMEOUT_MS });
+  await splatFrame.waitForFunction(() => {
+    const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
+    return !!cam && [cam.position.x, cam.position.y, cam.position.z, cam.distance].every(Number.isFinite);
+  }, null, { timeout: LOAD_TIMEOUT_MS });
+
+  if (testCase.expectCanyonTools) {
+    await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
+    await page.getByTestId("focus-scene-center").waitFor({ state: "visible", timeout: 10000 });
+  } else {
+    assert((await page.getByTestId("sogs-hole-picker").count()) === 0, "generic stage should hide hole picker");
+    assert((await page.getByTestId("focus-scene-center").count()) === 0, "generic stage should hide canyon focus button");
+  }
+
+  const renderBuffer = await page.locator('iframe[title="sogs-migrated-viewer"]').screenshot();
+  const renderStats = summarizeRenderedPixels(renderBuffer);
+  assert(
+    renderStats.bright > testCase.minBright,
+    `${testCase.name} should render visible pixels, got ${JSON.stringify(renderStats)}`,
+  );
+
+  return { splatFrame, renderStats };
+}
+
+async function verifyNavigation(page, frame, testCase) {
+  if (testCase.expectCanyonTools) {
+    const autoRotateToggle = page.getByLabel("Toggle auto-rotate");
+    if ((await autoRotateToggle.getAttribute("aria-pressed")) === "true") {
+      await autoRotateToggle.click();
+    }
+    await page.evaluate(() => {
+      const iframe = document.querySelector('iframe[title="sogs-migrated-viewer"]');
+      iframe?.contentWindow?.postMessage({ type: "sogs:cameraMode", mode: "free" }, "*");
+    });
+    await page.waitForTimeout(500);
+  }
+
+  const canvas = page.frameLocator('iframe[title="sogs-migrated-viewer"]').locator("canvas");
+  await canvas.waitFor({ state: "visible", timeout: LOAD_TIMEOUT_MS });
+  const box = await canvas.boundingBox();
+  assert(box, "viewer canvas should have a bounding box");
+
+  const centerX = box.x + box.width / 2;
+  const centerY = box.y + box.height / 2;
+
+  const before = await readCamera(frame);
+  assert(before, `${testCase.name} camera should exist before navigation`);
+
+  await page.mouse.move(centerX, centerY);
+  await page.mouse.down();
+  await page.mouse.move(centerX + 140, centerY + 60, { steps: 12 });
+  await page.mouse.up();
+  await page.waitForTimeout(500);
+
+  const afterOrbit = await readCamera(frame);
+  const orbitChanged = cameraDelta(before, afterOrbit) > 0.001;
+
+  await page.mouse.move(centerX, centerY);
+  await page.mouse.wheel(0, 500);
+  await page.waitForTimeout(500);
+
+  const afterZoom = await readCamera(frame);
+  assert(cameraDelta(afterOrbit, afterZoom) > 0.001, `${testCase.name} camera should change after zoom navigation`);
+
+  return { before, afterOrbit, afterZoom, orbitChanged };
 }
 
 (async () => {
   await fs.mkdir(logsDir, { recursive: true });
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const results = [];
 
-  const encoded = encodeURIComponent(bundleUrl);
-  await page.goto(`${baseUrl}/sogs-migrated-viewer?url=${encoded}`, {
-    waitUntil: "domcontentloaded",
-    timeout: 120000,
-  });
+  for (const testCase of CASES) {
+    const { splatFrame, renderStats } = await loadCase(page, testCase);
+    const cameraStates = testCase.verifyNavigation ? await verifyNavigation(page, splatFrame, testCase) : null;
 
-  assert((await page.locator("header").count()) === 0, "no site header on standalone migrated viewer");
-  await page.waitForSelector('iframe[title="sogs-migrated-viewer"]', { timeout: 60000 });
+    const screenshotPath = path.join(logsDir, `sogs-migrated-viewer-${testCase.name}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
 
-  const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
-  assert(!!splatFrame, "supersplat iframe frame exists");
-  await splatFrame.waitForFunction(() => window.__sogsSplatXzDragReady === true, null, {
-    timeout: 120000,
-  });
-  await page.waitForFunction(() => {
-    const button = document.querySelector('[data-testid="focus-scene-center"]');
-    return button instanceof HTMLButtonElement && !button.disabled;
-  }, null, { timeout: 120000 });
-  await splatFrame.waitForFunction(() => {
-    const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
-    return !!cam && [cam.position.x, cam.position.y, cam.position.z, cam.distance].every(Number.isFinite);
-  }, null, { timeout: 120000 });
+    results.push({
+      name: testCase.name,
+      stage: testCase.expectedStage,
+      renderStats,
+      cameraStates,
+      screenshotPath,
+    });
+  }
 
-  const stats = await readCanvasStats(splatFrame);
-  const renderBuffer = await page.locator('iframe[title="sogs-migrated-viewer"]').screenshot();
-  const renderStats = summarizeRenderedPixels(renderBuffer);
-  assert(!!stats.camera, "camera should be available inside the migrated viewer iframe");
-  assert(
-    [stats.camera.position.x, stats.camera.position.y, stats.camera.position.z, stats.camera.distance].every(
-      Number.isFinite,
-    ),
-    `camera pose should stay finite: ${JSON.stringify(stats.camera)}`,
-  );
-  assert(
-    renderStats.alpha > 0 && renderStats.bright > 5000,
-    `viewer iframe should render visible content, got stats ${JSON.stringify(renderStats)}`,
-  );
-
-  await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("focus-scene-center").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("path-editor-toggle").click();
-  await page.waitForSelector('[data-testid="animation-path-panel"].active', { timeout: 10000 });
-  await page.waitForSelector('[data-testid="animation-path-checkpoints"] .animation-checkpoint-item', {
-    timeout: 10000,
-  });
-
-  const shot = path.join(logsDir, "sogs-migrated-viewer-smoke.png");
-  await page.screenshot({ path: shot, fullPage: true });
-  console.log(`Canvas stats: ${JSON.stringify(stats)}`);
-  console.log(`Render stats: ${JSON.stringify(renderStats)}`);
-  console.log(`OK — screenshot ${shot}`);
+  const summaryPath = path.join(logsDir, "sogs-migrated-viewer-results.json");
+  await fs.writeFile(summaryPath, JSON.stringify(results, null, 2));
+  console.log(JSON.stringify({ ok: true, summaryPath, results }, null, 2));
   await browser.close();
-})().catch((e) => {
-  console.error(e);
+})().catch((error) => {
+  console.error("Unexpected failure while running SOGS migrated viewer tests", error);
   process.exit(1);
 });

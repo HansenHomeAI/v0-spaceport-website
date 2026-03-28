@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createDefaultScenePayload } from "../../lib/sogsViewerSceneDefaults";
-import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
+import { DEFAULT_SOGS_BUNDLE_URL, resolveSogsSource, type SogsViewerStage } from "../../lib/sogsViewerBundle";
 import {
   CANYON_VISTA_CAMERA_START_Y,
   CANYON_VISTA_DEFAULT_PATH_CHECKPOINTS,
@@ -37,6 +37,17 @@ import { TapDotsOverlay } from "./TapDotsOverlay";
 import "./sogs-migrated-viewer.css";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
+const PRESET_CANYON_CONTENT_URLS = new Set(
+  CANYON_VISTA_HOLES.map((hole) => resolveSogsSource(hole.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL)?.contentUrl).filter(
+    (value): value is string => Boolean(value),
+  ),
+);
+const STAGE_LABELS: Record<SogsViewerStage, string> = {
+  compressed: "Compressed SOGS bundle",
+  "3dgs": "3DGS model",
+  sfm: "SfM sparse point cloud",
+  direct: "Direct viewer asset",
+};
 
 function postToWindow(win: Window | null | undefined, payload: object) {
   if (!win) return;
@@ -51,6 +62,7 @@ export default function SogsMigratedViewer() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ignoreNextSogsStateRef = useRef(false);
+  const canyonToolsRef = useRef(true);
 
   const pathStateRef = useRef<PathAnimationState>(
     createInitialPathState({
@@ -78,6 +90,7 @@ export default function SogsMigratedViewer() {
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState("");
+  const [activeStage, setActiveStage] = useState<SogsViewerStage>("compressed");
   const [error, setError] = useState<string | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
   const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
@@ -90,6 +103,7 @@ export default function SogsMigratedViewer() {
   const [selectedHoleId, setSelectedHoleId] = useState(() => CANYON_VISTA_HOLES[0]?.id ?? "canyon-vista");
   const [photoDot, setPhotoDot] = useState<TapDotConfig | null>(null);
   const [pathPanelOpen, setPathPanelOpen] = useState(false);
+  const [useCanyonTools, setUseCanyonTools] = useState(true);
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -99,17 +113,30 @@ export default function SogsMigratedViewer() {
   useEffect(() => {
     autoRotateRef.current = autoRotate;
   }, [autoRotate]);
+  useEffect(() => {
+    canyonToolsRef.current = useCanyonTools;
+    if (!useCanyonTools) {
+      pathStateRef.current.playing = false;
+      pathPlayingRef.current = false;
+      setPathPlaying(false);
+      setAutoRotate(false);
+      setPathPanelOpen(false);
+      setPhotoDot(null);
+    }
+  }, [useCanyonTools]);
 
   const attemptLoad = useCallback((rawValue: string) => {
     setError(null);
-    const normalized = normalizeBundleUrl(rawValue);
-    if (!normalized) {
-      setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
+    const resolved = resolveSogsSource(rawValue);
+    if (!resolved) {
+      setError("Paste an S3 or HTTPS URL for an SfM, 3DGS, or compressed output folder/file.");
       setViewerState("idle");
       return false;
     }
     setViewerState("loading");
-    setActiveUrl(normalized);
+    setActiveUrl(resolved.contentUrl);
+    setActiveStage(resolved.stage);
+    setUseCanyonTools(PRESET_CANYON_CONTENT_URLS.has(resolved.contentUrl));
     setIframeKey((k) => k + 1);
     ignoreNextSogsStateRef.current = true;
     poseRef.current = null;
@@ -137,38 +164,43 @@ export default function SogsMigratedViewer() {
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
-        const scene = createDefaultScenePayload();
-        const t = CANYON_VISTA_HOLE_VIEW.target;
-        const sp = CANYON_VISTA_HOLE_VIEW.startPosition;
-        try {
-          (event.source as Window).postMessage(
-            {
-              type: "sogs:apply",
-              position: scene.position,
-              rotation: scene.rotation,
-              scale: scene.scale,
-              fov: scene.fov,
-            },
-            "*",
-          );
-          (event.source as Window).postMessage(
-            {
-              type: "sogs:cameraLookAt",
-              position: [sp.x, sp.y, sp.z],
-              target: [t.x, t.y, t.z],
-              fov: scene.fov,
-            },
-            "*",
-          );
-          (event.source as Window).postMessage({ type: "sogs:cameraMode", mode: "free" }, "*");
-        } catch {
-          /* ignore */
+        if (canyonToolsRef.current) {
+          const scene = createDefaultScenePayload();
+          const t = CANYON_VISTA_HOLE_VIEW.target;
+          const sp = CANYON_VISTA_HOLE_VIEW.startPosition;
+          try {
+            (event.source as Window).postMessage(
+              {
+                type: "sogs:apply",
+                position: scene.position,
+                rotation: scene.rotation,
+                scale: scene.scale,
+                fov: scene.fov,
+              },
+              "*",
+            );
+            (event.source as Window).postMessage(
+              {
+                type: "sogs:cameraLookAt",
+                position: [sp.x, sp.y, sp.z],
+                target: [t.x, t.y, t.z],
+                fov: scene.fov,
+              },
+              "*",
+            );
+            (event.source as Window).postMessage({ type: "sogs:cameraMode", mode: "free" }, "*");
+          } catch {
+            /* ignore */
+          }
+          poseRef.current = {
+            position: { x: sp.x, y: sp.y, z: sp.z },
+            target: { x: t.x, y: t.y, z: t.z },
+            fov: scene.fov,
+          };
+        } else {
+          postToWindow(event.source as Window, { type: "sogs:cameraMode", mode: "free" });
+          poseRef.current = null;
         }
-        poseRef.current = {
-          position: { x: sp.x, y: sp.y, z: sp.z },
-          target: { x: t.x, y: t.y, z: t.z },
-          fov: scene.fov,
-        };
         lastScriptedRef.current = false;
         setViewerState("ready");
       }
@@ -368,29 +400,35 @@ export default function SogsMigratedViewer() {
         ) : (
           <div className="sogs-migrated-placeholder" aria-hidden />
         )}
-        <CanyonVignette />
-        <TapDotsOverlay
-          enabled={viewerState === "ready" && showTapDots}
-          tapDots={CANYON_VISTA_TAP_DOTS}
-          poseRef={poseRef}
-          containerRef={containerRef}
-          onOpenPhotos={setPhotoDot}
-        />
-        <LotLinesOverlay
-          enabled={viewerState === "ready" && showLotLines}
-          poseRef={poseRef}
-          containerRef={containerRef}
-        />
-        <SoldOverlays
-          enabled={viewerState === "ready" && showSoldLabels}
-          hotspots={CANYON_VISTA_SOLD_HOTSPOTS}
-          poseRef={poseRef}
-          containerRef={containerRef}
-        />
+        {useCanyonTools ? <CanyonVignette /> : null}
+        {useCanyonTools ? (
+          <TapDotsOverlay
+            enabled={viewerState === "ready" && showTapDots}
+            tapDots={CANYON_VISTA_TAP_DOTS}
+            poseRef={poseRef}
+            containerRef={containerRef}
+            onOpenPhotos={setPhotoDot}
+          />
+        ) : null}
+        {useCanyonTools ? (
+          <LotLinesOverlay
+            enabled={viewerState === "ready" && showLotLines}
+            poseRef={poseRef}
+            containerRef={containerRef}
+          />
+        ) : null}
+        {useCanyonTools ? (
+          <SoldOverlays
+            enabled={viewerState === "ready" && showSoldLabels}
+            hotspots={CANYON_VISTA_SOLD_HOTSPOTS}
+            poseRef={poseRef}
+            containerRef={containerRef}
+          />
+        ) : null}
       </div>
 
       {/* Canyon-Vista: top-right editor toggles (HansenHomeAI/Canyon-Vista index.html) */}
-      <div className="editor-toggles-wrap" id="editorTogglesWrap">
+      {useCanyonTools ? <div className="editor-toggles-wrap" id="editorTogglesWrap">
         <div className="animation-editor-toggle-wrap">
           <button
             type="button"
@@ -480,24 +518,26 @@ export default function SogsMigratedViewer() {
             </svg>
           </button>
         </div>
-      </div>
+      </div> : null}
 
-      <AnimationPathPanel
-        open={pathPanelOpen}
-        onClose={() => setPathPanelOpen(false)}
-        pathStateRef={pathStateRef}
-        pathVersion={pathVersion}
-        bumpPath={bumpPath}
-        disabled={toggleDisabled}
-        onSeekCheckpoint={onSeekCheckpoint}
-        onAddFromCurrentView={onAddFromCurrentView}
-        onPlayTour={onPlayTour}
-        onStopTour={onStopTour}
-        pathPlaying={pathPlaying}
-      />
+      {useCanyonTools ? (
+        <AnimationPathPanel
+          open={pathPanelOpen}
+          onClose={() => setPathPanelOpen(false)}
+          pathStateRef={pathStateRef}
+          pathVersion={pathVersion}
+          bumpPath={bumpPath}
+          disabled={toggleDisabled}
+          onSeekCheckpoint={onSeekCheckpoint}
+          onAddFromCurrentView={onAddFromCurrentView}
+          onPlayTour={onPlayTour}
+          onStopTour={onStopTour}
+          pathPlaying={pathPlaying}
+        />
+      ) : null}
 
       {/* Canyon-Vista: bottom-left glass menu */}
-      <div className="menu-container" id="menuContainer">
+      {useCanyonTools ? <div className="menu-container" id="menuContainer">
         <button
           type="button"
           className="menu-button"
@@ -531,33 +571,36 @@ export default function SogsMigratedViewer() {
             onClick={onFaceNorth}
           />
         ) : null}
-      </div>
+      </div> : null}
 
       <div className="lot-editor-panel sogs-bundle-panel" aria-label="SOGS bundle">
-        <div className="lot-editor-title">Bundle</div>
-        <div className="lot-editor-field sogs-bundle-hole-field">
-          <label htmlFor="sogs-hole-picker">Hole</label>
-          <select
-            id="sogs-hole-picker"
-            data-testid="sogs-hole-picker"
-            value={selectedHoleId}
-            onChange={(e) => {
-              const id = e.target.value;
-              setSelectedHoleId(id);
-              const hole = CANYON_VISTA_HOLES.find((h) => h.id === id);
-              const url = hole?.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL;
-              setInputUrl(url);
-              if (attemptLoad(url)) setPathPlaying(false);
-            }}
-            disabled={viewerState === "loading"}
-          >
-            {CANYON_VISTA_HOLES.map((h) => (
-              <option key={h.id} value={h.id}>
-                {h.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div className="lot-editor-title">Source</div>
+        <p className="lot-editor-status">Detected: {STAGE_LABELS[activeStage]}</p>
+        {useCanyonTools ? (
+          <div className="lot-editor-field sogs-bundle-hole-field">
+            <label htmlFor="sogs-hole-picker">Hole</label>
+            <select
+              id="sogs-hole-picker"
+              data-testid="sogs-hole-picker"
+              value={selectedHoleId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setSelectedHoleId(id);
+                const hole = CANYON_VISTA_HOLES.find((h) => h.id === id);
+                const url = hole?.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL;
+                setInputUrl(url);
+                if (attemptLoad(url)) setPathPlaying(false);
+              }}
+              disabled={viewerState === "loading"}
+            >
+              {CANYON_VISTA_HOLES.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
         <form
           className="sogs-bundle-form"
           onSubmit={(e) => {
@@ -566,13 +609,15 @@ export default function SogsMigratedViewer() {
           }}
         >
           <div className="lot-editor-field">
-            <label htmlFor="sogs-migrated-url">SOGS URL</label>
+            <label htmlFor="sogs-migrated-url">Pipeline URL</label>
             <input
               id="sogs-migrated-url"
-              type="url"
+              type="text"
+              inputMode="url"
+              spellCheck={false}
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
-              placeholder="https://…/meta.json"
+              placeholder="s3://… or https://…/meta.json | model.tar.gz | colmap/"
             />
           </div>
           <div className="lot-editor-actions sogs-bundle-actions">
@@ -585,7 +630,7 @@ export default function SogsMigratedViewer() {
         {viewerState === "loading" ? <p className="lot-editor-status">Loading viewer…</p> : null}
       </div>
 
-      <CanyonPhotoModal dot={photoDot} onClose={() => setPhotoDot(null)} />
+      {useCanyonTools ? <CanyonPhotoModal dot={photoDot} onClose={() => setPhotoDot(null)} /> : null}
     </main>
   );
 }
