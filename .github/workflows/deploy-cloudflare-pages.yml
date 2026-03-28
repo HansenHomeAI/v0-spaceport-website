@@ -128,6 +128,10 @@ jobs:
               elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
                 echo "Stack $stack_name is ready with status $status"
                 return 0
+              elif [[ "$stack_name" == "$AUTH_STACK_NAME" && "$status" == "UPDATE_ROLLBACK_COMPLETE" ]]; then
+                # The shared auth stack can be reused safely for preview env injection even when its last update rolled back.
+                echo "Shared auth stack $stack_name is readable with status $status"
+                return 0
               else
                 echo "Stack $stack_name reached unexpected status: $status" >&2
                 return 1
