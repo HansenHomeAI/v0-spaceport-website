@@ -1,5 +1,5 @@
 reason: implementing CloudFront edge bundle delivery on an isolated branch worktree and iterating through CI and preview validation
-last_step: patched the Pages workflow so it can reuse shared auth stack outputs when the shared stack is in a stable rollback-complete state
-next_unblocked_step: commit and push the Pages workflow fix, monitor the resulting CDK run, manually rerun Pages on the new head, then validate the preview viewer with an edge bundle URL
+last_step: fixed the Cloudflare Pages build by marking the non-static viewer and sandbox routes as edge runtime routes and verified next-on-pages locally
+next_unblocked_step: commit and push the edge runtime route fix, monitor the resulting CDK and Pages runs to green, then validate the preview viewer with the published edge bundle URL
 owner_action_needed: none
-updated: 2026-03-28T21:00:00Z
+updated: 2026-03-28T21:13:00Z
