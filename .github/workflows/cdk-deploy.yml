@@ -317,7 +317,11 @@ jobs:
         echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
 
         DEPLOY_AUTH_STACK_EFFECTIVE="${DEPLOY_AUTH_STACK}"
-        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${AUTH_STACK_CHANGED}" = "true" ]; then
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+          if [ "${AUTH_STACK_CHANGED}" = "true" ] || [ "${EXPLORE_API_MISSING}" = "true" ]; then
+            echo "Branch previews reuse shared auth outputs; skipping shared auth deployment for this branch"
+          fi
+        elif [ "${AUTH_STACK_CHANGED}" = "true" ]; then
           DEPLOY_AUTH_STACK_EFFECTIVE="true"
         fi
 

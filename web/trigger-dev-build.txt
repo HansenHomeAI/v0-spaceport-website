@@ -39,3 +39,4 @@
 2026-03-28 sogs-migrated-viewer black viewport fix + render-verifying smoke test
 2026-03-28 sogs-migrated-viewer multi-stage pipeline URL support preview rebuild
 2026-03-28 accept stable shared auth stack outputs for preview rebuilds
+2026-03-28 skip shared auth deploys for branch previews and rebuild viewer preview
