@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
+reason: implementing CloudFront edge bundle delivery on an isolated branch worktree and iterating through CI and preview validation
+last_step: patched the CDK workflow to compute changed files from the push range and stop treating workflow-only changes as shared auth stack changes
+next_unblocked_step: commit and push the workflow fix, monitor CDK and Pages to green, then validate the branch preview with an edge bundle URL in the migrated viewer
 owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+updated: 2026-03-28T20:36:00Z
