@@ -45,6 +45,11 @@ class SpaceportStack(Stack):
         self.branch_name = env_config.get("branchName", "")
         self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
         # Account will be dynamically resolved from deployment context
+        self.api_endpoint_types = (
+            [apigw.EndpointType.REGIONAL]
+            if self.deployment_class == "branch-preview"
+            else [apigw.EndpointType.EDGE]
+        )
 
         if self.deployment_class == "branch-preview":
             Tags.of(self).add("SpaceportDeploymentClass", "branch-preview")
@@ -294,6 +299,7 @@ class SpaceportStack(Stack):
             "SpaceportDronePathApi",
             rest_api_name=f"spaceport-drone-path-api-{suffix}",
             description=f"Spaceport Drone Path API for {env_config['domain']}",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -306,6 +312,7 @@ class SpaceportStack(Stack):
             "SpaceportFileUploadApi",
             rest_api_name=f"spaceport-file-upload-api-{suffix}",
             description=f"Spaceport File Upload API for {env_config['domain']}",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -319,6 +326,7 @@ class SpaceportStack(Stack):
             "SpaceportWaitlistApi",
             rest_api_name=f"spaceport-waitlist-api-{suffix}",
             description=f"Spaceport Waitlist API for {env_config['domain']}",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
@@ -331,6 +339,7 @@ class SpaceportStack(Stack):
             "SpaceportFeedbackApi",
             rest_api_name=f"spaceport-feedback-api-{suffix}",
             description=f"Spaceport Feedback API for {env_config['domain']}",
+            endpoint_types=self.api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
