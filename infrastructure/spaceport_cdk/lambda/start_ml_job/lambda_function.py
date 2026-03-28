@@ -10,6 +10,14 @@ from urllib.parse import urlparse
 stepfunctions = boto3.client('stepfunctions')
 s3 = boto3.client('s3')
 
+
+def resolve_state_machine_arn() -> str:
+    """Support both legacy and current env var names for state machine ARN."""
+    arn = os.environ.get("STATE_MACHINE_ARN") or os.environ.get("STEP_FUNCTION_ARN")
+    if not arn:
+        raise ValueError("Missing STATE_MACHINE_ARN/STEP_FUNCTION_ARN environment variable")
+    return arn
+
 def lambda_handler(event, context):
     """
     Lambda function to start ML processing pipeline
@@ -121,7 +129,7 @@ def lambda_handler(event, context):
                 # Continue without GPS data - don't fail the entire request
         
         # Get environment variables
-        state_machine_arn = os.environ['STATE_MACHINE_ARN']
+        state_machine_arn = resolve_state_machine_arn()
         ml_bucket = os.environ['ML_BUCKET']
         
         # Get ECR repository names from environment variables (set by CDK)

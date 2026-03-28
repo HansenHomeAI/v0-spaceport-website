@@ -6,6 +6,14 @@ from datetime import datetime
 # Initialize AWS clients
 stepfunctions = boto3.client('stepfunctions')
 
+
+def resolve_state_machine_arn() -> str:
+    """Support both legacy and current env var names for state machine ARN."""
+    arn = os.environ.get("STATE_MACHINE_ARN") or os.environ.get("STEP_FUNCTION_ARN")
+    if not arn:
+        raise ValueError("Missing STATE_MACHINE_ARN/STEP_FUNCTION_ARN environment variable")
+    return arn
+
 def lambda_handler(event, context):
     """
     Lambda function to get ML processing pipeline status
@@ -31,9 +39,7 @@ def lambda_handler(event, context):
             }
         
         # Get environment variables
-        state_machine_arn = os.environ.get('STATE_MACHINE_ARN')
-        if not state_machine_arn:
-            raise ValueError("STATE_MACHINE_ARN environment variable not set")
+        state_machine_arn = resolve_state_machine_arn()
         
         # Construct execution ARN from job ID
         execution_arn = f"{state_machine_arn.replace(':stateMachine:', ':execution:')}:execution-{job_id}"

@@ -639,6 +639,13 @@ class MLPipelineStack(Stack):
                 "state": sfn.JsonPath.entire_payload
             })
         )
+        fail_pipeline = sfn.Fail(
+            self,
+            "PipelineFailed",
+            error="PipelineFailed",
+            cause="A pipeline stage failed. See execution state and notification payload for details.",
+        )
+        notify_error.next(fail_pipeline)
 
         # Add error handling to each job
         sfm_job_with_catch = sfm_job.add_catch(
@@ -754,6 +761,7 @@ class MLPipelineStack(Stack):
 
         # Update start job lambda with Step Function ARN
         start_job_lambda.add_environment("STEP_FUNCTION_ARN", ml_pipeline.state_machine_arn)
+        start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
 
         # Create Lambda function for stopping jobs
         stop_job_lambda = lambda_.Function(
@@ -766,6 +774,7 @@ class MLPipelineStack(Stack):
             memory_size=256,
             environment={
                 "STEP_FUNCTION_ARN": ml_pipeline.state_machine_arn,
+                "STATE_MACHINE_ARN": ml_pipeline.state_machine_arn,
             }
         )
 
