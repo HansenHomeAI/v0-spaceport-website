@@ -180,7 +180,7 @@ jobs:
             fi
 
             if [ -n "$fallback" ]; then
-              echo "Falling back from stack $primary to shared stack $fallback"
+              echo "Falling back from stack $primary to shared stack $fallback" >&2
               wait_for_stack "$fallback" "$extra_ready_regex"
               printf '%s' "$fallback"
               return 0

@@ -1,3 +1,4 @@
+2026-03-29 stderr-only stack fallback logging for branch preview output resolution
 2026-03-29 explicit deploy-scope gate for branch-preview skybox bundle validation
 2026-03-29 branch preview stack-output fallback + cdk no-op for web/container-only skybox delivery changes
 2026-03-29 edge bundle skybox manifest + bundled equirect asset for sogs-migrated-viewer
