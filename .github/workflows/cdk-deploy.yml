@@ -263,9 +263,17 @@ jobs:
         
         # Detect Lambda function changes
         LAMBDA_CHANGED="false"
+        STACK_DEPLOY_REQUIRED="false"
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
         if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          if printf '%s\n' "${CHANGED_FILES}" | grep -Eq "^(infrastructure/spaceport_cdk/|scripts/resolve_preview_context\.py)"; then
+            STACK_DEPLOY_REQUIRED="true"
+            echo "CDK stack sources changed - will deploy stacks"
+          else
+            echo "No CDK stack source changes detected - will skip stack deploy"
+          fi
+
           # Check if any Lambda files changed
           if printf '%s\n' "${CHANGED_FILES}" | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
             LAMBDA_CHANGED="true"
@@ -312,6 +320,7 @@ jobs:
         
         echo "Branch name: ${BRANCH_NAME}"
         echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
+        echo "Stack deploy required: ${STACK_DEPLOY_REQUIRED}"
         echo "Lambda changed: ${LAMBDA_CHANGED}"
         echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
         echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
@@ -329,6 +338,12 @@ jobs:
         fi
 
         echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
+
+        if [ "${STACK_DEPLOY_REQUIRED}" != "true" ]; then
+          echo "Skipping CDK stack deploy because no stack-defining sources changed."
+          echo "SKIP_CDK_DEPLOY=true" >> "$GITHUB_ENV"
+          exit 0
+        fi
         
         export DEPLOY_AUTH_STACK_OVERRIDE="${DEPLOY_AUTH_STACK_EFFECTIVE}"
         cdk deploy "${STACKS[@]}" \
@@ -348,6 +363,40 @@ jobs:
       run: |
         set -euo pipefail
 
+        resolve_output_stack() {
+          local primary="$1"
+          local fallback="$2"
+          local status
+
+          if status=$(aws cloudformation describe-stacks \
+            --stack-name "$primary" \
+            --query 'Stacks[0].StackStatus' \
+            --output text 2>/dev/null); then
+            case "$status" in
+              CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS|UPDATE_ROLLBACK_COMPLETE)
+                printf '%s' "$primary"
+                return 0
+                ;;
+            esac
+          fi
+
+          if [ -n "$fallback" ] && status=$(aws cloudformation describe-stacks \
+            --stack-name "$fallback" \
+            --query 'Stacks[0].StackStatus' \
+            --output text 2>/dev/null); then
+            case "$status" in
+              CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS|UPDATE_ROLLBACK_COMPLETE)
+                echo "Falling back from stack $primary to shared stack $fallback"
+                printf '%s' "$fallback"
+                return 0
+                ;;
+            esac
+          fi
+
+          echo "Unable to resolve ready stack for primary=$primary fallback=${fallback:-<none>}" >&2
+          exit 1
+        }
+
         get_output() {
           local stack_name="$1"
           local output_key="$2"
@@ -363,14 +412,17 @@ jobs:
           printf '%s' "$value"
         }
 
-        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-        ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+        SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportStagingStack')")"
+        ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportMLPipelineStagingStack')")"
+
+        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
 
         echo "Deployment class: $DEPLOYMENT_CLASS"
         echo "Branch ID: ${BRANCH_ID:-<shared>}"
-        echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-        echo "ML stack: $ML_STACK_NAME"
+        echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+        echo "ML stack: $ML_OUTPUT_STACK"
         echo "Shared auth stack: $AUTH_STACK_NAME"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"

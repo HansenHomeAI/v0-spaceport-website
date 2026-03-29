@@ -169,24 +169,44 @@ jobs:
             return 1
           }
 
-          wait_for_stack "$SPACEPORT_STACK_NAME"
-          wait_for_stack "$ML_STACK_NAME"
-          wait_for_stack "$AUTH_STACK_NAME" "^(UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED)$"
+          resolve_output_stack() {
+            local primary="$1"
+            local fallback="$2"
+            local extra_ready_regex="${3:-}"
 
-          PROJECTS_API_URL="$(get_output "$AUTH_STACK_NAME" "ProjectsApiUrl")"
-          COGNITO_USER_POOL_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolId")"
-          COGNITO_USER_POOL_CLIENT_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolClientId")"
-          SUBSCRIPTION_API_URL="$(get_output "$AUTH_STACK_NAME" "SubscriptionApiUrl")"
-          BETA_ACCESS_API_URL="$(get_output "$AUTH_STACK_NAME" "BetaAccessAdminApiUrl")"
-          MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_STACK_NAME" "ModelDeliveryAdminApiUrl")"
-          EXPLORE_API_URL="$(get_output "$AUTH_STACK_NAME" "ExplorePublicApiUrl")"
+            if wait_for_stack "$primary" "$extra_ready_regex"; then
+              printf '%s' "$primary"
+              return 0
+            fi
 
-          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-          WAITLIST_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "WaitlistApiUrl")"
-          FEEDBACK_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FeedbackApiUrl")"
-          ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
-          ML_DELIVERY_BUCKET_NAME="$(get_output "$ML_STACK_NAME" "MLDeliveryBucketName")"
+            if [ -n "$fallback" ]; then
+              echo "Falling back from stack $primary to shared stack $fallback"
+              wait_for_stack "$fallback" "$extra_ready_regex"
+              printf '%s' "$fallback"
+              return 0
+            fi
+
+            return 1
+          }
+
+          SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportStagingStack')")"
+          ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportMLPipelineStagingStack')")"
+          AUTH_OUTPUT_STACK="$(resolve_output_stack "$AUTH_STACK_NAME" "" "^(UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED)$")"
+
+          PROJECTS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ProjectsApiUrl")"
+          COGNITO_USER_POOL_ID="$(get_output "$AUTH_OUTPUT_STACK" "CognitoUserPoolId")"
+          COGNITO_USER_POOL_CLIENT_ID="$(get_output "$AUTH_OUTPUT_STACK" "CognitoUserPoolClientId")"
+          SUBSCRIPTION_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "SubscriptionApiUrl")"
+          BETA_ACCESS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "BetaAccessAdminApiUrl")"
+          MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ModelDeliveryAdminApiUrl")"
+          EXPLORE_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ExplorePublicApiUrl")"
+
+          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+          WAITLIST_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "WaitlistApiUrl")"
+          FEEDBACK_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FeedbackApiUrl")"
+          ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
+          ML_DELIVERY_BUCKET_NAME="$(get_output "$ML_OUTPUT_STACK" "MLDeliveryBucketName")"
 
           {
             echo "PROJECTS_API_URL=$PROJECTS_API_URL"
@@ -205,9 +225,9 @@ jobs:
           } >> "$GITHUB_ENV"
 
           echo "Resolved deployment class: $DEPLOYMENT_CLASS"
-          echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-          echo "ML stack: $ML_STACK_NAME"
-          echo "Shared auth stack: $AUTH_STACK_NAME"
+          echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+          echo "ML stack: $ML_OUTPUT_STACK"
+          echo "Shared auth stack: $AUTH_OUTPUT_STACK"
           echo "Drone Path API: $DRONE_PATH_API_URL"
           echo "File Upload API: $FILE_UPLOAD_API_URL"
           echo "Waitlist API: $WAITLIST_API_URL"
