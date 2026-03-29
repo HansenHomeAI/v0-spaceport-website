@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { AwsClient } from "aws4fetch";
+import { XMLParser } from "fast-xml-parser";
 
 export const runtime = "edge";
 
@@ -10,6 +11,11 @@ const ALLOWED_HOSTS = new Set([
 
 const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
 const DELIVERY_BUCKET = process.env.ML_DELIVERY_BUCKET_NAME?.trim() ?? "";
+const CLOUDFRONT_REGION = "us-east-1";
+const CLOUDFRONT_DISTRIBUTIONS_URL = "https://cloudfront.amazonaws.com/2020-05-31/distribution";
+const xmlParser = new XMLParser();
+const cloudFrontBucketCache = new Map<string, string | null>();
+let cloudFrontBucketCacheLoad: Promise<void> | null = null;
 
 function isAllowedEdgeBundleUrl(url: URL): boolean {
   return url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
@@ -25,20 +31,144 @@ function toRegionalS3HttpsUrl(url: URL): URL {
   return url;
 }
 
-function toSignedS3HttpsUrl(url: URL): URL {
-  if (isAllowedEdgeBundleUrl(url) && DELIVERY_BUCKET) {
-    return new URL(`https://${DELIVERY_BUCKET}.s3.${S3_REGION}.amazonaws.com${url.pathname}${url.search}`);
+function awsCredentialsAvailable(): boolean {
+  return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+}
+
+function getS3BucketFromDomainName(domainName: string): string | null {
+  const regionalMatch = /^([^.]+)\.s3\.[^.]+\.amazonaws\.com$/i.exec(domainName);
+  if (regionalMatch) {
+    return regionalMatch[1];
+  }
+
+  const globalMatch = /^([^.]+)\.s3\.amazonaws\.com$/i.exec(domainName);
+  if (globalMatch) {
+    return globalMatch[1];
+  }
+
+  return null;
+}
+
+function toArray<T>(value: T | T[] | undefined): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  return value == null ? [] : [value];
+}
+
+async function populateCloudFrontBucketCache(): Promise<void> {
+  if (cloudFrontBucketCacheLoad) {
+    return cloudFrontBucketCacheLoad;
+  }
+
+  cloudFrontBucketCacheLoad = (async () => {
+    if (!awsCredentialsAvailable()) {
+      return;
+    }
+
+    const client = new AwsClient({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+      region: CLOUDFRONT_REGION,
+      service: "cloudfront",
+    });
+
+    const response = await client.fetch(CLOUDFRONT_DISTRIBUTIONS_URL, {
+      headers: { Accept: "application/xml" },
+    });
+    if (!response.ok) {
+      throw new Error(`CloudFront distribution lookup failed with ${response.status}`);
+    }
+
+    const body = await response.text();
+    const parsed = xmlParser.parse(body) as {
+      DistributionList?: {
+        Items?: {
+          DistributionSummary?: Array<{
+            DomainName?: string;
+            Origins?: {
+              Items?: {
+                Origin?: Array<{ DomainName?: string }> | { DomainName?: string };
+              };
+            };
+          }> | {
+            DomainName?: string;
+            Origins?: {
+              Items?: {
+                Origin?: Array<{ DomainName?: string }> | { DomainName?: string };
+              };
+            };
+          };
+        };
+      };
+    };
+
+    const distributions = toArray(parsed.DistributionList?.Items?.DistributionSummary);
+    for (const distribution of distributions) {
+      const host = distribution?.DomainName?.trim();
+      if (!host) {
+        continue;
+      }
+
+      const origins = toArray(distribution.Origins?.Items?.Origin);
+      const bucket =
+        origins
+          .map((origin) => origin?.DomainName?.trim())
+          .map((domainName) => (domainName ? getS3BucketFromDomainName(domainName) : null))
+          .find((candidate) => Boolean(candidate)) ?? null;
+      cloudFrontBucketCache.set(host, bucket);
+    }
+  })();
+
+  try {
+    await cloudFrontBucketCacheLoad;
+  } finally {
+    cloudFrontBucketCacheLoad = null;
+  }
+}
+
+async function resolveDeliveryBucket(url: URL): Promise<string | null> {
+  if (!isAllowedEdgeBundleUrl(url)) {
+    return null;
+  }
+
+  if (DELIVERY_BUCKET) {
+    return DELIVERY_BUCKET;
+  }
+
+  if (cloudFrontBucketCache.has(url.host)) {
+    return cloudFrontBucketCache.get(url.host) ?? null;
+  }
+
+  try {
+    await populateCloudFrontBucketCache();
+  } catch {
+    return null;
+  }
+
+  return cloudFrontBucketCache.get(url.host) ?? null;
+}
+
+async function toSignedS3HttpsUrl(url: URL): Promise<URL | null> {
+  if (isAllowedEdgeBundleUrl(url)) {
+    const bucket = await resolveDeliveryBucket(url);
+    if (!bucket) {
+      return null;
+    }
+    return new URL(`https://${bucket}.s3.${S3_REGION}.amazonaws.com${url.pathname}${url.search}`);
   }
 
   return toRegionalS3HttpsUrl(url);
 }
 
-function awsCredentialsAvailable(): boolean {
-  return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
-}
-
-async function fetchS3Signed(url: URL): Promise<Response> {
-  const regional = toSignedS3HttpsUrl(url);
+async function fetchS3Signed(url: URL, accept: string): Promise<Response> {
+  const regional = await toSignedS3HttpsUrl(url);
+  if (!regional) {
+    return fetch(url, {
+      headers: { Accept: accept },
+    });
+  }
   const client = new AwsClient({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
@@ -82,13 +212,14 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }
 
-  const shouldUseSignedS3First = isAllowedEdgeBundleUrl(upstreamUrl) && DELIVERY_BUCKET && awsCredentialsAvailable();
+  const shouldUseSignedS3First = isAllowedEdgeBundleUrl(upstreamUrl) && awsCredentialsAvailable();
+  const accept = request.headers.get("accept") ?? "*/*";
 
   let upstreamResponse = shouldUseSignedS3First
-    ? await fetchS3Signed(upstreamUrl)
+    ? await fetchS3Signed(upstreamUrl, accept)
     : await fetch(upstreamUrl, {
         headers: {
-          Accept: request.headers.get("accept") ?? "*/*",
+          Accept: accept,
         },
       });
 
@@ -98,7 +229,7 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     awsCredentialsAvailable()
   ) {
     try {
-      upstreamResponse = await fetchS3Signed(upstreamUrl);
+      upstreamResponse = await fetchS3Signed(upstreamUrl, accept);
     } catch {
       /* keep original response */
     }

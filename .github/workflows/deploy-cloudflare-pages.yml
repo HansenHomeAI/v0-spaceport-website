@@ -169,6 +169,19 @@ jobs:
             return 1
           }
 
+          get_optional_output() {
+            local stack_name="$1"
+            local output_key="$2"
+            local value=""
+            value=$(aws cloudformation describe-stacks \
+              --stack-name "$stack_name" \
+              --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+              --output text 2>/dev/null || true)
+            if [ -n "$value" ] && [ "$value" != "None" ]; then
+              printf '%s' "$value"
+            fi
+          }
+
           resolve_output_stack() {
             local primary="$1"
             local fallback="$2"
@@ -206,7 +219,7 @@ jobs:
           WAITLIST_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "WaitlistApiUrl")"
           FEEDBACK_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FeedbackApiUrl")"
           ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
-          ML_DELIVERY_BUCKET_NAME="$(get_output "$ML_OUTPUT_STACK" "MLDeliveryBucketName")"
+          ML_DELIVERY_BUCKET_NAME="$(get_optional_output "$ML_OUTPUT_STACK" "MLDeliveryBucketName")"
 
           {
             echo "PROJECTS_API_URL=$PROJECTS_API_URL"
@@ -233,7 +246,7 @@ jobs:
           echo "Waitlist API: $WAITLIST_API_URL"
           echo "Feedback API: $FEEDBACK_API_URL"
           echo "ML Pipeline API: $ML_PIPELINE_API_URL"
-          echo "ML Delivery Bucket: $ML_DELIVERY_BUCKET_NAME"
+          echo "ML Delivery Bucket: ${ML_DELIVERY_BUCKET_NAME:-<resolved dynamically at runtime>}"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -261,7 +274,7 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
           echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
           if [ -n "${AWS_SESSION_TOKEN:-}" ]; then echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> .env; fi
-          echo "ML_DELIVERY_BUCKET_NAME=$ML_DELIVERY_BUCKET_NAME" >> .env
+          if [ -n "$ML_DELIVERY_BUCKET_NAME" ]; then echo "ML_DELIVERY_BUCKET_NAME=$ML_DELIVERY_BUCKET_NAME" >> .env; fi
           GOOGLE_MAPS_KEY="${MAPS_KEY_PRIMARY:-}"
           if [ -z "$GOOGLE_MAPS_KEY" ]; then GOOGLE_MAPS_KEY="${MAPS_KEY_LEGACY:-}"; fi
           GOOGLE_MAPS_MAP_ID="${MAP_ID_PRIMARY:-}"
@@ -320,7 +333,7 @@ jobs:
             echo ".env missing or empty" >&2
             exit 1
           fi
-          if grep -E '^(AWS_REGION|AWS_DEFAULT_REGION|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|ML_DELIVERY_BUCKET_NAME)=$' .env; then
+          if grep -E '^(AWS_REGION|AWS_DEFAULT_REGION|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY)=$' .env; then
             echo "Detected empty server-side runtime variables in .env" >&2
             exit 1
           fi
@@ -397,9 +410,9 @@ jobs:
                       AWS_REGION: { type: "plain_text", value: $aws_region },
                       AWS_DEFAULT_REGION: { type: "plain_text", value: $aws_region },
                       AWS_ACCESS_KEY_ID: { type: "secret_text", value: $aws_access_key_id },
-                      AWS_SECRET_ACCESS_KEY: { type: "secret_text", value: $aws_secret_access_key },
-                      ML_DELIVERY_BUCKET_NAME: { type: "plain_text", value: $ml_delivery_bucket_name }
+                      AWS_SECRET_ACCESS_KEY: { type: "secret_text", value: $aws_secret_access_key }
                     }
+                    + (if $ml_delivery_bucket_name != "" then { ML_DELIVERY_BUCKET_NAME: { type: "plain_text", value: $ml_delivery_bucket_name } } else {} end)
                     + (if $aws_session_token != "" then { AWS_SESSION_TOKEN: { type: "secret_text", value: $aws_session_token } } else {} end)
                   )
                 }
