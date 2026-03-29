@@ -345,10 +345,16 @@ jobs:
           if [ -z "$google_maps" ]; then google_maps="$MAPS_KEY_LEGACY"; fi
           google_maps_map_id="$MAP_ID_PRIMARY"
           if [ -z "$google_maps_map_id" ]; then google_maps_map_id="$MAP_ID_LEGACY"; fi
+          aws_session_token="${AWS_SESSION_TOKEN:-}"
 
           jq -n \
             --arg google_maps "$google_maps" \
             --arg google_maps_map_id "$google_maps_map_id" \
+            --arg aws_region "$AWS_REGION" \
+            --arg aws_access_key_id "$AWS_ACCESS_KEY_ID" \
+            --arg aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" \
+            --arg aws_session_token "$aws_session_token" \
+            --arg ml_delivery_bucket_name "$ML_DELIVERY_BUCKET_NAME" \
             '{
               deployment_configs: {
                 production: {
@@ -364,10 +370,18 @@ jobs:
                   compatibility_date: "2025-08-09",
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
-                  environment_variables: {
-                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
-                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
-                  }
+                  environment_variables: (
+                    {
+                      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
+                      NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id },
+                      AWS_REGION: { value: $aws_region },
+                      AWS_DEFAULT_REGION: { value: $aws_region },
+                      AWS_ACCESS_KEY_ID: { value: $aws_access_key_id },
+                      AWS_SECRET_ACCESS_KEY: { value: $aws_secret_access_key },
+                      ML_DELIVERY_BUCKET_NAME: { value: $ml_delivery_bucket_name }
+                    }
+                    + (if $aws_session_token != "" then { AWS_SESSION_TOKEN: { value: $aws_session_token } } else {} end)
+                  )
                 }
               }
             }' > payload.json
