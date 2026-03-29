@@ -1,3 +1,4 @@
+2026-03-29T00:56:00Z edge bundle delivery: remove temporary preview runtime binding diagnostics after proxy verification
 2026-03-29T00:45:00Z edge bundle delivery: switch Cloudflare Pages project payload to env_vars with secret_text for preview runtime bindings
 2026-03-29T00:33:00Z edge bundle delivery: expose proxy runtime binding presence via api/test-config for preview diagnostics
 2026-03-28T22:14:00Z edge bundle delivery: patch Pages preview runtime bindings for signed S3 proxy access
