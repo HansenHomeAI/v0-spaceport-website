@@ -81,6 +81,7 @@ RUN pip3 install --no-cache-dir \
 # Copy application code
 COPY compress.py .
 COPY diagnostic_script.py .
+COPY assets ./assets
 RUN chmod +x compress.py
 RUN chmod +x diagnostic_script.py
 

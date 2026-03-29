@@ -27,6 +27,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+SKYBOX_ASSET_NAME = "kloppenheim_06_puresky_equirect.png"
+SKYBOX_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_ASSET_NAME}"
+CONTAINER_SKYBOX_SOURCE = Path(__file__).resolve().parent / "assets" / "skybox" / SKYBOX_ASSET_NAME
+
 def _diagnose_gpu_environment():
     """Diagnose GPU and CUDA environment for debugging"""
     logger.info("=== GPU Environment Diagnosis ===")
@@ -357,6 +361,18 @@ class PlayCanvasSOGSCompressor:
                 import shutil
                 shutil.copy2(file_path, dest_path)
                 logger.info(f"Copied {file_path.name} to SuperSplat bundle")
+
+        skybox_manifest_path = None
+        if CONTAINER_SKYBOX_SOURCE.exists():
+            import shutil
+
+            skybox_dir = bundle_dir / "skybox"
+            skybox_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(CONTAINER_SKYBOX_SOURCE, skybox_dir / SKYBOX_ASSET_NAME)
+            skybox_manifest_path = SKYBOX_BUNDLE_RELATIVE_PATH
+            logger.info(f"Copied bundled skybox {SKYBOX_ASSET_NAME} into SuperSplat bundle")
+        else:
+            logger.warning(f"Bundled skybox asset not found at {CONTAINER_SKYBOX_SOURCE}")
         
         # Create viewer settings file for SuperSplat
         settings = {
@@ -372,7 +388,18 @@ class PlayCanvasSOGSCompressor:
         settings_path = bundle_dir / "settings.json"
         with open(settings_path, 'w') as f:
             json.dump(settings, f, indent=2)
-        
+
+        bundle_manifest = {
+            "version": 1,
+            "skybox": {
+                "type": "equirect",
+                "path": skybox_manifest_path,
+            } if skybox_manifest_path else None,
+        }
+        bundle_manifest_path = bundle_dir / "spaceport_bundle.json"
+        with open(bundle_manifest_path, 'w') as f:
+            json.dump(bundle_manifest, f, indent=2)
+
         logger.info(f"✅ SuperSplat bundle created at: {bundle_dir}")
 
     def _extract_and_find_plys(self, archive_path: str) -> List[str]:
