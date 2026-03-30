@@ -50,8 +50,7 @@
 2026-03-30 sogs-migrated-viewer: pick→orbit refocus, dynamic orbit focus, tap feedback, multi-hole, smoke pick
 2026-03-30 sogs-migrated-viewer smoke: fix postMessage listener; canvas dblclick; close path panel; default SOGS_MIGRATED_URL :3002
 2026-03-30 sogs tap-focus: single click no-drag, look() orbit tilt/pan, iframe→viewport ring, Canyon-style CSS
-2026-03-30 sogs-migrated-viewer: place tap ring at projected orbit focus after cameraPose
-2026-03-30 sogs-migrated-viewer: tap ring container-local coords + orbit target from same cameraPose (fix fixed/visible mismatch)
+2026-03-30 sogs-migrated-viewer: revert tap ring to iframe clientX/clientY (remove orbit projection experiment)
 2026-03-30 edge runtime config for preview/debug app routes + explicit not-found page
 2026-03-26 switch SfM preview branch to COLMAP gpu handoff validation
 2026-03-28T00:00:00Z switch branch-preview API Gateway endpoints to regional for quota-safe deploys

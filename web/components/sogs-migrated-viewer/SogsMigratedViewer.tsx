@@ -28,12 +28,7 @@ import {
 } from "../../lib/canyon-vista/pathAnimation";
 import { appendCheckpoint, snapCameraToCheckpointKey } from "../../lib/canyon-vista/pathEditing";
 import type { PathAnimationState, V3 } from "../../lib/canyon-vista/types";
-import {
-  createOverlayPerspectiveCamera,
-  projectWorldToScreen,
-  syncOverlayCamera,
-  type CameraPose,
-} from "../../lib/canyon-vista/worldProjection";
+import type { CameraPose } from "../../lib/canyon-vista/worldProjection";
 import { AnimationPathPanel } from "./AnimationPathPanel";
 import { CanyonCompassLive } from "./CanyonCompassLive";
 import { CanyonDetailsMenuButton, CanyonDetailsPanel } from "./CanyonDetailsPanel";
@@ -123,30 +118,6 @@ export default function SogsMigratedViewer() {
   }, [activeHoleView]);
 
   const [pickFeedbackScreen, setPickFeedbackScreen] = useState<{ x: number; y: number; t: number } | null>(null);
-
-  const pickRingCamRef = useRef(createOverlayPerspectiveCamera());
-  /** After tap-to-focus, next free-mode `sogs:cameraPose` places the ring at that frame's orbit target (same as iframe `calcFocusPoint`). */
-  const showFocusRingAfterPickRef = useRef(false);
-
-  /** Container-local pixels (same convention as TapDotsOverlay), not viewport — pairs with `.sogs-tap-pick-feedback { position: absolute }`. */
-  const placeFocusRingForPose = useCallback((pose: CameraPose) => {
-    const stamp = Date.now();
-    const el = containerRef.current;
-    if (!el) {
-      return;
-    }
-    const cw = el.clientWidth;
-    const ch = el.clientHeight;
-    if (cw <= 0 || ch <= 0) {
-      return;
-    }
-    const cam = pickRingCamRef.current;
-    syncOverlayCamera(cam, pose, cw, ch);
-    const p = projectWorldToScreen(pose.target, cam, cw, ch);
-    const x = Math.min(Math.max(p.x, 0), cw);
-    const y = Math.min(Math.max(p.y, 0), ch);
-    setPickFeedbackScreen({ x, y, t: stamp });
-  }, []);
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -263,11 +234,26 @@ export default function SogsMigratedViewer() {
       }
 
       if (event.data?.type === "sogs:pickFocus" && event.source === iframeRef.current?.contentWindow) {
-        const d = event.data as { world?: number[] };
+        const d = event.data as { world?: number[]; clientX?: number; clientY?: number };
         if (Array.isArray(d.world) && d.world.length >= 3) {
-          const focus: V3 = { x: d.world[0], y: d.world[1], z: d.world[2] };
-          orbitFocusRef.current = { ...focus };
-          showFocusRingAfterPickRef.current = true;
+          orbitFocusRef.current = {
+            x: d.world[0],
+            y: d.world[1],
+            z: d.world[2],
+          };
+        }
+        if (typeof d.clientX === "number" && typeof d.clientY === "number") {
+          const iframeEl = iframeRef.current;
+          if (iframeEl) {
+            const r = iframeEl.getBoundingClientRect();
+            setPickFeedbackScreen({
+              x: r.left + d.clientX,
+              y: r.top + d.clientY,
+              t: Date.now(),
+            });
+          } else {
+            setPickFeedbackScreen({ x: d.clientX, y: d.clientY, t: Date.now() });
+          }
         }
       }
 
@@ -304,10 +290,6 @@ export default function SogsMigratedViewer() {
           y: d.target[1],
           z: d.target[2],
         };
-        if (showFocusRingAfterPickRef.current) {
-          showFocusRingAfterPickRef.current = false;
-          placeFocusRingForPose(poseRef.current);
-        }
       }
 
       if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
