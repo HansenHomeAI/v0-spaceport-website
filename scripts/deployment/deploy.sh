@@ -95,6 +95,7 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local runtime_base_image=""
   local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
@@ -113,6 +114,21 @@ deploy_container() {
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
   docker pull "${base_image}" || log "No base image yet for ${container_name}"
+
+  if [[ "${container_name}" == "sfm" ]]; then
+    if [[ -n "${branch_tag}" ]] && aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag="${branch_tag}" >/dev/null 2>&1; then
+      runtime_base_image="${ecr_uri}:${branch_tag}"
+    elif aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
+      runtime_base_image="${ecr_uri}:latest"
+    fi
+
+    if [[ -n "${runtime_base_image}" ]]; then
+      log "Using existing SfM runtime image as BASE_IMAGE: ${runtime_base_image}"
+      docker pull "${runtime_base_image}" || log "Unable to pull ${runtime_base_image}; Dockerfile default will be used."
+    else
+      log "No existing SfM runtime image found for BASE_IMAGE; Dockerfile default will be used."
+    fi
+  fi
   
   # Build base image if missing
   if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
@@ -140,15 +156,25 @@ deploy_container() {
 
   # Build with advanced caching options
   log "Building with Docker BuildKit and layer caching..."
+  local -a extra_build_args=()
+  local -a extra_cache_from=()
+  if [[ -n "${runtime_base_image}" ]]; then
+    extra_build_args+=(--build-arg "BASE_IMAGE=${runtime_base_image}")
+    extra_cache_from+=(--cache-from "${runtime_base_image}")
+  elif [[ "${container_name}" != "sfm" ]]; then
+    extra_build_args+=(--build-arg "BASE_IMAGE=${base_image}")
+    extra_cache_from+=(--cache-from "${base_image}")
+  fi
+
   docker buildx build \
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
-    --build-arg BASE_IMAGE="${base_image}" \
+    "${extra_build_args[@]}" \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
-    --cache-from "${base_image}" \
+    "${extra_cache_from[@]}" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \
