@@ -1,8 +1,12 @@
 /**
- * Smoke test for /sogs-migrated-viewer: standalone chrome, iframe, first frame, bridge ready.
+ * Smoke test for /sogs-migrated-viewer: standalone chrome, iframe, first frame, bridge ready,
+ * double-click pick → sogs:pickFocus.
  *
  * Usage (from web/):
- *   SOGS_MIGRATED_URL=http://127.0.0.1:3000 node scripts/test-sogs-migrated-viewer.mjs
+ *   SOGS_MIGRATED_URL=http://127.0.0.1:3002 node scripts/test-sogs-migrated-viewer.mjs
+ *
+ * Prefer a production server (`npm run build && npx next start -p 3002`). A stale `next dev`
+ * can serve HTML with `_next/static/chunks/*` URLs that 404 (no hydration → no iframe).
  */
 
 import { chromium } from "playwright";
@@ -16,7 +20,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const logsDir = path.join(repoRoot, "logs");
 
-const baseUrl = (process.env.SOGS_MIGRATED_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
+const baseUrl = (process.env.SOGS_MIGRATED_URL ?? "http://127.0.0.1:3002").replace(/\/$/, "");
 const bundleUrl =
   process.env.SOGS_BUNDLE_URL ??
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
@@ -147,12 +151,18 @@ function summarizeRenderedPixels(buffer) {
 
   const encoded = encodeURIComponent(bundleUrl);
   await page.goto(`${baseUrl}/sogs-migrated-viewer?url=${encoded}`, {
-    waitUntil: "domcontentloaded",
+    waitUntil: "load",
     timeout: 120000,
   });
 
   assert((await page.locator("header").count()) === 0, "no site header on standalone migrated viewer");
-  await page.waitForSelector('iframe[title="sogs-migrated-viewer"]', { timeout: 60000 });
+  try {
+    await page.waitForSelector('iframe[title="sogs-migrated-viewer"]', { timeout: 90000 });
+  } catch {
+    throw new Error(
+      "Timed out waiting for viewer iframe (client did not hydrate). Restart `next dev` or use `npm run build && npx next start -p 3002` and set SOGS_MIGRATED_URL.",
+    );
+  }
 
   const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
   assert(!!splatFrame, "supersplat iframe frame exists");
@@ -196,25 +206,29 @@ function summarizeRenderedPixels(buffer) {
     await pausePath.click();
     await page.waitForTimeout(200);
   }
+  await page.locator("#animationEditorCloseButton").click();
+  await page.waitForSelector('[data-testid="animation-path-panel"]:not(.active)', { timeout: 10000 });
 
   await page.evaluate(() => {
     window.__sogsPickFocusSeen = false;
-    window.addEventListener(
-      "message",
-      (ev) => {
-        if (ev.data?.type === "sogs:pickFocus" && Array.isArray(ev.data.world)) {
-          window.__sogsPickFocusSeen = true;
-        }
-      },
-      { once: true },
-    );
+    function onPickFocusMessage(ev) {
+      if (ev.data?.type === "sogs:pickFocus" && Array.isArray(ev.data.world)) {
+        window.__sogsPickFocusSeen = true;
+        window.removeEventListener("message", onPickFocusMessage);
+      }
+    }
+    window.addEventListener("message", onPickFocusMessage);
   });
-  await page.locator('iframe[title="sogs-migrated-viewer"]').click({
-    position: { x: 640, y: 400 },
+  const canvas = splatFrame.locator("canvas").first();
+  await canvas.waitFor({ state: "visible", timeout: 30000 });
+  const box = await canvas.boundingBox();
+  assert(box && box.width > 0 && box.height > 0, "supersplat canvas should have a non-zero size");
+  await canvas.click({
+    position: { x: box.width / 2, y: box.height / 2 },
     clickCount: 2,
-    delay: 40,
+    delay: 50,
   });
-  await page.waitForFunction(() => window.__sogsPickFocusSeen === true, null, { timeout: 20000 });
+  await page.waitForFunction(() => window.__sogsPickFocusSeen === true, null, { timeout: 35000 });
   assert(
     await page.evaluate(() => window.__sogsPickFocusSeen === true),
     "parent should receive sogs:pickFocus after double-click (orbit refocus)",
