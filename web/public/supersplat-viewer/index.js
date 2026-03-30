@@ -101111,8 +101111,35 @@ class CameraManager {
             // set time
             controllers.anim.animState.cursor.value = time;
         });
-        // Spaceport: no double-click refocus — orbit pivot stays at scene origin / initial target
-        events.on('pick', () => {});
+        events.on('pick', (payload) => {
+            const worldPos = payload && payload.world ? payload.world : payload;
+            if (!worldPos || !isFinite(worldPos.x)) {
+                return;
+            }
+            if (state.cameraMode !== 'orbit') {
+                return;
+            }
+            this.camera.calcFocusPoint(tmpv);
+            tmpCamera.copy(this.camera);
+            tmpCamera.position.x += worldPos.x - tmpv.x;
+            tmpCamera.position.y += worldPos.y - tmpv.y;
+            tmpCamera.position.z += worldPos.z - tmpv.z;
+            controllers.orbit.goto(tmpCamera);
+            try {
+                if (payload && payload.world && window.parent) {
+                    window.parent.postMessage({
+                        type: 'sogs:pickFocus',
+                        world: [
+                            worldPos.x,
+                            worldPos.y,
+                            worldPos.z
+                        ],
+                        clientX: payload.clientX,
+                        clientY: payload.clientY
+                    }, '*');
+                }
+            } catch (e) {}
+        });
         events.on('annotation.activate', (annotation) => {
             // switch to orbit camera on pick
             state.cameraMode = 'orbit';
@@ -101296,7 +101323,11 @@ class InputController {
                     }
                     const result = await picker.pick(event.offsetX, event.offsetY);
                     if (result) {
-                        events.fire('pick', result);
+                        events.fire('pick', {
+                            world: result,
+                            clientX: event.clientX,
+                            clientY: event.clientY
+                        });
                     }
                     break;
                 }

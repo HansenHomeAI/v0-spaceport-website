@@ -47,3 +47,4 @@
 2026-03-30 supersplat: remove per-frame orbit focus clamp (was fighting drag every frame)
 2026-03-30 supersplat: snap orbit goto after scripted (avoid smooth attach lerp jitter)
 2026-03-30 chore: remove debug ingest instrumentation (sogs-bridge, migrated viewer, explore)
+2026-03-30 sogs-migrated-viewer: pick→orbit refocus, dynamic orbit focus, tap feedback, multi-hole, smoke pick

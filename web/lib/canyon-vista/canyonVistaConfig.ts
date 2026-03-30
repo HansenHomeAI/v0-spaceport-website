@@ -12,11 +12,29 @@ export type CanyonHoleConfig = {
   label: string;
   /** If omitted, the app default bundle URL is used. */
   bundleUrl?: string;
+  /** Per-hole camera/orbit defaults; merged onto `CANYON_VISTA_HOLE_VIEW`. */
+  holeView?: Partial<{
+    startPosition: Partial<V3>;
+    target: Partial<V3>;
+    minDistance: number;
+    maxDistance: number;
+    minPolarAngle: number;
+    maxPolarAngle: number;
+    northDirection: number;
+  }>;
 };
 
-export const CANYON_VISTA_HOLES: CanyonHoleConfig[] = [{ id: "canyon-vista", label: "Canyon Vista" }];
+export const CANYON_VISTA_HOLES: CanyonHoleConfig[] = [
+  { id: "canyon-vista", label: "Canyon Vista" },
+  {
+    id: "sogs-test",
+    label: "SOGS test bundle",
+    bundleUrl:
+      "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+  },
+];
 
-/** Single-hole layout: SOGS bundle URL is supplied at runtime (?url=). */
+/** Default hole layout: SOGS bundle URL is supplied at runtime (?url=). */
 export const CANYON_VISTA_HOLE_VIEW = {
   startPosition: { x: 0.22, y: 0.6, z: 2.75 } as V3,
   target: { x: 0, y: -0.06, z: 0 } as V3,
@@ -27,6 +45,23 @@ export const CANYON_VISTA_HOLE_VIEW = {
   /** Degrees: positive Z = 0; matches Canyon-Vista `compass.northDirection`. */
   northDirection: 358,
 };
+
+export type CanyonHoleViewResolved = typeof CANYON_VISTA_HOLE_VIEW;
+
+/** Merge per-hole [`CanyonHoleConfig.holeView`](#canyonholeconfig) onto the default hole view. */
+export function resolveHoleView(hole: CanyonHoleConfig | undefined): CanyonHoleViewResolved {
+  const base = CANYON_VISTA_HOLE_VIEW;
+  const ov = hole?.holeView;
+  if (!ov) {
+    return { ...base, startPosition: { ...base.startPosition }, target: { ...base.target } };
+  }
+  return {
+    ...base,
+    ...ov,
+    startPosition: { ...base.startPosition, ...ov.startPosition },
+    target: { ...base.target, ...ov.target },
+  };
+}
 
 export const CANYON_VISTA_ORBIT = {
   autoRotateDefault: false,

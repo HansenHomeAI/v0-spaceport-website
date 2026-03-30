@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createDefaultScenePayload } from "../../lib/sogsViewerSceneDefaults";
 import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
 import {
@@ -11,6 +11,7 @@ import {
   CANYON_VISTA_HOLES,
   CANYON_VISTA_INTRO,
   CANYON_VISTA_ORBIT,
+  resolveHoleView,
 } from "../../lib/canyon-vista/canyonVistaConfig";
 import {
   computeNorthFacingPosition,
@@ -36,6 +37,7 @@ import { CanyonVignette } from "./CanyonVignette";
 import { LotLinesOverlay } from "./LotLinesOverlay";
 import { SoldOverlays } from "./SoldOverlays";
 import { TapDotsOverlay } from "./TapDotsOverlay";
+import { TapPickFeedback } from "./TapPickFeedback";
 import "./sogs-migrated-viewer.css";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
@@ -89,12 +91,33 @@ export default function SogsMigratedViewer() {
   const [showLotLines, setShowLotLines] = useState(false);
   const [showSoldLabels, setShowSoldLabels] = useState(false);
   const [pathVersion, setPathVersion] = useState(0);
-  const [selectedHoleId, setSelectedHoleId] = useState(() => CANYON_VISTA_HOLES[0]?.id ?? "canyon-vista");
   const [photoDot, setPhotoDot] = useState<TapDotConfig | null>(null);
   const [pathPanelOpen, setPathPanelOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [revealDone, setRevealDone] = useState(false);
   const introPathPlayedRef = useRef(false);
+
+  const [selectedHoleId, setSelectedHoleId] = useState(() => CANYON_VISTA_HOLES[0]?.id ?? "canyon-vista");
+  const selectedHoleIdRef = useRef(selectedHoleId);
+  useEffect(() => {
+    selectedHoleIdRef.current = selectedHoleId;
+  }, [selectedHoleId]);
+
+  const activeHoleView = useMemo(
+    () => resolveHoleView(CANYON_VISTA_HOLES.find((h) => h.id === selectedHoleId)),
+    [selectedHoleId],
+  );
+  const activeHoleViewRef = useRef(activeHoleView);
+  /** Orbit pivot; updated in free mode from camera pose and on pick / hole change. */
+  const orbitFocusRef = useRef<V3>({ ...CANYON_VISTA_HOLE_VIEW.target });
+
+  useEffect(() => {
+    activeHoleViewRef.current = activeHoleView;
+    const t = activeHoleView.target;
+    orbitFocusRef.current = { x: t.x, y: t.y, z: t.z };
+  }, [activeHoleView]);
+
+  const [pickFeedbackScreen, setPickFeedbackScreen] = useState<{ x: number; y: number } | null>(null);
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -118,7 +141,8 @@ export default function SogsMigratedViewer() {
     introPathPlayedRef.current = true;
     const t = window.setTimeout(() => {
       setAutoRotate(false);
-      jumpToPathStart(pathStateRef.current, CANYON_VISTA_HOLE_VIEW.target);
+      const focus = orbitFocusRef.current;
+      jumpToPathStart(pathStateRef.current, { x: focus.x, y: focus.y, z: focus.z });
       pathPlayingRef.current = true;
       setPathPlaying(true);
     }, CANYON_VISTA_INTRO.autoPlayDelayMs);
@@ -140,6 +164,8 @@ export default function SogsMigratedViewer() {
       setViewerState("idle");
       return false;
     }
+    const hole = resolveHoleView(CANYON_VISTA_HOLES.find((h) => h.id === selectedHoleIdRef.current));
+    orbitFocusRef.current = { x: hole.target.x, y: hole.target.y, z: hole.target.z };
     setViewerState("loading");
     setActiveUrl(normalized);
     setIframeKey((k) => k + 1);
@@ -170,8 +196,9 @@ export default function SogsMigratedViewer() {
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
         const scene = createDefaultScenePayload();
-        const t = CANYON_VISTA_HOLE_VIEW.target;
-        const sp = CANYON_VISTA_HOLE_VIEW.startPosition;
+        const hv = activeHoleViewRef.current;
+        const t = hv.target;
+        const sp = hv.startPosition;
         try {
           (event.source as Window).postMessage(
             {
@@ -201,8 +228,23 @@ export default function SogsMigratedViewer() {
           target: { x: t.x, y: t.y, z: t.z },
           fov: scene.fov,
         };
+        orbitFocusRef.current = { x: t.x, y: t.y, z: t.z };
         lastScriptedRef.current = false;
         setViewerState("ready");
+      }
+
+      if (event.data?.type === "sogs:pickFocus" && event.source === iframeRef.current?.contentWindow) {
+        const d = event.data as { world?: number[]; clientX?: number; clientY?: number };
+        if (Array.isArray(d.world) && d.world.length >= 3) {
+          orbitFocusRef.current = {
+            x: d.world[0],
+            y: d.world[1],
+            z: d.world[2],
+          };
+        }
+        if (typeof d.clientX === "number" && typeof d.clientY === "number") {
+          setPickFeedbackScreen({ x: d.clientX, y: d.clientY });
+        }
       }
 
       if (event.data?.type === "sogs:userInteraction" && event.source === iframeRef.current?.contentWindow) {
@@ -232,6 +274,11 @@ export default function SogsMigratedViewer() {
           position: { x: d.position[0], y: d.position[1], z: d.position[2] },
           target: { x: d.target[0], y: d.target[1], z: d.target[2] },
           fov: typeof d.fov === "number" && Number.isFinite(d.fov) ? d.fov : createDefaultScenePayload().fov,
+        };
+        orbitFocusRef.current = {
+          x: d.target[0],
+          y: d.target[1],
+          z: d.target[2],
         };
       }
 
@@ -271,17 +318,18 @@ export default function SogsMigratedViewer() {
           }
         } else if (orbit) {
           angleRef.current += CANYON_VISTA_ORBIT.speed * 60 * deltaSeconds;
+          const focus = orbitFocusRef.current;
           sampleAutoRotatePose(
             angleRef.current,
-            CANYON_VISTA_ORBIT.center,
+            { x: focus.x, y: CANYON_VISTA_ORBIT.center.y, z: focus.z },
             CANYON_VISTA_ORBIT.startRadius,
-            CANYON_VISTA_HOLE_VIEW.target,
+            focus,
             CANYON_VISTA_CAMERA_START_Y,
             outPos.current,
           );
-          outTarget.current.x = CANYON_VISTA_HOLE_VIEW.target.x;
-          outTarget.current.y = CANYON_VISTA_HOLE_VIEW.target.y;
-          outTarget.current.z = CANYON_VISTA_HOLE_VIEW.target.z;
+          outTarget.current.x = focus.x;
+          outTarget.current.y = focus.y;
+          outTarget.current.z = focus.z;
         }
         poseRef.current = {
           position: { x: outPos.current.x, y: outPos.current.y, z: outPos.current.z },
@@ -313,7 +361,8 @@ export default function SogsMigratedViewer() {
 
   const goToAnimationStart = useCallback(() => {
     setAutoRotate(false);
-    jumpToPathStart(pathStateRef.current, CANYON_VISTA_HOLE_VIEW.target);
+    const f = orbitFocusRef.current;
+    jumpToPathStart(pathStateRef.current, { x: f.x, y: f.y, z: f.z });
     pathPlayingRef.current = true;
     setPathPlaying(true);
   }, []);
@@ -328,12 +377,9 @@ export default function SogsMigratedViewer() {
     const p = poseRef.current;
     const win = iframeRef.current?.contentWindow;
     if (!p || !win) return;
-    const next = computeNorthFacingPosition(
-      p.position,
-      CANYON_VISTA_HOLE_VIEW.target,
-      CANYON_VISTA_HOLE_VIEW.northDirection,
-    );
-    const t = CANYON_VISTA_HOLE_VIEW.target;
+    const hv = activeHoleViewRef.current;
+    const t = orbitFocusRef.current;
+    const next = computeNorthFacingPosition(p.position, t, hv.northDirection);
     postToWindow(win, { type: "sogs:cameraMode", mode: "scripted" });
     postToWindow(win, {
       type: "sogs:cameraLookAt",
@@ -415,6 +461,7 @@ export default function SogsMigratedViewer() {
           <div className="sogs-migrated-placeholder" aria-hidden />
         )}
         <CanyonVignette />
+        <TapPickFeedback screen={pickFeedbackScreen} />
         <TapDotsOverlay
           enabled={viewerState === "ready" && showTapDots}
           tapDots={CANYON_VISTA_TAP_DOTS}
@@ -569,8 +616,8 @@ export default function SogsMigratedViewer() {
         {viewerState === "ready" ? (
           <CanyonCompassLive
             poseRef={poseRef}
-            orbitTarget={CANYON_VISTA_HOLE_VIEW.target}
-            northDeg={CANYON_VISTA_HOLE_VIEW.northDirection}
+            orbitTargetRef={orbitFocusRef}
+            northDeg={activeHoleView.northDirection}
             onClick={onCompassClick}
             compassAriaLabel={
               CANYON_VISTA_COMPASS.northButtonMode === "animationStart"

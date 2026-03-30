@@ -8,27 +8,29 @@ import { CanyonCompass } from "./CanyonCompass";
 
 type Props = {
   poseRef: React.MutableRefObject<CameraPose | null>;
-  orbitTarget: V3;
+  /** Orbit pivot (world); ref updates during free navigation / tap-to-focus without re-rendering parent. */
+  orbitTargetRef: React.MutableRefObject<V3>;
   northDeg: number;
   onClick: () => void;
   compassAriaLabel?: string;
 };
 
-export function CanyonCompassLive({ poseRef, orbitTarget, northDeg, onClick, compassAriaLabel }: Props) {
+export function CanyonCompassLive({ poseRef, orbitTargetRef, northDeg, onClick, compassAriaLabel }: Props) {
   const [rot, setRot] = useState(0);
 
   useEffect(() => {
     let raf = 0;
     const tick = () => {
       const p = poseRef.current;
+      const ot = orbitTargetRef.current;
       if (p) {
-        setRot(compassArrowRotationDeg(p.position, orbitTarget, northDeg));
+        setRot(compassArrowRotationDeg(p.position, ot, northDeg));
       }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [poseRef, orbitTarget, northDeg]);
+  }, [poseRef, orbitTargetRef, northDeg]);
 
   return <CanyonCompass rotationDeg={rot} onClick={onClick} ariaLabel={compassAriaLabel} />;
 }

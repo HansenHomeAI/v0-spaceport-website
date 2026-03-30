@@ -191,6 +191,35 @@ function summarizeRenderedPixels(buffer) {
     timeout: 10000,
   });
 
+  const pausePath = page.getByRole("button", { name: "Pause path" });
+  if ((await pausePath.count()) > 0) {
+    await pausePath.click();
+    await page.waitForTimeout(200);
+  }
+
+  await page.evaluate(() => {
+    window.__sogsPickFocusSeen = false;
+    window.addEventListener(
+      "message",
+      (ev) => {
+        if (ev.data?.type === "sogs:pickFocus" && Array.isArray(ev.data.world)) {
+          window.__sogsPickFocusSeen = true;
+        }
+      },
+      { once: true },
+    );
+  });
+  await page.locator('iframe[title="sogs-migrated-viewer"]').click({
+    position: { x: 640, y: 400 },
+    clickCount: 2,
+    delay: 40,
+  });
+  await page.waitForFunction(() => window.__sogsPickFocusSeen === true, null, { timeout: 20000 });
+  assert(
+    await page.evaluate(() => window.__sogsPickFocusSeen === true),
+    "parent should receive sogs:pickFocus after double-click (orbit refocus)",
+  );
+
   const shot = path.join(logsDir, "sogs-migrated-viewer-smoke.png");
   await page.screenshot({ path: shot, fullPage: true });
   console.log(`Canvas stats: ${JSON.stringify(stats)}`);
