@@ -389,21 +389,28 @@ jobs:
         echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
 
         STACKS=()
+        TARGET_STACKS=()
         if [ "${SPACEPORT_STACK_CHANGED}" = "true" ]; then
           STACKS+=("$SPACEPORT_STACK_NAME")
+          TARGET_STACKS+=("spaceport")
         fi
         if [ "${ML_STACK_CHANGED}" = "true" ]; then
           STACKS+=("$ML_STACK_NAME")
+          TARGET_STACKS+=("ml")
         fi
         if [ "${#STACKS[@]}" -eq 0 ]; then
           STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+          TARGET_STACKS=("spaceport" "ml")
           echo "Unable to determine stack ownership from changed files - deploying both stacks"
         fi
         if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
+          TARGET_STACKS+=("auth")
         fi
 
         echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
+        TARGET_STACKS_CSV="$(IFS=,; echo "${TARGET_STACKS[*]}")"
+        echo "Synthesizing CDK targets: ${TARGET_STACKS_CSV}"
         
         export DEPLOY_AUTH_STACK_OVERRIDE="${DEPLOY_AUTH_STACK_EFFECTIVE}"
         cdk deploy "${STACKS[@]}" \
@@ -412,6 +419,7 @@ jobs:
           --context environment="${CDK_ENVIRONMENT_NAME}" \
           --context branch_name="${BRANCH_NAME}" \
           --context deploy_auth_stack="${DEPLOY_AUTH_STACK_EFFECTIVE}" \
+          --context target_stacks="${TARGET_STACKS_CSV}" \
           --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
