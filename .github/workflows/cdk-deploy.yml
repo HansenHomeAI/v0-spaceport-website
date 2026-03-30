@@ -230,6 +230,8 @@ jobs:
         printf 'Changed files for %s:\n%s\n' "${GITHUB_SHA}" "${CHANGED_FILES}"
 
         STACK_DEPLOY_REQUIRED="${STACK_DEPLOY_REQUIRED:-false}"
+        SPACEPORT_STACK_CHANGED="false"
+        ML_STACK_CHANGED="false"
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
@@ -241,6 +243,22 @@ jobs:
           echo "Changed file list is empty - preserving fail-safe stack deploy"
         else
           echo "No CDK stack source changes detected - will skip stack deploy"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/(app\.py|requirements\.txt|setup\.py)|infrastructure/spaceport_cdk/spaceport_cdk/(deployment_context|auth_stack)\.py)'; then
+          SPACEPORT_STACK_CHANGED="true"
+          ML_STACK_CHANGED="true"
+          echo "Shared CDK sources changed - will deploy both app and ML stacks"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack\.py|infrastructure/spaceport_cdk/lambda/(ml_|start_ml_job|stop_job))'; then
+          ML_STACK_CHANGED="true"
+          echo "ML pipeline sources changed - will deploy ML stack"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/spaceport_cdk/spaceport_stack\.py|infrastructure/spaceport_cdk/lambda/(drone_path|feedback|file_upload|waitlist|file_metadata|explore_public|subscription|beta_access|model_delivery_admin))'; then
+          SPACEPORT_STACK_CHANGED="true"
+          echo "Application API sources changed - will deploy app stack"
         fi
 
         if printf '%s\n' "${CHANGED_FILES}" | grep -q '^infrastructure/spaceport_cdk/lambda/'; then
@@ -266,6 +284,8 @@ jobs:
         fi
 
         echo "stack_deploy_required=${STACK_DEPLOY_REQUIRED}" >> "$GITHUB_OUTPUT"
+        echo "spaceport_stack_changed=${SPACEPORT_STACK_CHANGED}" >> "$GITHUB_OUTPUT"
+        echo "ml_stack_changed=${ML_STACK_CHANGED}" >> "$GITHUB_OUTPUT"
         echo "lambda_changed=${LAMBDA_CHANGED}" >> "$GITHUB_OUTPUT"
         echo "auth_stack_changed=${AUTH_STACK_CHANGED}" >> "$GITHUB_OUTPUT"
         echo "explore_api_missing=${EXPLORE_API_MISSING}" >> "$GITHUB_OUTPUT"
@@ -318,6 +338,8 @@ jobs:
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
         STACK_DEPLOY_REQUIRED="${{ steps.deploy_scope.outputs.stack_deploy_required }}"
+        SPACEPORT_STACK_CHANGED="${{ steps.deploy_scope.outputs.spaceport_stack_changed }}"
+        ML_STACK_CHANGED="${{ steps.deploy_scope.outputs.ml_stack_changed }}"
         LAMBDA_CHANGED="${{ steps.deploy_scope.outputs.lambda_changed }}"
         AUTH_STACK_CHANGED="${{ steps.deploy_scope.outputs.auth_stack_changed }}"
         EXPLORE_API_MISSING="${{ steps.deploy_scope.outputs.explore_api_missing }}"
@@ -356,7 +378,17 @@ jobs:
 
         echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
 
-        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+        STACKS=()
+        if [ "${SPACEPORT_STACK_CHANGED}" = "true" ]; then
+          STACKS+=("$SPACEPORT_STACK_NAME")
+        fi
+        if [ "${ML_STACK_CHANGED}" = "true" ]; then
+          STACKS+=("$ML_STACK_NAME")
+        fi
+        if [ "${#STACKS[@]}" -eq 0 ]; then
+          STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+          echo "Unable to determine stack ownership from changed files - deploying both stacks"
+        fi
         if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
         fi

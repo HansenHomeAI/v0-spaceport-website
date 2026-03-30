@@ -7,6 +7,7 @@ import boto3
 
 s3 = boto3.client("s3")
 
+# Immutable assets let the CDN keep cold-path fetches predictable once published.
 CACHE_CONTROL = "public, max-age=31536000, s-maxage=31536000, immutable"
 
 
