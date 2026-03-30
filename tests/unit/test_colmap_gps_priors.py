@@ -331,6 +331,23 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertNotIn("--image_list_path", mapper_command)
             self.assertEqual(model.images_registered, 3)
 
+    def test_run_sequential_matcher_avoids_runtime_specific_matching_flags(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline, "count_verified_pairs", side_effect=[10, 16]
+            ):
+                pipeline.run_sequential_matcher()
+
+            command = stream_command_mock.call_args.args[0]
+            self.assertIn("sequential_matcher", command)
+            self.assertNotIn("--SiftMatching.use_gpu", command)
+            self.assertNotIn("--SiftMatching.guided_matching", command)
+            self.assertEqual(pipeline.matcher_pair_deltas["sequential_matcher"], 6)
+            self.assertIn("sequential_matcher", pipeline.matchers_run)
+
 
 if __name__ == "__main__":
     unittest.main()
