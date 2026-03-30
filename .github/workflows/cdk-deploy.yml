@@ -178,6 +178,21 @@ jobs:
             echo "${key}=${value}" >> "$GITHUB_ENV"
           done < /tmp/deploy-context.env
 
+      - name: Audit current EDGE API usage
+        run: |
+          set -euo pipefail
+          python3 ../../scripts/audit_edge_api_usage.py \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --format text
+
+      - name: Verify synthesized endpoint policy
+        run: |
+          set -euo pipefail
+          python3 ../../scripts/check_cdk_endpoint_policy.py \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --branch "${GITHUB_REF_NAME}" \
+            --deploy-auth-stack true
+
       - name: CDK Bootstrap (if needed)
         run: |
           set -e
@@ -414,6 +429,21 @@ jobs:
           while IFS='=' read -r key value; do
             echo "${key}=${value}" >> "$GITHUB_ENV"
           done < /tmp/deploy-context.env
+
+      - name: Audit current EDGE API usage
+        run: |
+          set -euo pipefail
+          python3 ../../scripts/audit_edge_api_usage.py \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --format text
+
+      - name: Verify synthesized endpoint policy
+        run: |
+          set -euo pipefail
+          python3 ../../scripts/check_cdk_endpoint_policy.py \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --branch "${GITHUB_REF_NAME}" \
+            --deploy-auth-stack false
 
       - name: CDK Bootstrap (if needed)
         run: |
