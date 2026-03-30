@@ -63,16 +63,15 @@ function postSogsState() {
 
 /**
  * Wraps CameraManager.update: free orbit vs scripted pose from `window.__sogsCameraPose`.
- * `sogs:cameraMode` sets `window.__sogsScriptedCamera` (true = scripted).
+ * Orbit consumes InputFrame via `frame.read()` each update; while scripted we skip `origUpdate`,
+ * so flush the same `frame` reference each scripted frame. First free frame skips one `origUpdate`
+ * so orbit integration cannot nudge the camera away from the last `look()` pose.
  */
-/**
- * OrbitController consumes InputFrame via `frame.read()` each update. While scripted we skip
- * `origUpdate`, so `read()` never runs and InputController keeps appending — deltas accumulate
- * for the whole tour and fire in one frame when going free. Flush every scripted frame + on exit.
- */
-function flushSogsAccumulatedInputFrame() {
+function flushSogsAccumulatedInputFrame(frame) {
   try {
-    const fr = window.__sogsCtx?.viewer?.inputController?.frame?.read();
+    const inputFrame = frame ?? window.__sogsCtx?.viewer?.inputController?.frame;
+    if (!inputFrame || typeof inputFrame.read !== "function") return null;
+    const fr = inputFrame.read();
     if (!fr) return null;
     const m = fr.move || [0, 0, 0];
     const r = fr.rotate || [0, 0, 0];
@@ -151,7 +150,7 @@ function setupCameraManagerBridge(cameraManager) {
           window.__sogsUserFov = pose.fov;
         }
       }
-      flushSogsAccumulatedInputFrame();
+      flushSogsAccumulatedInputFrame(frame);
       prevScripted = true;
       return;
     }
@@ -159,23 +158,10 @@ function setupCameraManagerBridge(cameraManager) {
     const leftScripted = prevScripted;
     prevScripted = false;
     let focusBeforeClamp = null;
+    let skipFirstOrbitAfterScripted = false;
     if (leftScripted) {
-      const flushedOnExit = flushSogsAccumulatedInputFrame();
-      // #region agent log
-      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
-        body: JSON.stringify({
-          sessionId: "191e7b",
-          location: "sogs-bridge.mjs:flush_on_exit_scripted",
-          message: "accumulated_input_flushed_before_free_orbit",
-          hypothesisId: "H6",
-          runId: "input-flush",
-          data: flushedOnExit,
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
+      const flushedOnExit = flushSogsAccumulatedInputFrame(frame);
+      const frameSameRef = frame === window.__sogsCtx?.viewer?.inputController?.frame;
       if (typeof cameraManager.syncOrbitFromCurrentCamera === "function") {
         cameraManager.syncOrbitFromCurrentCamera();
       }
@@ -189,17 +175,21 @@ function setupCameraManagerBridge(cameraManager) {
         const dz = focusOrbit.z - pose.target[2];
         targetMismatch = Math.sqrt(dx * dx + dy * dy + dz * dz);
       }
+      skipFirstOrbitAfterScripted = true;
       // #region agent log
       fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
         body: JSON.stringify({
           sessionId: "191e7b",
-          location: "sogs-bridge.mjs:setupCameraManagerBridge:firstFreeFrame",
-          message: "scripted_to_free_before_origUpdate",
-          hypothesisId: "H1",
-          runId: "pre1",
+          location: "sogs-bridge.mjs:first_free_after_scripted",
+          message: "skip_origUpdate_keep_last_look_plus_flush",
+          hypothesisId: "H10",
+          runId: "skip-orbit-1",
           data: {
+            flushedOnExit,
+            frameSameRef,
+            skippedOrigUpdate: true,
             pos: [cam.position.x, cam.position.y, cam.position.z],
             distance: cam.distance,
             angles: [cam.angles.x, cam.angles.y, cam.angles.z],
@@ -212,32 +202,14 @@ function setupCameraManagerBridge(cameraManager) {
       }).catch(() => {});
       // #endregion
     }
-    origUpdate(dt, frame);
+    if (!skipFirstOrbitAfterScripted) {
+      origUpdate(dt, frame);
+    }
     if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
       cameraManager.camera.fov = window.__sogsUserFov;
     }
     let focusPreClampStep = null;
     if (leftScripted) {
-      // #region agent log
-      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
-        body: JSON.stringify({
-          sessionId: "191e7b",
-          location: "sogs-bridge.mjs:setupCameraManagerBridge:after_origUpdate",
-          message: "after_origUpdate_before_clamp",
-          hypothesisId: "H1",
-          runId: "post-fix",
-          data: {
-            pos: [cam.position.x, cam.position.y, cam.position.z],
-            distance: cam.distance,
-            angles: [cam.angles.x, cam.angles.y, cam.angles.z],
-            orbitSynced: typeof cameraManager.syncOrbitFromCurrentCamera === "function",
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       const fPre = getFocusPoint(cam);
       focusPreClampStep = { x: fPre.x, y: fPre.y, z: fPre.z };
     }
@@ -475,8 +447,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   /** Tell parent to exit scripted tour / auto-orbit when the user grabs the view (orbit, zoom, touch). */
-  const notifyUserInteraction = () => {
+  const notifyUserInteraction = (e) => {
     if (window.__sogsScriptedCamera) {
+      let pointerNorm = null;
+      try {
+        const c = window.__sogsCtx?.app?.graphicsDevice?.canvas;
+        let cx = e?.clientX;
+        let cy = e?.clientY;
+        if (e?.touches?.length) {
+          cx = e.touches[0].clientX;
+          cy = e.touches[0].clientY;
+        }
+        if (c && cx != null && cy != null) {
+          const r = c.getBoundingClientRect();
+          const w = r.width || 1;
+          const h = r.height || 1;
+          pointerNorm = { nx: (cx - r.left) / w, ny: (cy - r.top) / h };
+        }
+      } catch {
+        /* ignore */
+      }
       // #region agent log
       fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
         method: "POST",
@@ -484,10 +474,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify({
           sessionId: "191e7b",
           location: "sogs-bridge.mjs:notifyUserInteraction",
-          message: "iframe_userInteraction",
-          hypothesisId: "H5",
+          message: "iframe_userInteraction_pointer_norm",
+          hypothesisId: "H11",
           runId: "pre1",
-          data: { hasPose: !!window.__sogsCameraPose },
+          data: { hasPose: !!window.__sogsCameraPose, pointerNorm, evType: e?.type },
           timestamp: Date.now(),
         }),
       }).catch(() => {});
