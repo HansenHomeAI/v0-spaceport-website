@@ -897,10 +897,16 @@ class MLPipelineStack(Stack):
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
+        ml_api_endpoint_types = (
+            [apigw.EndpointType.REGIONAL]
+            if self.deployment_class == "branch-preview"
+            else [apigw.EndpointType.EDGE]
+        )
         ml_api = apigw.RestApi(
             self, "SpaceportMLApi",
             rest_api_name=f"Spaceport-ML-API-{suffix}",
             description="API for ML processing pipeline",
+            endpoint_types=ml_api_endpoint_types,
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
