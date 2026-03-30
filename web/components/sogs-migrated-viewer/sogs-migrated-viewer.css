@@ -1277,7 +1277,8 @@
 
 /* Single-tap pick focus ring (Canyon-Vista #tap-focus-feedback) */
 .sogs-tap-pick-feedback {
-  position: fixed;
+  /* Match .tapdot-layer: coords are container-local (stage-relative), not viewport */
+  position: absolute;
   width: 36px;
   height: 36px;
   margin: 0;

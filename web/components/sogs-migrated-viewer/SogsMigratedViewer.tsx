@@ -125,35 +125,28 @@ export default function SogsMigratedViewer() {
   const [pickFeedbackScreen, setPickFeedbackScreen] = useState<{ x: number; y: number; t: number } | null>(null);
 
   const pickRingCamRef = useRef(createOverlayPerspectiveCamera());
-  /** After tap-to-focus, show ring at projected orbit focus once `sogs:cameraPose` matches new view. */
-  const pendingFocusRingWorldRef = useRef<V3 | null>(null);
+  /** After tap-to-focus, next free-mode `sogs:cameraPose` places the ring at that frame's orbit target (same as iframe `calcFocusPoint`). */
+  const showFocusRingAfterPickRef = useRef(false);
 
-  const placeFocusRingAtWorld = useCallback((world: V3) => {
+  /** Container-local pixels (same convention as TapDotsOverlay), not viewport — pairs with `.sogs-tap-pick-feedback { position: absolute }`. */
+  const placeFocusRingForPose = useCallback((pose: CameraPose) => {
     const stamp = Date.now();
     const el = containerRef.current;
-    const pose = poseRef.current;
-    const iframe = iframeRef.current;
-    if (!el || !iframe) {
+    if (!el) {
       return;
     }
-    const rect = el.getBoundingClientRect();
-    if (pose) {
-      const cw = el.clientWidth;
-      const ch = el.clientHeight;
-      const cam = pickRingCamRef.current;
-      syncOverlayCamera(cam, pose, cw, ch);
-      const p = projectWorldToScreen(world, cam, cw, ch);
-      if (p.visible) {
-        setPickFeedbackScreen({ x: rect.left + p.x, y: rect.top + p.y, t: stamp });
-        return;
-      }
+    const cw = el.clientWidth;
+    const ch = el.clientHeight;
+    if (cw <= 0 || ch <= 0) {
+      return;
     }
-    const ir = iframe.getBoundingClientRect();
-    setPickFeedbackScreen({ x: ir.left + ir.width / 2, y: ir.top + ir.height / 2, t: stamp });
+    const cam = pickRingCamRef.current;
+    syncOverlayCamera(cam, pose, cw, ch);
+    const p = projectWorldToScreen(pose.target, cam, cw, ch);
+    const x = Math.min(Math.max(p.x, 0), cw);
+    const y = Math.min(Math.max(p.y, 0), ch);
+    setPickFeedbackScreen({ x, y, t: stamp });
   }, []);
-
-  const placeFocusRingAtWorldRef = useRef(placeFocusRingAtWorld);
-  placeFocusRingAtWorldRef.current = placeFocusRingAtWorld;
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -274,7 +267,7 @@ export default function SogsMigratedViewer() {
         if (Array.isArray(d.world) && d.world.length >= 3) {
           const focus: V3 = { x: d.world[0], y: d.world[1], z: d.world[2] };
           orbitFocusRef.current = { ...focus };
-          pendingFocusRingWorldRef.current = focus;
+          showFocusRingAfterPickRef.current = true;
         }
       }
 
@@ -311,14 +304,9 @@ export default function SogsMigratedViewer() {
           y: d.target[1],
           z: d.target[2],
         };
-        const pending = pendingFocusRingWorldRef.current;
-        if (pending) {
-          const tgt = poseRef.current.target;
-          const dist = Math.hypot(tgt.x - pending.x, tgt.y - pending.y, tgt.z - pending.z);
-          if (dist < 0.15) {
-            placeFocusRingAtWorldRef.current(pending);
-            pendingFocusRingWorldRef.current = null;
-          }
+        if (showFocusRingAfterPickRef.current) {
+          showFocusRingAfterPickRef.current = false;
+          placeFocusRingForPose(poseRef.current);
         }
       }
 
