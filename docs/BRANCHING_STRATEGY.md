@@ -3,63 +3,90 @@
 ## Branch Roles & Environment Separation
 
 ### Branch Strategy
-- **`development`** (staging): Integration branch for testing and validation
-  - Every push deploys to **staging AWS account** via CDK
-  - Frontend deploys to staging Cloudflare Pages project
-  - Safe environment for experimentation and testing
+- **`development`** (staging): integration branch for testing and validation
+  - Every push deploys to the staging AWS account
+  - Deploys the shared staging auth stack by default
+  - Deploys to the staging Cloudflare Pages preview project
 
-- **`main`** (production): Release branch for live production
-  - Every push deploys to **production AWS account** via CDK
-  - Frontend deploys to production Cloudflare Pages project
-  - Live environment for end users
+- **`main`** (production): release branch for live production
+  - Every push deploys to the production AWS account
+  - Deploys the production auth stack by default
+  - Deploys to the production Cloudflare Pages project
+
+- **Preview branches** (`agent-*`, `codex/agent-*`): branch-local application previews
+  - Deploy branch-specific Spaceport and ML stacks by default
+  - Reuse the shared staging auth stack unless the branch explicitly opts in
+  - Deploy to the shared preview Pages project, but each run must use the `PREVIEW_URL` emitted by that run
+
+### Preview Branch Auth Contract
+- Preview branches are auth read-only by default.
+- Add `.spaceport/deploy-auth-preview` on a preview branch to redeploy the shared staging auth stack on every push.
+- Remove `.spaceport/deploy-auth-preview` to return that branch to the default auth read-only behavior.
+- Child branches inherit the marker file naturally. Remove it in the child branch if that branch should stop redeploying auth.
+- Shared staging auth deploys run in a dedicated serialized CI lane so opt-in branches do not collide with each other or with `development`.
+
+### Preview URL Contract
+- Cloudflare Pages preview validation must use the `PREVIEW_URL` emitted by the current workflow run.
+- `PREVIEW_URL` prefers the branch alias URL when Wrangler emits one and falls back to the current deploy hash URL.
+- Do not query the latest deployment in the Pages project for branch validation. Concurrent branch deploys can return another branch's preview.
 
 ## 🔄 Development Workflow
 
 ### 1. Feature Development
 ```bash
 git checkout development
-git checkout -b feature/new-feature
+git checkout -b agent-12345678-new-feature
 # Make changes, test locally
 git commit -m "Add new feature"
-git push origin feature/new-feature
+git push origin agent-12345678-new-feature
 ```
 
-### 2. Staging Deployment
+### 2. Preview Deployment
 ```bash
-# Merge feature branch to development (preserve history)
-git checkout development
-git merge --no-ff feature/new-feature
-git push origin development
-# ✅ Auto-deploys to staging AWS account
+# Push your preview branch and wait for both workflows
+gh run list --branch agent-12345678-new-feature
+gh run watch <pages-run-id> --exit-status
+gh run watch <cdk-run-id> --exit-status
+
+# Read PREVIEW_URL from that Pages run and validate against it
 ```
 
-### 3. Production Release
+### 3. Staging Deployment
+```bash
+# Merge preview branch to development (preserve history)
+git checkout development
+git merge --no-ff agent-12345678-new-feature
+git push origin development
+# ✅ Auto-deploys shared staging infra, including auth
+```
+
+### 4. Production Release
 ```bash
 # Merge development to main (preserve history)
 git checkout main
 git merge --no-ff development
 git push origin main
-# 🚀 Auto-deploys to production AWS account
+# 🚀 Auto-deploys production
 ```
 
-### 4. Branch Archiving (After Successful Merge)
+### 5. Branch Archiving (After Successful Merge)
 ```bash
 # Create archive tag to preserve branch history
-git tag archive/feature-name HEAD~1
+git tag archive/agent-12345678-new-feature HEAD~1
 
 # Delete remote branch (keeps repository clean)
-git push origin --delete feature/new-feature
+git push origin --delete agent-12345678-new-feature
 
-# Optional: Delete local branch
-git branch -d feature/new-feature
+# Optional: delete local branch
+git branch -d agent-12345678-new-feature
 ```
 
 ## 🏗️ Infrastructure Deployment
 
 ### AWS CDK Stacks
-- **SpaceportStack**: Main application infrastructure
-- **MLPipelineStack**: ML processing infrastructure  
-- **AuthStack**: Authentication and user management
+- **SpaceportStack**: main application infrastructure
+- **MLPipelineStack**: ML processing infrastructure
+- **AuthStack**: authentication and user management
 
 ### Environment Targeting
 ```yaml
@@ -69,39 +96,42 @@ environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
 
 ### Security & Authentication
 - **OIDC Authentication**: GitHub Actions securely authenticate with AWS
-- **Environment Secrets**: Separate secrets for staging vs production
-- **Role-Based Access**: Least-privilege IAM policies per environment
-- **Complete Isolation**: No resource sharing between environments
+- **Environment Secrets**: separate secrets for staging vs production
+- **Role-Based Access**: least-privilege IAM policies per environment
+- **Shared Preview Auth**: preview branches share the staging auth stack unless they opt into redeploying it
 
 ## 🌐 Frontend Deployment
 
 ### Cloudflare Pages
-- **Build Command**: `next build` → `@cloudflare/next-on-pages`
-- **Output**: `.vercel/output/static` (worker.js at root)
+- **Build Command**: `next build` then `@cloudflare/next-on-pages`
+- **Output**: `.vercel/output/static` so `_worker.js` sits at the upload root
 - **SSR/ISR**: Edge runtime for dynamic content
 
 ### Environment Projects
-- **Staging**: `v0-spaceport-website-preview2` (development branch)
-- **Production**: `v0-spaceport-website-prod-fresh` (main branch)
+- **Preview/Staging**: `v0-spaceport-website-preview2` (`development` and preview branches)
+- **Production**: `v0-spaceport-website-prod-fresh` (`main`)
 
 ## ✅ CI/CD Essentials
 
 ### Do's
 - ✅ Keep `export const runtime = 'edge'` on app/API routes
-- ✅ Deploy `.vercel/output/static` (worker mounts correctly)
+- ✅ Deploy `.vercel/output/static` so the worker mounts correctly
 - ✅ Use environment-specific secrets and configurations
+- ✅ Use the workflow-emitted `PREVIEW_URL` for preview testing
+- ✅ Add `.spaceport/deploy-auth-preview` only when a preview branch intentionally needs shared auth redeploys
 - ✅ Test in staging before merging to main
 
 ### Don'ts
-- ❌ Deploy `.vercel/output` root (causes 404s)
+- ❌ Deploy `.vercel/output` root
 - ❌ Use `output: 'export'` in Next.js config
 - ❌ Share credentials between environments
+- ❌ Query "latest deployment in project" when validating a branch preview
 - ❌ Deploy untested changes directly to main
 
 ## 🗂️ Branch Archiving Strategy
 
 ### Archive Tags Approach
-After successful feature completion and merge, branches are archived using git tags:
+After successful feature completion and merge, branches are archived using Git tags:
 
 ```bash
 # 1. Create archive tag (preserves exact branch state)
@@ -115,27 +145,10 @@ git push origin archive/agent-12345678-feature-name
 ```
 
 ### Archive Tag Benefits
-- ✅ **Clean repository** - No cluttered feature branches
-- ✅ **Preserved history** - All work accessible via archive tags
-- ✅ **Easy reference** - `git show archive/agent-12345678-feature-name`
-- ✅ **Organized structure** - Clear separation between active and archived work
-
-### Current Archive Tags
-```bash
-# View all archive tags
-git tag -l "archive/*"
-# archive/agent-20250919184906-improve-the-custom
-# archive/agent-274
-# archive/agent-58392017-footer-feedback
-# archive/agent-73510264
-# archive/agent-80aef7e9
-# archive/agent-ba4c1671
-# archive/agent-c24d0458
-# archive/agent-setup-sop
-
-# Check out archived branch for reference
-git checkout archive/agent-58392017-footer-feedback
-```
+- ✅ **Clean repository**: no cluttered feature branches
+- ✅ **Preserved history**: all work accessible via archive tags
+- ✅ **Easy reference**: `git show archive/agent-12345678-feature-name`
+- ✅ **Organized structure**: clear separation between active and archived work
 
 ## 🔄 Rollback Strategy
 
@@ -143,31 +156,31 @@ git checkout archive/agent-58392017-footer-feedback
 ```bash
 # Revert CDK deployment
 git revert <commit-hash>
-git push origin main  # Triggers new deployment
+git push origin main
 ```
 
 ### Frontend Rollback
 ```bash
 # Revert to previous commit
 git revert <commit-hash>
-git push origin main  # Cloudflare Pages redeploys
+git push origin main
 ```
 
 ## 📊 Deployment Status
 
 ### Current Status: ✅ PRODUCTION READY
-- **Staging Environment**: Fully operational
-- **Production Environment**: All AWS infrastructure deployed successfully
-- **Environment Separation**: 100% isolated and secure
-- **Deployment Automation**: Push-to-deploy working perfectly
+- **Staging Environment**: fully operational
+- **Production Environment**: AWS and Pages deployments operational
+- **Preview Branching**: branch-local app stacks with explicit shared-auth opt-in
+- **Deployment Automation**: push-to-deploy with branch-bound preview URLs
 
 ### Success Metrics
 - **Infrastructure Deployment**: ~90 seconds
-- **Environment Isolation**: 100% complete
+- **Auth Contention Control**: shared auth deploys serialized when explicitly requested
 - **Security**: OIDC + least-privilege access
-- **Zero Downtime**: Rolling deployments with health checks
+- **Preview Validation**: current-run `PREVIEW_URL` prevents cross-branch Pages races
 
 ---
 
-**Last Updated**: August 21, 2025 - After successful production infrastructure deployment  
-**Status**: Production-ready with enterprise-grade deployment strategy
+**Last Updated**: March 28, 2026
+**Status**: Production-ready with explicit preview auth controls
