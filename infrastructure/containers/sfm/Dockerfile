@@ -1,5 +1,6 @@
-# Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay reproducible.
-ARG BASE_IMAGE=colmap/colmap:20260318.6455
+# Default to the most recent published SfM runtime in ECR so branch builds do not
+# depend on Docker Hub availability; deploy.sh can still override BASE_IMAGE.
+ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest
 FROM ${BASE_IMAGE}
 
 # Leave the vocab tree URL empty by default so COLMAP 4 can use its own
