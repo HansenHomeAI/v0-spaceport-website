@@ -18,7 +18,7 @@ echo "============================================================"
 echo "🚀 SPACEPORT COLMAP GPU SfM PROCESSING"
 echo "============================================================"
 echo "📅 Started at: $(date)"
-echo "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/vocab matching"
+echo "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching"
 echo "📍 GPS Priors: image EXIF metadata"
 echo "🎯 Output: COLMAP TXT export for 3DGS"
 echo "============================================================"
@@ -125,6 +125,9 @@ metadata = json.loads(Path("/opt/ml/processing/output/sfm_metadata.json").read_t
 print(f"⏱️ Processing time: {metadata.get('processing_time_seconds')} seconds")
 print(f"🛰️ GPS priors detected: {metadata.get('gps_priors_detected')}")
 print(f"🔗 Matchers: {', '.join(metadata.get('matchers_run', []))}")
+print(f"🧭 Match profile: {metadata.get('match_profile')}")
+print(f"➡️ Sequential matcher enabled: {metadata.get('sequential_matcher_enabled')}")
+print(f"↩️ Fallback reason: {metadata.get('fallback_reason')}")
 print(f"🎯 Vocab tree candidates: {metadata.get('vocab_tree_num_images')}")
 print(f"📌 SIFT max features: {metadata.get('sift_max_num_features')}")
 PY

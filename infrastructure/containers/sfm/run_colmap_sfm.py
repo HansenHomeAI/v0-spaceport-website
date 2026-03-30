@@ -24,6 +24,23 @@ logger = logging.getLogger(__name__)
 
 WGS84_COORDINATE_SYSTEM = 0
 INF_COVARIANCE_BLOB = struct.pack("<9d", *([float("inf")] * 9))
+MATCH_PROFILES = {
+    "P1": {
+        "spatial_neighbors": 12,
+        "spatial_distance_m": 120.0,
+        "sequential_overlap": 8,
+    },
+    "P2": {
+        "spatial_neighbors": 14,
+        "spatial_distance_m": 140.0,
+        "sequential_overlap": 8,
+    },
+    "P3": {
+        "spatial_neighbors": 16,
+        "spatial_distance_m": 160.0,
+        "sequential_overlap": 10,
+    },
+}
 
 
 @dataclass
@@ -87,12 +104,24 @@ def model_sort_key(model: ModelSummary) -> tuple[int, int, int]:
     return (model.images_registered, model.points_3d, model.cameras_registered)
 
 
+def sort_capture_records(records: Iterable[dict[str, str]]) -> List[dict[str, str]]:
+    def record_key(record: dict[str, str]) -> tuple[int, str, str]:
+        capture_time = record.get("capture_time", "")
+        file_name = record.get("file_name", "")
+        if capture_time:
+            return (0, capture_time, file_name.lower())
+        return (1, file_name.lower(), "")
+
+    return sorted(records, key=record_key)
+
+
 class ColmapPipeline:
     def __init__(self, input_dir: Path, output_dir: Path) -> None:
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
         self.work_dir = Path(tempfile.mkdtemp(prefix="colmap_sfm_"))
         self.images_dir = self.work_dir / "images"
+        self.image_list_path = self.work_dir / "image_list.txt"
         self.database_path = self.work_dir / "database.db"
         self.vocab_tree_path = Path(
             os.environ.get(
@@ -105,7 +134,16 @@ class ColmapPipeline:
         self.vocab_tree_url = os.environ.get("COLMAP_VOCAB_TREE_URL", "")
         self.use_gpu = os.environ.get("COLMAP_USE_GPU", "1") != "0"
         self.enable_spatial_matcher = os.environ.get("COLMAP_ENABLE_SPATIAL_MATCHER", "1") != "0"
+        self.enable_sequential_matcher = (
+            os.environ.get("COLMAP_ENABLE_SEQUENTIAL_MATCHER", "1") != "0"
+        )
         self.force_gps_first = os.environ.get("COLMAP_FORCE_GPS_FIRST", "1") != "0"
+        requested_match_profile = os.environ.get("COLMAP_MATCH_PROFILE", "P1").strip().upper() or "P1"
+        if requested_match_profile not in MATCH_PROFILES:
+            raise RuntimeError(
+                f"Unsupported COLMAP_MATCH_PROFILE={requested_match_profile}; expected one of {sorted(MATCH_PROFILES)}"
+            )
+        profile_defaults = MATCH_PROFILES[requested_match_profile]
         self.max_features = int(os.environ.get("COLMAP_SIFT_MAX_NUM_FEATURES", "8192"))
         self.vocab_num_images = int(os.environ.get("COLMAP_VOCAB_NUM_IMAGES", "40"))
         self.vocab_num_visual_words = int(
@@ -118,8 +156,33 @@ class ColmapPipeline:
             "COLMAP_VOCAB_BUILD_THREADS",
             os.environ.get("COLMAP_MAPPER_THREADS", "-1"),
         )
-        self.spatial_neighbors = int(os.environ.get("COLMAP_SPATIAL_MAX_NEIGHBORS", "12"))
-        self.spatial_distance_m = float(os.environ.get("COLMAP_SPATIAL_MAX_DISTANCE_METERS", "120"))
+        self.spatial_neighbors = int(
+            os.environ.get(
+                "COLMAP_SPATIAL_MAX_NEIGHBORS",
+                str(profile_defaults["spatial_neighbors"]),
+            )
+        )
+        self.spatial_distance_m = float(
+            os.environ.get(
+                "COLMAP_SPATIAL_MAX_DISTANCE_METERS",
+                str(profile_defaults["spatial_distance_m"]),
+            )
+        )
+        self.sequential_overlap = int(
+            os.environ.get(
+                "COLMAP_SEQUENTIAL_OVERLAP",
+                str(profile_defaults["sequential_overlap"]),
+            )
+        )
+        if (
+            self.enable_sequential_matcher
+            and self.spatial_neighbors == profile_defaults["spatial_neighbors"]
+            and self.spatial_distance_m == profile_defaults["spatial_distance_m"]
+            and self.sequential_overlap == profile_defaults["sequential_overlap"]
+        ):
+            self.match_profile = requested_match_profile
+        else:
+            self.match_profile = "custom"
         self.gps_min_prior_coverage = float(os.environ.get("COLMAP_GPS_MIN_PRIOR_COVERAGE", "0.95"))
         self.gps_min_registered_ratio = float(
             os.environ.get("COLMAP_GPS_MIN_REGISTERED_RATIO", "0.98")
@@ -127,16 +190,19 @@ class ColmapPipeline:
         self.mapper_threads = os.environ.get("COLMAP_MAPPER_THREADS", "-1")
         self.start_time = time.time()
         self.timings: Dict[str, float] = {}
+        self.dataset_image_count = 0
         self.gps_image_count = 0
         self.pose_priors_written_count = 0
         self.gps_prior_coverage = 0.0
         self.pose_priors_source = "none"
         self.exif_records: Dict[str, Dict[str, float | str]] = {}
+        self.capture_ordered_names: List[str] = []
         self.matchers_run: List[str] = []
         self.matcher_pair_deltas: Dict[str, int] = {}
         self.verified_pairs_total = 0
         self.vocab_tree_source = "uninitialized"
         self.fallback_triggered = False
+        self.fallback_reason = "not_needed"
         self.final_matcher_mode = "uninitialized"
         self.gps_first_attempted = False
         self.gps_first_skipped_reason = "uninitialized"
@@ -150,6 +216,7 @@ class ColmapPipeline:
             self.extract_images()
             self.exif_records = self.load_exif_records()
             self.gps_image_count = len(self.exif_records)
+            self.prepare_capture_ordered_image_list()
             self.run_feature_extraction()
             self.log_pose_prior_schema()
             self.validate_or_backfill_pose_priors()
@@ -186,6 +253,7 @@ class ColmapPipeline:
                 image_count += 1
         if image_count == 0:
             raise RuntimeError("No images were found in the SfM input")
+        self.dataset_image_count = image_count
         self.timings["extract_images_seconds"] = round(time.time() - started, 2)
         logger.info("Extracted %s images", image_count)
 
@@ -227,6 +295,56 @@ class ColmapPipeline:
             }
         logger.info("Detected GPS EXIF priors on %s images", len(exif_records))
         return exif_records
+
+    def load_capture_records(self) -> List[dict[str, str]]:
+        command = [
+            "exiftool",
+            "-j",
+            "-FileName",
+            "-DateTimeOriginal",
+            "-SubSecDateTimeOriginal",
+            "-CreateDate",
+            str(self.images_dir),
+        ]
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        records = json.loads(result.stdout or "[]")
+        capture_records: List[dict[str, str]] = []
+        for record in records:
+            file_name = record.get("FileName")
+            if not file_name:
+                continue
+            capture_records.append(
+                {
+                    "file_name": file_name,
+                    "capture_time": (
+                        record.get("SubSecDateTimeOriginal")
+                        or record.get("DateTimeOriginal")
+                        or record.get("CreateDate")
+                        or ""
+                    ),
+                }
+            )
+        return capture_records
+
+    def prepare_capture_ordered_image_list(self) -> None:
+        capture_records = sort_capture_records(self.load_capture_records())
+        if capture_records:
+            self.capture_ordered_names = [record["file_name"] for record in capture_records]
+        else:
+            self.capture_ordered_names = sorted(
+                path.name
+                for path in self.images_dir.iterdir()
+                if path.suffix.lower() in {".jpg", ".jpeg", ".png"}
+            )
+        if not self.capture_ordered_names:
+            raise RuntimeError("Unable to determine image order for COLMAP processing")
+        with open(self.image_list_path, "w", encoding="utf-8") as handle:
+            for file_name in self.capture_ordered_names:
+                handle.write(f"{file_name}\n")
+        logger.info(
+            "Prepared image list with %s entries ordered by capture time then filename",
+            len(self.capture_ordered_names),
+        )
 
     def count_verified_pairs(self) -> int:
         if not self.database_path.exists():
@@ -473,6 +591,8 @@ class ColmapPipeline:
             str(self.database_path),
             "--image_path",
             str(self.images_dir),
+            "--image_list_path",
+            str(self.image_list_path),
             "--ImageReader.single_camera",
             "1",
             "--ImageReader.camera_model",
@@ -536,6 +656,38 @@ class ColmapPipeline:
             self.matcher_pair_deltas["spatial_matcher"],
         )
 
+    def run_sequential_matcher(self) -> None:
+        started = time.time()
+        pairs_before = self.count_verified_pairs()
+        stream_command(
+            [
+                "colmap",
+                "sequential_matcher",
+                "--database_path",
+                str(self.database_path),
+                "--SiftMatching.use_gpu",
+                "1" if self.use_gpu else "0",
+                "--SiftMatching.guided_matching",
+                "1",
+                "--SequentialMatching.overlap",
+                str(self.sequential_overlap),
+                "--SequentialMatching.quadratic_overlap",
+                "1",
+                "--SequentialMatching.loop_detection",
+                "0",
+            ],
+            stage="sequential_matcher",
+        )
+        pairs_after = self.count_verified_pairs()
+        self.timings["sequential_matching_seconds"] = round(time.time() - started, 2)
+        self.matcher_pair_deltas["sequential_matcher"] = pairs_after - pairs_before
+        self.matchers_run.append("sequential_matcher")
+        self.verified_pairs_total = pairs_after
+        logger.info(
+            "Sequential matcher added %s verified image pairs",
+            self.matcher_pair_deltas["sequential_matcher"],
+        )
+
     def run_vocab_matching(self) -> None:
         started = time.time()
         pairs_before = self.count_verified_pairs()
@@ -576,6 +728,8 @@ class ColmapPipeline:
                 str(self.database_path),
                 "--image_path",
                 str(self.images_dir),
+                "--image_list_path",
+                str(self.image_list_path),
                 "--output_path",
                 str(sparse_root),
                 "--Mapper.num_threads",
@@ -641,13 +795,27 @@ class ColmapPipeline:
         self.final_matcher_mode = "vocab_only"
         return self.run_mapper(stage="mapper_vocab_only", sparse_root=self.work_dir / "sparse_vocab_only")
 
-    def run_spatial_plus_vocab_path(self) -> ModelSummary:
+    def run_spatial_sequential_plus_vocab_path(self) -> ModelSummary:
         self.run_spatial_matcher()
+        if self.enable_sequential_matcher:
+            self.run_sequential_matcher()
         self.run_vocab_matching()
-        self.final_matcher_mode = "spatial_plus_vocab"
+        self.final_matcher_mode = (
+            "spatial_sequential_plus_vocab"
+            if self.enable_sequential_matcher
+            else "spatial_plus_vocab"
+        )
         return self.run_mapper(
-            stage="mapper_spatial_plus_vocab",
-            sparse_root=self.work_dir / "sparse_spatial_plus_vocab",
+            stage=(
+                "mapper_spatial_sequential_plus_vocab"
+                if self.enable_sequential_matcher
+                else "mapper_spatial_plus_vocab"
+            ),
+            sparse_root=(
+                self.work_dir / "sparse_spatial_sequential_plus_vocab"
+                if self.enable_sequential_matcher
+                else self.work_dir / "sparse_spatial_plus_vocab"
+            ),
         )
 
     def run_matching_and_mapping(self) -> ModelSummary:
@@ -657,46 +825,78 @@ class ColmapPipeline:
                 and self.gps_image_count > 0
                 and self.gps_prior_coverage >= self.gps_min_prior_coverage
             ):
-                return self.run_spatial_plus_vocab_path()
+                return self.run_spatial_sequential_plus_vocab_path()
             return self.run_vocab_only_path()
 
         self.gps_first_attempted = True
         spatial_model: ModelSummary | None = None
         try:
             self.run_spatial_matcher()
+            if self.enable_sequential_matcher:
+                self.run_sequential_matcher()
             spatial_model = self.run_mapper(
-                stage="mapper_spatial_only",
-                sparse_root=self.work_dir / "sparse_spatial_only",
+                stage=(
+                    "mapper_spatial_sequential_only"
+                    if self.enable_sequential_matcher
+                    else "mapper_spatial_only"
+                ),
+                sparse_root=(
+                    self.work_dir / "sparse_spatial_sequential_only"
+                    if self.enable_sequential_matcher
+                    else self.work_dir / "sparse_spatial_only"
+                ),
             )
         except RuntimeError as exc:
             self.fallback_triggered = True
-            logger.warning("GPS-first spatial-only pass failed, falling back to vocab tree: %s", exc)
+            self.fallback_reason = "mapper_failed"
+            logger.warning("GPS-first first-pass mapper failed, falling back to vocab tree: %s", exc)
 
         if spatial_model is not None:
-            registered_ratio = spatial_model.images_registered / max(1, len(list(self.images_dir.iterdir())))
             logger.info(
-                "Spatial-only mapper registered %.2f%% of extracted images",
-                registered_ratio * 100.0,
+                "First-pass mapper registered %s/%s extracted images",
+                spatial_model.images_registered,
+                self.dataset_image_count,
             )
-            if registered_ratio >= self.gps_min_registered_ratio:
-                self.final_matcher_mode = "spatial_only"
+            if spatial_model.images_registered >= self.dataset_image_count:
+                self.final_matcher_mode = (
+                    "spatial_sequential_only"
+                    if self.enable_sequential_matcher
+                    else "spatial_only"
+                )
                 return spatial_model
             self.fallback_triggered = True
+            self.fallback_reason = "incomplete_registration"
             logger.info(
-                "Spatial-only registration ratio %.4f is below threshold %.4f; adding vocab-tree matches",
-                registered_ratio,
-                self.gps_min_registered_ratio,
+                "First-pass mapper registered %s/%s images; adding vocab-tree recovery",
+                spatial_model.images_registered,
+                self.dataset_image_count,
             )
 
         self.run_vocab_matching()
         fallback_model = self.run_mapper(
-            stage="mapper_spatial_plus_vocab",
-            sparse_root=self.work_dir / "sparse_spatial_plus_vocab",
+            stage=(
+                "mapper_spatial_sequential_plus_vocab"
+                if self.enable_sequential_matcher
+                else "mapper_spatial_plus_vocab"
+            ),
+            sparse_root=(
+                self.work_dir / "sparse_spatial_sequential_plus_vocab"
+                if self.enable_sequential_matcher
+                else self.work_dir / "sparse_spatial_plus_vocab"
+            ),
         )
         if spatial_model is not None and model_sort_key(spatial_model) > model_sort_key(fallback_model):
-            self.final_matcher_mode = "spatial_only_better_than_fallback"
+            self.final_matcher_mode = (
+                "spatial_sequential_only_better_than_fallback"
+                if self.enable_sequential_matcher
+                else "spatial_only_better_than_fallback"
+            )
             return spatial_model
-        self.final_matcher_mode = "spatial_plus_vocab"
+        self.final_matcher_mode = (
+            "spatial_sequential_plus_vocab"
+            if self.enable_sequential_matcher
+            else "spatial_plus_vocab"
+        )
         return fallback_model
 
     def export_output(self, best_model: ModelSummary) -> None:
@@ -717,6 +917,7 @@ class ColmapPipeline:
             "pipeline": "colmap_gpu_adaptive_matching",
             "processing_time_seconds": round(time.time() - self.start_time, 2),
             "timings": self.timings,
+            "dataset_image_count": self.dataset_image_count,
             "cameras_registered": best_model.cameras_registered,
             "images_registered": best_model.images_registered,
             "points_3d": best_model.points_3d,
@@ -735,9 +936,13 @@ class ColmapPipeline:
             "matcher_pair_deltas": self.matcher_pair_deltas,
             "verified_pairs_total": self.verified_pairs_total,
             "spatial_matcher_enabled": self.enable_spatial_matcher,
+            "sequential_matcher_enabled": self.enable_sequential_matcher,
+            "sequential_pair_delta": self.matcher_pair_deltas.get("sequential_matcher", 0),
+            "match_profile": self.match_profile,
             "gps_first_attempted": self.gps_first_attempted,
             "gps_first_skipped_reason": self.gps_first_skipped_reason,
             "fallback_triggered": self.fallback_triggered,
+            "fallback_reason": self.fallback_reason,
             "final_matcher_mode": self.final_matcher_mode,
             "model_summaries": self.model_summaries,
             "vocab_tree_path": str(self.active_vocab_tree_path or self.vocab_tree_path),

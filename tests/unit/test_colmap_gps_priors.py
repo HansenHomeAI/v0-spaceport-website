@@ -1,10 +1,12 @@
 import importlib.util
+import os
 import sqlite3
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +19,40 @@ SPEC.loader.exec_module(run_colmap_sfm)
 
 
 class ColmapGpsPriorTests(unittest.TestCase):
+    def test_match_profile_picks_profile_defaults(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_MATCH_PROFILE": "P2",
+                "COLMAP_ENABLE_SEQUENTIAL_MATCHER": "1",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.match_profile, "P2")
+            self.assertEqual(pipeline.spatial_neighbors, 14)
+            self.assertEqual(pipeline.spatial_distance_m, 140.0)
+            self.assertEqual(pipeline.sequential_overlap, 8)
+
+    def test_match_profile_marks_custom_when_overridden(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_MATCH_PROFILE": "P1",
+                "COLMAP_SPATIAL_MAX_NEIGHBORS": "16",
+                "COLMAP_ENABLE_SEQUENTIAL_MATCHER": "0",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.match_profile, "custom")
+            self.assertEqual(pipeline.spatial_neighbors, 16)
+            self.assertFalse(pipeline.enable_sequential_matcher)
+
     def test_get_pose_prior_image_names_uses_schema_tolerant_join(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -188,6 +224,94 @@ class ColmapGpsPriorTests(unittest.TestCase):
             pipeline.gps_prior_coverage = 0.95
             self.assertTrue(pipeline.should_attempt_gps_first())
             self.assertEqual(pipeline.gps_first_skipped_reason, "eligible")
+
+    def test_gps_first_uses_sequential_first_pass_when_registration_is_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 3
+            pipeline.gps_image_count = 3
+            pipeline.gps_prior_coverage = 1.0
+            pipeline.enable_sequential_matcher = True
+
+            calls: list[str] = []
+
+            def record_call(name: str):
+                def inner(*args, **kwargs):
+                    calls.append(name)
+                    return None
+
+                return inner
+
+            pipeline.run_spatial_matcher = record_call("spatial_matcher")
+            pipeline.run_sequential_matcher = record_call("sequential_matcher")
+            pipeline.run_vocab_matching = record_call("vocab_tree_matcher")
+            pipeline.run_mapper = mock.Mock(
+                return_value=run_colmap_sfm.ModelSummary(
+                    stage="mapper_spatial_sequential_only",
+                    text_dir=root,
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=2500,
+                )
+            )
+
+            best_model = pipeline.run_matching_and_mapping()
+
+            self.assertEqual(best_model.images_registered, 3)
+            self.assertEqual(calls, ["spatial_matcher", "sequential_matcher"])
+            self.assertEqual(pipeline.final_matcher_mode, "spatial_sequential_only")
+            self.assertFalse(pipeline.fallback_triggered)
+            self.assertEqual(pipeline.fallback_reason, "not_needed")
+
+    def test_gps_first_falls_back_once_when_registration_is_incomplete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 4
+            pipeline.gps_image_count = 4
+            pipeline.gps_prior_coverage = 1.0
+            pipeline.enable_sequential_matcher = True
+
+            calls: list[str] = []
+
+            def record_call(name: str):
+                def inner(*args, **kwargs):
+                    calls.append(name)
+                    return None
+
+                return inner
+
+            spatial_model = run_colmap_sfm.ModelSummary(
+                stage="mapper_spatial_sequential_only",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=3000,
+            )
+            fallback_model = run_colmap_sfm.ModelSummary(
+                stage="mapper_spatial_sequential_plus_vocab",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=3400,
+            )
+
+            pipeline.run_spatial_matcher = record_call("spatial_matcher")
+            pipeline.run_sequential_matcher = record_call("sequential_matcher")
+            pipeline.run_vocab_matching = record_call("vocab_tree_matcher")
+            pipeline.run_mapper = mock.Mock(side_effect=[spatial_model, fallback_model])
+
+            best_model = pipeline.run_matching_and_mapping()
+
+            self.assertEqual(best_model.images_registered, 4)
+            self.assertEqual(
+                calls,
+                ["spatial_matcher", "sequential_matcher", "vocab_tree_matcher"],
+            )
+            self.assertTrue(pipeline.fallback_triggered)
+            self.assertEqual(pipeline.fallback_reason, "incomplete_registration")
+            self.assertEqual(pipeline.final_matcher_mode, "spatial_sequential_plus_vocab")
 
 
 if __name__ == "__main__":

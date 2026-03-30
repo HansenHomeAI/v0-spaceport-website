@@ -20,3 +20,4 @@
 2026-03-30T13:07:44Z rerun preview auth opt-in with serialized non-production auth API endpoint migrations
 2026-03-30T13:49:30Z trigger preview baseline for sequential GPS SfM optimization branch
 2026-03-30T14:11:40Z push adaptive GPS-first COLMAP matching and sequential SfM benchmark tooling
+2026-03-30T19:09:00Z push GPS plus sequential first-pass recovery tuning for large-dataset SfM validation
