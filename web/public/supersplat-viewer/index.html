@@ -13,16 +13,37 @@
                 return img;
             };
 
+            const resolveBundleSkyboxUrl = async (contentUrl, explicitSkyboxUrl) => {
+                if (explicitSkyboxUrl) {
+                    return explicitSkyboxUrl;
+                }
+                try {
+                    const content = new URL(contentUrl, location.href);
+                    const bundleUrl = new URL('spaceport_bundle.json', content);
+                    const response = await fetch(bundleUrl.toString());
+                    if (!response.ok) {
+                        return null;
+                    }
+                    const bundle = await response.json();
+                    const skyboxPath = bundle?.skybox?.path;
+                    return typeof skyboxPath === 'string' && skyboxPath.length
+                        ? new URL(skyboxPath, bundleUrl).toString()
+                        : null;
+                } catch {
+                    return null;
+                }
+            };
+
             const url = new URL(location.href);
 
             const posterUrl = url.searchParams.get('poster');
-            const skyboxUrl = url.searchParams.get('skybox');
+            const explicitSkyboxUrl = url.searchParams.get('skybox');
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './scene.compressed.ply';
 
-            const sseConfig = {
+            const sseConfigPromise = (async () => ({
                 poster: posterUrl && createImage(posterUrl),
-                skyboxUrl,
+                skyboxUrl: await resolveBundleSkyboxUrl(contentUrl, explicitSkyboxUrl),
                 contentUrl,
                 contents: fetch(contentUrl),
                 noui: url.searchParams.has('noui'),
@@ -30,10 +51,10 @@
                 ministats: url.searchParams.has('ministats'),
                 unified: url.searchParams.has('unified'),
                 aa: url.searchParams.has('aa')
-            };
+            }))();
 
             window.sse = {
-                config: sseConfig,
+                configReady: sseConfigPromise,
                 settings: fetch(settingsUrl).then(response => response.json())
             };
         </script>

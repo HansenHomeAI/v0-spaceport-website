@@ -47,6 +47,7 @@ type SogsMigratedViewerProps = {
   useBundleProxy?: boolean;
   viewerBase?: string;
   viewerSettingsPath?: string;
+  viewerSrcDoc?: string;
 };
 
 function postToWindow(win: Window | null | undefined, payload: object) {
@@ -62,6 +63,7 @@ export default function SogsMigratedViewer({
   useBundleProxy = true,
   viewerBase = DEFAULT_VIEWER_BASE,
   viewerSettingsPath = DEFAULT_VIEWER_SETTINGS_PATH,
+  viewerSrcDoc,
 }: SogsMigratedViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -476,10 +478,13 @@ export default function SogsMigratedViewer({
           <iframe
             key={iframeKey}
             ref={iframeRef}
-            src={viewerSrc}
+            src={viewerSrcDoc ? void 0 : viewerSrc}
+            srcDoc={viewerSrcDoc}
             title="sogs-migrated-viewer"
             className="sogs-migrated-iframe"
             allow="xr-spatial-tracking"
+            data-sogs-content-url={activeUrl}
+            data-sogs-settings-path={viewerSettingsPath}
           />
         ) : (
           <div className="sogs-migrated-placeholder" aria-hidden />

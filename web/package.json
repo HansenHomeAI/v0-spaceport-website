@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build:sogs-migrated-onefile": "node scripts/build-sogs-migrated-onefile.mjs",
     "build:sogs-migrated-standalone": "node scripts/build-sogs-migrated-standalone.mjs",
     "predev": "node scripts/copy-cesium-assets.cjs && node scripts/build-sogs-migrated-standalone.mjs",
     "dev": "NODE_OPTIONS='--max-http-header-size=32768' next dev",

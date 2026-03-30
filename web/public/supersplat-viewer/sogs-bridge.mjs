@@ -224,8 +224,9 @@ function syncSogsAxesGuides(app) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const { config, settings } = window.sse;
-  const { poster } = config;
+  const { config, configReady, settings } = window.sse;
+  const resolvedConfig = await Promise.resolve(configReady ?? config);
+  const { poster } = resolvedConfig;
 
   if (poster) {
     const element = document.getElementById("poster");
@@ -242,7 +243,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const app = appElement.app;
   const camera = cameraElement.entity;
-  const viewer = await main(app, camera, settingsJson, config);
+  const viewer = await main(app, camera, settingsJson, resolvedConfig);
 
   window.__sogsCtx = { viewer, app, camera };
 
