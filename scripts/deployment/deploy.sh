@@ -95,7 +95,6 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
-  local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -112,10 +111,27 @@ deploy_container() {
   log "Pulling existing image and cache for layer reuse..."
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
-  docker pull "${base_image}" || log "No base image yet for ${container_name}"
+  local base_image_present=0
+  if docker pull "${base_image}"; then
+    base_image_present=1
+  else
+    log "No base image yet for ${container_name}"
+  fi
   
-  # Build base image if missing
-  if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
+  local base_image_needs_rebuild=0
+  if [[ "${base_image_present}" -eq 0 ]]; then
+    base_image_needs_rebuild=1
+  elif [[ "${container_name}" = "sfm" ]]; then
+    if docker run --rm --entrypoint /bin/sh "${base_image}" -lc 'command -v colmap >/dev/null 2>&1'; then
+      log "Cached base image for ${container_name} already includes COLMAP."
+    else
+      log "Cached base image for ${container_name} is missing COLMAP; rebuilding base image."
+      base_image_needs_rebuild=1
+    fi
+  fi
+
+  # Build base image if missing or invalid for the requested container.
+  if [[ "${base_image_needs_rebuild}" -eq 1 ]]; then
     local base_file="${container_dir}/Dockerfile.base"
     if [[ -f "$base_file" ]]; then
       log "Building base image for ${container_name}..."
