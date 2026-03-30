@@ -15,6 +15,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    outputs:
+      preview_url: ${{ steps.resolve_urls.outputs.preview_url }}
+      alias_url: ${{ steps.resolve_urls.outputs.alias_url }}
+      hash_url: ${{ steps.resolve_urls.outputs.hash_url }}
     permissions:
       actions: read
       id-token: write
@@ -257,8 +261,8 @@ jobs:
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
             echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -279,8 +283,8 @@ jobs:
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
             echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
+            echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -368,60 +372,79 @@ jobs:
             --data @payload.json | cat
 
       - name: Deploy to Cloudflare Pages
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          BRANCH="${{ github.ref_name }}"
-          # Deploy the static subdir so _worker.js sits at the upload root
-          npx wrangler pages deploy .vercel/output/static \
-            --project-name "$CF_PAGES_PROJECT" \
-            --branch "$BRANCH"
-
-      - name: Resolve latest deployment URLs (preview alias + hash URL)
-        id: resolve_urls
+        id: deploy_pages
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -euo pipefail
           BRANCH="${{ github.ref_name }}"
-          # Get most recent deployment for the selected project (includes preview)
-          JSON=$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")
-          HASH_URL=$(echo "$JSON" | jq -r '.result[0].url')
-          DEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')
-          # Fetch aliases for that deployment (branch alias if any)
-          DETAIL=$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")
-          ALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')
-          echo "hash_url=$HASH_URL" >> $GITHUB_OUTPUT
-          echo "alias_url=$ALIAS" >> $GITHUB_OUTPUT
-          echo "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"
+          # Deploy the static subdir so _worker.js sits at the upload root
+          npx wrangler pages deploy .vercel/output/static \
+            --project-name "$CF_PAGES_PROJECT" \
+            --branch "$BRANCH" \
+            --commit-hash "${GITHUB_SHA}" | tee /tmp/wrangler-pages-deploy.log
 
-      - name: Verify preview alias and hash URL with retries
+      - name: Resolve deployment URLs from current deploy output
+        id: resolve_urls
+        run: |
+          set -euo pipefail
+          python3 ../scripts/parse_pages_deploy_output.py \
+            --log /tmp/wrangler-pages-deploy.log \
+            --format shell > /tmp/pages-deploy-urls.env
+          set -a
+          . /tmp/pages-deploy-urls.env
+          set +a
+          cat /tmp/pages-deploy-urls.env
+          while IFS='=' read -r key value; do
+            echo "${key,,}=${value}" >> "$GITHUB_OUTPUT"
+            echo "${key}=${value}" >> "$GITHUB_ENV"
+          done < /tmp/pages-deploy-urls.env
+          echo "PREVIEW_URL=${PREVIEW_URL}"
+          {
+            echo "### Pages preview URLs"
+            echo ""
+            echo "- PREVIEW_URL=${PREVIEW_URL}"
+            echo "- ALIAS_URL=${ALIAS_URL:-<none>}"
+            echo "- HASH_URL=${HASH_URL}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify preview URL and hash URL with retries
         env:
+          PREVIEW_URL: ${{ steps.resolve_urls.outputs.preview_url }}
           HASH_URL: ${{ steps.resolve_urls.outputs.hash_url }}
           ALIAS_URL: ${{ steps.resolve_urls.outputs.alias_url }}
         run: |
-          set -e
-          urls=""
-          if [ -n "$ALIAS_URL" ]; then urls="$urls $ALIAS_URL"; fi
-          if [ -n "$HASH_URL" ]; then urls="$urls $HASH_URL"; fi
-          echo "Checking URLs: $urls"
-          for URL in $urls; do
-            echo "Probing $URL ..."
+          set -euo pipefail
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "PREVIEW_URL was not resolved from the current deploy output" >&2
+            exit 1
+          fi
+
+          probe_url() {
+            local url="$1"
+            local required="$2"
+            echo "Probing $url ..."
             for i in $(seq 1 12); do
               echo "Attempt $i"
-              if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
+              if curl -fsS "$url/health.txt" >/dev/null; then
+                echo "OK $url/health.txt"
+                return 0
+              fi
               sleep 5
               if [ $i -eq 12 ]; then
-                if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then
-                  echo "Timeout waiting for hash URL $URL; continuing"
-                  break
+                if [ "$required" = "false" ]; then
+                  echo "Timeout waiting for diagnostic URL $url; continuing"
+                  return 0
                 fi
-                echo "Timeout waiting for $URL"
-                exit 1
+                echo "Timeout waiting for $url"
+                return 1
               fi
             done
-          done
+          }
+
+          echo "PREVIEW_URL=$PREVIEW_URL"
+          probe_url "$PREVIEW_URL" true
+          if [ -n "$HASH_URL" ] && [ "$HASH_URL" != "$PREVIEW_URL" ]; then
+            probe_url "$HASH_URL" false
+          fi

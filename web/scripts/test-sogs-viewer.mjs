@@ -1,3 +1,15 @@
+/**
+ * E2E checks for /sogs-viewer: auto-load, manual reload, ?url= override, site chrome elsewhere.
+ *
+ * Usage (from repo root or web/):
+ *   cd web && SOGS_VIEWER_URL=http://127.0.0.1:3001 node scripts/test-sogs-viewer.mjs
+ *
+ * Env:
+ *   SOGS_VIEWER_URL   — base URL (default: Cloudflare preview in repo)
+ *   SOGS_BUNDLE_URL   — HTTPS meta.json or bundle folder URL
+ *   SOGS_SCENARIOS    — comma list: chromium-desktop, webkit-mobile
+ */
+
 import { chromium, webkit } from "playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -12,7 +24,7 @@ const DEFAULT_PREVIEW = "https://agent-48291037-sogs-viewer.v0-spaceport-website
 const DEFAULT_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 
-const previewUrl = process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW;
+const previewUrl = (process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW).replace(/\/$/, "");
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
 
 const scenarios = [
@@ -32,7 +44,9 @@ const scenarios = [
   },
 ];
 const requestedScenarios = process.env.SOGS_SCENARIOS
-  ? process.env.SOGS_SCENARIOS.split(",").map((s) => s.trim()).filter(Boolean)
+  ? process.env.SOGS_SCENARIOS.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
   : null;
 const activeScenarios = requestedScenarios?.length
   ? scenarios.filter((scenario) => requestedScenarios.includes(scenario.name))
@@ -44,10 +58,16 @@ if (!activeScenarios.length) {
 
 const inputSelector = "#sogs-url-input";
 const submitSelector = 'button[type="submit"]';
-const iframeSelector = 'iframe[title="SuperSplat Viewer"]';
+const iframeSelector = 'iframe[title="sogs-viewer"]';
 
 async function ensureLogsDir() {
   await fs.mkdir(logsDir, { recursive: true });
+}
+
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
 }
 
 async function runScenario({ launcher, name, options }) {
@@ -64,33 +84,61 @@ async function runScenario({ launcher, name, options }) {
   const consolePath = path.join(logsDir, `sogs-viewer-${name}-console.log`);
 
   try {
+    // --- Standalone page: no site header/footer ---
     await page.goto(`${previewUrl}/sogs-viewer`, { waitUntil: "domcontentloaded", timeout: 120000 });
     await page.waitForSelector(inputSelector, { timeout: 15000 });
-    await page.waitForFunction(
-      () => {
-        const input = document.querySelector("#sogs-url-input");
-        return input && !input.hasAttribute("disabled");
-      },
-      null,
-      { timeout: 180000 }
-    );
-    await page.fill(inputSelector, bundleUrl);
+    assert((await page.locator("header").count()) === 0, "sogs-viewer should not render main site <header>");
+    assert((await page.getByRole("link", { name: "Spaceport Home" }).count()) === 0, "no Spaceport Home nav link on standalone viewer");
+
+    // Prefilled default bundle + auto-load on mount
+    await expectInputHasBundle(page);
+    await page.waitForSelector(iframeSelector, { timeout: 60000 });
+    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+
+    const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
+    assert(!!splatFrame, "supersplat iframe frame should exist");
+    const xzReady = await splatFrame.evaluate(() => window.__sogsSplatXzDragReady === true);
+    assert(xzReady, "sogs-bridge should set __sogsSplatXzDragReady on the viewer canvas");
+
+    // Manual reload still works
     await page.click(submitSelector);
-    await page.waitForSelector(iframeSelector, { timeout: 15000 });
-    await page.waitForSelector('text=Viewer ready', { timeout: 360000 });
-    await page.waitForSelector('text=SOGS bundle loaded in the embedded viewer.', { timeout: 360000 });
+    await page.getByText(/Loading bundle/).waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+
+    // ?url= override (encoded)
+    const encoded = encodeURIComponent(bundleUrl);
+    await page.goto(`${previewUrl}/sogs-viewer?url=${encoded}`, { waitUntil: "domcontentloaded", timeout: 60000 });
+    await page.waitForSelector(iframeSelector, { timeout: 60000 });
+    await expectInputHasBundle(page);
+    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+
+    // Non-HTTP URL is rejected — wait for auto-load to finish first or the mount effect overwrites the field
+    await page.goto(`${previewUrl}/sogs-viewer`, { waitUntil: "domcontentloaded", timeout: 60000 });
+    await page.waitForSelector(iframeSelector, { timeout: 120000 });
+    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+    await page.fill(inputSelector, "ftp://example.com/bundle/");
+    await page.click(submitSelector);
+    await page.getByText(/Enter a valid HTTPS URL/).waitFor({ state: "visible", timeout: 30000 });
+
+    // Main site still has chrome when leaving viewer
+    await page.goto(`${previewUrl}/landing`, { waitUntil: "domcontentloaded", timeout: 60000 });
+    await page.getByRole("link", { name: "Spaceport Home" }).waitFor({ state: "visible", timeout: 15000 });
 
     await page.screenshot({ path: screenshotPath, fullPage: true });
     await fs.writeFile(consolePath, consoleBuffer.join("\n"), "utf8");
     return { name, screenshotPath, consolePath };
   } catch (error) {
-    // capture failure state
     await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
     await fs.writeFile(consolePath, consoleBuffer.join("\n"), "utf8").catch(() => {});
     throw error;
   } finally {
     await browser.close();
   }
+}
+
+async function expectInputHasBundle(page) {
+  const val = await page.inputValue(inputSelector);
+  assert(val.includes("spaceport-ml-processing.s3.amazonaws.com"), "expected prefilled S3 test bundle URL");
 }
 
 (async () => {

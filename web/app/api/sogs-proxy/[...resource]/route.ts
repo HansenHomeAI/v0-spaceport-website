@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { AwsClient } from "aws4fetch";
 
 export const runtime = "edge";
 
@@ -6,6 +7,33 @@ const ALLOWED_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
 ]);
+
+const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
+
+/** Map global S3 hostname to regional (SigV4 + SSE-KMS GET needs a signed request). */
+function toRegionalS3HttpsUrl(url: URL): URL {
+  const globalMatch = /^([^.]+)\.s3\.amazonaws\.com$/i.exec(url.host);
+  if (globalMatch) {
+    const bucket = globalMatch[1];
+    return new URL(`https://${bucket}.s3.${S3_REGION}.amazonaws.com${url.pathname}${url.search}`);
+  }
+  return url;
+}
+
+function awsCredentialsAvailable(): boolean {
+  return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+}
+
+async function fetchS3Signed(url: URL): Promise<Response> {
+  const regional = toRegionalS3HttpsUrl(url);
+  const client = new AwsClient({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
+    region: S3_REGION,
+  });
+  return client.fetch(regional.toString());
+}
 
 const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   if (!segments.length) {
@@ -27,7 +55,7 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
       return null;
     }
     return url;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -38,11 +66,23 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }
 
-  const upstreamResponse = await fetch(upstreamUrl, {
+  let upstreamResponse = await fetch(upstreamUrl, {
     headers: {
-      "Accept": request.headers.get("accept") ?? "*/*",
+      Accept: request.headers.get("accept") ?? "*/*",
     },
   });
+
+  // SSE-S3 (AES256): anonymous GET works. SSE-KMS: anonymous GET returns 400; use SigV4 when creds exist.
+  if (
+    (upstreamResponse.status === 400 || upstreamResponse.status === 403) &&
+    awsCredentialsAvailable()
+  ) {
+    try {
+      upstreamResponse = await fetchS3Signed(upstreamUrl);
+    } catch {
+      /* keep original response */
+    }
+  }
 
   const headers = new Headers(upstreamResponse.headers);
   headers.set("Access-Control-Allow-Origin", "*");
