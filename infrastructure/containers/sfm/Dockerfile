@@ -1,6 +1,5 @@
 # Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay reproducible.
-ARG BASE_IMAGE=colmap/colmap:20260318.6455
-FROM ${BASE_IMAGE}
+FROM colmap/colmap:20260318.6455
 
 # Leave the vocab tree URL empty by default so COLMAP 4 can use its own
 # FAISS-compatible runtime tree path; the runtime script still accepts an
