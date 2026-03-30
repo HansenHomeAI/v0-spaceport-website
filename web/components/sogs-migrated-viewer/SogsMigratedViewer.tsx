@@ -11,7 +11,6 @@ import {
   CANYON_VISTA_HOLES,
   CANYON_VISTA_INTRO,
   CANYON_VISTA_ORBIT,
-  CANYON_VISTA_SCENE_ORIGIN,
 } from "../../lib/canyon-vista/canyonVistaConfig";
 import {
   computeNorthFacingPosition,
@@ -206,6 +205,22 @@ export default function SogsMigratedViewer() {
         setViewerState("ready");
       }
 
+      if (event.data?.type === "sogs:userInteraction" && event.source === iframeRef.current?.contentWindow) {
+        if (!pathPlayingRef.current && !autoRotateRef.current) {
+          return;
+        }
+        pathStateRef.current.playing = false;
+        pathPlayingRef.current = false;
+        setPathPlaying(false);
+        setAutoRotate(false);
+        try {
+          (event.source as Window).postMessage({ type: "sogs:cameraMode", mode: "free" }, "*");
+        } catch {
+          /* ignore */
+        }
+        lastScriptedRef.current = false;
+      }
+
       if (event.data?.type === "sogs:cameraPose" && event.source === iframeRef.current?.contentWindow) {
         if (pathPlayingRef.current || autoRotateRef.current) {
           return;
@@ -344,26 +359,6 @@ export default function SogsMigratedViewer() {
     }
   }, [goToAnimationStart, onFaceNorth]);
 
-  const onFocusSceneCenter = useCallback(() => {
-    const p = poseRef.current;
-    const win = iframeRef.current?.contentWindow;
-    if (!p || !win) return;
-    const t = CANYON_VISTA_SCENE_ORIGIN;
-    postToWindow(win, { type: "sogs:cameraMode", mode: "scripted" });
-    postToWindow(win, {
-      type: "sogs:cameraLookAt",
-      position: [p.position.x, p.position.y, p.position.z],
-      target: [t.x, t.y, t.z],
-      fov: p.fov,
-    });
-    poseRef.current = {
-      position: { ...p.position },
-      target: { x: t.x, y: t.y, z: t.z },
-      fov: p.fov,
-    };
-    window.setTimeout(() => postToWindow(iframeRef.current?.contentWindow, { type: "sogs:cameraMode", mode: "free" }), 80);
-  }, []);
-
   const onAddFromCurrentView = useCallback(() => {
     const p = poseRef.current;
     if (!p) return;
@@ -378,6 +373,7 @@ export default function SogsMigratedViewer() {
   const onSeekCheckpoint = useCallback(
     (index: number) => {
       pathStateRef.current.playing = false;
+      pathPlayingRef.current = false;
       setPathPlaying(false);
       snapCameraToCheckpointKey(pathStateRef.current, index, outPos.current, outTarget.current);
       const win = iframeRef.current?.contentWindow;
@@ -565,31 +561,6 @@ export default function SogsMigratedViewer() {
 
       {/* Canyon-Vista: bottom-left glass menu */}
       <div className="menu-container" id="menuContainer">
-        <button
-          type="button"
-          className="menu-button"
-          data-testid="focus-scene-center"
-          aria-label="Focus scene"
-          disabled={viewerState !== "ready"}
-          onClick={onFocusSceneCenter}
-        >
-          <svg
-            className="sogs-focus-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <circle cx="12" cy="12" r="3" />
-            <line x1="12" y1="2" x2="12" y2="5" />
-            <line x1="12" y1="19" x2="12" y2="22" />
-            <line x1="2" y1="12" x2="5" y2="12" />
-            <line x1="19" y1="12" x2="22" y2="12" />
-          </svg>
-        </button>
         <CanyonDetailsMenuButton
           disabled={viewerState !== "ready"}
           open={detailsOpen}

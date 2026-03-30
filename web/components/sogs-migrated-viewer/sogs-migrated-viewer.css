@@ -126,19 +126,13 @@
   cursor: not-allowed;
 }
 
-.menu-button img,
-.menu-button .sogs-focus-icon {
+.menu-button img {
   width: 21px;
   height: 21px;
   position: relative;
   z-index: 1;
   pointer-events: none;
   flex-shrink: 0;
-}
-
-.menu-button .sogs-focus-icon {
-  color: #333;
-  stroke: currentColor;
 }
 
 @media (hover: hover) {

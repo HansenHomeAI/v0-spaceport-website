@@ -160,8 +160,8 @@ function summarizeRenderedPixels(buffer) {
     timeout: 120000,
   });
   await page.waitForFunction(() => {
-    const button = document.querySelector('[data-testid="focus-scene-center"]');
-    return button instanceof HTMLButtonElement && !button.disabled;
+    const btn = document.querySelector('[data-testid="path-editor-toggle"]');
+    return btn instanceof HTMLButtonElement && !btn.disabled;
   }, null, { timeout: 120000 });
   await splatFrame.waitForFunction(() => {
     const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
@@ -184,7 +184,7 @@ function summarizeRenderedPixels(buffer) {
   );
 
   await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("focus-scene-center").waitFor({ state: "visible", timeout: 10000 });
+  await page.locator("#detailsButton").waitFor({ state: "visible", timeout: 10000 });
   await page.getByTestId("path-editor-toggle").click();
   await page.waitForSelector('[data-testid="animation-path-panel"].active', { timeout: 10000 });
   await page.waitForSelector('[data-testid="animation-path-checkpoints"] .animation-checkpoint-item', {

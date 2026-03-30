@@ -40,3 +40,4 @@
 2026-03-26 sogs-migrated-viewer UI parity with Canyon-Vista (glass menus, editor toggles, path panel)
 2026-03-28 sogs-migrated-viewer black viewport fix + render-verifying smoke test
 2026-03-30 sogs-migrated-viewer: Canyon-Vista details panel, tapdot photo modal, intro reveal + auto path
+2026-03-30 sogs-migrated-viewer: remove focus menu button; stop tour on iframe interaction (sogs:userInteraction)
