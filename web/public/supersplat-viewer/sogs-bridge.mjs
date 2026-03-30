@@ -139,6 +139,9 @@ function setupCameraManagerBridge(cameraManager) {
     prevScripted = false;
     let focusBeforeClamp = null;
     if (leftScripted) {
+      if (typeof cameraManager.syncOrbitFromCurrentCamera === "function") {
+        cameraManager.syncOrbitFromCurrentCamera();
+      }
       const pose = window.__sogsCameraPose;
       const focusOrbit = getFocusPoint(cam);
       focusBeforeClamp = { x: focusOrbit.x, y: focusOrbit.y, z: focusOrbit.z };
@@ -187,11 +190,12 @@ function setupCameraManagerBridge(cameraManager) {
           location: "sogs-bridge.mjs:setupCameraManagerBridge:after_origUpdate",
           message: "after_origUpdate_before_clamp",
           hypothesisId: "H1",
-          runId: "pre1",
+          runId: "post-fix",
           data: {
             pos: [cam.position.x, cam.position.y, cam.position.z],
             distance: cam.distance,
             angles: [cam.angles.x, cam.angles.y, cam.angles.z],
+            orbitSynced: typeof cameraManager.syncOrbitFromCurrentCamera === "function",
           },
           timestamp: Date.now(),
         }),

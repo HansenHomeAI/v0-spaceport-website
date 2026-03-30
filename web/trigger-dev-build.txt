@@ -41,3 +41,4 @@
 2026-03-28 sogs-migrated-viewer black viewport fix + render-verifying smoke test
 2026-03-30 sogs-migrated-viewer: Canyon-Vista details panel, tapdot photo modal, intro reveal + auto path
 2026-03-30 sogs-migrated-viewer: remove focus menu button; stop tour on iframe interaction (sogs:userInteraction)
+2026-03-30 supersplat: sync orbit controller after scripted camera (fix snap on tour exit)

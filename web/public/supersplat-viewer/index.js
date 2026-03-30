@@ -101122,6 +101122,10 @@ class CameraManager {
             tmpCamera.look(new Vec3(initial.position), new Vec3(initial.target));
             controllers.orbit.goto(tmpCamera);
         });
+        /** Spaceport SOGS: after scripted `camera.look()` frames, orbit internal pose is stale; call before resuming `update`. */
+        this.syncOrbitFromCurrentCamera = () => {
+            controllers.orbit.goto(this.camera);
+        };
     }
 }
 
