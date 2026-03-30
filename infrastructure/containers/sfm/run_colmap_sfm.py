@@ -151,6 +151,7 @@ class ColmapPipeline:
             self.exif_records = self.load_exif_records()
             self.gps_image_count = len(self.exif_records)
             self.run_feature_extraction()
+            self.log_pose_prior_schema()
             self.validate_or_backfill_pose_priors()
             best_model = self.run_matching_and_mapping()
             self.export_output(best_model)
@@ -256,6 +257,21 @@ class ColmapPipeline:
 
     def supports_pose_prior_image_backfill(self) -> bool:
         return "image_id" in self.pose_priors_columns()
+
+    def pose_prior_schema_variant(self) -> str:
+        columns = self.pose_priors_columns()
+        if "image_id" in columns:
+            return "image_id"
+        if "pose_prior_id" in columns:
+            return "pose_prior_id"
+        return "unknown"
+
+    def log_pose_prior_schema(self) -> None:
+        logger.info(
+            "COLMAP pose_priors schema variant=%s columns=%s",
+            self.pose_prior_schema_variant(),
+            sorted(self.pose_priors_columns()),
+        )
 
     def get_pose_prior_image_names(self) -> set[str]:
         columns = self.pose_priors_columns()

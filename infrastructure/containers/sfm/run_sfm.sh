@@ -26,6 +26,12 @@ echo "============================================================"
 echo "🔍 Verifying environment..."
 python3 --version || error_exit "Python 3 not available"
 colmap help >/dev/null 2>&1 || error_exit "COLMAP not available"
+COLMAP_VERSION=$(colmap version 2>/dev/null || true)
+if [ -n "$COLMAP_VERSION" ]; then
+    echo "📦 COLMAP version: $COLMAP_VERSION"
+else
+    echo "📦 COLMAP version: unavailable via 'colmap version'"
+fi
 exiftool -ver >/dev/null 2>&1 || error_exit "exiftool not available"
 if command -v nvidia-smi >/dev/null 2>&1; then
     nvidia-smi || true
