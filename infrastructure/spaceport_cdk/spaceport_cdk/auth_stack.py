@@ -17,7 +17,21 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import boto3
+from .api_gateway_config import (
+    resolve_auth_api_endpoint_type,
+    should_serialize_auth_api_updates,
+)
 from .branch_utils import build_scoped_name
+
+
+def build_auth_api_kwargs(deployment_class: str) -> dict:
+    api_kwargs = {}
+    endpoint_type = resolve_auth_api_endpoint_type(deployment_class)
+    if endpoint_type == "REGIONAL":
+        # Shared staging auth is reused by development and explicit preview opt-in branches.
+        # Keeping non-production auth APIs regional avoids exhausting the account EDGE API quota.
+        api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+    return api_kwargs
 
 
 class AuthStack(Stack):
@@ -58,6 +72,7 @@ class AuthStack(Stack):
 
         CfnOutput(self, "CognitoUserPoolId", value=user_pool.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
+        api_kwargs = build_auth_api_kwargs(deployment_class)
 
         # Import existing Lambda functions to avoid conflicts
 
@@ -81,6 +96,7 @@ class AuthStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
             ),
+            **api_kwargs,
         )
 
         invite_res = invite_api.root.add_resource("invite")
@@ -205,6 +221,7 @@ class AuthStack(Stack):
                     user=True,
                 ),
             ),
+            **api_kwargs,
         )
         # Create Cognito authorizer for projects API
         projects_authorizer = apigw.CognitoUserPoolsAuthorizer(
@@ -322,6 +339,7 @@ class AuthStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
             ),
+            **api_kwargs,
         )
 
         explore_resource = explore_api.root.add_resource("explore")
@@ -443,6 +461,7 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add subscription endpoints
@@ -626,6 +645,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add beta access admin endpoints
@@ -774,6 +794,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         model_delivery_authorizer = apigw.CognitoUserPoolsAuthorizer(
@@ -949,6 +970,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add password reset endpoint
@@ -970,6 +992,21 @@ class AuthStack(Stack):
         self.password_reset_lambda = password_reset_lambda
         self.password_reset_api = password_reset_api
         self.password_reset_codes_table = password_reset_codes_table
+
+        if should_serialize_auth_api_updates(deployment_class):
+            # API Gateway only allows one endpoint-type migration at a time for these shared auth APIs.
+            # Serializing the RestApi resources keeps staging auth redeploys from deadlocking each other.
+            self._serialize_rest_api_updates(
+                [
+                    invite_api,
+                    projects_api,
+                    explore_api,
+                    subscription_api,
+                    beta_access_api,
+                    model_delivery_api,
+                    password_reset_api,
+                ]
+            )
 
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
@@ -1004,6 +1041,14 @@ class AuthStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
+
+    def _serialize_rest_api_updates(self, rest_apis) -> None:
+        previous_api_resource = None
+        for rest_api in rest_apis:
+            current_api_resource = rest_api.node.default_child
+            if previous_api_resource is not None and current_api_resource is not None:
+                current_api_resource.add_dependency(previous_api_resource)
+            previous_api_resource = current_api_resource
 
     def _cognito_user_pool_exists(self, user_pool_name: str) -> bool:
         """Check if a Cognito User Pool exists"""

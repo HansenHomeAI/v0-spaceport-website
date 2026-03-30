@@ -2,9 +2,19 @@ export const runtime = "edge";
 
 export default function NotFound() {
   return (
-    <main style={{ padding: "3rem 1.5rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Page not found</h1>
-      <p>The requested page could not be found.</p>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        padding: "2rem",
+        textAlign: "center",
+      }}
+    >
+      <div>
+        <h1 style={{ marginBottom: "0.75rem" }}>Page not found</h1>
+        <p>The page you requested does not exist.</p>
+      </div>
     </main>
   );
 }
