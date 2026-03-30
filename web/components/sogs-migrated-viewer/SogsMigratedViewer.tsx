@@ -28,7 +28,12 @@ import {
 } from "../../lib/canyon-vista/pathAnimation";
 import { appendCheckpoint, snapCameraToCheckpointKey } from "../../lib/canyon-vista/pathEditing";
 import type { PathAnimationState, V3 } from "../../lib/canyon-vista/types";
-import type { CameraPose } from "../../lib/canyon-vista/worldProjection";
+import {
+  createOverlayPerspectiveCamera,
+  projectWorldToScreen,
+  syncOverlayCamera,
+  type CameraPose,
+} from "../../lib/canyon-vista/worldProjection";
 import { AnimationPathPanel } from "./AnimationPathPanel";
 import { CanyonCompassLive } from "./CanyonCompassLive";
 import { CanyonDetailsMenuButton, CanyonDetailsPanel } from "./CanyonDetailsPanel";
@@ -110,6 +115,10 @@ export default function SogsMigratedViewer() {
   const activeHoleViewRef = useRef(activeHoleView);
   /** Orbit pivot; updated in free mode from camera pose and on pick / hole change. */
   const orbitFocusRef = useRef<V3>({ ...CANYON_VISTA_HOLE_VIEW.target });
+
+  /** After tap-to-focus, show ring at projected focus — wait for next `sogs:cameraPose` so pose matches the new view. */
+  const pendingPickRingFocusRef = useRef<V3 | null>(null);
+  const pickRingOverlayCamRef = useRef(createOverlayPerspectiveCamera());
 
   useEffect(() => {
     activeHoleViewRef.current = activeHoleView;
@@ -234,26 +243,18 @@ export default function SogsMigratedViewer() {
       }
 
       if (event.data?.type === "sogs:pickFocus" && event.source === iframeRef.current?.contentWindow) {
-        const d = event.data as { world?: number[]; clientX?: number; clientY?: number };
+        const d = event.data as { world?: number[] };
         if (Array.isArray(d.world) && d.world.length >= 3) {
           orbitFocusRef.current = {
             x: d.world[0],
             y: d.world[1],
             z: d.world[2],
           };
-        }
-        if (typeof d.clientX === "number" && typeof d.clientY === "number") {
-          const iframeEl = iframeRef.current;
-          if (iframeEl) {
-            const r = iframeEl.getBoundingClientRect();
-            setPickFeedbackScreen({
-              x: r.left + d.clientX,
-              y: r.top + d.clientY,
-              t: Date.now(),
-            });
-          } else {
-            setPickFeedbackScreen({ x: d.clientX, y: d.clientY, t: Date.now() });
-          }
+          pendingPickRingFocusRef.current = {
+            x: d.world[0],
+            y: d.world[1],
+            z: d.world[2],
+          };
         }
       }
 
@@ -290,6 +291,26 @@ export default function SogsMigratedViewer() {
           y: d.target[1],
           z: d.target[2],
         };
+
+        const pending = pendingPickRingFocusRef.current;
+        if (pending) {
+          pendingPickRingFocusRef.current = null;
+          const container = containerRef.current;
+          const pose = poseRef.current;
+          if (container && pose) {
+            const cam = pickRingOverlayCamRef.current;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            syncOverlayCamera(cam, pose, w, h);
+            const p = projectWorldToScreen(pending, cam, w, h);
+            const rect = container.getBoundingClientRect();
+            if (p.visible) {
+              setPickFeedbackScreen({ x: rect.left + p.x, y: rect.top + p.y, t: Date.now() });
+            } else {
+              setPickFeedbackScreen({ x: rect.left + w / 2, y: rect.top + h / 2, t: Date.now() });
+            }
+          }
+        }
       }
 
       if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
