@@ -50,4 +50,4 @@
 2026-03-30 sogs-migrated-viewer: pick→orbit refocus, dynamic orbit focus, tap feedback, multi-hole, smoke pick
 2026-03-30 sogs-migrated-viewer smoke: fix postMessage listener; canvas dblclick; close path panel; default SOGS_MIGRATED_URL :3002
 2026-03-30 sogs tap-focus: single click no-drag, look() orbit tilt/pan, iframe→viewport ring, Canyon-style CSS
-2026-03-30 sogs-migrated-viewer: tap ring at projected orbit focus (post cameraPose), not cursor
+2026-03-30 sogs-migrated-viewer: place tap ring at projected orbit focus after cameraPose

@@ -116,10 +116,6 @@ export default function SogsMigratedViewer() {
   /** Orbit pivot; updated in free mode from camera pose and on pick / hole change. */
   const orbitFocusRef = useRef<V3>({ ...CANYON_VISTA_HOLE_VIEW.target });
 
-  /** After tap-to-focus, show ring at projected focus — wait for next `sogs:cameraPose` so pose matches the new view. */
-  const pendingPickRingFocusRef = useRef<V3 | null>(null);
-  const pickRingOverlayCamRef = useRef(createOverlayPerspectiveCamera());
-
   useEffect(() => {
     activeHoleViewRef.current = activeHoleView;
     const t = activeHoleView.target;
@@ -127,6 +123,37 @@ export default function SogsMigratedViewer() {
   }, [activeHoleView]);
 
   const [pickFeedbackScreen, setPickFeedbackScreen] = useState<{ x: number; y: number; t: number } | null>(null);
+
+  const pickRingCamRef = useRef(createOverlayPerspectiveCamera());
+  /** After tap-to-focus, show ring at projected orbit focus once `sogs:cameraPose` matches new view. */
+  const pendingFocusRingWorldRef = useRef<V3 | null>(null);
+
+  const placeFocusRingAtWorld = useCallback((world: V3) => {
+    const stamp = Date.now();
+    const el = containerRef.current;
+    const pose = poseRef.current;
+    const iframe = iframeRef.current;
+    if (!el || !iframe) {
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    if (pose) {
+      const cw = el.clientWidth;
+      const ch = el.clientHeight;
+      const cam = pickRingCamRef.current;
+      syncOverlayCamera(cam, pose, cw, ch);
+      const p = projectWorldToScreen(world, cam, cw, ch);
+      if (p.visible) {
+        setPickFeedbackScreen({ x: rect.left + p.x, y: rect.top + p.y, t: stamp });
+        return;
+      }
+    }
+    const ir = iframe.getBoundingClientRect();
+    setPickFeedbackScreen({ x: ir.left + ir.width / 2, y: ir.top + ir.height / 2, t: stamp });
+  }, []);
+
+  const placeFocusRingAtWorldRef = useRef(placeFocusRingAtWorld);
+  placeFocusRingAtWorldRef.current = placeFocusRingAtWorld;
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -245,16 +272,9 @@ export default function SogsMigratedViewer() {
       if (event.data?.type === "sogs:pickFocus" && event.source === iframeRef.current?.contentWindow) {
         const d = event.data as { world?: number[] };
         if (Array.isArray(d.world) && d.world.length >= 3) {
-          orbitFocusRef.current = {
-            x: d.world[0],
-            y: d.world[1],
-            z: d.world[2],
-          };
-          pendingPickRingFocusRef.current = {
-            x: d.world[0],
-            y: d.world[1],
-            z: d.world[2],
-          };
+          const focus: V3 = { x: d.world[0], y: d.world[1], z: d.world[2] };
+          orbitFocusRef.current = { ...focus };
+          pendingFocusRingWorldRef.current = focus;
         }
       }
 
@@ -291,24 +311,13 @@ export default function SogsMigratedViewer() {
           y: d.target[1],
           z: d.target[2],
         };
-
-        const pending = pendingPickRingFocusRef.current;
+        const pending = pendingFocusRingWorldRef.current;
         if (pending) {
-          pendingPickRingFocusRef.current = null;
-          const container = containerRef.current;
-          const pose = poseRef.current;
-          if (container && pose) {
-            const cam = pickRingOverlayCamRef.current;
-            const w = container.clientWidth;
-            const h = container.clientHeight;
-            syncOverlayCamera(cam, pose, w, h);
-            const p = projectWorldToScreen(pending, cam, w, h);
-            const rect = container.getBoundingClientRect();
-            if (p.visible) {
-              setPickFeedbackScreen({ x: rect.left + p.x, y: rect.top + p.y, t: Date.now() });
-            } else {
-              setPickFeedbackScreen({ x: rect.left + w / 2, y: rect.top + h / 2, t: Date.now() });
-            }
+          const tgt = poseRef.current.target;
+          const dist = Math.hypot(tgt.x - pending.x, tgt.y - pending.y, tgt.z - pending.z);
+          if (dist < 0.15) {
+            placeFocusRingAtWorldRef.current(pending);
+            pendingFocusRingWorldRef.current = null;
           }
         }
       }
