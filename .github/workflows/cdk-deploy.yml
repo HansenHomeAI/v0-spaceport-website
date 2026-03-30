@@ -32,6 +32,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -218,7 +220,15 @@ jobs:
       run: |
         set -euo pipefail
         CHANGED_FILES_EMPTY="false"
-        CHANGED_FILES="$(git show --pretty='' --name-only "${GITHUB_SHA}" || true)"
+        BASE_SHA="$(jq -r '.before // empty' "$GITHUB_EVENT_PATH")"
+        if [ "$BASE_SHA" = "null" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          BASE_SHA=""
+        fi
+
+        CHANGED_FILES=""
+        if [ -n "${BASE_SHA}" ]; then
+          CHANGED_FILES="$(git diff --name-only "${BASE_SHA}" "${GITHUB_SHA}" || true)"
+        fi
         if [ -z "${CHANGED_FILES}" ] && git rev-parse "${GITHUB_SHA}^" >/dev/null 2>&1; then
           CHANGED_FILES="$(git diff --name-only "${GITHUB_SHA}^" "${GITHUB_SHA}" || true)"
         fi
