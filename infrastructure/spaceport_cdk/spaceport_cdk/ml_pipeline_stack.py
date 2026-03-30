@@ -138,6 +138,7 @@ class MLPipelineStack(Stack):
             self,
             "SpaceportMLEdgeDistribution",
             comment=f"Spaceport ML edge delivery for {suffix}",
+            http_version=cloudfront.HttpVersion.HTTP2_AND_3,
             default_behavior=cloudfront.BehaviorOptions(
                 origin=origins.S3Origin(
                     delivery_bucket,
