@@ -89,6 +89,7 @@ function postCameraPoseFromViewer(cameraManager) {
 function setupCameraManagerBridge(cameraManager) {
   const origUpdate = cameraManager.update.bind(cameraManager);
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  let prevScripted = false;
 
   const getFocusPoint = (cam) => {
     // `cam.angles` comes from the bundled viewer build, not the esm.sh Vec3 class.
@@ -130,14 +131,99 @@ function setupCameraManagerBridge(cameraManager) {
           window.__sogsUserFov = pose.fov;
         }
       }
-    } else {
-      origUpdate(dt, frame);
-      if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
-        cameraManager.camera.fov = window.__sogsUserFov;
-      }
-      clampCameraFocus(cameraManager.camera);
-      postCameraPoseFromViewer(cameraManager);
+      prevScripted = true;
+      return;
     }
+    const cam = cameraManager.camera;
+    const leftScripted = prevScripted;
+    prevScripted = false;
+    let focusBeforeClamp = null;
+    if (leftScripted) {
+      const pose = window.__sogsCameraPose;
+      const focusOrbit = getFocusPoint(cam);
+      focusBeforeClamp = { x: focusOrbit.x, y: focusOrbit.y, z: focusOrbit.z };
+      let targetMismatch = null;
+      if (pose?.target?.length === 3) {
+        const dx = focusOrbit.x - pose.target[0];
+        const dy = focusOrbit.y - pose.target[1];
+        const dz = focusOrbit.z - pose.target[2];
+        targetMismatch = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      }
+      // #region agent log
+      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+        body: JSON.stringify({
+          sessionId: "191e7b",
+          location: "sogs-bridge.mjs:setupCameraManagerBridge:firstFreeFrame",
+          message: "scripted_to_free_before_origUpdate",
+          hypothesisId: "H1",
+          runId: "pre1",
+          data: {
+            pos: [cam.position.x, cam.position.y, cam.position.z],
+            distance: cam.distance,
+            angles: [cam.angles.x, cam.angles.y, cam.angles.z],
+            focusFromOrbit: focusBeforeClamp,
+            scriptedTarget: pose?.target ? [pose.target[0], pose.target[1], pose.target[2]] : null,
+            targetMismatch,
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+    }
+    origUpdate(dt, frame);
+    if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
+      cameraManager.camera.fov = window.__sogsUserFov;
+    }
+    let focusPreClampStep = null;
+    if (leftScripted) {
+      // #region agent log
+      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+        body: JSON.stringify({
+          sessionId: "191e7b",
+          location: "sogs-bridge.mjs:setupCameraManagerBridge:after_origUpdate",
+          message: "after_origUpdate_before_clamp",
+          hypothesisId: "H1",
+          runId: "pre1",
+          data: {
+            pos: [cam.position.x, cam.position.y, cam.position.z],
+            distance: cam.distance,
+            angles: [cam.angles.x, cam.angles.y, cam.angles.z],
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+      const fPre = getFocusPoint(cam);
+      focusPreClampStep = { x: fPre.x, y: fPre.y, z: fPre.z };
+    }
+    clampCameraFocus(cam);
+    if (leftScripted && focusPreClampStep) {
+      const focusAfter = getFocusPoint(cam);
+      const dx = focusAfter.x - focusPreClampStep.x;
+      const dy = focusAfter.y - focusPreClampStep.y;
+      const dz = focusAfter.z - focusPreClampStep.z;
+      const clampDelta = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      // #region agent log
+      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+        body: JSON.stringify({
+          sessionId: "191e7b",
+          location: "sogs-bridge.mjs:setupCameraManagerBridge:after_clamp",
+          message: "focus_delta_after_clampCameraFocus",
+          hypothesisId: "H2",
+          runId: "pre1",
+          data: { clampDelta, focusAfter: { x: focusAfter.x, y: focusAfter.y, z: focusAfter.z }, focusPreClampStep },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+    }
+    postCameraPoseFromViewer(cameraManager);
   };
 }
 
@@ -316,8 +402,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       app.renderNextFrame = true;
     }
     if (d.type === "sogs:cameraMode") {
+      const wasScripted = window.__sogsScriptedCamera;
       const scripted = d.mode === "scripted" || d.scripted === true;
       window.__sogsScriptedCamera = !!scripted;
+      if (wasScripted && !window.__sogsScriptedCamera && viewer.cameraManager) {
+        const cam = viewer.cameraManager.camera;
+        const pose = window.__sogsCameraPose;
+        // #region agent log
+        fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+          body: JSON.stringify({
+            sessionId: "191e7b",
+            location: "sogs-bridge.mjs:message:cameraMode",
+            message: "parent_set_cameraMode_free",
+            hypothesisId: "H3",
+            runId: "pre1",
+            data: {
+              pos: [cam.position.x, cam.position.y, cam.position.z],
+              distance: cam.distance,
+              angles: [cam.angles.x, cam.angles.y, cam.angles.z],
+              scriptedPoseTarget: pose?.target ? [pose.target[0], pose.target[1], pose.target[2]] : null,
+            },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
+      }
       app.renderNextFrame = true;
     }
   });
@@ -325,6 +436,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   /** Tell parent to exit scripted tour / auto-orbit when the user grabs the view (orbit, zoom, touch). */
   const notifyUserInteraction = () => {
     if (window.__sogsScriptedCamera) {
+      // #region agent log
+      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+        body: JSON.stringify({
+          sessionId: "191e7b",
+          location: "sogs-bridge.mjs:notifyUserInteraction",
+          message: "iframe_userInteraction",
+          hypothesisId: "H5",
+          runId: "pre1",
+          data: { hasPose: !!window.__sogsCameraPose },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       window.parent.postMessage({ type: "sogs:userInteraction" }, "*");
     }
   };

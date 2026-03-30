@@ -209,6 +209,26 @@ export default function SogsMigratedViewer() {
         if (!pathPlayingRef.current && !autoRotateRef.current) {
           return;
         }
+        // #region agent log
+        fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+          body: JSON.stringify({
+            sessionId: "191e7b",
+            location: "SogsMigratedViewer.tsx:onMessage:userInteraction",
+            message: "parent_received_userInteraction",
+            hypothesisId: "H4",
+            runId: "pre1",
+            data: {
+              pathPlaying: pathPlayingRef.current,
+              autoRotate: autoRotateRef.current,
+              lastScripted: lastScriptedRef.current,
+              pose: poseRef.current,
+            },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
         pathStateRef.current.playing = false;
         pathPlayingRef.current = false;
         setPathPlaying(false);
