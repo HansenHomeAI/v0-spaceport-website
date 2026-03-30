@@ -165,7 +165,8 @@ function summarizeRenderedPixels(buffer) {
   assert((await page.locator("header").count()) === 0, "no site header on standalone migrated viewer");
   await page.waitForSelector('iframe[title="sogs-migrated-viewer"]', { timeout: 60000 });
 
-  const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
+  const iframeHandle = await page.locator('iframe[title="sogs-migrated-viewer"]').elementHandle();
+  const splatFrame = await iframeHandle?.contentFrame();
   assert(!!splatFrame, "supersplat iframe frame exists");
   await splatFrame.waitForFunction(() => window.__sogsSplatXzDragReady === true, null, {
     timeout: 120000,
