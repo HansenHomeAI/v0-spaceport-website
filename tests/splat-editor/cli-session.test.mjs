@@ -7,6 +7,8 @@ import { promisify } from "node:util";
 import {
   buildExportArtifact,
   createSessionFromSource,
+  createSessionFromUpload,
+  getLatestSessionPublicState,
   getSessionPublicState,
 } from "../../web/lib/splat-editor/session-store.js";
 import { createTempDir, createSyntheticTarGz, writeSyntheticPly } from "./helpers.mjs";
@@ -87,3 +89,66 @@ test("imports local bare PLY sessions and exports a bare edited PLY", async () =
   assert.ok(stat.size > 0);
 });
 
+test("restores the latest local session from disk without re-importing", async () => {
+  const tempRoot = await createTempDir("splat-editor-latest-session-");
+  process.env.SPLAT_EDITOR_SESSION_DIR = path.join(tempRoot, "sessions");
+
+  const plyPath = path.join(tempRoot, "restore-source.ply");
+  await writeSyntheticPly(plyPath, {
+    extraRestCount: 24,
+    rows: [
+      { x: 0, y: -2, z: 0 },
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 2, z: 0 },
+    ],
+  });
+
+  const session = await createSessionFromSource(plyPath);
+  await execFileAsync("node", ["web/scripts/edit-3dgs-ply.mjs", "--input", session.workingPlyPath, "--y-gt", "1"], {
+    cwd: path.resolve("."),
+  });
+
+  const latest = await getLatestSessionPublicState();
+  assert.ok(latest);
+  assert.equal(latest.sessionId, session.sessionId);
+  assert.equal(latest.workingPlyPath, session.workingPlyPath);
+  assert.equal(latest.vertexCount, 2);
+});
+
+test("imports uploaded local artifacts and preserves export format", async () => {
+  const tempRoot = await createTempDir("splat-editor-upload-session-");
+  process.env.SPLAT_EDITOR_SESSION_DIR = path.join(tempRoot, "sessions");
+
+  const sourceDir = path.join(tempRoot, "source");
+  await fs.mkdir(sourceDir, { recursive: true });
+
+  const plyPath = path.join(sourceDir, "upload-fixture.ply");
+  await writeSyntheticPly(plyPath, {
+    extraRestCount: 24,
+    rows: [
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 1, z: 0 },
+    ],
+  });
+
+  const tarPath = path.join(sourceDir, "upload-fixture.tar.gz");
+  await createSyntheticTarGz({
+    tarPath,
+    plyPath,
+    metadata: {
+      output_file: "splat.ply",
+      file_size_mb: 0.1,
+      training_completed: true,
+      sh_degree: 2,
+    },
+  });
+
+  const uploadBuffer = await fs.readFile(tarPath);
+  const session = await createSessionFromUpload("upload-fixture.tar.gz", uploadBuffer);
+  assert.equal(session.sourceArtifactType, "model.tar.gz");
+  assert.match(session.sourceUrl, /^upload:\/\/upload-fixture\.tar\.gz$/);
+  assert.equal(session.vertexCount, 2);
+
+  const exportArtifact = await buildExportArtifact(session.sessionId);
+  assert.equal(exportArtifact.fileName, "edited-model.tar.gz");
+});

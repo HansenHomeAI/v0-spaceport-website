@@ -11,6 +11,9 @@ const execFileAsync = promisify(execFile);
 const DEFAULT_IMPORT_SOURCE =
   "s3://spaceport-ml-processing/3dgs/manual-3dgs-1774642514/ml-job-20260327-201514-manual-3-3dgs/output/model.tar.gz";
 
+const LATEST_SESSION_FILE = "latest-session.json";
+const DEFAULT_SESSION_ROOT = path.join(os.homedir(), "Downloads", "Spaceport Splat Editor");
+
 function toS3UriFromHttps(input) {
   try {
     const url = new URL(input);
@@ -31,7 +34,11 @@ function ensureArtifactType(source) {
 }
 
 function getSessionRoot() {
-  return process.env.SPLAT_EDITOR_SESSION_DIR || path.join(os.tmpdir(), "spaceport-splat-editor-sessions");
+  return process.env.SPLAT_EDITOR_SESSION_DIR || DEFAULT_SESSION_ROOT;
+}
+
+function latestSessionPath() {
+  return path.join(getSessionRoot(), LATEST_SESSION_FILE);
 }
 
 function sessionPaths(sessionId) {
@@ -47,6 +54,7 @@ function sessionPaths(sessionId) {
 }
 
 async function ensureSessionDirs(paths) {
+  await fs.mkdir(getSessionRoot(), { recursive: true });
   await fs.mkdir(paths.sourceDir, { recursive: true });
   await fs.mkdir(paths.workingDir, { recursive: true });
   await fs.mkdir(paths.exportDir, { recursive: true });
@@ -59,6 +67,14 @@ async function writeJson(filePath, data) {
 
 async function readJson(filePath) {
   return JSON.parse(await fs.readFile(filePath, "utf8"));
+}
+
+async function writeLatestSession(sessionId) {
+  await fs.mkdir(getSessionRoot(), { recursive: true });
+  await writeJson(latestSessionPath(), {
+    sessionId,
+    updatedAt: new Date().toISOString(),
+  });
 }
 
 async function runAwsCopy(source, destination) {
@@ -121,6 +137,42 @@ function buildExportName(artifactType) {
   return artifactType === "ply" ? "edited-splat.ply" : "edited-model.tar.gz";
 }
 
+async function stageArtifactIntoSession(paths, sourceArtifactType, sourceArtifactPath) {
+  let workingPlyPath = path.join(paths.workingDir, "splat.ply");
+  let trainingMetadataPath = null;
+
+  if (sourceArtifactType === "ply") {
+    await fs.copyFile(sourceArtifactPath, workingPlyPath);
+  } else {
+    await runTarExtract(sourceArtifactPath, paths.tempDir);
+    const extractedPly = path.join(paths.tempDir, "splat.ply");
+    const extractedMetadata = path.join(paths.tempDir, "training_metadata.json");
+    try {
+      await fs.access(extractedPly);
+    } catch {
+      throw new Error("Imported tar.gz is missing splat.ply");
+    }
+    try {
+      await fs.access(extractedMetadata);
+      trainingMetadataPath = path.join(paths.workingDir, "training_metadata.json");
+      await fs.copyFile(extractedMetadata, trainingMetadataPath);
+    } catch {
+      throw new Error("Imported tar.gz is missing training_metadata.json");
+    }
+    await fs.copyFile(extractedPly, workingPlyPath);
+  }
+
+  return { workingPlyPath, trainingMetadataPath };
+}
+
+async function finalizeSession(session, paths) {
+  const workingStatus = await buildWorkingStatus(session.workingPlyPath, null);
+  session.workingStatus = workingStatus;
+  await writeJson(paths.sessionFile, session);
+  await writeLatestSession(session.sessionId);
+  return publicSession(session, workingStatus);
+}
+
 async function buildWorkingStatus(filePath, previous) {
   const stat = await fs.stat(filePath);
   const fileSignature = `${stat.size}:${stat.mtimeMs}`;
@@ -172,30 +224,11 @@ async function initializeSession(sourceUrl) {
   const sourceArtifactPath = path.join(paths.sourceDir, sourceArtifactName);
 
   await copySourceArtifact(sourceUrl, sourceArtifactPath);
-
-  let workingPlyPath = path.join(paths.workingDir, "splat.ply");
-  let trainingMetadataPath = null;
-
-  if (sourceArtifactType === "ply") {
-    await fs.copyFile(sourceArtifactPath, workingPlyPath);
-  } else {
-    await runTarExtract(sourceArtifactPath, paths.tempDir);
-    const extractedPly = path.join(paths.tempDir, "splat.ply");
-    const extractedMetadata = path.join(paths.tempDir, "training_metadata.json");
-    try {
-      await fs.access(extractedPly);
-    } catch {
-      throw new Error("Imported tar.gz is missing splat.ply");
-    }
-    try {
-      await fs.access(extractedMetadata);
-      trainingMetadataPath = path.join(paths.workingDir, "training_metadata.json");
-      await fs.copyFile(extractedMetadata, trainingMetadataPath);
-    } catch {
-      throw new Error("Imported tar.gz is missing training_metadata.json");
-    }
-    await fs.copyFile(extractedPly, workingPlyPath);
-  }
+  const { workingPlyPath, trainingMetadataPath } = await stageArtifactIntoSession(
+    paths,
+    sourceArtifactType,
+    sourceArtifactPath,
+  );
 
   const session = {
     sessionId,
@@ -209,15 +242,43 @@ async function initializeSession(sourceUrl) {
     workingStatus: null,
   };
 
-  const workingStatus = await buildWorkingStatus(workingPlyPath, null);
-  session.workingStatus = workingStatus;
-  await writeJson(paths.sessionFile, session);
-
-  return publicSession(session, workingStatus);
+  return finalizeSession(session, paths);
 }
 
 export async function createSessionFromSource(sourceUrl = DEFAULT_IMPORT_SOURCE) {
   return initializeSession(sourceUrl);
+}
+
+export async function createSessionFromUpload(fileName, fileBuffer) {
+  const normalizedName = String(fileName || "").trim() || "upload";
+  const sourceArtifactType = ensureArtifactType(normalizedName.toLowerCase());
+  const sessionId = randomUUID();
+  const paths = sessionPaths(sessionId);
+  await ensureSessionDirs(paths);
+
+  const sourceArtifactName = sourceArtifactType === "ply" ? "source-splat.ply" : "source-model.tar.gz";
+  const sourceArtifactPath = path.join(paths.sourceDir, sourceArtifactName);
+  await fs.writeFile(sourceArtifactPath, fileBuffer);
+
+  const { workingPlyPath, trainingMetadataPath } = await stageArtifactIntoSession(
+    paths,
+    sourceArtifactType,
+    sourceArtifactPath,
+  );
+
+  const session = {
+    sessionId,
+    sourceUrl: `upload://${normalizedName}`,
+    sourceArtifactType,
+    sourceArtifactPath,
+    workingPlyPath,
+    trainingMetadataPath,
+    exportTargetName: buildExportName(sourceArtifactType),
+    createdAt: new Date().toISOString(),
+    workingStatus: null,
+  };
+
+  return finalizeSession(session, paths);
 }
 
 export async function loadSession(sessionId) {
@@ -234,6 +295,21 @@ export async function loadSession(sessionId) {
 export async function getSessionPublicState(sessionId) {
   const { session, workingStatus } = await loadSession(sessionId);
   return publicSession(session, workingStatus);
+}
+
+export async function getLatestSessionPublicState() {
+  try {
+    const latest = await readJson(latestSessionPath());
+    if (!latest?.sessionId) {
+      return null;
+    }
+    return await getSessionPublicState(latest.sessionId);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function getSessionWorkingPlyPath(sessionId) {

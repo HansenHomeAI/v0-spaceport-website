@@ -3,10 +3,10 @@
  * Paste JSON from the viewer’s “Copy scene JSON” into chat to update these values in code.
  */
 export const SOGS_DEFAULT_SCENE = {
-  /** scene-v1 export 2026-03-25 */
-  position: [0, 0.231, 0] as [number, number, number],
+  /** scene-v1 export 2026-03-28 */
+  position: [0.03, 0.1, 0.15] as [number, number, number],
   /** Euler ° (PlayCanvas order: X, Y, Z) */
-  rotation: [-82, -90, 0] as [number, number, number],
+  rotation: [-100, 0, 0] as [number, number, number],
   scale: 1,
   fov: 60,
 } as const;

@@ -1,11 +1,14 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { DragEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createDefaultScenePayload } from "../../lib/sogsViewerSceneDefaults";
 import "./splat-editor.css";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 const DEFAULT_SOURCE =
   "s3://spaceport-ml-processing/3dgs/manual-3dgs-1774642514/ml-job-20260327-201514-manual-3-3dgs/output/model.tar.gz";
+const DEFAULT_SCENE = createDefaultScenePayload();
+const SESSION_STORAGE_KEY = "spaceport:splat-editor:session-id";
 
 type SessionState = {
   sessionId: string;
@@ -22,30 +25,48 @@ type SessionState = {
   vertexCount: number;
 };
 
-function formatBytes(bytes: number) {
-  if (!Number.isFinite(bytes)) return "0 B";
-  const units = ["B", "KB", "MB", "GB"];
-  let value = bytes;
-  let unitIndex = 0;
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex += 1;
-  }
-  return `${value.toFixed(unitIndex === 0 ? 0 : 2)} ${units[unitIndex]}`;
-}
+type TransformState = {
+  position: [number, number, number];
+  rotation: [number, number, number];
+};
+
+const DEFAULT_TRANSFORM: TransformState = {
+  position: [...DEFAULT_SCENE.position],
+  rotation: [...DEFAULT_SCENE.rotation],
+};
+
+const GUIDES_PAYLOAD = {
+  type: "sogs:guides",
+  enabled: true,
+  length: 20,
+  radius: 0.03,
+  colors: {
+    x: [0.92, 0.26, 0.22],
+    y: [0.96, 0.85, 0.2],
+    z: [0.24, 0.56, 0.98],
+  },
+} as const;
 
 export default function SplatEditor() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const lastRevisionRef = useRef<string | null>(null);
+  const transformRef = useRef<TransformState>(DEFAULT_TRANSFORM);
+  const ignoreNextSogsStateRef = useRef(false);
+  const allowRestoreRef = useRef(true);
+  const userTouchedSourceRef = useRef(false);
 
   const [source, setSource] = useState(DEFAULT_SOURCE);
   const [session, setSession] = useState<SessionState | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
   const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
-  const [status, setStatus] = useState("No local session yet.");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [clientReady, setClientReady] = useState(false);
+  const [transform, setTransform] = useState<TransformState>(DEFAULT_TRANSFORM);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+  const [dropActive, setDropActive] = useState(false);
 
   const viewerSrc = useMemo(() => {
     if (!session) return null;
@@ -60,19 +81,129 @@ export default function SplatEditor() {
 
   const sessionId = session?.sessionId ?? null;
 
+  const postToIframe = useCallback((payload: object) => {
+    const win = iframeRef.current?.contentWindow;
+    if (!win) {
+      return;
+    }
+    try {
+      win.postMessage(payload, "*");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const applySceneToViewer = useCallback(
+    (nextTransform: TransformState) => {
+      postToIframe(GUIDES_PAYLOAD);
+      postToIframe({
+        type: "sogs:apply",
+        position: nextTransform.position,
+        rotation: nextTransform.rotation,
+        scale: DEFAULT_SCENE.scale,
+        fov: DEFAULT_SCENE.fov,
+      });
+    },
+    [postToIframe],
+  );
+
+  const applySession = useCallback((nextSession: SessionState) => {
+    setSession(nextSession);
+    setSource(nextSession.sourceUrl);
+    lastRevisionRef.current = nextSession.revisionHash;
+    ignoreNextSogsStateRef.current = true;
+    setViewerState("loading");
+    setIframeKey((value) => value + 1);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(SESSION_STORAGE_KEY, nextSession.sessionId);
+    }
+  }, []);
+
+  useEffect(() => {
+    transformRef.current = transform;
+  }, [transform]);
+
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
+        applySceneToViewer(transformRef.current);
         setViewerState("ready");
+        return;
+      }
+      if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
+        if (ignoreNextSogsStateRef.current) {
+          ignoreNextSogsStateRef.current = false;
+        }
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [applySceneToViewer]);
 
   useEffect(() => {
     setClientReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!userTouchedSourceRef.current && source !== DEFAULT_SOURCE) {
+      userTouchedSourceRef.current = true;
+    }
+  }, [source]);
+
+  useEffect(() => {
+    if (!clientReady) return;
+    let cancelled = false;
+
+    async function restoreLatestSession() {
+      try {
+        setBusy(true);
+        setBusyLabel("Restoring local splat…");
+        const storedSessionId =
+          typeof window !== "undefined" ? window.sessionStorage.getItem(SESSION_STORAGE_KEY) : null;
+        const preferredResponse = storedSessionId
+          ? await fetch(`/api/splat-editor/sessions/${storedSessionId}`, { cache: "no-store" })
+          : null;
+        const preferredPayload = preferredResponse ? await preferredResponse.json() : null;
+        const shouldIgnoreStoredSession =
+          !!preferredPayload?.session &&
+          preferredPayload.session.sourceUrl !== DEFAULT_SOURCE &&
+          !userTouchedSourceRef.current &&
+          source === DEFAULT_SOURCE;
+        const response = shouldIgnoreStoredSession
+          ? await fetch("/api/splat-editor/latest", { cache: "no-store" })
+          : preferredResponse ?? (await fetch("/api/splat-editor/latest", { cache: "no-store" }));
+        const payload =
+          shouldIgnoreStoredSession || !preferredPayload ? await response.json() : preferredPayload;
+        if (
+          !response.ok ||
+          !payload.ok ||
+          !payload.session ||
+          cancelled ||
+          !allowRestoreRef.current ||
+          userTouchedSourceRef.current ||
+          source !== DEFAULT_SOURCE
+        ) {
+          if (storedSessionId && (!response.ok || !payload.ok || !payload.session) && typeof window !== "undefined") {
+            window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+          }
+          return;
+        }
+        applySession(payload.session as SessionState);
+      } catch {
+        /* ignore missing latest session */
+      } finally {
+        if (!cancelled) {
+          setBusy(false);
+          setBusyLabel(null);
+        }
+      }
+    }
+
+    void restoreLatestSession();
+    return () => {
+      cancelled = true;
+    };
+  }, [applySession, clientReady, source]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -89,7 +220,7 @@ export default function SplatEditor() {
           lastRevisionRef.current = nextSession.revisionHash;
           setViewerState("loading");
           setIframeKey((value) => value + 1);
-          setStatus(`Detected local file change. Reloaded revision ${nextSession.revisionHash.slice(0, 12)}.`);
+          ignoreNextSogsStateRef.current = true;
         }
       } catch {
         /* ignore transient poll errors */
@@ -100,9 +231,11 @@ export default function SplatEditor() {
 
   async function importSource(event: FormEvent) {
     event.preventDefault();
+    allowRestoreRef.current = false;
+    userTouchedSourceRef.current = true;
     setBusy(true);
+    setBusyLabel("Importing splat…");
     setError(null);
-    setStatus("Downloading and staging 3DGS artifact locally…");
     setViewerState("loading");
     try {
       const response = await fetch("/api/splat-editor/import", {
@@ -114,25 +247,127 @@ export default function SplatEditor() {
       if (!response.ok || !payload.ok) {
         throw new Error(payload.error || "Import failed");
       }
-      setSession(payload.session as SessionState);
-      lastRevisionRef.current = payload.session.revisionHash;
-      setIframeKey((value) => value + 1);
-      setStatus("Local staged copy ready. External edits can now target the working PLY path below.");
+      applySession(payload.session as SessionState);
     } catch (importError: any) {
       setViewerState("idle");
       setError(importError?.message || "Import failed");
-      setStatus("Import failed.");
     } finally {
       setBusy(false);
+      setBusyLabel(null);
     }
   }
 
-  const commandExample = session
-    ? `node web/scripts/edit-3dgs-ply.mjs --input "${session.workingPlyPath}" --y-gt 2.5`
-    : `node web/scripts/edit-3dgs-ply.mjs --input "/absolute/path/to/staged/splat.ply" --y-gt 2.5`;
+  async function importFile(file: File) {
+    allowRestoreRef.current = false;
+    userTouchedSourceRef.current = true;
+    setBusy(true);
+    setBusyLabel("Importing local splat…");
+    setError(null);
+    setViewerState("loading");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/splat-editor/import", {
+        method: "POST",
+        body: formData,
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "Import failed");
+      }
+      applySession(payload.session as SessionState);
+    } catch (importError: any) {
+      setViewerState("idle");
+      setError(importError?.message || "Import failed");
+    } finally {
+      setBusy(false);
+      setBusyLabel(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }
+
+  async function handleDroppedFile(fileList: FileList | null) {
+    const file = fileList?.[0];
+    if (!file) {
+      return;
+    }
+    const lowerName = file.name.toLowerCase();
+    if (!lowerName.endsWith(".ply") && !lowerName.endsWith(".tar.gz")) {
+      setError("Drop a .ply or .tar.gz artifact");
+      return;
+    }
+    await importFile(file);
+  }
+
+  function onShellDragOver(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    if (!busy) {
+      setDropActive(true);
+    }
+  }
+
+  function onShellDragLeave(event: DragEvent<HTMLElement>) {
+    if (event.currentTarget === event.target) {
+      setDropActive(false);
+    }
+  }
+
+  async function onShellDrop(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setDropActive(false);
+    await handleDroppedFile(event.dataTransfer.files);
+  }
+
+  useEffect(() => {
+    if (!session || viewerState !== "ready") {
+      return;
+    }
+    applySceneToViewer(transform);
+  }, [applySceneToViewer, session, transform, viewerState]);
+
+  const exportHref = session ? `/api/splat-editor/sessions/${session.sessionId}/export` : null;
+
+  function setTransformAxis(kind: "position" | "rotation", axisIndex: 0 | 1 | 2, value: string) {
+    const nextValue = Number(value);
+    setTransform((current) => {
+      const next = {
+        position: [...current.position] as [number, number, number],
+        rotation: [...current.rotation] as [number, number, number],
+      };
+      next[kind][axisIndex] = Number.isFinite(nextValue) ? nextValue : 0;
+      return next;
+    });
+  }
+
+  async function copySettings() {
+    const text = JSON.stringify(
+      {
+        position: transform.position,
+        rotation: transform.rotation,
+        scale: DEFAULT_SCENE.scale,
+        fov: DEFAULT_SCENE.fov,
+      },
+      null,
+      2,
+    );
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyFeedback("Copied");
+    } catch {
+      setCopyFeedback("Copy failed");
+    }
+    window.setTimeout(() => setCopyFeedback(null), 1500);
+  }
 
   return (
-    <main className="splat-editor-shell">
+    <main
+      className={`splat-editor-shell${dropActive ? " splat-editor-shell--drop-active" : ""}`}
+      onDragOver={onShellDragOver}
+      onDragLeave={onShellDragLeave}
+      onDrop={onShellDrop}
+    >
       {viewerSrc ? (
         <iframe
           key={iframeKey}
@@ -147,135 +382,118 @@ export default function SplatEditor() {
       )}
 
       <section className="splat-editor-panel">
-        <div className="splat-editor-heading">
-          <h1>Local 3DGS Splat Editor</h1>
-          <p>Import once from S3 or HTTPS, stage locally, edit the staged PLY in place, and export when done.</p>
-        </div>
-
         <form className="splat-editor-form" onSubmit={importSource}>
-          <label htmlFor="splat-source-input">3DGS source artifact</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="splat-editor-file-input"
+            onChange={(event) => {
+              void handleDroppedFile(event.target.files);
+            }}
+          />
           <div className="splat-editor-row">
             <input
               data-testid="splat-source-input"
               id="splat-source-input"
               type="text"
               value={source}
-              onChange={(event) => setSource(event.target.value)}
+              onFocus={() => {
+                allowRestoreRef.current = false;
+                userTouchedSourceRef.current = true;
+              }}
+              onChange={(event) => {
+                allowRestoreRef.current = false;
+                userTouchedSourceRef.current = true;
+                setSource(event.target.value);
+              }}
               placeholder="s3://…/model.tar.gz or …/splat.ply"
               spellCheck={false}
             />
             <button data-testid="splat-import-button" type="submit" disabled={busy || !source.trim() || !clientReady}>
-              {busy ? "Importing…" : "Import"}
+              Import
             </button>
+            <button
+              type="button"
+              className="splat-editor-browse-button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={busy || !clientReady}
+            >
+              Drop / Browse
+            </button>
+            {exportHref ? (
+              <a data-testid="splat-export-link" className="splat-editor-export-link" href={exportHref}>
+                Export
+              </a>
+              ) : null}
           </div>
         </form>
 
-        <div className="splat-editor-status-grid" data-testid="splat-status-grid">
-          <div>
-            <span>Status</span>
-            <strong data-testid="splat-status-text">{status}</strong>
-          </div>
-          <div>
-            <span>Viewer</span>
-            <strong data-testid="splat-viewer-state">{viewerState}</strong>
-          </div>
-          <div>
-            <span>Auto-refresh</span>
-            <strong>{session?.autoRefreshEnabled ? "Enabled" : "Waiting for session"}</strong>
-          </div>
+        <div className="splat-editor-drop-hint">Drop `model.tar.gz` or `splat.ply` anywhere</div>
+
+        <div className="splat-editor-status-row" data-testid="splat-status-grid">
+          <strong data-testid="splat-status-text">{busyLabel || viewerState}</strong>
+          {busy ? <span className="splat-editor-spinner" aria-label="Importing" /> : null}
+          <span className="splat-editor-dim" data-testid="splat-viewer-state">
+            {viewerState}
+          </span>
         </div>
 
         {error ? <p className="splat-editor-error">{error}</p> : null}
 
         <div className="splat-editor-card">
-          <div className="splat-editor-card-title">Session metadata</div>
-          {session ? (
-            <dl className="splat-editor-metadata" data-testid="splat-session-metadata">
-              <div>
-                <dt>Session id</dt>
-                <dd data-testid="splat-session-id">{session.sessionId}</dd>
-              </div>
-              <div>
-                <dt>Artifact type</dt>
-                <dd data-testid="splat-artifact-type">{session.sourceArtifactType}</dd>
-              </div>
-              <div>
-                <dt>Vertices</dt>
-                <dd data-testid="splat-vertex-count">{session.vertexCount.toLocaleString()}</dd>
-              </div>
-              <div>
-                <dt>Revision hash</dt>
-                <dd data-testid="splat-revision-hash">{session.revisionHash}</dd>
-              </div>
-              <div>
-                <dt>Last modified</dt>
-                <dd>{new Date(session.lastModifiedMs).toLocaleString()}</dd>
-              </div>
-              <div>
-                <dt>Working size</dt>
-                <dd>{formatBytes(session.sizeBytes)}</dd>
-              </div>
-              <div className="splat-editor-metadata-wide">
-                <dt>Remote source</dt>
-                <dd>{session.sourceUrl}</dd>
-              </div>
-              <div className="splat-editor-metadata-wide">
-                <dt>Local source artifact path</dt>
-                <dd>{session.sourceArtifactPath}</dd>
-              </div>
-              <div className="splat-editor-metadata-wide">
-                <dt>Working PLY path</dt>
-                <dd data-testid="splat-working-ply-path">{session.workingPlyPath}</dd>
-              </div>
-              <div className="splat-editor-metadata-wide">
-                <dt>Export target</dt>
-                <dd data-testid="splat-export-name">{session.exportTargetName}</dd>
-              </div>
-              {session.trainingMetadataPath ? (
-                <div className="splat-editor-metadata-wide">
-                  <dt>Training metadata path</dt>
-                  <dd>{session.trainingMetadataPath}</dd>
-                </div>
-              ) : null}
-            </dl>
-          ) : (
-            <p className="splat-editor-placeholder">Import an artifact to create a local editing session.</p>
-          )}
+          <div className="splat-editor-card-title">Transform</div>
+          <div className="splat-editor-transform-group">
+            <div className="splat-editor-transform-label">Position</div>
+            <div className="splat-editor-transform-grid">
+              {(["X", "Y", "Z"] as const).map((axis, index) => (
+                <label key={`position-${axis}`} className="splat-editor-transform-field">
+                  <span>{axis}</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={transform.position[index]}
+                    onChange={(event) => setTransformAxis("position", index as 0 | 1 | 2, event.target.value)}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="splat-editor-transform-group">
+            <div className="splat-editor-transform-label">Rotation</div>
+            <div className="splat-editor-transform-grid">
+              {(["X", "Y", "Z"] as const).map((axis, index) => (
+                <label key={`rotation-${axis}`} className="splat-editor-transform-field">
+                  <span>{axis}</span>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={transform.rotation[index]}
+                    onChange={(event) => setTransformAxis("rotation", index as 0 | 1 | 2, event.target.value)}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="splat-editor-actions">
+            <button type="button" className="splat-editor-copy-button" onClick={copySettings}>
+              Copy Settings
+            </button>
+            {copyFeedback ? <span className="splat-editor-dim">{copyFeedback}</span> : null}
+          </div>
         </div>
 
-        <div className="splat-editor-card">
-          <div className="splat-editor-card-title">External edit command</div>
-          <p className="splat-editor-hint">
-            The viewer only watches the staged local file. Run the CLI against the working PLY path and this page will
-            reload the preview when the file changes.
-          </p>
-          <pre>{commandExample}</pre>
-        </div>
-
-        <div className="splat-editor-card">
-          <div className="splat-editor-card-title">Supported delete rules</div>
-          <ul>
-            <li>
-              <code>--y-gt</code> and <code>--y-lt</code>
-            </li>
-            <li>
-              <code>--radius-gt</code> and <code>--radius-lt</code>
-            </li>
-            <li>
-              <code>--bounds minX,maxX,minY,maxY,minZ,maxZ</code>
-            </li>
-          </ul>
-          {session ? (
-            <a
-              data-testid="splat-export-link"
-              className="splat-editor-export-link"
-              href={`/api/splat-editor/sessions/${session.sessionId}/export`}
-            >
-              Export Splat
-            </a>
-          ) : null}
-        </div>
+        {session ? (
+          <div className="splat-editor-session-strip" data-testid="splat-session-metadata">
+            <span data-testid="splat-session-id">{session.sessionId}</span>
+            <span data-testid="splat-artifact-type">{session.sourceArtifactType}</span>
+            <span data-testid="splat-vertex-count">{session.vertexCount.toLocaleString()}</span>
+            <span data-testid="splat-revision-hash">{session.revisionHash}</span>
+            <code data-testid="splat-working-ply-path">{session.workingPlyPath}</code>
+            <span data-testid="splat-export-name">{session.exportTargetName}</span>
+          </div>
+        ) : null}
       </section>
+      {dropActive ? <div className="splat-editor-drop-overlay">Drop local splat</div> : null}
     </main>
   );
 }
