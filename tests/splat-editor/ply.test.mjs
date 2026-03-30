@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createRuleMatcher, filterPlyBuffer, parsePlyHeader } from "../../web/lib/splat-editor/ply.js";
+import { createRuleMatcher, filterPlyBuffer, mutatePlyBuffer, parsePlyHeader } from "../../web/lib/splat-editor/ply.js";
 import { createSyntheticPlyBuffer } from "./helpers.mjs";
 
 function rowSlice(buffer, header, index) {
@@ -79,3 +79,61 @@ test("supports radius and bounds filters", () => {
   assert.equal(boundsFiltered.keptCount, 2);
 });
 
+test("supports viewer/world-space Y cuts using the applied splat transform", () => {
+  const buffer = createSyntheticPlyBuffer({
+    extraRestCount: 24,
+    rows: [
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 0, z: 0.2 },
+      { x: 0, y: 0, z: -0.2 },
+    ],
+  });
+
+  const result = filterPlyBuffer(
+    buffer,
+    createRuleMatcher({
+      maxWorldY: 0.03,
+      transform: {
+        position: [0.03, 0.1, 0.15],
+        rotation: [-100, 0, 0],
+        scale: 1,
+      },
+    }),
+  );
+
+  assert.equal(result.changed, true);
+  assert.equal(result.keptCount, 1);
+  assert.equal(parsePlyHeader(result.buffer).vertexCount, 1);
+});
+
+test("mutates only rows beyond the configured world-space radius", () => {
+  const buffer = createSyntheticPlyBuffer({
+    extraRestCount: 45,
+    rows: [
+      { x: 0, y: 0, z: 0, opacity: 0, scale_0: 0, scale_1: 0, scale_2: 0, f_rest_0: 1 },
+      { x: 0, y: 0, z: 3, opacity: 0, scale_0: 0, scale_1: 0, scale_2: 0, f_rest_0: 1 },
+    ],
+  });
+
+  const result = mutatePlyBuffer(buffer, ({ z, get, set }) => {
+    if (z <= 2) return false;
+    set("scale_0", get("scale_0") + Math.log(2));
+    set("f_rest_0", get("f_rest_0") * 0.5);
+    return true;
+  });
+
+  assert.equal(result.changed, true);
+  assert.equal(result.modifiedCount, 1);
+
+  const header = parsePlyHeader(result.buffer);
+  const view = new DataView(result.buffer.buffer, result.buffer.byteOffset, result.buffer.byteLength);
+  const row0 = header.vertexDataStart;
+  const row1 = row0 + header.vertexStride;
+  const s0 = header.propertyOffsets.get("scale_0");
+  const rest0 = header.propertyOffsets.get("f_rest_0");
+
+  assert.equal(view.getFloat32(row0 + s0.offset, true), 0);
+  assert.equal(view.getFloat32(row0 + rest0.offset, true), 1);
+  assert.ok(Math.abs(view.getFloat32(row1 + s0.offset, true) - Math.log(2)) < 1e-6);
+  assert.ok(Math.abs(view.getFloat32(row1 + rest0.offset, true) - 0.5) < 1e-6);
+});

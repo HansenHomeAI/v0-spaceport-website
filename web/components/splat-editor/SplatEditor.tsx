@@ -7,6 +7,8 @@ import "./splat-editor.css";
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 const DEFAULT_SOURCE =
   "s3://spaceport-ml-processing/3dgs/manual-3dgs-1774642514/ml-job-20260327-201514-manual-3-3dgs/output/model.tar.gz";
+const SKYBOX_URL =
+  "https://d2l2i40lmijzqm.cloudfront.net/models/edge-cold-ui-20260330T163800Z-a/supersplat_bundle/skybox/kloppenheim_06_puresky_equirect.webp";
 const DEFAULT_SCENE = createDefaultScenePayload();
 const SESSION_STORAGE_KEY = "spaceport:splat-editor:session-id";
 
@@ -79,6 +81,7 @@ export default function SplatEditor() {
       settings: "/supersplat-viewer/settings.json",
       content,
       noui: "1",
+      skybox: SKYBOX_URL,
     });
     return `${VIEWER_BASE}?${params.toString()}`;
   }, [session]);
