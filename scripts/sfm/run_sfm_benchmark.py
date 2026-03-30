@@ -70,9 +70,14 @@ def find_branch_ml_stack(branch_name: str) -> tuple[str, Dict[str, str]]:
 def get_sagemaker_role_arn(stack_name: str) -> str:
     resources = aws_json("cloudformation", "list-stack-resources", "--stack-name", stack_name)
     for resource in resources.get("StackResourceSummaries", []):
-        if resource.get("LogicalResourceId") != "SageMakerExecutionRole":
+        logical_id = resource.get("LogicalResourceId", "")
+        physical_id = resource.get("PhysicalResourceId", "")
+        if not (
+            logical_id.startswith("SageMakerExecutionRole")
+            or physical_id.startswith("Spaceport-SageMaker-Role-")
+        ):
             continue
-        role_name = resource["PhysicalResourceId"]
+        role_name = physical_id
         role = aws_json("iam", "get-role", "--role-name", role_name)
         return role["Role"]["Arn"]
     raise RuntimeError(f"Could not resolve SageMakerExecutionRole from stack {stack_name}")
@@ -109,6 +114,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--instance-type", default="ml.g4dn.xlarge")
     parser.add_argument("--volume-size-gb", default="100")
     parser.add_argument(
+        "--image-tag",
+        default="",
+        help="Override the ECR image tag. Defaults to the current branch tag.",
+    )
+    parser.add_argument(
+        "--image-uri",
+        default="",
+        help="Fully qualified ECR image URI override. Takes precedence over --image-tag.",
+    )
+    parser.add_argument(
         "--env",
         action="append",
         default=[],
@@ -125,7 +140,8 @@ def main() -> int:
     stack_name, outputs = find_branch_ml_stack(branch_name)
     role_arn = get_sagemaker_role_arn(stack_name)
     branch_tag = get_branch_ecr_tag(branch_name) or "latest"
-    image_uri = f"{outputs['SfMRepositoryUri']}:{branch_tag}"
+    selected_tag = args.image_tag or branch_tag
+    image_uri = args.image_uri or f"{outputs['SfMRepositoryUri']}:{selected_tag}"
 
     timestamp = int(time.time())
     job_name = f"{args.job_prefix}-{timestamp}"
@@ -212,6 +228,7 @@ def main() -> int:
         "stack_name": stack_name,
         "job_name": job_name,
         "image_uri": image_uri,
+        "selected_tag": selected_tag if not args.image_uri else "",
         "input_s3_uri": args.input_s3_uri,
         "output_s3_uri": output_s3_uri,
         "instance_type": args.instance_type,

@@ -17,6 +17,35 @@ SPEC.loader.exec_module(run_colmap_sfm)
 
 
 class ColmapGpsPriorTests(unittest.TestCase):
+    def test_get_pose_prior_image_names_uses_schema_tolerant_join(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.database_path = root / "database.db"
+
+            with sqlite3.connect(pipeline.database_path) as connection:
+                connection.execute("CREATE TABLE images(image_id INTEGER PRIMARY KEY, name TEXT)")
+                connection.execute(
+                    """
+                    CREATE TABLE pose_priors(
+                        image_id INTEGER PRIMARY KEY,
+                        position BLOB,
+                        coordinate_system INTEGER,
+                        position_covariance BLOB
+                    )
+                    """
+                )
+                connection.execute("INSERT INTO images(image_id, name) VALUES (1, 'a.jpg'), (2, 'b.jpg')")
+                connection.execute(
+                    """
+                    INSERT INTO pose_priors(image_id, position, coordinate_system, position_covariance)
+                    VALUES (2, X'00', 0, X'00')
+                    """
+                )
+                connection.commit()
+
+            self.assertEqual(pipeline.get_pose_prior_image_names(), {"b.jpg"})
+
     def test_backfill_pose_priors_restores_missing_wgs84_priors(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

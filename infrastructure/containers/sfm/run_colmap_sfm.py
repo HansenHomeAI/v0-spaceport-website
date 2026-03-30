@@ -246,13 +246,22 @@ class ColmapPipeline:
             rows = connection.execute("SELECT image_id, name FROM images").fetchall()
         return {str(name): int(image_id) for image_id, name in rows}
 
+    def get_table_columns(self, table_name: str) -> set[str]:
+        with sqlite3.connect(self.database_path) as connection:
+            rows = connection.execute(f"PRAGMA table_info({table_name})").fetchall()
+        return {str(row[1]) for row in rows}
+
     def get_pose_prior_image_names(self) -> set[str]:
+        columns = self.get_table_columns("pose_priors")
+        if "image_id" not in columns:
+            logger.warning("COLMAP pose_priors table is missing image_id; columns=%s", sorted(columns))
+            return set()
         with sqlite3.connect(self.database_path) as connection:
             rows = connection.execute(
                 """
                 SELECT images.name
-                FROM pose_priors
-                INNER JOIN images ON images.image_id = pose_priors.image_id
+                FROM images
+                INNER JOIN pose_priors USING(image_id)
                 """
             ).fetchall()
         return {str(row[0]) for row in rows}
