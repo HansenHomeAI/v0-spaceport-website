@@ -17,7 +17,18 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import boto3
+from .api_gateway_config import resolve_auth_api_endpoint_type
 from .branch_utils import build_scoped_name
+
+
+def build_auth_api_kwargs(deployment_class: str) -> dict:
+    api_kwargs = {}
+    endpoint_type = resolve_auth_api_endpoint_type(deployment_class)
+    if endpoint_type == "REGIONAL":
+        # Shared staging auth is reused by development and explicit preview opt-in branches.
+        # Keeping non-production auth APIs regional avoids exhausting the account EDGE API quota.
+        api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+    return api_kwargs
 
 
 class AuthStack(Stack):
@@ -58,6 +69,7 @@ class AuthStack(Stack):
 
         CfnOutput(self, "CognitoUserPoolId", value=user_pool.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
+        api_kwargs = build_auth_api_kwargs(deployment_class)
 
         # Import existing Lambda functions to avoid conflicts
 
@@ -81,6 +93,7 @@ class AuthStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
             ),
+            **api_kwargs,
         )
 
         invite_res = invite_api.root.add_resource("invite")
@@ -205,6 +218,7 @@ class AuthStack(Stack):
                     user=True,
                 ),
             ),
+            **api_kwargs,
         )
         # Create Cognito authorizer for projects API
         projects_authorizer = apigw.CognitoUserPoolsAuthorizer(
@@ -322,6 +336,7 @@ class AuthStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
             ),
+            **api_kwargs,
         )
 
         explore_resource = explore_api.root.add_resource("explore")
@@ -443,6 +458,7 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add subscription endpoints
@@ -626,6 +642,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add beta access admin endpoints
@@ -774,6 +791,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         model_delivery_authorizer = apigw.CognitoUserPoolsAuthorizer(
@@ -949,6 +967,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add password reset endpoint
