@@ -897,6 +897,7 @@ class MLPipelineStack(Stack):
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
+        # Branch previews use regional APIs so ML preview deploys do not consume scarce EDGE API quota.
         ml_api_endpoint_types = (
             [apigw.EndpointType.REGIONAL]
             if self.deployment_class == "branch-preview"
