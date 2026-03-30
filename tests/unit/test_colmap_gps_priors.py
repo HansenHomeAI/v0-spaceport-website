@@ -310,8 +310,48 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 ["spatial_matcher", "sequential_matcher", "vocab_tree_matcher"],
             )
             self.assertTrue(pipeline.fallback_triggered)
-            self.assertEqual(pipeline.fallback_reason, "incomplete_registration")
+            self.assertEqual(pipeline.fallback_reason, "below_registered_ratio_threshold")
             self.assertEqual(pipeline.final_matcher_mode, "spatial_sequential_plus_vocab")
+
+    def test_gps_first_accepts_ratio_threshold_without_vocab_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 100
+            pipeline.gps_image_count = 100
+            pipeline.gps_prior_coverage = 1.0
+            pipeline.enable_sequential_matcher = True
+            pipeline.gps_min_registered_ratio = 0.98
+
+            calls: list[str] = []
+
+            def record_call(name: str):
+                def inner(*args, **kwargs):
+                    calls.append(name)
+                    return None
+
+                return inner
+
+            spatial_model = run_colmap_sfm.ModelSummary(
+                stage="mapper_spatial_sequential_only",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=98,
+                points_3d=5000,
+            )
+
+            pipeline.run_spatial_matcher = record_call("spatial_matcher")
+            pipeline.run_sequential_matcher = record_call("sequential_matcher")
+            pipeline.run_vocab_matching = record_call("vocab_tree_matcher")
+            pipeline.run_mapper = mock.Mock(return_value=spatial_model)
+
+            best_model = pipeline.run_matching_and_mapping()
+
+            self.assertEqual(best_model.images_registered, 98)
+            self.assertEqual(calls, ["spatial_matcher", "sequential_matcher"])
+            self.assertFalse(pipeline.fallback_triggered)
+            self.assertEqual(pipeline.fallback_reason, "not_needed")
+            self.assertEqual(pipeline.final_matcher_mode, "spatial_sequential_only")
 
     def test_run_mapper_does_not_pass_image_list_path(self):
         with tempfile.TemporaryDirectory() as tmp:

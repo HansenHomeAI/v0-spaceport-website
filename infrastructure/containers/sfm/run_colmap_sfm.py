@@ -846,12 +846,18 @@ class ColmapPipeline:
             logger.warning("GPS-first first-pass mapper failed, falling back to vocab tree: %s", exc)
 
         if spatial_model is not None:
+            registered_ratio = (
+                spatial_model.images_registered / self.dataset_image_count
+                if self.dataset_image_count
+                else 0.0
+            )
             logger.info(
-                "First-pass mapper registered %s/%s extracted images",
+                "First-pass mapper registered %s/%s extracted images (%.2f%%)",
                 spatial_model.images_registered,
                 self.dataset_image_count,
+                registered_ratio * 100.0,
             )
-            if spatial_model.images_registered >= self.dataset_image_count:
+            if registered_ratio >= self.gps_min_registered_ratio:
                 self.final_matcher_mode = (
                     "spatial_sequential_only"
                     if self.enable_sequential_matcher
@@ -859,11 +865,13 @@ class ColmapPipeline:
                 )
                 return spatial_model
             self.fallback_triggered = True
-            self.fallback_reason = "incomplete_registration"
+            self.fallback_reason = "below_registered_ratio_threshold"
             logger.info(
-                "First-pass mapper registered %s/%s images; adding vocab-tree recovery",
+                "First-pass mapper registered %s/%s images (%.2f%%), below %.2f%% threshold; adding vocab-tree recovery",
                 spatial_model.images_registered,
                 self.dataset_image_count,
+                registered_ratio * 100.0,
+                self.gps_min_registered_ratio * 100.0,
             )
 
         self.run_vocab_matching()
