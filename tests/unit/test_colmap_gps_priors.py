@@ -46,6 +46,51 @@ class ColmapGpsPriorTests(unittest.TestCase):
 
             self.assertEqual(pipeline.get_pose_prior_image_names(), {"b.jpg"})
 
+    def test_validate_pose_priors_skips_backfill_for_newer_schema_variant(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.database_path = root / "database.db"
+            pipeline.gps_image_count = 2
+
+            with sqlite3.connect(pipeline.database_path) as connection:
+                connection.execute("CREATE TABLE images(image_id INTEGER PRIMARY KEY, name TEXT)")
+                connection.execute(
+                    """
+                    CREATE TABLE pose_priors(
+                        pose_prior_id INTEGER PRIMARY KEY,
+                        position BLOB,
+                        coordinate_system INTEGER,
+                        position_covariance BLOB,
+                        gravity BLOB,
+                        corr_sensor_id INTEGER,
+                        corr_sensor_type INTEGER
+                    )
+                    """
+                )
+                connection.execute(
+                    """
+                    INSERT INTO pose_priors(
+                        pose_prior_id,
+                        position,
+                        coordinate_system,
+                        position_covariance,
+                        gravity,
+                        corr_sensor_id,
+                        corr_sensor_type
+                    ) VALUES
+                        (1, X'00', 0, X'00', NULL, NULL, NULL),
+                        (2, X'00', 0, X'00', NULL, NULL, NULL)
+                    """
+                )
+                connection.commit()
+
+            pipeline.validate_or_backfill_pose_priors()
+
+            self.assertEqual(pipeline.pose_priors_written_count, 2)
+            self.assertEqual(pipeline.gps_prior_coverage, 1.0)
+            self.assertEqual(pipeline.pose_priors_source, "feature_extractor")
+
     def test_backfill_pose_priors_restores_missing_wgs84_priors(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -251,8 +251,14 @@ class ColmapPipeline:
             rows = connection.execute(f"PRAGMA table_info({table_name})").fetchall()
         return {str(row[1]) for row in rows}
 
+    def pose_priors_columns(self) -> set[str]:
+        return self.get_table_columns("pose_priors")
+
+    def supports_pose_prior_image_backfill(self) -> bool:
+        return "image_id" in self.pose_priors_columns()
+
     def get_pose_prior_image_names(self) -> set[str]:
-        columns = self.get_table_columns("pose_priors")
+        columns = self.pose_priors_columns()
         if "image_id" not in columns:
             logger.warning("COLMAP pose_priors table is missing image_id; columns=%s", sorted(columns))
             return set()
@@ -268,6 +274,9 @@ class ColmapPipeline:
 
     def backfill_pose_priors_from_exif(self) -> int:
         if not self.exif_records:
+            return 0
+        if not self.supports_pose_prior_image_backfill():
+            logger.info("Skipping manual pose prior backfill for schema columns=%s", sorted(self.pose_priors_columns()))
             return 0
         image_ids_by_name = self.get_image_ids_by_name()
         existing_names = self.get_pose_prior_image_names()
@@ -319,8 +328,12 @@ class ColmapPipeline:
             return
 
         before_backfill = self.count_pose_priors()
-        backfilled_count = self.backfill_pose_priors_from_exif()
-        after_backfill = self.count_pose_priors()
+        if before_backfill == 0 and self.supports_pose_prior_image_backfill():
+            backfilled_count = self.backfill_pose_priors_from_exif()
+            after_backfill = self.count_pose_priors()
+        else:
+            backfilled_count = 0
+            after_backfill = before_backfill
 
         self.pose_priors_written_count = after_backfill
         self.gps_prior_coverage = round(after_backfill / self.gps_image_count, 4)
@@ -330,6 +343,8 @@ class ColmapPipeline:
             self.pose_priors_source = "backfilled_from_exif"
         elif before_backfill > 0:
             self.pose_priors_source = "feature_extractor"
+        elif after_backfill == 0 and not self.supports_pose_prior_image_backfill():
+            self.pose_priors_source = "unsupported_pose_prior_schema"
         else:
             self.pose_priors_source = "missing"
 
