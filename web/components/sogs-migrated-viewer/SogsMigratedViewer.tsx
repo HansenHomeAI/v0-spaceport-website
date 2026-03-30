@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createDefaultScenePayload } from "../../lib/sogsViewerSceneDefaults";
-import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
+import {
+  DEFAULT_SOGS_BUNDLE_URL,
+  resolveSogsViewerBundle,
+} from "../../lib/sogsViewerBundle";
 import {
   CANYON_VISTA_CAMERA_START_Y,
   CANYON_VISTA_DEFAULT_PATH_CHECKPOINTS,
@@ -51,6 +54,7 @@ export default function SogsMigratedViewer() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ignoreNextSogsStateRef = useRef(false);
+  const loadRequestRef = useRef(0);
 
   const pathStateRef = useRef<PathAnimationState>(
     createInitialPathState({
@@ -77,6 +81,8 @@ export default function SogsMigratedViewer() {
   const autoRotateRef = useRef(false);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
+  /** `null` = explicit no-skybox; string = resolved asset URL for SuperSplat `&skybox=`. */
+  const [skyboxForViewer, setSkyboxForViewer] = useState<string | null>(null);
   const [activeUrl, setActiveUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
@@ -100,16 +106,25 @@ export default function SogsMigratedViewer() {
     autoRotateRef.current = autoRotate;
   }, [autoRotate]);
 
-  const attemptLoad = useCallback((rawValue: string) => {
+  const attemptLoad = useCallback(async (rawValue: string, explicitSkybox?: string | null) => {
+    const loadRequest = loadRequestRef.current + 1;
+    loadRequestRef.current = loadRequest;
     setError(null);
-    const normalized = normalizeBundleUrl(rawValue);
-    if (!normalized) {
+    setViewerState("loading");
+
+    const resolved = await resolveSogsViewerBundle(rawValue, explicitSkybox);
+    if (loadRequest !== loadRequestRef.current) {
+      return false;
+    }
+
+    if (!resolved) {
       setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
       setViewerState("idle");
       return false;
     }
-    setViewerState("loading");
-    setActiveUrl(normalized);
+
+    setSkyboxForViewer(resolved.skyboxUrl);
+    setActiveUrl(resolved.contentUrl);
     setIframeKey((k) => k + 1);
     ignoreNextSogsStateRef.current = true;
     poseRef.current = null;
@@ -122,6 +137,9 @@ export default function SogsMigratedViewer() {
       settings: "/supersplat-viewer/settings.json",
       content: activeUrl,
     });
+    if (skyboxForViewer?.trim()) {
+      params.set("skybox", skyboxForViewer.trim());
+    }
     return `${VIEWER_BASE}?${params.toString()}`;
   })();
 
@@ -131,7 +149,15 @@ export default function SogsMigratedViewer() {
     const q = params.get("url");
     const raw = q?.trim() ? q.trim() : DEFAULT_SOGS_BUNDLE_URL;
     setInputUrl(raw);
-    attemptLoad(raw);
+
+    const sky = params.get("skybox");
+    let explicitSkybox: string | null | undefined;
+    if (sky === "0" || sky === "off" || sky === "none") {
+      explicitSkybox = null;
+    } else if (sky?.trim()) {
+      explicitSkybox = sky.trim();
+    }
+    void attemptLoad(raw, explicitSkybox);
   }, [attemptLoad]);
 
   useEffect(() => {
@@ -358,7 +384,7 @@ export default function SogsMigratedViewer() {
       <div ref={containerRef} className="sogs-migrated-stage">
         {viewerSrc ? (
           <iframe
-            key={iframeKey}
+            key={`${iframeKey}-${skyboxForViewer ?? "no"}`}
             ref={iframeRef}
             src={viewerSrc}
             title="sogs-migrated-viewer"
@@ -547,7 +573,9 @@ export default function SogsMigratedViewer() {
               const hole = CANYON_VISTA_HOLES.find((h) => h.id === id);
               const url = hole?.bundleUrl ?? DEFAULT_SOGS_BUNDLE_URL;
               setInputUrl(url);
-              if (attemptLoad(url)) setPathPlaying(false);
+              void attemptLoad(url).then((loaded) => {
+                if (loaded) setPathPlaying(false);
+              });
             }}
             disabled={viewerState === "loading"}
           >
@@ -562,7 +590,9 @@ export default function SogsMigratedViewer() {
           className="sogs-bundle-form"
           onSubmit={(e) => {
             e.preventDefault();
-            if (attemptLoad(inputUrl)) setPathPlaying(false);
+            void attemptLoad(inputUrl).then((loaded) => {
+              if (loaded) setPathPlaying(false);
+            });
           }}
         >
           <div className="lot-editor-field">

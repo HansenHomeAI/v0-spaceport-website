@@ -46,6 +46,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.31",
     "playwright": "^1.48.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2",
     "wrangler": "^4.28.1"
   },

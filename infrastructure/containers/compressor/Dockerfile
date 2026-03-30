@@ -40,6 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     cmake \
+    webp \
     wget \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
@@ -81,6 +82,7 @@ RUN pip3 install --no-cache-dir \
 # Copy application code
 COPY compress.py .
 COPY diagnostic_script.py .
+COPY assets ./assets
 RUN chmod +x compress.py
 RUN chmod +x diagnostic_script.py
 

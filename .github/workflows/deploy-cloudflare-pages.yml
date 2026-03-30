@@ -15,10 +15,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
-    outputs:
-      preview_url: ${{ steps.resolve_urls.outputs.preview_url }}
-      alias_url: ${{ steps.resolve_urls.outputs.alias_url }}
-      hash_url: ${{ steps.resolve_urls.outputs.hash_url }}
     permissions:
       actions: read
       id-token: write
@@ -115,40 +111,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          wait_for_stack() {
-            local stack_name="$1"
-            local max_attempts=120
-            local sleep_seconds=15
-            local attempt=1
-
-            while [ "$attempt" -le "$max_attempts" ]; do
-              if ! status=$(aws cloudformation describe-stacks \
-                --stack-name "$stack_name" \
-                --query 'Stacks[0].StackStatus' \
-                --output text 2>/dev/null); then
-                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to exist..."
-              elif [[ "$status" == *_IN_PROGRESS ]]; then
-                echo "[$attempt/$max_attempts] Waiting for stack $stack_name to finish: $status"
-              elif [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
-                echo "Stack $stack_name is ready with status $status"
-                return 0
-              elif [[ "$stack_name" == "$AUTH_STACK_NAME" && "$status" == "UPDATE_ROLLBACK_COMPLETE" ]]; then
-                # The shared auth stack can be reused safely for preview env injection even when its last update rolled back.
-                echo "Shared auth stack $stack_name is readable with status $status"
-                return 0
-              else
-                echo "Stack $stack_name reached unexpected status: $status" >&2
-                return 1
-              fi
-
-              sleep "$sleep_seconds"
-              attempt=$((attempt + 1))
-            done
-
-            echo "Timed out waiting for stack $stack_name" >&2
-            return 1
-          }
-
           get_output() {
             local stack_name="$1"
             local output_key="$2"
@@ -176,23 +138,89 @@ jobs:
             return 1
           }
 
-          wait_for_stack "$SPACEPORT_STACK_NAME"
-          wait_for_stack "$ML_STACK_NAME"
-          wait_for_stack "$AUTH_STACK_NAME"
+          get_optional_output() {
+            local stack_name="$1"
+            local output_key="$2"
+            local value=""
+            value=$(aws cloudformation describe-stacks \
+              --stack-name "$stack_name" \
+              --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
+              --output text 2>/dev/null || true)
+            if [ -n "$value" ] && [ "$value" != "None" ]; then
+              printf '%s' "$value"
+            fi
+          }
 
-          PROJECTS_API_URL="$(get_output "$AUTH_STACK_NAME" "ProjectsApiUrl")"
-          COGNITO_USER_POOL_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolId")"
-          COGNITO_USER_POOL_CLIENT_ID="$(get_output "$AUTH_STACK_NAME" "CognitoUserPoolClientId")"
-          SUBSCRIPTION_API_URL="$(get_output "$AUTH_STACK_NAME" "SubscriptionApiUrl")"
-          BETA_ACCESS_API_URL="$(get_output "$AUTH_STACK_NAME" "BetaAccessAdminApiUrl")"
-          MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_STACK_NAME" "ModelDeliveryAdminApiUrl")"
-          EXPLORE_API_URL="$(get_output "$AUTH_STACK_NAME" "ExplorePublicApiUrl")"
+          is_ready_stack_status() {
+            local status="$1"
+            local extra_ready_regex="${2:-}"
 
-          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-          WAITLIST_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "WaitlistApiUrl")"
-          FEEDBACK_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FeedbackApiUrl")"
-          ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+            if [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
+              return 0
+            fi
+
+            if [ -n "$extra_ready_regex" ] && [[ "$status" =~ $extra_ready_regex ]]; then
+              return 0
+            fi
+
+            return 1
+          }
+
+          resolve_output_stack() {
+            local primary="$1"
+            local fallback="$2"
+            local extra_ready_regex="${3:-}"
+            local status=""
+
+            if status=$(aws cloudformation describe-stacks \
+              --stack-name "$primary" \
+              --query 'Stacks[0].StackStatus' \
+              --output text 2>/dev/null); then
+              if is_ready_stack_status "$status" "$extra_ready_regex"; then
+                echo "Stack $primary is ready with status $status" >&2
+                printf '%s' "$primary"
+                return 0
+              fi
+              echo "Stack $primary is not ready for output resolution: $status" >&2
+            fi
+
+            if [ -n "$fallback" ]; then
+              echo "Falling back from stack $primary to shared stack $fallback" >&2
+              if status=$(aws cloudformation describe-stacks \
+                --stack-name "$fallback" \
+                --query 'Stacks[0].StackStatus' \
+                --output text 2>/dev/null); then
+                if is_ready_stack_status "$status" "$extra_ready_regex"; then
+                  echo "Stack $fallback is ready with status $status" >&2
+                  printf '%s' "$fallback"
+                  return 0
+                fi
+                echo "Stack $fallback is not ready for output resolution: $status" >&2
+              fi
+            fi
+
+            echo "Unable to resolve ready stack for primary=$primary fallback=${fallback:-<none>}" >&2
+            return 1
+          }
+
+          SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportStagingStack')")"
+          ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportMLPipelineStagingStack')")"
+          AUTH_OUTPUT_STACK="$(resolve_output_stack "$AUTH_STACK_NAME" "" "^(UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED)$")"
+
+          PROJECTS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ProjectsApiUrl")"
+          COGNITO_USER_POOL_ID="$(get_output "$AUTH_OUTPUT_STACK" "CognitoUserPoolId")"
+          COGNITO_USER_POOL_CLIENT_ID="$(get_output "$AUTH_OUTPUT_STACK" "CognitoUserPoolClientId")"
+          SUBSCRIPTION_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "SubscriptionApiUrl")"
+          BETA_ACCESS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "BetaAccessAdminApiUrl")"
+          MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ModelDeliveryAdminApiUrl")"
+          EXPLORE_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ExplorePublicApiUrl")"
+
+          DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+          FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+          WAITLIST_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "WaitlistApiUrl")"
+          FEEDBACK_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FeedbackApiUrl")"
+          ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
+          ML_DELIVERY_BUCKET_NAME="$(get_optional_output "$ML_OUTPUT_STACK" "MLDeliveryBucketName")"
 
           {
             echo "PROJECTS_API_URL=$PROJECTS_API_URL"
@@ -207,17 +235,19 @@ jobs:
             echo "WAITLIST_API_URL=$WAITLIST_API_URL"
             echo "FEEDBACK_API_URL=$FEEDBACK_API_URL"
             echo "ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL"
+            echo "ML_DELIVERY_BUCKET_NAME=$ML_DELIVERY_BUCKET_NAME"
           } >> "$GITHUB_ENV"
 
           echo "Resolved deployment class: $DEPLOYMENT_CLASS"
-          echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-          echo "ML stack: $ML_STACK_NAME"
-          echo "Shared auth stack: $AUTH_STACK_NAME"
+          echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+          echo "ML stack: $ML_OUTPUT_STACK"
+          echo "Shared auth stack: $AUTH_OUTPUT_STACK"
           echo "Drone Path API: $DRONE_PATH_API_URL"
           echo "File Upload API: $FILE_UPLOAD_API_URL"
           echo "Waitlist API: $WAITLIST_API_URL"
           echo "Feedback API: $FEEDBACK_API_URL"
           echo "ML Pipeline API: $ML_PIPELINE_API_URL"
+          echo "ML Delivery Bucket: ${ML_DELIVERY_BUCKET_NAME:-<resolved dynamically at runtime>}"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -240,6 +270,12 @@ jobs:
           BRANCH="${{ github.ref_name }}"
           echo "Preparing .env for branch $BRANCH"
           : > .env
+          echo "AWS_REGION=$AWS_REGION" >> .env
+          echo "AWS_DEFAULT_REGION=$AWS_REGION" >> .env
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
+          if [ -n "${AWS_SESSION_TOKEN:-}" ]; then echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> .env; fi
+          if [ -n "$ML_DELIVERY_BUCKET_NAME" ]; then echo "ML_DELIVERY_BUCKET_NAME=$ML_DELIVERY_BUCKET_NAME" >> .env; fi
           GOOGLE_MAPS_KEY="${MAPS_KEY_PRIMARY:-}"
           if [ -z "$GOOGLE_MAPS_KEY" ]; then GOOGLE_MAPS_KEY="${MAPS_KEY_LEGACY:-}"; fi
           GOOGLE_MAPS_MAP_ID="${MAP_ID_PRIMARY:-}"
@@ -261,8 +297,8 @@ jobs:
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_PROD }}" >> .env
             echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
-            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
-            echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -283,8 +319,8 @@ jobs:
             echo "NEXT_PUBLIC_SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL" >> .env
             echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY_STAGING }}" >> .env
             echo "NEXT_PUBLIC_SPACES_VIEWER_BASE_URL=https://spcprt.com/spaces" >> .env
-            echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
-            echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_KEY" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=$GOOGLE_MAPS_MAP_ID" >> .env
             # Analytics environment variables
             echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" >> .env
             echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env
@@ -296,6 +332,10 @@ jobs:
         run: |
           if ! [ -s .env ]; then
             echo ".env missing or empty" >&2
+            exit 1
+          fi
+          if grep -E '^(AWS_REGION|AWS_DEFAULT_REGION|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY)=$' .env; then
+            echo "Detected empty server-side runtime variables in .env" >&2
             exit 1
           fi
           if grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=$' .env; then
@@ -339,29 +379,43 @@ jobs:
           if [ -z "$google_maps" ]; then google_maps="$MAPS_KEY_LEGACY"; fi
           google_maps_map_id="$MAP_ID_PRIMARY"
           if [ -z "$google_maps_map_id" ]; then google_maps_map_id="$MAP_ID_LEGACY"; fi
+          aws_session_token="${AWS_SESSION_TOKEN:-}"
 
           jq -n \
             --arg google_maps "$google_maps" \
             --arg google_maps_map_id "$google_maps_map_id" \
+            --arg aws_region "$AWS_REGION" \
+            --arg aws_access_key_id "$AWS_ACCESS_KEY_ID" \
+            --arg aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" \
+            --arg aws_session_token "$aws_session_token" \
+            --arg ml_delivery_bucket_name "$ML_DELIVERY_BUCKET_NAME" \
             '{
               deployment_configs: {
                 production: {
                   compatibility_date: "2025-08-09",
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
-                  environment_variables: {
-                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
-                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
+                  env_vars: {
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { type: "plain_text", value: $google_maps },
+                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { type: "plain_text", value: $google_maps_map_id }
                   }
                 },
                 preview: {
                   compatibility_date: "2025-08-09",
                   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
                   build_image_major_version: 3,
-                  environment_variables: {
-                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { value: $google_maps },
-                    NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { value: $google_maps_map_id }
-                  }
+                  env_vars: (
+                    {
+                      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: { type: "plain_text", value: $google_maps },
+                      NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: { type: "plain_text", value: $google_maps_map_id },
+                      AWS_REGION: { type: "plain_text", value: $aws_region },
+                      AWS_DEFAULT_REGION: { type: "plain_text", value: $aws_region },
+                      AWS_ACCESS_KEY_ID: { type: "secret_text", value: $aws_access_key_id },
+                      AWS_SECRET_ACCESS_KEY: { type: "secret_text", value: $aws_secret_access_key }
+                    }
+                    + (if $ml_delivery_bucket_name != "" then { ML_DELIVERY_BUCKET_NAME: { type: "plain_text", value: $ml_delivery_bucket_name } } else {} end)
+                    + (if $aws_session_token != "" then { AWS_SESSION_TOKEN: { type: "secret_text", value: $aws_session_token } } else {} end)
+                  )
                 }
               }
             }' > payload.json
@@ -372,79 +426,60 @@ jobs:
             --data @payload.json | cat
 
       - name: Deploy to Cloudflare Pages
-        id: deploy_pages
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          # Deploy the static subdir so _worker.js sits at the upload root
+          npx wrangler pages deploy .vercel/output/static \
+            --project-name "$CF_PAGES_PROJECT" \
+            --branch "$BRANCH"
+
+      - name: Resolve latest deployment URLs (preview alias + hash URL)
+        id: resolve_urls
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -euo pipefail
           BRANCH="${{ github.ref_name }}"
-          # Deploy the static subdir so _worker.js sits at the upload root
-          npx wrangler pages deploy .vercel/output/static \
-            --project-name "$CF_PAGES_PROJECT" \
-            --branch "$BRANCH" \
-            --commit-hash "${GITHUB_SHA}" | tee /tmp/wrangler-pages-deploy.log
+          # Get most recent deployment for the selected project (includes preview)
+          JSON=$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")
+          HASH_URL=$(echo "$JSON" | jq -r '.result[0].url')
+          DEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')
+          # Fetch aliases for that deployment (branch alias if any)
+          DETAIL=$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")
+          ALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')
+          echo "hash_url=$HASH_URL" >> $GITHUB_OUTPUT
+          echo "alias_url=$ALIAS" >> $GITHUB_OUTPUT
+          echo "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"
 
-      - name: Resolve deployment URLs from current deploy output
-        id: resolve_urls
-        run: |
-          set -euo pipefail
-          python3 ../scripts/parse_pages_deploy_output.py \
-            --log /tmp/wrangler-pages-deploy.log \
-            --format shell > /tmp/pages-deploy-urls.env
-          set -a
-          . /tmp/pages-deploy-urls.env
-          set +a
-          cat /tmp/pages-deploy-urls.env
-          while IFS='=' read -r key value; do
-            echo "${key,,}=${value}" >> "$GITHUB_OUTPUT"
-            echo "${key}=${value}" >> "$GITHUB_ENV"
-          done < /tmp/pages-deploy-urls.env
-          echo "PREVIEW_URL=${PREVIEW_URL}"
-          {
-            echo "### Pages preview URLs"
-            echo ""
-            echo "- PREVIEW_URL=${PREVIEW_URL}"
-            echo "- ALIAS_URL=${ALIAS_URL:-<none>}"
-            echo "- HASH_URL=${HASH_URL}"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Verify preview URL and hash URL with retries
+      - name: Verify preview alias and hash URL with retries
         env:
-          PREVIEW_URL: ${{ steps.resolve_urls.outputs.preview_url }}
           HASH_URL: ${{ steps.resolve_urls.outputs.hash_url }}
           ALIAS_URL: ${{ steps.resolve_urls.outputs.alias_url }}
         run: |
-          set -euo pipefail
-          if [ -z "$PREVIEW_URL" ]; then
-            echo "PREVIEW_URL was not resolved from the current deploy output" >&2
-            exit 1
-          fi
-
-          probe_url() {
-            local url="$1"
-            local required="$2"
-            echo "Probing $url ..."
+          set -e
+          urls=""
+          if [ -n "$ALIAS_URL" ]; then urls="$urls $ALIAS_URL"; fi
+          if [ -n "$HASH_URL" ]; then urls="$urls $HASH_URL"; fi
+          echo "Checking URLs: $urls"
+          for URL in $urls; do
+            echo "Probing $URL ..."
             for i in $(seq 1 12); do
               echo "Attempt $i"
-              if curl -fsS "$url/health.txt" >/dev/null; then
-                echo "OK $url/health.txt"
-                return 0
-              fi
+              if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
               sleep 5
               if [ $i -eq 12 ]; then
-                if [ "$required" = "false" ]; then
-                  echo "Timeout waiting for diagnostic URL $url; continuing"
-                  return 0
+                if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then
+                  echo "Timeout waiting for hash URL $URL; continuing"
+                  break
                 fi
-                echo "Timeout waiting for $url"
-                return 1
+                echo "Timeout waiting for $URL"
+                exit 1
               fi
             done
-          }
-
-          echo "PREVIEW_URL=$PREVIEW_URL"
-          probe_url "$PREVIEW_URL" true
-          if [ -n "$HASH_URL" ] && [ "$HASH_URL" != "$PREVIEW_URL" ]; then
-            probe_url "$HASH_URL" false
-          fi
+          done

@@ -20,6 +20,10 @@ const baseUrl = (process.env.SOGS_MIGRATED_URL ?? "http://127.0.0.1:3000").repla
 const bundleUrl =
   process.env.SOGS_BUNDLE_URL ??
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+const expectedSkyboxSubstring =
+  process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/skybox/kloppenheim_06_puresky_equirect.webp";
+const expectBundledSkybox =
+  process.env.SOGS_EXPECT_BUNDLED_SKYBOX === "1" || process.env.SOGS_EXPECT_BUNDLED_SKYBOX === "true";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -144,6 +148,13 @@ function summarizeRenderedPixels(buffer) {
   await fs.mkdir(logsDir, { recursive: true });
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const skyboxResponses = [];
+
+  page.on("response", (response) => {
+    if (response.url().includes(expectedSkyboxSubstring)) {
+      skyboxResponses.push({ url: response.url(), status: response.status() });
+    }
+  });
 
   const encoded = encodeURIComponent(bundleUrl);
   await page.goto(`${baseUrl}/sogs-migrated-viewer?url=${encoded}`, {
@@ -154,7 +165,8 @@ function summarizeRenderedPixels(buffer) {
   assert((await page.locator("header").count()) === 0, "no site header on standalone migrated viewer");
   await page.waitForSelector('iframe[title="sogs-migrated-viewer"]', { timeout: 60000 });
 
-  const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
+  const iframeHandle = await page.locator('iframe[title="sogs-migrated-viewer"]').elementHandle();
+  const splatFrame = await iframeHandle?.contentFrame();
   assert(!!splatFrame, "supersplat iframe frame exists");
   await splatFrame.waitForFunction(() => window.__sogsSplatXzDragReady === true, null, {
     timeout: 120000,
@@ -182,6 +194,12 @@ function summarizeRenderedPixels(buffer) {
     renderStats.alpha > 0 && renderStats.bright > 5000,
     `viewer iframe should render visible content, got stats ${JSON.stringify(renderStats)}`,
   );
+  if (expectBundledSkybox) {
+    assert(
+      skyboxResponses.some((response) => response.status === 200),
+      `expected bundled skybox request containing "${expectedSkyboxSubstring}", got ${JSON.stringify(skyboxResponses)}`,
+    );
+  }
 
   await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
   await page.getByTestId("focus-scene-center").waitFor({ state: "visible", timeout: 10000 });
@@ -195,6 +213,9 @@ function summarizeRenderedPixels(buffer) {
   await page.screenshot({ path: shot, fullPage: true });
   console.log(`Canvas stats: ${JSON.stringify(stats)}`);
   console.log(`Render stats: ${JSON.stringify(renderStats)}`);
+  if (expectBundledSkybox) {
+    console.log(`Skybox responses: ${JSON.stringify(skyboxResponses)}`);
+  }
   console.log(`OK — screenshot ${shot}`);
   await browser.close();
 })().catch((e) => {
