@@ -6,6 +6,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -192,6 +193,7 @@ def delete_stale_preview_stacks(region: str, preview_stacks: Sequence[PreviewSta
 
 def delete_stale_orphan_preview_apis(region: str, rest_apis: Sequence[RestApiRecord], preview_stacks: Sequence[PreviewStackRecord], stale_branch_ids: Set[str]) -> List[str]:
     import boto3
+    from botocore.exceptions import ClientError
 
     client = boto3.client("apigateway", region_name=region)
     stack_branch_ids = {stack.branch_id for stack in preview_stacks if not stack.status.startswith("DELETE_")}
@@ -202,7 +204,16 @@ def delete_stale_orphan_preview_apis(region: str, rest_apis: Sequence[RestApiRec
             continue
         if api.branch_id in stack_branch_ids:
             continue
-        client.delete_rest_api(restApiId=api.api_id)
+        attempts = 0
+        while True:
+            try:
+                client.delete_rest_api(restApiId=api.api_id)
+                break
+            except ClientError as exc:
+                if exc.response.get("Error", {}).get("Code") != "TooManyRequestsException" or attempts >= 4:
+                    raise
+                attempts += 1
+                time.sleep(2 * attempts)
         deleted.append(api.name)
 
     return deleted
