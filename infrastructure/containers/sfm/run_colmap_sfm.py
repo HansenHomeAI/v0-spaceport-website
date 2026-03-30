@@ -728,8 +728,6 @@ class ColmapPipeline:
                 str(self.database_path),
                 "--image_path",
                 str(self.images_dir),
-                "--image_list_path",
-                str(self.image_list_path),
                 "--output_path",
                 str(sparse_root),
                 "--Mapper.num_threads",

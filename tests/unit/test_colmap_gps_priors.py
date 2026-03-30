@@ -313,6 +313,24 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.fallback_reason, "incomplete_registration")
             self.assertEqual(pipeline.final_matcher_mode, "spatial_sequential_plus_vocab")
 
+    def test_run_mapper_does_not_pass_image_list_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            sparse_root = root / "sparse_vocab_only"
+            (sparse_root / "0").mkdir(parents=True, exist_ok=True)
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                run_colmap_sfm, "count_text_rows", return_value=1
+            ), mock.patch.object(run_colmap_sfm, "count_registered_images", return_value=3):
+                model = pipeline.run_mapper(stage="mapper_vocab_only", sparse_root=sparse_root)
+
+            mapper_args = stream_command_mock.call_args_list[0].kwargs["stage"]
+            self.assertEqual(mapper_args, "mapper_vocab_only")
+            mapper_command = stream_command_mock.call_args_list[0].args[0]
+            self.assertNotIn("--image_list_path", mapper_command)
+            self.assertEqual(model.images_registered, 3)
+
 
 if __name__ == "__main__":
     unittest.main()
