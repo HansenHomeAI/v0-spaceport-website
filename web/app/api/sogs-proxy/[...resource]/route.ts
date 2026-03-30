@@ -13,9 +13,11 @@ const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
 const DELIVERY_BUCKET = process.env.ML_DELIVERY_BUCKET_NAME?.trim() ?? "";
 const CLOUDFRONT_REGION = "us-east-1";
 const CLOUDFRONT_DISTRIBUTIONS_URL = "https://cloudfront.amazonaws.com/2020-05-31/distribution";
+const EDGE_CACHE_NAME = "sogs-proxy-assets-v1";
 const xmlParser = new XMLParser();
 const cloudFrontBucketCache = new Map<string, string | null>();
 let cloudFrontBucketCacheLoad: Promise<void> | null = null;
+const IMMUTABLE_EDGE_CACHE_CONTROL = "public, max-age=31536000, s-maxage=31536000, immutable";
 
 function isAllowedEdgeBundleUrl(url: URL): boolean {
   return url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
@@ -33,6 +35,34 @@ function toRegionalS3HttpsUrl(url: URL): URL {
 
 function awsCredentialsAvailable(): boolean {
   return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+}
+
+function shouldEdgeCache(url: URL, response: Response): boolean {
+  if (!response.ok) {
+    return false;
+  }
+
+  if (!url.pathname.startsWith("/models/")) {
+    return false;
+  }
+
+  return true;
+}
+
+function createCacheKey(request: NextRequest): Request {
+  return new Request(request.url, { method: "GET" });
+}
+
+async function getEdgeCache(): Promise<Cache | null> {
+  if (typeof caches === "undefined" || typeof caches.open !== "function") {
+    return null;
+  }
+
+  try {
+    return await caches.open(EDGE_CACHE_NAME);
+  } catch {
+    return null;
+  }
 }
 
 function getS3BucketFromDomainName(domainName: string): string | null {
@@ -212,6 +242,15 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }
 
+  const cacheKey = createCacheKey(request);
+  const edgeCache = await getEdgeCache();
+  if (edgeCache) {
+    const cached = await edgeCache.match(cacheKey);
+    if (cached) {
+      return cached;
+    }
+  }
+
   const shouldUseSignedS3First = isAllowedEdgeBundleUrl(upstreamUrl) && awsCredentialsAvailable();
   const accept = request.headers.get("accept") ?? "*/*";
 
@@ -238,10 +277,19 @@ export async function GET(request: NextRequest, { params }: { params: { resource
   const headers = new Headers(upstreamResponse.headers);
   headers.set("Access-Control-Allow-Origin", "*");
   headers.delete("content-security-policy");
+  if (shouldEdgeCache(upstreamUrl, upstreamResponse)) {
+    headers.set("Cache-Control", headers.get("Cache-Control") || IMMUTABLE_EDGE_CACHE_CONTROL);
+  }
 
-  return new Response(upstreamResponse.body, {
+  const response = new Response(upstreamResponse.body, {
     status: upstreamResponse.status,
     statusText: upstreamResponse.statusText,
     headers,
   });
+
+  if (edgeCache && shouldEdgeCache(upstreamUrl, response)) {
+    await edgeCache.put(cacheKey, response.clone());
+  }
+
+  return response;
 }

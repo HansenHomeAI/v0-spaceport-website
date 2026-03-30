@@ -1,3 +1,4 @@
+2026-03-30 edge cache for immutable model bundle assets in sogs proxy
 2026-03-30 edge-runtime route config for Cloudflare Pages build compatibility
 2026-03-30 fast fallback to shared stacks for Pages branch-preview output resolution
 2026-03-29 dynamic CloudFront origin bucket resolution for edge-bundled skybox previews
