@@ -19,6 +19,7 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Any
 import boto3
+import shutil
 
 # Configure logging so container diagnostics are surfaced consistently.
 logging.basicConfig(
@@ -27,9 +28,57 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-SKYBOX_ASSET_NAME = "kloppenheim_06_puresky_equirect.png"
-SKYBOX_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_ASSET_NAME}"
-CONTAINER_SKYBOX_SOURCE = Path(__file__).resolve().parent / "assets" / "skybox" / SKYBOX_ASSET_NAME
+SKYBOX_SOURCE_ASSET_NAME = "kloppenheim_06_puresky_equirect.png"
+SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_SOURCE_ASSET_NAME}"
+SKYBOX_GENERATED_ASSET_NAME = "kloppenheim_06_puresky_equirect.webp"
+SKYBOX_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_GENERATED_ASSET_NAME}"
+SKYBOX_WEBP_QUALITY = 80
+CONTAINER_SKYBOX_SOURCE = Path(__file__).resolve().parent / "assets" / "skybox" / SKYBOX_SOURCE_ASSET_NAME
+
+
+def _convert_skybox_to_webp(source_path: Path, destination_path: Path) -> bool:
+    """Generate a compact equirect skybox for the edge bundle."""
+    if source_path.suffix.lower() == ".webp":
+        shutil.copy2(source_path, destination_path)
+        return True
+
+    try:
+        subprocess.run(
+            [
+                "cwebp",
+                "-quiet",
+                "-q",
+                str(SKYBOX_WEBP_QUALITY),
+                str(source_path),
+                "-o",
+                str(destination_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return True
+    except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+        logger.warning(f"Failed to convert bundled skybox to WebP: {exc}")
+        return False
+
+
+def _bundle_skybox_asset(bundle_dir: Path) -> str | None:
+    if not CONTAINER_SKYBOX_SOURCE.exists():
+        logger.warning(f"Bundled skybox asset not found at {CONTAINER_SKYBOX_SOURCE}")
+        return None
+
+    skybox_dir = bundle_dir / "skybox"
+    skybox_dir.mkdir(parents=True, exist_ok=True)
+    generated_destination = skybox_dir / SKYBOX_GENERATED_ASSET_NAME
+    if _convert_skybox_to_webp(CONTAINER_SKYBOX_SOURCE, generated_destination):
+        logger.info(f"Bundled optimized skybox {SKYBOX_GENERATED_ASSET_NAME} into SuperSplat bundle")
+        return SKYBOX_BUNDLE_RELATIVE_PATH
+
+    fallback_destination = skybox_dir / SKYBOX_SOURCE_ASSET_NAME
+    shutil.copy2(CONTAINER_SKYBOX_SOURCE, fallback_destination)
+    logger.info(f"Bundled fallback skybox {SKYBOX_SOURCE_ASSET_NAME} into SuperSplat bundle")
+    return SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH
 
 def _diagnose_gpu_environment():
     """Diagnose GPU and CUDA environment for debugging"""
@@ -362,17 +411,7 @@ class PlayCanvasSOGSCompressor:
                 shutil.copy2(file_path, dest_path)
                 logger.info(f"Copied {file_path.name} to SuperSplat bundle")
 
-        skybox_manifest_path = None
-        if CONTAINER_SKYBOX_SOURCE.exists():
-            import shutil
-
-            skybox_dir = bundle_dir / "skybox"
-            skybox_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(CONTAINER_SKYBOX_SOURCE, skybox_dir / SKYBOX_ASSET_NAME)
-            skybox_manifest_path = SKYBOX_BUNDLE_RELATIVE_PATH
-            logger.info(f"Copied bundled skybox {SKYBOX_ASSET_NAME} into SuperSplat bundle")
-        else:
-            logger.warning(f"Bundled skybox asset not found at {CONTAINER_SKYBOX_SOURCE}")
+        skybox_manifest_path = _bundle_skybox_asset(bundle_dir)
         
         # Create viewer settings file for SuperSplat
         settings = {

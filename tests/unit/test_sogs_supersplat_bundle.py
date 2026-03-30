@@ -4,6 +4,7 @@ import sys
 import tempfile
 import types
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -47,7 +48,7 @@ class SogsSupersplatBundleTests(unittest.TestCase):
         )
         self.compressor.output_dir = str(self.output_dir)
 
-    def test_create_supersplat_bundle_copies_bundle_and_writes_skybox_manifest(self):
+    def test_create_supersplat_bundle_copies_bundle_and_writes_optimized_skybox_manifest(self):
         results = {
             "compressed_outputs": [
                 {
@@ -59,7 +60,16 @@ class SogsSupersplatBundleTests(unittest.TestCase):
         original_source = compress_module.CONTAINER_SKYBOX_SOURCE
         compress_module.CONTAINER_SKYBOX_SOURCE = self.skybox_source
         try:
-            self.compressor._create_supersplat_bundle(results)
+            def fake_convert(_source, destination):
+                destination.write_bytes(b"webp")
+                return True
+
+            with mock.patch.object(
+                compress_module,
+                "_convert_skybox_to_webp",
+                side_effect=fake_convert,
+            ):
+                self.compressor._create_supersplat_bundle(results)
         finally:
             compress_module.CONTAINER_SKYBOX_SOURCE = original_source
 
@@ -68,14 +78,39 @@ class SogsSupersplatBundleTests(unittest.TestCase):
         self.assertTrue((bundle_dir / "chunk-0.webp").exists())
         self.assertTrue((bundle_dir / "settings.json").exists())
 
-        bundled_skybox = bundle_dir / "skybox" / compress_module.SKYBOX_ASSET_NAME
+        bundled_skybox = bundle_dir / "skybox" / compress_module.SKYBOX_GENERATED_ASSET_NAME
         self.assertTrue(bundled_skybox.exists())
-        self.assertEqual(bundled_skybox.read_bytes(), b"png")
+        self.assertEqual(bundled_skybox.read_bytes(), b"webp")
 
         manifest = json.loads((bundle_dir / "spaceport_bundle.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["version"], 1)
         self.assertEqual(manifest["skybox"]["type"], "equirect")
         self.assertEqual(manifest["skybox"]["path"], compress_module.SKYBOX_BUNDLE_RELATIVE_PATH)
+
+    def test_create_supersplat_bundle_falls_back_to_source_skybox_when_conversion_fails(self):
+        results = {
+            "compressed_outputs": [
+                {
+                    "output_dir": str(self.compressed_dir),
+                }
+            ]
+        }
+
+        original_source = compress_module.CONTAINER_SKYBOX_SOURCE
+        compress_module.CONTAINER_SKYBOX_SOURCE = self.skybox_source
+        try:
+            with mock.patch.object(compress_module, "_convert_skybox_to_webp", return_value=False):
+                self.compressor._create_supersplat_bundle(results)
+        finally:
+            compress_module.CONTAINER_SKYBOX_SOURCE = original_source
+
+        bundle_dir = self.output_dir / "supersplat_bundle"
+        bundled_skybox = bundle_dir / "skybox" / compress_module.SKYBOX_SOURCE_ASSET_NAME
+        self.assertTrue(bundled_skybox.exists())
+        self.assertEqual(bundled_skybox.read_bytes(), b"png")
+
+        manifest = json.loads((bundle_dir / "spaceport_bundle.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["skybox"]["path"], compress_module.SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH)
 
     def test_create_supersplat_bundle_sets_null_skybox_when_asset_missing(self):
         results = {

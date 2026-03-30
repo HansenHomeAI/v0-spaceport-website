@@ -1,3 +1,4 @@
+2026-03-30T16:16:32Z optimize bundled skybox payload for cold edge delivery validation
 2026-03-30 http3 edge delivery validation rerun
 2026-03-30 edge cache for immutable model bundle assets in sogs proxy
 2026-03-30 direct CloudFront cold-start delivery for edge bundle assets

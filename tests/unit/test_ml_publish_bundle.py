@@ -66,7 +66,7 @@ class PublishBundleLambdaTests(unittest.TestCase):
                     "Contents": [
                         {"Key": "compressed/job-123/supersplat_bundle/meta.json"},
                         {"Key": "compressed/job-123/supersplat_bundle/means_l.webp"},
-                        {"Key": "compressed/job-123/supersplat_bundle/skybox/kloppenheim_06_puresky_equirect.png"},
+                        {"Key": "compressed/job-123/supersplat_bundle/skybox/kloppenheim_06_puresky_equirect.webp"},
                     ]
                 }
             ]
@@ -86,7 +86,7 @@ class PublishBundleLambdaTests(unittest.TestCase):
         self.assertEqual(fake_s3.paginator.calls[0]["Prefix"], "compressed/job-123/supersplat_bundle/")
         self.assertEqual(fake_s3.copy_calls[0]["ContentType"], "application/json")
         self.assertEqual(fake_s3.copy_calls[1]["ContentType"], "image/webp")
-        self.assertEqual(fake_s3.copy_calls[2]["ContentType"], "image/png")
+        self.assertEqual(fake_s3.copy_calls[2]["ContentType"], "image/webp")
         self.assertEqual(
             fake_s3.copy_calls[1]["CacheControl"],
             "public, max-age=31536000, s-maxage=31536000, immutable",

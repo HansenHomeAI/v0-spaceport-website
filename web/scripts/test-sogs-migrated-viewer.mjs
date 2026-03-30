@@ -21,7 +21,7 @@ const bundleUrl =
   process.env.SOGS_BUNDLE_URL ??
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 const expectedSkyboxSubstring =
-  process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/skybox/kloppenheim_06_puresky_equirect.png";
+  process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/skybox/kloppenheim_06_puresky_equirect.webp";
 const expectBundledSkybox =
   process.env.SOGS_EXPECT_BUNDLED_SKYBOX === "1" || process.env.SOGS_EXPECT_BUNDLED_SKYBOX === "true";
 

@@ -40,6 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     cmake \
+    webp \
     wget \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
