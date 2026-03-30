@@ -217,10 +217,19 @@ jobs:
       id: deploy_scope
       run: |
         set -euo pipefail
-        CHANGED_FILES="$(git diff-tree --no-commit-id --name-only -r "${GITHUB_SHA}")"
+        CHANGED_FILES_EMPTY="false"
+        CHANGED_FILES="$(git show --pretty='' --name-only "${GITHUB_SHA}" || true)"
+        if [ -z "${CHANGED_FILES}" ] && git rev-parse "${GITHUB_SHA}^" >/dev/null 2>&1; then
+          CHANGED_FILES="$(git diff --name-only "${GITHUB_SHA}^" "${GITHUB_SHA}" || true)"
+        fi
+        if [ -z "${CHANGED_FILES}" ]; then
+          CHANGED_FILES_EMPTY="true"
+          echo "Changed file detection returned an empty set for ${GITHUB_SHA}; failing safe by forcing stack deploy."
+          STACK_DEPLOY_REQUIRED="true"
+        fi
         printf 'Changed files for %s:\n%s\n' "${GITHUB_SHA}" "${CHANGED_FILES}"
 
-        STACK_DEPLOY_REQUIRED="false"
+        STACK_DEPLOY_REQUIRED="${STACK_DEPLOY_REQUIRED:-false}"
         LAMBDA_CHANGED="false"
         AUTH_STACK_CHANGED="false"
         EXPLORE_API_MISSING="false"
@@ -228,6 +237,8 @@ jobs:
         if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/|scripts/resolve_preview_context\.py)'; then
           STACK_DEPLOY_REQUIRED="true"
           echo "CDK stack sources changed - will deploy stacks"
+        elif [ "${CHANGED_FILES_EMPTY}" = "true" ]; then
+          echo "Changed file list is empty - preserving fail-safe stack deploy"
         else
           echo "No CDK stack source changes detected - will skip stack deploy"
         fi
