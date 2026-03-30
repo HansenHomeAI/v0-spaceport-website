@@ -68,11 +68,7 @@ function convertToProxyPath(url: URL): string {
 }
 
 function shouldProxyBundleUrl(url: URL): boolean {
-  if (PROXY_HOSTS.has(url.host)) {
-    return true;
-  }
-
-  return url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
+  return PROXY_HOSTS.has(url.host);
 }
 
 function toViewerAssetUrl(url: URL): string {
