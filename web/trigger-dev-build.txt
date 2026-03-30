@@ -46,3 +46,4 @@
 2026-03-30 supersplat: skip first orbit update after scripted; flush InputFrame by update() ref
 2026-03-30 supersplat: remove per-frame orbit focus clamp (was fighting drag every frame)
 2026-03-30 supersplat: snap orbit goto after scripted (avoid smooth attach lerp jitter)
+2026-03-30 chore: remove debug ingest instrumentation (sogs-bridge, migrated viewer, explore)

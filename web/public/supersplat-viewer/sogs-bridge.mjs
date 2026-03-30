@@ -118,39 +118,15 @@ function setupCameraManagerBridge(cameraManager) {
       prevScripted = true;
       return;
     }
-    const cam = cameraManager.camera;
     const leftScripted = prevScripted;
     prevScripted = false;
     let skipFirstOrbitAfterScripted = false;
     if (leftScripted) {
-      const flushedOnExit = flushSogsAccumulatedInputFrame(frame);
-      const frameSameRef = frame === window.__sogsCtx?.viewer?.inputController?.frame;
+      flushSogsAccumulatedInputFrame(frame);
       if (typeof cameraManager.syncOrbitFromCurrentCamera === "function") {
         cameraManager.syncOrbitFromCurrentCamera();
       }
       skipFirstOrbitAfterScripted = true;
-      // #region agent log
-      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
-        body: JSON.stringify({
-          sessionId: "191e7b",
-          location: "sogs-bridge.mjs:first_free_after_scripted",
-          message: "skip_origUpdate_keep_last_look_plus_flush",
-          hypothesisId: "H10",
-          runId: "skip-orbit-1",
-          data: {
-            flushedOnExit,
-            frameSameRef,
-            skippedOrigUpdate: true,
-            pos: [cam.position.x, cam.position.y, cam.position.z],
-            distance: cam.distance,
-            angles: [cam.angles.x, cam.angles.y, cam.angles.z],
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
     }
     if (!skipFirstOrbitAfterScripted) {
       origUpdate(dt, frame);
@@ -337,73 +313,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       app.renderNextFrame = true;
     }
     if (d.type === "sogs:cameraMode") {
-      const wasScripted = window.__sogsScriptedCamera;
       const scripted = d.mode === "scripted" || d.scripted === true;
       window.__sogsScriptedCamera = !!scripted;
-      if (wasScripted && !window.__sogsScriptedCamera && viewer.cameraManager) {
-        const cam = viewer.cameraManager.camera;
-        const pose = window.__sogsCameraPose;
-        // #region agent log
-        fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
-          body: JSON.stringify({
-            sessionId: "191e7b",
-            location: "sogs-bridge.mjs:message:cameraMode",
-            message: "parent_set_cameraMode_free",
-            hypothesisId: "H3",
-            runId: "pre1",
-            data: {
-              pos: [cam.position.x, cam.position.y, cam.position.z],
-              distance: cam.distance,
-              angles: [cam.angles.x, cam.angles.y, cam.angles.z],
-              scriptedPoseTarget: pose?.target ? [pose.target[0], pose.target[1], pose.target[2]] : null,
-            },
-            timestamp: Date.now(),
-          }),
-        }).catch(() => {});
-        // #endregion
-      }
       app.renderNextFrame = true;
     }
   });
 
   /** Tell parent to exit scripted tour / auto-orbit when the user grabs the view (orbit, zoom, touch). */
-  const notifyUserInteraction = (e) => {
+  const notifyUserInteraction = () => {
     if (window.__sogsScriptedCamera) {
-      let pointerNorm = null;
-      try {
-        const c = window.__sogsCtx?.app?.graphicsDevice?.canvas;
-        let cx = e?.clientX;
-        let cy = e?.clientY;
-        if (e?.touches?.length) {
-          cx = e.touches[0].clientX;
-          cy = e.touches[0].clientY;
-        }
-        if (c && cx != null && cy != null) {
-          const r = c.getBoundingClientRect();
-          const w = r.width || 1;
-          const h = r.height || 1;
-          pointerNorm = { nx: (cx - r.left) / w, ny: (cy - r.top) / h };
-        }
-      } catch {
-        /* ignore */
-      }
-      // #region agent log
-      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
-        body: JSON.stringify({
-          sessionId: "191e7b",
-          location: "sogs-bridge.mjs:notifyUserInteraction",
-          message: "iframe_userInteraction_pointer_norm",
-          hypothesisId: "H11",
-          runId: "pre1",
-          data: { hasPose: !!window.__sogsCameraPose, pointerNorm, evType: e?.type },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       window.parent.postMessage({ type: "sogs:userInteraction" }, "*");
     }
   };

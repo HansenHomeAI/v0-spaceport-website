@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { PROPERTIES } from '../../lib/data';
 
 export const runtime = 'edge';
 
-const DEBUG_ENDPOINT = 'http://127.0.0.1:7249/ingest/256c2b17-3bda-4985-b0bf-1f11562cd483';
 const FALLBACK_IMAGE = '/assets/SpaceportIcons/SpcprtLarge.png';
 
 type ExploreCard = {
@@ -22,35 +21,6 @@ function normalizePublicApiUrl(rawUrl: string | undefined): string {
   if (!trimmed) return '';
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
   return `https://${trimmed.replace(/^\/+/, '')}`;
-}
-
-function logVisitButtonEvent(
-  event: 'enter' | 'leave',
-  propertyId: string,
-  target: HTMLElement
-): void {
-  // #region agent log
-  const rect = target.getBoundingClientRect();
-  fetch(DEBUG_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      location: 'explore/page.tsx:Visit button',
-      message: `Visit button mouse${event}`,
-      data: {
-        event,
-        propertyId,
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-        left: Math.round(rect.left),
-        top: Math.round(rect.top),
-      },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      hypothesisId: event === 'enter' ? 'H1' : 'H1',
-    }),
-  }).catch(() => {});
-  // #endregion
 }
 
 export default function ExplorePage(): JSX.Element {
@@ -99,19 +69,6 @@ export default function ExplorePage(): JSX.Element {
     };
   }, []);
 
-  const handleVisitEnter = useCallback(
-    (e: React.MouseEvent<HTMLSpanElement>, propertyId: string) => {
-      logVisitButtonEvent('enter', propertyId, e.currentTarget);
-    },
-    []
-  );
-  const handleVisitLeave = useCallback(
-    (e: React.MouseEvent<HTMLSpanElement>, propertyId: string) => {
-      logVisitButtonEvent('leave', propertyId, e.currentTarget);
-    },
-    []
-  );
-
   return (
     <>
       <section className="section" id="explore-header">
@@ -142,11 +99,7 @@ export default function ExplorePage(): JSX.Element {
                     <h3>{property.title}</h3>
                     <p className="property-card-location">{property.location}</p>
                   </div>
-                  <span
-                    className="cta-button property-card-visit"
-                    onMouseEnter={(e) => handleVisitEnter(e, property.id)}
-                    onMouseLeave={(e) => handleVisitLeave(e, property.id)}
-                  >
+                  <span className="cta-button property-card-visit">
                     Visit
                   </span>
                 </div>
