@@ -4,11 +4,19 @@ This project deploys the Next.js app to Cloudflare Pages using `@cloudflare/next
 
 - Branch routing
   - development → `v0-spaceport-website-preview2` (preview)
+  - preview branches (`agent-*`, `codex/agent-*`) → `v0-spaceport-website-preview2` (preview)
   - main → `v0-spaceport-website-prod-fresh` (production)
 
 - Build and deploy
   - Build: `npm run build` then `npx @cloudflare/next-on-pages`
   - Deploy path: `.vercel/output/static` (ensures `_worker.js` is at the upload root so the site is recognized as a Pages Function and SSR works)
+  - Deploy command: `wrangler pages deploy ... --branch "$GITHUB_REF_NAME" --commit-hash "$GITHUB_SHA"`
+
+- Preview URL resolution
+  - The workflow captures Wrangler output with `tee` and parses the URLs from that same deploy run.
+  - `PREVIEW_URL` prefers `Deployment alias URL: ...` when present.
+  - If no alias URL is emitted, `PREVIEW_URL` falls back to the deployment hash URL from `Deployment complete! Take a peek over at ...`.
+  - Do not look up the project's latest deployment to validate a branch. Concurrent branch deploys make that unsafe.
 
 - Why `.vercel/output/static`
   - If `_worker.js` is not at the deploy root, Cloudflare treats the site as static, causing 404 responses and no tail logs. Deploying the `static` directory places the worker at the root and enables SSR/Edge routes.
@@ -33,5 +41,4 @@ This project deploys the Next.js app to Cloudflare Pages using `@cloudflare/next
 
 - Troubleshooting symptoms
   - 404 for `/` and static files, 500 on `/api/*`, and tail refusal → deployment recognized as static → fix deploy path.
-
 

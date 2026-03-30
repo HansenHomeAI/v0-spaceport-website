@@ -5,7 +5,9 @@
 2. **Baseline**: push your task branch to trigger the Cloudflare Pages workflow, then monitor *every* GitHub Actions run kicked off by the push until they finish successfully (use `gh run list --branch <branch>` to enumerate, and `gh run watch <id> --exit-status` on each run). At minimum, confirm both the Pages deploy and the "CDK Deploy" workflow are green before moving on, capturing failing logs immediately if either stops early.
  - Push the branch upstream as soon as there is meaningful work (`git push origin agent-…`) so deploy workflows and reviewers can see your changes.
  - If a deployment is rejected, immediately check environment protection rules: `gh api repos/$OWNER/$REPO/environments/<env>/deployment-branch-policies` and adjust with `gh api ... --field name="agent-*" --field type="branch"` (or coordinate with the maintainer) before retrying. The same expectation applies to infrastructure runs—never continue while "CDK Deploy" is red.
- - When validating UI or MCP flows, always use the Cloudflare preview alias produced by your branch deployment—avoid hitting production until the preview passes.
+ - When validating UI or MCP flows, always use the `PREVIEW_URL` emitted by your branch deployment—avoid hitting production until the preview passes.
+ - Preview branches are auth read-only by default. Add `.spaceport/deploy-auth-preview` only when the branch intentionally needs to redeploy the shared staging auth stack on every push.
+ - If you branch from an auth-enabled preview branch, the marker file is inherited until you remove it in the child branch.
   - Stay in the loop: keep iterating (push → deploy → validate → fix) without pausing for maintainer approval unless you are blocked by secrets or protections.
 3. **Test**: start Playwright MCP with `python3 scripts/playwright-mcp-manager.py ensure`, record a baseline run, and expand coverage when gaps appear.
 4. **Iterate**: apply the smallest fix, redeploy, watch the live preview build/logs, and rerun the baseline until everything passes.
@@ -39,7 +41,7 @@ tmux new -s codex 'scripts/codex-loop.sh'
 - Never hit production until preview is green.
 - After push, resolve the exact preview URL deterministically:
   1) `gh run watch --workflow deploy-cloudflare-pages.yml --branch <branch> --exit-status`
-  2) Query run outputs or derive Pages alias from `$BRANCH` and print: `PREVIEW_URL=<resolved-url>`
+  2) Read the Pages job output/log line for `PREVIEW_URL=<resolved-url>` from that same run. Do not use “latest deployment in project”.
 - Use that `PREVIEW_URL` in Playwright MCP; fail the loop if it is missing.
 
 ## Guardrails (Never Do)
