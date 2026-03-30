@@ -44,3 +44,4 @@
 2026-03-30 supersplat: sync orbit controller after scripted camera (fix snap on tour exit)
 2026-03-30 supersplat: flush InputFrame while scripted (orbit skipped read() → delta backlog)
 2026-03-30 supersplat: skip first orbit update after scripted; flush InputFrame by update() ref
+2026-03-30 supersplat: remove per-frame orbit focus clamp (was fighting drag every frame)

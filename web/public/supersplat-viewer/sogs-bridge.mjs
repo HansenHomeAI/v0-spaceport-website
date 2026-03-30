@@ -8,7 +8,6 @@ import {
   Entity,
   Mesh,
   MeshInstance,
-  Quat,
   StandardMaterial,
   Vec3,
 } from "https://esm.sh/playcanvas@2.13.2";
@@ -18,12 +17,6 @@ const tmpFrom = new Vec3();
 const tmpTo = new Vec3();
 /** Orbit focus point for `sogs:cameraPose` (parent overlays / Three.js projection). */
 const tmpFocus = new Vec3();
-
-/** PlayCanvas: camera looks down -Z; matches supersplat Camera.calcFocusPoint. */
-const CAM_FORWARD = new Vec3(0, 0, -1);
-
-const FOCUS_XZ_MAX = 10;
-const FOCUS_Y = 0;
 
 const AXIS_LEN = 45;
 const AXIS_RADIUS = 0.28;
@@ -107,36 +100,7 @@ function postCameraPoseFromViewer(cameraManager) {
 
 function setupCameraManagerBridge(cameraManager) {
   const origUpdate = cameraManager.update.bind(cameraManager);
-  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   let prevScripted = false;
-
-  const getFocusPoint = (cam) => {
-    // `cam.angles` comes from the bundled viewer build, not the esm.sh Vec3 class.
-    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
-    const dir = new Vec3();
-    q.transformVector(CAM_FORWARD, dir);
-    dir.mulScalar(cam.distance);
-    return new Vec3().copy(cam.position).add(dir);
-  };
-
-  const setCameraFromFocus = (cam, focus) => {
-    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
-    const dir = new Vec3();
-    q.transformVector(CAM_FORWARD, dir);
-    dir.mulScalar(cam.distance);
-    cam.position.copy(focus).sub(dir);
-  };
-
-  const clampCameraFocus = (cam) => {
-    const focus = getFocusPoint(cam);
-    const fx = clamp(focus.x, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
-    const fz = clamp(focus.z, -FOCUS_XZ_MAX, FOCUS_XZ_MAX);
-    const fy = FOCUS_Y;
-    if (fx !== focus.x || fz !== focus.z || Math.abs(fy - focus.y) > 1e-5) {
-      focus.set(fx, fy, fz);
-      setCameraFromFocus(cam, focus);
-    }
-  };
 
   cameraManager.update = (dt, frame) => {
     if (window.__sogsScriptedCamera) {
@@ -157,23 +121,12 @@ function setupCameraManagerBridge(cameraManager) {
     const cam = cameraManager.camera;
     const leftScripted = prevScripted;
     prevScripted = false;
-    let focusBeforeClamp = null;
     let skipFirstOrbitAfterScripted = false;
     if (leftScripted) {
       const flushedOnExit = flushSogsAccumulatedInputFrame(frame);
       const frameSameRef = frame === window.__sogsCtx?.viewer?.inputController?.frame;
       if (typeof cameraManager.syncOrbitFromCurrentCamera === "function") {
         cameraManager.syncOrbitFromCurrentCamera();
-      }
-      const pose = window.__sogsCameraPose;
-      const focusOrbit = getFocusPoint(cam);
-      focusBeforeClamp = { x: focusOrbit.x, y: focusOrbit.y, z: focusOrbit.z };
-      let targetMismatch = null;
-      if (pose?.target?.length === 3) {
-        const dx = focusOrbit.x - pose.target[0];
-        const dy = focusOrbit.y - pose.target[1];
-        const dz = focusOrbit.z - pose.target[2];
-        targetMismatch = Math.sqrt(dx * dx + dy * dy + dz * dz);
       }
       skipFirstOrbitAfterScripted = true;
       // #region agent log
@@ -193,9 +146,6 @@ function setupCameraManagerBridge(cameraManager) {
             pos: [cam.position.x, cam.position.y, cam.position.z],
             distance: cam.distance,
             angles: [cam.angles.x, cam.angles.y, cam.angles.z],
-            focusFromOrbit: focusBeforeClamp,
-            scriptedTarget: pose?.target ? [pose.target[0], pose.target[1], pose.target[2]] : null,
-            targetMismatch,
           },
           timestamp: Date.now(),
         }),
@@ -207,34 +157,6 @@ function setupCameraManagerBridge(cameraManager) {
     }
     if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
       cameraManager.camera.fov = window.__sogsUserFov;
-    }
-    let focusPreClampStep = null;
-    if (leftScripted) {
-      const fPre = getFocusPoint(cam);
-      focusPreClampStep = { x: fPre.x, y: fPre.y, z: fPre.z };
-    }
-    clampCameraFocus(cam);
-    if (leftScripted && focusPreClampStep) {
-      const focusAfter = getFocusPoint(cam);
-      const dx = focusAfter.x - focusPreClampStep.x;
-      const dy = focusAfter.y - focusPreClampStep.y;
-      const dz = focusAfter.z - focusPreClampStep.z;
-      const clampDelta = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      // #region agent log
-      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
-        body: JSON.stringify({
-          sessionId: "191e7b",
-          location: "sogs-bridge.mjs:setupCameraManagerBridge:after_clamp",
-          message: "focus_delta_after_clampCameraFocus",
-          hypothesisId: "H2",
-          runId: "pre1",
-          data: { clampDelta, focusAfter: { x: focusAfter.x, y: focusAfter.y, z: focusAfter.z }, focusPreClampStep },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
     }
     postCameraPoseFromViewer(cameraManager);
   };
