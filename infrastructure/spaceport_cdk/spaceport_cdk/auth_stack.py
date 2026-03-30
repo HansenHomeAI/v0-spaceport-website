@@ -17,7 +17,10 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import boto3
-from .api_gateway_config import resolve_auth_api_endpoint_type
+from .api_gateway_config import (
+    resolve_auth_api_endpoint_type,
+    should_serialize_auth_api_updates,
+)
 from .branch_utils import build_scoped_name
 
 
@@ -990,6 +993,21 @@ class AuthStack(Stack):
         self.password_reset_api = password_reset_api
         self.password_reset_codes_table = password_reset_codes_table
 
+        if should_serialize_auth_api_updates(deployment_class):
+            # API Gateway only allows one endpoint-type migration at a time for these shared auth APIs.
+            # Serializing the RestApi resources keeps staging auth redeploys from deadlocking each other.
+            self._serialize_rest_api_updates(
+                [
+                    invite_api,
+                    projects_api,
+                    explore_api,
+                    subscription_api,
+                    beta_access_api,
+                    model_delivery_api,
+                    password_reset_api,
+                ]
+            )
+
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
         try:
@@ -1023,6 +1041,14 @@ class AuthStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
+
+    def _serialize_rest_api_updates(self, rest_apis) -> None:
+        previous_api_resource = None
+        for rest_api in rest_apis:
+            current_api_resource = rest_api.node.default_child
+            if previous_api_resource is not None and current_api_resource is not None:
+                current_api_resource.add_dependency(previous_api_resource)
+            previous_api_resource = current_api_resource
 
     def _cognito_user_pool_exists(self, user_pool_name: str) -> bool:
         """Check if a Cognito User Pool exists"""
