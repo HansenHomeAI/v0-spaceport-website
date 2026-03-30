@@ -100970,11 +100970,11 @@ class OrbitController {
     }
     onExit(camera) {
     }
-    goto(camera) {
+    goto(camera, smooth = true) {
         p.position.copy(camera.position);
         p.angles.copy(camera.angles);
         p.distance = camera.distance;
-        this.controller.attach(p, true);
+        this.controller.attach(p, smooth);
     }
 }
 
@@ -101122,9 +101122,9 @@ class CameraManager {
             tmpCamera.look(new Vec3(initial.position), new Vec3(initial.target));
             controllers.orbit.goto(tmpCamera);
         });
-        /** Spaceport SOGS: after scripted `camera.look()` frames, orbit internal pose is stale; call before resuming `update`. */
+        /** Spaceport SOGS: after scripted `camera.look()` frames, orbit internal pose is stale; snap (no smooth) so no ~100ms lerp jitter. */
         this.syncOrbitFromCurrentCamera = () => {
-            controllers.orbit.goto(this.camera);
+            controllers.orbit.goto(this.camera, false);
         };
     }
 }
