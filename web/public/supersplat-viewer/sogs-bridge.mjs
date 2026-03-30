@@ -65,6 +65,26 @@ function postSogsState() {
  * Wraps CameraManager.update: free orbit vs scripted pose from `window.__sogsCameraPose`.
  * `sogs:cameraMode` sets `window.__sogsScriptedCamera` (true = scripted).
  */
+/**
+ * OrbitController consumes InputFrame via `frame.read()` each update. While scripted we skip
+ * `origUpdate`, so `read()` never runs and InputController keeps appending — deltas accumulate
+ * for the whole tour and fire in one frame when going free. Flush every scripted frame + on exit.
+ */
+function flushSogsAccumulatedInputFrame() {
+  try {
+    const fr = window.__sogsCtx?.viewer?.inputController?.frame?.read();
+    if (!fr) return null;
+    const m = fr.move || [0, 0, 0];
+    const r = fr.rotate || [0, 0, 0];
+    return {
+      moveLen: Math.hypot(m[0], m[1], m[2] || 0),
+      rotateLen: Math.hypot(r[0], r[1], r[2] || 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function postCameraPoseFromViewer(cameraManager) {
   try {
     if (window.__sogsScriptedCamera) {
@@ -131,6 +151,7 @@ function setupCameraManagerBridge(cameraManager) {
           window.__sogsUserFov = pose.fov;
         }
       }
+      flushSogsAccumulatedInputFrame();
       prevScripted = true;
       return;
     }
@@ -139,6 +160,22 @@ function setupCameraManagerBridge(cameraManager) {
     prevScripted = false;
     let focusBeforeClamp = null;
     if (leftScripted) {
+      const flushedOnExit = flushSogsAccumulatedInputFrame();
+      // #region agent log
+      fetch("http://127.0.0.1:7854/ingest/47d6cee9-3a45-4acf-a87f-28c0bc8ea975", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "191e7b" },
+        body: JSON.stringify({
+          sessionId: "191e7b",
+          location: "sogs-bridge.mjs:flush_on_exit_scripted",
+          message: "accumulated_input_flushed_before_free_orbit",
+          hypothesisId: "H6",
+          runId: "input-flush",
+          data: flushedOnExit,
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       if (typeof cameraManager.syncOrbitFromCurrentCamera === "function") {
         cameraManager.syncOrbitFromCurrentCamera();
       }
