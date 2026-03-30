@@ -50,6 +50,7 @@ function sessionPaths(sessionId) {
     workingDir: path.join(root, "working"),
     exportDir: path.join(root, "export"),
     tempDir: path.join(root, "tmp"),
+    historyDir: path.join(root, "history"),
   };
 }
 
@@ -59,6 +60,7 @@ async function ensureSessionDirs(paths) {
   await fs.mkdir(paths.workingDir, { recursive: true });
   await fs.mkdir(paths.exportDir, { recursive: true });
   await fs.mkdir(paths.tempDir, { recursive: true });
+  await fs.mkdir(paths.historyDir, { recursive: true });
 }
 
 async function writeJson(filePath, data) {
@@ -75,6 +77,27 @@ async function writeLatestSession(sessionId) {
     sessionId,
     updatedAt: new Date().toISOString(),
   });
+}
+
+async function sessionExists(sessionId) {
+  try {
+    await fs.access(sessionPaths(sessionId).sessionFile);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function getReusableSessionId() {
+  try {
+    const latest = await readJson(latestSessionPath());
+    if (latest?.sessionId && (await sessionExists(latest.sessionId))) {
+      return latest.sessionId;
+    }
+  } catch {
+    /* ignore */
+  }
+  return randomUUID();
 }
 
 async function runAwsCopy(source, destination) {
@@ -165,9 +188,86 @@ async function stageArtifactIntoSession(paths, sourceArtifactType, sourceArtifac
   return { workingPlyPath, trainingMetadataPath };
 }
 
+function emptyHistoryState() {
+  return {
+    revisions: [],
+    currentIndex: -1,
+  };
+}
+
+function historySummary(history) {
+  const currentIndex = Number.isInteger(history?.currentIndex) ? history.currentIndex : -1;
+  const revisions = Array.isArray(history?.revisions) ? history.revisions : [];
+  return {
+    canUndo: currentIndex > 0,
+    canRedo: currentIndex >= 0 && currentIndex < revisions.length - 1,
+    historyLength: revisions.length,
+    historyIndex: currentIndex,
+  };
+}
+
+async function writeRevisionSnapshot(paths, workingPlyPath, workingStatus, revisionIndex) {
+  const safeIndex = String(revisionIndex).padStart(4, "0");
+  const snapshotFileName = `${safeIndex}-${workingStatus.hash.slice(0, 12)}.ply`;
+  const snapshotPath = path.join(paths.historyDir, snapshotFileName);
+  await fs.copyFile(workingPlyPath, snapshotPath);
+  return snapshotPath;
+}
+
+async function deleteRevisionSnapshots(revisions = []) {
+  await Promise.all(
+    revisions.map((revision) => fs.rm(revision.snapshotPath, { force: true }).catch(() => undefined)),
+  );
+}
+
+async function initializeHistory(session, paths, workingStatus) {
+  const snapshotPath = await writeRevisionSnapshot(paths, session.workingPlyPath, workingStatus, 0);
+  session.history = {
+    revisions: [
+      {
+        hash: workingStatus.hash,
+        snapshotPath,
+        createdAt: new Date().toISOString(),
+        vertexCount: workingStatus.vertexCount,
+        sizeBytes: workingStatus.sizeBytes,
+      },
+    ],
+    currentIndex: 0,
+  };
+}
+
+async function recordHistoryRevision(session, paths, workingStatus) {
+  if (!session.history?.revisions?.length) {
+    await initializeHistory(session, paths, workingStatus);
+    return;
+  }
+
+  const revisions = session.history.revisions;
+  const currentIndex = session.history.currentIndex;
+  const currentRevision = revisions[currentIndex];
+  if (currentRevision?.hash === workingStatus.hash) {
+    return;
+  }
+
+  const dropped = revisions.splice(currentIndex + 1);
+  await deleteRevisionSnapshots(dropped);
+
+  const nextIndex = revisions.length;
+  const snapshotPath = await writeRevisionSnapshot(paths, session.workingPlyPath, workingStatus, nextIndex);
+  revisions.push({
+    hash: workingStatus.hash,
+    snapshotPath,
+    createdAt: new Date().toISOString(),
+    vertexCount: workingStatus.vertexCount,
+    sizeBytes: workingStatus.sizeBytes,
+  });
+  session.history.currentIndex = revisions.length - 1;
+}
+
 async function finalizeSession(session, paths) {
   const workingStatus = await buildWorkingStatus(session.workingPlyPath, null);
   session.workingStatus = workingStatus;
+  await initializeHistory(session, paths, workingStatus);
   await writeJson(paths.sessionFile, session);
   await writeLatestSession(session.sessionId);
   return publicSession(session, workingStatus);
@@ -211,12 +311,14 @@ function publicSession(session, workingStatus) {
     lastModifiedMs: workingStatus.mtimeMs,
     sizeBytes: workingStatus.sizeBytes,
     vertexCount: workingStatus.vertexCount,
+    ...historySummary(session.history),
   };
 }
 
 async function initializeSession(sourceUrl) {
-  const sessionId = randomUUID();
+  const sessionId = await getReusableSessionId();
   const paths = sessionPaths(sessionId);
+  await fs.rm(paths.root, { recursive: true, force: true });
   await ensureSessionDirs(paths);
 
   const sourceArtifactType = ensureArtifactType(sourceUrl);
@@ -240,6 +342,7 @@ async function initializeSession(sourceUrl) {
     exportTargetName: buildExportName(sourceArtifactType),
     createdAt: new Date().toISOString(),
     workingStatus: null,
+    history: emptyHistoryState(),
   };
 
   return finalizeSession(session, paths);
@@ -252,8 +355,9 @@ export async function createSessionFromSource(sourceUrl = DEFAULT_IMPORT_SOURCE)
 export async function createSessionFromUpload(fileName, fileBuffer) {
   const normalizedName = String(fileName || "").trim() || "upload";
   const sourceArtifactType = ensureArtifactType(normalizedName.toLowerCase());
-  const sessionId = randomUUID();
+  const sessionId = await getReusableSessionId();
   const paths = sessionPaths(sessionId);
+  await fs.rm(paths.root, { recursive: true, force: true });
   await ensureSessionDirs(paths);
 
   const sourceArtifactName = sourceArtifactType === "ply" ? "source-splat.ply" : "source-model.tar.gz";
@@ -276,6 +380,7 @@ export async function createSessionFromUpload(fileName, fileBuffer) {
     exportTargetName: buildExportName(sourceArtifactType),
     createdAt: new Date().toISOString(),
     workingStatus: null,
+    history: emptyHistoryState(),
   };
 
   return finalizeSession(session, paths);
@@ -284,8 +389,12 @@ export async function createSessionFromUpload(fileName, fileBuffer) {
 export async function loadSession(sessionId) {
   const paths = sessionPaths(sessionId);
   const session = await readJson(paths.sessionFile);
+  if (!session.history) {
+    session.history = emptyHistoryState();
+  }
   const workingStatus = await buildWorkingStatus(session.workingPlyPath, session.workingStatus);
   if (session.workingStatus?.hash !== workingStatus.hash || session.workingStatus?.mtimeMs !== workingStatus.mtimeMs) {
+    await recordHistoryRevision(session, paths, workingStatus);
     session.workingStatus = workingStatus;
     await writeJson(paths.sessionFile, session);
   }
@@ -393,6 +502,34 @@ export async function applyRulesToSession(sessionId, matcher) {
   const result = await filterPlyFile(session.workingPlyPath, session.workingPlyPath, matcher);
   await getSessionPublicState(sessionId);
   return result;
+}
+
+async function restoreHistoryRevision(sessionId, direction) {
+  const paths = sessionPaths(sessionId);
+  const { session } = await loadSession(sessionId);
+  const revisions = session.history?.revisions || [];
+  const currentIndex = session.history?.currentIndex ?? -1;
+  const nextIndex = currentIndex + direction;
+
+  if (nextIndex < 0 || nextIndex >= revisions.length) {
+    throw new Error(direction < 0 ? "Nothing to undo" : "Nothing to redo");
+  }
+
+  const targetRevision = revisions[nextIndex];
+  await fs.copyFile(targetRevision.snapshotPath, session.workingPlyPath);
+  const workingStatus = await buildWorkingStatus(session.workingPlyPath, null);
+  session.history.currentIndex = nextIndex;
+  session.workingStatus = workingStatus;
+  await writeJson(paths.sessionFile, session);
+  return publicSession(session, workingStatus);
+}
+
+export async function undoSession(sessionId) {
+  return restoreHistoryRevision(sessionId, -1);
+}
+
+export async function redoSession(sessionId) {
+  return restoreHistoryRevision(sessionId, 1);
 }
 
 export { DEFAULT_IMPORT_SOURCE, getSessionRoot, sessionPaths };

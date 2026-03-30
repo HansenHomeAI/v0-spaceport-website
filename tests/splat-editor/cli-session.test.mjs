@@ -10,6 +10,8 @@ import {
   createSessionFromUpload,
   getLatestSessionPublicState,
   getSessionPublicState,
+  redoSession,
+  undoSession,
 } from "../../web/lib/splat-editor/session-store.js";
 import { createTempDir, createSyntheticTarGz, writeSyntheticPly } from "./helpers.mjs";
 
@@ -151,4 +153,61 @@ test("imports uploaded local artifacts and preserves export format", async () =>
 
   const exportArtifact = await buildExportArtifact(session.sessionId);
   assert.equal(exportArtifact.fileName, "edited-model.tar.gz");
+});
+
+test("reuses one local session and supports undo/redo after external edits", async () => {
+  const tempRoot = await createTempDir("splat-editor-history-session-");
+  process.env.SPLAT_EDITOR_SESSION_DIR = path.join(tempRoot, "sessions");
+
+  const sourceDir = path.join(tempRoot, "source");
+  await fs.mkdir(sourceDir, { recursive: true });
+
+  const plyPath = path.join(sourceDir, "history-fixture.ply");
+  await writeSyntheticPly(plyPath, {
+    extraRestCount: 24,
+    rows: [
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 0.5, z: 0 },
+      { x: 0, y: 2, z: 0 },
+    ],
+  });
+
+  const tarPath = path.join(sourceDir, "history-fixture.tar.gz");
+  await createSyntheticTarGz({
+    tarPath,
+    plyPath,
+    metadata: {
+      output_file: "splat.ply",
+      file_size_mb: 0.1,
+      training_completed: true,
+      sh_degree: 2,
+    },
+  });
+
+  const first = await createSessionFromSource(tarPath);
+  const second = await createSessionFromSource(tarPath);
+  assert.equal(second.sessionId, first.sessionId);
+
+  await execFileAsync("node", ["web/scripts/edit-3dgs-ply.mjs", "--input", second.workingPlyPath, "--y-gt", "1"], {
+    cwd: path.resolve("."),
+  });
+
+  const edited = await getSessionPublicState(second.sessionId);
+  assert.equal(edited.vertexCount, 2);
+  assert.equal(edited.canUndo, true);
+  assert.equal(edited.canRedo, false);
+  assert.equal(edited.historyLength, 2);
+  assert.equal(edited.historyIndex, 1);
+
+  const undone = await undoSession(second.sessionId);
+  assert.equal(undone.vertexCount, 3);
+  assert.equal(undone.canUndo, false);
+  assert.equal(undone.canRedo, true);
+  assert.equal(undone.historyIndex, 0);
+
+  const redone = await redoSession(second.sessionId);
+  assert.equal(redone.vertexCount, 2);
+  assert.equal(redone.canUndo, true);
+  assert.equal(redone.canRedo, false);
+  assert.equal(redone.historyIndex, 1);
 });

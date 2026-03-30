@@ -23,6 +23,10 @@ type SessionState = {
   lastModifiedMs: number;
   sizeBytes: number;
   vertexCount: number;
+  canUndo: boolean;
+  canRedo: boolean;
+  historyLength: number;
+  historyIndex: number;
 };
 
 type TransformState = {
@@ -257,6 +261,30 @@ export default function SplatEditor() {
     }
   }
 
+  async function mutateHistory(direction: "undo" | "redo") {
+    if (!session) {
+      return;
+    }
+    setBusy(true);
+    setBusyLabel(direction === "undo" ? "Undoing edit…" : "Redoing edit…");
+    setError(null);
+    try {
+      const response = await fetch(`/api/splat-editor/sessions/${session.sessionId}/${direction}`, {
+        method: "POST",
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok || !payload.session) {
+        throw new Error(payload.error || `Failed to ${direction}`);
+      }
+      applySession(payload.session as SessionState);
+    } catch (historyError: any) {
+      setError(historyError?.message || `Failed to ${direction}`);
+    } finally {
+      setBusy(false);
+      setBusyLabel(null);
+    }
+  }
+
   async function importFile(file: File) {
     allowRestoreRef.current = false;
     userTouchedSourceRef.current = true;
@@ -475,6 +503,22 @@ export default function SplatEditor() {
             </div>
           </div>
           <div className="splat-editor-actions">
+            <button
+              type="button"
+              className="splat-editor-copy-button"
+              onClick={() => void mutateHistory("undo")}
+              disabled={!session?.canUndo || busy}
+            >
+              Undo
+            </button>
+            <button
+              type="button"
+              className="splat-editor-copy-button"
+              onClick={() => void mutateHistory("redo")}
+              disabled={!session?.canRedo || busy}
+            >
+              Redo
+            </button>
             <button type="button" className="splat-editor-copy-button" onClick={copySettings}>
               Copy Settings
             </button>
@@ -488,6 +532,9 @@ export default function SplatEditor() {
             <span data-testid="splat-artifact-type">{session.sourceArtifactType}</span>
             <span data-testid="splat-vertex-count">{session.vertexCount.toLocaleString()}</span>
             <span data-testid="splat-revision-hash">{session.revisionHash}</span>
+            <span data-testid="splat-history-state">
+              {session.historyLength > 0 ? `${session.historyIndex + 1}/${session.historyLength}` : "0/0"}
+            </span>
             <code data-testid="splat-working-ply-path">{session.workingPlyPath}</code>
             <span data-testid="splat-export-name">{session.exportTargetName}</span>
           </div>

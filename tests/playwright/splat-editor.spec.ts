@@ -66,6 +66,7 @@ test("imports a real 3DGS tarball, auto-refreshes after CLI edit, and exports th
   const workingPlyPath = (await page.getByTestId("splat-working-ply-path").textContent())?.trim();
   const originalSessionId = (await page.getByTestId("splat-session-id").textContent())?.trim();
   const firstHash = (await page.getByTestId("splat-revision-hash").textContent())?.trim();
+  await expect(page.getByTestId("splat-history-state")).toHaveText("1/1");
   expect(workingPlyPath).toBeTruthy();
   expect(originalSessionId).toBeTruthy();
   expect(firstHash).toBeTruthy();
@@ -78,12 +79,22 @@ test("imports a real 3DGS tarball, auto-refreshes after CLI edit, and exports th
   await expect(page.getByTestId("splat-revision-hash")).not.toHaveText(firstHash!, { timeout: 30_000 });
   const updatedHash = (await page.getByTestId("splat-revision-hash").textContent())?.trim();
   expect(updatedHash).toBeTruthy();
+  await expect(page.getByTestId("splat-history-state")).toHaveText("2/2");
+
+  await page.getByRole("button", { name: "Undo" }).click();
+  await expect(page.getByTestId("splat-revision-hash")).toHaveText(firstHash!);
+  await expect(page.getByTestId("splat-history-state")).toHaveText("1/2");
+
+  await page.getByRole("button", { name: "Redo" }).click();
+  await expect(page.getByTestId("splat-revision-hash")).toHaveText(updatedHash!);
+  await expect(page.getByTestId("splat-history-state")).toHaveText("2/2");
 
   await page.reload();
   await expect(page.getByTestId("splat-session-id")).toHaveText(originalSessionId!);
   await expect(page.getByTestId("splat-working-ply-path")).toHaveText(workingPlyPath!);
   await expect(page.getByTestId("splat-revision-hash")).toHaveText(updatedHash!);
   await expect(page.getByTestId("splat-viewer-state")).toHaveText("ready", { timeout: 180_000 });
+  await expect(page.getByTestId("splat-history-state")).toHaveText("2/2");
 
   const [download] = await Promise.all([
     page.waitForEvent("download"),
