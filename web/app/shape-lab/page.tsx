@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = "edge";
+
 import React, { useMemo, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Html } from '@react-three/drei';

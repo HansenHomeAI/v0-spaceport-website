@@ -51,3 +51,14 @@
 2026-03-30 sogs-migrated-viewer smoke: fix postMessage listener; canvas dblclick; close path panel; default SOGS_MIGRATED_URL :3002
 2026-03-30 sogs tap-focus: single click no-drag, look() orbit tilt/pan, iframe→viewport ring, Canyon-style CSS
 2026-03-30 sogs-migrated-viewer: place tap ring at projected orbit focus after cameraPose
+2026-03-30 edge runtime config for preview/debug app routes + explicit not-found page
+2026-03-26 switch SfM preview branch to COLMAP gpu handoff validation
+2026-03-28T00:00:00Z switch branch-preview API Gateway endpoints to regional for quota-safe deploys
+2026-03-28T00:10:00Z allow shared auth rollback-complete stack outputs during preview pages deploy
+2026-03-28T18:25:00Z validate preview auth opt-in and branch-bound Pages preview URLs
+2026-03-28T21:52:00Z rerun preview workflows after skipped auth lane application deploy fix
+2026-03-28T22:01:00Z validate shared auth redeploy after explicit preview opt-in
+2026-03-30T12:47:34Z validate non-production auth APIs use regional endpoints for preview auth opt-in
+2026-03-30T12:53:35Z rerun preview auth opt-in after fixing Python 3.9 helper compatibility
+2026-03-30T13:01:24Z rerun preview auth opt-in after recovering SpaceportAuthStagingStack rollback state
+2026-03-30T13:07:44Z rerun preview auth opt-in with serialized non-production auth API endpoint migrations
