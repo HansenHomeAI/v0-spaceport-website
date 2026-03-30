@@ -11,9 +11,10 @@ type Props = {
   orbitTarget: V3;
   northDeg: number;
   onClick: () => void;
+  compassAriaLabel?: string;
 };
 
-export function CanyonCompassLive({ poseRef, orbitTarget, northDeg, onClick }: Props) {
+export function CanyonCompassLive({ poseRef, orbitTarget, northDeg, onClick, compassAriaLabel }: Props) {
   const [rot, setRot] = useState(0);
 
   useEffect(() => {
@@ -29,5 +30,5 @@ export function CanyonCompassLive({ poseRef, orbitTarget, northDeg, onClick }: P
     return () => cancelAnimationFrame(raf);
   }, [poseRef, orbitTarget, northDeg]);
 
-  return <CanyonCompass rotationDeg={rot} onClick={onClick} />;
+  return <CanyonCompass rotationDeg={rot} onClick={onClick} ariaLabel={compassAriaLabel} />;
 }

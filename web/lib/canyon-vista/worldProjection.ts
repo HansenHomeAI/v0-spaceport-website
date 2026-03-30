@@ -1,7 +1,8 @@
 /**
  * Match SuperSplat / Three Y-up perspective for overlay labels (tap dots, lot vertices).
+ * Named imports avoid `import * as THREE` namespace typing issues with @types/three.
  */
-import * as THREE from "three";
+import { PerspectiveCamera, Vector3 } from "three";
 import type { V3 } from "./types";
 
 export type CameraPose = {
@@ -10,12 +11,12 @@ export type CameraPose = {
   fov: number;
 };
 
-export function createOverlayPerspectiveCamera(): THREE.PerspectiveCamera {
-  return new THREE.PerspectiveCamera(60, 1, 0.05, 5000);
+export function createOverlayPerspectiveCamera(): PerspectiveCamera {
+  return new PerspectiveCamera(60, 1, 0.05, 5000);
 }
 
 export function syncOverlayCamera(
-  cam: THREE.PerspectiveCamera,
+  cam: PerspectiveCamera,
   pose: CameraPose,
   width: number,
   height: number,
@@ -30,11 +31,11 @@ export function syncOverlayCamera(
 
 export function projectWorldToScreen(
   world: V3,
-  cam: THREE.PerspectiveCamera,
+  cam: PerspectiveCamera,
   width: number,
   height: number,
 ): { x: number; y: number; visible: boolean } {
-  const v = new THREE.Vector3(world.x, world.y, world.z);
+  const v = new Vector3(world.x, world.y, world.z);
   v.project(cam);
   const x = (v.x * 0.5 + 0.5) * width;
   const y = (-v.y * 0.5 + 0.5) * height;

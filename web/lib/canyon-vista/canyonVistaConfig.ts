@@ -37,6 +37,20 @@ export const CANYON_VISTA_ORBIT = {
   center: { x: 0, y: -0.06, z: 0 } as V3,
 };
 
+/** Matches Canyon-Vista `compass.northButtonMode`. */
+export type CanyonCompassNorthMode = "north" | "animationStart";
+
+export const CANYON_VISTA_COMPASS: { northButtonMode: CanyonCompassNorthMode } = {
+  northButtonMode: "animationStart",
+};
+
+/** Intro: fade from black + optional auto path (Canyon-Vista–style landing motion). */
+export const CANYON_VISTA_INTRO = {
+  revealDurationMs: 2800,
+  autoPlayPathOnFirstReady: true,
+  autoPlayDelayMs: 400,
+};
+
 /** Global default camera path (hole `path: null` defers to this in Canyon-Vista). */
 export const CANYON_VISTA_DEFAULT_PATH_CHECKPOINTS: PathCheckpoint[] = [
   { position: { x: 1.582791, y: -0.07165, z: 1.155954 }, lookAt: { x: 0.1521, y: -0.180213, z: 0.600098 }, duration: 5 },

@@ -12,6 +12,9 @@ import {
   type CameraPose,
 } from "../../lib/canyon-vista/worldProjection";
 
+const TAPDOT_CAMERA_ICON =
+  "https://raw.githubusercontent.com/HansenHomeAI/WhiteCameraIcon/main/3TestIcons-9.png";
+
 type ProjectedDot = {
   x: number;
   y: number;
@@ -68,11 +71,21 @@ export function TapDotsOverlay({ enabled, tapDots, poseRef, containerRef, onOpen
         if (!d.visible) {
           return null;
         }
+        const dot = d.dot;
+        const isCamera = dot.icon === "camera";
+        const iconOnly = dot.icon === "info" && (!dot.photos || dot.photos.length === 0);
+        const bubbleClass = [
+          "tapdot-label-bubble",
+          isCamera ? "has-camera" : "",
+          iconOnly ? "icon-only" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
         return (
           <button
             key={`${d.caption}-${i}`}
             type="button"
-            className="tapdot-label-bubble"
+            className={bubbleClass}
             style={{
               left: d.x,
               top: d.y,
@@ -81,7 +94,11 @@ export function TapDotsOverlay({ enabled, tapDots, poseRef, containerRef, onOpen
             onClick={() => onOpenPhotos(d.dot)}
             aria-label={d.caption}
           >
-            <span className="tapdot-label-text">{d.caption}</span>
+            {isCamera ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="tapdot-camera-icon" src={TAPDOT_CAMERA_ICON} alt="" draggable={false} />
+            ) : null}
+            {!iconOnly ? <span className="tapdot-label-text">{d.caption}</span> : null}
           </button>
         );
       })}

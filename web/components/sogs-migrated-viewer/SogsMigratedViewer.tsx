@@ -5,9 +5,11 @@ import { createDefaultScenePayload } from "../../lib/sogsViewerSceneDefaults";
 import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
 import {
   CANYON_VISTA_CAMERA_START_Y,
+  CANYON_VISTA_COMPASS,
   CANYON_VISTA_DEFAULT_PATH_CHECKPOINTS,
   CANYON_VISTA_HOLE_VIEW,
   CANYON_VISTA_HOLES,
+  CANYON_VISTA_INTRO,
   CANYON_VISTA_ORBIT,
   CANYON_VISTA_SCENE_ORIGIN,
 } from "../../lib/canyon-vista/canyonVistaConfig";
@@ -29,6 +31,7 @@ import type { PathAnimationState, V3 } from "../../lib/canyon-vista/types";
 import type { CameraPose } from "../../lib/canyon-vista/worldProjection";
 import { AnimationPathPanel } from "./AnimationPathPanel";
 import { CanyonCompassLive } from "./CanyonCompassLive";
+import { CanyonDetailsMenuButton, CanyonDetailsPanel } from "./CanyonDetailsPanel";
 import { CanyonPhotoModal } from "./CanyonPhotoModal";
 import { CanyonVignette } from "./CanyonVignette";
 import { LotLinesOverlay } from "./LotLinesOverlay";
@@ -90,6 +93,9 @@ export default function SogsMigratedViewer() {
   const [selectedHoleId, setSelectedHoleId] = useState(() => CANYON_VISTA_HOLES[0]?.id ?? "canyon-vista");
   const [photoDot, setPhotoDot] = useState<TapDotConfig | null>(null);
   const [pathPanelOpen, setPathPanelOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [revealDone, setRevealDone] = useState(false);
+  const introPathPlayedRef = useRef(false);
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -99,6 +105,33 @@ export default function SogsMigratedViewer() {
   useEffect(() => {
     autoRotateRef.current = autoRotate;
   }, [autoRotate]);
+
+  useEffect(() => {
+    if (viewerState !== "ready") return;
+    const id = requestAnimationFrame(() => setRevealDone(true));
+    return () => cancelAnimationFrame(id);
+  }, [viewerState]);
+
+  useEffect(() => {
+    if (viewerState !== "ready" || !CANYON_VISTA_INTRO.autoPlayPathOnFirstReady || introPathPlayedRef.current) {
+      return;
+    }
+    introPathPlayedRef.current = true;
+    const t = window.setTimeout(() => {
+      setAutoRotate(false);
+      jumpToPathStart(pathStateRef.current, CANYON_VISTA_HOLE_VIEW.target);
+      pathPlayingRef.current = true;
+      setPathPlaying(true);
+    }, CANYON_VISTA_INTRO.autoPlayDelayMs);
+    return () => clearTimeout(t);
+  }, [viewerState]);
+
+  useEffect(() => {
+    if (viewerState === "loading" || viewerState === "idle") {
+      setRevealDone(false);
+      introPathPlayedRef.current = false;
+    }
+  }, [viewerState]);
 
   const attemptLoad = useCallback((rawValue: string) => {
     setError(null);
@@ -259,15 +292,24 @@ export default function SogsMigratedViewer() {
   const onPlayTour = () => {
     setAutoRotate(false);
     jumpToPathStart(pathStateRef.current, null);
+    pathPlayingRef.current = true;
     setPathPlaying(true);
   };
 
+  const goToAnimationStart = useCallback(() => {
+    setAutoRotate(false);
+    jumpToPathStart(pathStateRef.current, CANYON_VISTA_HOLE_VIEW.target);
+    pathPlayingRef.current = true;
+    setPathPlaying(true);
+  }, []);
+
   const onStopTour = () => {
     pathStateRef.current.playing = false;
+    pathPlayingRef.current = false;
     setPathPlaying(false);
   };
 
-  const onFaceNorth = () => {
+  const onFaceNorth = useCallback(() => {
     const p = poseRef.current;
     const win = iframeRef.current?.contentWindow;
     if (!p || !win) return;
@@ -292,7 +334,15 @@ export default function SogsMigratedViewer() {
     window.setTimeout(() => {
       postToWindow(iframeRef.current?.contentWindow, { type: "sogs:cameraMode", mode: "free" });
     }, 100);
-  };
+  }, []);
+
+  const onCompassClick = useCallback(() => {
+    if (CANYON_VISTA_COMPASS.northButtonMode === "animationStart") {
+      goToAnimationStart();
+    } else {
+      onFaceNorth();
+    }
+  }, [goToAnimationStart, onFaceNorth]);
 
   const onFocusSceneCenter = useCallback(() => {
     const p = poseRef.current;
@@ -374,7 +424,10 @@ export default function SogsMigratedViewer() {
           tapDots={CANYON_VISTA_TAP_DOTS}
           poseRef={poseRef}
           containerRef={containerRef}
-          onOpenPhotos={setPhotoDot}
+          onOpenPhotos={(d) => {
+            setDetailsOpen(false);
+            setPhotoDot(d);
+          }}
         />
         <LotLinesOverlay
           enabled={viewerState === "ready" && showLotLines}
@@ -387,7 +440,21 @@ export default function SogsMigratedViewer() {
           poseRef={poseRef}
           containerRef={containerRef}
         />
+        <div
+          className={`sogs-migrated-reveal ${revealDone ? "sogs-migrated-reveal--done" : ""}`}
+          style={{ transitionDuration: `${CANYON_VISTA_INTRO.revealDurationMs}ms` }}
+          aria-hidden
+        />
       </div>
+
+      {detailsOpen ? (
+        <div
+          id="overlay-ui"
+          className="sogs-migrated-overlay-ui active"
+          onClick={() => setDetailsOpen(false)}
+          aria-hidden
+        />
+      ) : null}
 
       {/* Canyon-Vista: top-right editor toggles (HansenHomeAI/Canyon-Vista index.html) */}
       <div className="editor-toggles-wrap" id="editorTogglesWrap">
@@ -523,15 +590,27 @@ export default function SogsMigratedViewer() {
             <line x1="19" y1="12" x2="22" y2="12" />
           </svg>
         </button>
+        <CanyonDetailsMenuButton
+          disabled={viewerState !== "ready"}
+          open={detailsOpen}
+          onToggle={() => setDetailsOpen((v) => !v)}
+        />
         {viewerState === "ready" ? (
           <CanyonCompassLive
             poseRef={poseRef}
             orbitTarget={CANYON_VISTA_HOLE_VIEW.target}
             northDeg={CANYON_VISTA_HOLE_VIEW.northDirection}
-            onClick={onFaceNorth}
+            onClick={onCompassClick}
+            compassAriaLabel={
+              CANYON_VISTA_COMPASS.northButtonMode === "animationStart"
+                ? "Go to animation start"
+                : "Face north"
+            }
           />
         ) : null}
       </div>
+
+      <CanyonDetailsPanel open={detailsOpen} onClose={() => setDetailsOpen(false)} />
 
       <div className="lot-editor-panel sogs-bundle-panel" aria-label="SOGS bundle">
         <div className="lot-editor-title">Bundle</div>
