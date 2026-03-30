@@ -101119,11 +101119,9 @@ class CameraManager {
             if (state.cameraMode !== 'orbit') {
                 return;
             }
-            this.camera.calcFocusPoint(tmpv);
-            tmpCamera.copy(this.camera);
-            tmpCamera.position.x += worldPos.x - tmpv.x;
-            tmpCamera.position.y += worldPos.y - tmpv.y;
-            tmpCamera.position.z += worldPos.z - tmpv.z;
+            const cam = this.camera;
+            tmpCamera.copy(cam);
+            tmpCamera.look(cam.position, worldPos);
             controllers.orbit.goto(tmpCamera);
             try {
                 if (payload && payload.world && window.parent) {
@@ -101296,42 +101294,83 @@ class InputController {
         canvas.addEventListener('pointermove', (event) => {
             events.fire('inputEvent', 'interact', event);
         });
-        // Detect double taps manually because iOS doesn't send dblclick events
-        const lastTap = { time: 0, x: 0, y: 0 };
-        canvas.addEventListener('pointerdown', (event) => {
-            const now = Date.now();
-            const delay = Math.max(0, now - lastTap.time);
-            if (delay < 300 &&
-                Math.abs(event.clientX - lastTap.x) < 8 &&
-                Math.abs(event.clientY - lastTap.y) < 8) {
-                events.fire('inputEvent', 'dblclick', event);
-                lastTap.time = 0;
-            }
-            else {
-                lastTap.time = now;
-                lastTap.x = event.clientX;
-                lastTap.y = event.clientY;
-            }
-        });
-        // Calculate pick location on double click
         let picker = null;
-        events.on('inputEvent', async (eventName, event) => {
-            switch (eventName) {
-                case 'dblclick': {
-                    if (!picker) {
-                        picker = new Picker(app, camera);
-                    }
-                    const result = await picker.pick(event.offsetX, event.offsetY);
-                    if (result) {
-                        events.fire('pick', {
-                            world: result,
-                            clientX: event.clientX,
-                            clientY: event.clientY
-                        });
-                    }
-                    break;
-                }
+        const TAP_MOVE_PX = 8;
+        const TAP_MAX_MS = 500;
+        let tapPointer = null;
+        let tapWheelDuring = false;
+        window.addEventListener('wheel', ()=>{
+            if (tapPointer) {
+                tapWheelDuring = true;
             }
+        }, {
+            passive: true,
+            capture: true
+        });
+        canvas.addEventListener('pointerdown', (event)=>{
+            if (event.button !== 0 || !event.isPrimary) {
+                return;
+            }
+            tapWheelDuring = false;
+            tapPointer = {
+                x: event.clientX,
+                y: event.clientY,
+                ox: event.offsetX,
+                oy: event.offsetY,
+                pointerId: event.pointerId,
+                t: Date.now(),
+                cancelled: false,
+                movePx: event.pointerType === 'touch' ? 12 : 8
+            };
+        }, {
+            passive: true
+        });
+        canvas.addEventListener('pointermove', (event)=>{
+            if (!tapPointer || event.pointerId !== tapPointer.pointerId) {
+                return;
+            }
+            const dx = event.clientX - tapPointer.x;
+            const dy = event.clientY - tapPointer.y;
+            const th = tapPointer.movePx ?? TAP_MOVE_PX;
+            if (Math.hypot(dx, dy) > th) {
+                tapPointer.cancelled = true;
+            }
+        }, {
+            passive: true
+        });
+        canvas.addEventListener('pointerup', (event)=>{
+            if (!tapPointer || event.pointerId !== tapPointer.pointerId) {
+                return;
+            }
+            const { ox, oy, t, cancelled } = tapPointer;
+            const clientX = event.clientX;
+            const clientY = event.clientY;
+            tapPointer = null;
+            if (cancelled || tapWheelDuring || Date.now() - t > TAP_MAX_MS) {
+                return;
+            }
+            (async ()=>{
+                if (!picker) {
+                    picker = new Picker(app, camera);
+                }
+                const result = await picker.pick(ox, oy);
+                if (result) {
+                    events.fire('pick', {
+                        world: result,
+                        clientX,
+                        clientY
+                    });
+                }
+            })();
+        }, {
+            passive: true
+        });
+        canvas.addEventListener('pointercancel', (event)=>{
+            if (tapPointer && event.pointerId === tapPointer.pointerId) {
+                tapPointer = null;
+            }
+        }, {
+            passive: true
         });
         // update input mode based on pointer event
         ['pointerdown', 'pointermove'].forEach((eventName) => {

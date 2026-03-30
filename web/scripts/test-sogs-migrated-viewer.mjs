@@ -1,6 +1,6 @@
 /**
  * Smoke test for /sogs-migrated-viewer: standalone chrome, iframe, first frame, bridge ready,
- * double-click pick → sogs:pickFocus.
+ * single-click (no drag) pick → sogs:pickFocus.
  *
  * Usage (from web/):
  *   SOGS_MIGRATED_URL=http://127.0.0.1:3002 node scripts/test-sogs-migrated-viewer.mjs
@@ -225,13 +225,11 @@ function summarizeRenderedPixels(buffer) {
   assert(box && box.width > 0 && box.height > 0, "supersplat canvas should have a non-zero size");
   await canvas.click({
     position: { x: box.width / 2, y: box.height / 2 },
-    clickCount: 2,
-    delay: 50,
   });
   await page.waitForFunction(() => window.__sogsPickFocusSeen === true, null, { timeout: 35000 });
   assert(
     await page.evaluate(() => window.__sogsPickFocusSeen === true),
-    "parent should receive sogs:pickFocus after double-click (orbit refocus)",
+    "parent should receive sogs:pickFocus after single tap (orbit refocus)",
   );
 
   const shot = path.join(logsDir, "sogs-migrated-viewer-smoke.png");

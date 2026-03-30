@@ -117,7 +117,7 @@ export default function SogsMigratedViewer() {
     orbitFocusRef.current = { x: t.x, y: t.y, z: t.z };
   }, [activeHoleView]);
 
-  const [pickFeedbackScreen, setPickFeedbackScreen] = useState<{ x: number; y: number } | null>(null);
+  const [pickFeedbackScreen, setPickFeedbackScreen] = useState<{ x: number; y: number; t: number } | null>(null);
 
   const bumpPath = useCallback(() => setPathVersion((v) => v + 1), []);
 
@@ -243,7 +243,17 @@ export default function SogsMigratedViewer() {
           };
         }
         if (typeof d.clientX === "number" && typeof d.clientY === "number") {
-          setPickFeedbackScreen({ x: d.clientX, y: d.clientY });
+          const iframeEl = iframeRef.current;
+          if (iframeEl) {
+            const r = iframeEl.getBoundingClientRect();
+            setPickFeedbackScreen({
+              x: r.left + d.clientX,
+              y: r.top + d.clientY,
+              t: Date.now(),
+            });
+          } else {
+            setPickFeedbackScreen({ x: d.clientX, y: d.clientY, t: Date.now() });
+          }
         }
       }
 

@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 
 type Props = {
-  /** Screen coordinates (CSS pixels, viewport) */
-  screen: { x: number; y: number } | null;
-  /** Fade out after this many ms */
+  /** Viewport coordinates (parent page) + stamp so repeated taps re-run the ring animation */
+  screen: { x: number; y: number; t: number } | null;
+  /** Hold visible then fade (Canyon-Vista tap-focus-feedback timing) */
   durationMs?: number;
 };
 
 /**
- * Brief ring at double-tap / pick focus (Canyon-Vista #tap-focus-feedback style).
+ * Ring at tap-to-focus screen position (HansenHomeAI/Canyon-Vista #tap-focus-feedback).
  */
-export function TapPickFeedback({ screen, durationMs = 520 }: Props) {
+export function TapPickFeedback({ screen, durationMs = 720 }: Props) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export function TapPickFeedback({ screen, durationMs = 520 }: Props) {
 
   return (
     <div
+      key={screen.t}
       className="sogs-tap-pick-feedback"
       style={{ left: screen.x, top: screen.y }}
       aria-hidden
