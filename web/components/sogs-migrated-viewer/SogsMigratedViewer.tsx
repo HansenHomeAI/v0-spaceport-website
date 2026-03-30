@@ -40,7 +40,14 @@ import { TapDotsOverlay } from "./TapDotsOverlay";
 import { TapPickFeedback } from "./TapPickFeedback";
 import "./sogs-migrated-viewer.css";
 
-const VIEWER_BASE = "/supersplat-viewer/index.html";
+const DEFAULT_VIEWER_BASE = "../supersplat-viewer/index.html";
+const DEFAULT_VIEWER_SETTINGS_PATH = "../supersplat-viewer/settings.json";
+
+type SogsMigratedViewerProps = {
+  useBundleProxy?: boolean;
+  viewerBase?: string;
+  viewerSettingsPath?: string;
+};
 
 function postToWindow(win: Window | null | undefined, payload: object) {
   if (!win) return;
@@ -51,7 +58,11 @@ function postToWindow(win: Window | null | undefined, payload: object) {
   }
 }
 
-export default function SogsMigratedViewer() {
+export default function SogsMigratedViewer({
+  useBundleProxy = true,
+  viewerBase = DEFAULT_VIEWER_BASE,
+  viewerSettingsPath = DEFAULT_VIEWER_SETTINGS_PATH,
+}: SogsMigratedViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ignoreNextSogsStateRef = useRef(false);
@@ -156,31 +167,34 @@ export default function SogsMigratedViewer() {
     }
   }, [viewerState]);
 
-  const attemptLoad = useCallback((rawValue: string) => {
-    setError(null);
-    const normalized = normalizeBundleUrl(rawValue);
-    if (!normalized) {
-      setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
-      setViewerState("idle");
-      return false;
-    }
-    const hole = resolveHoleView(CANYON_VISTA_HOLES.find((h) => h.id === selectedHoleIdRef.current));
-    orbitFocusRef.current = { x: hole.target.x, y: hole.target.y, z: hole.target.z };
-    setViewerState("loading");
-    setActiveUrl(normalized);
-    setIframeKey((k) => k + 1);
-    ignoreNextSogsStateRef.current = true;
-    poseRef.current = null;
-    return true;
-  }, []);
+  const attemptLoad = useCallback(
+    (rawValue: string) => {
+      setError(null);
+      const normalized = normalizeBundleUrl(rawValue, { useProxy: useBundleProxy });
+      if (!normalized) {
+        setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
+        setViewerState("idle");
+        return false;
+      }
+      const hole = resolveHoleView(CANYON_VISTA_HOLES.find((h) => h.id === selectedHoleIdRef.current));
+      orbitFocusRef.current = { x: hole.target.x, y: hole.target.y, z: hole.target.z };
+      setViewerState("loading");
+      setActiveUrl(normalized);
+      setIframeKey((k) => k + 1);
+      ignoreNextSogsStateRef.current = true;
+      poseRef.current = null;
+      return true;
+    },
+    [useBundleProxy],
+  );
 
   const viewerSrc = (() => {
     if (!activeUrl) return null;
     const params = new URLSearchParams({
-      settings: "/supersplat-viewer/settings.json",
+      settings: viewerSettingsPath,
       content: activeUrl,
     });
-    return `${VIEWER_BASE}?${params.toString()}`;
+    return `${viewerBase}?${params.toString()}`;
   })();
 
   useEffect(() => {

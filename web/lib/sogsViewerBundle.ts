@@ -11,23 +11,32 @@ export function getBaseOrigin(): string {
   return typeof window !== "undefined" ? window.location.origin : "https://spcprt.com";
 }
 
+export type NormalizeBundleUrlOptions = {
+  useProxy?: boolean;
+  baseOrigin?: string;
+};
+
 function convertToProxyPath(url: URL): string {
   const base = `${url.protocol}//${url.host}`;
   const encodedBase = base.replace("://", ":/");
   return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
 }
 
-export function normalizeBundleUrl(rawValue: string): string | null {
+export function normalizeBundleUrl(
+  rawValue: string,
+  options: NormalizeBundleUrlOptions = {},
+): string | null {
   const trimmed = rawValue.trim();
   if (!trimmed) {
     return null;
   }
 
   try {
+    const baseOrigin = options.baseOrigin ?? getBaseOrigin();
     const parsed =
       trimmed.startsWith("http://") || trimmed.startsWith("https://")
         ? new URL(trimmed)
-        : new URL(trimmed, getBaseOrigin());
+        : new URL(trimmed, baseOrigin);
 
     if (!parsed.protocol.startsWith("http")) {
       return null;
@@ -37,7 +46,7 @@ export function normalizeBundleUrl(rawValue: string): string | null {
       parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
     }
 
-    if (PROXY_HOSTS.has(parsed.host)) {
+    if (options.useProxy !== false && PROXY_HOSTS.has(parsed.host)) {
       return convertToProxyPath(parsed);
     }
 
