@@ -14,6 +14,7 @@ const DEFAULT_BUNDLE =
 
 const previewUrl = process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW;
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
+const expectSkybox = /^(1|true|yes)$/i.test(process.env.SOGS_EXPECT_SKYBOX ?? "");
 
 const scenarios = [
   {
@@ -45,6 +46,67 @@ if (!activeScenarios.length) {
 const inputSelector = "#sogs-url-input";
 const submitSelector = 'button[type="submit"]';
 const iframeSelector = 'iframe[title="SuperSplat Viewer"]';
+const readyMessageSelector = expectSkybox
+  ? 'text=SOGS bundle and baked skybox loaded.'
+  : 'text=/SOGS bundle (and baked skybox )?loaded\\./';
+
+async function sampleCanvasLuminance(frame) {
+  return frame.evaluate(async () => {
+    const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+    const canvas = document.querySelector("canvas");
+    if (!(canvas instanceof HTMLCanvasElement)) {
+      return null;
+    }
+
+    await sleep(1500);
+
+    const width = canvas.width || canvas.clientWidth;
+    const height = canvas.height || canvas.clientHeight;
+    if (!width || !height) {
+      return null;
+    }
+
+    const sampleCanvas = document.createElement("canvas");
+    sampleCanvas.width = width;
+    sampleCanvas.height = height;
+
+    const ctx = sampleCanvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) {
+      return null;
+    }
+
+    ctx.drawImage(canvas, 0, 0);
+
+    const sampleWidth = Math.max(1, Math.floor(width * 0.25));
+    const sampleHeight = Math.max(1, Math.floor(height * 0.2));
+    const offsetX = Math.max(0, Math.floor((width - sampleWidth) / 2));
+    const image = ctx.getImageData(offsetX, 0, sampleWidth, sampleHeight);
+
+    let luminanceSum = 0;
+    let nonBlackPixels = 0;
+    const pixelCount = image.data.length / 4;
+
+    for (let index = 0; index < image.data.length; index += 4) {
+      const r = image.data[index];
+      const g = image.data[index + 1];
+      const b = image.data[index + 2];
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      luminanceSum += luminance;
+      if (luminance > 8) {
+        nonBlackPixels += 1;
+      }
+    }
+
+    return {
+      width,
+      height,
+      sampleWidth,
+      sampleHeight,
+      avgLuminance: pixelCount ? luminanceSum / pixelCount : 0,
+      nonBlackRatio: pixelCount ? nonBlackPixels / pixelCount : 0,
+    };
+  });
+}
 
 async function ensureLogsDir() {
   await fs.mkdir(logsDir, { recursive: true });
@@ -78,11 +140,39 @@ async function runScenario({ launcher, name, options }) {
     await page.click(submitSelector);
     await page.waitForSelector(iframeSelector, { timeout: 15000 });
     await page.waitForSelector('text=Viewer ready', { timeout: 360000 });
-    await page.waitForSelector('text=SOGS bundle loaded in the embedded viewer.', { timeout: 360000 });
+    await page.waitForSelector(readyMessageSelector, { timeout: 360000 });
+
+    const iframeSrc = await page.locator(iframeSelector).getAttribute("src");
+    const viewerFrame = page.frames().find((frame) => frame.url().includes("/supersplat-viewer/index.html"));
+    if (!viewerFrame) {
+      throw new Error("Could not resolve the embedded SuperSplat iframe.");
+    }
+
+    const skyboxUrl = await viewerFrame.evaluate(() => window.sse?.config?.skyboxUrl ?? null);
+    const luminanceSample = await sampleCanvasLuminance(viewerFrame);
+
+    if (expectSkybox && !iframeSrc?.includes("skybox=")) {
+      throw new Error(`Expected iframe src to include skybox query param, got: ${iframeSrc}`);
+    }
+
+    if (expectSkybox && !skyboxUrl) {
+      throw new Error("Expected embedded viewer to receive a skyboxUrl, but none was present.");
+    }
+
+    if (expectSkybox) {
+      if (!luminanceSample) {
+        throw new Error("Could not sample viewer canvas luminance for skybox validation.");
+      }
+      if (luminanceSample.avgLuminance <= 8 || luminanceSample.nonBlackRatio <= 0.1) {
+        throw new Error(
+          `Skybox validation failed: avgLuminance=${luminanceSample.avgLuminance}, nonBlackRatio=${luminanceSample.nonBlackRatio}`,
+        );
+      }
+    }
 
     await page.screenshot({ path: screenshotPath, fullPage: true });
     await fs.writeFile(consolePath, consoleBuffer.join("\n"), "utf8");
-    return { name, screenshotPath, consolePath };
+    return { name, screenshotPath, consolePath, iframeSrc, skyboxUrl, luminanceSample };
   } catch (error) {
     // capture failure state
     await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
