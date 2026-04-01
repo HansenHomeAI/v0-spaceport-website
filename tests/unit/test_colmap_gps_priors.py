@@ -388,6 +388,156 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.matcher_pair_deltas["sequential_matcher"], 6)
             self.assertIn("sequential_matcher", pipeline.matchers_run)
 
+    def test_build_spatial_heading_chunks_groups_by_spatial_proximity_not_capture_time(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 4
+            pipeline.chunk_min_images = 2
+            pipeline.chunk_overlap_images = 1
+            pipeline.capture_ordered_names = [
+                "A1.jpg",
+                "B1.jpg",
+                "A2.jpg",
+                "B2.jpg",
+            ]
+            pipeline.exif_records = {
+                "A1.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "A2.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "B1.jpg": {"local_x_m": 500.0, "local_y_m": 0.0, "heading_deg": 180.0},
+                "B2.jpg": {"local_x_m": 502.0, "local_y_m": 0.0, "heading_deg": 180.0},
+            }
+
+            chunks = pipeline.build_spatial_heading_chunks()
+
+            self.assertEqual(len(chunks), 2)
+            self.assertEqual(set(chunks[0].core_names), {"A1.jpg", "A2.jpg"})
+            self.assertEqual(set(chunks[1].core_names), {"B1.jpg", "B2.jpg"})
+
+    def test_build_spatial_heading_chunks_adds_overlap_between_adjacent_chunks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 3
+            pipeline.chunk_min_images = 2
+            pipeline.chunk_overlap_images = 2
+            pipeline.capture_ordered_names = [
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+                "IMG_05.jpg",
+                "IMG_06.jpg",
+            ]
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 50.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_05.jpg": {"local_x_m": 51.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_06.jpg": {"local_x_m": 52.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+
+            chunks = pipeline.build_spatial_heading_chunks()
+
+            self.assertGreaterEqual(len(chunks), 2)
+            shared_names = set(chunks[0].image_names).intersection(chunks[1].image_names)
+            self.assertTrue(shared_names)
+            self.assertGreater(pipeline.chunk_overlap_image_count, 0)
+
+    def test_run_chunk_pipeline_triggers_boundary_recovery_for_weak_chunk(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.enable_sequential_matcher = True
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                overlap_names=["IMG_03.jpg", "IMG_04.jpg"],
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1000,
+                binary_dir=root,
+                image_count=4,
+            )
+            recovered_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_recovery",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=1400,
+                binary_dir=root,
+                image_count=4,
+            )
+
+            with mock.patch.object(pipeline, "run_feature_extraction"), mock.patch.object(
+                pipeline, "validate_or_backfill_pose_priors"
+            ), mock.patch.object(pipeline, "run_spatial_matcher") as spatial_mock, mock.patch.object(
+                pipeline, "run_sequential_matcher"
+            ), mock.patch.object(pipeline, "run_vocab_matching") as vocab_mock, mock.patch.object(
+                pipeline,
+                "run_mapper",
+                side_effect=[initial_model, recovered_model],
+            ) as mapper_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                pipeline.timings["chunk_00_mapper_recovery_seconds"] = 8.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertEqual(best_model.images_registered, 4)
+            self.assertTrue(pipeline.boundary_recovery_triggered)
+            self.assertEqual(spatial_mock.call_count, 2)
+            self.assertEqual(vocab_mock.call_count, 1)
+            self.assertEqual(mapper_mock.call_count, 2)
+
+    def test_run_matching_and_mapping_falls_back_to_monolithic_when_chunked_path_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            fallback_model = run_colmap_sfm.ModelSummary(
+                stage="mapper_spatial_sequential_only",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=10,
+                points_3d=2000,
+                binary_dir=root,
+                image_count=10,
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "should_attempt_spatial_chunking",
+                return_value=True,
+            ), mock.patch.object(
+                pipeline,
+                "run_spatial_heading_chunked_path",
+                side_effect=RuntimeError("merge failed"),
+            ), mock.patch.object(
+                pipeline,
+                "should_attempt_gps_first",
+                return_value=True,
+            ), mock.patch.object(
+                pipeline,
+                "run_monolithic_gps_first_path",
+                return_value=fallback_model,
+            ):
+                best_model = pipeline.run_matching_and_mapping()
+
+            self.assertEqual(best_model.images_registered, 10)
+            self.assertTrue(pipeline.fallback_triggered)
+            self.assertEqual(pipeline.fallback_reason, "chunked_path_failed")
+            self.assertEqual(pipeline.final_matcher_mode, "chunked_fallback_to_monolithic")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -129,9 +129,51 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Repeatable KEY=VALUE environment overrides for the container",
     )
+    parser.add_argument(
+        "--mode",
+        choices=["monolithic", "chunked"],
+        default="monolithic",
+        help="Benchmark the current monolithic path or the spatial-heading chunked path.",
+    )
+    parser.add_argument(
+        "--subset-strategy",
+        default="first_portion_by_exif_datetime_else_filename",
+        help="Benchmark subset strategy label written into container metadata.",
+    )
+    parser.add_argument(
+        "--summary-json-output",
+        default="",
+        help="Optional local path for the compact benchmark summary JSON.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
+
+
+def build_summary_row(
+    *,
+    job_name: str,
+    mode: str,
+    input_s3_uri: str,
+    metadata: dict,
+) -> dict:
+    return {
+        "job_name": job_name,
+        "mode": mode,
+        "input_s3_uri": input_s3_uri,
+        "processing_time_seconds": metadata.get("processing_time_seconds"),
+        "chunk_mapper_seconds": metadata.get("chunk_mapper_seconds"),
+        "mapper_seconds_per_registered_image": metadata.get("mapper_seconds_per_registered_image"),
+        "images_registered": metadata.get("images_registered"),
+        "dataset_image_count": metadata.get("dataset_image_count"),
+        "points_3d": metadata.get("points_3d"),
+        "final_points_per_registered_image": metadata.get("final_points_per_registered_image"),
+        "final_matcher_mode": metadata.get("final_matcher_mode"),
+        "fallback_reason": metadata.get("fallback_reason"),
+        "merged_component_count": metadata.get("merged_component_count"),
+        "chunk_count": metadata.get("chunk_count"),
+        "chunk_sizes": metadata.get("chunk_sizes"),
+    }
 
 
 def main() -> int:
@@ -152,9 +194,13 @@ def main() -> int:
     environment = {
         "AWS_DEFAULT_REGION": "us-west-2",
         "PYTHONUNBUFFERED": "1",
-        "SFM_BENCHMARK_SUBSET_STRATEGY": "first_portion_by_exif_datetime_else_filename",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": args.subset_strategy,
         **parse_env(args.env),
     }
+    if args.mode == "chunked":
+        environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
+    else:
+        environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "0")
 
     payload = {
         "ProcessingJobName": job_name,
@@ -227,6 +273,7 @@ def main() -> int:
         "branch": branch_name,
         "stack_name": stack_name,
         "job_name": job_name,
+        "mode": args.mode,
         "image_uri": image_uri,
         "selected_tag": selected_tag if not args.image_uri else "",
         "input_s3_uri": args.input_s3_uri,
@@ -264,6 +311,17 @@ def main() -> int:
     metadata = load_s3_json(f"{output_s3_uri.rstrip('/')}/sfm_metadata.json")
     if metadata:
         print(json.dumps({"sfm_metadata": metadata}, indent=2))
+        summary_row = build_summary_row(
+            job_name=job_name,
+            mode=args.mode,
+            input_s3_uri=args.input_s3_uri,
+            metadata=metadata,
+        )
+        print(json.dumps({"benchmark_summary": summary_row}, indent=2))
+        if args.summary_json_output:
+            output_path = Path(args.summary_json_output).expanduser().resolve()
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(json.dumps(summary_row, indent=2) + "\n", encoding="utf-8")
 
     if job_status != "Completed":
         raise SystemExit(1)
