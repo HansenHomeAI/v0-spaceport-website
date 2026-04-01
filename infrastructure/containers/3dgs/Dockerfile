@@ -87,6 +87,7 @@ RUN pip install --no-cache-dir \
 COPY train_nerfstudio_production.py /opt/ml/code/
 COPY export_splatfacto_w_assets.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
+COPY sitecustomize.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
 
 # Set Python path
