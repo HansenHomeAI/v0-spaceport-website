@@ -388,6 +388,54 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.matcher_pair_deltas["sequential_matcher"], 6)
             self.assertIn("sequential_matcher", pipeline.matchers_run)
 
+    def test_run_feature_extraction_falls_back_to_sift_option_family(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            error = RuntimeError(
+                "feature_extractor failed with exit code 1\n"
+                "Failed to parse options - unrecognised option '--FeatureExtraction.use_gpu'."
+            )
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command",
+                side_effect=[error, None],
+            ) as stream_command_mock:
+                pipeline.run_feature_extraction()
+
+            first_command = stream_command_mock.call_args_list[0].args[0]
+            second_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("--FeatureExtraction.use_gpu", first_command)
+            self.assertIn("--SiftExtraction.use_gpu", second_command)
+            self.assertEqual(pipeline.feature_option_family, "SiftExtraction")
+
+    def test_run_spatial_matcher_falls_back_to_sift_matching_family(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            error = RuntimeError(
+                "spatial_matcher failed with exit code 1\n"
+                "Failed to parse options - unrecognised option '--FeatureMatching.use_gpu'."
+            )
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command",
+                side_effect=[error, None],
+            ) as stream_command_mock, mock.patch.object(
+                pipeline,
+                "count_verified_pairs",
+                side_effect=[10, 10],
+            ):
+                pipeline.run_spatial_matcher()
+
+            first_command = stream_command_mock.call_args_list[0].args[0]
+            second_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("--FeatureMatching.use_gpu", first_command)
+            self.assertIn("--SiftMatching.use_gpu", second_command)
+            self.assertEqual(pipeline.matching_option_family, "SiftMatching")
+
     def test_build_spatial_heading_chunks_groups_by_spatial_proximity_not_capture_time(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
