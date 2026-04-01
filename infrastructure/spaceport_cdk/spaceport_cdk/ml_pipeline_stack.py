@@ -313,6 +313,7 @@ class MLPipelineStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
+            role=lambda_role,
             timeout=Duration.seconds(60),
             memory_size=512,
             environment={
@@ -334,6 +335,7 @@ class MLPipelineStack(Stack):
             function_name=scoped_name("Spaceport-MLNotification-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
+            role=notification_lambda_role,
             code=lambda_.Code.from_asset(
                 "lambda/ml_notification",
                 bundling=BundlingOptions(
