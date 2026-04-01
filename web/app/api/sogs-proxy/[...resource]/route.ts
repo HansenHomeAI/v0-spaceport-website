@@ -2,10 +2,10 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-const ALLOWED_HOSTS = new Set([
-  "spaceport-ml-processing.s3.amazonaws.com",
-  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
-]);
+const ALLOWED_HOST_PATTERNS = [
+  /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3\.amazonaws\.com$/i,
+  /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3\.us-west-2\.amazonaws\.com$/i,
+];
 
 const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   if (!segments.length) {
@@ -23,7 +23,7 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   urlString = urlString.replace(/^https:\/\//, "https://").replace(/^http:\/\//, "http://");
   try {
     const url = new URL(urlString);
-    if (!ALLOWED_HOSTS.has(url.host)) {
+    if (!ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(url.host))) {
       return null;
     }
     return url;

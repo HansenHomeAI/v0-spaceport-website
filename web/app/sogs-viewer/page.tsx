@@ -7,10 +7,7 @@ const REMOTE_S3_BUNDLE =
 const LOCAL_MIRROR_BUNDLE = "/test-sogs-1763664401/meta.json";
 const DEFAULT_BUNDLE_URL = REMOTE_S3_BUNDLE;
 const VIEWER_BASE = "/supersplat-viewer/index.html";
-const PROXY_HOSTS = new Set([
-  "spaceport-ml-processing.s3.amazonaws.com",
-  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
-]);
+const SPACEPORT_S3_HOST = /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3(?:\.us-west-2)?\.amazonaws\.com$/i;
 const SAMPLE_BUNDLES = [
   {
     label: "S3 proxy · sogs-test-1763664401",
@@ -126,11 +123,16 @@ const overlayWrapperStyles: CSSProperties = {
   pointerEvents: "none",
 };
 
+const hasFileExtension = (pathname: string) => /\.[a-z0-9]+$/i.test(pathname);
+
 export default function SogsViewerPage() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const requestIdRef = useRef(0);
+
   const getBaseOrigin = () => {
     return typeof window !== "undefined" ? window.location.origin : "https://spaceport.space";
   };
+
   const prettifySource = (rawValue: string) => {
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -141,22 +143,11 @@ export default function SogsViewerPage() {
         trimmed.startsWith("http://") || trimmed.startsWith("https://")
           ? new URL(trimmed)
           : new URL(trimmed, getBaseOrigin());
-      if (PROXY_HOSTS.has(parsed.host)) {
-        return `${parsed.host}${parsed.pathname}`;
-      }
       return parsed.host ? `${parsed.host}${parsed.pathname}` : parsed.pathname || trimmed;
     } catch {
       return trimmed;
     }
   };
-
-  const [inputUrl, setInputUrl] = useState(DEFAULT_BUNDLE_URL);
-  const [activeUrl, setActiveUrl] = useState(DEFAULT_BUNDLE_URL);
-  const [statusMessage, setStatusMessage] = useState("Paste an S3 bundle URL to render your splats.");
-  const [sourceLabel, setSourceLabel] = useState(() => prettifySource(DEFAULT_BUNDLE_URL));
-  const [error, setError] = useState<string | null>(null);
-  const [iframeKey, setIframeKey] = useState(0);
-  const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
 
   const convertToProxyPath = (url: URL) => {
     const base = `${url.protocol}//${url.host}`;
@@ -164,7 +155,7 @@ export default function SogsViewerPage() {
     return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
   };
 
-  const normalizeBundleUrl = (rawValue: string): string | null => {
+  const normalizeAssetUrl = (rawValue: string, defaultFilename: string | null): string | null => {
     const trimmed = rawValue.trim();
     if (!trimmed) {
       return null;
@@ -180,11 +171,11 @@ export default function SogsViewerPage() {
         return null;
       }
 
-      if (!parsed.pathname.endsWith(".json")) {
-        parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
+      if (defaultFilename && !hasFileExtension(parsed.pathname)) {
+        parsed.pathname = parsed.pathname.replace(/\/?$/, `/${defaultFilename}`);
       }
 
-      if (PROXY_HOSTS.has(parsed.host)) {
+      if (SPACEPORT_S3_HOST.test(parsed.host)) {
         return convertToProxyPath(parsed);
       }
 
@@ -194,46 +185,133 @@ export default function SogsViewerPage() {
     }
   };
 
-  const attemptLoad = (rawValue: string) => {
-    setError(null);
-    const normalized = normalizeBundleUrl(rawValue);
-    if (!normalized) {
+  const buildSiblingAssetRawUrl = (rawValue: string, filename: string) => {
+    const parsed =
+      rawValue.startsWith("http://") || rawValue.startsWith("https://")
+        ? new URL(rawValue)
+        : new URL(rawValue, getBaseOrigin());
+    if (hasFileExtension(parsed.pathname)) {
+      parsed.pathname = parsed.pathname.replace(/[^/]+$/, filename);
+    } else {
+      parsed.pathname = parsed.pathname.replace(/\/?$/, `/${filename}`);
+    }
+    return parsed.toString();
+  };
+
+  const fetchIfOk = async (url: string) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        return null;
+      }
+      return response;
+    } catch {
+      return null;
+    }
+  };
+
+  const resolveSkyboxUrl = async (bundleRawValue: string, explicitSkyboxRawValue?: string | null) => {
+    if (explicitSkyboxRawValue) {
+      const explicitUrl = normalizeAssetUrl(explicitSkyboxRawValue, null);
+      if (explicitUrl && (await fetchIfOk(explicitUrl))) {
+        return explicitUrl;
+      }
+    }
+
+    const manifestRawUrl = buildSiblingAssetRawUrl(bundleRawValue, "background_manifest.json");
+    const manifestUrl = normalizeAssetUrl(manifestRawUrl, null);
+    if (manifestUrl) {
+      const manifestResponse = await fetchIfOk(manifestUrl);
+      if (manifestResponse) {
+        try {
+          const manifest = (await manifestResponse.json()) as { asset?: string };
+          if (manifest?.asset) {
+            const skyboxRawUrl = buildSiblingAssetRawUrl(bundleRawValue, manifest.asset);
+            const skyboxUrl = normalizeAssetUrl(skyboxRawUrl, null);
+            if (skyboxUrl && (await fetchIfOk(skyboxUrl))) {
+              return skyboxUrl;
+            }
+          }
+        } catch {
+          // Ignore invalid manifests and fall back to the conventional filename.
+        }
+      }
+    }
+
+    const conventionalSkyboxRawUrl = buildSiblingAssetRawUrl(bundleRawValue, "background_skybox.webp");
+    const conventionalSkyboxUrl = normalizeAssetUrl(conventionalSkyboxRawUrl, null);
+    if (conventionalSkyboxUrl && (await fetchIfOk(conventionalSkyboxUrl))) {
+      return conventionalSkyboxUrl;
+    }
+
+    return null;
+  };
+
+  const [inputUrl, setInputUrl] = useState(DEFAULT_BUNDLE_URL);
+  const [activeUrl, setActiveUrl] = useState(DEFAULT_BUNDLE_URL);
+  const [activeSkyboxUrl, setActiveSkyboxUrl] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState("Paste an S3 bundle URL to render your splats.");
+  const [sourceLabel, setSourceLabel] = useState(() => prettifySource(DEFAULT_BUNDLE_URL));
+  const [error, setError] = useState<string | null>(null);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
+  const [chromeless, setChromeless] = useState(false);
+
+  const attemptLoad = async (rawBundleValue: string, explicitSkyboxRawValue?: string | null) => {
+    const normalizedBundleUrl = normalizeAssetUrl(rawBundleValue, "meta.json");
+    if (!normalizedBundleUrl) {
       setError("Enter a valid HTTPS URL pointing to the SOGS bundle (folder or meta.json).");
       return false;
     }
 
-    setStatusMessage("Loading viewer…");
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
+    setError(null);
     setViewerState("loading");
-    setSourceLabel(prettifySource(rawValue));
-    setActiveUrl(normalized);
+    setStatusMessage("Resolving bundle assets…");
+    setSourceLabel(prettifySource(rawBundleValue));
+
+    const resolvedSkyboxUrl = await resolveSkyboxUrl(rawBundleValue, explicitSkyboxRawValue);
+    if (requestIdRef.current !== requestId) {
+      return false;
+    }
+
+    setStatusMessage(resolvedSkyboxUrl ? "Loading splats and baked skybox…" : "Loading splats…");
+    setActiveUrl(normalizedBundleUrl);
+    setActiveSkyboxUrl(resolvedSkyboxUrl);
     setIframeKey((prev) => prev + 1);
     return true;
   };
 
   const viewerSrc = useMemo(() => {
-    if (!activeUrl) {
-      return `${VIEWER_BASE}?settings=/supersplat-viewer/settings.json`;
-    }
-
     const params = new URLSearchParams({
       settings: "/supersplat-viewer/settings.json",
-      content: activeUrl,
+      content: activeUrl || DEFAULT_BUNDLE_URL,
     });
 
+    if (activeSkyboxUrl) {
+      params.set("skybox", activeSkyboxUrl);
+    }
+
     return `${VIEWER_BASE}?${params.toString()}`;
-  }, [activeUrl, iframeKey]);
+  }, [activeSkyboxUrl, activeUrl]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    attemptLoad(inputUrl);
+    void attemptLoad(inputUrl);
   };
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
-        console.info("[sogs-viewer] first frame event received");
         setViewerState("ready");
-        setStatusMessage("SOGS bundle loaded in the embedded viewer.");
+        setStatusMessage(
+          activeSkyboxUrl ? "SOGS bundle and baked skybox loaded." : "SOGS bundle loaded in the embedded viewer.",
+        );
       }
     };
 
@@ -241,7 +319,7 @@ export default function SogsViewerPage() {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [activeSkyboxUrl]);
 
   useEffect(() => {
     const poll = () => {
@@ -254,10 +332,12 @@ export default function SogsViewerPage() {
         const loadingWrap = doc.getElementById("loadingWrap");
         if (loadingWrap?.classList.contains("hidden")) {
           setViewerState((prev) => (prev === "ready" ? prev : "ready"));
-          setStatusMessage("SOGS bundle loaded in the embedded viewer.");
+          setStatusMessage(
+            activeSkyboxUrl ? "SOGS bundle and baked skybox loaded." : "SOGS bundle loaded in the embedded viewer.",
+          );
         }
       } catch {
-        // ignore cross-origin access errors
+        // Ignore cross-origin access errors.
       }
     };
 
@@ -265,18 +345,26 @@ export default function SogsViewerPage() {
     return () => {
       window.clearInterval(id);
     };
-  }, [viewerSrc]);
+  }, [activeSkyboxUrl, viewerSrc]);
 
   useEffect(() => {
-    setViewerState("loading");
-    setStatusMessage("Loading viewer…");
-    const normalizedDefault = normalizeBundleUrl(DEFAULT_BUNDLE_URL);
-    if (normalizedDefault && normalizedDefault !== DEFAULT_BUNDLE_URL) {
-      setActiveUrl(normalizedDefault);
+    const params = new URLSearchParams(window.location.search);
+    const bundleParam = params.get("bundle");
+    const skyboxParam = params.get("skybox");
+    const chromelessParam = params.get("chromeless");
+
+    setChromeless(chromelessParam === "1" || chromelessParam === "true");
+
+    if (bundleParam) {
+      setInputUrl(bundleParam);
+      void attemptLoad(bundleParam, skyboxParam);
+      return;
     }
+
+    void attemptLoad(DEFAULT_BUNDLE_URL);
   }, []);
 
-  const isSubmitDisabled = !inputUrl.trim();
+  const isSubmitDisabled = !inputUrl.trim() || viewerState === "loading";
 
   return (
     <main
@@ -307,33 +395,34 @@ export default function SogsViewerPage() {
         />
       </div>
 
-      <div style={overlayWrapperStyles}>
-        <form style={formCardStyles} onSubmit={handleSubmit}>
-          <p style={statusTextStyles}>
-            {viewerState === "ready" ? "Viewer ready" : viewerState === "loading" ? "Loading viewer" : "Idle"}
-            {" · Source: "}
-            {sourceLabel}
-          </p>
-          <h1
-            style={{
-              fontSize: "2.5rem",
-              fontWeight: 600,
-              margin: "10px 0 24px",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            SOGS Viewer
-          </h1>
-          <label style={labelStyles} htmlFor="sogs-url-input">
-            S3 bundle URL
-          </label>
-          <div
-            style={{
-              display: "flex",
-              gap: "14px",
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
+      {!chromeless && (
+        <div style={overlayWrapperStyles}>
+          <form style={formCardStyles} onSubmit={handleSubmit}>
+            <p style={statusTextStyles}>
+              {viewerState === "ready" ? "Viewer ready" : viewerState === "loading" ? "Loading viewer" : "Idle"}
+              {" · Source: "}
+              {sourceLabel}
+            </p>
+            <h1
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: 600,
+                margin: "10px 0 24px",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              SOGS Viewer
+            </h1>
+            <label style={labelStyles} htmlFor="sogs-url-input">
+              S3 bundle URL
+            </label>
+            <div
+              style={{
+                display: "flex",
+                gap: "14px",
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
             >
               <input
                 id="sogs-url-input"
@@ -360,36 +449,39 @@ export default function SogsViewerPage() {
               >
                 {viewerState === "loading" ? "Loading…" : "Load"}
               </button>
-          </div>
-          <p style={helperTextStyles}>
-            Expecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g.{" "}
-            <code>meta.json</code>, <code>means_l.webp</code>, <code>shN_centroids.webp</code>).
-          </p>
-          <div style={samplesWrapStyles}>
-            <p style={{ ...helperTextStyles, marginTop: 0 }}>
-              Quick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror
-              handy if you need an offline fallback):
-            </p>
-            <div style={samplesListStyles}>
-              {SAMPLE_BUNDLES.map((sample) => (
-                <button
-                  key={sample.url}
-                  type="button"
-                  style={sampleButtonStyles}
-                  onClick={() => {
-                    setInputUrl(sample.url);
-                    attemptLoad(sample.url);
-                  }}
-                >
-                  {sample.label}
-                </button>
-              ))}
             </div>
-          </div>
-          <p style={{ ...helperTextStyles, marginTop: "6px" }}>{statusMessage}</p>
-          {error && <p style={errorTextStyles}>{error}</p>}
-        </form>
-      </div>
+            <p style={helperTextStyles}>
+              Expecting a public HTTPS S3 directory that contains the SuperSplat bundle files (for example{" "}
+              <code>meta.json</code>, <code>means_l.webp</code>, <code>shN_centroids.webp</code>). If a baked skybox is
+              present, this page auto-loads it from <code>background_manifest.json</code> or{" "}
+              <code>background_skybox.webp</code>.
+            </p>
+            <div style={samplesWrapStyles}>
+              <p style={{ ...helperTextStyles, marginTop: 0 }}>
+                Quick samples (Spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror
+                handy if you need an offline fallback):
+              </p>
+              <div style={samplesListStyles}>
+                {SAMPLE_BUNDLES.map((sample) => (
+                  <button
+                    key={sample.url}
+                    type="button"
+                    style={sampleButtonStyles}
+                    onClick={() => {
+                      setInputUrl(sample.url);
+                      void attemptLoad(sample.url);
+                    }}
+                  >
+                    {sample.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p style={{ ...helperTextStyles, marginTop: "6px" }}>{statusMessage}</p>
+            {error && <p style={errorTextStyles}>{error}</p>}
+          </form>
+        </div>
+      )}
     </main>
   );
 }

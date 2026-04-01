@@ -90,10 +90,15 @@ class NerfStudioPipelineTest:
         
         # Test script path
         script_path = Path(__file__).parent / "train_nerfstudio_production.py"
+        export_script_path = Path(__file__).parent / "export_splatfacto_w_assets.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
         
         if not script_path.exists():
             logger.error("❌ Training script not found")
+            return False
+
+        if not export_script_path.exists():
+            logger.error("❌ Export script not found")
             return False
         
         if not config_path.exists():
@@ -111,6 +116,16 @@ class NerfStudioPipelineTest:
                 return False
             
             logger.info("✅ Training script syntax validated")
+
+            export_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(export_script_path)
+            ], capture_output=True, text=True)
+            
+            if export_result.returncode != 0:
+                logger.error(f"❌ Export script syntax error: {export_result.stderr}")
+                return False
+
+            logger.info("✅ Export script syntax validated")
             
             # Test configuration loading
             import yaml
@@ -142,9 +157,11 @@ class NerfStudioPipelineTest:
         
         # Check Vincent Woo's key parameters
         checks = [
-            (config.get('model', {}).get('variant') == 'splatfacto-big', "Model variant should be splatfacto-big"),
-            (config.get('model', {}).get('sh_degree') == 3, "SH degree should be 3 (industry standard)"),
-            (config.get('model', {}).get('bilateral_processing') == True, "Bilateral processing should be enabled"),
+            (config.get('model', {}).get('variant') == 'splatfacto-w-light', "Model variant should be splatfacto-w-light"),
+            (config.get('model', {}).get('sh_degree') == 3, "SH degree should be 3"),
+            (config.get('model', {}).get('enable_bg_model') == True, "Background model should be enabled"),
+            (config.get('model', {}).get('enable_alpha_loss') == True, "Alpha loss should be enabled"),
+            (config.get('model', {}).get('enable_robust_mask') == True, "Robust mask should be enabled"),
             (config.get('training', {}).get('max_iterations') == 30000, "Max iterations should be 30000"),
             (config.get('licensing', {}).get('license') == 'Apache 2.0', "License should be Apache 2.0")
         ]
@@ -183,7 +200,14 @@ class NerfStudioPipelineTest:
         else:
             logger.error("❌ SOGS compatibility not configured")
             return False
-        
+
+        skybox_config = output_config.get('background_skybox', {})
+        if skybox_config.get('enabled') and skybox_config.get('width') == 1024:
+            logger.info("✅ Background skybox export configured")
+        else:
+            logger.error("❌ Background skybox export not configured")
+            return False
+
         return True
     
     def run_comprehensive_test(self) -> bool:

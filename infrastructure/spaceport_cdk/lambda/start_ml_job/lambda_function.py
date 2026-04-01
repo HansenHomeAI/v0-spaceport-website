@@ -204,20 +204,29 @@ def lambda_handler(event, context):
         # Special handling for 3DGS-only tests with existing SfM data
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        # Define Vincent Woo's NerfStudio hyperparameters for Sutro Tower methodology
-        # Updated to use NerfStudio environment variable format for the container
+        # Default to splatfacto-w-light with the background model enabled so the
+        # pipeline produces a foreground PLY for SOGS plus a lightweight skybox.
         default_hyperparameters = {
-            # Vincent Woo's Core Parameters (NerfStudio Environment Variable Format)
-            "MAX_ITERATIONS": "30000",          # Vincent's exact iteration count
-            "TARGET_PSNR": "35.0",              # Vincent's quality target
-            "MODEL_VARIANT": "splatfacto-big",  # Vincent's model choice
-            "SH_DEGREE": "3",                   # Industry standard (16 coefficients)
-            "BILATERAL_PROCESSING": "true",     # Vincent's exposure correction innovation
-            "LOG_INTERVAL": "100",              # Progress logging frequency
+            "MAX_ITERATIONS": "30000",
+            "TARGET_PSNR": "35.0",
+            "MODEL_VARIANT": "splatfacto-w-light",
+            "SH_DEGREE": "3",
+            "BILATERAL_PROCESSING": "false",
+            "LOG_INTERVAL": "100",
+            "ENABLE_BG_MODEL": "true",
+            "ENABLE_ALPHA_LOSS": "true",
+            "ENABLE_ROBUST_MASK": "true",
+            "BG_SH_DEGREE": "4",
+            "APPEARANCE_EMBED_DIM": "48",
+            "NEVER_MASK_UPPER": "0.4",
+            "BACKGROUND_APPEARANCE_MODE": "average",
+            "BACKGROUND_SKYBOX_WIDTH": "1024",
+            "BACKGROUND_SKYBOX_HEIGHT": "512",
+            "BACKGROUND_SKYBOX_QUALITY": "90",
             
             # NerfStudio Framework Configuration
             "FRAMEWORK": "nerfstudio",
-            "METHODOLOGY": "vincent_woo_sutro_tower",
+            "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
             "LICENSE": "apache_2_0",
             "COMMERCIAL_LICENSE": "true",
             

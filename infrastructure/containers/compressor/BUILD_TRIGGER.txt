@@ -19,3 +19,4 @@ Build timestamp: 2025-07-29 21:45:00 UTC
 
 Cache validation: safe no-op touchpoint to exercise app-layer rebuild timing.
 Sequential queue validation: 2026-03-06T00:00:00Z
+2026-04-01T19:30:00Z copy baked skybox sidecars into supersplat bundles
