@@ -9,10 +9,10 @@ const CONFIGURED_DEFAULT_SOGS_BUNDLE_URL =
 const SPACEPORT_BUNDLE_CONFIG_NAME = "spaceport_bundle.json";
 const DEFAULT_SOGS_SKYBOX_FILE_NAME = "kloppenheim_06_puresky_equirect.png";
 
-/** Latest pipeline compression output (SSE-KMS); /api/sogs-proxy signs GETs when AWS_* creds are set. */
+/** Latest recent pipeline compression output; /api/sogs-proxy signs GETs when AWS_* creds are set. */
 export const DEFAULT_SOGS_BUNDLE_URL =
   CONFIGURED_DEFAULT_SOGS_BUNDLE_URL ||
-  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/manual-3dgs-1774642514/supersplat_bundle/meta.json";
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/horsetail-sfwl-final-1775119905/supersplat_bundle/meta.json";
 
 /** Equirect sky (Poly Haven Kloppenheim-style pure sky), baked from HDR for repo size; override with ?skybox=. */
 export const DEFAULT_SOGS_SKYBOX_PATH = `/supersplat-viewer/skybox/${DEFAULT_SOGS_SKYBOX_FILE_NAME}`;
