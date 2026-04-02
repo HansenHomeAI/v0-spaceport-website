@@ -25,3 +25,4 @@
 2026-04-01T23:32:45Z push remote COLMAP option-family compatibility fix for Brass Lantern SfM benchmarks
 2026-04-02T07:43:00Z push balanced spatial-axis chunk planner fix for Brass Lantern chunked SfM validation
 2026-04-02T08:34:00Z push chunk recovery compatibility fix for older remote vocab tree builder
+2026-04-02T03:45:00-06:00 chunk core gate skip recovery
