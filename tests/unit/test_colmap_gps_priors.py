@@ -493,6 +493,30 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertTrue(shared_names)
             self.assertGreater(pipeline.chunk_overlap_image_count, 0)
 
+    def test_build_spatial_heading_chunks_keeps_multiple_chunks_for_large_balanced_dataset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 200
+            pipeline.chunk_min_images = 120
+            pipeline.chunk_overlap_images = 30
+            pipeline.chunk_max_radius_m = 300.0
+            pipeline.capture_ordered_names = [f"IMG_{index:03d}.jpg" for index in range(250)]
+            pipeline.exif_records = {
+                image_name: {
+                    "local_x_m": float(index * 8),
+                    "local_y_m": 0.0,
+                    "heading_deg": 0.0,
+                }
+                for index, image_name in enumerate(pipeline.capture_ordered_names)
+            }
+
+            chunks = pipeline.build_spatial_heading_chunks()
+
+            self.assertEqual(len(chunks), 2)
+            self.assertTrue(all(len(chunk.core_names) >= 120 for chunk in chunks))
+            self.assertEqual(sum(len(chunk.core_names) for chunk in chunks), 250)
+
     def test_run_chunk_pipeline_triggers_boundary_recovery_for_weak_chunk(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
