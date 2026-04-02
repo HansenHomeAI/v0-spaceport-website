@@ -223,6 +223,7 @@ def lambda_handler(event, context):
             "BACKGROUND_SKYBOX_WIDTH": "1024",
             "BACKGROUND_SKYBOX_HEIGHT": "512",
             "BACKGROUND_SKYBOX_QUALITY": "90",
+            "TRAINING_TIMEOUT_SECONDS": "14400",
             
             # NerfStudio Framework Configuration
             "FRAMEWORK": "nerfstudio",

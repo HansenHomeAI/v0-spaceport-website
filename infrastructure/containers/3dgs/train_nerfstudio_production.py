@@ -599,6 +599,9 @@ class NerfStudioTrainer:
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
         logger.info("=" * 60)
+
+        training_timeout_seconds = int(os.environ.get("TRAINING_TIMEOUT_SECONDS", "14400"))
+        logger.info(f"⏱️  Training timeout: {training_timeout_seconds} seconds")
         
         # Execute training
         try:
@@ -615,7 +618,7 @@ class NerfStudioTrainer:
                 capture_output=True,
                 text=True,
                 env=train_env,
-                timeout=7200  # 2 hour timeout
+                timeout=training_timeout_seconds,
             )
             
             if result.returncode != 0:
@@ -637,7 +640,7 @@ class NerfStudioTrainer:
             return True
             
         except subprocess.TimeoutExpired:
-            logger.error("❌ Training timeout (2 hours exceeded)")
+            logger.error(f"❌ Training timeout ({training_timeout_seconds} seconds exceeded)")
             return False
         except Exception as e:
             logger.error(f"❌ Training execution failed: {e}")
