@@ -43,10 +43,21 @@ output:
   compression_ready: true            # Prepare for SOGS compression
   background_skybox:
     enabled: true
-    width: 1024
-    height: 512
-    quality: 90
-    appearance_mode: "average"
+    width: 2048
+    height: 1024
+    quality: 95
+    appearance_mode: "auto_camera"
+    selection_stride: 5
+    selection_max_frames: 32
+  floater_pruning:
+    enabled: true
+    min_views: 4
+    top_region_ratio: 0.35
+    top_view_fraction: 0.8
+    max_opacity: 0.25
+    max_color_distance: 0.12
+    min_edge_support: 2
+    patch_size: 9
   
   # Metadata inclusion
   include_training_metadata: true

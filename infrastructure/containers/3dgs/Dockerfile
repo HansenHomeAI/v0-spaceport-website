@@ -78,7 +78,8 @@ RUN pip install --no-cache-dir \
     boto3>=1.26.0 \
     psutil>=5.9.0 \
     plyfile>=0.7.4 \
-    Pillow>=10.0.0
+    Pillow>=10.0.0 \
+    opencv-python-headless>=4.10.0
 
 # ---------------------------------------------------------------
 # 3. Copy Training Code and Configuration
@@ -86,6 +87,8 @@ RUN pip install --no-cache-dir \
 
 COPY train_nerfstudio_production.py /opt/ml/code/
 COPY export_splatfacto_w_assets.py /opt/ml/code/
+COPY run_export_quality_pass.py /opt/ml/code/
+COPY sky_quality.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
 COPY sitecustomize.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/

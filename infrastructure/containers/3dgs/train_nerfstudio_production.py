@@ -65,6 +65,13 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil
 
+from sky_quality import (
+    BackgroundSelectionResult,
+    FloaterPruningResult,
+    prune_foreground_floaters,
+    select_background_camera,
+)
+
 # Configure production logging
 logging.basicConfig(
     level=logging.INFO,
@@ -88,6 +95,8 @@ class NerfStudioTrainer:
         # Create necessary directories
         self.output_dir.mkdir(exist_ok=True, parents=True)
         self.temp_dir.mkdir(exist_ok=True, parents=True)
+        self.background_selection_result: Optional[BackgroundSelectionResult] = None
+        self.floater_pruning_result: Optional[FloaterPruningResult] = None
         
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
@@ -116,17 +125,26 @@ class NerfStudioTrainer:
             'BACKGROUND_SKYBOX_WIDTH': 'output.background_skybox.width',
             'BACKGROUND_SKYBOX_HEIGHT': 'output.background_skybox.height',
             'BACKGROUND_SKYBOX_QUALITY': 'output.background_skybox.quality',
+            'BACKGROUND_SELECTION_STRIDE': 'output.background_skybox.selection_stride',
+            'BACKGROUND_SELECTION_MAX_FRAMES': 'output.background_skybox.selection_max_frames',
+            'FLOATER_PRUNING_ENABLED': 'output.floater_pruning.enabled',
+            'FLOATER_PRUNING_MIN_VIEWS': 'output.floater_pruning.min_views',
+            'FLOATER_PRUNING_TOP_REGION_RATIO': 'output.floater_pruning.top_region_ratio',
+            'FLOATER_PRUNING_TOP_VIEW_FRACTION': 'output.floater_pruning.top_view_fraction',
+            'FLOATER_PRUNING_MAX_OPACITY': 'output.floater_pruning.max_opacity',
+            'FLOATER_PRUNING_MAX_COLOR_DISTANCE': 'output.floater_pruning.max_color_distance',
+            'FLOATER_PRUNING_MIN_EDGE_SUPPORT': 'output.floater_pruning.min_edge_support',
         }
         
         for env_var, config_path in env_params.items():
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK']:
+                if env_var in ['BILATERAL_PROCESSING', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY']:
+                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'NEVER_MASK_UPPER']:
+                elif env_var in ['TARGET_PSNR', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
                     value = float(value)
                 
                 # Set nested config values
@@ -648,34 +666,142 @@ class NerfStudioTrainer:
         except Exception as e:
             logger.error(f"❌ Training execution failed: {e}")
             return False
+
+    def resolve_background_selection(self) -> BackgroundSelectionResult:
+        """Resolve the background export mode before we bake the skybox."""
+        skybox_config = self.config.get('output', {}).get('background_skybox', {})
+        requested_mode = str(skybox_config.get('appearance_mode', 'auto_camera'))
+        selection_stride = int(skybox_config.get('selection_stride', 5))
+        selection_max_frames = int(skybox_config.get('selection_max_frames', 32))
+
+        selection = select_background_camera(
+            data_dir=self.input_dir,
+            requested_mode=requested_mode,
+            stride=selection_stride,
+            max_frames=selection_max_frames,
+            default_camera_idx=0,
+        )
+        logger.info("🌤️ Background camera selection:")
+        logger.info(f"   Requested mode: {selection.requested_mode}")
+        logger.info(f"   Resolved mode: {selection.resolved_mode}")
+        logger.info(f"   Camera index: {selection.camera_idx}")
+        logger.info(f"   Sampled candidates: {selection.sampled_candidates}")
+        if selection.image_path:
+            logger.info(f"   Source image: {selection.image_path}")
+        if selection.score is not None:
+            logger.info(f"   Selection score: {selection.score:.4f}")
+
+        self.background_selection_result = selection
+        return selection
+
+    def prune_exported_foreground(self) -> Optional[FloaterPruningResult]:
+        """Prune sky floaters from the exported foreground PLY before compression."""
+        pruning_config = self.config.get('output', {}).get('floater_pruning', {})
+        if not pruning_config.get('enabled', True):
+            self.floater_pruning_result = FloaterPruningResult(
+                enabled=False,
+                evaluated_gaussians=0,
+                candidate_gaussians=0,
+                removed_gaussians=0,
+                remaining_gaussians=0,
+                sampled_views=0,
+                min_views=int(pruning_config.get('min_views', 4)),
+                top_region_ratio=float(pruning_config.get('top_region_ratio', 0.35)),
+                top_view_fraction=float(pruning_config.get('top_view_fraction', 0.8)),
+                max_opacity=float(pruning_config.get('max_opacity', 0.25)),
+                max_color_distance=float(pruning_config.get('max_color_distance', 0.12)),
+                min_edge_support=int(pruning_config.get('min_edge_support', 2)),
+                patch_size=int(pruning_config.get('patch_size', 9)),
+            )
+            return self.floater_pruning_result
+
+        ply_path = self.output_dir / "splat.ply"
+        if not ply_path.exists():
+            logger.warning("⚠️ Floater pruning skipped because splat.ply was not found")
+            return None
+
+        result = prune_foreground_floaters(
+            ply_path=ply_path,
+            data_dir=self.input_dir,
+            sampled_views=24,
+            min_views=int(pruning_config.get('min_views', 4)),
+            top_region_ratio=float(pruning_config.get('top_region_ratio', 0.35)),
+            top_view_fraction=float(pruning_config.get('top_view_fraction', 0.8)),
+            max_opacity=float(pruning_config.get('max_opacity', 0.25)),
+            max_color_distance=float(pruning_config.get('max_color_distance', 0.12)),
+            min_edge_support=int(pruning_config.get('min_edge_support', 2)),
+            patch_size=int(pruning_config.get('patch_size', 9)),
+        )
+        self.floater_pruning_result = result
+
+        summary_path = self.output_dir / "floater_pruning_summary.json"
+        with open(summary_path, 'w') as f:
+            json.dump(result.to_dict(), f, indent=2)
+
+        logger.info("🧹 Floater pruning summary:")
+        logger.info(f"   Evaluated gaussians: {result.evaluated_gaussians}")
+        logger.info(f"   Low-opacity candidates: {result.candidate_gaussians}")
+        logger.info(f"   Removed gaussians: {result.removed_gaussians}")
+        logger.info(f"   Remaining gaussians: {result.remaining_gaussians}")
+        return result
+
+    def patch_export_manifests(self) -> None:
+        """Annotate export manifests with resolved camera selection and pruning metadata."""
+        export_manifest_path = self.output_dir / "export_manifest.json"
+        background_manifest_path = self.output_dir / "background_manifest.json"
+
+        selection_dict = self.background_selection_result.to_dict() if self.background_selection_result else None
+        pruning_dict = self.floater_pruning_result.to_dict() if self.floater_pruning_result else None
+
+        if export_manifest_path.exists():
+            with open(export_manifest_path, 'r', encoding='utf-8') as f:
+                export_manifest = json.load(f)
+            export_manifest['background_selection'] = selection_dict
+            export_manifest['floater_pruning'] = pruning_dict
+            with open(export_manifest_path, 'w', encoding='utf-8') as f:
+                json.dump(export_manifest, f, indent=2)
+
+        if background_manifest_path.exists():
+            with open(background_manifest_path, 'r', encoding='utf-8') as f:
+                background_manifest = json.load(f)
+            if selection_dict:
+                background_manifest['selection'] = selection_dict
+            if pruning_dict:
+                background_manifest['floater_pruning'] = pruning_dict
+            with open(background_manifest_path, 'w', encoding='utf-8') as f:
+                json.dump(background_manifest, f, indent=2)
     
-    def export_trained_model(self) -> bool:
+    def export_trained_model(self, source_config: Optional[Path] = None) -> bool:
         """Export trained model to PLY format and bake the background skybox when available."""
         logger.info("📦 Exporting trained model artifacts...")
-        
-        # Find the latest config file in training output
-        config_files = list(self.temp_dir.glob("**/config.yml"))
-        if not config_files:
-            logger.error("❌ No config.yml found in training output")
-            return False
-        
-        # Use the most recent config file
-        config_file = max(config_files, key=lambda x: x.stat().st_mtime)
+
+        if source_config is not None:
+            config_file = source_config
+        else:
+            # Find the latest config file in training output
+            config_files = list(self.temp_dir.glob("**/config.yml"))
+            if not config_files:
+                logger.error("❌ No config.yml found in training output")
+                return False
+
+            # Use the most recent config file
+            config_file = max(config_files, key=lambda x: x.stat().st_mtime)
         logger.info(f"📄 Using config: {config_file}")
         
         model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w-light')
         skybox_config = self.config.get('output', {}).get('background_skybox', {})
+        background_selection = self.resolve_background_selection()
 
         if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
             export_cmd = [
                 "python", "/opt/ml/code/export_splatfacto_w_assets.py",
                 "--load-config", str(config_file),
                 "--output-dir", str(self.output_dir),
-                "--camera-idx", "0",
-                "--background-width", str(skybox_config.get('width', 1024)),
-                "--background-height", str(skybox_config.get('height', 512)),
-                "--background-quality", str(skybox_config.get('quality', 90)),
-                "--background-appearance-mode", str(skybox_config.get('appearance_mode', 'average')),
+                "--camera-idx", str(background_selection.camera_idx or 0),
+                "--background-width", str(skybox_config.get('width', 2048)),
+                "--background-height", str(skybox_config.get('height', 1024)),
+                "--background-quality", str(skybox_config.get('quality', 95)),
+                "--background-appearance-mode", str(background_selection.resolved_mode),
             ]
         else:
             export_cmd = [
@@ -720,6 +846,9 @@ class NerfStudioTrainer:
                     f"🌤️ Background skybox: {skybox_path.name} "
                     f"({skybox_path.stat().st_size / (1024 * 1024):.2f} MB)"
                 )
+
+            self.prune_exported_foreground()
+            self.patch_export_manifests()
             
             return True
             
@@ -761,6 +890,10 @@ class NerfStudioTrainer:
         if skybox_path.exists():
             metadata['background_skybox'] = skybox_path.name
             metadata['background_skybox_size_mb'] = skybox_path.stat().st_size / (1024 * 1024)
+        if self.background_selection_result is not None:
+            metadata['background_selection'] = self.background_selection_result.to_dict()
+        if self.floater_pruning_result is not None:
+            metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
         
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"
