@@ -1425,7 +1425,7 @@ class ColmapPipeline:
         return chunk_database_path
 
     def chunk_registered_ratio_threshold(self) -> float:
-        return max(self.gps_min_registered_ratio, 0.99)
+        return self.gps_min_registered_ratio
 
     def chunk_core_registered_ratio(
         self,

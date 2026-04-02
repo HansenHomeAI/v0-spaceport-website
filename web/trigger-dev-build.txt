@@ -30,3 +30,4 @@
 2026-04-02T10:26:29-0600 relax chunk core recovery threshold
 2026-04-02T13:21:33-0600 precreate chunk merge output directory
 2026-04-02T14:26:26-0600 bundle adjuster fallback without gpu flag
+2026-04-02T15:26:49-0600 accept merged chunk result at configured gps threshold
