@@ -839,6 +839,55 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(matches_count, 0)
             self.assertEqual(geometry_count, 0)
 
+    def test_merge_chunk_models_creates_output_directory_before_merger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_model_dir.mkdir(parents=True, exist_ok=True)
+            second_model_dir.mkdir(parents=True, exist_ok=True)
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=root / "text_00",
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=root / "text_01",
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+            ]
+            output_path = pipeline.work_dir / "merged_chunk_model_01"
+            merged_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=root / "merged_text",
+                cameras_registered=1,
+                images_registered=20,
+                points_3d=2000,
+                binary_dir=output_path,
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=merged_model,
+            ):
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            self.assertTrue(output_path.is_dir())
+            merger_command = stream_command_mock.call_args.args[0]
+            self.assertIn("model_merger", merger_command)
+            self.assertIn(str(output_path), merger_command)
+            self.assertEqual(result.images_registered, 20)
+
     def test_build_vocab_tree_retries_without_max_num_images_for_older_colmap(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

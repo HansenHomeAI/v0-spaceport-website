@@ -28,3 +28,4 @@
 2026-04-02T03:45:00-06:00 chunk core gate skip recovery
 2026-04-02T04:32:00-06:00 chunk db pruning avoids duplicate feature extraction
 2026-04-02T10:26:29-0600 relax chunk core recovery threshold
+2026-04-02T13:21:33-0600 precreate chunk merge output directory
