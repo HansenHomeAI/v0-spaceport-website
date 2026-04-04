@@ -135,6 +135,10 @@ class NerfStudioTrainer:
             'FLOATER_PRUNING_MIN_VIEWS': 'output.floater_pruning.min_views',
             'FLOATER_PRUNING_TOP_REGION_RATIO': 'output.floater_pruning.top_region_ratio',
             'FLOATER_PRUNING_TOP_VIEW_FRACTION': 'output.floater_pruning.top_view_fraction',
+            'FLOATER_PRUNING_MIN_SKY_VIEWS': 'output.floater_pruning.min_sky_views',
+            'FLOATER_PRUNING_SKY_MIN_LUMINANCE': 'output.floater_pruning.sky_min_luminance',
+            'FLOATER_PRUNING_SKY_MIN_SATURATION': 'output.floater_pruning.sky_min_saturation',
+            'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN': 'output.floater_pruning.sky_blue_dominance_margin',
             'FLOATER_PRUNING_MAX_OPACITY': 'output.floater_pruning.max_opacity',
             'FLOATER_PRUNING_MAX_COLOR_DISTANCE': 'output.floater_pruning.max_color_distance',
             'FLOATER_PRUNING_MIN_EDGE_SUPPORT': 'output.floater_pruning.min_edge_support',
@@ -146,9 +150,9 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
+                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
+                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
                     value = float(value)
                 
                 # Set nested config values
@@ -724,6 +728,10 @@ class NerfStudioTrainer:
                 min_views=int(pruning_config.get('min_views', 4)),
                 top_region_ratio=float(pruning_config.get('top_region_ratio', 0.35)),
                 top_view_fraction=float(pruning_config.get('top_view_fraction', 0.8)),
+                min_sky_views=int(pruning_config.get('min_sky_views', 0)),
+                sky_min_luminance=float(pruning_config.get('sky_min_luminance', 0.3)),
+                sky_min_saturation=float(pruning_config.get('sky_min_saturation', 0.08)),
+                sky_blue_dominance_margin=float(pruning_config.get('sky_blue_dominance_margin', 0.02)),
                 max_opacity=float(pruning_config.get('max_opacity', 0.25)),
                 max_color_distance=float(pruning_config.get('max_color_distance', 0.12)),
                 min_edge_support=int(pruning_config.get('min_edge_support', 2)),
@@ -743,6 +751,10 @@ class NerfStudioTrainer:
             min_views=int(pruning_config.get('min_views', 4)),
             top_region_ratio=float(pruning_config.get('top_region_ratio', 0.35)),
             top_view_fraction=float(pruning_config.get('top_view_fraction', 0.8)),
+            min_sky_views=int(pruning_config.get('min_sky_views', 0)),
+            sky_min_luminance=float(pruning_config.get('sky_min_luminance', 0.3)),
+            sky_min_saturation=float(pruning_config.get('sky_min_saturation', 0.08)),
+            sky_blue_dominance_margin=float(pruning_config.get('sky_blue_dominance_margin', 0.02)),
             max_opacity=float(pruning_config.get('max_opacity', 0.25)),
             max_color_distance=float(pruning_config.get('max_color_distance', 0.12)),
             min_edge_support=int(pruning_config.get('min_edge_support', 2)),

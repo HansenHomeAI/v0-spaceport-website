@@ -244,7 +244,12 @@ class NerfStudioPipelineTest:
             return False
 
         floater_pruning_config = output_config.get('floater_pruning', {})
-        if floater_pruning_config.get('enabled') and floater_pruning_config.get('min_views') == 4:
+        if (
+            floater_pruning_config.get('enabled')
+            and floater_pruning_config.get('min_views') == 6
+            and floater_pruning_config.get('min_sky_views') == 2
+            and floater_pruning_config.get('max_opacity') == 0.75
+        ):
             logger.info("✅ Floater pruning configured")
         else:
             logger.error("❌ Floater pruning not configured")
