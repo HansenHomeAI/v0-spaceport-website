@@ -24,7 +24,7 @@ async function run() {
   await ensureLogsDir();
   const consoleBuffer = [];
   const browser = await chromium.launch();
-  const context = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 1400, height: 900 }, ignoreHTTPSErrors: true });
   const page = await context.newPage();
 
   page.on("console", (msg) => {
