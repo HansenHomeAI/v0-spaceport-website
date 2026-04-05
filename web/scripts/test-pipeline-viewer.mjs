@@ -8,12 +8,13 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const logsDir = path.join(repoRoot, "logs");
 
-const DEFAULT_PREVIEW = "https://agent-60391827-pipeline-viewer.v0-spaceport-website-preview2.pages.dev";
+const DEFAULT_PREVIEW = "https://agent-83927461-sfm-pointcloud-viewer.v0-spaceport-website-preview2.pages.dev";
 const DEFAULT_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 
 const previewUrl = process.env.PIPELINE_VIEWER_URL ?? DEFAULT_PREVIEW;
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
+const sfmStatusSelector = "text=/Loaded\s+\d+\s+points/";
 
 async function ensureLogsDir() {
   await fs.mkdir(logsDir, { recursive: true });
@@ -36,6 +37,19 @@ async function run() {
   try {
     await page.goto(`${previewUrl}/pipeline-viewer`, { waitUntil: "domcontentloaded", timeout: 120000 });
     await page.waitForSelector("text=Pipeline Viewer", { timeout: 15000 });
+
+    const sfmButton = page.getByRole("button", { name: "SfM (COLMAP)" });
+    await sfmButton.click();
+    await page.waitForSelector(sfmStatusSelector, { timeout: 120000 });
+
+    const sfmCanvas = page.locator("canvas").first();
+    const box = await sfmCanvas.boundingBox();
+    if (box) {
+      await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width * 0.65, box.y + box.height * 0.45, { steps: 15 });
+      await page.mouse.up();
+    }
 
     const compressedButton = page.getByRole("button", { name: "Compressed (SOGS)" });
     await compressedButton.click();

@@ -14,6 +14,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const DEFAULT_COMPRESSED_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+const DEFAULT_SFM_COLMAP_BASE =
+  "https://spaceport-ml-processing.s3.amazonaws.com/colmap/brass-full-chunk-a-1775237679/";
+const DEFAULT_SFM_JOB_ID = "brass-full-chunk-a-1775237679";
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
@@ -797,10 +800,10 @@ const SupersplatPanel = ({
 };
 
 export default function PipelineViewerPage() {
-  const [activeTab, setActiveTab] = useState<"sfm" | "gaussian" | "compressed">("compressed");
+  const [activeTab, setActiveTab] = useState<"sfm" | "gaussian" | "compressed">("sfm");
   const [compressedInput, setCompressedInput] = useState(DEFAULT_COMPRESSED_BUNDLE);
-  const [derivedJobId, setDerivedJobId] = useState<string | null>(null);
-  const [colmapBaseUrl, setColmapBaseUrl] = useState("");
+  const [derivedJobId, setDerivedJobId] = useState<string | null>(DEFAULT_SFM_JOB_ID);
+  const [colmapBaseUrl, setColmapBaseUrl] = useState(DEFAULT_SFM_COLMAP_BASE);
   const [gaussianPlyUrl, setGaussianPlyUrl] = useState("");
   const [sfmSparsePath, setSfmSparsePath] = useState("sparse/0/");
   const [sfmMaxPoints, setSfmMaxPoints] = useState(150000);
@@ -883,6 +886,13 @@ export default function PipelineViewerPage() {
 
   const sfmFileUrls = useMemo(() => buildSfmFileUrls(colmapBaseUrl, sfmSparsePath), [colmapBaseUrl, sfmSparsePath]);
 
+
+  useEffect(() => {
+    void handleLoadSfm();
+    // run once so the default COLMAP dataset appears immediately
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <main style={pageStyles}>
       <header style={headerStyles}>
@@ -897,8 +907,8 @@ export default function PipelineViewerPage() {
         <div style={cardStyles}>
           <h2 style={{ margin: "0 0 12px", fontSize: "1.3rem" }}>Pipeline Source</h2>
           <p style={mutedTextStyles}>
-            Paste the compressed bundle URL that renders correctly. We will infer the job ID and suggest the
-            matching COLMAP + 3DGS paths so you can check rotation errors earlier in the pipeline.
+            Defaulting to the latest brass lantern chunked SfM run. You can still paste a compressed bundle URL
+            to infer matching COLMAP + 3DGS paths for any other job.
           </p>
           <div style={{ marginTop: "14px", display: "grid", gap: "10px" }}>
             <label style={labelStyles} htmlFor="compressed-seed">
