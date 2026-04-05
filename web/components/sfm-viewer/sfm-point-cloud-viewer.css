@@ -1,0 +1,87 @@
+.sfm-viewer-shell {
+  width: 100%;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  background: #07090f;
+  color: #e6ecff;
+}
+
+.sfm-controls {
+  border-right: 1px solid #1b2338;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #0e1322 0%, #07090f 100%);
+}
+
+.sfm-controls h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.sfm-controls p,
+.sfm-controls li,
+.sfm-controls label {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.sfm-row {
+  display: flex;
+  gap: 8px;
+}
+
+.sfm-row input {
+  flex: 1;
+  min-width: 0;
+  background: #11192d;
+  border: 1px solid #2a3657;
+  color: #eef3ff;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.sfm-row button {
+  border: 1px solid #5274ff;
+  border-radius: 8px;
+  color: #eef3ff;
+  background: #3151d7;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+.sfm-meta {
+  color: #a6b5df;
+  word-break: break-all;
+}
+
+.sfm-stats {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.sfm-error {
+  color: #ff9090;
+  font-weight: 500;
+}
+
+.sfm-canvas-wrap {
+  position: relative;
+  min-height: 60dvh;
+}
+
+@media (max-width: 900px) {
+  .sfm-viewer-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(50dvh, 1fr);
+  }
+
+  .sfm-controls {
+    border-right: 0;
+    border-bottom: 1px solid #1b2338;
+  }
+}
