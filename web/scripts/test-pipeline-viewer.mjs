@@ -14,7 +14,7 @@ const DEFAULT_BUNDLE =
 
 const previewUrl = process.env.PIPELINE_VIEWER_URL ?? DEFAULT_PREVIEW;
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
-const sfmStatusSelector = "text=/Loaded\s+\d+\s+points/";
+const sfmStatusRegex = /Loaded\s+\d+\s+points/;
 
 async function ensureLogsDir() {
   await fs.mkdir(logsDir, { recursive: true });
@@ -40,7 +40,7 @@ async function run() {
 
     const sfmButton = page.getByRole("button", { name: "SfM (COLMAP)" });
     await sfmButton.click();
-    await page.waitForSelector(sfmStatusSelector, { timeout: 120000 });
+    await page.getByText(sfmStatusRegex).waitFor({ timeout: 120000 });
 
     const sfmCanvas = page.locator("canvas").first();
     const box = await sfmCanvas.boundingBox();

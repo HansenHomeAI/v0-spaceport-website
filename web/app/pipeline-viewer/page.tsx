@@ -17,12 +17,14 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 const DEFAULT_COMPRESSED_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 const DEFAULT_SFM_COLMAP_BASE =
-  "https://spaceport-ml-processing.s3.amazonaws.com/colmap/brass-full-chunk-a-1775237679/";
-const DEFAULT_SFM_JOB_ID = "brass-full-chunk-a-1775237679";
+  "https://spaceport-ml-processing-staging.s3.amazonaws.com/manual-validations/brassfullchunka-1775237679/colmap/";
+const DEFAULT_SFM_JOB_ID = "brassfullchunka-1775237679";
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com",
 ]);
 
 type SfmData = {
