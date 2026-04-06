@@ -94,6 +94,7 @@ class NerfStudioPipelineTest:
         export_script_path = Path(__file__).parent / "export_splatfacto_w_assets.py"
         quality_pass_script_path = Path(__file__).parent / "run_export_quality_pass.py"
         helper_script_path = Path(__file__).parent / "sky_quality.py"
+        semantic_mask_script_path = Path(__file__).parent / "semantic_sky_masking.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
         
         if not script_path.exists():
@@ -106,6 +107,10 @@ class NerfStudioPipelineTest:
 
         if not helper_script_path.exists():
             logger.error("❌ Sky quality helper not found")
+            return False
+
+        if not semantic_mask_script_path.exists():
+            logger.error("❌ Semantic sky masking helper not found")
             return False
 
         if not quality_pass_script_path.exists():
@@ -147,6 +152,16 @@ class NerfStudioPipelineTest:
                 return False
 
             logger.info("✅ Sky quality helper syntax validated")
+
+            semantic_mask_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(semantic_mask_script_path)
+            ], capture_output=True, text=True)
+
+            if semantic_mask_result.returncode != 0:
+                logger.error(f"❌ Semantic sky masking helper syntax error: {semantic_mask_result.stderr}")
+                return False
+
+            logger.info("✅ Semantic sky masking helper syntax validated")
 
             quality_pass_result = subprocess.run([
                 sys.executable, "-m", "py_compile", str(quality_pass_script_path)
@@ -254,6 +269,18 @@ class NerfStudioPipelineTest:
             logger.info("✅ Floater pruning configured")
         else:
             logger.error("❌ Floater pruning not configured")
+            return False
+
+        semantic_mask_config = config.get('preprocessing', {}).get('semantic_sky_masks', {})
+        if (
+            semantic_mask_config.get('enabled') == False
+            and semantic_mask_config.get('model_id') == 'nvidia/segformer-b0-finetuned-ade-512-512'
+            and semantic_mask_config.get('confidence_threshold') == 0.55
+            and semantic_mask_config.get('keep_top_connected_only') == True
+        ):
+            logger.info("✅ Semantic sky preprocessing defaults configured")
+        else:
+            logger.error("❌ Semantic sky preprocessing defaults not configured")
             return False
 
         return True

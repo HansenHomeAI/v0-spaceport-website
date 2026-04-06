@@ -65,6 +65,13 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil
 
+from semantic_sky_masking import (
+    SemanticSkyMaskConfig,
+    SemanticSkyMaskSummary,
+    generate_semantic_sky_masks,
+    materialize_nerfstudio_training_masks,
+    resolve_semantic_sky_config,
+)
 from sky_quality import (
     BackgroundSelectionResult,
     FloaterPruningResult,
@@ -97,6 +104,7 @@ class NerfStudioTrainer:
         self.temp_dir.mkdir(exist_ok=True, parents=True)
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
+        self.semantic_sky_mask_summary: Optional[SemanticSkyMaskSummary] = None
         
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
@@ -142,17 +150,61 @@ class NerfStudioTrainer:
             'FLOATER_PRUNING_MAX_OPACITY': 'output.floater_pruning.max_opacity',
             'FLOATER_PRUNING_MAX_COLOR_DISTANCE': 'output.floater_pruning.max_color_distance',
             'FLOATER_PRUNING_MIN_EDGE_SUPPORT': 'output.floater_pruning.min_edge_support',
+            'ENABLE_SEMANTIC_SKY_MASKS': 'preprocessing.semantic_sky_masks.enabled',
+            'SEMANTIC_SKY_MODEL_ID': 'preprocessing.semantic_sky_masks.model_id',
+            'SEMANTIC_SKY_CONFIDENCE_THRESHOLD': 'preprocessing.semantic_sky_masks.confidence_threshold',
+            'SEMANTIC_SKY_MIN_COMPONENT_AREA': 'preprocessing.semantic_sky_masks.min_component_area',
+            'SEMANTIC_SKY_FILL_HOLE_AREA': 'preprocessing.semantic_sky_masks.fill_hole_area',
+            'SEMANTIC_SKY_KEEP_TOP_CONNECTED_ONLY': 'preprocessing.semantic_sky_masks.keep_top_connected_only',
         }
         
         for env_var, config_path in env_params.items():
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
+                if env_var in [
+                    'BILATERAL_PROCESSING',
+                    'USE_SCALE_REGULARIZATION',
+                    'ENABLE_BG_MODEL',
+                    'ENABLE_ALPHA_LOSS',
+                    'ENABLE_ROBUST_MASK',
+                    'FLOATER_PRUNING_ENABLED',
+                    'ENABLE_SEMANTIC_SKY_MASKS',
+                    'SEMANTIC_SKY_KEEP_TOP_CONNECTED_ONLY',
+                ]:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
+                elif env_var in [
+                    'MAX_ITERATIONS',
+                    'SH_DEGREE',
+                    'LOG_INTERVAL',
+                    'BG_SH_DEGREE',
+                    'APPEARANCE_EMBED_DIM',
+                    'BACKGROUND_SKYBOX_WIDTH',
+                    'BACKGROUND_SKYBOX_HEIGHT',
+                    'BACKGROUND_SKYBOX_QUALITY',
+                    'BACKGROUND_SELECTION_STRIDE',
+                    'BACKGROUND_SELECTION_MAX_FRAMES',
+                    'FLOATER_PRUNING_MIN_VIEWS',
+                    'FLOATER_PRUNING_MIN_SKY_VIEWS',
+                    'FLOATER_PRUNING_MIN_EDGE_SUPPORT',
+                ]:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
+                elif env_var in [
+                    'TARGET_PSNR',
+                    'CULL_ALPHA_THRESH',
+                    'CULL_SCALE_THRESH',
+                    'NEVER_MASK_UPPER',
+                    'FLOATER_PRUNING_TOP_REGION_RATIO',
+                    'FLOATER_PRUNING_TOP_VIEW_FRACTION',
+                    'FLOATER_PRUNING_SKY_MIN_LUMINANCE',
+                    'FLOATER_PRUNING_SKY_MIN_SATURATION',
+                    'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN',
+                    'FLOATER_PRUNING_MAX_OPACITY',
+                    'FLOATER_PRUNING_MAX_COLOR_DISTANCE',
+                    'SEMANTIC_SKY_CONFIDENCE_THRESHOLD',
+                    'SEMANTIC_SKY_MIN_COMPONENT_AREA',
+                    'SEMANTIC_SKY_FILL_HOLE_AREA',
+                ]:
                     value = float(value)
                 
                 # Set nested config values
@@ -165,6 +217,12 @@ class NerfStudioTrainer:
                 config_section[keys[-1]] = value
                 
                 logger.info(f"📝 Override {config_path} = {value} (from {env_var})")
+
+    def get_semantic_sky_mask_config(self) -> SemanticSkyMaskConfig:
+        """Resolve semantic sky preprocessing configuration from the loaded config."""
+        preprocessing_config = self.config.get('preprocessing', {})
+        raw_mask_config = preprocessing_config.get('semantic_sky_masks', {})
+        return resolve_semantic_sky_config(raw_mask_config)
     
     def validate_input_data(self) -> bool:
         """Validate COLMAP data format and convert to NerfStudio format"""
@@ -271,6 +329,9 @@ class NerfStudioTrainer:
         # Create converted data directory
         converted_dir = self.temp_dir / "converted_data"
         converted_dir.mkdir(exist_ok=True, parents=True)
+
+        semantic_sky_config = self.get_semantic_sky_mask_config()
+        source_mask_dir = self.temp_dir / "semantic_sky_masks"
         
         # Convert COLMAP TXT to BIN into a dedicated directory (industry-standard for NerfStudio)
         sparse_txt_dir = self.input_dir / "sparse" / "0"
@@ -280,6 +341,19 @@ class NerfStudioTrainer:
         if not self.convert_colmap_text_to_binary(sparse_txt_dir, sparse_bin_dir):
             logger.error("❌ Failed to convert COLMAP text files to binary format")
             return False
+
+        if semantic_sky_config.enabled:
+            logger.info("🌤️ Generating semantic sky masks before ns-process-data")
+            self.semantic_sky_mask_summary = generate_semantic_sky_masks(
+                images_dir=self.input_dir / "images",
+                output_dir=source_mask_dir,
+                config=semantic_sky_config,
+            )
+            logger.info(
+                "🌤️ Semantic sky mask summary: "
+                f"{self.semantic_sky_mask_summary.frame_count} frames, "
+                f"avg masked fraction={self.semantic_sky_mask_summary.average_masked_fraction:.4f}"
+            )
         
         # Use ns-process-data to convert COLMAP to transforms.json
         convert_cmd = [
@@ -339,9 +413,22 @@ class NerfStudioTrainer:
             # This ensures validation looks in the right place for the converted files
             self.input_dir = converted_dir
             logger.info(f"📁 Updated input directory for validation: {self.input_dir}")
+
+            if semantic_sky_config.enabled:
+                self.semantic_sky_mask_summary = materialize_nerfstudio_training_masks(
+                    enabled=True,
+                    converted_dir=converted_dir,
+                    transforms_path=transforms_file,
+                    source_mask_dir=source_mask_dir,
+                    colmap_images_path=sparse_txt_dir / "images.txt",
+                    config=semantic_sky_config,
+                )
             
             # COMPREHENSIVE VALIDATION: Analyze the transforms.json file
-            if not self.validate_transforms_json(transforms_file):
+            if not self.validate_transforms_json(
+                transforms_file,
+                require_masks=semantic_sky_config.enabled,
+            ):
                 logger.error("❌ transforms.json validation failed")
                 return False
             
@@ -443,7 +530,7 @@ class NerfStudioTrainer:
             logger.error(f"❌ COLMAP text to binary conversion failed: {e}")
             return False
     
-    def validate_transforms_json(self, transforms_file: Path) -> bool:
+    def validate_transforms_json(self, transforms_file: Path, require_masks: bool = False) -> bool:
         """Comprehensive validation of the generated transforms.json file"""
         logger.info("🔍 COMPREHENSIVE transforms.json validation...")
         
@@ -535,6 +622,18 @@ class NerfStudioTrainer:
                         logger.error(f"      ❌ Invalid transform_matrix format")
                 else:
                     logger.error(f"      ❌ No transform_matrix in frame {i}")
+
+                if require_masks:
+                    mask_path = frame.get('mask_path')
+                    if not mask_path:
+                        logger.error(f"      ❌ Missing mask_path in frame {i}")
+                        return False
+                    resolved_mask_path = self.input_dir / Path(mask_path)
+                    if resolved_mask_path.exists():
+                        logger.info(f"      ✅ mask_path exists: {mask_path}")
+                    else:
+                        logger.error(f"      ❌ mask_path missing on disk: {resolved_mask_path}")
+                        return False
             
             logger.info(f"📊 VALIDATION SUMMARY:")
             logger.info(f"   Total frames: {num_frames}")
@@ -580,6 +679,7 @@ class NerfStudioTrainer:
         appearance_embed_dim = model_config.get('appearance_embed_dim', 48)
         never_mask_upper = model_config.get('never_mask_upper', 0.4)
         log_interval = training_config.get('log_interval', 100)
+        semantic_sky_config = self.get_semantic_sky_mask_config()
         
         logger.info("🎯 Training Configuration:")
         logger.info(f"   Model: {model_variant}")
@@ -594,6 +694,7 @@ class NerfStudioTrainer:
         logger.info(f"   Robust sky masking: {enable_robust_mask}")
         logger.info(f"   Background SH degree: {bg_sh_degree}")
         logger.info(f"   Appearance embedding dim: {appearance_embed_dim}")
+        logger.info(f"   Semantic sky masks: {semantic_sky_config.enabled}")
         logger.info(f"   Log interval: {log_interval}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
         
@@ -906,6 +1007,7 @@ class NerfStudioTrainer:
             'timestamp': time.time(),
             'version': '1.0.0'
         }
+        metadata['semantic_sky_masks'] = self.get_semantic_sky_mask_config().to_dict()
         
         # Add file information
         ply_files = list(self.output_dir.glob("*.ply"))
@@ -918,10 +1020,13 @@ class NerfStudioTrainer:
         if skybox_path.exists():
             metadata['background_skybox'] = skybox_path.name
             metadata['background_skybox_size_mb'] = skybox_path.stat().st_size / (1024 * 1024)
+            metadata['background_skybox_generation_method'] = 'learned_export'
         if self.background_selection_result is not None:
             metadata['background_selection'] = self.background_selection_result.to_dict()
         if self.floater_pruning_result is not None:
             metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
+        if self.semantic_sky_mask_summary is not None:
+            metadata['semantic_sky_mask_summary'] = self.semantic_sky_mask_summary.to_dict()
         
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"

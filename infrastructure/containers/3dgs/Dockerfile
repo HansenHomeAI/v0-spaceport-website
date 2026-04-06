@@ -79,7 +79,20 @@ RUN pip install --no-cache-dir \
     psutil>=5.9.0 \
     plyfile>=0.7.4 \
     Pillow>=10.0.0 \
-    opencv-python-headless>=4.10.0
+    opencv-python-headless>=4.10.0 \
+    transformers>=4.48.0 \
+    safetensors>=0.4.5
+
+# Warm the default semantic sky model into the image so SageMaker training jobs
+# do not depend on external model downloads.
+RUN python - <<'PY'
+from transformers import AutoImageProcessor, AutoModelForSemanticSegmentation
+
+model_id = "nvidia/segformer-b0-finetuned-ade-512-512"
+AutoImageProcessor.from_pretrained(model_id)
+AutoModelForSemanticSegmentation.from_pretrained(model_id)
+print(f"✅ Cached semantic sky model: {model_id}")
+PY
 
 # ---------------------------------------------------------------
 # 3. Copy Training Code and Configuration
@@ -89,6 +102,7 @@ COPY train_nerfstudio_production.py /opt/ml/code/
 COPY export_splatfacto_w_assets.py /opt/ml/code/
 COPY run_export_quality_pass.py /opt/ml/code/
 COPY sky_quality.py /opt/ml/code/
+COPY semantic_sky_masking.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
 COPY sitecustomize.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
