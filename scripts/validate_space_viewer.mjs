@@ -7,6 +7,8 @@ import { promisify } from "node:util";
 const targetUrl = process.env.TARGET_URL;
 const logsDir = process.env.LOGS_DIR || path.resolve("logs");
 const execFileAsync = promisify(execFile);
+const iframeSelector =
+  'iframe[title="SuperSplat Viewer"], iframe[title="Spaceport SuperSplat Viewer"]';
 
 if (!targetUrl) {
   console.error("TARGET_URL is required");
@@ -263,31 +265,36 @@ async function runScenario({ name, launcher, options }) {
 
   try {
     await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 120000 });
-    await page.waitForSelector('iframe[title="Spaceport SuperSplat Viewer"]', { timeout: 15000 });
+    await page.waitForSelector(iframeSelector, { timeout: 15000 });
 
-    const iframeLocator = page.locator('iframe[title="Spaceport SuperSplat Viewer"]');
+    const iframeLocator = page.locator(iframeSelector).first();
     const iframeSrc = await iframeLocator.getAttribute("src");
-    if (!iframeSrc || !iframeSrc.includes("skybox=")) {
-      throw new Error(`Expected iframe src to include skybox query param, got: ${iframeSrc}`);
+    if (!iframeSrc || !iframeSrc.includes("content=")) {
+      throw new Error(`Expected iframe src to include bundle content query param, got: ${iframeSrc}`);
     }
 
     let frame = null;
-    for (let attempt = 0; attempt < 60; attempt += 1) {
-      frame = page.frames().find((entry) => entry.url().includes("/supersplat-viewer/index.html"));
-      if (frame) {
-        break;
+    for (let attempt = 0; attempt < 180; attempt += 1) {
+      const candidate = page.frames().find((entry) => entry.url().includes("/supersplat-viewer/index.html"));
+      if (candidate) {
+        try {
+          const isReady = await candidate.evaluate(
+            () => Boolean(window.sse?.config?.skyboxUrl) && Boolean(document.querySelector("canvas")),
+          );
+          if (isReady) {
+            frame = candidate;
+            break;
+          }
+        } catch {
+          // Ignore detached frame handles while the page remounts the viewer iframe.
+        }
       }
       await page.waitForTimeout(1000);
     }
     if (!frame) {
-      throw new Error("Could not resolve the embedded SuperSplat frame");
+      throw new Error("Could not resolve a ready SuperSplat frame with a skybox");
     }
 
-    await frame.waitForFunction(
-      () => Boolean(window.sse?.config?.skyboxUrl) && Boolean(document.querySelector("canvas")),
-      null,
-      { timeout: 180000 },
-    );
     const skyboxUrl = await frame.evaluate(() => window.sse?.config?.skyboxUrl ?? null);
     await findBestCanvasLuminance(page, frame);
     const zenithSkyboxSample = skyboxUrl ? await sampleSkyboxZenith(frame, skyboxUrl) : null;
