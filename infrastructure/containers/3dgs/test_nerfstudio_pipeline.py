@@ -93,7 +93,9 @@ class NerfStudioPipelineTest:
         script_path = Path(__file__).parent / "train_nerfstudio_production.py"
         export_script_path = Path(__file__).parent / "export_splatfacto_w_assets.py"
         quality_pass_script_path = Path(__file__).parent / "run_export_quality_pass.py"
+        diagnostics_script_path = Path(__file__).parent / "run_semantic_sky_mask_diagnostics.py"
         helper_script_path = Path(__file__).parent / "sky_quality.py"
+        semantic_mask_script_path = Path(__file__).parent / "semantic_sky_masks.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
         
         if not script_path.exists():
@@ -110,6 +112,14 @@ class NerfStudioPipelineTest:
 
         if not quality_pass_script_path.exists():
             logger.error("❌ Export quality pass script not found")
+            return False
+
+        if not diagnostics_script_path.exists():
+            logger.error("❌ Semantic sky mask diagnostics script not found")
+            return False
+
+        if not semantic_mask_script_path.exists():
+            logger.error("❌ Semantic sky mask helper not found")
             return False
         
         if not config_path.exists():
@@ -157,13 +167,33 @@ class NerfStudioPipelineTest:
                 return False
 
             logger.info("✅ Export quality pass syntax validated")
+
+            diagnostics_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(diagnostics_script_path)
+            ], capture_output=True, text=True)
+
+            if diagnostics_result.returncode != 0:
+                logger.error(f"❌ Semantic sky diagnostics syntax error: {diagnostics_result.stderr}")
+                return False
+
+            logger.info("✅ Semantic sky diagnostics syntax validated")
+
+            semantic_mask_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(semantic_mask_script_path)
+            ], capture_output=True, text=True)
+
+            if semantic_mask_result.returncode != 0:
+                logger.error(f"❌ Semantic sky helper syntax error: {semantic_mask_result.stderr}")
+                return False
+
+            logger.info("✅ Semantic sky helper syntax validated")
             
             # Test configuration loading
             import yaml
             with open(config_path, 'r') as f:
                 config = yaml.safe_load(f)
             
-            required_sections = ['model', 'training', 'hardware', 'output']
+            required_sections = ['model', 'training', 'hardware', 'preprocessing', 'output']
             for section in required_sections:
                 if section not in config:
                     logger.error(f"❌ Missing config section: {section}")
@@ -193,6 +223,8 @@ class NerfStudioPipelineTest:
             (config.get('model', {}).get('enable_bg_model') == True, "Background model should be enabled"),
             (config.get('model', {}).get('enable_alpha_loss') == True, "Alpha loss should be enabled"),
             (config.get('model', {}).get('enable_robust_mask') == True, "Robust mask should be enabled"),
+            (config.get('preprocessing', {}).get('semantic_sky_masks', {}).get('enabled') == False, "Semantic sky masks should default to disabled"),
+            (config.get('preprocessing', {}).get('semantic_sky_masks', {}).get('model_id') == 'nvidia/segformer-b0-finetuned-ade-512-512', "Semantic sky mask model should match the approved SegFormer checkpoint"),
             (config.get('training', {}).get('max_iterations') == 30000, "Max iterations should be 30000"),
             (config.get('licensing', {}).get('license') == 'Apache 2.0', "License should be Apache 2.0")
         ]

@@ -1,5 +1,5 @@
-reason: validating the splatfacto-w-light skybox implementation on a branch preview with the horsetail COLMAP dataset
-last_step: patched the training/export/compression/viewer stack, passed Python syntax checks, and completed a successful Next.js production build
-next_unblocked_step: push the branch, monitor build-containers/CDK/Pages runs to green, then execute the branch-preview ML pipeline on the horsetail COLMAP dataset and verify the hosted viewer skybox
+reason: implementing semantic sky and horizon separation ahead of Nerfstudio training for Brass Lantern and validating masked vs unmasked learned skybox behavior
+last_step: completed local semantic mask implementation, targeted tests, and CPU-only Brass subset diagnostics with 24 overlay QC artifacts
+next_unblocked_step: commit and push the semantic sky mask changes, watch the branch container/deploy workflows to green, then run sequential Brass subset A/B training jobs from the preview ML API and validate the learned skyboxes
 owner_action_needed: none
-updated: 2026-04-01T19:30:00Z
+updated: 2026-04-07T15:54:00Z

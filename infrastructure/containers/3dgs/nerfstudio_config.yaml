@@ -40,6 +40,16 @@ hardware:
   num_gpus: 1                        # Single A10G GPU
   max_memory_gb: 14                  # Conservative memory limit (16GB total)
 
+# Preprocessing Configuration
+preprocessing:
+  semantic_sky_masks:
+    enabled: false
+    model_id: "nvidia/segformer-b0-finetuned-ade-512-512"
+    confidence_threshold: 0.55
+    min_component_area: 0.002
+    fill_hole_area: 0.001
+    keep_top_connected_only: true
+
 # Output Configuration
 output:
   format: "ply"                      # SOGS-compatible PLY format

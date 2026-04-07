@@ -11,6 +11,8 @@ psutil>=5.9.0
 
 # 3D Processing
 plyfile>=0.7.4
+transformers>=4.48.0
+safetensors>=0.5.0
 
 # Core Dependencies (managed by nerfstudio[all])
 # torch>=2.0.1

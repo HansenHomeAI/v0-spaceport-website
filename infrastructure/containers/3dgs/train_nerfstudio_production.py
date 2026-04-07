@@ -71,6 +71,13 @@ from sky_quality import (
     prune_foreground_floaters,
     select_background_camera,
 )
+from semantic_sky_masks import (
+    SemanticSkyMaskSettings,
+    attach_masks_to_transforms,
+    compact_semantic_mask_summary,
+    generate_source_semantic_sky_masks,
+    write_summary_json,
+)
 
 # Configure production logging
 logging.basicConfig(
@@ -89,6 +96,7 @@ class NerfStudioTrainer:
         
         # SageMaker environment paths
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
+        self.source_input_dir = self.input_dir
         self.output_dir = Path(os.environ.get("SM_MODEL_DIR", "/opt/ml/model"))
         self.temp_dir = Path("/tmp/nerfstudio_training")
         
@@ -97,6 +105,7 @@ class NerfStudioTrainer:
         self.temp_dir.mkdir(exist_ok=True, parents=True)
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
+        self.semantic_mask_summary: Optional[Dict[str, Any]] = None
         
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
@@ -122,6 +131,12 @@ class NerfStudioTrainer:
             'ENABLE_BG_MODEL': 'model.enable_bg_model',
             'ENABLE_ALPHA_LOSS': 'model.enable_alpha_loss',
             'ENABLE_ROBUST_MASK': 'model.enable_robust_mask',
+            'ENABLE_SEMANTIC_SKY_MASKS': 'preprocessing.semantic_sky_masks.enabled',
+            'SEMANTIC_SKY_MODEL_ID': 'preprocessing.semantic_sky_masks.model_id',
+            'SEMANTIC_SKY_CONFIDENCE_THRESHOLD': 'preprocessing.semantic_sky_masks.confidence_threshold',
+            'SEMANTIC_SKY_MIN_COMPONENT_AREA': 'preprocessing.semantic_sky_masks.min_component_area',
+            'SEMANTIC_SKY_FILL_HOLE_AREA': 'preprocessing.semantic_sky_masks.fill_hole_area',
+            'SEMANTIC_SKY_KEEP_TOP_CONNECTED_ONLY': 'preprocessing.semantic_sky_masks.keep_top_connected_only',
             'BG_SH_DEGREE': 'model.bg_sh_degree',
             'APPEARANCE_EMBED_DIM': 'model.appearance_embed_dim',
             'NEVER_MASK_UPPER': 'model.never_mask_upper',
@@ -143,16 +158,58 @@ class NerfStudioTrainer:
             'FLOATER_PRUNING_MAX_COLOR_DISTANCE': 'output.floater_pruning.max_color_distance',
             'FLOATER_PRUNING_MIN_EDGE_SUPPORT': 'output.floater_pruning.min_edge_support',
         }
+
+        boolean_envs = {
+            'BILATERAL_PROCESSING',
+            'USE_SCALE_REGULARIZATION',
+            'ENABLE_BG_MODEL',
+            'ENABLE_ALPHA_LOSS',
+            'ENABLE_ROBUST_MASK',
+            'ENABLE_SEMANTIC_SKY_MASKS',
+            'SEMANTIC_SKY_KEEP_TOP_CONNECTED_ONLY',
+            'FLOATER_PRUNING_ENABLED',
+        }
+        integer_envs = {
+            'MAX_ITERATIONS',
+            'SH_DEGREE',
+            'LOG_INTERVAL',
+            'BG_SH_DEGREE',
+            'APPEARANCE_EMBED_DIM',
+            'BACKGROUND_SKYBOX_WIDTH',
+            'BACKGROUND_SKYBOX_HEIGHT',
+            'BACKGROUND_SKYBOX_QUALITY',
+            'BACKGROUND_SELECTION_STRIDE',
+            'BACKGROUND_SELECTION_MAX_FRAMES',
+            'FLOATER_PRUNING_MIN_VIEWS',
+            'FLOATER_PRUNING_MIN_SKY_VIEWS',
+            'FLOATER_PRUNING_MIN_EDGE_SUPPORT',
+        }
+        float_envs = {
+            'TARGET_PSNR',
+            'CULL_ALPHA_THRESH',
+            'CULL_SCALE_THRESH',
+            'NEVER_MASK_UPPER',
+            'SEMANTIC_SKY_CONFIDENCE_THRESHOLD',
+            'SEMANTIC_SKY_MIN_COMPONENT_AREA',
+            'SEMANTIC_SKY_FILL_HOLE_AREA',
+            'FLOATER_PRUNING_TOP_REGION_RATIO',
+            'FLOATER_PRUNING_TOP_VIEW_FRACTION',
+            'FLOATER_PRUNING_SKY_MIN_LUMINANCE',
+            'FLOATER_PRUNING_SKY_MIN_SATURATION',
+            'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN',
+            'FLOATER_PRUNING_MAX_OPACITY',
+            'FLOATER_PRUNING_MAX_COLOR_DISTANCE',
+        }
         
         for env_var, config_path in env_params.items():
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
+                if env_var in boolean_envs:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
+                elif env_var in integer_envs:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
+                elif env_var in float_envs:
                     value = float(value)
                 
                 # Set nested config values
@@ -165,6 +222,85 @@ class NerfStudioTrainer:
                 config_section[keys[-1]] = value
                 
                 logger.info(f"📝 Override {config_path} = {value} (from {env_var})")
+
+    def get_semantic_mask_settings(self) -> SemanticSkyMaskSettings:
+        """Return the effective semantic sky mask settings for this run."""
+        mask_config = self.config.get('preprocessing', {}).get('semantic_sky_masks', {})
+        return SemanticSkyMaskSettings(
+            enabled=bool(mask_config.get('enabled', False)),
+            model_id=str(mask_config.get('model_id', 'nvidia/segformer-b0-finetuned-ade-512-512')),
+            confidence_threshold=float(mask_config.get('confidence_threshold', 0.55)),
+            min_component_area=float(mask_config.get('min_component_area', 0.002)),
+            fill_hole_area=float(mask_config.get('fill_hole_area', 0.001)),
+            keep_top_connected_only=bool(mask_config.get('keep_top_connected_only', True)),
+        )
+
+    def run_semantic_sky_mask_stage(
+        self,
+        settings: SemanticSkyMaskSettings,
+    ) -> Optional[Dict[str, Any]]:
+        """Generate semantic sky masks on the source COLMAP images before conversion."""
+        if not settings.enabled:
+            logger.info("🌤️ Semantic sky masks disabled for this run")
+            return None
+
+        source_mask_dir = self.temp_dir / "semantic_sky_masks" / "source"
+        logger.info("🌤️ Generating semantic sky masks before ns-process-data")
+        logger.info(f"   Model ID: {settings.model_id}")
+        logger.info(f"   Confidence threshold: {settings.confidence_threshold}")
+        logger.info(f"   Min component area: {settings.min_component_area}")
+        logger.info(f"   Fill hole area: {settings.fill_hole_area}")
+        logger.info(f"   Keep top connected only: {settings.keep_top_connected_only}")
+
+        source_summary = generate_source_semantic_sky_masks(
+            dataset_dir=self.source_input_dir,
+            output_dir=source_mask_dir,
+            settings=settings,
+            logger=logger,
+        )
+        logger.info(
+            "✅ Generated %s source semantic masks (mean coverage %.3f)",
+            source_summary.get('registered_image_count', 0),
+            source_summary.get('mean_mask_ratio', 0.0),
+        )
+        return source_summary
+
+    def sync_semantic_sky_masks(
+        self,
+        converted_dir: Path,
+        transforms_file: Path,
+        settings: SemanticSkyMaskSettings,
+        source_summary: Optional[Dict[str, Any]],
+    ) -> bool:
+        """Write training masks into converted_data/masks and patch transforms.json."""
+        try:
+            summary = attach_masks_to_transforms(
+                transforms_path=transforms_file,
+                converted_data_dir=converted_dir,
+                source_summary=source_summary or {},
+                settings=settings,
+            )
+        except Exception as exc:
+            logger.error(f"❌ Failed to attach semantic sky masks: {exc}")
+            return False
+
+        if source_summary:
+            merged_summary = compact_semantic_mask_summary(source_summary)
+            merged_summary.update(summary)
+        else:
+            merged_summary = summary
+
+        merged_summary['summary_file'] = 'semantic_sky_mask_summary.json'
+        self.semantic_mask_summary = merged_summary
+        write_summary_json(merged_summary, self.output_dir / 'semantic_sky_mask_summary.json')
+
+        if settings.enabled:
+            logger.info(
+                "✅ Attached semantic sky masks to %s/%s frames",
+                merged_summary.get('frames_with_masks', 0),
+                merged_summary.get('frames_total', 0),
+            )
+        return True
     
     def validate_input_data(self) -> bool:
         """Validate COLMAP data format and convert to NerfStudio format"""
@@ -271,9 +407,12 @@ class NerfStudioTrainer:
         # Create converted data directory
         converted_dir = self.temp_dir / "converted_data"
         converted_dir.mkdir(exist_ok=True, parents=True)
+
+        semantic_mask_settings = self.get_semantic_mask_settings()
+        source_semantic_mask_summary = self.run_semantic_sky_mask_stage(semantic_mask_settings)
         
         # Convert COLMAP TXT to BIN into a dedicated directory (industry-standard for NerfStudio)
-        sparse_txt_dir = self.input_dir / "sparse" / "0"
+        sparse_txt_dir = self.source_input_dir / "sparse" / "0"
         sparse_bin_dir = self.temp_dir / "colmap_bin" / "0"
         sparse_bin_dir.mkdir(parents=True, exist_ok=True)
 
@@ -284,7 +423,7 @@ class NerfStudioTrainer:
         # Use ns-process-data to convert COLMAP to transforms.json
         convert_cmd = [
             "ns-process-data", "images",
-            "--data", str(self.input_dir / "images"),
+            "--data", str(self.source_input_dir / "images"),
             "--output-dir", str(converted_dir),
             "--skip-colmap",  # Skip running COLMAP; reuse existing model
             "--colmap-model-path", str(sparse_bin_dir)
@@ -333,6 +472,14 @@ class NerfStudioTrainer:
                         logger.error(f"   Found: {item.name}")
                 except Exception as e:
                     logger.error(f"   Failed to list directory: {e}")
+                return False
+
+            if not self.sync_semantic_sky_masks(
+                converted_dir=converted_dir,
+                transforms_file=transforms_file,
+                settings=semantic_mask_settings,
+                source_summary=source_semantic_mask_summary,
+            ):
                 return False
             
             # CRITICAL FIX: Update input directory to point to converted data BEFORE validation
@@ -446,6 +593,7 @@ class NerfStudioTrainer:
     def validate_transforms_json(self, transforms_file: Path) -> bool:
         """Comprehensive validation of the generated transforms.json file"""
         logger.info("🔍 COMPREHENSIVE transforms.json validation...")
+        semantic_mask_settings = self.get_semantic_mask_settings()
         
         try:
             # Read and parse the transforms.json file
@@ -517,6 +665,18 @@ class NerfStudioTrainer:
                                 logger.warning(f"      📁 Available files: {[f.name for f in files]}")
                         except Exception as e:
                             logger.warning(f"      📁 Error listing files: {e}")
+
+                    if semantic_mask_settings.enabled:
+                        mask_path = frame.get('mask_path')
+                        if not mask_path:
+                            logger.error(f"      ❌ Missing mask_path in frame {i}")
+                            return False
+                        mask_file = self.input_dir / Path(mask_path)
+                        if mask_file.exists():
+                            logger.info(f"      ✅ Mask file exists: {mask_file.name}")
+                        else:
+                            logger.error(f"      ❌ Mask file missing: {mask_file}")
+                            return False
                 else:
                     logger.error(f"      ❌ No file_path in frame {i}")
                 
@@ -540,6 +700,22 @@ class NerfStudioTrainer:
             logger.info(f"   Total frames: {num_frames}")
             logger.info(f"   Valid frames: {valid_frames}")
             logger.info(f"   Success rate: {valid_frames/num_frames*100:.1f}%" if num_frames > 0 else "   Success rate: 0%")
+
+            mask_path_count = sum(1 for frame in frames if frame.get('mask_path'))
+            if semantic_mask_settings.enabled:
+                logger.info(f"   Frames with semantic masks: {mask_path_count}")
+                if mask_path_count != num_frames:
+                    logger.error(
+                        "❌ Semantic masks enabled but mask_path coverage is incomplete "
+                        f"({mask_path_count}/{num_frames})"
+                    )
+                    return False
+            elif mask_path_count:
+                logger.error(
+                    "❌ Semantic masks disabled but transforms.json still contains "
+                    f"{mask_path_count} mask_path entries"
+                )
+                return False
             
             if valid_frames < 2:
                 logger.error("❌ Insufficient valid frames for NerfStudio training (need at least 2)")
@@ -580,6 +756,7 @@ class NerfStudioTrainer:
         appearance_embed_dim = model_config.get('appearance_embed_dim', 48)
         never_mask_upper = model_config.get('never_mask_upper', 0.4)
         log_interval = training_config.get('log_interval', 100)
+        semantic_mask_settings = self.get_semantic_mask_settings()
         
         logger.info("🎯 Training Configuration:")
         logger.info(f"   Model: {model_variant}")
@@ -592,6 +769,7 @@ class NerfStudioTrainer:
         logger.info(f"   Background model: {enable_bg_model}")
         logger.info(f"   Alpha loss: {enable_alpha_loss}")
         logger.info(f"   Robust sky masking: {enable_robust_mask}")
+        logger.info(f"   Semantic sky masks: {semantic_mask_settings.enabled}")
         logger.info(f"   Background SH degree: {bg_sh_degree}")
         logger.info(f"   Appearance embedding dim: {appearance_embed_dim}")
         logger.info(f"   Log interval: {log_interval}")
@@ -780,12 +958,14 @@ class NerfStudioTrainer:
 
         selection_dict = self.background_selection_result.to_dict() if self.background_selection_result else None
         pruning_dict = self.floater_pruning_result.to_dict() if self.floater_pruning_result else None
+        semantic_mask_dict = compact_semantic_mask_summary(self.semantic_mask_summary)
 
         if export_manifest_path.exists():
             with open(export_manifest_path, 'r', encoding='utf-8') as f:
                 export_manifest = json.load(f)
             export_manifest['background_selection'] = selection_dict
             export_manifest['floater_pruning'] = pruning_dict
+            export_manifest['semantic_sky_masks'] = semantic_mask_dict
             with open(export_manifest_path, 'w', encoding='utf-8') as f:
                 json.dump(export_manifest, f, indent=2)
 
@@ -796,6 +976,7 @@ class NerfStudioTrainer:
                 background_manifest['selection'] = selection_dict
             if pruning_dict:
                 background_manifest['floater_pruning'] = pruning_dict
+            background_manifest['semantic_sky_masks'] = semantic_mask_dict
             with open(background_manifest_path, 'w', encoding='utf-8') as f:
                 json.dump(background_manifest, f, indent=2)
     
@@ -889,6 +1070,7 @@ class NerfStudioTrainer:
     
     def generate_training_metadata(self) -> Dict[str, Any]:
         """Generate comprehensive training metadata"""
+        semantic_mask_settings = self.get_semantic_mask_settings()
         metadata = {
             'training_methodology': 'Spaceport splatfacto-w-light skybox export',
             'framework': 'NerfStudio',
@@ -904,7 +1086,18 @@ class NerfStudioTrainer:
             'playcanvas_ready': True,
             'training_completed': True,
             'timestamp': time.time(),
-            'version': '1.0.0'
+            'version': '1.1.0',
+            'semantic_sky_masks': compact_semantic_mask_summary(self.semantic_mask_summary) if self.semantic_mask_summary else {
+                'enabled': semantic_mask_settings.enabled,
+                'settings': {
+                    'enabled': semantic_mask_settings.enabled,
+                    'model_id': semantic_mask_settings.model_id,
+                    'confidence_threshold': semantic_mask_settings.confidence_threshold,
+                    'min_component_area': semantic_mask_settings.min_component_area,
+                    'fill_hole_area': semantic_mask_settings.fill_hole_area,
+                    'keep_top_connected_only': semantic_mask_settings.keep_top_connected_only,
+                },
+            },
         }
         
         # Add file information
@@ -922,6 +1115,8 @@ class NerfStudioTrainer:
             metadata['background_selection'] = self.background_selection_result.to_dict()
         if self.floater_pruning_result is not None:
             metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
+        if (self.output_dir / 'semantic_sky_mask_summary.json').exists():
+            metadata['semantic_sky_mask_summary'] = 'semantic_sky_mask_summary.json'
         
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"
