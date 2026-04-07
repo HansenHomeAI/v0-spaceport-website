@@ -256,6 +256,55 @@ def build_training_keep_mask(sky_mask: np.ndarray) -> np.ndarray:
     return keep_mask
 
 
+def _resize_keep_mask(keep_mask: np.ndarray, target_size: tuple[int, int]) -> np.ndarray:
+    if target_size == (keep_mask.shape[1], keep_mask.shape[0]):
+        return keep_mask
+
+    resized_mask = Image.fromarray(keep_mask, mode="L").resize(
+        target_size,
+        resample=Image.Resampling.NEAREST,
+    )
+    return np.asarray(resized_mask, dtype=np.uint8)
+
+
+def _infer_downscale_factors(converted_dir: Path) -> list[int]:
+    factors: set[int] = set()
+    for path in converted_dir.iterdir():
+        if not path.is_dir() or not path.name.startswith("images_"):
+            continue
+        suffix = path.name.split("_", 1)[1]
+        if suffix.isdigit():
+            factors.add(int(suffix))
+
+    # NerfStudio's full-image datamanager commonly auto-selects one of these
+    # downscales even when only the base image directory is referenced.
+    factors.update({2, 4, 8})
+    return sorted(factor for factor in factors if factor > 1)
+
+
+def _write_keep_mask_variants(
+    *,
+    converted_dir: Path,
+    converted_image_path: Path,
+    source_stem: str,
+    keep_mask: np.ndarray,
+) -> None:
+    _write_mask(converted_dir / "masks" / f"{source_stem}.png", keep_mask > 0)
+
+    with Image.open(converted_image_path) as converted_image:
+        base_width, base_height = converted_image.size
+
+    for factor in _infer_downscale_factors(converted_dir):
+        target_size = (
+            max(1, int(round(base_width / factor))),
+            max(1, int(round(base_height / factor))),
+        )
+        resized_keep_mask = _resize_keep_mask(keep_mask, target_size)
+        output_path = converted_dir / f"masks_{factor}" / f"{source_stem}.png"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        Image.fromarray(resized_keep_mask, mode="L").save(output_path)
+
+
 def _write_mask(path: Path, mask: np.ndarray) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray((mask.astype(np.uint8) * 255), mode="L").save(path)
@@ -447,7 +496,12 @@ def materialize_nerfstudio_training_masks(
 
         keep_mask = build_training_keep_mask(sky_mask)
         keep_mask_path = masks_dir / f"{source_stem}.png"
-        Image.fromarray(keep_mask, mode="L").save(keep_mask_path)
+        _write_keep_mask_variants(
+            converted_dir=converted_dir,
+            converted_image_path=converted_image_path,
+            source_stem=source_stem,
+            keep_mask=keep_mask,
+        )
 
         frame["mask_path"] = f"masks/{keep_mask_path.name}"
         frame_stats.append(_mask_stats(source_name, sky_mask))

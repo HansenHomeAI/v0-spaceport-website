@@ -66,12 +66,16 @@ class SemanticSkyMaskingTests(unittest.TestCase):
             temp_path = Path(temp_dir)
             converted_dir = temp_path / "converted_data"
             images_dir = converted_dir / "images"
+            images_4_dir = converted_dir / "images_4"
             masks_dir = temp_path / "source_masks"
             images_dir.mkdir(parents=True)
+            images_4_dir.mkdir(parents=True)
             masks_dir.mkdir(parents=True)
 
             Image.new("RGB", (6, 4), color=(255, 255, 255)).save(images_dir / "frame_00001.JPG")
             Image.new("RGB", (6, 4), color=(255, 255, 255)).save(images_dir / "frame_00002.JPG")
+            Image.new("RGB", (2, 1), color=(255, 255, 255)).save(images_4_dir / "frame_00001.JPG")
+            Image.new("RGB", (2, 1), color=(255, 255, 255)).save(images_4_dir / "frame_00002.JPG")
 
             sky_mask = np.zeros((4, 6), dtype=np.uint8)
             sky_mask[:2, :] = 255
@@ -123,6 +127,9 @@ class SemanticSkyMaskingTests(unittest.TestCase):
             keep_mask = np.asarray(Image.open(converted_dir / "masks" / "source_a.png").convert("L"))
             self.assertTrue(np.all(keep_mask[:2, :] == 0))
             self.assertTrue(np.all(keep_mask[2:, :] == 255))
+
+            keep_mask_4 = np.asarray(Image.open(converted_dir / "masks_4" / "source_a.png").convert("L"))
+            self.assertEqual(keep_mask_4.shape, (1, 2))
 
     def test_materialize_masks_is_noop_when_disabled(self):
         with tempfile.TemporaryDirectory() as temp_dir:
