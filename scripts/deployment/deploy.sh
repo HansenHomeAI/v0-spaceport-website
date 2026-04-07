@@ -95,8 +95,6 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
-  local runtime_base_image=""
-  local flattened_runtime_base_tag=""
   local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
@@ -116,40 +114,6 @@ deploy_container() {
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
   docker pull "${base_image}" || log "No base image yet for ${container_name}"
 
-  if [[ "${container_name}" == "sfm" ]]; then
-    if [[ -n "${branch_tag}" ]] && aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag="${branch_tag}" >/dev/null 2>&1; then
-      runtime_base_image="${ecr_uri}:${branch_tag}"
-    elif aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
-      runtime_base_image="${ecr_uri}:latest"
-    fi
-
-    if [[ -n "${runtime_base_image}" ]]; then
-      log "Using existing SfM runtime image as BASE_IMAGE: ${runtime_base_image}"
-      if docker pull "${runtime_base_image}"; then
-        # Flatten the runtime image before reusing it as BASE_IMAGE so repeated
-        # branch builds do not create an infinitely deep runtime-on-runtime chain.
-        flattened_runtime_base_tag="${repo_name}:runtime-base-flat"
-        docker rm -f "${container_name}-runtime-base-flat" >/dev/null 2>&1 || true
-        if docker create --name "${container_name}-runtime-base-flat" "${runtime_base_image}" >/dev/null; then
-          if docker export "${container_name}-runtime-base-flat" | docker import - "${flattened_runtime_base_tag}" >/dev/null; then
-            log "Flattened SfM runtime base image into ${flattened_runtime_base_tag}"
-          else
-            log "Flattening ${runtime_base_image} failed; Dockerfile default will be used."
-            flattened_runtime_base_tag=""
-          fi
-          docker rm -f "${container_name}-runtime-base-flat" >/dev/null 2>&1 || true
-        else
-          log "Unable to create a temporary container from ${runtime_base_image}; Dockerfile default will be used."
-        fi
-      else
-        log "Unable to pull ${runtime_base_image}; Dockerfile default will be used."
-        runtime_base_image=""
-      fi
-    else
-      log "No existing SfM runtime image found for BASE_IMAGE; Dockerfile default will be used."
-    fi
-  fi
-  
   # Build base image if missing
   if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
     local base_file="${container_dir}/Dockerfile.base"
@@ -180,11 +144,10 @@ deploy_container() {
   local -a extra_cache_from=()
   local -a registry_cache_from=()
   local -a registry_cache_to=()
-  if [[ -n "${flattened_runtime_base_tag}" ]]; then
-    extra_build_args+=(--build-arg "BASE_IMAGE=${flattened_runtime_base_tag}")
-  elif [[ -n "${runtime_base_image}" ]]; then
-    extra_build_args+=(--build-arg "BASE_IMAGE=${runtime_base_image}")
-    extra_cache_from+=(--cache-from "${runtime_base_image}")
+  if [[ "${container_name}" == "sfm" ]]; then
+    extra_build_args+=(--build-arg "BASE_IMAGE=${base_image}")
+    extra_cache_from+=(--cache-from "${base_image}")
+    log "SfM app builds use the published base image to avoid runtime ancestry recursion."
   elif [[ "${container_name}" != "sfm" ]]; then
     extra_build_args+=(--build-arg "BASE_IMAGE=${base_image}")
     extra_cache_from+=(--cache-from "${base_image}")
@@ -239,9 +202,6 @@ deploy_container() {
   docker rmi "${ecr_uri}:latest" || true
   if [ -n "$branch_tag" ]; then
     docker rmi "${ecr_uri}:${branch_tag}" || true
-  fi
-  if [[ -n "${flattened_runtime_base_tag}" ]]; then
-    docker rmi "${flattened_runtime_base_tag}" || true
   fi
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
