@@ -4,11 +4,23 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
-const targetUrl = process.env.TARGET_URL;
+const rawTargetUrl = process.env.TARGET_URL;
 const logsDir = process.env.LOGS_DIR || path.resolve("logs");
 const execFileAsync = promisify(execFile);
 const iframeSelector =
   'iframe[title="SuperSplat Viewer"], iframe[title="Spaceport SuperSplat Viewer"]';
+
+const targetUrl = (() => {
+  if (!rawTargetUrl) {
+    return rawTargetUrl;
+  }
+
+  const parsed = new URL(rawTargetUrl);
+  if (parsed.pathname.endsWith("/sogs-viewer") && !parsed.searchParams.has("chromeless")) {
+    parsed.searchParams.set("chromeless", "1");
+  }
+  return parsed.toString();
+})();
 
 if (!targetUrl) {
   console.error("TARGET_URL is required");
