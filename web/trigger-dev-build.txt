@@ -16,3 +16,4 @@
 2026-04-06T23:35:11Z trigger preview for semantic sky masking branch validation
 2026-04-07T02:24:51Z fix staging-bucket SOGS viewer loading by preferring direct asset URLs before proxy fallback
 2026-04-07T02:47:30Z allow direct S3 bundle fallback when preview-side asset probes fail so Brass viewer validation does not snap back to the sample bundle
+2026-04-07T11:57:38Z sign staging S3 bundle fetches in sogs proxy so preview viewer can render the latest masked Brass subset artifact

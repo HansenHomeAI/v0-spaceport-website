@@ -175,10 +175,9 @@ export default function SogsViewerPage() {
         parsed.pathname = parsed.pathname.replace(/\/?$/, `/${defaultFilename}`);
       }
 
-      const candidates = [parsed.toString()];
-      if (SPACEPORT_S3_HOST.test(parsed.host)) {
-        candidates.push(convertToProxyPath(parsed));
-      }
+      const candidates = SPACEPORT_S3_HOST.test(parsed.host)
+        ? [convertToProxyPath(parsed), parsed.toString()]
+        : [parsed.toString()];
 
       return candidates;
     } catch {
