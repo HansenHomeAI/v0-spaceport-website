@@ -7,15 +7,20 @@ import json
 import logging
 import math
 import os
+import queue
 import shutil
+import signal
 import sqlite3
+import statistics
 import struct
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import zipfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Sequence, Set
 
@@ -64,6 +69,41 @@ class ChunkPlan:
     core_names: List[str]
     image_names: List[str]
     overlap_names: List[str]
+    core_group_indices: List[int] = field(default_factory=list)
+    group_indices: List[int] = field(default_factory=list)
+    overlap_group_indices: List[int] = field(default_factory=list)
+    segment_indices: List[int] = field(default_factory=list)
+
+
+@dataclass
+class CaptureGroup:
+    index: int
+    image_names: List[str]
+    centroid_x_m: float
+    centroid_y_m: float
+    centroid_z_m: float
+    heading_deg: float | None
+    pitch_deg: float | None
+    start_capture_time_s: float | None
+    end_capture_time_s: float | None
+
+    @property
+    def image_count(self) -> int:
+        return len(self.image_names)
+
+
+@dataclass
+class FlightSegment:
+    index: int
+    group_indices: List[int]
+
+    @property
+    def start_group_index(self) -> int:
+        return self.group_indices[0]
+
+    @property
+    def end_group_index(self) -> int:
+        return self.group_indices[-1]
 
 
 def log_memory(stage: str) -> None:
@@ -104,7 +144,14 @@ def load_registered_image_names(images_txt: Path) -> Set[str]:
     return registered_names
 
 
-def stream_command(command: List[str], *, stage: str, env: Dict[str, str] | None = None) -> None:
+def stream_command(
+    command: List[str],
+    *,
+    stage: str,
+    env: Dict[str, str] | None = None,
+    timeout_seconds: float | None = None,
+    heartbeat_seconds: float | None = None,
+) -> None:
     logger.info("[%s] %s", stage, " ".join(command))
     process = subprocess.Popen(
         command,
@@ -113,13 +160,65 @@ def stream_command(command: List[str], *, stage: str, env: Dict[str, str] | None
         text=True,
         env=env,
         bufsize=1,
+        start_new_session=True,
     )
     assert process.stdout is not None
+    output_queue: queue.Queue[str | None] = queue.Queue()
+
+    def reader() -> None:
+        assert process.stdout is not None
+        for line in process.stdout:
+            output_queue.put(line.rstrip())
+        output_queue.put(None)
+
+    reader_thread = threading.Thread(target=reader, daemon=True)
+    reader_thread.start()
+
     lines: List[str] = []
-    for line in process.stdout:
-        message = line.rstrip()
+    started = time.monotonic()
+    last_output_at = started
+    next_heartbeat_at = (
+        started + heartbeat_seconds if heartbeat_seconds is not None and heartbeat_seconds > 0 else None
+    )
+    while True:
+        now = time.monotonic()
+        if timeout_seconds is not None and now - started > timeout_seconds:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait()
+            tail = "\n".join(lines[-50:])
+            raise RuntimeError(
+                f"{stage} timed out after {timeout_seconds:.0f}s\n{tail}"
+            )
+        try:
+            message = output_queue.get(timeout=1)
+        except queue.Empty:
+            if next_heartbeat_at is not None and now >= next_heartbeat_at:
+                print(
+                    f"COLMAP[{stage}] HEARTBEAT elapsed={int(now - started)}s "
+                    f"idle={int(now - last_output_at)}s",
+                    flush=True,
+                )
+                next_heartbeat_at = now + heartbeat_seconds
+            if process.poll() is not None and not reader_thread.is_alive() and output_queue.empty():
+                break
+            continue
+        if message is None:
+            break
         lines.append(message)
+        last_output_at = time.monotonic()
         print(f"COLMAP[{stage}] {message}", flush=True)
+        if heartbeat_seconds is not None and heartbeat_seconds > 0:
+            next_heartbeat_at = last_output_at + heartbeat_seconds
     return_code = process.wait()
     if return_code != 0:
         tail = "\n".join(lines[-50:])
@@ -174,6 +273,47 @@ def angular_distance_degrees(first_deg: float | None, second_deg: float | None) 
         return 90.0
     difference = abs(normalize_heading(first_deg) - normalize_heading(second_deg))
     return min(difference, 360.0 - difference)
+
+
+def parse_capture_time_seconds(capture_time: str | None) -> float | None:
+    if not capture_time:
+        return None
+    for fmt in ("%Y:%m:%d %H:%M:%S.%f", "%Y:%m:%d %H:%M:%S"):
+        try:
+            return datetime.strptime(capture_time, fmt).timestamp()
+        except ValueError:
+            continue
+    return None
+
+
+def normalize_pitch(angle_deg: float | None) -> float | None:
+    if angle_deg is None:
+        return None
+    return max(-90.0, min(90.0, float(angle_deg)))
+
+
+def view_vector(heading_deg: float | None, pitch_deg: float | None) -> tuple[float, float, float] | None:
+    if heading_deg is None:
+        return None
+    yaw_radians = math.radians(normalize_heading(heading_deg) or 0.0)
+    pitch_radians = math.radians(normalize_pitch(pitch_deg if pitch_deg is not None else 0.0) or 0.0)
+    horizontal_scale = math.cos(pitch_radians)
+    return (
+        horizontal_scale * math.cos(yaw_radians),
+        horizontal_scale * math.sin(yaw_radians),
+        math.sin(pitch_radians),
+    )
+
+
+def angular_distance_between_vectors(
+    first_vector: tuple[float, float, float] | None,
+    second_vector: tuple[float, float, float] | None,
+) -> float:
+    if first_vector is None or second_vector is None:
+        return 90.0
+    dot_product = sum(first * second for first, second in zip(first_vector, second_vector))
+    dot_product = max(-1.0, min(1.0, dot_product))
+    return math.degrees(math.acos(dot_product))
 
 
 class ColmapPipeline:
@@ -257,11 +397,62 @@ class ColmapPipeline:
                 str(max(self.spatial_neighbors + 4, 18)),
             )
         )
-        self.chunk_boundary_vocab_num_images = int(
-            os.environ.get("COLMAP_CHUNK_BOUNDARY_VOCAB_NUM_IMAGES", "12")
-        )
         self.chunk_min_core_registered_ratio = float(
             os.environ.get("COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO", "0.90")
+        )
+        self.chunk_retry_group_context = int(
+            os.environ.get("COLMAP_CHUNK_RETRY_GROUP_CONTEXT", "2")
+        )
+        self.capture_group_max_time_gap_s = float(
+            os.environ.get("COLMAP_CAPTURE_GROUP_MAX_TIME_GAP_SECONDS", "1.5")
+        )
+        self.capture_group_max_distance_m = float(
+            os.environ.get("COLMAP_CAPTURE_GROUP_MAX_DISTANCE_METERS", "6.0")
+        )
+        self.capture_group_max_altitude_delta_m = float(
+            os.environ.get("COLMAP_CAPTURE_GROUP_MAX_ALTITUDE_DELTA_METERS", "4.0")
+        )
+        self.capture_group_max_heading_delta_deg = float(
+            os.environ.get("COLMAP_CAPTURE_GROUP_MAX_HEADING_DELTA_DEGREES", "12.0")
+        )
+        self.capture_group_max_pitch_delta_deg = float(
+            os.environ.get("COLMAP_CAPTURE_GROUP_MAX_PITCH_DELTA_DEGREES", "10.0")
+        )
+        self.segment_break_heading_delta_deg = float(
+            os.environ.get("COLMAP_SEGMENT_BREAK_HEADING_DELTA_DEGREES", "35.0")
+        )
+        self.segment_break_pitch_delta_deg = float(
+            os.environ.get("COLMAP_SEGMENT_BREAK_PITCH_DELTA_DEGREES", "20.0")
+        )
+        self.segment_break_altitude_delta_m = float(
+            os.environ.get("COLMAP_SEGMENT_BREAK_ALTITUDE_DELTA_METERS", "12.0")
+        )
+        self.segment_break_step_multiplier = float(
+            os.environ.get("COLMAP_SEGMENT_BREAK_STEP_MULTIPLIER", "3.0")
+        )
+        raw_only_chunk_indexes = os.environ.get("COLMAP_ONLY_CHUNK_INDEXES", "").strip()
+        self.only_chunk_indexes = {
+            int(token.strip())
+            for token in raw_only_chunk_indexes.split(",")
+            if token.strip()
+        }
+        self.command_heartbeat_seconds = float(
+            os.environ.get("COLMAP_COMMAND_HEARTBEAT_SECONDS", "60")
+        )
+        self.matcher_timeout_seconds = float(
+            os.environ.get("COLMAP_MATCHER_TIMEOUT_SECONDS", "900")
+        )
+        self.chunk_mapper_timeout_seconds = float(
+            os.environ.get("COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS", "2700")
+        )
+        self.monolithic_mapper_timeout_seconds = float(
+            os.environ.get("COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS", "21600")
+        )
+        self.bundle_adjuster_timeout_seconds = float(
+            os.environ.get("COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS", "21600")
+        )
+        self.vocab_builder_timeout_seconds = float(
+            os.environ.get("COLMAP_VOCAB_BUILDER_TIMEOUT_SECONDS", "900")
         )
         if (
             self.enable_sequential_matcher
@@ -308,8 +499,57 @@ class ColmapPipeline:
         self.chunk_merge_seconds = 0.0
         self.boundary_recovery_triggered = False
         self.merged_component_count = 0
+        self.chunk_groups: List[CaptureGroup] = []
+        self.flight_segments: List[FlightSegment] = []
+        self.image_group_indices: Dict[str, int] = {}
+        self.chunk_group_count = 0
+        self.chunk_segment_count = 0
+        self.chunk_recovery_mode = "prior_aware_retry_no_vocab"
+        self.failure_stage = ""
+        self.failure_reason_detail = ""
+        self.failed_chunk_index: int | None = None
+        self.failed_chunk_registered_ratio = 0.0
+        self.failed_chunk_core_registered_ratio = 0.0
+        self.timed_out = False
+        self.chunk_execution_image_count = 0
         self.images_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+    def resolve_timeout_seconds(self, timeout_seconds: float | None) -> float | None:
+        if timeout_seconds is None or timeout_seconds <= 0:
+            return None
+        return timeout_seconds
+
+    def mark_failure(
+        self,
+        *,
+        stage: str,
+        reason: str,
+        timed_out: bool = False,
+        chunk_index: int | None = None,
+        registered_ratio: float | None = None,
+        core_registered_ratio: float | None = None,
+    ) -> None:
+        self.failure_stage = stage
+        self.failure_reason_detail = reason
+        self.timed_out = timed_out
+        if chunk_index is not None:
+            self.failed_chunk_index = chunk_index
+        if registered_ratio is not None:
+            self.failed_chunk_registered_ratio = round(registered_ratio, 4)
+        if core_registered_ratio is not None:
+            self.failed_chunk_core_registered_ratio = round(core_registered_ratio, 4)
+
+    def write_failure_metadata(self) -> None:
+        metadata = self.build_metadata(
+            best_model=None,
+            quality_check_passed=False,
+        )
+        metadata["failure_stage"] = self.failure_stage
+        metadata["failure_reason_detail"] = self.failure_reason_detail
+        metadata["timed_out"] = self.timed_out
+        with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
+            json.dump(metadata, handle, indent=2)
 
     def run(self) -> int:
         try:
@@ -327,6 +567,12 @@ class ColmapPipeline:
             self.export_output(best_model)
             return 0
         except Exception as exc:
+            if not self.failure_stage:
+                self.mark_failure(stage="pipeline", reason=str(exc), timed_out="timed out" in str(exc).lower())
+            try:
+                self.write_failure_metadata()
+            except Exception:
+                logger.exception("Failed to write failure metadata")
             logger.exception("COLMAP pipeline failed: %s", exc)
             return 1
         finally:
@@ -431,6 +677,12 @@ class ColmapPipeline:
                 "flight_pitch_deg": parse_optional_float(record, ["FlightPitchDegree"]),
                 "flight_roll_deg": parse_optional_float(record, ["FlightRollDegree"]),
             }
+            exif_records[file_name]["pitch_deg"] = normalize_pitch(
+                parse_optional_float(record, ["GimbalPitchDegree", "FlightPitchDegree"])
+            )
+            exif_records[file_name]["capture_time_s"] = parse_capture_time_seconds(
+                str(exif_records[file_name]["capture_time"])
+            )
         self.populate_local_coordinates(exif_records)
         logger.info(
             "Detected GPS EXIF priors on %s images; orientation priors present on %s images",
@@ -695,16 +947,22 @@ class ColmapPipeline:
             return
         self.vocab_tree_path.parent.mkdir(parents=True, exist_ok=True)
         logger.info("Downloading vocab tree from %s", self.vocab_tree_url)
-        stream_command(
-            [
-                "curl",
-                "-fL",
-                self.vocab_tree_url,
-                "-o",
-                str(self.vocab_tree_path),
-            ],
-            stage="download_vocab_tree",
-        )
+        try:
+            stream_command(
+                [
+                    "curl",
+                    "-fL",
+                    self.vocab_tree_url,
+                    "-o",
+                    str(self.vocab_tree_path),
+                ],
+                stage="download_vocab_tree",
+                timeout_seconds=self.resolve_timeout_seconds(self.vocab_builder_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error("download_vocab_tree", error)
+            raise
         if not self.vocab_tree_path.exists() or self.vocab_tree_path.stat().st_size == 0:
             raise RuntimeError("Vocabulary tree download produced an empty file")
         self.timings["download_vocab_tree_seconds"] = round(time.time() - started, 2)
@@ -747,7 +1005,12 @@ class ColmapPipeline:
         last_error: RuntimeError | None = None
         for command in builder_commands:
             try:
-                stream_command(command, stage="vocab_tree_builder")
+                stream_command(
+                    command,
+                    stage="vocab_tree_builder",
+                    timeout_seconds=self.resolve_timeout_seconds(self.vocab_builder_timeout_seconds),
+                    heartbeat_seconds=self.command_heartbeat_seconds,
+                )
                 break
             except RuntimeError as error:
                 if "--max_num_images" in command and unrecognized_option_error(error, ["--max_num_images"]):
@@ -756,6 +1019,7 @@ class ColmapPipeline:
                     )
                     last_error = error
                     continue
+                self.handle_stage_runtime_error("vocab_tree_builder", error)
                 raise
         else:
             if last_error is not None:
@@ -804,6 +1068,7 @@ class ColmapPipeline:
                 ],
                 [f"--{family}.use_gpu", f"--{family}.guided_matching"],
             ),
+            timeout_seconds=self.matcher_timeout_seconds,
         )
         self.matching_option_family = matching_family
 
@@ -842,6 +1107,7 @@ class ColmapPipeline:
                 ],
                 [f"--{family}.use_gpu", f"--{family}.max_image_size"],
             ),
+            timeout_seconds=self.monolithic_mapper_timeout_seconds,
         )
         self.feature_option_family = feature_family
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
@@ -884,6 +1150,14 @@ class ColmapPipeline:
             return [preferred, *[family for family in families if family != preferred]]
         return list(families)
 
+    def handle_stage_runtime_error(self, stage: str, error: RuntimeError) -> None:
+        self.mark_failure(
+            stage=stage,
+            reason=str(error),
+            timed_out="timed out" in str(error).lower(),
+            chunk_index=self.failed_chunk_index,
+        )
+
     def run_with_option_family_fallback(
         self,
         *,
@@ -891,12 +1165,18 @@ class ColmapPipeline:
         families: Sequence[str],
         preferred_family: str,
         build_command,
+        timeout_seconds: float | None,
     ) -> str:
         last_error: RuntimeError | None = None
         for family in self.ordered_option_families(preferred_family, families):
             command, option_markers = build_command(family)
             try:
-                stream_command(command, stage=stage)
+                stream_command(
+                    command,
+                    stage=stage,
+                    timeout_seconds=self.resolve_timeout_seconds(timeout_seconds),
+                    heartbeat_seconds=self.command_heartbeat_seconds,
+                )
                 return family
             except RuntimeError as error:
                 if unrecognized_option_error(error, option_markers):
@@ -907,6 +1187,7 @@ class ColmapPipeline:
                     )
                     last_error = error
                     continue
+                self.handle_stage_runtime_error(stage, error)
                 raise
         if last_error is not None:
             raise last_error
@@ -947,6 +1228,7 @@ class ColmapPipeline:
                 ],
                 [f"--{family}.use_gpu", f"--{family}.guided_matching"],
             ),
+            timeout_seconds=self.matcher_timeout_seconds,
         )
         self.matching_option_family = matching_family
         pairs_after = self.count_verified_pairs(active_database_path)
@@ -966,21 +1248,27 @@ class ColmapPipeline:
         active_database_path = database_path or self.database_path
         started = time.time()
         pairs_before = self.count_verified_pairs(active_database_path)
-        stream_command(
-            [
-                "colmap",
-                "sequential_matcher",
-                "--database_path",
-                str(active_database_path),
-                "--SequentialMatching.overlap",
-                str(overlap if overlap is not None else self.sequential_overlap),
-                "--SequentialMatching.quadratic_overlap",
-                "1",
-                "--SequentialMatching.loop_detection",
-                "0",
-            ],
-            stage=stage,
-        )
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "sequential_matcher",
+                    "--database_path",
+                    str(active_database_path),
+                    "--SequentialMatching.overlap",
+                    str(overlap if overlap is not None else self.sequential_overlap),
+                    "--SequentialMatching.quadratic_overlap",
+                    "1",
+                    "--SequentialMatching.loop_detection",
+                    "0",
+                ],
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(stage, error)
+            raise
         pairs_after = self.count_verified_pairs(active_database_path)
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         self.record_matcher_delta(label, pairs_after - pairs_before)
@@ -1033,19 +1321,26 @@ class ColmapPipeline:
     def summarize_model(self, *, stage: str, binary_dir: Path, image_count: int) -> ModelSummary:
         text_dir = self.work_dir / "text_models" / stage / binary_dir.name
         text_dir.mkdir(parents=True, exist_ok=True)
-        stream_command(
-            [
-                "colmap",
-                "model_converter",
-                "--input_path",
-                str(binary_dir),
-                "--output_path",
-                str(text_dir),
-                "--output_type",
-                "TXT",
-            ],
-            stage=f"{stage}_model_converter_{binary_dir.name}",
-        )
+        model_converter_stage = f"{stage}_model_converter_{binary_dir.name}"
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "model_converter",
+                    "--input_path",
+                    str(binary_dir),
+                    "--output_path",
+                    str(text_dir),
+                    "--output_type",
+                    "TXT",
+                ],
+                stage=model_converter_stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(model_converter_stage, error)
+            raise
         return ModelSummary(
             stage=stage,
             text_dir=text_dir,
@@ -1068,23 +1363,33 @@ class ColmapPipeline:
         active_image_count = image_count if image_count is not None else self.dataset_image_count
         started = time.time()
         sparse_root.mkdir(parents=True, exist_ok=True)
-        stream_command(
-            [
-                "colmap",
-                "mapper",
-                "--database_path",
-                str(active_database_path),
-                "--image_path",
-                str(self.images_dir),
-                "--output_path",
-                str(sparse_root),
-                "--Mapper.num_threads",
-                str(self.mapper_threads),
-                "--Mapper.ba_refine_principal_point",
-                "0",
-            ],
-            stage=stage,
-        )
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "mapper",
+                    "--database_path",
+                    str(active_database_path),
+                    "--image_path",
+                    str(self.images_dir),
+                    "--output_path",
+                    str(sparse_root),
+                    "--Mapper.num_threads",
+                    str(self.mapper_threads),
+                    "--Mapper.ba_refine_principal_point",
+                    "0",
+                ],
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(
+                    self.chunk_mapper_timeout_seconds
+                    if stage.startswith("chunk_")
+                    else self.monolithic_mapper_timeout_seconds
+                ),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(stage, error)
+            raise
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
 
         candidate_dirs = [path for path in sorted(sparse_root.iterdir()) if path.is_dir()]
@@ -1133,10 +1438,16 @@ class ColmapPipeline:
             "1" if self.use_gpu else "0",
         ]
         try:
-            stream_command(command, stage=stage)
+            stream_command(
+                command,
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.bundle_adjuster_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
         except RuntimeError as exc:
             error_text = str(exc)
             if "unrecognised option '--BundleAdjustment.use_gpu'" not in error_text:
+                self.handle_stage_runtime_error(stage, exc)
                 raise
             logger.warning(
                 "bundle_adjuster rejected BundleAdjustment.use_gpu; retrying with older COLMAP-compatible flags"
@@ -1151,7 +1462,12 @@ class ColmapPipeline:
                 "--BundleAdjustment.refine_principal_point",
                 "0",
             ]
-            stream_command(fallback_command, stage=stage)
+            stream_command(
+                fallback_command,
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.bundle_adjuster_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         return self.summarize_model(
             stage=stage,
@@ -1170,24 +1486,21 @@ class ColmapPipeline:
             sum_y += float(record["local_y_m"])
         return (sum_x / len(image_names), sum_y / len(image_names))
 
-    def cluster_score(
-        self,
-        record: Dict[str, float | str | None],
-        center_x: float,
-        center_y: float,
-        center_heading: float | None,
-    ) -> float:
-        delta_x = float(record["local_x_m"]) - center_x
-        delta_y = float(record["local_y_m"]) - center_y
-        distance = math.hypot(delta_x, delta_y)
-        heading_factor = 1.0 + (
-            self.chunk_heading_weight
-            * angular_distance_degrees(record.get("heading_deg"), center_heading)
-            / 180.0
-        )
-        return distance * heading_factor
+    def centroid_xyz_for_names(self, image_names: Sequence[str]) -> tuple[float, float, float]:
+        if not image_names:
+            return (0.0, 0.0, 0.0)
+        sum_x = 0.0
+        sum_y = 0.0
+        sum_z = 0.0
+        for image_name in image_names:
+            record = self.exif_records[image_name]
+            sum_x += float(record["local_x_m"])
+            sum_y += float(record["local_y_m"])
+            sum_z += float(record.get("local_z_m", 0.0))
+        image_count = len(image_names)
+        return (sum_x / image_count, sum_y / image_count, sum_z / image_count)
 
-    def cluster_heading(self, image_names: Sequence[str]) -> float | None:
+    def mean_heading_for_names(self, image_names: Sequence[str]) -> float | None:
         x_sum = 0.0
         y_sum = 0.0
         sample_count = 0
@@ -1203,17 +1516,106 @@ class ColmapPipeline:
             return None
         return normalize_heading(math.degrees(math.atan2(y_sum, x_sum)))
 
-    def dominant_spatial_axis(self, image_names: Sequence[str]) -> tuple[float, float]:
-        if len(image_names) <= 1:
+    def mean_pitch_for_names(self, image_names: Sequence[str]) -> float | None:
+        pitches = [
+            float(record["pitch_deg"])
+            for image_name in image_names
+            if (record := self.exif_records[image_name]).get("pitch_deg") is not None
+        ]
+        if not pitches:
+            return None
+        return normalize_pitch(sum(pitches) / len(pitches))
+
+    def should_group_adjacent_images(self, previous_name: str, current_name: str) -> bool:
+        previous_record = self.exif_records[previous_name]
+        current_record = self.exif_records[current_name]
+        previous_time = previous_record.get("capture_time_s")
+        current_time = current_record.get("capture_time_s")
+        time_gap_s = (
+            abs(float(current_time) - float(previous_time))
+            if previous_time is not None and current_time is not None
+            else 0.0
+        )
+        distance_m = math.hypot(
+            float(current_record["local_x_m"]) - float(previous_record["local_x_m"]),
+            float(current_record["local_y_m"]) - float(previous_record["local_y_m"]),
+        )
+        altitude_delta_m = abs(
+            float(current_record.get("local_z_m", 0.0)) - float(previous_record.get("local_z_m", 0.0))
+        )
+        heading_delta_deg = angular_distance_degrees(
+            previous_record.get("heading_deg"),
+            current_record.get("heading_deg"),
+        )
+        previous_pitch = previous_record.get("pitch_deg")
+        current_pitch = current_record.get("pitch_deg")
+        pitch_delta_deg = (
+            abs(float(current_pitch) - float(previous_pitch))
+            if previous_pitch is not None and current_pitch is not None
+            else 0.0
+        )
+        return (
+            time_gap_s <= self.capture_group_max_time_gap_s
+            and distance_m <= self.capture_group_max_distance_m
+            and altitude_delta_m <= self.capture_group_max_altitude_delta_m
+            and heading_delta_deg <= self.capture_group_max_heading_delta_deg
+            and pitch_delta_deg <= self.capture_group_max_pitch_delta_deg
+        )
+
+    def build_capture_group(self, group_index: int, image_names: Sequence[str]) -> CaptureGroup:
+        centroid_x, centroid_y, centroid_z = self.centroid_xyz_for_names(image_names)
+        capture_times = [
+            float(record["capture_time_s"])
+            for image_name in image_names
+            if (record := self.exif_records[image_name]).get("capture_time_s") is not None
+        ]
+        return CaptureGroup(
+            index=group_index,
+            image_names=list(image_names),
+            centroid_x_m=centroid_x,
+            centroid_y_m=centroid_y,
+            centroid_z_m=centroid_z,
+            heading_deg=self.mean_heading_for_names(image_names),
+            pitch_deg=self.mean_pitch_for_names(image_names),
+            start_capture_time_s=min(capture_times) if capture_times else None,
+            end_capture_time_s=max(capture_times) if capture_times else None,
+        )
+
+    def build_capture_groups(self) -> List[CaptureGroup]:
+        ordered_names = [
+            image_name for image_name in self.capture_ordered_names if image_name in self.exif_records
+        ]
+        if not ordered_names:
+            return []
+        groups: List[CaptureGroup] = []
+        current_group_names = [ordered_names[0]]
+        for image_name in ordered_names[1:]:
+            if self.should_group_adjacent_images(current_group_names[-1], image_name):
+                current_group_names.append(image_name)
+                continue
+            groups.append(self.build_capture_group(len(groups), current_group_names))
+            current_group_names = [image_name]
+        groups.append(self.build_capture_group(len(groups), current_group_names))
+        self.image_group_indices = {
+            image_name: group.index
+            for group in groups
+            for image_name in group.image_names
+        }
+        self.chunk_groups = groups
+        self.chunk_group_count = len(groups)
+        return groups
+
+    def dominant_spatial_axis_for_groups(self, groups: Sequence[CaptureGroup]) -> tuple[float, float]:
+        if len(groups) <= 1:
             return (1.0, 0.0)
-        centroid_x, centroid_y = self.centroid_for_names(image_names)
+        centroid_x = sum(group.centroid_x_m for group in groups) / len(groups)
+        centroid_y = sum(group.centroid_y_m for group in groups) / len(groups)
         xx = 0.0
         xy = 0.0
         yy = 0.0
-        for image_name in image_names:
-            record = self.exif_records[image_name]
-            delta_x = float(record["local_x_m"]) - centroid_x
-            delta_y = float(record["local_y_m"]) - centroid_y
+        for group in groups:
+            delta_x = group.centroid_x_m - centroid_x
+            delta_y = group.centroid_y_m - centroid_y
             xx += delta_x * delta_x
             xy += delta_x * delta_y
             yy += delta_y * delta_y
@@ -1229,144 +1631,333 @@ class ColmapPipeline:
         length = math.hypot(axis_x, axis_y)
         return (axis_x / length, axis_y / length)
 
-    def spatial_projection(self, image_name: str, axis_x: float, axis_y: float) -> tuple[float, float, float]:
-        record = self.exif_records[image_name]
-        x_coord = float(record["local_x_m"])
-        y_coord = float(record["local_y_m"])
-        along_axis = x_coord * axis_x + y_coord * axis_y
-        across_axis = (-axis_y * x_coord) + (axis_x * y_coord)
-        heading_deg = record.get("heading_deg")
-        return (
-            along_axis,
-            across_axis,
-            normalize_heading(float(heading_deg)) if heading_deg is not None else -1.0,
+    def group_projection(
+        self,
+        group: CaptureGroup,
+        axis_x: float,
+        axis_y: float,
+    ) -> tuple[float, float, float, float]:
+        along_axis = group.centroid_x_m * axis_x + group.centroid_y_m * axis_y
+        across_axis = (-axis_y * group.centroid_x_m) + (axis_x * group.centroid_y_m)
+        heading_value = group.heading_deg if group.heading_deg is not None else -1.0
+        pitch_value = group.pitch_deg if group.pitch_deg is not None else 0.0
+        return (along_axis, across_axis, heading_value, pitch_value)
+
+    def ordered_groups_for_chunking(self, groups: Sequence[CaptureGroup]) -> List[CaptureGroup]:
+        axis_x, axis_y = self.dominant_spatial_axis_for_groups(groups)
+        return sorted(groups, key=lambda group: self.group_projection(group, axis_x, axis_y))
+
+    def view_mismatch_between_groups(self, first_group: CaptureGroup, second_group: CaptureGroup) -> float:
+        return angular_distance_between_vectors(
+            view_vector(first_group.heading_deg, first_group.pitch_deg),
+            view_vector(second_group.heading_deg, second_group.pitch_deg),
         )
 
-    def split_projection_clusters(
-        self, ordered_names: Sequence[str], cluster_count: int
-    ) -> List[List[str]]:
-        if cluster_count <= 1:
-            return [list(ordered_names)]
-        max_cluster_count = max(1, len(ordered_names) // max(self.chunk_min_images, 1))
-        effective_cluster_count = max(1, min(cluster_count, max_cluster_count, len(ordered_names)))
-        axis_x, axis_y = self.dominant_spatial_axis(ordered_names)
-        spatially_sorted_names = sorted(
-            ordered_names,
-            key=lambda image_name: self.spatial_projection(image_name, axis_x, axis_y),
-        )
-        base_size = len(spatially_sorted_names) // effective_cluster_count
-        remainder = len(spatially_sorted_names) % effective_cluster_count
-        clusters: List[List[str]] = []
-        start = 0
-        for index in range(effective_cluster_count):
-            cluster_size = base_size + (1 if index < remainder else 0)
-            end = start + cluster_size
-            if end > len(spatially_sorted_names):
-                break
-            clusters.append(spatially_sorted_names[start:end])
-            start = end
-        if start < len(spatially_sorted_names):
-            if clusters:
-                clusters[-1].extend(spatially_sorted_names[start:])
-            else:
-                clusters.append(spatially_sorted_names[start:])
-        return [cluster for cluster in clusters if cluster]
-
-    def boundary_candidate_score(
-        self, image_name: str, midpoint_x: float, midpoint_y: float, boundary_heading: float
-    ) -> float:
-        record = self.exif_records[image_name]
-        distance = math.hypot(
-            float(record["local_x_m"]) - midpoint_x,
-            float(record["local_y_m"]) - midpoint_y,
-        )
-        heading_factor = 1.0 + (
-            self.chunk_heading_weight
-            * min(
-                angular_distance_degrees(record.get("heading_deg"), boundary_heading),
-                angular_distance_degrees(record.get("heading_deg"), normalize_heading(boundary_heading + 180.0)),
-            )
-            / 180.0
-        )
-        return distance * heading_factor
-
-    def build_spatial_heading_chunks(self) -> List[ChunkPlan]:
-        ordered_names = sorted(self.exif_records.keys())
-        if not ordered_names:
+    def build_flight_segments(self, ordered_groups: Sequence[CaptureGroup]) -> List[FlightSegment]:
+        if not ordered_groups:
             return []
-        core_chunk_size = max(self.chunk_target_images - self.chunk_overlap_images, self.chunk_min_images)
-        spatial_span_x = max(float(record["local_x_m"]) for record in self.exif_records.values()) - min(
-            float(record["local_x_m"]) for record in self.exif_records.values()
-        )
-        spatial_span_y = max(float(record["local_y_m"]) for record in self.exif_records.values()) - min(
-            float(record["local_y_m"]) for record in self.exif_records.values()
-        )
-        max_spatial_span = max(spatial_span_x, spatial_span_y)
-        cluster_count = max(
-            1,
-            math.ceil(len(ordered_names) / core_chunk_size),
-            math.ceil(max_spatial_span / max(self.chunk_max_radius_m, 1.0)),
-        )
-        core_clusters = self.split_projection_clusters(ordered_names, cluster_count)
-        if len(core_clusters) <= 1:
-            self.chunk_overlap_image_count = 0
-            self.chunk_sizes = [len(core_clusters[0])] if core_clusters else []
-            return [
-                ChunkPlan(index=0, core_names=core_clusters[0], image_names=core_clusters[0], overlap_names=[])
-            ] if core_clusters else []
-
-        use_x_axis = spatial_span_x >= spatial_span_y
-        core_clusters.sort(
-            key=lambda image_names: self.centroid_for_names(image_names)[0 if use_x_axis else 1]
-        )
-
-        final_chunk_sets = [set(image_names) for image_names in core_clusters]
-        overlap_totals = [set() for _ in core_clusters]
-        total_overlap_assignments = 0
-        for index in range(len(core_clusters) - 1):
-            current_centroid = self.centroid_for_names(core_clusters[index])
-            next_centroid = self.centroid_for_names(core_clusters[index + 1])
-            midpoint_x = (current_centroid[0] + next_centroid[0]) / 2.0
-            midpoint_y = (current_centroid[1] + next_centroid[1]) / 2.0
-            boundary_heading = normalize_heading(
-                math.degrees(math.atan2(next_centroid[1] - current_centroid[1], next_centroid[0] - current_centroid[0]))
-            ) or 0.0
-            candidate_names = sorted(
-                set(core_clusters[index]).union(core_clusters[index + 1]),
-                key=lambda image_name: self.boundary_candidate_score(
-                    image_name,
-                    midpoint_x,
-                    midpoint_y,
-                    boundary_heading,
-                ),
+        segments: List[FlightSegment] = []
+        current_group_indices = [ordered_groups[0].index]
+        recent_step_distances: List[float] = []
+        for previous_group, current_group in zip(ordered_groups, ordered_groups[1:]):
+            step_distance_m = math.hypot(
+                current_group.centroid_x_m - previous_group.centroid_x_m,
+                current_group.centroid_y_m - previous_group.centroid_y_m,
             )
-            shared_names = candidate_names[: min(self.chunk_overlap_images, len(candidate_names))]
-            final_chunk_sets[index].update(shared_names)
-            final_chunk_sets[index + 1].update(shared_names)
-            overlap_totals[index].update(shared_names)
-            overlap_totals[index + 1].update(shared_names)
-            total_overlap_assignments += len(shared_names)
+            altitude_delta_m = abs(current_group.centroid_z_m - previous_group.centroid_z_m)
+            heading_delta_deg = angular_distance_degrees(previous_group.heading_deg, current_group.heading_deg)
+            pitch_delta_deg = (
+                abs(float(current_group.pitch_deg) - float(previous_group.pitch_deg))
+                if current_group.pitch_deg is not None and previous_group.pitch_deg is not None
+                else 0.0
+            )
+            rolling_step_distance_m = (
+                statistics.median(recent_step_distances[-5:])
+                if recent_step_distances
+                else max(step_distance_m, 1.0)
+            )
+            should_break = (
+                heading_delta_deg > self.segment_break_heading_delta_deg
+                or pitch_delta_deg > self.segment_break_pitch_delta_deg
+                or altitude_delta_m > self.segment_break_altitude_delta_m
+                or (
+                    recent_step_distances
+                    and step_distance_m > rolling_step_distance_m * self.segment_break_step_multiplier
+                )
+            )
+            if should_break:
+                segments.append(FlightSegment(index=len(segments), group_indices=current_group_indices))
+                current_group_indices = [current_group.index]
+                recent_step_distances = [max(step_distance_m, 1e-6)]
+                continue
+            current_group_indices.append(current_group.index)
+            recent_step_distances.append(max(step_distance_m, 1e-6))
+        segments.append(FlightSegment(index=len(segments), group_indices=current_group_indices))
+        self.flight_segments = segments
+        self.chunk_segment_count = len(segments)
+        return segments
 
+    def group_indices_image_count(self, group_indices: Sequence[int]) -> int:
+        return sum(self.chunk_groups[group_index].image_count for group_index in group_indices)
+
+    def group_indices_radius_m(self, group_indices: Sequence[int]) -> float:
+        if len(group_indices) <= 1:
+            return 0.0
+        centroid_x = sum(self.chunk_groups[group_index].centroid_x_m for group_index in group_indices) / len(group_indices)
+        centroid_y = sum(self.chunk_groups[group_index].centroid_y_m for group_index in group_indices) / len(group_indices)
+        return max(
+            math.hypot(
+                self.chunk_groups[group_index].centroid_x_m - centroid_x,
+                self.chunk_groups[group_index].centroid_y_m - centroid_y,
+            )
+            for group_index in group_indices
+        )
+
+    def slice_segment_into_chunk_units(self, segment: FlightSegment) -> List[dict[str, List[int]]]:
+        chunk_units: List[dict[str, List[int]]] = []
+        current_group_indices: List[int] = []
+        for group_index in segment.group_indices:
+            candidate_group_indices = [*current_group_indices, group_index]
+            candidate_image_count = self.group_indices_image_count(candidate_group_indices)
+            candidate_radius_m = self.group_indices_radius_m(candidate_group_indices)
+            if current_group_indices and (
+                (
+                    candidate_image_count > self.chunk_target_images
+                    and self.group_indices_image_count(current_group_indices) >= self.chunk_min_images
+                )
+                or (
+                    candidate_radius_m > self.chunk_max_radius_m
+                    and self.group_indices_image_count(current_group_indices) >= self.chunk_min_images
+                )
+            ):
+                chunk_units.append(
+                    {
+                        "core_group_indices": list(current_group_indices),
+                        "segment_indices": [segment.index],
+                    }
+                )
+                current_group_indices = [group_index]
+                continue
+            current_group_indices = candidate_group_indices
+        if current_group_indices:
+            if chunk_units and self.group_indices_image_count(current_group_indices) < self.chunk_min_images:
+                chunk_units[-1]["core_group_indices"].extend(current_group_indices)
+            else:
+                chunk_units.append(
+                    {
+                        "core_group_indices": list(current_group_indices),
+                        "segment_indices": [segment.index],
+                    }
+                )
+        return chunk_units
+
+    def chunk_unit_boundary_score(
+        self,
+        first_group_indices: Sequence[int],
+        second_group_indices: Sequence[int],
+    ) -> float:
+        first_group = self.chunk_groups[first_group_indices[-1]]
+        second_group = self.chunk_groups[second_group_indices[0]]
+        distance_m = math.hypot(
+            second_group.centroid_x_m - first_group.centroid_x_m,
+            second_group.centroid_y_m - first_group.centroid_y_m,
+        )
+        altitude_delta_m = abs(second_group.centroid_z_m - first_group.centroid_z_m)
+        view_delta_deg = self.view_mismatch_between_groups(first_group, second_group)
+        return distance_m + altitude_delta_m * 0.5 + view_delta_deg * self.chunk_heading_weight
+
+    def merge_small_chunk_units(self, chunk_units: List[dict[str, List[int]]]) -> List[dict[str, List[int]]]:
+        while len(chunk_units) > 1:
+            merge_index = next(
+                (
+                    index
+                    for index, chunk_unit in enumerate(chunk_units)
+                    if self.group_indices_image_count(chunk_unit["core_group_indices"]) < self.chunk_min_images
+                ),
+                None,
+            )
+            if merge_index is None:
+                break
+            candidate_neighbors: List[tuple[float, int]] = []
+            if merge_index > 0:
+                candidate_neighbors.append(
+                    (
+                        self.chunk_unit_boundary_score(
+                            chunk_units[merge_index - 1]["core_group_indices"],
+                            chunk_units[merge_index]["core_group_indices"],
+                        ),
+                        merge_index - 1,
+                    )
+                )
+            if merge_index + 1 < len(chunk_units):
+                candidate_neighbors.append(
+                    (
+                        self.chunk_unit_boundary_score(
+                            chunk_units[merge_index]["core_group_indices"],
+                            chunk_units[merge_index + 1]["core_group_indices"],
+                        ),
+                        merge_index + 1,
+                    )
+                )
+            _, neighbor_index = min(candidate_neighbors, key=lambda item: item[0])
+            first_index, second_index = sorted((merge_index, neighbor_index))
+            chunk_units[first_index] = {
+                "core_group_indices": [
+                    *chunk_units[first_index]["core_group_indices"],
+                    *chunk_units[second_index]["core_group_indices"],
+                ],
+                "segment_indices": sorted(
+                    set(chunk_units[first_index]["segment_indices"]).union(chunk_units[second_index]["segment_indices"])
+                ),
+            }
+            chunk_units.pop(second_index)
+        return chunk_units
+
+    def group_boundary_score(self, first_group: CaptureGroup, second_group: CaptureGroup) -> float:
+        distance_m = math.hypot(
+            second_group.centroid_x_m - first_group.centroid_x_m,
+            second_group.centroid_y_m - first_group.centroid_y_m,
+        )
+        altitude_delta_m = abs(second_group.centroid_z_m - first_group.centroid_z_m)
+        view_delta_deg = self.view_mismatch_between_groups(first_group, second_group)
+        return distance_m + altitude_delta_m * 0.5 + view_delta_deg * self.chunk_heading_weight
+
+    def build_chunk_plan_from_groups(
+        self,
+        *,
+        index: int,
+        core_group_indices: Sequence[int],
+        overlap_group_indices: Sequence[int],
+        segment_indices: Sequence[int],
+    ) -> ChunkPlan:
         capture_order_index = {
             image_name: position for position, image_name in enumerate(self.capture_ordered_names)
         }
-        chunk_plans = [
-            ChunkPlan(
-                index=index,
-                core_names=sorted(
-                    core_clusters[index],
-                    key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
-                ),
-                image_names=sorted(
-                    final_chunk_sets[index],
-                    key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
-                ),
-                overlap_names=sorted(
-                    overlap_totals[index],
-                    key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
+        core_names = [
+            image_name
+            for group_index in core_group_indices
+            for image_name in self.chunk_groups[group_index].image_names
+        ]
+        overlap_names = [
+            image_name
+            for group_index in overlap_group_indices
+            for image_name in self.chunk_groups[group_index].image_names
+        ]
+        image_names = sorted(
+            set(core_names).union(overlap_names),
+            key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
+        )
+        return ChunkPlan(
+            index=index,
+            core_names=sorted(
+                core_names,
+                key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
+            ),
+            image_names=image_names,
+            overlap_names=sorted(
+                set(overlap_names),
+                key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
+            ),
+            core_group_indices=list(core_group_indices),
+            group_indices=sorted(set(core_group_indices).union(overlap_group_indices)),
+            overlap_group_indices=sorted(set(overlap_group_indices)),
+            segment_indices=sorted(set(segment_indices)),
+        )
+
+    def build_spatial_heading_chunks(self) -> List[ChunkPlan]:
+        capture_groups = self.build_capture_groups()
+        if not capture_groups:
+            return []
+        ordered_groups = self.ordered_groups_for_chunking(capture_groups)
+        segments = self.build_flight_segments(ordered_groups)
+        chunk_units: List[dict[str, List[int]]] = []
+        for segment in segments:
+            chunk_units.extend(self.slice_segment_into_chunk_units(segment))
+        chunk_units = self.merge_small_chunk_units(chunk_units)
+        if len(chunk_units) <= 1:
+            self.chunk_overlap_image_count = 0
+            self.chunk_sizes = [
+                self.group_indices_image_count(chunk_units[0]["core_group_indices"])
+            ] if chunk_units else []
+            return [
+                self.build_chunk_plan_from_groups(
+                    index=0,
+                    core_group_indices=chunk_units[0]["core_group_indices"],
+                    overlap_group_indices=[],
+                    segment_indices=chunk_units[0]["segment_indices"],
+                )
+            ] if chunk_units else []
+
+        overlap_group_indices_per_chunk: List[Set[int]] = [set() for _ in chunk_units]
+        total_overlap_assignments = 0
+        for index in range(len(chunk_units) - 1):
+            left_core_group_indices = chunk_units[index]["core_group_indices"]
+            right_core_group_indices = chunk_units[index + 1]["core_group_indices"]
+            left_boundary_candidates = left_core_group_indices[-min(4, len(left_core_group_indices)):]
+            right_boundary_candidates = right_core_group_indices[: min(4, len(right_core_group_indices))]
+            left_boundary_group = self.chunk_groups[left_core_group_indices[-1]]
+            right_boundary_group = self.chunk_groups[right_core_group_indices[0]]
+            left_sorted_candidates = sorted(
+                left_boundary_candidates,
+                key=lambda group_index: self.group_boundary_score(
+                    self.chunk_groups[group_index],
+                    right_boundary_group,
                 ),
             )
-            for index in range(len(core_clusters))
+            right_sorted_candidates = sorted(
+                right_boundary_candidates,
+                key=lambda group_index: self.group_boundary_score(
+                    left_boundary_group,
+                    self.chunk_groups[group_index],
+                ),
+            )
+            shared_group_indices: List[int] = []
+            shared_group_indices.extend(left_sorted_candidates[: min(2, len(left_sorted_candidates))])
+            shared_group_indices.extend(right_sorted_candidates[: min(2, len(right_sorted_candidates))])
+            left_cursor = min(2, len(left_sorted_candidates))
+            right_cursor = min(2, len(right_sorted_candidates))
+            while (
+                self.group_indices_image_count(shared_group_indices) < self.chunk_overlap_images
+                and (left_cursor < len(left_sorted_candidates) or right_cursor < len(right_sorted_candidates))
+            ):
+                candidate_scores: List[tuple[float, int, str]] = []
+                if left_cursor < len(left_sorted_candidates):
+                    left_group_index = left_sorted_candidates[left_cursor]
+                    candidate_scores.append(
+                        (
+                            self.group_boundary_score(self.chunk_groups[left_group_index], right_boundary_group),
+                            left_group_index,
+                            "left",
+                        )
+                    )
+                if right_cursor < len(right_sorted_candidates):
+                    right_group_index = right_sorted_candidates[right_cursor]
+                    candidate_scores.append(
+                        (
+                            self.group_boundary_score(left_boundary_group, self.chunk_groups[right_group_index]),
+                            right_group_index,
+                            "right",
+                        )
+                    )
+                _, group_index, side = min(candidate_scores, key=lambda item: item[0])
+                shared_group_indices.append(group_index)
+                if side == "left":
+                    left_cursor += 1
+                else:
+                    right_cursor += 1
+            shared_group_indices = sorted(set(shared_group_indices))
+            overlap_group_indices_per_chunk[index].update(shared_group_indices)
+            overlap_group_indices_per_chunk[index + 1].update(shared_group_indices)
+            total_overlap_assignments += self.group_indices_image_count(shared_group_indices)
+
+        chunk_plans = [
+            self.build_chunk_plan_from_groups(
+                index=index,
+                core_group_indices=chunk_unit["core_group_indices"],
+                overlap_group_indices=sorted(overlap_group_indices_per_chunk[index]),
+                segment_indices=chunk_unit["segment_indices"],
+            )
+            for index, chunk_unit in enumerate(chunk_units)
         ]
         self.chunk_overlap_image_count = total_overlap_assignments
         self.chunk_sizes = [len(chunk_plan.image_names) for chunk_plan in chunk_plans]
@@ -1440,11 +2031,75 @@ class ColmapPipeline:
         core_registered_count = len(set(chunk_plan.core_names).intersection(registered_names))
         return core_registered_count / len(chunk_plan.core_names), core_registered_count, registered_names
 
+    def retry_group_indices_for_missing_core_names(self, missing_core_names: Sequence[str]) -> List[int]:
+        missing_group_indices = sorted(
+            {
+                self.image_group_indices[image_name]
+                for image_name in missing_core_names
+                if image_name in self.image_group_indices
+            }
+        )
+        if not missing_group_indices:
+            return []
+        expanded_group_indices: Set[int] = set()
+        interval_start = missing_group_indices[0]
+        interval_end = missing_group_indices[0]
+        for group_index in missing_group_indices[1:]:
+            if group_index == interval_end + 1:
+                interval_end = group_index
+                continue
+            expanded_group_indices.update(
+                range(
+                    max(0, interval_start - self.chunk_retry_group_context),
+                    min(len(self.chunk_groups), interval_end + self.chunk_retry_group_context + 1),
+                )
+            )
+            interval_start = interval_end = group_index
+        expanded_group_indices.update(
+            range(
+                max(0, interval_start - self.chunk_retry_group_context),
+                min(len(self.chunk_groups), interval_end + self.chunk_retry_group_context + 1),
+            )
+        )
+        return sorted(expanded_group_indices)
+
+    def build_retry_chunk_plan(
+        self,
+        chunk_plan: ChunkPlan,
+        missing_core_names: Sequence[str],
+    ) -> ChunkPlan:
+        retry_group_indices = sorted(
+            set(chunk_plan.group_indices).union(self.retry_group_indices_for_missing_core_names(missing_core_names))
+        )
+        if not retry_group_indices:
+            return chunk_plan
+        retry_overlap_group_indices = sorted(
+            set(retry_group_indices).difference(chunk_plan.core_group_indices)
+        )
+        retry_segment_indices = sorted(
+            {
+                segment.index
+                for segment in self.flight_segments
+                if set(segment.group_indices).intersection(retry_group_indices)
+            }
+        )
+        return self.build_chunk_plan_from_groups(
+            index=chunk_plan.index,
+            core_group_indices=chunk_plan.core_group_indices or sorted(
+                {
+                    self.image_group_indices[image_name]
+                    for image_name in chunk_plan.core_names
+                    if image_name in self.image_group_indices
+                }
+            ),
+            overlap_group_indices=retry_overlap_group_indices,
+            segment_indices=retry_segment_indices or chunk_plan.segment_indices,
+        )
+
     def run_chunk_pipeline(self, chunk_plan: ChunkPlan) -> ModelSummary:
         chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
         chunk_dir.mkdir(parents=True, exist_ok=True)
         chunk_database_path = self.prepare_chunk_database(chunk_plan)
-        chunk_image_list_path = self.write_chunk_image_list(chunk_plan)
         chunk_stage_prefix = f"chunk_{chunk_plan.index:02d}"
         self.run_spatial_matcher(
             database_path=chunk_database_path,
@@ -1501,35 +2156,73 @@ class ColmapPipeline:
             core_missing_names,
         )
         self.boundary_recovery_triggered = True
-        try:
-            self.run_spatial_matcher(
-                database_path=chunk_database_path,
-                stage=f"{chunk_stage_prefix}_spatial_matcher_recovery",
-                label="chunk_spatial_matcher",
-                max_neighbors=self.chunk_boundary_max_neighbors,
-                max_distance_m=max(self.spatial_distance_m * 1.5, self.chunk_max_radius_m),
-            )
-            self.run_vocab_matching(
-                database_path=chunk_database_path,
-                stage=f"{chunk_stage_prefix}_vocab_tree_matcher_recovery",
-                label="chunk_vocab_tree_matcher",
-                num_images=self.chunk_boundary_vocab_num_images,
-            )
-            recovered_model = self.run_mapper(
-                database_path=chunk_database_path,
-                stage=f"{chunk_stage_prefix}_mapper_recovery",
-                sparse_root=chunk_dir / "sparse_recovery",
-                image_count=len(chunk_plan.image_names),
-            )
-        except RuntimeError as exc:
-            logger.warning(
-                "Chunk %s boundary recovery failed; keeping initial chunk model instead: %s",
+        retry_chunk_plan = self.build_retry_chunk_plan(chunk_plan, core_missing_names)
+        if retry_chunk_plan.image_names != chunk_plan.image_names:
+            logger.info(
+                "Chunk %s retry expanded from %s to %s images across groups %s",
                 chunk_plan.index,
-                exc,
+                len(chunk_plan.image_names),
+                len(retry_chunk_plan.image_names),
+                retry_chunk_plan.group_indices,
             )
-            return initial_model
+            chunk_database_path = self.prepare_chunk_database(retry_chunk_plan)
+        self.run_spatial_matcher(
+            database_path=chunk_database_path,
+            stage=f"{chunk_stage_prefix}_spatial_matcher_recovery",
+            label="chunk_spatial_matcher",
+            max_neighbors=self.chunk_boundary_max_neighbors,
+            max_distance_m=max(self.spatial_distance_m * 1.5, self.chunk_max_radius_m),
+        )
+        if self.enable_sequential_matcher:
+            self.run_sequential_matcher(
+                database_path=chunk_database_path,
+                stage=f"{chunk_stage_prefix}_sequential_matcher_recovery",
+                label="chunk_sequential_matcher",
+                overlap=max(self.sequential_overlap, 12),
+            )
+        recovered_model = self.run_mapper(
+            database_path=chunk_database_path,
+            stage=f"{chunk_stage_prefix}_mapper_recovery",
+            sparse_root=chunk_dir / "sparse_recovery",
+            image_count=len(retry_chunk_plan.image_names),
+        )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
-        return recovered_model if model_sort_key(recovered_model) >= model_sort_key(initial_model) else initial_model
+        recovered_ratio = (
+            recovered_model.images_registered / len(retry_chunk_plan.image_names)
+            if retry_chunk_plan.image_names
+            else 0.0
+        )
+        recovered_core_ratio, recovered_core_count, recovered_registered_names = self.chunk_core_registered_ratio(
+            retry_chunk_plan,
+            recovered_model,
+        )
+        if recovered_ratio >= self.chunk_registered_ratio_threshold():
+            return recovered_model
+        if recovered_core_ratio >= self.chunk_min_core_registered_ratio:
+            logger.info(
+                "Chunk %s recovered to %s/%s total images (%.2f%%) with %s/%s core images (%.2f%%); accepting retry result",
+                retry_chunk_plan.index,
+                recovered_model.images_registered,
+                len(retry_chunk_plan.image_names),
+                recovered_ratio * 100.0,
+                recovered_core_count,
+                len(retry_chunk_plan.core_names),
+                recovered_core_ratio * 100.0,
+            )
+            return recovered_model
+        self.mark_failure(
+            stage=f"{chunk_stage_prefix}_recovery_failed",
+            reason=(
+                f"chunk {retry_chunk_plan.index} remained below threshold after prior-aware retry: "
+                f"registered={recovered_model.images_registered}/{len(retry_chunk_plan.image_names)} "
+                f"core={recovered_core_count}/{len(retry_chunk_plan.core_names)} "
+                f"missing_core={sorted(set(retry_chunk_plan.core_names).difference(recovered_registered_names))}"
+            ),
+            chunk_index=retry_chunk_plan.index,
+            registered_ratio=recovered_ratio,
+            core_registered_ratio=recovered_core_ratio,
+        )
+        raise RuntimeError(self.failure_reason_detail)
 
     def merge_chunk_models(self, chunk_models: Sequence[ModelSummary]) -> ModelSummary:
         if not chunk_models:
@@ -1559,10 +2252,13 @@ class ColmapPipeline:
                         "64",
                     ],
                     stage=f"chunk_model_merger_{index:02d}",
+                    timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                    heartbeat_seconds=self.command_heartbeat_seconds,
                 )
             except RuntimeError as exc:
                 merged_components += 1
                 self.merged_component_count = merged_components
+                self.handle_stage_runtime_error(f"chunk_model_merger_{index:02d}", exc)
                 raise RuntimeError(f"Failed to merge chunk model {index}: {exc}") from exc
             merged_path = output_path
         self.chunk_merge_seconds = round(time.time() - merge_started, 2)
@@ -1692,36 +2388,57 @@ class ColmapPipeline:
 
     def run_spatial_heading_chunked_path(self) -> ModelSummary:
         self.chunking_attempted = True
+        self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
         self.chunk_plans = self.build_spatial_heading_chunks()
+        if self.only_chunk_indexes:
+            self.chunk_plans = [
+                chunk_plan for chunk_plan in self.chunk_plans if chunk_plan.index in self.only_chunk_indexes
+            ]
+            if not self.chunk_plans:
+                raise RuntimeError(
+                    f"Requested COLMAP_ONLY_CHUNK_INDEXES={sorted(self.only_chunk_indexes)} but no chunks matched"
+                )
+            logger.info(
+                "Restricting chunk execution to chunk indexes %s (%s chunks)",
+                sorted(self.only_chunk_indexes),
+                len(self.chunk_plans),
+            )
+            self.chunk_execution_image_count = len(
+                {image_name for chunk_plan in self.chunk_plans for image_name in chunk_plan.image_names}
+            )
+        else:
+            self.chunk_execution_image_count = self.dataset_image_count
         if len(self.chunk_plans) <= 1:
-            self.chunking_skipped_reason = "single_chunk_only"
-            raise RuntimeError("Spatial-heading chunking produced only one chunk")
+            self.chunking_skipped_reason = "single_chunk_only" if not self.only_chunk_indexes else "single_chunk_selected"
         chunk_models: List[ModelSummary] = []
         for chunk_plan in self.chunk_plans:
             chunk_model = self.run_chunk_pipeline(chunk_plan)
             chunk_models.append(chunk_model)
         merged_model = self.merge_chunk_models(chunk_models)
         merged_ratio = (
-            merged_model.images_registered / self.dataset_image_count
-            if self.dataset_image_count
+            merged_model.images_registered / self.chunk_execution_image_count
+            if self.chunk_execution_image_count
             else 0.0
         )
         if merged_ratio < self.chunk_registered_ratio_threshold():
-            raise RuntimeError(
-                f"Chunked merge registered {merged_model.images_registered}/{self.dataset_image_count} images"
+            self.mark_failure(
+                stage="chunked_merge_threshold",
+                reason=(
+                    f"Chunked merge registered {merged_model.images_registered}/"
+                    f"{self.chunk_execution_image_count} images"
+                ),
+                chunk_index=self.failed_chunk_index,
+                registered_ratio=merged_ratio,
             )
-        self.final_matcher_mode = "spatial_heading_chunked"
+            raise RuntimeError(self.failure_reason_detail)
+        self.final_matcher_mode = (
+            "spatial_heading_chunked_subset" if self.only_chunk_indexes else "spatial_heading_chunked"
+        )
         return merged_model
 
     def run_matching_and_mapping(self) -> ModelSummary:
         if self.should_attempt_spatial_chunking():
-            try:
-                return self.run_spatial_heading_chunked_path()
-            except RuntimeError as exc:
-                self.fallback_triggered = True
-                self.fallback_reason = "chunked_path_failed"
-                logger.warning("Spatial-heading chunked path failed; falling back to monolithic GPS-first flow: %s", exc)
-                self.final_matcher_mode = "chunked_fallback_to_monolithic"
+            return self.run_spatial_heading_chunked_path()
 
         if not self.should_attempt_gps_first():
             if (
@@ -1735,49 +2452,40 @@ class ColmapPipeline:
         return self.run_monolithic_gps_first_path()
 
     def resolve_mapper_seconds(self) -> float:
-        if self.final_matcher_mode == "spatial_heading_chunked":
+        if self.final_matcher_mode in {"spatial_heading_chunked", "spatial_heading_chunked_subset"}:
             return round(self.chunk_mapper_seconds, 2)
         mapper_timings = [
             value for key, value in self.timings.items() if key.startswith("mapper_") and key.endswith("_seconds")
         ]
         return round(max(mapper_timings), 2) if mapper_timings else 0.0
 
-    def export_output(self, best_model: ModelSummary) -> None:
-        sparse_output = self.output_dir / "sparse" / "0"
-        images_output = self.output_dir / "images"
-
-        if sparse_output.exists():
-            shutil.rmtree(sparse_output)
-        if images_output.exists():
-            shutil.rmtree(images_output)
-
-        sparse_output.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(best_model.text_dir, sparse_output)
-        shutil.copytree(self.images_dir, images_output)
-        shutil.copy2(self.database_path, self.output_dir / "database.db")
-
+    def build_metadata(
+        self,
+        *,
+        best_model: ModelSummary | None,
+        quality_check_passed: bool,
+    ) -> dict[str, object]:
         mapper_seconds = self.resolve_mapper_seconds()
-        final_points_per_registered_image = round(
-            best_model.points_3d / best_model.images_registered,
-            2,
-        ) if best_model.images_registered else 0.0
-        mapper_seconds_per_registered_image = round(
-            mapper_seconds / best_model.images_registered,
-            2,
-        ) if best_model.images_registered else 0.0
-        metadata = {
+        final_points_per_registered_image = (
+            round(best_model.points_3d / best_model.images_registered, 2)
+            if best_model is not None and best_model.images_registered
+            else 0.0
+        )
+        mapper_seconds_per_registered_image = (
+            round(mapper_seconds / best_model.images_registered, 2)
+            if best_model is not None and best_model.images_registered
+            else 0.0
+        )
+        return {
             "pipeline": self.pipeline_name,
             "processing_time_seconds": round(time.time() - self.start_time, 2),
             "timings": self.timings,
             "dataset_image_count": self.dataset_image_count,
-            "cameras_registered": best_model.cameras_registered,
-            "images_registered": best_model.images_registered,
-            "points_3d": best_model.points_3d,
-            "quality_check_passed": (
-                best_model.points_3d >= 1000
-                and best_model.images_registered > 0
-                and best_model.cameras_registered > 0
-            ),
+            "chunk_execution_image_count": self.chunk_execution_image_count or self.dataset_image_count,
+            "cameras_registered": best_model.cameras_registered if best_model is not None else 0,
+            "images_registered": best_model.images_registered if best_model is not None else 0,
+            "points_3d": best_model.points_3d if best_model is not None else 0,
+            "quality_check_passed": quality_check_passed,
             "gpu_enabled": self.use_gpu,
             "gps_priors_detected": self.gps_image_count,
             "gps_exif_count": self.gps_image_count,
@@ -1800,8 +2508,11 @@ class ColmapPipeline:
             "chunk_count": len(self.chunk_plans),
             "chunk_sizes": self.chunk_sizes,
             "chunk_overlap_image_count": self.chunk_overlap_image_count,
+            "chunk_group_count": self.chunk_group_count,
+            "chunk_segment_count": self.chunk_segment_count,
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
+            "chunk_recovery_mode": self.chunk_recovery_mode,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
             "merged_component_count": self.merged_component_count,
             "final_points_per_registered_image": final_points_per_registered_image,
@@ -1824,8 +2535,38 @@ class ColmapPipeline:
             "vocab_tree_num_visual_words": self.vocab_num_visual_words,
             "vocab_tree_max_num_descriptors": self.vocab_max_num_descriptors,
             "benchmark_subset_strategy": self.benchmark_subset_strategy,
+            "failure_stage": self.failure_stage,
+            "failure_reason_detail": self.failure_reason_detail,
+            "failed_chunk_index": self.failed_chunk_index,
+            "failed_chunk_registered_ratio": self.failed_chunk_registered_ratio,
+            "failed_chunk_core_registered_ratio": self.failed_chunk_core_registered_ratio,
+            "timed_out": self.timed_out,
+            "selected_chunk_indexes": sorted(self.only_chunk_indexes),
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
+
+    def export_output(self, best_model: ModelSummary) -> None:
+        sparse_output = self.output_dir / "sparse" / "0"
+        images_output = self.output_dir / "images"
+
+        if sparse_output.exists():
+            shutil.rmtree(sparse_output)
+        if images_output.exists():
+            shutil.rmtree(images_output)
+
+        sparse_output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(best_model.text_dir, sparse_output)
+        shutil.copytree(self.images_dir, images_output)
+        shutil.copy2(self.database_path, self.output_dir / "database.db")
+        quality_check_passed = (
+            best_model.points_3d >= 1000
+            and best_model.images_registered > 0
+            and best_model.cameras_registered > 0
+        )
+        metadata = self.build_metadata(
+            best_model=best_model,
+            quality_check_passed=quality_check_passed,
+        )
         with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
             json.dump(metadata, handle, indent=2)
 

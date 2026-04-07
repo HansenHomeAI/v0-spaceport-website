@@ -4,6 +4,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -595,7 +596,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 return_value=root / "chunk.db",
             ), mock.patch.object(pipeline, "run_spatial_matcher") as spatial_mock, mock.patch.object(
                 pipeline, "run_sequential_matcher"
-            ), mock.patch.object(pipeline, "run_vocab_matching") as vocab_mock, mock.patch.object(
+            ) as sequential_mock, mock.patch.object(
                 pipeline,
                 "run_mapper",
                 side_effect=[initial_model, recovered_model],
@@ -607,7 +608,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(best_model.images_registered, 4)
             self.assertTrue(pipeline.boundary_recovery_triggered)
             self.assertEqual(spatial_mock.call_count, 2)
-            self.assertEqual(vocab_mock.call_count, 1)
+            self.assertEqual(sequential_mock.call_count, 2)
             self.assertEqual(mapper_mock.call_count, 2)
 
     def test_run_chunk_pipeline_skips_boundary_recovery_when_core_images_are_registered(self):
@@ -757,7 +758,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(vocab_mock.call_count, 0)
             self.assertEqual(mapper_mock.call_count, 1)
 
-    def test_run_chunk_pipeline_keeps_initial_model_when_boundary_recovery_fails(self):
+    def test_run_chunk_pipeline_fails_fast_when_prior_retry_stays_below_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
@@ -783,6 +784,15 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 binary_dir=root,
                 image_count=4,
             )
+            recovered_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_recovery",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1100,
+                binary_dir=root,
+                image_count=4,
+            )
 
             with mock.patch.object(
                 pipeline,
@@ -792,19 +802,18 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 pipeline, "run_sequential_matcher"
             ), mock.patch.object(
                 pipeline,
-                "run_vocab_matching",
-                side_effect=RuntimeError("legacy builder flags unsupported"),
-            ), mock.patch.object(
-                pipeline,
                 "run_mapper",
-                return_value=initial_model,
+                side_effect=[initial_model, recovered_model],
             ) as mapper_mock:
                 pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
-                best_model = pipeline.run_chunk_pipeline(chunk)
+                pipeline.timings["chunk_00_mapper_recovery_seconds"] = 6.0
+                with self.assertRaises(RuntimeError):
+                    pipeline.run_chunk_pipeline(chunk)
 
-            self.assertEqual(best_model.images_registered, 2)
             self.assertTrue(pipeline.boundary_recovery_triggered)
-            self.assertEqual(mapper_mock.call_count, 1)
+            self.assertEqual(mapper_mock.call_count, 2)
+            self.assertEqual(pipeline.failed_chunk_index, 0)
+            self.assertEqual(pipeline.failure_stage, "chunk_00_recovery_failed")
 
     def test_prepare_chunk_database_prunes_global_features_without_reextracting(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -995,7 +1004,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
 
             command_calls: list[list[str]] = []
 
-            def fake_stream_command(command, *, stage, env=None):
+            def fake_stream_command(command, *, stage, env=None, timeout_seconds=None, heartbeat_seconds=None):
                 command_calls.append(command)
                 if "--max_num_images" in command:
                     raise RuntimeError("vocab_tree_builder failed with exit code 1\nFailed to parse options - unrecognised option '--max_num_images'.")
@@ -1009,19 +1018,10 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertNotIn("--max_num_images", command_calls[1])
             self.assertEqual(pipeline.active_vocab_tree_path, pipeline.generated_vocab_tree_path)
 
-    def test_run_matching_and_mapping_falls_back_to_monolithic_when_chunked_path_fails(self):
+    def test_run_matching_and_mapping_fails_when_chunked_path_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
-            fallback_model = run_colmap_sfm.ModelSummary(
-                stage="mapper_spatial_sequential_only",
-                text_dir=root,
-                cameras_registered=1,
-                images_registered=10,
-                points_3d=2000,
-                binary_dir=root,
-                image_count=10,
-            )
 
             with mock.patch.object(
                 pipeline,
@@ -1031,21 +1031,70 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 pipeline,
                 "run_spatial_heading_chunked_path",
                 side_effect=RuntimeError("merge failed"),
-            ), mock.patch.object(
-                pipeline,
-                "should_attempt_gps_first",
-                return_value=True,
-            ), mock.patch.object(
-                pipeline,
-                "run_monolithic_gps_first_path",
-                return_value=fallback_model,
             ):
-                best_model = pipeline.run_matching_and_mapping()
+                with self.assertRaises(RuntimeError):
+                    pipeline.run_matching_and_mapping()
 
-            self.assertEqual(best_model.images_registered, 10)
-            self.assertTrue(pipeline.fallback_triggered)
-            self.assertEqual(pipeline.fallback_reason, "chunked_path_failed")
-            self.assertEqual(pipeline.final_matcher_mode, "chunked_fallback_to_monolithic")
+            self.assertFalse(pipeline.fallback_triggered)
+
+    def test_run_spatial_heading_chunked_path_supports_selected_chunk_indexes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with mock.patch.dict(os.environ, {"COLMAP_ONLY_CHUNK_INDEXES": "1"}, clear=False):
+                pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 8
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(index=0, core_names=["a", "b"], image_names=["a", "b"], overlap_names=[]),
+                run_colmap_sfm.ChunkPlan(index=1, core_names=["c", "d"], image_names=["c", "d"], overlap_names=[]),
+            ]
+            merged_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=root / "merged_text",
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=100,
+                binary_dir=root / "merged_chunk_model_01",
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "build_spatial_heading_chunks",
+                return_value=chunk_plans,
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_pipeline",
+                return_value=run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=root / "chunk1",
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=root / "chunk1",
+                ),
+            ) as run_chunk_mock, mock.patch.object(
+                pipeline,
+                "merge_chunk_models",
+                return_value=merged_model,
+            ):
+                result = pipeline.run_spatial_heading_chunked_path()
+
+            self.assertEqual(result.images_registered, 2)
+            self.assertEqual(run_chunk_mock.call_count, 1)
+            self.assertEqual(pipeline.chunk_execution_image_count, 2)
+            self.assertEqual(pipeline.final_matcher_mode, "spatial_heading_chunked_subset")
+
+    def test_stream_command_times_out(self):
+        started = time.time()
+        with self.assertRaises(RuntimeError) as raised:
+            run_colmap_sfm.stream_command(
+                [sys.executable, "-c", "import time; time.sleep(2)"],
+                stage="timeout_test",
+                timeout_seconds=0.2,
+                heartbeat_seconds=0.1,
+            )
+
+        self.assertIn("timed out", str(raised.exception).lower())
+        self.assertLess(time.time() - started, 2.0)
 
 
 if __name__ == "__main__":

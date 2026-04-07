@@ -145,6 +145,11 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional local path for the compact benchmark summary JSON.",
     )
+    parser.add_argument(
+        "--only-chunk-indexes",
+        default="",
+        help="Optional comma-separated chunk indexes to run when --mode=chunked.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -199,6 +204,8 @@ def main() -> int:
     }
     if args.mode == "chunked":
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
+        if args.only_chunk_indexes:
+            environment["COLMAP_ONLY_CHUNK_INDEXES"] = args.only_chunk_indexes
     else:
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "0")
 
