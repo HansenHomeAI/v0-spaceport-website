@@ -18,7 +18,7 @@ from typing import Any, Dict, Iterable, Optional
 
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFile
 
 
 LOGGER = logging.getLogger(__name__)
@@ -134,6 +134,25 @@ def _load_model_bundle(config: SemanticSkyMaskConfig) -> tuple[Any, Any, list[in
     return processor, model, sky_class_ids, sky_labels
 
 
+def _open_image_rgb(image_path: Path) -> Image.Image:
+    try:
+        with Image.open(image_path) as image:
+            return image.convert("RGB")
+    except OSError as exc:
+        # Brass subset diagnostics exposed a truncated DJI JPEG. Recover so one
+        # imperfect source image does not abort the entire mask-generation run.
+        if "broken data stream" not in str(exc).lower() and "truncated" not in str(exc).lower():
+            raise
+
+    prior_setting = ImageFile.LOAD_TRUNCATED_IMAGES
+    try:
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
+        with Image.open(image_path) as image:
+            return image.convert("RGB")
+    finally:
+        ImageFile.LOAD_TRUNCATED_IMAGES = prior_setting
+
+
 def _predict_raw_sky_mask(
     image_path: Path,
     processor: Any,
@@ -144,7 +163,7 @@ def _predict_raw_sky_mask(
 ) -> np.ndarray:
     import torch
 
-    image = Image.open(image_path).convert("RGB")
+    image = _open_image_rgb(image_path)
     inputs = processor(images=image, return_tensors="pt")
     pixel_values = inputs["pixel_values"].to(device)
 

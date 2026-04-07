@@ -14,6 +14,7 @@ if str(MODULE_ROOT) not in sys.path:
 
 from semantic_sky_masking import (
     SemanticSkyMaskConfig,
+    _open_image_rgb,
     build_training_keep_mask,
     materialize_nerfstudio_training_masks,
     postprocess_sky_mask,
@@ -47,6 +48,18 @@ class SemanticSkyMaskingTests(unittest.TestCase):
         keep_mask = build_training_keep_mask(sky_mask)
 
         self.assertEqual(keep_mask.tolist(), [[0, 255], [255, 0]])
+
+    def test_open_image_rgb_recovers_from_truncated_jpeg(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            image_path = Path(temp_dir) / "truncated.JPG"
+            Image.new("RGB", (24, 16), color=(64, 128, 255)).save(image_path, format="JPEG")
+            original_bytes = image_path.read_bytes()
+            image_path.write_bytes(original_bytes[:-8])
+
+            loaded = _open_image_rgb(image_path)
+
+            self.assertEqual(loaded.mode, "RGB")
+            self.assertEqual(loaded.size, (24, 16))
 
     def test_materialize_masks_adds_mask_paths_for_every_frame(self):
         with tempfile.TemporaryDirectory() as temp_dir:
