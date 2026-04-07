@@ -155,7 +155,7 @@ export default function SogsViewerPage() {
     return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
   };
 
-  const normalizeAssetUrl = (rawValue: string, defaultFilename: string | null): string | null => {
+  const buildAssetCandidates = (rawValue: string, defaultFilename: string | null): string[] | null => {
     const trimmed = rawValue.trim();
     if (!trimmed) {
       return null;
@@ -175,11 +175,12 @@ export default function SogsViewerPage() {
         parsed.pathname = parsed.pathname.replace(/\/?$/, `/${defaultFilename}`);
       }
 
+      const candidates = [parsed.toString()];
       if (SPACEPORT_S3_HOST.test(parsed.host)) {
-        return convertToProxyPath(parsed);
+        candidates.push(convertToProxyPath(parsed));
       }
 
-      return parsed.toString();
+      return candidates;
     } catch {
       return null;
     }
@@ -213,37 +214,66 @@ export default function SogsViewerPage() {
     }
   };
 
+  const resolveAccessibleAssetUrl = async (rawValue: string, defaultFilename: string | null) => {
+    const candidates = buildAssetCandidates(rawValue, defaultFilename);
+    if (!candidates?.length) {
+      return null;
+    }
+
+    for (const candidate of candidates) {
+      const response = await fetchIfOk(candidate);
+      if (response) {
+        return candidate;
+      }
+    }
+
+    return null;
+  };
+
+  const resolveAccessibleAssetResponse = async (rawValue: string, defaultFilename: string | null) => {
+    const candidates = buildAssetCandidates(rawValue, defaultFilename);
+    if (!candidates?.length) {
+      return null;
+    }
+
+    for (const candidate of candidates) {
+      const response = await fetchIfOk(candidate);
+      if (response) {
+        return { response, url: candidate };
+      }
+    }
+
+    return null;
+  };
+
   const resolveSkyboxUrl = async (bundleRawValue: string, explicitSkyboxRawValue?: string | null) => {
     if (explicitSkyboxRawValue) {
-      const explicitUrl = normalizeAssetUrl(explicitSkyboxRawValue, null);
-      if (explicitUrl && (await fetchIfOk(explicitUrl))) {
+      const explicitUrl = await resolveAccessibleAssetUrl(explicitSkyboxRawValue, null);
+      if (explicitUrl) {
         return explicitUrl;
       }
     }
 
     const manifestRawUrl = buildSiblingAssetRawUrl(bundleRawValue, "background_manifest.json");
-    const manifestUrl = normalizeAssetUrl(manifestRawUrl, null);
-    if (manifestUrl) {
-      const manifestResponse = await fetchIfOk(manifestUrl);
-      if (manifestResponse) {
-        try {
-          const manifest = (await manifestResponse.json()) as { asset?: string };
-          if (manifest?.asset) {
-            const skyboxRawUrl = buildSiblingAssetRawUrl(bundleRawValue, manifest.asset);
-            const skyboxUrl = normalizeAssetUrl(skyboxRawUrl, null);
-            if (skyboxUrl && (await fetchIfOk(skyboxUrl))) {
-              return skyboxUrl;
-            }
+    const manifestAsset = await resolveAccessibleAssetResponse(manifestRawUrl, null);
+    if (manifestAsset) {
+      try {
+        const manifest = (await manifestAsset.response.json()) as { asset?: string };
+        if (manifest?.asset) {
+          const skyboxRawUrl = buildSiblingAssetRawUrl(bundleRawValue, manifest.asset);
+          const skyboxUrl = await resolveAccessibleAssetUrl(skyboxRawUrl, null);
+          if (skyboxUrl) {
+            return skyboxUrl;
           }
-        } catch {
-          // Ignore invalid manifests and fall back to the conventional filename.
         }
+      } catch {
+        // Ignore invalid manifests and fall back to the conventional filename.
       }
     }
 
     const conventionalSkyboxRawUrl = buildSiblingAssetRawUrl(bundleRawValue, "background_skybox.webp");
-    const conventionalSkyboxUrl = normalizeAssetUrl(conventionalSkyboxRawUrl, null);
-    if (conventionalSkyboxUrl && (await fetchIfOk(conventionalSkyboxUrl))) {
+    const conventionalSkyboxUrl = await resolveAccessibleAssetUrl(conventionalSkyboxRawUrl, null);
+    if (conventionalSkyboxUrl) {
       return conventionalSkyboxUrl;
     }
 
@@ -261,9 +291,9 @@ export default function SogsViewerPage() {
   const [chromeless, setChromeless] = useState(false);
 
   const attemptLoad = async (rawBundleValue: string, explicitSkyboxRawValue?: string | null) => {
-    const normalizedBundleUrl = normalizeAssetUrl(rawBundleValue, "meta.json");
+    const normalizedBundleUrl = await resolveAccessibleAssetUrl(rawBundleValue, "meta.json");
     if (!normalizedBundleUrl) {
-      setError("Enter a valid HTTPS URL pointing to the SOGS bundle (folder or meta.json).");
+      setError("Enter a valid, reachable HTTPS URL pointing to the SOGS bundle (folder or meta.json).");
       return false;
     }
 

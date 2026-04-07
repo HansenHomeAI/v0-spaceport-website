@@ -14,3 +14,4 @@
 2026-04-01T19:30:00Z load baked splatfacto-w-light skyboxes in the branch preview viewer
 2026-04-02T17:15:00Z iterate skybox export quality defaults and pre-compression floater pruning
 2026-04-06T23:35:11Z trigger preview for semantic sky masking branch validation
+2026-04-07T02:24:51Z fix staging-bucket SOGS viewer loading by preferring direct asset URLs before proxy fallback
