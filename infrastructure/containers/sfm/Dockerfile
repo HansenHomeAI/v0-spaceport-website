@@ -1,6 +1,7 @@
 # Default to the most recent published SfM runtime in ECR so branch builds do not
-# depend on Docker Hub availability; deploy.sh can still override BASE_IMAGE and
-# flatten the pulled runtime image to avoid recursive branch-on-branch ancestry.
+# depend on Docker Hub availability; deploy.sh can still override BASE_IMAGE,
+# flatten the pulled runtime image, and skip registry cache manifests to avoid
+# recursive branch-on-branch ancestry during repeated branch builds.
 ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest
 FROM ${BASE_IMAGE}
 

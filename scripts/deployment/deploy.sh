@@ -178,6 +178,8 @@ deploy_container() {
   log "Building with Docker BuildKit and layer caching..."
   local -a extra_build_args=()
   local -a extra_cache_from=()
+  local -a registry_cache_from=()
+  local -a registry_cache_to=()
   if [[ -n "${flattened_runtime_base_tag}" ]]; then
     extra_build_args+=(--build-arg "BASE_IMAGE=${flattened_runtime_base_tag}")
   elif [[ -n "${runtime_base_image}" ]]; then
@@ -188,16 +190,27 @@ deploy_container() {
     extra_cache_from+=(--cache-from "${base_image}")
   fi
 
+  if [[ "${container_name}" != "sfm" ]]; then
+    registry_cache_from+=(
+      --cache-from "type=registry,ref=${build_cache_ref},mode=max"
+      --cache-from "type=registry,ref=${ecr_uri}:latest"
+    )
+    registry_cache_to+=(
+      --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}"
+    )
+  else
+    log "Skipping registry cache manifests for sfm to avoid recursive BuildKit cache ancestry."
+  fi
+
   docker buildx build \
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
     "${extra_build_args[@]}" \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
-    --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
-    --cache-from "type=registry,ref=${ecr_uri}:latest" \
+    "${registry_cache_from[@]}" \
     "${extra_cache_from[@]}" \
-    --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
+    "${registry_cache_to[@]}" \
     --progress plain \
     --load \
     "${container_dir}"
