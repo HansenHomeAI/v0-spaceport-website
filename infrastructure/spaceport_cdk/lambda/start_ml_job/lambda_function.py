@@ -120,8 +120,10 @@ def lambda_handler(event, context):
                 print(f"⚠️ Failed to save CSV data: {str(e)}")
                 # Continue without GPS data - don't fail the entire request
         
-        # Get environment variables
-        state_machine_arn = os.environ['STATE_MACHINE_ARN']
+        # Support both the historical and current environment variable names.
+        state_machine_arn = os.environ.get('STATE_MACHINE_ARN') or os.environ.get('STEP_FUNCTION_ARN')
+        if not state_machine_arn:
+            raise KeyError('STATE_MACHINE_ARN')
         ml_bucket = os.environ['ML_BUCKET']
         
         # Get ECR repository names from environment variables (set by CDK)

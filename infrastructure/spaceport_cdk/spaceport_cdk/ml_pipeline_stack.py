@@ -786,8 +786,9 @@ class MLPipelineStack(Stack):
             timeout=Duration.hours(8)
         )
 
-        # Update start job lambda with Step Function ARN
+        # Keep both names while callers converge on the same Step Functions env key.
         start_job_lambda.add_environment("STEP_FUNCTION_ARN", ml_pipeline.state_machine_arn)
+        start_job_lambda.add_environment("STATE_MACHINE_ARN", ml_pipeline.state_machine_arn)
 
         # Create Lambda function for stopping jobs
         stop_job_lambda = lambda_.Function(
