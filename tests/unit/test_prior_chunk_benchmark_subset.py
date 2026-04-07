@@ -17,6 +17,26 @@ run_colmap_sfm = prepare_subset.run_colmap_sfm
 
 
 class PriorChunkBenchmarkSubsetTests(unittest.TestCase):
+    def test_build_retry_context_group_indices_expands_non_contiguous_intervals(self):
+        chunk_plan = run_colmap_sfm.ChunkPlan(
+            index=4,
+            core_names=["IMG_010.jpg", "IMG_020.jpg", "IMG_021.jpg"],
+            image_names=["IMG_010.jpg", "IMG_020.jpg", "IMG_021.jpg"],
+            overlap_names=[],
+            core_group_indices=[10, 20, 21],
+            group_indices=[10, 20, 21],
+            overlap_group_indices=[],
+            segment_indices=[1, 2],
+        )
+
+        retry_group_indices = prepare_subset.build_retry_context_group_indices(
+            chunk_plan=chunk_plan,
+            chunk_group_count=30,
+            retry_group_context=2,
+        )
+
+        self.assertEqual(retry_group_indices, [8, 9, 10, 11, 12, 18, 19, 20, 21, 22, 23])
+
     def test_collect_selected_image_names_includes_retry_context_groups(self):
         chunk_groups = [
             run_colmap_sfm.CaptureGroup(index=0, image_names=["IMG_001.jpg"], centroid_x_m=0.0, centroid_y_m=0.0, centroid_z_m=0.0, heading_deg=0.0, pitch_deg=0.0, start_capture_time_s=0.0, end_capture_time_s=0.0),

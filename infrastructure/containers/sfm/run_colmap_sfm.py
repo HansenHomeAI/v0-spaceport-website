@@ -2304,7 +2304,6 @@ class ColmapPipeline:
 
     def run_monolithic_gps_first_path(self) -> ModelSummary:
         self.gps_first_attempted = True
-        spatial_model: ModelSummary | None = None
         try:
             self.run_spatial_matcher()
             if self.enable_sequential_matcher:
@@ -2324,67 +2323,49 @@ class ColmapPipeline:
                 image_count=self.dataset_image_count,
             )
         except RuntimeError as exc:
-            self.fallback_triggered = True
-            self.fallback_reason = "mapper_failed"
-            logger.warning("GPS-first first-pass mapper failed, falling back to vocab tree: %s", exc)
-
-        if spatial_model is not None:
-            registered_ratio = (
-                spatial_model.images_registered / self.dataset_image_count
-                if self.dataset_image_count
-                else 0.0
-            )
-            logger.info(
-                "First-pass mapper registered %s/%s extracted images (%.2f%%)",
-                spatial_model.images_registered,
-                self.dataset_image_count,
-                registered_ratio * 100.0,
-            )
-            if registered_ratio >= self.gps_min_registered_ratio:
-                self.final_matcher_mode = (
-                    "spatial_sequential_only"
+            self.mark_failure(
+                stage=(
+                    "mapper_spatial_sequential_only"
                     if self.enable_sequential_matcher
-                    else "spatial_only"
-                )
-                return spatial_model
-            self.fallback_triggered = True
-            self.fallback_reason = "below_registered_ratio_threshold"
-            logger.info(
-                "First-pass mapper registered %s/%s images (%.2f%%), below %.2f%% threshold; adding vocab-tree recovery",
-                spatial_model.images_registered,
-                self.dataset_image_count,
-                registered_ratio * 100.0,
-                self.gps_min_registered_ratio * 100.0,
+                    else "mapper_spatial_only"
+                ),
+                reason=f"GPS-first mapper failed: {exc}",
             )
+            raise RuntimeError(self.failure_reason_detail) from exc
 
-        self.run_vocab_matching()
-        fallback_model = self.run_mapper(
-            database_path=self.database_path,
+        registered_ratio = (
+            spatial_model.images_registered / self.dataset_image_count
+            if self.dataset_image_count
+            else 0.0
+        )
+        logger.info(
+            "First-pass mapper registered %s/%s extracted images (%.2f%%)",
+            spatial_model.images_registered,
+            self.dataset_image_count,
+            registered_ratio * 100.0,
+        )
+        if registered_ratio >= self.gps_min_registered_ratio:
+            self.final_matcher_mode = (
+                "spatial_sequential_only"
+                if self.enable_sequential_matcher
+                else "spatial_only"
+            )
+            return spatial_model
+        self.mark_failure(
             stage=(
                 "mapper_spatial_sequential_plus_vocab"
                 if self.enable_sequential_matcher
                 else "mapper_spatial_plus_vocab"
             ),
-            sparse_root=(
-                self.work_dir / "sparse_spatial_sequential_plus_vocab"
-                if self.enable_sequential_matcher
-                else self.work_dir / "sparse_spatial_plus_vocab"
+            reason=(
+                "GPS-first mapper registered "
+                f"{spatial_model.images_registered}/{self.dataset_image_count} images "
+                f"({registered_ratio * 100.0:.2f}%), below "
+                f"{self.gps_min_registered_ratio * 100.0:.2f}% threshold"
             ),
-            image_count=self.dataset_image_count,
+            registered_ratio=registered_ratio,
         )
-        if spatial_model is not None and model_sort_key(spatial_model) > model_sort_key(fallback_model):
-            self.final_matcher_mode = (
-                "spatial_sequential_only_better_than_fallback"
-                if self.enable_sequential_matcher
-                else "spatial_only_better_than_fallback"
-            )
-            return spatial_model
-        self.final_matcher_mode = (
-            "spatial_sequential_plus_vocab"
-            if self.enable_sequential_matcher
-            else "spatial_plus_vocab"
-        )
-        return fallback_model
+        raise RuntimeError(self.failure_reason_detail)
 
     def run_spatial_heading_chunked_path(self) -> ModelSummary:
         self.chunking_attempted = True

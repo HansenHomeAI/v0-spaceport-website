@@ -94,11 +94,30 @@ def build_retry_context_group_indices(
     chunk_group_count: int,
     retry_group_context: int,
 ) -> List[int]:
-    if not getattr(chunk_plan, "core_group_indices", None):
+    core_group_indices = sorted(set(getattr(chunk_plan, "core_group_indices", [])))
+    if not core_group_indices:
         return []
-    start_index = max(0, min(chunk_plan.core_group_indices) - retry_group_context)
-    end_index = min(chunk_group_count - 1, max(chunk_plan.core_group_indices) + retry_group_context)
-    return list(range(start_index, end_index + 1))
+    expanded_group_indices: set[int] = set()
+    interval_start = core_group_indices[0]
+    interval_end = core_group_indices[0]
+    for group_index in core_group_indices[1:]:
+        if group_index == interval_end + 1:
+            interval_end = group_index
+            continue
+        expanded_group_indices.update(
+            range(
+                max(0, interval_start - retry_group_context),
+                min(chunk_group_count, interval_end + retry_group_context + 1),
+            )
+        )
+        interval_start = interval_end = group_index
+    expanded_group_indices.update(
+        range(
+            max(0, interval_start - retry_group_context),
+            min(chunk_group_count, interval_end + retry_group_context + 1),
+        )
+    )
+    return sorted(expanded_group_indices)
 
 
 def collect_selected_image_names(

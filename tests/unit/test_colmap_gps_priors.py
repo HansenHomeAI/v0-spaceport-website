@@ -265,7 +265,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertFalse(pipeline.fallback_triggered)
             self.assertEqual(pipeline.fallback_reason, "not_needed")
 
-    def test_gps_first_falls_back_once_when_registration_is_incomplete(self):
+    def test_gps_first_fails_fast_when_registration_is_incomplete(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
@@ -290,29 +290,50 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 images_registered=3,
                 points_3d=3000,
             )
-            fallback_model = run_colmap_sfm.ModelSummary(
-                stage="mapper_spatial_sequential_plus_vocab",
-                text_dir=root,
-                cameras_registered=1,
-                images_registered=4,
-                points_3d=3400,
-            )
 
             pipeline.run_spatial_matcher = record_call("spatial_matcher")
             pipeline.run_sequential_matcher = record_call("sequential_matcher")
             pipeline.run_vocab_matching = record_call("vocab_tree_matcher")
-            pipeline.run_mapper = mock.Mock(side_effect=[spatial_model, fallback_model])
+            pipeline.run_mapper = mock.Mock(return_value=spatial_model)
 
-            best_model = pipeline.run_matching_and_mapping()
+            with self.assertRaisesRegex(RuntimeError, "below 98.00% threshold"):
+                pipeline.run_matching_and_mapping()
 
-            self.assertEqual(best_model.images_registered, 4)
-            self.assertEqual(
-                calls,
-                ["spatial_matcher", "sequential_matcher", "vocab_tree_matcher"],
-            )
-            self.assertTrue(pipeline.fallback_triggered)
-            self.assertEqual(pipeline.fallback_reason, "below_registered_ratio_threshold")
-            self.assertEqual(pipeline.final_matcher_mode, "spatial_sequential_plus_vocab")
+            self.assertEqual(calls, ["spatial_matcher", "sequential_matcher"])
+            self.assertFalse(pipeline.fallback_triggered)
+            self.assertEqual(pipeline.fallback_reason, "not_needed")
+            self.assertEqual(pipeline.failure_stage, "mapper_spatial_sequential_plus_vocab")
+
+    def test_gps_first_fails_fast_when_mapper_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 4
+            pipeline.gps_image_count = 4
+            pipeline.gps_prior_coverage = 1.0
+            pipeline.enable_sequential_matcher = True
+
+            calls: list[str] = []
+
+            def record_call(name: str):
+                def inner(*args, **kwargs):
+                    calls.append(name)
+                    return None
+
+                return inner
+
+            pipeline.run_spatial_matcher = record_call("spatial_matcher")
+            pipeline.run_sequential_matcher = record_call("sequential_matcher")
+            pipeline.run_vocab_matching = record_call("vocab_tree_matcher")
+            pipeline.run_mapper = mock.Mock(side_effect=RuntimeError("mapper exploded"))
+
+            with self.assertRaisesRegex(RuntimeError, "GPS-first mapper failed: mapper exploded"):
+                pipeline.run_matching_and_mapping()
+
+            self.assertEqual(calls, ["spatial_matcher", "sequential_matcher"])
+            self.assertFalse(pipeline.fallback_triggered)
+            self.assertEqual(pipeline.fallback_reason, "not_needed")
+            self.assertEqual(pipeline.failure_stage, "mapper_spatial_sequential_only")
 
     def test_gps_first_accepts_ratio_threshold_without_vocab_fallback(self):
         with tempfile.TemporaryDirectory() as tmp:
