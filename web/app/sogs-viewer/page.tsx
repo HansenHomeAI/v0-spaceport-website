@@ -214,7 +214,11 @@ export default function SogsViewerPage() {
     }
   };
 
-  const resolveAccessibleAssetUrl = async (rawValue: string, defaultFilename: string | null) => {
+  const resolveAccessibleAssetUrl = async (
+    rawValue: string,
+    defaultFilename: string | null,
+    options?: { allowUnverifiedFallback?: boolean },
+  ) => {
     const candidates = buildAssetCandidates(rawValue, defaultFilename);
     if (!candidates?.length) {
       return null;
@@ -225,6 +229,10 @@ export default function SogsViewerPage() {
       if (response) {
         return candidate;
       }
+    }
+
+    if (options?.allowUnverifiedFallback !== false) {
+      return candidates[0];
     }
 
     return null;
