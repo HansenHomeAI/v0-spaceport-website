@@ -41,8 +41,7 @@ const encodeRfc3986 = (value: string) =>
 
 const toHex = (bytes: Uint8Array) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 
-const toArrayBuffer = (bytes: Uint8Array) =>
-  bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+const toArrayBuffer = (bytes: Uint8Array): ArrayBuffer => Uint8Array.from(bytes).buffer;
 
 const sha256Hex = async (value: string) => {
   const digest = await crypto.subtle.digest("SHA-256", encoder.encode(value));
