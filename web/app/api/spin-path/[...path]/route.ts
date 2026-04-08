@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 function stripTrailingSlash(rawUrl: string): string {
@@ -49,9 +49,8 @@ async function proxySpinPath(request: NextRequest, path: string[]) {
   };
 
   if (!["GET", "HEAD"].includes(request.method)) {
-    const bodyText = await request.text();
-    if (bodyText) {
-      init.body = bodyText;
+    if (request.body) {
+      init.body = request.body;
     }
   }
 
