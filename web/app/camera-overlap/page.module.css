@@ -703,6 +703,22 @@
   color: #3a8eff;
 }
 
+/* ── Import / export flight JSON (bottom of page) ───────────────────────── */
+.flightConfigBar {
+  align-items: center;
+  border-top: 1px solid #242424;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 16px 4px 8px;
+}
+
+.flightConfigHint {
+  color: rgba(245, 245, 247, 0.45);
+  font-size: 0.75rem;
+}
+
 /* ── Capture interval unit toggle (ft / s) ───────────────────────────────── */
 .unitToggle {
   display: inline-flex;

@@ -18,6 +18,7 @@ import {
   toT,
   type PitchDomain,
 } from '../../lib/gimbalPitchDistribution';
+import type { GimbalDistributionSnapshot } from '../../lib/cameraOverlapFlightConfig';
 import styles from './page.module.css';
 
 type EnvelopeSliderProps = {
@@ -314,6 +315,8 @@ export type GimbalDistributionCardProps = {
   viewerPathLengthFt: number;
   onViewerPathLengthFt: (ft: number) => void;
   onPitchSequenceGenerated: (pitchNegDeg: number[]) => void;
+  distribution: GimbalDistributionSnapshot;
+  onDistributionChange: (patch: Partial<GimbalDistributionSnapshot>) => void;
 };
 
 export default function GimbalDistributionCard({
@@ -330,11 +333,10 @@ export default function GimbalDistributionCard({
   viewerPathLengthFt,
   onViewerPathLengthFt,
   onPitchSequenceGenerated,
+  distribution,
+  onDistributionChange,
 }: GimbalDistributionCardProps) {
-  const [peakConc, setPeakConc] = useState(200);
-  const [baseConc, setBaseConc] = useState(3.3);
-  const [outlierRate, setOutlierRate] = useState(0.25);
-  const [rho, setRho] = useState(0.2);
+  const { peakConc, baseConc, outlierRate, rho } = distribution;
   const [sequence, setSequence] = useState<number[]>([]);
 
   // Manual reshuffle seed lives here; auto-regen uses a deterministic seed
@@ -473,7 +475,7 @@ export default function GimbalDistributionCard({
         max={300}
         step={1}
         display={(v) => v.toFixed(1)}
-        onChange={setPeakConc}
+        onChange={(v) => onDistributionChange({ peakConc: v })}
       />
       <DistSlider
         label="Base spread"
@@ -483,7 +485,7 @@ export default function GimbalDistributionCard({
         max={12}
         step={0.1}
         display={(v) => v.toFixed(1)}
-        onChange={setBaseConc}
+        onChange={(v) => onDistributionChange({ baseConc: v })}
       />
       <DistSlider
         label="Outlier rate"
@@ -493,7 +495,7 @@ export default function GimbalDistributionCard({
         max={0.5}
         step={0.01}
         display={(v) => `${Math.round(v * 100)}%`}
-        onChange={setOutlierRate}
+        onChange={(v) => onDistributionChange({ outlierRate: v })}
       />
 
       <p className={styles.gimbalSectionLabelMuted}>Sequence</p>
@@ -505,7 +507,7 @@ export default function GimbalDistributionCard({
         max={0.95}
         step={0.05}
         display={(v) => v.toFixed(2)}
-        onChange={setRho}
+        onChange={(v) => onDistributionChange({ rho: v })}
       />
       <DistSlider
         label="3D path span"

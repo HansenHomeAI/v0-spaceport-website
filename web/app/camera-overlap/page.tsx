@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   averageAdjacentFootprintIou,
   FULL_ROT_SEC,
@@ -12,6 +12,13 @@ import {
   rotationTimeSec,
   waypointCountFromLinearPathSpan,
 } from '../../lib/cameraOverlapMath';
+import {
+  buildCameraOverlapFlightConfig,
+  defaultGimbalDistribution,
+  defaultRealPathForm,
+  parseCameraOverlapFlightConfigJson,
+  type GimbalDistributionSnapshot,
+} from '../../lib/cameraOverlapFlightConfig';
 import { buildSpinPathOverlapConfig } from '../../lib/realPathSpin';
 import styles from './page.module.css';
 import GimbalDistributionCard from './GimbalDistributionCard';
@@ -139,6 +146,10 @@ export default function CameraOverlapPage() {
   const [captureIntervalFt, setCaptureIntervalFt] = useState(6);
   const [captureIntervalSec, setCaptureIntervalSec] = useState(1.5);
   const [captureIntervalUnit, setCaptureIntervalUnit] = useState<'ft' | 's'>('s');
+
+  const [realPathForm, setRealPathForm] = useState(defaultRealPathForm);
+  const [gimbalDistribution, setGimbalDistribution] = useState<GimbalDistributionSnapshot>(defaultGimbalDistribution);
+  const [flightConfigHint, setFlightConfigHint] = useState<string | null>(null);
 
   const dragIdx = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -362,6 +373,112 @@ export default function CameraOverlapPage() {
     setMaxAngleHeight(Math.max(val, minAngleHeight + 1));
   };
 
+  const applyFlightConfigSnapshot = useCallback((rawJson: string) => {
+    const parsed = parseCameraOverlapFlightConfigJson(rawJson.trim());
+    if (parsed.ok === false) {
+      setFlightConfigHint(parsed.error);
+      return false;
+    }
+    const c = parsed.config;
+    setWorkflowMode(c.workflowMode);
+    setHeight(c.height);
+    setHandles(c.handles.length === 4 ? [...c.handles] : [10, 100, 190, 280]);
+    setSpeedEnvLoAgl(c.speedEnv.loAglFt);
+    setSpeedEnvLoMph(c.speedEnv.loMph);
+    setSpeedEnvHiAgl(c.speedEnv.hiAglFt);
+    setSpeedEnvHiMph(c.speedEnv.hiMph);
+    setMinAngle(c.minAngle);
+    setMinAngleHeight(c.minAngleHeight);
+    setMaxAngle(c.maxAngle);
+    setMaxAngleHeight(c.maxAngleHeight);
+    setCustomCaptureRing(c.customCaptureRing);
+    setViewerPathLengthFt(c.viewerPathLengthFt);
+    setPitchSequenceNeg([...c.pitchSequenceNeg]);
+    setSpinMode(c.spinMode);
+    setCaptureIntervalFt(c.captureIntervalFt);
+    setCaptureIntervalSec(c.captureIntervalSec);
+    setCaptureIntervalUnit(c.captureIntervalUnit);
+    setGimbalDistribution({ ...c.gimbalDistribution });
+    setRealPathForm({ ...c.realPath });
+    setFlightConfigHint('Configuration applied');
+    return true;
+  }, []);
+
+  const handleCopyFlightConfig = useCallback(async () => {
+    const snapshot = buildCameraOverlapFlightConfig({
+      workflowMode,
+      height,
+      handles,
+      speedEnv: {
+        loAglFt: speedEnvLoAgl,
+        loMph: speedEnvLoMph,
+        hiAglFt: speedEnvHiAgl,
+        hiMph: speedEnvHiMph,
+      },
+      minAngle,
+      minAngleHeight,
+      maxAngle,
+      maxAngleHeight,
+      customCaptureRing,
+      viewerPathLengthFt,
+      pitchSequenceNeg,
+      spinMode,
+      captureIntervalFt,
+      captureIntervalSec,
+      captureIntervalUnit,
+      gimbalDistribution,
+      realPath: realPathForm,
+    });
+    const text = JSON.stringify(snapshot, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      setFlightConfigHint('Copied to clipboard');
+    } catch {
+      setFlightConfigHint('Copy failed (clipboard blocked)');
+    }
+    window.setTimeout(() => setFlightConfigHint(null), 2500);
+  }, [
+    workflowMode,
+    height,
+    handles,
+    speedEnvLoAgl,
+    speedEnvLoMph,
+    speedEnvHiAgl,
+    speedEnvHiMph,
+    minAngle,
+    minAngleHeight,
+    maxAngle,
+    maxAngleHeight,
+    customCaptureRing,
+    viewerPathLengthFt,
+    pitchSequenceNeg,
+    spinMode,
+    captureIntervalFt,
+    captureIntervalSec,
+    captureIntervalUnit,
+    gimbalDistribution,
+    realPathForm,
+  ]);
+
+  const handlePasteFlightConfig = useCallback(async () => {
+    let raw = '';
+    try {
+      raw = await navigator.clipboard.readText();
+    } catch {
+      raw = '';
+    }
+    if (!raw.trim()) {
+      const fromPrompt = window.prompt('Paste camera overlap JSON:');
+      if (!fromPrompt?.trim()) {
+        setFlightConfigHint(null);
+        return;
+      }
+      raw = fromPrompt;
+    }
+    applyFlightConfigSnapshot(raw);
+    window.setTimeout(() => setFlightConfigHint(null), 2500);
+  }, [applyFlightConfigSnapshot]);
+
   return (
     <main
       className={styles.pageRoot}
@@ -405,7 +522,11 @@ export default function CameraOverlapPage() {
         <div className={styles.topCard}>
           <div style={{ padding: '8px 0' }}>
             {isRealPathMode ? (
-              <RealPathPlanner overlapConfig={realPathOverlapConfig} />
+              <RealPathPlanner
+                overlapConfig={realPathOverlapConfig}
+                form={realPathForm}
+                onFormChange={(patch) => setRealPathForm((f) => ({ ...f, ...patch }))}
+              />
             ) : (
               <>
                 <div className={styles.viewModeToggle}>
@@ -774,7 +895,36 @@ export default function CameraOverlapPage() {
           viewerPathLengthFt={viewerPathLengthFt}
           onViewerPathLengthFt={setViewerPathLengthFt}
           onPitchSequenceGenerated={setPitchSequenceNeg}
+          distribution={gimbalDistribution}
+          onDistributionChange={(patch) =>
+            setGimbalDistribution((d) => ({ ...d, ...patch }))
+          }
         />
+
+        <div
+          className={styles.flightConfigBar}
+          data-testid="camera-overlap-flight-config-bar"
+        >
+          <button
+            type="button"
+            className={styles.viewModeBtn}
+            data-testid="camera-overlap-copy-config"
+            onClick={() => void handleCopyFlightConfig()}
+          >
+            Copy configuration
+          </button>
+          <button
+            type="button"
+            className={styles.viewModeBtn}
+            data-testid="camera-overlap-paste-config"
+            onClick={() => void handlePasteFlightConfig()}
+          >
+            Paste configuration
+          </button>
+          {flightConfigHint ? (
+            <span className={styles.flightConfigHint}>{flightConfigHint}</span>
+          ) : null}
+        </div>
       </div>
     </main>
   );

@@ -5,4 +5,4 @@
 2026-03-21T22:44:04Z camera-overlap real path spin tool
 2026-03-21T23:28:00Z real-path waypoint efficiency + stage-speed export + wider map
 2026-03-22T00:00:17Z real-path outbound inbound minimum stage split
-2026-04-08T16:53:12Z regional branch preview apis for spin-path validation
+2026-04-08T17:13:45Z deploy camera-overlap copy-paste and spin-path proxy fixes

@@ -2,8 +2,8 @@
 
 import JSZip from "jszip";
 import { useEffect, useMemo, useState } from "react";
-import { buildApiUrl } from "../api-config";
 import { downloadBlob } from "../../lib/flightConverter";
+import { normalizeCenterCoordinateInput } from "../../lib/coordinateInput";
 import {
   averageRealPathOverlapIou,
   type RealPathBatteryExportResponse,
@@ -11,12 +11,20 @@ import {
   type RealPathPreviewBattery,
   type SpinPathOverlapConfig,
 } from "../../lib/realPathSpin";
+import type { RealPathFormSnapshot } from "../../lib/cameraOverlapFlightConfig";
 import RealPathMap from "./RealPathMap";
 import styles from "./page.module.css";
 
 type RealPathPlannerProps = {
   overlapConfig: SpinPathOverlapConfig;
+  form: RealPathFormSnapshot;
+  onFormChange: (patch: Partial<RealPathFormSnapshot>) => void;
 };
+
+const SPIN_PATH_ENDPOINTS = {
+  optimize: "/api/spin-path/optimize",
+  exportBattery: (batteryId: string) => `/api/spin-path/export/battery/${batteryId}`,
+} as const;
 
 function parseOptionalNumber(value: string): number | undefined {
   const trimmed = value.trim();
@@ -46,6 +54,32 @@ function formatStageSpeedSummary(values: number[] | undefined): string {
   return `${values[0].toFixed(1)} -> ${values[values.length - 1].toFixed(1)} mph`;
 }
 
+async function parseJsonResponse<T>(response: Response, fallbackError: string): Promise<T> {
+  const text = await response.text();
+  const looksHtml = /^\s*</.test(text) && /<!doctype html|<html/i.test(text.slice(0, 200));
+  if (looksHtml) {
+    throw new Error("Drone Path API returned HTML instead of JSON. Check the API URL or preview deployment.");
+  }
+
+  let payload: unknown = null;
+  if (text.trim()) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      throw new Error("Drone Path API returned invalid JSON.");
+    }
+  }
+
+  if (!response.ok) {
+    const message = payload && typeof payload === "object" && "error" in payload
+      ? (payload as { error?: string }).error
+      : undefined;
+    throw new Error(message || fallbackError);
+  }
+
+  return payload as T;
+}
+
 function selectedPreviewBattery(
   result: RealPathOptimizeResponse | null,
   selectedBatteryIndex: number | null,
@@ -59,21 +93,24 @@ function selectedPreviewBattery(
     ?? null;
 }
 
-export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps) {
-  const [center, setCenter] = useState("39.739200, -104.990300");
-  const [batteryMinutes, setBatteryMinutes] = useState("20");
-  const [batteries, setBatteries] = useState("2");
-  const [minHeight, setMinHeight] = useState("120");
-  const [maxHeight, setMaxHeight] = useState("360");
-  const [formToTerrain, setFormToTerrain] = useState(false);
-  const [minExpansionDist, setMinExpansionDist] = useState("");
-  const [maxExpansionDist, setMaxExpansionDist] = useState("");
+export default function RealPathPlanner({ overlapConfig, form, onFormChange }: RealPathPlannerProps) {
+  const {
+    center,
+    batteryMinutes,
+    batteries,
+    minHeight,
+    maxHeight,
+    formToTerrain,
+    minExpansionDist,
+    maxExpansionDist,
+  } = form;
   const [loading, setLoading] = useState(false);
   const [downloadingBatteryIndex, setDownloadingBatteryIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [optimizeResult, setOptimizeResult] = useState<RealPathOptimizeResponse | null>(null);
   const [selectedBatteryIndex, setSelectedBatteryIndex] = useState<number | null>(null);
   const [latestExport, setLatestExport] = useState<RealPathBatteryExportResponse | null>(null);
+  const normalizedCenter = useMemo(() => normalizeCenterCoordinateInput(center), [center]);
 
   const selectedBattery = useMemo(
     () => selectedPreviewBattery(optimizeResult, selectedBatteryIndex),
@@ -94,13 +131,21 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
   }, [optimizeResult]);
 
   const handleGenerate = async () => {
+    if (!normalizedCenter) {
+      setOptimizeResult(null);
+      setSelectedBatteryIndex(null);
+      setLatestExport(null);
+      setError('Enter center coordinates as "lat, lng" or paste a Google Maps coordinate link.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setLatestExport(null);
 
     try {
       const body: Record<string, unknown> = {
-        center: center.trim(),
+        center: normalizedCenter,
         batteryMinutes: Number(batteryMinutes),
         batteries: Number(batteries),
         minHeight: Number(minHeight),
@@ -118,7 +163,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
         body.maxExpansionDist = parsedMaxExpansion;
       }
 
-      const response = await fetch(buildApiUrl.spinPath.optimize(), {
+      const response = await fetch(SPIN_PATH_ENDPOINTS.optimize, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,12 +171,8 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
         body: JSON.stringify(body),
       });
 
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.error || "Spin-path optimize failed");
-      }
-
-      setOptimizeResult(payload as RealPathOptimizeResponse);
+      const payload = await parseJsonResponse<RealPathOptimizeResponse>(response, "Spin-path optimize failed");
+      setOptimizeResult(payload);
     } catch (caughtError) {
       setOptimizeResult(null);
       setSelectedBatteryIndex(null);
@@ -150,7 +191,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
     setError(null);
 
     try {
-      const response = await fetch(buildApiUrl.spinPath.exportBattery(String(batteryIndex)), {
+      const response = await fetch(SPIN_PATH_ENDPOINTS.exportBattery(String(batteryIndex)), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,12 +202,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
         }),
       });
 
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.error || "Spin-path export failed");
-      }
-
-      const exportResult = payload as RealPathBatteryExportResponse;
+      const exportResult = await parseJsonResponse<RealPathBatteryExportResponse>(response, "Spin-path export failed");
       setLatestExport(exportResult);
 
       if (exportResult.stages.length === 1) {
@@ -202,7 +238,12 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
             data-testid="real-path-center-input"
             placeholder="39.739200, -104.990300"
             value={center}
-            onChange={(event) => setCenter(event.target.value)}
+            onChange={(event) => onFormChange({ center: event.target.value })}
+            onBlur={() => {
+              if (normalizedCenter && normalizedCenter !== center) {
+                onFormChange({ center: normalizedCenter });
+              }
+            }}
           />
         </label>
 
@@ -215,7 +256,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               min={1}
               max={60}
               value={batteryMinutes}
-              onChange={(event) => setBatteryMinutes(event.target.value)}
+              onChange={(event) => onFormChange({ batteryMinutes: event.target.value })}
             />
           </label>
           <label className={styles.realPathField}>
@@ -226,7 +267,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               min={1}
               max={12}
               value={batteries}
-              onChange={(event) => setBatteries(event.target.value)}
+              onChange={(event) => onFormChange({ batteries: event.target.value })}
             />
           </label>
         </div>
@@ -239,7 +280,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               type="number"
               min={1}
               value={minHeight}
-              onChange={(event) => setMinHeight(event.target.value)}
+              onChange={(event) => onFormChange({ minHeight: event.target.value })}
             />
           </label>
           <label className={styles.realPathField}>
@@ -249,7 +290,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               type="number"
               min={1}
               value={maxHeight}
-              onChange={(event) => setMaxHeight(event.target.value)}
+              onChange={(event) => onFormChange({ maxHeight: event.target.value })}
             />
           </label>
         </div>
@@ -262,7 +303,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               inputMode="decimal"
               placeholder="Optional"
               value={minExpansionDist}
-              onChange={(event) => setMinExpansionDist(event.target.value)}
+              onChange={(event) => onFormChange({ minExpansionDist: event.target.value })}
             />
           </label>
           <label className={styles.realPathField}>
@@ -272,7 +313,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
               inputMode="decimal"
               placeholder="Optional"
               value={maxExpansionDist}
-              onChange={(event) => setMaxExpansionDist(event.target.value)}
+              onChange={(event) => onFormChange({ maxExpansionDist: event.target.value })}
             />
           </label>
         </div>
@@ -282,7 +323,7 @@ export default function RealPathPlanner({ overlapConfig }: RealPathPlannerProps)
             data-testid="real-path-terrain-toggle"
             type="checkbox"
             checked={formToTerrain}
-            onChange={(event) => setFormToTerrain(event.target.checked)}
+            onChange={(event) => onFormChange({ formToTerrain: event.target.checked })}
           />
           <span>Form to terrain</span>
         </label>

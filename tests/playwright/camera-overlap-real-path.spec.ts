@@ -211,3 +211,48 @@ test("camera overlap real path mode previews staged exports and preserves straig
   await expect(page.getByTestId("viewer-3d-path-span")).toBeVisible();
   await expect(page.getByTestId("camera-overlap-page-label")).toContainText("75°×55° FOV");
 });
+
+test("camera overlap flight config copy/paste bar is present", async ({ page }) => {
+  await page.goto("/camera-overlap");
+  await expect(page.getByTestId("camera-overlap-flight-config-bar")).toBeVisible();
+  await expect(page.getByTestId("camera-overlap-copy-config")).toBeVisible();
+  await expect(page.getByTestId("camera-overlap-paste-config")).toBeVisible();
+});
+
+test("camera overlap real path normalizes pasted coordinate links before optimize", async ({ page }) => {
+  await page.route("**/api/spin-path/optimize", async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body.center).toBe("39.739200, -104.990300");
+
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(optimizeResponse),
+    });
+  });
+
+  await page.goto("/camera-overlap");
+  await page.getByTestId("workflow-real-path-btn").click();
+  await page.getByTestId("real-path-center-input").fill("https://maps.google.com/?q=39.7392,-104.9903");
+  await page.getByTestId("real-path-generate-btn").click();
+
+  const mapWrapper = page.locator(".map-wrapper");
+  await expect(mapWrapper).toHaveAttribute("data-selected-battery", "1");
+  await expect(page.getByTestId("real-path-center-input")).toHaveValue("39.739200, -104.990300");
+});
+
+test("camera overlap real path surfaces html upstream failures as readable errors", async ({ page }) => {
+  await page.route("**/api/spin-path/optimize", async (route) => {
+    await route.fulfill({
+      status: 502,
+      contentType: "text/html",
+      body: "<!DOCTYPE html><html><body>proxy failure</body></html>",
+    });
+  });
+
+  await page.goto("/camera-overlap");
+  await page.getByTestId("workflow-real-path-btn").click();
+  await page.getByTestId("real-path-center-input").fill("39.739200, -104.990300");
+  await page.getByTestId("real-path-generate-btn").click();
+
+  await expect(page.getByTestId("real-path-error")).toContainText("returned HTML instead of JSON");
+});
