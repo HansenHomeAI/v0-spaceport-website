@@ -3,6 +3,8 @@ type LatLng = {
   lng: number;
 };
 
+type CardinalDirection = "N" | "S" | "E" | "W";
+
 function isValidLatLng(lat: number, lng: number): boolean {
   return Number.isFinite(lat)
     && Number.isFinite(lng)
@@ -43,6 +45,34 @@ function extractDegreePair(raw: string): LatLng | null {
   return isValidLatLng(lat, lng) ? { lat, lng } : null;
 }
 
+function dmsToDecimal(
+  degrees: string,
+  minutes: string | undefined,
+  seconds: string | undefined,
+  direction: CardinalDirection,
+): number {
+  const absValue = Number.parseFloat(degrees)
+    + Number.parseFloat(minutes || "0") / 60
+    + Number.parseFloat(seconds || "0") / 3600;
+  return direction === "S" || direction === "W" ? -absValue : absValue;
+}
+
+function extractDmsPair(raw: string): LatLng | null {
+  const normalized = raw
+    .replace(/[′’]/g, "'")
+    .replace(/[″”]/g, '"');
+  const match = normalized.match(
+    /(\d+(?:\.\d+)?)\s*°\s*(\d+(?:\.\d+)?)?\s*'?\s*(\d+(?:\.\d+)?)?\s*"?\s*([NS])(?:\s*,?\s*)(\d+(?:\.\d+)?)\s*°\s*(\d+(?:\.\d+)?)?\s*'?\s*(\d+(?:\.\d+)?)?\s*"?\s*([EW])/i,
+  );
+  if (!match) {
+    return null;
+  }
+
+  const lat = dmsToDecimal(match[1], match[2], match[3], match[4].toUpperCase() as CardinalDirection);
+  const lng = dmsToDecimal(match[5], match[6], match[7], match[8].toUpperCase() as CardinalDirection);
+  return isValidLatLng(lat, lng) ? { lat, lng } : null;
+}
+
 function extractKeyedPair(raw: string): LatLng | null {
   const latMatch = raw.match(/["']?(?:lat|latitude)["']?\s*[:=]\s*([-+]?\d+(?:\.\d+)?)/i);
   const lngMatch = raw.match(/["']?(?:lng|lon|longitude)["']?\s*[:=]\s*([-+]?\d+(?:\.\d+)?)/i);
@@ -69,7 +99,10 @@ function extractFromUrl(raw: string): LatLng | null {
       if (!candidate) {
         continue;
       }
-      const parsed = extractDecimalPair(candidate) ?? extractDegreePair(candidate) ?? extractKeyedPair(candidate);
+      const parsed = extractDecimalPair(candidate)
+        ?? extractDegreePair(candidate)
+        ?? extractDmsPair(candidate)
+        ?? extractKeyedPair(candidate);
       if (parsed) {
         return parsed;
       }
@@ -99,6 +132,7 @@ export function normalizeCenterCoordinateInput(raw: string): string | null {
   const parsed = extractFromUrl(trimmed)
     ?? extractKeyedPair(trimmed)
     ?? extractDegreePair(trimmed)
+    ?? extractDmsPair(trimmed)
     ?? extractDecimalPair(trimmed);
 
   if (!parsed) {

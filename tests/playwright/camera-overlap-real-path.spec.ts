@@ -240,6 +240,33 @@ test("camera overlap real path normalizes pasted coordinate links before optimiz
   await expect(page.getByTestId("real-path-center-input")).toHaveValue("39.739200, -104.990300");
 });
 
+test("camera overlap real path normalizes DMS coordinates before optimize", async ({ page }) => {
+  await page.route("**/api/spin-path/optimize", async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body.center).toBe("40.574389, -111.401653");
+
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...optimizeResponse,
+        optimizedParams: {
+          ...optimizeResponse.optimizedParams,
+          center: "40.574389, -111.401653",
+        },
+      }),
+    });
+  });
+
+  await page.goto("/camera-overlap");
+  await page.getByTestId("workflow-real-path-btn").click();
+  await page.getByTestId("real-path-center-input").fill(`40°34'27.80"N 111°24'05.95"W`);
+  await page.getByTestId("real-path-generate-btn").click();
+
+  const mapWrapper = page.locator(".map-wrapper");
+  await expect(mapWrapper).toHaveAttribute("data-selected-battery", "1");
+  await expect(page.getByTestId("real-path-center-input")).toHaveValue("40.574389, -111.401653");
+});
+
 test("camera overlap real path surfaces html upstream failures as readable errors", async ({ page }) => {
   await page.route("**/api/spin-path/optimize", async (route) => {
     await route.fulfill({
