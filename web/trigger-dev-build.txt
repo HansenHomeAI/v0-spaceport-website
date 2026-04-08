@@ -6,3 +6,4 @@
 2026-03-21T23:28:00Z real-path waypoint efficiency + stage-speed export + wider map
 2026-03-22T00:00:17Z real-path outbound inbound minimum stage split
 2026-04-08T19:02:00Z reduce real-path preview terrain sampling to avoid optimize timeouts
+2026-04-08T19:12:00Z use node runtime for spin-path proxy to keep local export body intact
