@@ -317,6 +317,11 @@ class SpaceportStack(Stack):
         
         # ========== API GATEWAY CONFIGURATION ==========
         # Create API Gateway with environment-specific naming
+        api_kwargs = {}
+        if self.deployment_class == "branch-preview":
+            # Branch previews quickly exhaust the account EDGE API quota; keep prod/shared behavior unchanged.
+            api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+
         self.drone_path_api = apigw.RestApi(
             self,
             "SpaceportDronePathApi",
@@ -326,7 +331,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            **api_kwargs,
         )
         
         self.file_upload_api = apigw.RestApi(
@@ -338,7 +344,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            **api_kwargs,
         )
         
         # Create Waitlist API Gateway
@@ -351,7 +358,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            **api_kwargs,
         )
 
         self.feedback_api = apigw.RestApi(
@@ -363,7 +371,8 @@ class SpaceportStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["*"]
-            )
+            ),
+            **api_kwargs,
         )
         
         # Create API Gateway resources and methods
