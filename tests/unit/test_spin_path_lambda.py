@@ -104,6 +104,29 @@ class SpinPathLambdaTests(unittest.TestCase):
         self.assertGreater(payload["previewBatteries"][0]["telemetry"]["waypointCount"], 99)
         self.assertEqual(payload["overlapTelemetry"]["captureTriggerMode"], "s")
 
+    def test_optimize_handler_skips_adaptive_terrain_sampling_for_preview(self):
+        with patch.object(self.designer, "get_elevation_feet", return_value=1000.0), \
+             patch.object(self.designer, "get_elevations_feet_optimized", side_effect=lambda locs: [1000.0] * len(locs)), \
+             patch.object(self.designer, "adaptive_terrain_sampling", side_effect=AssertionError("preview optimize should skip terrain sampling")), \
+             patch("builtins.print"):
+            response = spin_path_module.handle_spin_path_optimize(
+                self.designer,
+                {
+                    "center": self.center,
+                    "batteryMinutes": 18,
+                    "batteries": 2,
+                    "minHeight": 200,
+                    "maxHeight": 400,
+                    "formToTerrain": True,
+                    "minExpansionDist": 200,
+                    "maxExpansionDist": 200,
+                    "overlapConfig": self.raw_overlap_config,
+                },
+                {},
+            )
+
+        self.assertEqual(response["statusCode"], 200)
+
     def test_rendered_path_follows_curved_turn_geometry(self):
         waypoint_records = [
             {"x": 0.0, "y": 0.0, "altitude": 120.0, "curve_size_meters": 0.0},

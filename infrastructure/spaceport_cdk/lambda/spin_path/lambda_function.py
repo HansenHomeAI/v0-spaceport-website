@@ -2131,6 +2131,7 @@ class SpiralDesigner:
         boundary_plan: Optional[Dict] = None,
         form_to_terrain: bool = True,
         spin_mode: bool = False,
+        include_adaptive_terrain_sampling: bool = True,
     ) -> Tuple[Dict, List[Dict]]:
         """Build ordered waypoint records for one battery before CSV serialization."""
         center = self.parse_center(center_str)
@@ -2190,8 +2191,12 @@ class SpiralDesigner:
             ground_elevations = self.get_elevations_feet_optimized(locations)
             for i, elevation in enumerate(ground_elevations):
                 waypoints_with_coords[i]['elevation'] = elevation
-            print(f"🛡️  Starting adaptive terrain sampling for mission safety")
-            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            if include_adaptive_terrain_sampling:
+                print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+                safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            else:
+                print("⚡ Skipping adaptive terrain sampling for preview optimization")
+                safety_waypoints = []
         else:
             ground_elevations = [0.0] * len(locations)
             safety_waypoints = []
@@ -4346,6 +4351,7 @@ def _build_real_path_battery_export(
     max_height: float,
     form_to_terrain: bool,
     overlap_config: Dict,
+    include_adaptive_terrain_sampling: bool = True,
 ) -> Dict:
     center, base_waypoint_records = designer._prepare_battery_waypoint_records(
         params=params,
@@ -4355,6 +4361,7 @@ def _build_real_path_battery_export(
         max_height=max_height,
         form_to_terrain=form_to_terrain,
         spin_mode=True,
+        include_adaptive_terrain_sampling=include_adaptive_terrain_sampling,
     )
 
     rendered_points = _build_rendered_local_path_points(base_waypoint_records, designer)
@@ -4525,6 +4532,7 @@ def handle_spin_path_optimize(designer, body, cors_headers):
                 max_height=max_height,
                 form_to_terrain=form_to_terrain,
                 overlap_config=overlap_config,
+                include_adaptive_terrain_sampling=False,
             )
             telemetry = export_data['telemetry']
             battery_summaries.append({
