@@ -51,6 +51,7 @@ CC_STAT_TOP = 1
 CC_STAT_WIDTH = 2
 CC_STAT_HEIGHT = 3
 CC_STAT_AREA = 4
+PIL_NEAREST = getattr(getattr(Image, "Resampling", Image), "NEAREST", 0) if Image is not None else 0
 
 
 @dataclass(frozen=True)
@@ -575,6 +576,50 @@ def _resolve_source_mask_record(
     raise KeyError(f"Could not resolve source mask for frame {frame_index}: {frame}")
 
 
+def _discover_mask_downscale_variants(converted_data_dir: Path) -> List[tuple[int, Path, Path]]:
+    variants: List[tuple[int, Path, Path]] = []
+    for child in sorted(converted_data_dir.iterdir()):
+        if not child.is_dir() or not child.name.startswith("images_"):
+            continue
+        suffix = child.name.split("_", 1)[1]
+        if not suffix.isdigit():
+            continue
+        variants.append((int(suffix), child, converted_data_dir / f"masks_{suffix}"))
+    return variants
+
+
+def _write_mask_with_downscale_variants(
+    source_mask_path: Path,
+    converted_mask_path: Path,
+    converted_frame_path: Path,
+    downscale_variants: List[tuple[int, Path, Path]],
+) -> None:
+    converted_mask_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not downscale_variants:
+        converted_mask_path.write_bytes(source_mask_path.read_bytes())
+        return
+
+    _require_runtime_dependency(Image, "Pillow")
+    assert Image is not None
+
+    with Image.open(source_mask_path) as mask_handle:
+        base_mask = mask_handle.convert("L")
+        base_mask.save(converted_mask_path)
+
+        for _, image_dir, mask_dir in downscale_variants:
+            variant_image_path = image_dir / converted_frame_path.name
+            if not variant_image_path.exists():
+                raise FileNotFoundError(f"Downscaled converted image missing: {variant_image_path}")
+
+            with Image.open(variant_image_path) as image_handle:
+                target_size = image_handle.size
+
+            resized_mask = base_mask.resize(target_size, resample=PIL_NEAREST)
+            mask_dir.mkdir(parents=True, exist_ok=True)
+            resized_mask.save(mask_dir / converted_mask_path.name)
+
+
 def attach_masks_to_transforms(
     transforms_path: Path,
     converted_data_dir: Path,
@@ -613,6 +658,7 @@ def attach_masks_to_transforms(
     per_frame_stats: List[Dict[str, Any]] = []
     mapping_strategy_counts: Dict[str, int] = {}
     frame_count = len(frames)
+    downscale_variants = _discover_mask_downscale_variants(converted_data_dir)
 
     for frame_index, frame in enumerate(frames):
         source_record, strategy = _resolve_source_mask_record(
@@ -630,7 +676,12 @@ def attach_masks_to_transforms(
         converted_frame_path = Path(str(frame.get("file_path", "")))
         converted_mask_name = f"{converted_frame_path.stem}.png"
         converted_mask_path = mask_dir / converted_mask_name
-        converted_mask_path.write_bytes(source_mask_path.read_bytes())
+        _write_mask_with_downscale_variants(
+            source_mask_path=source_mask_path,
+            converted_mask_path=converted_mask_path,
+            converted_frame_path=converted_frame_path,
+            downscale_variants=downscale_variants,
+        )
 
         relative_mask_path = converted_mask_path.relative_to(converted_data_dir)
         frame["mask_path"] = relative_mask_path.as_posix()
@@ -658,6 +709,7 @@ def attach_masks_to_transforms(
         "settings": asdict(settings),
         "frames_total": frame_count,
         "frames_with_masks": len(per_frame_stats),
+        "downscale_mask_directories": [mask_dir.name for _, _, mask_dir in downscale_variants],
         "mean_mask_ratio": float(np.mean(mask_coverages)) if mask_coverages else 0.0,
         "min_mask_ratio": float(np.min(mask_coverages)) if mask_coverages else 0.0,
         "max_mask_ratio": float(np.max(mask_coverages)) if mask_coverages else 0.0,

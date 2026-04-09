@@ -130,6 +130,60 @@ class SemanticSkyMaskTests(unittest.TestCase):
             self.assertFalse(summary["enabled"])
             self.assertEqual(summary["frames_with_masks"], 0)
 
+    def test_attach_masks_to_transforms_writes_downscaled_mask_variants(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            converted_dir = temp_path / "converted_data"
+            images_dir = converted_dir / "images"
+            images_4_dir = converted_dir / "images_4"
+            images_dir.mkdir(parents=True)
+            images_4_dir.mkdir(parents=True)
+
+            transforms_path = converted_dir / "transforms.json"
+            transforms_path.write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "images/frame_00001.png", "colmap_im_id": 11},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            Image.new("RGB", (8, 8), color=(20, 30, 40)).save(images_dir / "frame_00001.png")
+            Image.new("RGB", (2, 2), color=(20, 30, 40)).save(images_4_dir / "frame_00001.png")
+
+            source_mask = temp_path / "source-mask.png"
+            Image.new("L", (8, 8), color=255).save(source_mask)
+
+            source_summary = {
+                "records_by_id": {
+                    11: {
+                        "image_id": 11,
+                        "image_name": "IMG_001.png",
+                        "mask_path": str(source_mask),
+                        "mask_ratio": 1.0,
+                        "top_border_ratio": 1.0,
+                    },
+                },
+                "records_by_name": {},
+                "mask_records": [],
+            }
+
+            summary = attach_masks_to_transforms(
+                transforms_path=transforms_path,
+                converted_data_dir=converted_dir,
+                source_summary=source_summary,
+                settings=SemanticSkyMaskSettings(enabled=True),
+            )
+
+            self.assertEqual(summary["downscale_mask_directories"], ["masks_4"])
+            self.assertTrue((converted_dir / "masks" / "frame_00001.png").exists())
+            self.assertTrue((converted_dir / "masks_4" / "frame_00001.png").exists())
+            with Image.open(converted_dir / "masks_4" / "frame_00001.png") as resized_mask:
+                self.assertEqual(resized_mask.size, (2, 2))
+
     def test_load_rgb_image_for_semantic_mask_recovers_truncated_jpeg(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             image_path = Path(temp_dir) / "truncated.jpg"
