@@ -458,6 +458,60 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertIn("--SiftMatching.use_gpu", second_command)
             self.assertEqual(pipeline.matching_option_family, "SiftMatching")
 
+    def test_run_matches_importer_falls_back_to_sift_matching_family(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            match_list_path = root / "match_list.txt"
+            match_list_path.write_text("A.jpg B.jpg\n", encoding="utf-8")
+
+            error = RuntimeError(
+                "matches_importer failed with exit code 1\n"
+                "Failed to parse options - unrecognised option '--FeatureMatching.use_gpu'."
+            )
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command",
+                side_effect=[error, None],
+            ) as stream_command_mock, mock.patch.object(
+                pipeline,
+                "count_verified_pairs",
+                side_effect=[10, 12],
+            ):
+                pipeline.run_matches_importer(match_list_path=match_list_path)
+
+            first_command = stream_command_mock.call_args_list[0].args[0]
+            second_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("--FeatureMatching.use_gpu", first_command)
+            self.assertIn("--SiftMatching.use_gpu", second_command)
+            self.assertEqual(pipeline.matching_option_family, "SiftMatching")
+
+    def test_run_exhaustive_matcher_falls_back_to_sift_matching_family(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            error = RuntimeError(
+                "exhaustive_matcher failed with exit code 1\n"
+                "Failed to parse options - unrecognised option '--FeatureMatching.use_gpu'."
+            )
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command",
+                side_effect=[error, None],
+            ) as stream_command_mock, mock.patch.object(
+                pipeline,
+                "count_verified_pairs",
+                side_effect=[10, 12],
+            ):
+                pipeline.run_exhaustive_matcher()
+
+            first_command = stream_command_mock.call_args_list[0].args[0]
+            second_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("--FeatureMatching.use_gpu", first_command)
+            self.assertIn("--SiftMatching.use_gpu", second_command)
+            self.assertEqual(pipeline.matching_option_family, "SiftMatching")
+
     def test_run_bundle_adjuster_retries_without_gpu_flag_for_older_colmap(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

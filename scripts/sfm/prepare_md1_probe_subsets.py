@@ -38,10 +38,15 @@ def run_command(command: List[str]) -> None:
     subprocess.run(command, check=True)
 
 
+def run_json_command(command: List[str]) -> list[dict]:
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    return json.loads(result.stdout or "[]")
+
+
 def resolve_input_archive(input_path: str, workspace: Path) -> Path:
     if input_path.startswith("s3://"):
         local_path = workspace / Path(input_path).name
-        run_command(["aws", "s3", "cp", input_path, str(local_path)])
+        run_command(["aws", "s3", "cp", "--no-progress", input_path, str(local_path)])
         return local_path
     return Path(input_path).expanduser().resolve()
 
@@ -55,31 +60,23 @@ def upload_output_file(local_path: Path, output_path: str) -> None:
     shutil.copy2(local_path, destination)
 
 
-def extract_images(archive_path: Path, extract_dir: Path) -> List[Path]:
-    extracted_paths: List[Path] = []
-    seen_names: set[str] = set()
-    with zipfile.ZipFile(archive_path, "r") as archive:
-        for member in archive.namelist():
-            if Path(member).suffix.lower() not in IMAGE_EXTENSIONS:
-                continue
-            file_name = Path(member).name
-            if file_name in seen_names:
-                raise ValueError(f"Archive contains duplicate image basename: {file_name}")
-            seen_names.add(file_name)
-            target_path = extract_dir / file_name
-            with archive.open(member) as source, open(target_path, "wb") as target:
-                shutil.copyfileobj(source, target)
-            extracted_paths.append(target_path)
-    if not extracted_paths:
-        raise ValueError(f"No images found in archive: {archive_path}")
-    return extracted_paths
-
-
-def write_subset_archive(image_paths: List[Path], output_path: Path) -> None:
+def write_subset_archive_from_members(
+    archive_path: Path,
+    member_by_file_name: Dict[str, str],
+    image_names: List[str],
+    output_path: Path,
+) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(output_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for image_path in image_paths:
-            archive.write(image_path, arcname=image_path.name)
+    with zipfile.ZipFile(archive_path, "r") as source_archive, zipfile.ZipFile(
+        output_path,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+    ) as output_archive:
+        for image_name in image_names:
+            member_name = member_by_file_name.get(image_name)
+            if not member_name:
+                raise ValueError(f"Missing archive member for probe image {image_name}")
+            output_archive.writestr(image_name, source_archive.read(member_name))
 
 
 def parse_args() -> argparse.Namespace:
@@ -91,6 +88,12 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Directory path or s3:// prefix where probe subset ZIPs should be written",
     )
+    parser.add_argument(
+        "--exif-batch-size",
+        type=int,
+        default=500,
+        help="Number of images to stage locally per EXIF scan batch",
+    )
     return parser.parse_args()
 
 
@@ -99,9 +102,8 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="sfm_md1_probe_subsets_") as temp_dir:
         workspace = Path(temp_dir)
         archive_path = resolve_input_archive(args.input, workspace)
-        extracted_dir = workspace / "images"
-        extracted_dir.mkdir(parents=True, exist_ok=True)
-        extract_images(archive_path, extracted_dir)
+        exif_batch_dir = workspace / "exif_batch"
+        exif_batch_dir.mkdir(parents=True, exist_ok=True)
 
         previous_planner = os.environ.get("COLMAP_CHUNK_PLANNER")
         os.environ["COLMAP_CHUNK_PLANNER"] = "footprint_graph_v1"
@@ -112,10 +114,59 @@ def main() -> int:
                 os.environ.pop("COLMAP_CHUNK_PLANNER", None)
             else:
                 os.environ["COLMAP_CHUNK_PLANNER"] = previous_planner
-        pipeline.images_dir = extracted_dir
-        pipeline.exif_records = pipeline.load_exif_records()
+        pipeline.images_dir = exif_batch_dir
+
+        all_exif_records: Dict[str, Dict[str, float | str | None]] = {}
+        member_by_file_name: Dict[str, str] = {}
+        batch_members: List[tuple[str, str]] = []
+        with zipfile.ZipFile(archive_path, "r") as archive:
+            for member in archive.namelist():
+                if Path(member).suffix.lower() not in IMAGE_EXTENSIONS:
+                    continue
+                file_name = Path(member).name
+                if file_name in member_by_file_name:
+                    raise ValueError(f"Archive contains duplicate image basename: {file_name}")
+                member_by_file_name[file_name] = member
+                batch_members.append((file_name, member))
+                if len(batch_members) >= max(args.exif_batch_size, 1):
+                    for staged_name, staged_member in batch_members:
+                        target_path = exif_batch_dir / staged_name
+                        with archive.open(staged_member) as source, open(target_path, "wb") as target:
+                            shutil.copyfileobj(source, target)
+                    batch_records = pipeline.load_exif_records()
+                    all_exif_records.update(batch_records)
+                    for staged_name, _ in batch_members:
+                        (exif_batch_dir / staged_name).unlink(missing_ok=True)
+                    batch_members = []
+            if batch_members:
+                for staged_name, staged_member in batch_members:
+                    target_path = exif_batch_dir / staged_name
+                    with archive.open(staged_member) as source, open(target_path, "wb") as target:
+                        shutil.copyfileobj(source, target)
+                batch_records = pipeline.load_exif_records()
+                all_exif_records.update(batch_records)
+                for staged_name, _ in batch_members:
+                    (exif_batch_dir / staged_name).unlink(missing_ok=True)
+
+        if not all_exif_records:
+            raise ValueError(f"No geotagged images found in archive: {archive_path}")
+
+        pipeline.apply_orientation_prior_sources(all_exif_records)
+        pipeline.populate_local_coordinates(all_exif_records)
+        pipeline.exif_records = all_exif_records
         pipeline.gps_image_count = len(pipeline.exif_records)
-        pipeline.prepare_capture_ordered_image_list()
+        pipeline.capture_ordered_names = [
+            record["file_name"]
+            for record in run_colmap_sfm.sort_capture_records(
+                [
+                    {
+                        "file_name": str(record["file_name"]),
+                        "capture_time": str(record.get("capture_time") or ""),
+                    }
+                    for record in pipeline.exif_records.values()
+                ]
+            )
+        ]
         chunk_plans = pipeline.build_chunk_plans()
 
         manifest = {
@@ -141,19 +192,15 @@ def main() -> int:
         upload_output_file(local_manifest_path, args.manifest_output)
 
         for probe_name, image_names in pipeline.probe_subsets.items():
-            subset_paths = [
-                extracted_dir / image_name
-                for image_name in image_names
-                if (extracted_dir / image_name).exists()
-            ]
             subset_zip_path = workspace / f"{probe_name}.zip"
-            write_subset_archive(subset_paths, subset_zip_path)
+            write_subset_archive_from_members(archive_path, member_by_file_name, image_names, subset_zip_path)
             destination = (
                 args.subset_output_prefix.rstrip("/") + f"/{probe_name}.zip"
                 if args.subset_output_prefix.startswith("s3://")
                 else str(Path(args.subset_output_prefix).expanduser().resolve() / f"{probe_name}.zip")
             )
             upload_output_file(subset_zip_path, destination)
+            subset_zip_path.unlink(missing_ok=True)
 
         print(json.dumps(manifest, indent=2))
     return 0

@@ -1857,25 +1857,26 @@ class ColmapPipeline:
         active_database_path = database_path or self.database_path
         started = time.time()
         pairs_before = self.count_verified_pairs(active_database_path)
-        try:
-            stream_command(
+        matching_family = self.run_with_option_family_fallback(
+            stage=stage,
+            families=MATCHING_OPTION_FAMILIES,
+            preferred_family=self.matching_option_family,
+            build_command=lambda family: (
                 [
                     "colmap",
                     "exhaustive_matcher",
                     "--database_path",
                     str(active_database_path),
-                    "--SiftMatching.use_gpu",
+                    f"--{family}.use_gpu",
                     "1" if self.use_gpu else "0",
-                    "--SiftMatching.guided_matching",
+                    f"--{family}.guided_matching",
                     "1",
                 ],
-                stage=stage,
-                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
-                heartbeat_seconds=self.command_heartbeat_seconds,
-            )
-        except RuntimeError as error:
-            self.handle_stage_runtime_error(stage, error)
-            raise
+                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+            ),
+            timeout_seconds=self.matcher_timeout_seconds,
+        )
+        self.matching_option_family = matching_family
         pairs_after = self.count_verified_pairs(active_database_path)
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         self.record_matcher_delta(label, pairs_after - pairs_before)
@@ -1915,8 +1916,11 @@ class ColmapPipeline:
         active_database_path = database_path or self.database_path
         started = time.time()
         pairs_before = self.count_verified_pairs(active_database_path)
-        try:
-            stream_command(
+        matching_family = self.run_with_option_family_fallback(
+            stage=stage,
+            families=MATCHING_OPTION_FAMILIES,
+            preferred_family=self.matching_option_family,
+            build_command=lambda family: (
                 [
                     "colmap",
                     "matches_importer",
@@ -1926,18 +1930,16 @@ class ColmapPipeline:
                     str(match_list_path),
                     "--match_type",
                     "pairs",
-                    "--SiftMatching.use_gpu",
+                    f"--{family}.use_gpu",
                     "1" if self.use_gpu else "0",
-                    "--SiftMatching.guided_matching",
+                    f"--{family}.guided_matching",
                     "1",
                 ],
-                stage=stage,
-                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
-                heartbeat_seconds=self.command_heartbeat_seconds,
-            )
-        except RuntimeError as error:
-            self.handle_stage_runtime_error(stage, error)
-            raise
+                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+            ),
+            timeout_seconds=self.matcher_timeout_seconds,
+        )
+        self.matching_option_family = matching_family
         pairs_after = self.count_verified_pairs(active_database_path)
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         self.record_matcher_delta(label, pairs_after - pairs_before)
