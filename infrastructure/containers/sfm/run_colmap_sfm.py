@@ -3151,6 +3151,9 @@ class ColmapPipeline:
         # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
         # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
         self.clone_database_for_chunk(chunk_database_path)
+        supports_pose_prior_image_backfill = self.supports_pose_prior_image_backfill(
+            database_path=chunk_database_path
+        )
 
         keep_image_names = set(chunk_plan.image_names)
         with sqlite3.connect(chunk_database_path) as connection:
@@ -3161,7 +3164,7 @@ class ColmapPipeline:
                 placeholders = ",".join("?" for _ in remove_image_ids)
                 connection.execute(f"DELETE FROM keypoints WHERE image_id IN ({placeholders})", remove_image_ids)
                 connection.execute(f"DELETE FROM descriptors WHERE image_id IN ({placeholders})", remove_image_ids)
-                if self.supports_pose_prior_image_backfill(database_path=chunk_database_path):
+                if supports_pose_prior_image_backfill:
                     connection.execute(
                         f"DELETE FROM pose_priors WHERE image_id IN ({placeholders})",
                         remove_image_ids,
