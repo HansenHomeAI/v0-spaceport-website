@@ -1,8 +1,7 @@
-# Default to the stable SfM base image in ECR so repeated branch app builds do
-# not create runtime-on-runtime ancestry chains. Branch deploys can still
-# override BASE_IMAGE explicitly, but the default path stays on the shallow
-# base layer stack that is produced by Dockerfile.base.
-ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:base
+# Default to the last known-good published SfM runtime digest because it
+# contains the CUDA-enabled COLMAP installation. deploy.sh overrides BASE_IMAGE
+# in branch builds, but this default keeps ad-hoc builds on a verified runtime.
+ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:1f63ec405c289f7686b061d986ee76f42be776619a54fe99f095499d3b849a59
 FROM ${BASE_IMAGE}
 
 # Leave the vocab tree URL empty by default so COLMAP 4 can use its own

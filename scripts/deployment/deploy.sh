@@ -91,6 +91,7 @@ deploy_container() {
   local container_name=$1
   local repo_name
   repo_name=$(get_repo_name "$container_name")
+  local sfm_runtime_base_digest="sha256:1f63ec405c289f7686b061d986ee76f42be776619a54fe99f095499d3b849a59"
   local build_cache_ref
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
@@ -145,9 +146,9 @@ deploy_container() {
   local -a registry_cache_from=()
   local -a registry_cache_to=()
   if [[ "${container_name}" == "sfm" ]]; then
-    extra_build_args+=(--build-arg "BASE_IMAGE=${base_image}")
-    extra_cache_from+=(--cache-from "${base_image}")
-    log "SfM app builds use the published base image to avoid runtime ancestry recursion."
+    extra_build_args+=(--build-arg "BASE_IMAGE=${ecr_uri}@${sfm_runtime_base_digest}")
+    extra_cache_from+=(--cache-from "${ecr_uri}@${sfm_runtime_base_digest}")
+    log "SfM app builds use the last known-good runtime digest as BASE_IMAGE so COLMAP remains available."
   elif [[ "${container_name}" != "sfm" ]]; then
     extra_build_args+=(--build-arg "BASE_IMAGE=${base_image}")
     extra_cache_from+=(--cache-from "${base_image}")
@@ -165,43 +166,73 @@ deploy_container() {
     log "Skipping registry cache manifests for sfm to avoid recursive BuildKit cache ancestry."
   fi
 
-  docker buildx build \
-    --platform linux/amd64 \
-    --file "${container_dir}/Dockerfile" \
-    "${extra_build_args[@]}" \
-    --build-arg BUILDKIT_INLINE_CACHE=1 \
-    --tag "${repo_name}:latest" \
-    "${registry_cache_from[@]}" \
-    "${extra_cache_from[@]}" \
-    "${registry_cache_to[@]}" \
-    --progress plain \
-    --load \
-    "${container_dir}"
+  if [[ "${container_name}" == "sfm" ]]; then
+    local -a sfm_tags=("--tag" "${ecr_uri}:latest")
+    if [ -n "$branch_tag" ]; then
+      sfm_tags+=("--tag" "${ecr_uri}:${branch_tag}")
+    fi
+
+    docker buildx build \
+      --platform linux/amd64 \
+      --file "${container_dir}/Dockerfile" \
+      "${extra_build_args[@]}" \
+      --build-arg BUILDKIT_INLINE_CACHE=1 \
+      "${sfm_tags[@]}" \
+      "${registry_cache_from[@]}" \
+      "${extra_cache_from[@]}" \
+      "${registry_cache_to[@]}" \
+      --progress plain \
+      --push \
+      "${container_dir}"
+  else
+    docker buildx build \
+      --platform linux/amd64 \
+      --file "${container_dir}/Dockerfile" \
+      "${extra_build_args[@]}" \
+      --build-arg BUILDKIT_INLINE_CACHE=1 \
+      --tag "${repo_name}:latest" \
+      "${registry_cache_from[@]}" \
+      "${extra_cache_from[@]}" \
+      "${registry_cache_to[@]}" \
+      --progress plain \
+      --load \
+      "${container_dir}"
+  fi
   
   log "Build complete with caching optimizations."
 
-  log "Tagging images..."
-  docker tag "${repo_name}:latest" "${ecr_uri}:latest"
-  if [ -n "$branch_tag" ]; then
-    docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
-    log "Tags created: latest, ${branch_tag}"
+  if [[ "${container_name}" == "sfm" ]]; then
+    if [ -n "$branch_tag" ]; then
+      log "Tags pushed directly from BuildKit: latest, ${branch_tag}"
+    else
+      log "Tag pushed directly from BuildKit: latest"
+    fi
   else
-    log "Tags created: latest"
-  fi
+    log "Tagging images..."
+    docker tag "${repo_name}:latest" "${ecr_uri}:latest"
+    if [ -n "$branch_tag" ]; then
+      docker tag "${repo_name}:latest" "${ecr_uri}:${branch_tag}"
+      log "Tags created: latest, ${branch_tag}"
+    else
+      log "Tags created: latest"
+    fi
 
-  log "Pushing images to ECR..."
-  docker push "${ecr_uri}:latest"
-  if [ -n "$branch_tag" ]; then
-    docker push "${ecr_uri}:${branch_tag}"
+    log "Pushing images to ECR..."
+    docker push "${ecr_uri}:latest"
+    if [ -n "$branch_tag" ]; then
+      docker push "${ecr_uri}:${branch_tag}"
+    fi
   fi
   log "Successfully pushed to ${ecr_uri}"
   
   # Clean up local images to save space
   log "Cleaning up local images..."
-  docker rmi "${repo_name}:latest" || true
-  docker rmi "${ecr_uri}:latest" || true
-  if [ -n "$branch_tag" ]; then
-    docker rmi "${ecr_uri}:${branch_tag}" || true
+  if [[ "${container_name}" != "sfm" ]]; then
+    docker rmi "${repo_name}:latest" || true
+    docker rmi "${ecr_uri}:latest" || true
+    if [ -n "$branch_tag" ]; then
+      docker rmi "${ecr_uri}:${branch_tag}" || true
+    fi
   fi
   
   log "--- Finished OPTIMIZED deployment for: ${container_name} ---"
