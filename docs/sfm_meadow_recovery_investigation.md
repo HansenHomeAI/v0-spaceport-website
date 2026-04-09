@@ -114,3 +114,120 @@ Tradeoff:
   - chunk 4 improves beyond `173/198` or avoids regression
   - only then rerun a full Meadow job
 - Keep Brass Lantern as the regression guardrail and only rerun the full Brass dataset after Meadow-targeted changes pass smaller checks.
+
+## Implemented Changes
+
+- Removed chunked `vocab_tree_builder` / `vocab_tree_matcher` recovery from the GPS-first chunked path.
+- Removed GPS-eligible fallback from the chunked path into the older monolithic visual-retrieval fallback.
+- Added bounded per-stage timeouts and heartbeat logging to child COLMAP commands.
+- Upgraded chunk planning to use:
+  - local XYZ
+  - altitude
+  - yaw
+  - pitch
+  - capture time
+- Added prior-aware capture grouping, flightline segmentation, and boundary overlap assignment.
+- Added one bounded prior-aware retry for unhealthy chunks.
+- Added one bounded adjacent-chunk merge retry for chunks that still fail after the prior-aware retry.
+- Added metadata fields that expose:
+  - failed chunk index
+  - registered/core ratios
+  - timeout state
+  - whether adjacent merge was triggered
+  - chunk group and segment counts
+
+## Post-Change Validation
+
+### Local Tests
+
+- `python3 -m unittest tests.unit.test_colmap_gps_priors` passed with `29` tests.
+- The broader local SfM unit suite passed earlier with `36` tests after the prior-aware chunking and fast-fail changes landed.
+
+### Meadow Chunk-4 Exact Subset
+
+Subset archive:
+
+- `s3://spaceport-ml-processing-staging/manual-validations/meadow_chunk4_subset_1775578610.zip`
+
+This subset is the exact Meadow chunk-4 problem slice used for low-cost live validation.
+
+#### 1. Monolithic fast-fail proof
+
+Job:
+
+- `meadowchunk4subsetmonofastfail-1775709702`
+
+Verified results:
+
+- completed in `812.02` seconds
+- no `vocab_tree_builder` or `vocab_tree_matcher` executed
+- registered `143/148` images
+- failed decisively on the quality gate instead of hanging
+- failure reason: `GPS-first mapper registered 143/148 images (96.62%), below 98.00% threshold`
+
+This proves the slow hanging vocab fallback is removed from the GPS-first monolithic path.
+
+#### 2. First chunked prior-aware retry proof
+
+Job:
+
+- `meadowchunk4subsetchunked-1775710814`
+
+Verified results:
+
+- completed in `1085.75` seconds
+- no vocab-tree stage executed
+- chunking used `2` chunks: `[69, 87]`
+- chunk 1 initial result: `84/87`
+- chunk 1 retry result: `84/87`
+- final failure was bounded and explicit:
+  - `failure_stage=chunk_01_recovery_failed`
+  - `failed_chunk_registered_ratio=0.9655`
+  - `failed_chunk_core_registered_ratio=0.6988`
+
+This proves the first fast-fail chunked path removed the hang but still under-registered the hard region.
+
+#### 3. Chunked adjacent-merge retry proof
+
+Job:
+
+- `meadowchunk4subsetchunked-1775713425`
+
+Verified results:
+
+- completed in `1908.32` seconds
+- no vocab-tree stage executed
+- `chunk_recovery_mode=prior_aware_retry_adjacent_merge_no_vocab`
+- `adjacent_chunk_merge_triggered=true`
+- chunk 0 initial model: `66/69`
+- chunk 1 initial model: `84/87`
+- chunk 1 retry model: `84/87`
+- adjacent merged chunk initial model: `143/148`
+- adjacent merged chunk retry model: `143/148`
+- final failure was still bounded and explicit:
+  - `failure_stage=chunk_00_01_adjacent_merge_recovery_failed`
+  - `failed_chunk_registered_ratio=0.9662`
+  - `failed_chunk_core_registered_ratio=0.8108`
+  - `timed_out=false`
+
+Missing-core images after the adjacent merge remained concentrated in specific filename bands:
+
+- `DJI_0099.JPG` to `DJI_0101.JPG`
+- `DJI_0362 2.JPG` to `DJI_0366 2.JPG`
+- `DJI_0391 2.JPG` to `DJI_0403 2.JPG`
+- `DJI_0418 2.JPG` to `DJI_0421 2.JPG`
+- `DJI_0626 2.JPG` to `DJI_0627 2.JPG`
+- `DJI_0647 2.JPG` to `DJI_0651 2.JPG`
+- `DJI_0667 2.JPG` to `DJI_0668 2.JPG`
+
+This proves the new prior-aware chunking and bounded adjacent merge materially improved the failing chunk's core registration from `58/83` to `120/148` on the exact Meadow problem subset, while still preserving deterministic failure instead of the original multi-hour hang.
+
+## Final Hard Assessment
+
+- Proven:
+  - the multi-hour hanging vocab-tree fallback is removed from the GPS-first Meadow recovery path
+  - Meadow now fails decisively with explicit failure metadata instead of hanging indefinitely
+  - richer prior-aware chunking plus adjacent merge materially improves the exact failing Meadow subset over the first fast-fail chunked implementation
+- Also proven:
+  - this change set does not yet clear the current Meadow subset quality gate on the exact chunk-4 slice
+  - the remaining misses are localized and repeatable, which makes further iteration measurable without rerunning the full dataset
