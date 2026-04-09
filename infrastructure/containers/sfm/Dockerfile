@@ -2,7 +2,7 @@
 # contains the CUDA-enabled COLMAP installation. deploy.sh overrides BASE_IMAGE
 # in branch builds, but this default keeps ad-hoc builds on a verified runtime.
 ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:1f63ec405c289f7686b061d986ee76f42be776619a54fe99f095499d3b849a59
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS runtime
 
 # Leave the vocab tree URL empty by default so COLMAP 4 can use its own
 # FAISS-compatible runtime tree path; the runtime script still accepts an
@@ -41,6 +41,18 @@ COPY run_colmap_sfm.py /opt/ml/code/run_colmap_sfm.py
 RUN chmod +x /opt/ml/code/run_sfm.sh /opt/ml/code/run_colmap_sfm.py && \
     mkdir -p /opt/ml/processing/output/sparse /opt/ml/processing/output/dense && \
     chmod -R 755 /opt/ml/processing/output
+
+WORKDIR /opt/ml/code
+
+FROM scratch
+
+COPY --from=runtime / /
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
+    COLMAP_VOCAB_TREE_URL= \
+    COLMAP_VOCAB_TREE_PATH=/opt/ml/code/resources/vocab_tree_flickr100K_words256K.bin
 
 WORKDIR /opt/ml/code
 
