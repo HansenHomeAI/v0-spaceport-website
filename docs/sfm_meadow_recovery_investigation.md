@@ -140,7 +140,7 @@ Tradeoff:
 
 ### Local Tests
 
-- `python3 -m unittest tests.unit.test_colmap_gps_priors` passed with `29` tests.
+- `python3 -m unittest tests.unit.test_colmap_gps_priors` passed with `31` tests after adding orientation-source selection coverage.
 - The broader local SfM unit suite passed earlier with `36` tests after the prior-aware chunking and fast-fail changes landed.
 
 ### Meadow Chunk-4 Exact Subset
@@ -222,12 +222,80 @@ Missing-core images after the adjacent merge remained concentrated in specific f
 
 This proves the new prior-aware chunking and bounded adjacent merge materially improved the failing chunk's core registration from `58/83` to `120/148` on the exact Meadow problem subset, while still preserving deterministic failure instead of the original multi-hour hang.
 
+### Root Cause Found: Meadow Was Using Degenerate Gimbal Orientation Priors
+
+The next investigation step checked the raw Meadow EXIF orientation fields instead of assuming the first non-null field was informative.
+
+Verified Meadow subset facts:
+
+- `GimbalYawDegree` had `1` unique value across the failing slice: `0.0`
+- `GimbalPitchDegree` had `1` unique value across the failing slice: `0.0`
+- `FlightYawDegree` had `131` unique values across the same slice
+- `FlightPitchDegree` had `110` unique values across the same slice
+
+That means the runtime was technically seeing `100%` orientation coverage while still selecting a useless orientation source for Meadow.
+
+Implemented fix:
+
+- the runtime now records raw orientation candidates separately
+- it computes coverage plus angular dispersion for each candidate source
+- it selects the first heading/pitch source that is both sufficiently populated and sufficiently informative
+- Meadow now selects:
+  - `heading_prior_source=flight_yaw`
+  - `pitch_prior_source=flight_pitch`
+
+This changed the Meadow full-dataset chunk plan materially:
+
+- previous chunk plan: `8` chunks with sizes `[290, 154, 139, 164, 148, 180, 192, 245]`
+- corrected chunk plan: `6` chunks with sizes `[268, 299, 205, 196, 263, 266]`
+
+### Corrected Meadow Chunk-4 Rebuild Proof
+
+Corrected subset archive:
+
+- `s3://spaceport-ml-processing-staging/manual-validations/meadow_chunk4_subset_fixed_1775754600.zip`
+
+This subset was rebuilt from the corrected full Meadow chunk plan after the runtime switched from degenerate gimbal orientation to informative flight orientation.
+
+Job:
+
+- `meadowchunk4fixedchunked-1775749511`
+
+Verified results:
+
+- completed in `2740.53` seconds
+- registered `343/343` images
+- produced `233601` points
+- `quality_check_passed=true`
+- `fallback_triggered=false`
+- `boundary_recovery_triggered=false`
+- `adjacent_chunk_merge_triggered=false`
+- `timed_out=false`
+- `heading_prior_source=flight_yaw`
+- `pitch_prior_source=flight_pitch`
+- chunking used `2` chunks: `[181, 170]`
+- chunk 0 initial model: `181/181`
+- chunk 1 initial model: `169/170`
+- chunk model merger succeeded and produced a merged reconstruction with `343` images
+- final matcher mode remained `spatial_heading_chunked`
+- no vocab-tree stage executed
+
+Runtime performance for the successful corrected subset:
+
+- total processing: `2740.53` seconds
+- chunk mapper: `1630.70` seconds
+- mapper seconds per registered image: `4.75`
+- merged components: `1`
+
+This is the first hard proof that the Meadow registration problem was not only about removing the hanging fallback. The pipeline was also leaving accuracy on the table by trusting degenerate gimbal orientation EXIF instead of the informative flight orientation EXIF. Once that source-selection bug was fixed, the rebuilt Meadow hard slice passed cleanly without any fallback or recovery escalation.
+
 ## Final Hard Assessment
 
 - Proven:
   - the multi-hour hanging vocab-tree fallback is removed from the GPS-first Meadow recovery path
-  - Meadow now fails decisively with explicit failure metadata instead of hanging indefinitely
-  - richer prior-aware chunking plus adjacent merge materially improves the exact failing Meadow subset over the first fast-fail chunked implementation
+  - Meadow now fails decisively with explicit failure metadata instead of hanging indefinitely when a chunk is unhealthy
+  - the Meadow archive had a real EXIF-prior-selection bug: degenerate gimbal yaw/pitch were being preferred over informative flight yaw/pitch
+  - after fixing orientation-source selection, the corrected Meadow chunk-4 rebuild passed end-to-end at `343/343` registered images with no fallback, no recovery escalation, and no timeout
 - Also proven:
-  - this change set does not yet clear the current Meadow subset quality gate on the exact chunk-4 slice
-  - the remaining misses are localized and repeatable, which makes further iteration measurable without rerunning the full dataset
+  - the original `148`-image failing harness was built from the pre-fix chunk plan, so it remains useful as a regression artifact but it is no longer the authoritative representation of the corrected Meadow chunk-4 problem
+  - the corrected prior-aware chunk plan is materially different, so future Meadow work should benchmark against the rebuilt corrected subset, not only the legacy failing slice
