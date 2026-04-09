@@ -403,6 +403,9 @@ class ColmapPipeline:
         self.chunk_retry_group_context = int(
             os.environ.get("COLMAP_CHUNK_RETRY_GROUP_CONTEXT", "2")
         )
+        self.enable_chunk_adjacent_merge_retry = (
+            os.environ.get("COLMAP_CHUNK_ADJACENT_MERGE_RETRY", "1") != "0"
+        )
         self.capture_group_max_time_gap_s = float(
             os.environ.get("COLMAP_CAPTURE_GROUP_MAX_TIME_GAP_SECONDS", "1.5")
         )
@@ -498,6 +501,7 @@ class ColmapPipeline:
         self.chunk_mapper_seconds = 0.0
         self.chunk_merge_seconds = 0.0
         self.boundary_recovery_triggered = False
+        self.adjacent_chunk_merge_triggered = False
         self.merged_component_count = 0
         self.chunk_groups: List[CaptureGroup] = []
         self.flight_segments: List[FlightSegment] = []
@@ -550,6 +554,14 @@ class ColmapPipeline:
         metadata["timed_out"] = self.timed_out
         with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
             json.dump(metadata, handle, indent=2)
+
+    def clear_failure(self) -> None:
+        self.failure_stage = ""
+        self.failure_reason_detail = ""
+        self.timed_out = False
+        self.failed_chunk_index = None
+        self.failed_chunk_registered_ratio = 0.0
+        self.failed_chunk_core_registered_ratio = 0.0
 
     def run(self) -> int:
         try:
@@ -1972,8 +1984,8 @@ class ColmapPipeline:
                 handle.write(f"{image_name}\n")
         return image_list_path
 
-    def prepare_chunk_database(self, chunk_plan: ChunkPlan) -> Path:
-        chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
+    def prepare_chunk_database(self, chunk_plan: ChunkPlan, *, dir_name: str | None = None) -> Path:
+        chunk_dir = self.work_dir / (dir_name or f"chunk_{chunk_plan.index:02d}")
         chunk_dir.mkdir(parents=True, exist_ok=True)
         chunk_database_path = chunk_dir / "database.db"
         shutil.copy2(self.database_path, chunk_database_path)
@@ -2096,11 +2108,42 @@ class ColmapPipeline:
             segment_indices=retry_segment_indices or chunk_plan.segment_indices,
         )
 
-    def run_chunk_pipeline(self, chunk_plan: ChunkPlan) -> ModelSummary:
-        chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
+    def build_adjacent_merged_chunk_plan(
+        self,
+        first_chunk_plan: ChunkPlan,
+        second_chunk_plan: ChunkPlan,
+        *,
+        index: int,
+    ) -> ChunkPlan:
+        merged_core_group_indices = sorted(
+            set(first_chunk_plan.core_group_indices).union(second_chunk_plan.core_group_indices)
+        )
+        merged_overlap_group_indices = sorted(
+            set(first_chunk_plan.overlap_group_indices)
+            .union(second_chunk_plan.overlap_group_indices)
+            .difference(merged_core_group_indices)
+        )
+        merged_segment_indices = sorted(
+            set(first_chunk_plan.segment_indices).union(second_chunk_plan.segment_indices)
+        )
+        return self.build_chunk_plan_from_groups(
+            index=index,
+            core_group_indices=merged_core_group_indices,
+            overlap_group_indices=merged_overlap_group_indices,
+            segment_indices=merged_segment_indices,
+        )
+
+    def run_chunk_pipeline(
+        self,
+        chunk_plan: ChunkPlan,
+        *,
+        stage_prefix: str | None = None,
+        dir_name: str | None = None,
+    ) -> ModelSummary:
+        chunk_stage_prefix = stage_prefix or f"chunk_{chunk_plan.index:02d}"
+        chunk_dir = self.work_dir / (dir_name or chunk_stage_prefix)
         chunk_dir.mkdir(parents=True, exist_ok=True)
-        chunk_database_path = self.prepare_chunk_database(chunk_plan)
-        chunk_stage_prefix = f"chunk_{chunk_plan.index:02d}"
+        chunk_database_path = self.prepare_chunk_database(chunk_plan, dir_name=dir_name or chunk_stage_prefix)
         self.run_spatial_matcher(
             database_path=chunk_database_path,
             stage=f"{chunk_stage_prefix}_spatial_matcher",
@@ -2165,7 +2208,10 @@ class ColmapPipeline:
                 len(retry_chunk_plan.image_names),
                 retry_chunk_plan.group_indices,
             )
-            chunk_database_path = self.prepare_chunk_database(retry_chunk_plan)
+            chunk_database_path = self.prepare_chunk_database(
+                retry_chunk_plan,
+                dir_name=dir_name or chunk_stage_prefix,
+            )
         self.run_spatial_matcher(
             database_path=chunk_database_path,
             stage=f"{chunk_stage_prefix}_spatial_matcher_recovery",
@@ -2392,9 +2438,76 @@ class ColmapPipeline:
         if len(self.chunk_plans) <= 1:
             self.chunking_skipped_reason = "single_chunk_only" if not self.only_chunk_indexes else "single_chunk_selected"
         chunk_models: List[ModelSummary] = []
-        for chunk_plan in self.chunk_plans:
-            chunk_model = self.run_chunk_pipeline(chunk_plan)
-            chunk_models.append(chunk_model)
+        chunk_index = 0
+        while chunk_index < len(self.chunk_plans):
+            chunk_plan = self.chunk_plans[chunk_index]
+            try:
+                chunk_model = self.run_chunk_pipeline(chunk_plan)
+                chunk_models.append(chunk_model)
+                chunk_index += 1
+                continue
+            except RuntimeError:
+                if not (
+                    self.enable_chunk_adjacent_merge_retry
+                    and self.failure_stage.endswith("_recovery_failed")
+                ):
+                    raise
+                merge_candidates: List[tuple[float, str, ChunkPlan]] = []
+                if chunk_index > 0 and chunk_models:
+                    previous_chunk_plan = self.chunk_plans[chunk_index - 1]
+                    merge_candidates.append(
+                        (
+                            self.chunk_unit_boundary_score(
+                                previous_chunk_plan.core_group_indices,
+                                chunk_plan.core_group_indices,
+                            ),
+                            "previous",
+                            previous_chunk_plan,
+                        )
+                    )
+                if chunk_index + 1 < len(self.chunk_plans):
+                    next_chunk_plan = self.chunk_plans[chunk_index + 1]
+                    merge_candidates.append(
+                        (
+                            self.chunk_unit_boundary_score(
+                                chunk_plan.core_group_indices,
+                                next_chunk_plan.core_group_indices,
+                            ),
+                            "next",
+                            next_chunk_plan,
+                        )
+                    )
+                if not merge_candidates:
+                    raise
+                _, merge_side, neighbor_chunk_plan = min(merge_candidates, key=lambda item: item[0])
+                merged_chunk_plan = self.build_adjacent_merged_chunk_plan(
+                    neighbor_chunk_plan if merge_side == "previous" else chunk_plan,
+                    chunk_plan if merge_side == "previous" else neighbor_chunk_plan,
+                    index=chunk_plan.index if merge_side == "previous" else neighbor_chunk_plan.index,
+                )
+                merged_stage_prefix = (
+                    f"chunk_{min(chunk_plan.index, neighbor_chunk_plan.index):02d}_"
+                    f"{max(chunk_plan.index, neighbor_chunk_plan.index):02d}_adjacent_merge"
+                )
+                logger.info(
+                    "Chunk %s failed bounded retry; merging with %s chunk %s for one final local rerun across %s images",
+                    chunk_plan.index,
+                    merge_side,
+                    neighbor_chunk_plan.index,
+                    len(merged_chunk_plan.image_names),
+                )
+                self.adjacent_chunk_merge_triggered = True
+                self.chunk_recovery_mode = "prior_aware_retry_adjacent_merge_no_vocab"
+                self.clear_failure()
+                if merge_side == "previous":
+                    chunk_models.pop()
+                merged_model = self.run_chunk_pipeline(
+                    merged_chunk_plan,
+                    stage_prefix=merged_stage_prefix,
+                    dir_name=merged_stage_prefix,
+                )
+                chunk_models.append(merged_model)
+                chunk_index += 1 if merge_side == "previous" else 2
         merged_model = self.merge_chunk_models(chunk_models)
         merged_ratio = (
             merged_model.images_registered / self.chunk_execution_image_count
@@ -2495,6 +2608,7 @@ class ColmapPipeline:
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_recovery_mode": self.chunk_recovery_mode,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
+            "adjacent_chunk_merge_triggered": self.adjacent_chunk_merge_triggered,
             "merged_component_count": self.merged_component_count,
             "final_points_per_registered_image": final_points_per_registered_image,
             "mapper_seconds_per_registered_image": mapper_seconds_per_registered_image,
