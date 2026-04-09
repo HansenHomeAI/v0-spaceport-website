@@ -89,6 +89,7 @@ RUN pip install --no-cache-dir \
 
 COPY train_nerfstudio_production.py /opt/ml/code/
 COPY export_splatfacto_w_assets.py /opt/ml/code/
+COPY projected_skybox.py /opt/ml/code/
 COPY run_export_quality_pass.py /opt/ml/code/
 COPY run_semantic_sky_mask_diagnostics.py /opt/ml/code/
 COPY semantic_sky_masks.py /opt/ml/code/

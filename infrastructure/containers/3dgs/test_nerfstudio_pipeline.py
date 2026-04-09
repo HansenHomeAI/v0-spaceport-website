@@ -96,6 +96,7 @@ class NerfStudioPipelineTest:
         diagnostics_script_path = Path(__file__).parent / "run_semantic_sky_mask_diagnostics.py"
         helper_script_path = Path(__file__).parent / "sky_quality.py"
         semantic_mask_script_path = Path(__file__).parent / "semantic_sky_masks.py"
+        projected_skybox_script_path = Path(__file__).parent / "projected_skybox.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
         
         if not script_path.exists():
@@ -120,6 +121,10 @@ class NerfStudioPipelineTest:
 
         if not semantic_mask_script_path.exists():
             logger.error("❌ Semantic sky mask helper not found")
+            return False
+
+        if not projected_skybox_script_path.exists():
+            logger.error("❌ Projected skybox helper not found")
             return False
         
         if not config_path.exists():
