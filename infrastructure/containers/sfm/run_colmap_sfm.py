@@ -292,6 +292,25 @@ def normalize_pitch(angle_deg: float | None) -> float | None:
     return max(-90.0, min(90.0, float(angle_deg)))
 
 
+def circular_dispersion_degrees(values: Sequence[float]) -> float:
+    if not values:
+        return 0.0
+    x_sum = 0.0
+    y_sum = 0.0
+    for value in values:
+        radians = math.radians(normalize_heading(value) or 0.0)
+        x_sum += math.cos(radians)
+        y_sum += math.sin(radians)
+    mean_heading = math.degrees(math.atan2(y_sum, x_sum))
+    return max(angular_distance_degrees(value, mean_heading) for value in values)
+
+
+def linear_dispersion(values: Sequence[float]) -> float:
+    if not values:
+        return 0.0
+    return max(values) - min(values)
+
+
 def view_vector(heading_deg: float | None, pitch_deg: float | None) -> tuple[float, float, float] | None:
     if heading_deg is None:
         return None
@@ -516,6 +535,16 @@ class ColmapPipeline:
         self.failed_chunk_core_registered_ratio = 0.0
         self.timed_out = False
         self.chunk_execution_image_count = 0
+        self.heading_source_min_dispersion_deg = float(
+            os.environ.get("COLMAP_HEADING_SOURCE_MIN_DISPERSION_DEGREES", "5.0")
+        )
+        self.pitch_source_min_dispersion_deg = float(
+            os.environ.get("COLMAP_PITCH_SOURCE_MIN_DISPERSION_DEGREES", "3.0")
+        )
+        self.heading_prior_source = "uninitialized"
+        self.pitch_prior_source = "uninitialized"
+        self.heading_prior_dispersion_deg = 0.0
+        self.pitch_prior_dispersion_deg = 0.0
         self.images_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -669,6 +698,11 @@ class ColmapPipeline:
             file_name = record.get("FileName")
             if not file_name:
                 continue
+            gimbal_yaw_deg = normalize_heading(parse_optional_float(record, ["GimbalYawDegree"]))
+            gps_img_direction_deg = normalize_heading(parse_optional_float(record, ["GPSImgDirection"]))
+            flight_yaw_deg = normalize_heading(parse_optional_float(record, ["FlightYawDegree"]))
+            gimbal_pitch_deg = normalize_pitch(parse_optional_float(record, ["GimbalPitchDegree"]))
+            flight_pitch_deg = normalize_pitch(parse_optional_float(record, ["FlightPitchDegree"]))
             exif_records[file_name] = {
                 "file_name": file_name,
                 "gps_latitude": float(record["GPSLatitude"]),
@@ -680,28 +714,107 @@ class ColmapPipeline:
                     or record.get("CreateDate")
                     or ""
                 ),
-                "heading_deg": normalize_heading(
-                    parse_optional_float(record, ["GimbalYawDegree", "GPSImgDirection", "FlightYawDegree"])
-                ),
-                "gimbal_pitch_deg": parse_optional_float(record, ["GimbalPitchDegree"]),
+                "gimbal_yaw_deg": gimbal_yaw_deg,
+                "gps_img_direction_deg": gps_img_direction_deg,
+                "flight_yaw_deg": flight_yaw_deg,
+                "heading_deg": None,
+                "gimbal_pitch_deg": gimbal_pitch_deg,
                 "gimbal_roll_deg": parse_optional_float(record, ["GimbalRollDegree"]),
-                "flight_yaw_deg": normalize_heading(parse_optional_float(record, ["FlightYawDegree"])),
-                "flight_pitch_deg": parse_optional_float(record, ["FlightPitchDegree"]),
+                "flight_pitch_deg": flight_pitch_deg,
                 "flight_roll_deg": parse_optional_float(record, ["FlightRollDegree"]),
+                "pitch_deg": None,
             }
-            exif_records[file_name]["pitch_deg"] = normalize_pitch(
-                parse_optional_float(record, ["GimbalPitchDegree", "FlightPitchDegree"])
-            )
             exif_records[file_name]["capture_time_s"] = parse_capture_time_seconds(
                 str(exif_records[file_name]["capture_time"])
             )
+        self.apply_orientation_prior_sources(exif_records)
         self.populate_local_coordinates(exif_records)
         logger.info(
-            "Detected GPS EXIF priors on %s images; orientation priors present on %s images",
+            "Detected GPS EXIF priors on %s images; orientation priors present on %s images "
+            "(heading_source=%s dispersion=%.2fdeg, pitch_source=%s dispersion=%.2fdeg)",
             len(exif_records),
             sum(1 for record in exif_records.values() if record.get("heading_deg") is not None),
+            self.heading_prior_source,
+            self.heading_prior_dispersion_deg,
+            self.pitch_prior_source,
+            self.pitch_prior_dispersion_deg,
         )
         return exif_records
+
+    def select_orientation_source(
+        self,
+        exif_records: Dict[str, Dict[str, float | str | None]],
+        *,
+        candidates: Sequence[tuple[str, str]],
+        circular: bool,
+        min_dispersion_deg: float,
+    ) -> tuple[str, float]:
+        candidate_stats: List[tuple[str, str, float, float]] = []
+        record_count = max(len(exif_records), 1)
+        for record_key, source_name in candidates:
+            values = [
+                float(value)
+                for record in exif_records.values()
+                if (value := record.get(record_key)) is not None
+            ]
+            if not values:
+                candidate_stats.append((record_key, source_name, 0.0, 0.0))
+                continue
+            dispersion_deg = (
+                circular_dispersion_degrees(values)
+                if circular
+                else linear_dispersion(values)
+            )
+            coverage = len(values) / record_count
+            candidate_stats.append((record_key, source_name, coverage, dispersion_deg))
+        for record_key, source_name, coverage, dispersion_deg in candidate_stats:
+            if coverage >= 0.5 and dispersion_deg >= min_dispersion_deg:
+                return (record_key, dispersion_deg)
+        best_record_key, best_source_name, best_coverage, best_dispersion_deg = max(
+            candidate_stats,
+            key=lambda item: (item[2], item[3], -candidates.index((item[0], item[1]))),
+        )
+        return (best_record_key, best_dispersion_deg)
+
+    def apply_orientation_prior_sources(
+        self,
+        exif_records: Dict[str, Dict[str, float | str | None]],
+    ) -> None:
+        heading_record_key, heading_dispersion_deg = self.select_orientation_source(
+            exif_records,
+            candidates=(
+                ("gps_img_direction_deg", "gps_img_direction"),
+                ("gimbal_yaw_deg", "gimbal_yaw"),
+                ("flight_yaw_deg", "flight_yaw"),
+            ),
+            circular=True,
+            min_dispersion_deg=self.heading_source_min_dispersion_deg,
+        )
+        pitch_record_key, pitch_dispersion_deg = self.select_orientation_source(
+            exif_records,
+            candidates=(
+                ("gimbal_pitch_deg", "gimbal_pitch"),
+                ("flight_pitch_deg", "flight_pitch"),
+            ),
+            circular=False,
+            min_dispersion_deg=self.pitch_source_min_dispersion_deg,
+        )
+        heading_source_names = {
+            "gps_img_direction_deg": "gps_img_direction",
+            "gimbal_yaw_deg": "gimbal_yaw",
+            "flight_yaw_deg": "flight_yaw",
+        }
+        pitch_source_names = {
+            "gimbal_pitch_deg": "gimbal_pitch",
+            "flight_pitch_deg": "flight_pitch",
+        }
+        self.heading_prior_source = heading_source_names[heading_record_key]
+        self.pitch_prior_source = pitch_source_names[pitch_record_key]
+        self.heading_prior_dispersion_deg = round(heading_dispersion_deg, 2)
+        self.pitch_prior_dispersion_deg = round(pitch_dispersion_deg, 2)
+        for record in exif_records.values():
+            record["heading_deg"] = record.get(heading_record_key)
+            record["pitch_deg"] = record.get(pitch_record_key)
 
     def load_capture_records(self) -> List[dict[str, str]]:
         command = [
@@ -2584,6 +2697,10 @@ class ColmapPipeline:
             "gps_priors_detected": self.gps_image_count,
             "gps_exif_count": self.gps_image_count,
             "orientation_prior_count": self.orientation_prior_count,
+            "heading_prior_source": self.heading_prior_source,
+            "heading_prior_dispersion_deg": self.heading_prior_dispersion_deg,
+            "pitch_prior_source": self.pitch_prior_source,
+            "pitch_prior_dispersion_deg": self.pitch_prior_dispersion_deg,
             "pose_priors_written_count": self.pose_priors_written_count,
             "pose_priors_source": self.pose_priors_source,
             "gps_prior_coverage": self.gps_prior_coverage,

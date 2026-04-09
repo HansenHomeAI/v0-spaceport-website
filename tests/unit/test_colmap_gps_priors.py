@@ -1117,6 +1117,76 @@ class ColmapGpsPriorTests(unittest.TestCase):
         self.assertIn("timed out", str(raised.exception).lower())
         self.assertLess(time.time() - started, 2.0)
 
+    def test_orientation_source_selection_prefers_flight_when_gimbal_is_degenerate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            exif_records = {
+                "a.jpg": {
+                    "gimbal_yaw_deg": 0.0,
+                    "flight_yaw_deg": 12.0,
+                    "gps_img_direction_deg": None,
+                    "gimbal_pitch_deg": 0.0,
+                    "flight_pitch_deg": -8.0,
+                },
+                "b.jpg": {
+                    "gimbal_yaw_deg": 0.0,
+                    "flight_yaw_deg": 94.0,
+                    "gps_img_direction_deg": None,
+                    "gimbal_pitch_deg": 0.0,
+                    "flight_pitch_deg": -21.0,
+                },
+                "c.jpg": {
+                    "gimbal_yaw_deg": 0.0,
+                    "flight_yaw_deg": 188.0,
+                    "gps_img_direction_deg": None,
+                    "gimbal_pitch_deg": 0.0,
+                    "flight_pitch_deg": -3.0,
+                },
+            }
+
+            pipeline.apply_orientation_prior_sources(exif_records)
+
+            self.assertEqual(pipeline.heading_prior_source, "flight_yaw")
+            self.assertEqual(pipeline.pitch_prior_source, "flight_pitch")
+            self.assertEqual(exif_records["a.jpg"]["heading_deg"], 12.0)
+            self.assertEqual(exif_records["b.jpg"]["pitch_deg"], -21.0)
+
+    def test_orientation_source_selection_keeps_gimbal_when_it_has_real_dispersion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            exif_records = {
+                "a.jpg": {
+                    "gimbal_yaw_deg": 10.0,
+                    "flight_yaw_deg": 13.0,
+                    "gps_img_direction_deg": None,
+                    "gimbal_pitch_deg": -20.0,
+                    "flight_pitch_deg": -18.0,
+                },
+                "b.jpg": {
+                    "gimbal_yaw_deg": 82.0,
+                    "flight_yaw_deg": 85.0,
+                    "gps_img_direction_deg": None,
+                    "gimbal_pitch_deg": -8.0,
+                    "flight_pitch_deg": -7.0,
+                },
+                "c.jpg": {
+                    "gimbal_yaw_deg": 174.0,
+                    "flight_yaw_deg": 176.0,
+                    "gps_img_direction_deg": None,
+                    "gimbal_pitch_deg": 2.0,
+                    "flight_pitch_deg": 3.0,
+                },
+            }
+
+            pipeline.apply_orientation_prior_sources(exif_records)
+
+            self.assertEqual(pipeline.heading_prior_source, "gimbal_yaw")
+            self.assertEqual(pipeline.pitch_prior_source, "gimbal_pitch")
+            self.assertEqual(exif_records["c.jpg"]["heading_deg"], 174.0)
+            self.assertEqual(exif_records["a.jpg"]["pitch_deg"], -20.0)
+
 
 if __name__ == "__main__":
     unittest.main()
