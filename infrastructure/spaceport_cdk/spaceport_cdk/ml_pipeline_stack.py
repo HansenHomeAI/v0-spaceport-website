@@ -631,6 +631,12 @@ class MLPipelineStack(Stack):
             ],
             result_path="$.compressionResult"
         )
+        compression_job.add_retry(
+            errors=["SageMaker.ResourceLimitExceededException"],
+            interval=Duration.minutes(2),
+            backoff_rate=1.3,
+            max_attempts=30,
+        )
 
         # Wait for Compression job to complete
         wait_for_compression = sfn_tasks.CallAwsService(
@@ -682,40 +688,47 @@ class MLPipelineStack(Stack):
                 "state": sfn.JsonPath.entire_payload
             })
         )
+        pipeline_failed = sfn.Fail(
+            self,
+            "PipelineFailed",
+            cause="ML pipeline execution failed",
+            error="PipelineExecutionFailed",
+        )
+        notify_error_chain = notify_error.next(pipeline_failed)
 
         # Add error handling to each job
         sfm_job_with_catch = sfm_job.add_catch(
-            notify_error,
+            notify_error_chain,
             errors=["States.ALL"],
             result_path="$.error"
         )
 
         wait_for_sfm_with_catch = wait_for_sfm.add_catch(
-            notify_error,
+            notify_error_chain,
             errors=["States.ALL"],
             result_path="$.error"
         )
 
         gaussian_job_with_catch = gaussian_job.add_catch(
-            notify_error,
+            notify_error_chain,
             errors=["States.ALL"],
             result_path="$.error"
         )
 
         wait_for_gaussian_with_catch = wait_for_gaussian.add_catch(
-            notify_error,
+            notify_error_chain,
             errors=["States.ALL"],
             result_path="$.error"
         )
 
         compression_job_with_catch = compression_job.add_catch(
-            notify_error,
+            notify_error_chain,
             errors=["States.ALL"],
             result_path="$.error"
         )
 
         wait_for_compression_with_catch = wait_for_compression.add_catch(
-            notify_error,
+            notify_error_chain,
             errors=["States.ALL"],
             result_path="$.error"
         )
@@ -727,7 +740,7 @@ class MLPipelineStack(Stack):
             gaussian_job_with_catch
         ).when(
             sfn.Condition.string_equals("$.sfmStatus.ProcessingJobStatus", "Failed"),
-            notify_error
+            notify_error_chain
         ).otherwise(
             sfm_wait.next(wait_for_sfm_with_catch)
         )
@@ -738,7 +751,7 @@ class MLPipelineStack(Stack):
             compression_job_with_catch
         ).when(
             sfn.Condition.string_equals("$.gaussianStatus.TrainingJobStatus", "Failed"),
-            notify_error
+            notify_error_chain
         ).otherwise(
             gaussian_wait.next(wait_for_gaussian_with_catch)
         )
@@ -749,7 +762,7 @@ class MLPipelineStack(Stack):
             notify_user
         ).when(
             sfn.Condition.string_equals("$.compressionStatus.ProcessingJobStatus", "Failed"),
-            notify_error
+            notify_error_chain
         ).otherwise(
             compression_wait.next(wait_for_compression_with_catch)
         )
