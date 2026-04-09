@@ -637,6 +637,12 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_matcher_strategy, "exhaustive")
             self.assertEqual(set(pipeline.probe_subsets), {"geometry_mix", "cross_pass", "horizon_context"})
             self.assertTrue(all(pipeline.probe_subsets.values()))
+            self.assertTrue(
+                any(
+                    len(details.get("source_chunk_indexes", [])) >= 2
+                    for details in pipeline.probe_subset_details.values()
+                )
+            )
 
     def test_build_retry_chunk_plan_footprint_graph_adds_graph_neighbors(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(

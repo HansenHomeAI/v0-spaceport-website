@@ -128,6 +128,7 @@ def main() -> int:
                 probe_name: {
                     "image_count": len(image_names),
                     "images": image_names,
+                    "details": pipeline.probe_subset_details.get(probe_name, {}),
                 }
                 for probe_name, image_names in pipeline.probe_subsets.items()
             },

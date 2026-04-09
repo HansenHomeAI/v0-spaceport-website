@@ -632,6 +632,7 @@ class ColmapPipeline:
         self.chunk_graph_probe_manifest: dict[str, object] = {}
         self.chunk_run_metrics: List[dict[str, object]] = []
         self.chunk_merge_proof: dict[str, object] = {}
+        self.probe_subset_details: Dict[str, dict[str, object]] = {}
         self.chunk_centroids: Dict[int, tuple[float, float]] = {}
         self.chunk_plans_by_index: Dict[int, ChunkPlan] = {}
         self.chunk_cross_edge_counts: Dict[Tuple[int, int], int] = {}
@@ -2956,6 +2957,7 @@ class ColmapPipeline:
         if not chunk_plans:
             return {}
         geometries = self.build_view_geometries()
+        chunk_plan_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
 
         def pitch_values_for_names(image_names: Sequence[str]) -> List[float]:
             return [
@@ -2963,6 +2965,61 @@ class ColmapPipeline:
                 for name in image_names
                 if name in geometries and geometries[name].pitch_deg is not None
             ]
+
+        def time_span_for_names(image_names: Sequence[str]) -> float:
+            capture_times = [
+                float(self.exif_records[image_name]["capture_time_s"])
+                for image_name in image_names
+                if self.exif_records[image_name].get("capture_time_s") is not None
+            ]
+            if not capture_times:
+                return 0.0
+            return max(capture_times) - min(capture_times)
+
+        def ranked_neighbor_indexes(seed_chunk_index: int) -> List[int]:
+            seed_centroid = self.chunk_centroids.get(seed_chunk_index, (0.0, 0.0))
+            ranked: List[tuple[float, float, float, int]] = []
+            for candidate in chunk_plans:
+                if candidate.index == seed_chunk_index:
+                    continue
+                pair_key = tuple(sorted((seed_chunk_index, candidate.index)))
+                cross_edge_count = float(self.chunk_cross_edge_counts.get(pair_key, 0))
+                candidate_centroid = self.chunk_centroids.get(candidate.index, (0.0, 0.0))
+                centroid_distance = math.hypot(
+                    candidate_centroid[0] - seed_centroid[0],
+                    candidate_centroid[1] - seed_centroid[1],
+                )
+                ranked.append(
+                    (
+                        -cross_edge_count,
+                        centroid_distance,
+                        -float(len(candidate.image_names)),
+                        candidate.index,
+                    )
+                )
+            return [candidate_index for _, _, _, candidate_index in sorted(ranked)]
+
+        def expand_probe(seed_chunk: ChunkPlan) -> tuple[List[str], List[int]]:
+            selected_chunk_indexes = [seed_chunk.index]
+            selected_names: Set[str] = set(seed_chunk.image_names)
+            target_probe_images = min(
+                max(self.chunk_target_images * 2, self.chunk_min_images * 2, 240),
+                max(self.chunk_target_images * 3, 420),
+            )
+            for neighbor_index in ranked_neighbor_indexes(seed_chunk.index):
+                if len(selected_names) >= target_probe_images and len(selected_chunk_indexes) >= 2:
+                    break
+                neighbor_plan = chunk_plan_by_index[neighbor_index]
+                selected_chunk_indexes.append(neighbor_index)
+                selected_names.update(neighbor_plan.image_names)
+                if len(selected_chunk_indexes) >= 3:
+                    break
+            ordered_names = [
+                image_name
+                for image_name in self.capture_ordered_names
+                if image_name in selected_names
+            ]
+            return ordered_names, selected_chunk_indexes
 
         geometry_mix = max(
             chunk_plans,
@@ -2974,16 +3031,7 @@ class ColmapPipeline:
         cross_pass = max(
             chunk_plans,
             key=lambda plan: (
-                max(
-                    (
-                        abs(float(self.exif_records[left]["capture_time_s"]) - float(self.exif_records[right]["capture_time_s"]))
-                        for left in plan.image_names
-                        for right in plan.image_names
-                        if self.exif_records[left].get("capture_time_s") is not None
-                        and self.exif_records[right].get("capture_time_s") is not None
-                    ),
-                    default=0.0,
-                ),
+                time_span_for_names(plan.image_names),
                 len(plan.image_names),
             ),
         )
@@ -2998,11 +3046,21 @@ class ColmapPipeline:
                 len(plan.image_names),
             ),
         )
-        return {
-            "geometry_mix": list(geometry_mix.image_names),
-            "cross_pass": list(cross_pass.image_names),
-            "horizon_context": list(horizon_context.image_names),
-        }
+        probe_subsets: Dict[str, List[str]] = {}
+        self.probe_subset_details = {}
+        for probe_name, seed_chunk in (
+            ("geometry_mix", geometry_mix),
+            ("cross_pass", cross_pass),
+            ("horizon_context", horizon_context),
+        ):
+            probe_image_names, source_chunk_indexes = expand_probe(seed_chunk)
+            probe_subsets[probe_name] = probe_image_names
+            self.probe_subset_details[probe_name] = {
+                "seed_chunk_index": seed_chunk.index,
+                "source_chunk_indexes": source_chunk_indexes,
+                "image_count": len(probe_image_names),
+            }
+        return probe_subsets
 
     def build_chunk_plans(self) -> List[ChunkPlan]:
         if self.chunk_planner == "footprint_graph_v1":
@@ -3029,6 +3087,7 @@ class ColmapPipeline:
             "chunk_segment_count": self.chunk_segment_count,
             "image_roles": self.chunk_role_by_image,
             "probe_subsets": self.probe_subsets,
+            "probe_subset_details": self.probe_subset_details,
             "chunks": [
                 {
                     "index": chunk_plan.index,
@@ -3890,6 +3949,7 @@ class ColmapPipeline:
                 probe_name: len(image_names)
                 for probe_name, image_names in self.probe_subsets.items()
             },
+            "probe_subset_details": self.probe_subset_details,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
 
