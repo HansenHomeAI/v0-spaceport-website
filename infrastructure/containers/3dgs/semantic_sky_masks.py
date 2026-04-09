@@ -46,6 +46,7 @@ except ImportError:  # pragma: no cover - exercised in container/runtime.
 
 
 DEFAULT_MODEL_ID = "nvidia/segformer-b0-finetuned-ade-512-512"
+DEFAULT_TRAINING_MASK_MODE = "exclude_sky"
 CC_STAT_LEFT = 0
 CC_STAT_TOP = 1
 CC_STAT_WIDTH = 2
@@ -62,6 +63,7 @@ class SemanticSkyMaskSettings:
     min_component_area: float = 0.002
     fill_hole_area: float = 0.001
     keep_top_connected_only: bool = True
+    training_mask_mode: str = DEFAULT_TRAINING_MASK_MODE
 
 
 @dataclass(frozen=True)
@@ -95,6 +97,26 @@ def _binary_mask(mask: np.ndarray) -> np.ndarray:
 
 def _mask_area_ratio(mask: np.ndarray) -> float:
     return float(mask.astype(bool).sum() / mask.size) if mask.size else 0.0
+
+
+def _validate_training_mask_mode(training_mask_mode: str) -> str:
+    normalized = str(training_mask_mode).strip().lower()
+    if normalized not in {"exclude_sky", "keep_sky"}:
+        raise ValueError(f"Unsupported semantic sky training mask mode: {training_mask_mode}")
+    return normalized
+
+
+def _semantic_sky_mask_to_training_keep_mask(
+    semantic_sky_mask: np.ndarray,
+    training_mask_mode: str,
+) -> np.ndarray:
+    binary_sky = _binary_mask(semantic_sky_mask)
+    normalized_mode = _validate_training_mask_mode(training_mask_mode)
+    if normalized_mode == "exclude_sky":
+        keep_mask = 1 - binary_sky
+    else:
+        keep_mask = binary_sky
+    return (keep_mask * 255).astype(np.uint8)
 
 
 def load_rgb_image_for_semantic_mask(
@@ -431,12 +453,23 @@ class SemanticSkyMaskGenerator:
         records: List[Dict[str, Any]] = []
         for image_index, (image_path, output_path) in enumerate(zip(image_paths, output_paths)):
             source_width, source_height = source_sizes[image_index]
+            confidence_source_resolution = torch_functional.interpolate(
+                sky_probabilities[image_index : image_index + 1],
+                size=(source_height, source_width),
+                mode="bilinear",
+                align_corners=False,
+            )[0, 0]
             binary_source_resolution = torch_functional.interpolate(
                 binary_reduced[image_index : image_index + 1],
                 size=(source_height, source_width),
                 mode="nearest",
             )[0, 0]
 
+            confidence_mask = np.clip(
+                confidence_source_resolution.detach().cpu().numpy(),
+                0.0,
+                1.0,
+            )
             raw_mask = binary_source_resolution.detach().cpu().numpy() > 0.5
             final_mask = post_process_semantic_sky_mask(
                 mask=raw_mask,
@@ -444,14 +477,20 @@ class SemanticSkyMaskGenerator:
                 fill_hole_area_ratio=self.settings.fill_hole_area,
                 keep_top_connected_only=self.settings.keep_top_connected_only,
             )
+            confidence_output_path = output_path.with_name(f"{output_path.stem}__confidence.png")
+            final_confidence = confidence_mask * final_mask.astype(np.float32)
 
             output_path.parent.mkdir(parents=True, exist_ok=True)
             Image.fromarray((final_mask.astype(np.uint8) * 255), mode="L").save(output_path)
+            Image.fromarray((final_confidence * 255.0).round().astype(np.uint8), mode="L").save(
+                confidence_output_path
+            )
             records.append(
                 {
                     "source_image": image_path.name,
                     "source_path": str(image_path),
                     "mask_path": str(output_path),
+                    "confidence_path": str(confidence_output_path),
                     "width": int(source_width),
                     "height": int(source_height),
                     "raw_mask_ratio": _mask_area_ratio(raw_mask),
@@ -588,36 +627,29 @@ def _discover_mask_downscale_variants(converted_data_dir: Path) -> List[tuple[in
     return variants
 
 
-def _write_mask_with_downscale_variants(
-    source_mask_path: Path,
-    converted_mask_path: Path,
+def _write_image_with_downscale_variants(
+    base_image: Any,
+    converted_output_path: Path,
     converted_frame_path: Path,
     downscale_variants: List[tuple[int, Path, Path]],
 ) -> None:
-    converted_mask_path.parent.mkdir(parents=True, exist_ok=True)
-
-    if not downscale_variants:
-        converted_mask_path.write_bytes(source_mask_path.read_bytes())
-        return
-
     _require_runtime_dependency(Image, "Pillow")
     assert Image is not None
 
-    with Image.open(source_mask_path) as mask_handle:
-        base_mask = mask_handle.convert("L")
-        base_mask.save(converted_mask_path)
+    converted_output_path.parent.mkdir(parents=True, exist_ok=True)
+    base_image.save(converted_output_path)
 
-        for _, image_dir, mask_dir in downscale_variants:
-            variant_image_path = image_dir / converted_frame_path.name
-            if not variant_image_path.exists():
-                raise FileNotFoundError(f"Downscaled converted image missing: {variant_image_path}")
+    for _, image_dir, variant_output_dir in downscale_variants:
+        variant_image_path = image_dir / converted_frame_path.name
+        if not variant_image_path.exists():
+            raise FileNotFoundError(f"Downscaled converted image missing: {variant_image_path}")
 
-            with Image.open(variant_image_path) as image_handle:
-                target_size = image_handle.size
+        with Image.open(variant_image_path) as image_handle:
+            target_size = image_handle.size
 
-            resized_mask = base_mask.resize(target_size, resample=PIL_NEAREST)
-            mask_dir.mkdir(parents=True, exist_ok=True)
-            resized_mask.save(mask_dir / converted_mask_path.name)
+        resized_image = base_image.resize(target_size, resample=PIL_NEAREST)
+        variant_output_dir.mkdir(parents=True, exist_ok=True)
+        resized_image.save(variant_output_dir / converted_output_path.name)
 
 
 def attach_masks_to_transforms(
@@ -643,6 +675,7 @@ def attach_masks_to_transforms(
     if not settings.enabled:
         for frame in frames:
             frame.pop("mask_path", None)
+            frame.pop("semantic_sky_confidence_path", None)
         with open(transforms_path, "w", encoding="utf-8") as handle:
             json.dump(transforms, handle, indent=2)
         return {
@@ -654,6 +687,8 @@ def attach_masks_to_transforms(
 
     mask_dir = converted_data_dir / "masks"
     mask_dir.mkdir(parents=True, exist_ok=True)
+    confidence_dir = converted_data_dir / "semantic_sky_confidence"
+    confidence_dir.mkdir(parents=True, exist_ok=True)
 
     per_frame_stats: List[Dict[str, Any]] = []
     mapping_strategy_counts: Dict[str, int] = {}
@@ -672,16 +707,42 @@ def attach_masks_to_transforms(
         source_mask_path = Path(str(source_record["mask_path"]))
         if not source_mask_path.exists():
             raise FileNotFoundError(f"Source semantic mask missing: {source_mask_path}")
+        source_confidence_path = Path(str(source_record.get("confidence_path", ""))) if source_record.get("confidence_path") else None
 
         converted_frame_path = Path(str(frame.get("file_path", "")))
         converted_mask_name = f"{converted_frame_path.stem}.png"
         converted_mask_path = mask_dir / converted_mask_name
-        _write_mask_with_downscale_variants(
-            source_mask_path=source_mask_path,
-            converted_mask_path=converted_mask_path,
-            converted_frame_path=converted_frame_path,
-            downscale_variants=downscale_variants,
-        )
+        _require_runtime_dependency(Image, "Pillow")
+        assert Image is not None
+        with Image.open(source_mask_path) as semantic_mask_handle:
+            semantic_mask = semantic_mask_handle.convert("L")
+            training_mask_array = _semantic_sky_mask_to_training_keep_mask(
+                np.asarray(semantic_mask, dtype=np.uint8) > 127,
+                settings.training_mask_mode,
+            )
+            training_mask = Image.fromarray(training_mask_array, mode="L")
+            _write_image_with_downscale_variants(
+                base_image=training_mask,
+                converted_output_path=converted_mask_path,
+                converted_frame_path=converted_frame_path,
+                downscale_variants=downscale_variants,
+            )
+
+        if source_confidence_path is not None and source_confidence_path.exists():
+            converted_confidence_path = confidence_dir / converted_mask_name
+            with Image.open(source_confidence_path) as confidence_handle:
+                confidence_mask = confidence_handle.convert("L")
+                _write_image_with_downscale_variants(
+                    base_image=confidence_mask,
+                    converted_output_path=converted_confidence_path,
+                    converted_frame_path=converted_frame_path,
+                    downscale_variants=[],
+                )
+            frame["semantic_sky_confidence_path"] = converted_confidence_path.relative_to(
+                converted_data_dir
+            ).as_posix()
+        else:
+            frame.pop("semantic_sky_confidence_path", None)
 
         relative_mask_path = converted_mask_path.relative_to(converted_data_dir)
         frame["mask_path"] = relative_mask_path.as_posix()
@@ -696,6 +757,8 @@ def attach_masks_to_transforms(
                 "mask_ratio": source_record["mask_ratio"],
                 "top_border_ratio": source_record["top_border_ratio"],
                 "mapping_strategy": strategy,
+                "training_mask_mode": settings.training_mask_mode,
+                "semantic_sky_confidence_path": frame.get("semantic_sky_confidence_path"),
             }
         )
 

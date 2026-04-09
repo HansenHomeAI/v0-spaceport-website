@@ -14,3 +14,4 @@
 2026-04-01T19:30:00Z load baked splatfacto-w-light skyboxes in the branch preview viewer
 2026-04-02T17:15:00Z iterate skybox export quality defaults and pre-compression floater pruning
 2026-04-07T15:54:00Z semantic sky/horizon separation training path for Brass Lantern preview validation
+2026-04-09T11:25:00Z unify projected-photo skybox composition and invert training masks for Horsetail AWS validation

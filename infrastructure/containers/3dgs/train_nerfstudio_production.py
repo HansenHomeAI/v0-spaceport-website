@@ -137,6 +137,7 @@ class NerfStudioTrainer:
             'SEMANTIC_SKY_MIN_COMPONENT_AREA': 'preprocessing.semantic_sky_masks.min_component_area',
             'SEMANTIC_SKY_FILL_HOLE_AREA': 'preprocessing.semantic_sky_masks.fill_hole_area',
             'SEMANTIC_SKY_KEEP_TOP_CONNECTED_ONLY': 'preprocessing.semantic_sky_masks.keep_top_connected_only',
+            'SEMANTIC_SKY_TRAINING_MASK_MODE': 'preprocessing.semantic_sky_masks.training_mask_mode',
             'BG_SH_DEGREE': 'model.bg_sh_degree',
             'APPEARANCE_EMBED_DIM': 'model.appearance_embed_dim',
             'NEVER_MASK_UPPER': 'model.never_mask_upper',
@@ -146,6 +147,14 @@ class NerfStudioTrainer:
             'BACKGROUND_SKYBOX_QUALITY': 'output.background_skybox.quality',
             'BACKGROUND_SELECTION_STRIDE': 'output.background_skybox.selection_stride',
             'BACKGROUND_SELECTION_MAX_FRAMES': 'output.background_skybox.selection_max_frames',
+            'ENABLE_PROJECTED_PHOTO_SKYBOX': 'output.background_skybox.enable_projected_photo_skybox',
+            'SKYBOX_COMPOSITION_MODE': 'output.background_skybox.composition_mode',
+            'SKYBOX_WORLD_UP_SOURCE': 'output.background_skybox.world_up_source',
+            'SKYBOX_MIN_SKY_MASK_RATIO': 'output.background_skybox.min_sky_mask_ratio',
+            'SKYBOX_MIN_OBSERVATIONS_PER_PIXEL': 'output.background_skybox.min_observations_per_pixel',
+            'SKYBOX_BLEND_EDGE_FEATHER_PX': 'output.background_skybox.blend_edge_feather_px',
+            'SKYBOX_LOW_FREQUENCY_FILL': 'output.background_skybox.low_frequency_fill',
+            'SKYBOX_PROJECTION_MAX_LONG_SIDE': 'output.background_skybox.projection_max_long_side',
             'FLOATER_PRUNING_ENABLED': 'output.floater_pruning.enabled',
             'FLOATER_PRUNING_MIN_VIEWS': 'output.floater_pruning.min_views',
             'FLOATER_PRUNING_TOP_REGION_RATIO': 'output.floater_pruning.top_region_ratio',
@@ -167,6 +176,8 @@ class NerfStudioTrainer:
             'ENABLE_ROBUST_MASK',
             'ENABLE_SEMANTIC_SKY_MASKS',
             'SEMANTIC_SKY_KEEP_TOP_CONNECTED_ONLY',
+            'ENABLE_PROJECTED_PHOTO_SKYBOX',
+            'SKYBOX_LOW_FREQUENCY_FILL',
             'FLOATER_PRUNING_ENABLED',
         }
         integer_envs = {
@@ -180,6 +191,9 @@ class NerfStudioTrainer:
             'BACKGROUND_SKYBOX_QUALITY',
             'BACKGROUND_SELECTION_STRIDE',
             'BACKGROUND_SELECTION_MAX_FRAMES',
+            'SKYBOX_MIN_OBSERVATIONS_PER_PIXEL',
+            'SKYBOX_BLEND_EDGE_FEATHER_PX',
+            'SKYBOX_PROJECTION_MAX_LONG_SIDE',
             'FLOATER_PRUNING_MIN_VIEWS',
             'FLOATER_PRUNING_MIN_SKY_VIEWS',
             'FLOATER_PRUNING_MIN_EDGE_SUPPORT',
@@ -192,6 +206,7 @@ class NerfStudioTrainer:
             'SEMANTIC_SKY_CONFIDENCE_THRESHOLD',
             'SEMANTIC_SKY_MIN_COMPONENT_AREA',
             'SEMANTIC_SKY_FILL_HOLE_AREA',
+            'SKYBOX_MIN_SKY_MASK_RATIO',
             'FLOATER_PRUNING_TOP_REGION_RATIO',
             'FLOATER_PRUNING_TOP_VIEW_FRACTION',
             'FLOATER_PRUNING_SKY_MIN_LUMINANCE',
@@ -233,6 +248,7 @@ class NerfStudioTrainer:
             min_component_area=float(mask_config.get('min_component_area', 0.002)),
             fill_hole_area=float(mask_config.get('fill_hole_area', 0.001)),
             keep_top_connected_only=bool(mask_config.get('keep_top_connected_only', True)),
+            training_mask_mode=str(mask_config.get('training_mask_mode', 'exclude_sky')),
         )
 
     def run_semantic_sky_mask_stage(
@@ -251,6 +267,7 @@ class NerfStudioTrainer:
         logger.info(f"   Min component area: {settings.min_component_area}")
         logger.info(f"   Fill hole area: {settings.fill_hole_area}")
         logger.info(f"   Keep top connected only: {settings.keep_top_connected_only}")
+        logger.info(f"   Training mask mode: {settings.training_mask_mode}")
 
         source_summary = generate_source_semantic_sky_masks(
             dataset_dir=self.source_input_dir,
@@ -999,6 +1016,7 @@ class NerfStudioTrainer:
         
         model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w-light')
         skybox_config = self.config.get('output', {}).get('background_skybox', {})
+        semantic_mask_settings = self.get_semantic_mask_settings()
         background_selection = self.resolve_background_selection()
 
         if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
@@ -1006,11 +1024,21 @@ class NerfStudioTrainer:
                 "python", "/opt/ml/code/export_splatfacto_w_assets.py",
                 "--load-config", str(config_file),
                 "--output-dir", str(self.output_dir),
+                "--data-dir", str(self.input_dir),
                 "--camera-idx", str(background_selection.camera_idx or 0),
                 "--background-width", str(skybox_config.get('width', 2048)),
                 "--background-height", str(skybox_config.get('height', 1024)),
                 "--background-quality", str(skybox_config.get('quality', 95)),
                 "--background-appearance-mode", str(background_selection.resolved_mode),
+                "--enable-projected-photo-skybox", str(skybox_config.get('enable_projected_photo_skybox', True)).lower(),
+                "--skybox-composition-mode", str(skybox_config.get('composition_mode', 'projected_photo_low_frequency')),
+                "--skybox-world-up-source", str(skybox_config.get('world_up_source', 'colmap_pose_consensus')),
+                "--skybox-min-sky-mask-ratio", str(skybox_config.get('min_sky_mask_ratio', 0.01)),
+                "--skybox-min-observations-per-pixel", str(skybox_config.get('min_observations_per_pixel', 1)),
+                "--skybox-blend-edge-feather-px", str(skybox_config.get('blend_edge_feather_px', 24)),
+                "--skybox-low-frequency-fill", str(skybox_config.get('low_frequency_fill', True)).lower(),
+                "--skybox-projection-max-long-side", str(skybox_config.get('projection_max_long_side', 1024)),
+                "--training-mask-mode", str(semantic_mask_settings.training_mask_mode),
             ]
         else:
             export_cmd = [
@@ -1071,6 +1099,7 @@ class NerfStudioTrainer:
     def generate_training_metadata(self) -> Dict[str, Any]:
         """Generate comprehensive training metadata"""
         semantic_mask_settings = self.get_semantic_mask_settings()
+        skybox_settings = self.config.get('output', {}).get('background_skybox', {})
         metadata = {
             'training_methodology': 'Spaceport splatfacto-w-light skybox export',
             'framework': 'NerfStudio',
@@ -1096,7 +1125,18 @@ class NerfStudioTrainer:
                     'min_component_area': semantic_mask_settings.min_component_area,
                     'fill_hole_area': semantic_mask_settings.fill_hole_area,
                     'keep_top_connected_only': semantic_mask_settings.keep_top_connected_only,
+                    'training_mask_mode': semantic_mask_settings.training_mask_mode,
                 },
+            },
+            'background_skybox_settings': {
+                'enable_projected_photo_skybox': bool(skybox_settings.get('enable_projected_photo_skybox', True)),
+                'composition_mode': str(skybox_settings.get('composition_mode', 'projected_photo_low_frequency')),
+                'world_up_source': str(skybox_settings.get('world_up_source', 'colmap_pose_consensus')),
+                'min_sky_mask_ratio': float(skybox_settings.get('min_sky_mask_ratio', 0.01)),
+                'min_observations_per_pixel': int(skybox_settings.get('min_observations_per_pixel', 1)),
+                'blend_edge_feather_px': int(skybox_settings.get('blend_edge_feather_px', 24)),
+                'low_frequency_fill': bool(skybox_settings.get('low_frequency_fill', True)),
+                'projection_max_long_side': int(skybox_settings.get('projection_max_long_side', 1024)),
             },
         }
         
@@ -1111,6 +1151,10 @@ class NerfStudioTrainer:
         if skybox_path.exists():
             metadata['background_skybox'] = skybox_path.name
             metadata['background_skybox_size_mb'] = skybox_path.stat().st_size / (1024 * 1024)
+        background_manifest_path = self.output_dir / "background_manifest.json"
+        if background_manifest_path.exists():
+            with open(background_manifest_path, 'r', encoding='utf-8') as f:
+                metadata['background_manifest'] = json.load(f)
         if self.background_selection_result is not None:
             metadata['background_selection'] = self.background_selection_result.to_dict()
         if self.floater_pruning_result is not None:

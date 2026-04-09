@@ -20,6 +20,7 @@ import torch
 from PIL import Image
 from gsplat.cuda._wrapper import spherical_harmonics
 from nerfstudio.utils.eval_utils import eval_setup
+from projected_skybox import ProjectedSkyboxSettings, build_projected_photo_skybox
 
 
 def write_ply(filename: Path, count: int, tensors: OrderedDict[str, np.ndarray]) -> None:
@@ -120,17 +121,15 @@ def resolve_appearance_embedding(model, appearance_mode: str, camera_idx: int) -
     }
 
 
-def build_background_skybox(
+def render_learned_background(
     model,
-    output_dir: Path,
     width: int,
     height: int,
-    quality: int,
     appearance_mode: str,
     camera_idx: int,
-) -> Optional[Path]:
+) -> tuple[Optional[np.ndarray], dict]:
     if not getattr(model.config, "enable_bg_model", False) or getattr(model, "bg_model", None) is None:
-        return None
+        return None, {"background_model_enabled": False}
 
     appearance_embedding, metadata = resolve_appearance_embedding(model, appearance_mode, camera_idx)
     directions = build_equirect_directions(width, height, model.device)
@@ -144,17 +143,61 @@ def build_background_skybox(
         )
         colors = torch.clamp(colors.reshape(height, width, 3), 0.0, 1.0)
 
-    rgb = (colors.detach().cpu().numpy() * 255.0).round().astype(np.uint8)
+    return colors.detach().cpu().numpy().astype(np.float32), {
+        "background_model_enabled": True,
+        "bg_sh_degree": int(model.config.bg_sh_degree),
+        **metadata,
+    }
+
+
+def build_background_skybox(
+    model,
+    output_dir: Path,
+    data_dir: Optional[Path],
+    width: int,
+    height: int,
+    quality: int,
+    appearance_mode: str,
+    camera_idx: int,
+    projected_skybox_settings: ProjectedSkyboxSettings,
+) -> Optional[Path]:
+    learned_fill_rgb, learned_background_metadata = render_learned_background(
+        model=model,
+        width=width,
+        height=height,
+        appearance_mode=appearance_mode,
+        camera_idx=camera_idx,
+    )
+    if learned_fill_rgb is None:
+        learned_fill_rgb = np.zeros((height, width, 3), dtype=np.float32)
+
+    if projected_skybox_settings.enabled and data_dir is not None:
+        manifest = build_projected_photo_skybox(
+            data_dir=data_dir,
+            output_dir=output_dir,
+            width=width,
+            height=height,
+            quality=quality,
+            fill_rgb=learned_fill_rgb,
+            settings=projected_skybox_settings,
+        )
+        manifest.update(learned_background_metadata)
+        (output_dir / "background_manifest.json").write_text(json.dumps(manifest, indent=2))
+        return output_dir / "background_skybox.webp"
+
+    rgb = (np.clip(learned_fill_rgb, 0.0, 1.0) * 255.0).round().astype(np.uint8)
     skybox_path = output_dir / "background_skybox.webp"
     Image.fromarray(rgb, mode="RGB").save(skybox_path, format="WEBP", quality=quality, method=6)
-
     manifest = {
-        "version": 1,
+        "version": 2,
         "asset": skybox_path.name,
         "width": width,
         "height": height,
-        "bg_sh_degree": int(model.config.bg_sh_degree),
-        **metadata,
+        "background_skybox_generation_method": "projected_photo_low_frequency",
+        "projection_mode": "projected_photo_low_frequency",
+        "observed_coverage_ratio": 0.0,
+        "filled_coverage_ratio": 1.0,
+        **learned_background_metadata,
     }
     (output_dir / "background_manifest.json").write_text(json.dumps(manifest, indent=2))
     return skybox_path
@@ -164,6 +207,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Export Splatfacto-W assets")
     parser.add_argument("--load-config", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--data-dir", type=Path)
     parser.add_argument("--camera-idx", type=int, default=0)
     parser.add_argument("--background-width", type=int, default=2048)
     parser.add_argument("--background-height", type=int, default=1024)
@@ -173,6 +217,15 @@ def main() -> None:
         choices=("average", "camera", "auto_camera"),
         default="auto_camera",
     )
+    parser.add_argument("--enable-projected-photo-skybox", choices=("true", "false"), default="true")
+    parser.add_argument("--skybox-composition-mode", default="projected_photo_low_frequency")
+    parser.add_argument("--skybox-world-up-source", default="colmap_pose_consensus")
+    parser.add_argument("--skybox-min-sky-mask-ratio", type=float, default=0.01)
+    parser.add_argument("--skybox-min-observations-per-pixel", type=int, default=1)
+    parser.add_argument("--skybox-blend-edge-feather-px", type=int, default=24)
+    parser.add_argument("--skybox-low-frequency-fill", choices=("true", "false"), default="true")
+    parser.add_argument("--skybox-projection-max-long-side", type=int, default=1024)
+    parser.add_argument("--training-mask-mode", choices=("exclude_sky", "keep_sky"), default="exclude_sky")
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -184,14 +237,27 @@ def main() -> None:
         raise RuntimeError("Loaded model is not compatible with Splatfacto-W asset export")
 
     build_foreground_ply(model, args.output_dir, args.camera_idx)
+    projected_skybox_settings = ProjectedSkyboxSettings(
+        enabled=args.enable_projected_photo_skybox == "true",
+        composition_mode=str(args.skybox_composition_mode),
+        world_up_source=str(args.skybox_world_up_source),
+        min_sky_mask_ratio=float(args.skybox_min_sky_mask_ratio),
+        min_observations_per_pixel=int(args.skybox_min_observations_per_pixel),
+        blend_edge_feather_px=int(args.skybox_blend_edge_feather_px),
+        low_frequency_fill=args.skybox_low_frequency_fill == "true",
+        training_mask_mode=str(args.training_mask_mode),
+        projection_max_long_side=int(args.skybox_projection_max_long_side),
+    )
     skybox_path = build_background_skybox(
         model=model,
         output_dir=args.output_dir,
+        data_dir=args.data_dir,
         width=args.background_width,
         height=args.background_height,
         quality=args.background_quality,
         appearance_mode="camera" if args.background_appearance_mode == "auto_camera" else args.background_appearance_mode,
         camera_idx=args.camera_idx,
+        projected_skybox_settings=projected_skybox_settings,
     )
 
     summary = {
@@ -199,6 +265,9 @@ def main() -> None:
         "skybox": skybox_path.name if skybox_path else None,
         "camera_idx": args.camera_idx,
         "background_appearance_mode": args.background_appearance_mode,
+        "projected_photo_skybox": args.enable_projected_photo_skybox == "true",
+        "skybox_composition_mode": args.skybox_composition_mode,
+        "training_mask_mode": args.training_mask_mode,
     }
     (args.output_dir / "export_manifest.json").write_text(json.dumps(summary, indent=2))
 

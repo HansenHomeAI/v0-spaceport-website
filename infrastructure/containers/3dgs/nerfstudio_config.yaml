@@ -49,6 +49,7 @@ preprocessing:
     min_component_area: 0.002
     fill_hole_area: 0.001
     keep_top_connected_only: true
+    training_mask_mode: "exclude_sky"
 
 # Output Configuration
 output:
@@ -63,6 +64,14 @@ output:
     appearance_mode: "auto_camera"
     selection_stride: 5
     selection_max_frames: 32
+    enable_projected_photo_skybox: true
+    composition_mode: "projected_photo_low_frequency"
+    world_up_source: "colmap_pose_consensus"
+    min_sky_mask_ratio: 0.01
+    min_observations_per_pixel: 1
+    blend_edge_feather_px: 24
+    low_frequency_fill: true
+    projection_max_long_side: 1024
   floater_pruning:
     enabled: true
     min_views: 6

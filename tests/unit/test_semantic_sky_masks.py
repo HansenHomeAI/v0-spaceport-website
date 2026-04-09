@@ -60,8 +60,18 @@ class SemanticSkyMaskTests(unittest.TestCase):
 
             source_mask_a = temp_path / "source-mask-a.png"
             source_mask_b = temp_path / "source-mask-b.png"
-            source_mask_a.write_bytes(b"mask-a")
-            source_mask_b.write_bytes(b"mask-b")
+            source_confidence_a = temp_path / "source-mask-a__confidence.png"
+            source_confidence_b = temp_path / "source-mask-b__confidence.png"
+            Image.fromarray(
+                np.array([[255, 255], [0, 0]], dtype=np.uint8),
+                mode="L",
+            ).save(source_mask_a)
+            Image.fromarray(
+                np.array([[0, 0], [255, 255]], dtype=np.uint8),
+                mode="L",
+            ).save(source_mask_b)
+            Image.new("L", (2, 2), color=192).save(source_confidence_a)
+            Image.new("L", (2, 2), color=224).save(source_confidence_b)
 
             source_summary = {
                 "records_by_id": {
@@ -69,6 +79,7 @@ class SemanticSkyMaskTests(unittest.TestCase):
                         "image_id": 11,
                         "image_name": "IMG_001.png",
                         "mask_path": str(source_mask_a),
+                        "confidence_path": str(source_confidence_a),
                         "mask_ratio": 0.21,
                         "top_border_ratio": 0.70,
                     },
@@ -76,6 +87,7 @@ class SemanticSkyMaskTests(unittest.TestCase):
                         "image_id": 22,
                         "image_name": "IMG_002.png",
                         "mask_path": str(source_mask_b),
+                        "confidence_path": str(source_confidence_b),
                         "mask_ratio": 0.32,
                         "top_border_ratio": 0.81,
                     },
@@ -94,8 +106,14 @@ class SemanticSkyMaskTests(unittest.TestCase):
             saved = json.loads(transforms_path.read_text(encoding="utf-8"))
             self.assertEqual(saved["frames"][0]["mask_path"], "masks/frame_00001.png")
             self.assertEqual(saved["frames"][1]["mask_path"], "masks/frame_00002.png")
-            self.assertEqual((converted_dir / "masks" / "frame_00001.png").read_bytes(), b"mask-a")
-            self.assertEqual((converted_dir / "masks" / "frame_00002.png").read_bytes(), b"mask-b")
+            self.assertEqual(
+                saved["frames"][0]["semantic_sky_confidence_path"],
+                "semantic_sky_confidence/frame_00001.png",
+            )
+            with Image.open(converted_dir / "masks" / "frame_00001.png") as training_mask_a:
+                self.assertEqual(np.asarray(training_mask_a).tolist(), [[0, 0], [255, 255]])
+            with Image.open(converted_dir / "masks" / "frame_00002.png") as training_mask_b:
+                self.assertEqual(np.asarray(training_mask_b).tolist(), [[255, 255], [0, 0]])
             self.assertEqual(summary["frames_with_masks"], 2)
             self.assertEqual(summary["mapping_strategy_counts"], {"colmap_im_id": 2})
 
@@ -127,6 +145,7 @@ class SemanticSkyMaskTests(unittest.TestCase):
             saved = json.loads(transforms_path.read_text(encoding="utf-8"))
             self.assertNotIn("mask_path", saved["frames"][0])
             self.assertNotIn("mask_path", saved["frames"][1])
+            self.assertNotIn("semantic_sky_confidence_path", saved["frames"][0])
             self.assertFalse(summary["enabled"])
             self.assertEqual(summary["frames_with_masks"], 0)
 
@@ -183,6 +202,7 @@ class SemanticSkyMaskTests(unittest.TestCase):
             self.assertTrue((converted_dir / "masks_4" / "frame_00001.png").exists())
             with Image.open(converted_dir / "masks_4" / "frame_00001.png") as resized_mask:
                 self.assertEqual(resized_mask.size, (2, 2))
+                self.assertEqual(np.asarray(resized_mask).tolist(), [[0, 0], [0, 0]])
 
     def test_load_rgb_image_for_semantic_mask_recovers_truncated_jpeg(self):
         with tempfile.TemporaryDirectory() as temp_dir:
