@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+from contextlib import contextmanager, nullcontext
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
@@ -31,9 +32,11 @@ except ImportError:  # pragma: no cover - exercised in container/runtime.
     torch_functional = None
 
 try:
-    from PIL import Image
+    from PIL import Image, ImageFile, ImageOps
 except ImportError:  # pragma: no cover - exercised in container/runtime.
     Image = None
+    ImageFile = None
+    ImageOps = None
 
 try:
     from transformers import AutoImageProcessor, AutoModelForSemanticSegmentation
@@ -71,12 +74,89 @@ def _require_runtime_dependency(module: Any, package_name: str) -> None:
         raise RuntimeError(f"{package_name} is required for semantic sky masking")
 
 
+@contextmanager
+def _pillow_truncated_image_mode() -> Any:
+    if ImageFile is None:
+        yield
+        return
+
+    previous = bool(ImageFile.LOAD_TRUNCATED_IMAGES)
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    try:
+        yield
+    finally:
+        ImageFile.LOAD_TRUNCATED_IMAGES = previous
+
+
 def _binary_mask(mask: np.ndarray) -> np.ndarray:
     return (mask.astype(bool)).astype(np.uint8)
 
 
 def _mask_area_ratio(mask: np.ndarray) -> float:
     return float(mask.astype(bool).sum() / mask.size) if mask.size else 0.0
+
+
+def load_rgb_image_for_semantic_mask(
+    image_path: Path,
+    logger: Optional[logging.Logger] = None,
+) -> Any:
+    """
+    Load a source RGB image for semantic masking with recovery paths.
+
+    Some camera JPGs decode cleanly in one library but not another. The
+    training path should salvage those images rather than failing the whole
+    experiment before mask generation starts.
+    """
+
+    _require_runtime_dependency(Image, "Pillow")
+    assert Image is not None
+    active_logger = logger or logging.getLogger(__name__)
+
+    def _open_with_pillow(*, allow_truncated: bool) -> Any:
+        context = _pillow_truncated_image_mode() if allow_truncated else nullcontext()
+        with context:
+            with Image.open(image_path) as image_handle:
+                image_handle.load()
+                oriented_image = (
+                    ImageOps.exif_transpose(image_handle) if ImageOps is not None else image_handle
+                )
+                rgb_image = oriented_image.convert("RGB")
+                rgb_image.load()
+                return rgb_image
+
+    try:
+        return _open_with_pillow(allow_truncated=False)
+    except Exception as initial_exc:
+        active_logger.warning(
+            "Semantic sky mask image load failed on first pass for %s: %s. Retrying with tolerant decoding.",
+            image_path,
+            initial_exc,
+        )
+
+    try:
+        recovered = _open_with_pillow(allow_truncated=True)
+        active_logger.warning("Recovered semantic sky input with tolerant Pillow decoding: %s", image_path)
+        return recovered
+    except Exception as tolerant_exc:
+        if cv2 is not None:
+            try:
+                encoded_bytes = np.fromfile(str(image_path), dtype=np.uint8)
+                decoded_bgr = cv2.imdecode(encoded_bytes, cv2.IMREAD_COLOR)
+                if decoded_bgr is not None:
+                    decoded_rgb = cv2.cvtColor(decoded_bgr, cv2.COLOR_BGR2RGB)
+                    active_logger.warning(
+                        "Recovered semantic sky input with OpenCV fallback decoding: %s",
+                        image_path,
+                    )
+                    return Image.fromarray(decoded_rgb, mode="RGB")
+            except Exception as cv_exc:
+                active_logger.warning(
+                    "OpenCV fallback decode failed for %s: %s",
+                    image_path,
+                    cv_exc,
+                )
+
+        raise RuntimeError(f"Could not decode semantic sky input image: {image_path}") from tolerant_exc
 
 
 def _connected_components_with_stats(mask: np.ndarray) -> tuple[int, np.ndarray, np.ndarray]:
@@ -331,10 +411,9 @@ class SemanticSkyMaskGenerator:
         rgb_images = []
         source_sizes = []
         for image_path in image_paths:
-            with Image.open(image_path) as image_handle:
-                rgb_image = image_handle.convert("RGB")
-                rgb_images.append(rgb_image)
-                source_sizes.append(rgb_image.size)
+            rgb_image = load_rgb_image_for_semantic_mask(image_path, logger=self.logger)
+            rgb_images.append(rgb_image)
+            source_sizes.append(rgb_image.size)
 
         processor_inputs = self._processor(images=rgb_images, return_tensors="pt")
 

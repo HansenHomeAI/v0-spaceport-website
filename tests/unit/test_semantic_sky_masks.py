@@ -2,9 +2,11 @@ import json
 import sys
 import tempfile
 import unittest
+from io import BytesIO
 from pathlib import Path
 
 import numpy as np
+from PIL import Image
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -15,6 +17,7 @@ if str(CONTAINER_DIR) not in sys.path:
 from semantic_sky_masks import (  # noqa: E402
     SemanticSkyMaskSettings,
     attach_masks_to_transforms,
+    load_rgb_image_for_semantic_mask,
     post_process_semantic_sky_mask,
 )
 
@@ -126,6 +129,21 @@ class SemanticSkyMaskTests(unittest.TestCase):
             self.assertNotIn("mask_path", saved["frames"][1])
             self.assertFalse(summary["enabled"])
             self.assertEqual(summary["frames_with_masks"], 0)
+
+    def test_load_rgb_image_for_semantic_mask_recovers_truncated_jpeg(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            image_path = Path(temp_dir) / "truncated.jpg"
+            image = Image.new("RGB", (32, 24), color=(80, 140, 220))
+            encoded = BytesIO()
+            image.save(encoded, format="JPEG", quality=90)
+            truncated_bytes = encoded.getvalue()[:-8]
+            image_path.write_bytes(truncated_bytes)
+
+            loaded = load_rgb_image_for_semantic_mask(image_path)
+
+            self.assertEqual(loaded.mode, "RGB")
+            self.assertEqual(loaded.size, (32, 24))
+            self.assertGreater(np.asarray(loaded).mean(), 0.0)
 
 
 if __name__ == "__main__":
